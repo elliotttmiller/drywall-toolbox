@@ -1088,24 +1088,30 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 
 /* popup animation for the viewer-anchored modal */
 .product-popup {
-    transform-origin: center top;
-    transform: translateY(-8px) scale(0.98);
-    opacity: 0;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    pointer-events: none;
+	/* Keep the popup out of document flow until shown to avoid layout gaps
+	   The code appends this element into the viewer container and sets
+	   position/display when a hotspot is activated, so make the initial
+	   state match the runtime behaviour (absolute + hidden). */
+	position: absolute;
+	display: none;
+	transform-origin: center top;
+	transform: translateY(-8px) scale(0.98);
+	opacity: 0;
+	transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+	pointer-events: none;
 
-    /* Clean, minimal design matching reference */
-    background: #ffffff;
-    border-radius: 4px;
-    border: 1px solid #d1d1d1;
-    box-shadow: 
-        0 2px 8px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.06);
+	/* Clean, minimal design matching reference */
+	background: #ffffff;
+	border-radius: 4px;
+	border: 1px solid #d1d1d1;
+	box-shadow: 
+		0 2px 8px rgba(0, 0, 0, 0.1),
+		0 1px 3px rgba(0, 0, 0, 0.06);
     
-    /* Responsive width - compact for mobile, comfortable for desktop */
-    width: 140px;
-    max-width: 140px;
-    z-index: 1000 !important;
+	/* Responsive width - compact for mobile, comfortable for desktop */
+	width: 140px;
+	max-width: 140px;
+	z-index: 1000 !important;
 }
 
 /* Desktop sizing */
@@ -2823,5 +2829,27 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 //# sourceURL=wp_customize_support_script
 </script>
 
-			</body>
+<!-- Ensure product popups are anchored into their schematic containers on load
+	 to avoid initial layout gaps (they are absolutely positioned and hidden
+	 by default via CSS). This mirrors the behaviour that occurs when a hotspot
+	 is clicked and the popup is appended into the viewer container. -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	['','2','3','4'].forEach(function(suffix) {
+		var popupId = 'productPopup' + suffix;
+		var containerId = 'schematicContainer' + (suffix || '');
+		var popup = document.getElementById(popupId);
+		var container = document.getElementById(containerId);
+		if (popup && container && popup.parentElement !== container) {
+			// ensure it's hidden and out of flow, then move it inside the container
+			popup.style.display = 'none';
+			popup.style.position = 'absolute';
+			popup.style.visibility = 'hidden';
+			container.appendChild(popup);
+		}
+	});
+});
+</script>
+
+		</body>
 </html>
