@@ -2516,13 +2516,71 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 
 	<script>
 	// PT Compound Pump Interactive Viewer (Viewer #5)
-	// Image dimensions: 1397×800 (placeholder values - to be updated)
+	// Hotspot boxes imported from `schematic_diagrams/pt-compound-hotspots.txt`
+	// The boxes store pixel coordinates (x,y) relative to the source image width/height below.
 	const schematicData5 = {
 		schematicId: 'PT-Compound-Pump',
+		width: 1400,
+		height: 798,
 		hotspots: [
-			{ id: 'part5-001', left: '25%', top: '25%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-1', productData: { id:501, name:'PT Compound Pump Part 1', sku:'PTCP-PART-01', price:29.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+1', description:'PT Compound Pump component part 1.' } },
-			{ id: 'part5-002', left: '50%', top: '50%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-2', productData: { id:502, name:'PT Compound Pump Part 2', sku:'PTCP-PART-02', price:34.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+2', description:'PT Compound Pump component part 2.' } },
-			{ id: 'part5-003', left: '75%', top: '75%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-3', productData: { id:503, name:'PT Compound Pump Part 3', sku:'PTCP-PART-03', price:39.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+3', description:'PT Compound Pump component part 3.' } }
+			{ id: '1', x: 347.16, y: 209.80, boxWidth: 29.27, boxHeight: 29.27, partNumber: 'part11', productData: { id:601, name:'part11', sku:'PTCP-part11', price:0.00, image:'', description:'' } },
+			{ id: '2', x: 510.43, y: 209.80, boxWidth: 31.53, boxHeight: 29.27, partNumber: 'part11', productData: { id:602, name:'part11', sku:'PTCP-part11-2', price:0.00, image:'', description:'' } },
+			{ id: '3', x: 302.13, y: 70.93, boxWidth: 30.78, boxHeight: 30.78, partNumber: 'part17', productData: { id:603, name:'part17', sku:'PTCP-part17-1', price:0.00, image:'', description:'' } },
+			{ id: '4', x: 636.91, y: 133.24, boxWidth: 29.27, boxHeight: 32.28, partNumber: 'part17', productData: { id:604, name:'part17', sku:'PTCP-part17-2', price:0.00, image:'', description:'' } },
+			{ id: '5', x: 302.50, y: 209.05, boxWidth: 30.03, boxHeight: 30.78, partNumber: 'part17', productData: { id:605, name:'part17', sku:'PTCP-part17-3', price:0.00, image:'', description:'' } },
+			{ id: '6', x: 347.16, y: 70.56, boxWidth: 29.27, boxHeight: 31.53, partNumber: 'part16', productData: { id:606, name:'part16', sku:'PTCP-part16-1', price:0.00, image:'', description:'' } },
+			{ id: '7', x: 519.81, y: 70.56, boxWidth: 30.78, boxHeight: 31.53, partNumber: 'part16', productData: { id:607, name:'part16', sku:'PTCP-part16-2', price:0.00, image:'', description:'' } },
+			{ id: '8', x: 872.23, y: 194.04, boxWidth: 30.03, boxHeight: 30.78, partNumber: 'part16', productData: { id:608, name:'part16', sku:'PTCP-part16-3', price:0.00, image:'', description:'' } },
+			{ id: '9', x: 595.25, y: 209.42, boxWidth: 30.03, boxHeight: 30.03, partNumber: 'part16', productData: { id:609, name:'part16', sku:'PTCP-part16-4', price:0.00, image:'', description:'' } },
+			{ id: 'A', x: 636.16, y: 32.28, boxWidth: 32.28, boxHeight: 31.53, partNumber: 'part7', productData: { id:610, name:'part7', sku:'PTCP-part7-1', price:0.00, image:'', description:'' } },
+			{ id: 'B', x: 1015.22, y: 278.86, boxWidth: 30.78, boxHeight: 32.28, partNumber: 'part5', productData: { id:611, name:'part5', sku:'PTCP-part5-1', price:0.00, image:'', description:'' } },
+			{ id: 'C', x: 818.56, y: 373.44, boxWidth: 30.78, boxHeight: 32.28, partNumber: 'part6', productData: { id:612, name:'part6', sku:'PTCP-part6-1', price:0.00, image:'', description:'' } },
+			{ id: 'D', x: 1015.22, y: 391.52, boxWidth: 30.78, boxHeight: 30.91, partNumber: 'part3', productData: { id:613, name:'part3', sku:'PTCP-part3-1', price:0.00, image:'', description:'' } },
+			{ id: 'E', x: 665.81, y: 455.77, boxWidth: 30.03, boxHeight: 31.53, partNumber: 'part1', productData: { id:614, name:'part1', sku:'PTCP-part1-1', price:0.00, image:'', description:'' } },
+			{ id: 'F', x: 1095.16, y: 521.07, boxWidth: 30.03, boxHeight: 30.03, partNumber: 'part4', productData: { id:615, name:'part4', sku:'PTCP-part4-1', price:0.00, image:'', description:'' } },
+			{ id: 'G', x: 912.76, y: 633.90, boxWidth: 30.03, boxHeight: 30.78, partNumber: 'part2', productData: { id:616, name:'part2', sku:'PTCP-part2-1', price:0.00, image:'', description:'' } },
+			{ id: 'H', x: 973.94, y: 389.58, boxWidth: 30.78, boxHeight: 30.03, partNumber: 'part18', productData: { id:617, name:'part18', sku:'PTCP-part18-1', price:0.00, image:'', description:'' } },
+			{ id: 'I', x: 912.76, y: 579.11, boxWidth: 30.03, boxHeight: 30.78, partNumber: 'part4', productData: { id:618, name:'part4', sku:'PTCP-part4-2', price:0.00, image:'', description:'' } },
+			{ id: 'J', x: 633.15, y: 304.00, boxWidth: 29.27, boxHeight: 33.03, partNumber: 'part22', productData: { id:619, name:'part22', sku:'PTCP-part22-1', price:0.00, image:'', description:'' } },
+			{ id: 'K', x: 636.53, y: 208.30, boxWidth: 30.03, boxHeight: 29.27, partNumber: 'part29', productData: { id:620, name:'part29', sku:'PTCP-part29-1', price:0.00, image:'', description:'' } },
+			{ id: 'L', x: 820.81, y: 330.65, boxWidth: 27.77, boxHeight: 29.27, partNumber: 'part29', productData: { id:621, name:'part29', sku:'PTCP-part29-2', price:0.00, image:'', description:'' } },
+			{ id: 'M', x: 1098.54, y: 578.73, boxWidth: 29.27, boxHeight: 31.53, partNumber: 'part20', productData: { id:622, name:'part20', sku:'PTCP-part20-1', price:0.00, image:'', description:'' } },
+			{ id: 'O', x: 662.43, y: 388.45, boxWidth: 29.27, boxHeight: 32.28, partNumber: 'part25', productData: { id:623, name:'part25', sku:'PTCP-part25-1', price:0.00, image:'', description:'' } },
+			{ id: 'P', x: 684.95, y: 209.42, boxWidth: 30.78, boxHeight: 28.52, partNumber: 'part24', productData: { id:624, name:'part24', sku:'PTCP-part24-1', price:0.00, image:'', description:'' } },
+			{ id: 'Q', x: 684.57, y: 171.89, boxWidth: 30.03, boxHeight: 28.52, partNumber: 'part26', productData: { id:625, name:'part26', sku:'PTCP-part26-1', price:0.00, image:'', description:'' } },
+			{ id: 'R', x: 684.95, y: 133.24, boxWidth: 30.78, boxHeight: 30.78, partNumber: 'part27', productData: { id:626, name:'part27', sku:'PTCP-part27-1', price:0.00, image:'', description:'' } },
+			{ id: 'S', x: 553.21, y: 210.18, boxWidth: 30.03, boxHeight: 30.03, partNumber: 'part30', productData: { id:627, name:'part30', sku:'PTCP-part30-1', price:0.00, image:'', description:'' } },
+			{ id: 'T', x: 538.57, y: 302.13, boxWidth: 29.27, boxHeight: 29.27, partNumber: 'part30', productData: { id:628, name:'part30', sku:'PTCP-part30-2', price:0.00, image:'', description:'' } },
+			{ id: 'U', x: 346.79, y: 356.17, boxWidth: 30.03, boxHeight: 32.28, partNumber: 'part30', productData: { id:629, name:'part30', sku:'PTCP-part30-3', price:0.00, image:'', description:'' } },
+			{ id: 'V', x: 894.37, y: 236.07, boxWidth: 32.28, boxHeight: 32.28, partNumber: 'part30', productData: { id:630, name:'part30', sku:'PTCP-part30-4', price:0.00, image:'', description:'' } },
+			{ id: 'W', x: 583.61, y: 303.63, boxWidth: 29.27, boxHeight: 29.27, partNumber: 'part31', productData: { id:631, name:'part31', sku:'PTCP-part31-1', price:0.00, image:'', description:'' } },
+			{ id: 'X', x: 831.32, y: 194.41, boxWidth: 29.27, boxHeight: 31.53, partNumber: 'part28', productData: { id:632, name:'part28', sku:'PTCP-part28-1', price:0.00, image:'', description:'' } },
+			{ id: 'Y', x: 877.86, y: 32.65, boxWidth: 29.27, boxHeight: 30.78, partNumber: 'part35', productData: { id:633, name:'part35', sku:'PTCP-part35-1', price:0.00, image:'', description:'' } },
+			{ id: 'Z', x: 617.77, y: 456.01, boxWidth: 31.53, boxHeight: 29.27, partNumber: 'part32', productData: { id:634, name:'part32', sku:'PTCP-part32-1', price:0.00, image:'', description:'' } },
+			{ id: 'a', x: 1015.22, y: 330.28, boxWidth: 27.77, boxHeight: 30.03, partNumber: 'part34', productData: { id:635, name:'part34', sku:'PTCP-part34-1', price:0.00, image:'', description:'' } },
+			{ id: 'b', x: 939.41, y: 235.32, boxWidth: 30.78, boxHeight: 30.78, partNumber: 'part33', productData: { id:636, name:'part33', sku:'PTCP-part33-1', price:0.00, image:'', description:'' } },
+			{ id: 'c', x: 1094.79, y: 118.22, boxWidth: 29.27, boxHeight: 29.27, partNumber: 'part38', productData: { id:637, name:'part38', sku:'PTCP-part38-1', price:0.00, image:'', description:'' } },
+			{ id: 'd', x: 1047.50, y: 117.47, boxWidth: 29.27, boxHeight: 30.78, partNumber: 'part39', productData: { id:638, name:'part39', sku:'PTCP-part39-1', price:0.00, image:'', description:'' } },
+			{ id: 'e', x: 939.41, y: 33.03, boxWidth: 30.78, boxHeight: 30.03, partNumber: 'part40', productData: { id:639, name:'part40', sku:'PTCP-part40-1', price:0.00, image:'', description:'' } },
+			{ id: 'f', x: 830.57, y: 152.00, boxWidth: 30.78, boxHeight: 29.27, partNumber: 'part42', productData: { id:640, name:'part42', sku:'PTCP-part42-1', price:0.00, image:'', description:'' } },
+			{ id: 'g', x: 1098.17, y: 330.65, boxWidth: 30.03, boxHeight: 32.28, partNumber: 'part43', productData: { id:641, name:'part43', sku:'PTCP-part43-1', price:0.00, image:'', description:'' } },
+			{ id: 'h', x: 791.16, y: 194.04, boxWidth: 28.52, boxHeight: 30.78, partNumber: 'part44', productData: { id:642, name:'part44', sku:'PTCP-part44-1', price:0.00, image:'', description:'' } },
+			{ id: 'i', x: 668.43, y: 521.31, boxWidth: 29.27, boxHeight: 29.27, partNumber: 'part45', productData: { id:643, name:'part45', sku:'PTCP-part45-1', price:0.00, image:'', description:'' } },
+			{ id: 'j', x: 511.55, y: 455.63, boxWidth: 29.27, boxHeight: 30.03, partNumber: 'part45', productData: { id:644, name:'part45', sku:'PTCP-part45-2', price:0.00, image:'', description:'' } },
+			{ id: 'k', x: 668.06, y: 579.48, boxWidth: 28.52, boxHeight: 30.03, partNumber: 'part46', productData: { id:645, name:'part46', sku:'PTCP-part46-1', price:0.00, image:'', description:'' } },
+			{ id: 'l', x: 668.81, y: 634.66, boxWidth: 30.03, boxHeight: 29.27, partNumber: 'part47', productData: { id:646, name:'part47', sku:'PTCP-part47-1', price:0.00, image:'', description:'' } },
+			{ id: 'm', x: 820.81, y: 578.73, boxWidth: 27.77, boxHeight: 30.03, partNumber: 'part48', productData: { id:647, name:'part48', sku:'PTCP-part48-1', price:0.00, image:'', description:'' } },
+			{ id: 'n', x: 669.18, y: 697.71, boxWidth: 30.78, boxHeight: 32.28, partNumber: 'part49', productData: { id:648, name:'part49', sku:'PTCP-part49-1', price:0.00, image:'', description:'' } },
+			{ id: 'o', x: 668.43, y: 758.13, boxWidth: 29.27, boxHeight: 30.03, partNumber: 'part50', productData: { id:649, name:'part50', sku:'PTCP-part50-1', price:0.00, image:'', description:'' } },
+			{ id: 'p', x: 820.81, y: 456.38, boxWidth: 30.78, boxHeight: 33.03, partNumber: 'part51', productData: { id:650, name:'part51', sku:'PTCP-part51-1', price:0.00, image:'', description:'' } },
+			{ id: 'q', x: 820.81, y: 520.94, boxWidth: 29.27, boxHeight: 28.52, partNumber: 'part52', productData: { id:651, name:'part52', sku:'PTCP-part52-1', price:0.00, image:'', description:'' } },
+			{ id: 'r', x: 347.16, y: 302.50, boxWidth: 29.27, boxHeight: 30.03, partNumber: 'part54', productData: { id:652, name:'part54', sku:'PTCP-part54-1', price:0.00, image:'', description:'' } },
+			{ id: 's', x: 346.79, y: 510.43, boxWidth: 30.03, boxHeight: 31.53, partNumber: 'part55', productData: { id:653, name:'part55', sku:'PTCP-part55-1', price:0.00, image:'', description:'' } },
+			{ id: 't', x: 347.92, y: 633.53, boxWidth: 29.27, boxHeight: 33.03, partNumber: 'part56', productData: { id:654, name:'part56', sku:'PTCP-part56-1', price:0.00, image:'', description:'' } },
+			{ id: 'u', x: 347.54, y: 405.34, boxWidth: 28.52, boxHeight: 28.52, partNumber: 'part57', productData: { id:655, name:'part57', sku:'PTCP-part57-1', price:0.00, image:'', description:'' } },
+			{ id: 'v', x: 514.55, y: 698.46, boxWidth: 29.27, boxHeight: 32.28, partNumber: 'part58', productData: { id:656, name:'part58', sku:'PTCP-part58-1', price:0.00, image:'', description:'' } },
+			{ id: 'w', x: 514.18, y: 569.73, boxWidth: 31.53, boxHeight: 31.53, partNumber: 'part59', productData: { id:657, name:'part59', sku:'PTCP-part59-1', price:0.00, image:'', description:'' } },
+			{ id: 'x', x: 511.18, y: 405.34, boxWidth: 31.53, boxHeight: 30.03, partNumber: 'part60', productData: { id:658, name:'part60', sku:'PTCP-part60-1', price:0.00, image:'', description:'' } }
 		]
 	};
 
@@ -2537,15 +2595,24 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 		schematicData5.hotspots.forEach(hotspot => {
 			const el = document.createElement('div');
 			el.className = 'hotspot';
-			el.style.left = hotspot.left;
-			el.style.top = hotspot.top;
+			// If the hotspot provides pixel coords (x,y) convert to percentage relative to the source image
+			if (typeof hotspot.x === 'number' && typeof schematicData5.width === 'number') {
+				const leftPercent = (hotspot.x / schematicData5.width) * 100;
+				const topPercent = (hotspot.y / schematicData5.height) * 100;
+				el.style.left = leftPercent + '%';
+				el.style.top = topPercent + '%';
+			} else {
+				el.style.left = hotspot.left || '0%';
+				el.style.top = hotspot.top || '0%';
+			}
+
 			el.dataset.boxWidth = hotspot.boxWidth;
 			el.dataset.boxHeight = hotspot.boxHeight;
 			el.dataset.partId = hotspot.id;
 
 			const lbl = document.createElement('span');
 			lbl.className = 'hotspot-label';
-			lbl.textContent = hotspot.partNumber.split('-').pop();
+			lbl.textContent = (hotspot.partNumber || hotspot.id).toString().split('-').pop();
 			el.appendChild(lbl);
 
 			el.addEventListener('click', (e) => { e.stopPropagation(); showProductPopup5(hotspot.productData, el); });
@@ -2560,7 +2627,9 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 		const img = document.getElementById('schematicImage5');
 		const container = document.getElementById('schematicContainer5');
 		if (!img || !img.naturalWidth) return;
-		const origW = 1397, origH = 800;
+		// Use the image's natural dimensions as the original reference. If not available, fall back to schematicData5.width/height.
+		const origW = img.naturalWidth || schematicData5.width || 1400;
+		const origH = img.naturalHeight || schematicData5.height || 798;
 		const displayW = img.clientWidth, displayH = img.clientHeight;
 		const scaleX = displayW / origW, scaleY = displayH / origH;
 		const hotspots = container.querySelectorAll('.hotspot');
@@ -2729,13 +2798,38 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 
 	<script>
 	// Corner Finisher Interactive Viewer (Viewer #6)
-	// Image dimensions: 1397×800 (placeholder values - to be updated)
+	// Imported annotation boxes from `schematic_diagrams/corner-finisher-hotspots.txt` (image: Platinum_Corner_Finisher.png)
 	const schematicData6 = {
 		schematicId: 'Platinum_Corner_Finisher',
+		// canonical image size (from the annotation file)
+		width: 1399,
+		height: 799,
+		// hotspots stored as pixel-based boxes (x,y are in image pixels). Runtime will convert to percentages.
 		hotspots: [
-			{ id: 'part6-001', left: '25%', top: '25%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-1', productData: { id:601, name:'Corner Finisher Part 1', sku:'PCF-PART-01', price:29.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+1', description:'Corner Finisher component part 1.' } },
-			{ id: 'part6-002', left: '50%', top: '50%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-2', productData: { id:602, name:'Corner Finisher Part 2', sku:'PCF-PART-02', price:34.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+2', description:'Corner Finisher component part 2.' } },
-			{ id: 'part6-003', left: '75%', top: '75%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-3', productData: { id:603, name:'Corner Finisher Part 3', sku:'PCF-PART-03', price:39.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+3', description:'Corner Finisher component part 3.' } }
+			{ id: '2', x: 892.84, y: 505.29, boxWidth: 25.02, boxHeight: 26.31, partNumber: 'part1', productData: { id:6020, name:'part1', sku:'PCF-002', price:0, image:'', description:'' } },
+			{ id: '3', x: 610.84, y: 738.85, boxWidth: 25.67, boxHeight: 26.31, partNumber: 'part2', productData: { id:6021, name:'part2', sku:'PCF-003', price:0, image:'', description:'' } },
+			{ id: '4', x: 189.93, y: 575.23, boxWidth: 29.52, boxHeight: 27.59, partNumber: 'part4', productData: { id:6022, name:'part4', sku:'PCF-004', price:0, image:'', description:'' } },
+			{ id: '5', x: 254.09, y: 437.6, boxWidth: 26.95, boxHeight: 26.95, partNumber: 'part4', productData: { id:6023, name:'part4', sku:'PCF-005', price:0, image:'', description:'' } },
+			{ id: '6', x: 410.33, y: 441.77, boxWidth: 26.31, boxHeight: 26.31, partNumber: 'part4', productData: { id:6024, name:'part4', sku:'PCF-006', price:0, image:'', description:'' } },
+			{ id: '7', x: 190.25, y: 697.78, boxWidth: 26.31, boxHeight: 27.59, partNumber: 'part5', productData: { id:6025, name:'part5', sku:'PCF-007', price:0, image:'', description:'' } },
+			{ id: '8', x: 189.93, y: 621.75, boxWidth: 26.95, boxHeight: 25.67, partNumber: 'part6', productData: { id:6026, name:'part6', sku:'PCF-008', price:0, image:'', description:'' } },
+			{ id: '9', x: 892.84, y: 670.83, boxWidth: 27.59, boxHeight: 27.59, partNumber: 'part7', productData: { id:6027, name:'part7', sku:'PCF-009', price:0, image:'', description:'' } },
+			{ id: 'A', x: 580.68, y: 670.83, boxWidth: 25.67, boxHeight: 27.59, partNumber: 'part9', productData: { id:6028, name:'part9', sku:'PCF-010', price:0, image:'', description:'' } },
+			{ id: 'B', x: 709.97, y: 738.53, boxWidth: 25.02, boxHeight: 26.95, partNumber: 'part10', productData: { id:6029, name:'part10', sku:'PCF-011', price:0, image:'', description:'' } },
+			{ id: 'C', x: 412.89, y: 386.91, boxWidth: 25.02, boxHeight: 26.95, partNumber: 'part14', productData: { id:6030, name:'part14', sku:'PCF-012', price:0, image:'', description:'' } },
+			{ id: 'D', x: 896.05, y: 564.0, boxWidth: 27.59, boxHeight: 26.95, partNumber: 'part16', productData: { id:6031, name:'part16', sku:'PCF-013', price:0, image:'', description:'' } },
+			{ id: 'E', x: 896.37, y: 610.2, boxWidth: 25.67, boxHeight: 26.95, partNumber: 'part17', productData: { id:6032, name:'part17', sku:'PCF-014', price:0, image:'', description:'' } },
+			{ id: 'F', x: 412.89, y: 274.3, boxWidth: 26.31, boxHeight: 26.31, partNumber: 'part11', productData: { id:6033, name:'part11', sku:'PCF-015', price:0, image:'', description:'' } },
+			{ id: 'G', x: 697.78, y: 99.77, boxWidth: 26.31, boxHeight: 27.59, partNumber: 'part12', productData: { id:6034, name:'part12', sku:'PCF-016', price:0, image:'', description:'' } },
+			{ id: 'H', x: 744.94, y: 249.28, boxWidth: 25.67, boxHeight: 28.87, partNumber: 'part15', productData: { id:6035, name:'part15', sku:'PCF-017', price:0, image:'', description:'' } },
+			{ id: 'I', x: 684.63, y: 188.0, boxWidth: 26.95, boxHeight: 25.67, partNumber: 'part17', productData: { id:6036, name:'part17', sku:'PCF-018', price:0, image:'', description:'' } },
+			{ id: 'J', x: 1197.3, y: 374.08, boxWidth: 26.95, boxHeight: 28.23, partNumber: 'part3', productData: { id:6037, name:'part3', sku:'PCF-019', price:0, image:'', description:'' } },
+			{ id: 'K', x: 1119.02, y: 92.72, boxWidth: 26.95, boxHeight: 26.31, partNumber: 'part4', productData: { id:6038, name:'part4', sku:'PCF-020', price:0, image:'', description:'' } },
+			{ id: 'L', x: 821.3, y: 142.12, boxWidth: 26.95, boxHeight: 28.87, partNumber: 'part4', productData: { id:6039, name:'part4', sku:'PCF-021', price:0, image:'', description:'' } },
+			{ id: 'M', x: 954.12, y: 289.38, boxWidth: 26.95, boxHeight: 25.67, partNumber: 'part4', productData: { id:6040, name:'part4', sku:'PCF-022', price:0, image:'', description:'' } },
+			{ id: 'N', x: 1197.3, y: 316.65, boxWidth: 25.67, boxHeight: 26.31, partNumber: 'part5', productData: { id:6041, name:'part5', sku:'PCF-023', price:0, image:'', description:'' } },
+			{ id: 'O', x: 1113.56, y: 374.72, boxWidth: 26.31, boxHeight: 26.95, partNumber: 'part6', productData: { id:6042, name:'part6', sku:'PCF-024', price:0, image:'', description:'' } },
+			{ id: 'P', x: 697.46, y: 26.95, boxWidth: 26.95, boxHeight: 28.23, partNumber: 'part13', productData: { id:6043, name:'part13', sku:'PCF-025', price:0, image:'', description:'' } }
 		]
 	};
 
@@ -2750,15 +2844,25 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 		schematicData6.hotspots.forEach(hotspot => {
 			const el = document.createElement('div');
 			el.className = 'hotspot';
-			el.style.left = hotspot.left;
-			el.style.top = hotspot.top;
-			el.dataset.boxWidth = hotspot.boxWidth;
-			el.dataset.boxHeight = hotspot.boxHeight;
+
+			// If hotspot is stored as pixel coords (x/y) convert to percent at init time
+			if (typeof hotspot.x === 'number' && typeof schematicData6.width === 'number') {
+				const leftPercent = (hotspot.x / schematicData6.width) * 100;
+				const topPercent = (hotspot.y / schematicData6.height) * 100;
+				el.style.left = leftPercent + '%';
+				el.style.top = topPercent + '%';
+			} else {
+				el.style.left = hotspot.left || '0%';
+				el.style.top = hotspot.top || '0%';
+			}
+
+			el.dataset.boxWidth = hotspot.boxWidth || hotspot.width || 0;
+			el.dataset.boxHeight = hotspot.boxHeight || hotspot.height || 0;
 			el.dataset.partId = hotspot.id;
 
 			const lbl = document.createElement('span');
 			lbl.className = 'hotspot-label';
-			lbl.textContent = hotspot.partNumber.split('-').pop();
+			lbl.textContent = (hotspot.partNumber || hotspot.label || hotspot.id).toString().split('-').pop();
 			el.appendChild(lbl);
 
 			el.addEventListener('click', (e) => { e.stopPropagation(); showProductPopup6(hotspot.productData, el); });
@@ -2772,8 +2876,10 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 	function adjustHotspotSizes6() {
 		const img = document.getElementById('schematicImage6');
 		const container = document.getElementById('schematicContainer6');
-		if (!img || !img.naturalWidth) return;
-		const origW = 1397, origH = 800;
+		if (!img) return;
+		// Use the image's natural dimensions as the original reference. If not available, fall back to schematicData6.width/height.
+		const origW = img.naturalWidth || schematicData6.width || 1399;
+		const origH = img.naturalHeight || schematicData6.height || 799;
 		const displayW = img.clientWidth, displayH = img.clientHeight;
 		const scaleX = displayW / origW, scaleY = displayH / origH;
 		const hotspots = container.querySelectorAll('.hotspot');
@@ -2781,13 +2887,20 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 		schematicData6.hotspots.forEach((hotspotData, index) => {
 			const h = hotspots[index];
 			if (!h) return;
-			
-			const leftPercent = parseFloat(hotspotData.left);
-			const topPercent = parseFloat(hotspotData.top);
-			
+
+			// compute left/top either from percent fields or from pixel x/y using canonical image dims
+			let leftPercent = 0, topPercent = 0;
+			if (typeof hotspotData.left === 'string') {
+				leftPercent = parseFloat(hotspotData.left);
+				topPercent = parseFloat(hotspotData.top);
+			} else if (typeof hotspotData.x === 'number' && typeof schematicData6.width === 'number') {
+				leftPercent = (hotspotData.x / schematicData6.width) * 100;
+				topPercent = (hotspotData.y / schematicData6.height) * 100;
+			}
+
 			h.style.left = leftPercent + '%';
 			h.style.top = topPercent + '%';
-			
+
 			const boxW = parseFloat(h.dataset.boxWidth||0), boxH = parseFloat(h.dataset.boxHeight||0);
 			let size = 26;
 			if (boxW && boxH) {
@@ -3155,13 +3268,36 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 
 	<script>
 	// Flat Box Handle Interactive Viewer (Viewer #8)
-	// Image dimensions: 1397×800 (placeholder values - to be updated)
+	// Imported annotation boxes from `schematic_diagrams/flat-box-handle-hotspots.txt` (image: platinum_flatbox_handle.png)
 	const schematicData8 = {
 		schematicId: 'platinum_flatbox_handle',
+		// canonical image size (from the annotation file)
+		width: 1398,
+		height: 798,
 		hotspots: [
-			{ id: 'part8-001', left: '25%', top: '25%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-1', productData: { id:801, name:'Flat Box Handle Part 1', sku:'PFBH-PART-01', price:29.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+1', description:'Flat Box Handle component part 1.' } },
-			{ id: 'part8-002', left: '50%', top: '50%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-2', productData: { id:802, name:'Flat Box Handle Part 2', sku:'PFBH-PART-02', price:34.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+2', description:'Flat Box Handle component part 2.' } },
-			{ id: 'part8-003', left: '75%', top: '75%', boxWidth: 50, boxHeight: 50, partNumber: 'PART-3', productData: { id:803, name:'Flat Box Handle Part 3', sku:'PFBH-PART-03', price:39.99, image:'https://via.placeholder.com/400x300/FFCC33/000000?text=Part+3', description:'Flat Box Handle component part 3.' } }
+			{ id: '1', x: 154.54, y: 731.75, boxWidth: 23.14, boxHeight: 23.14, partNumber: 'part2', productData: { id:8010, name:'part2', sku:'PFBH-001', price:0, image:'', description:'' } },
+			{ id: '2', x: 271.4, y: 579.88, boxWidth: 24.32, boxHeight: 24.32, partNumber: 'part3', productData: { id:8011, name:'part3', sku:'PFBH-002', price:0, image:'', description:'' } },
+			{ id: '3', x: 154.83, y: 772.98, boxWidth: 23.73, boxHeight: 22.54, partNumber: 'part4', productData: { id:8012, name:'part4', sku:'PFBH-003', price:0, image:'', description:'' } },
+			{ id: '4', x: 154.24, y: 647.81, boxWidth: 23.73, boxHeight: 23.73, partNumber: 'part6', productData: { id:8013, name:'part6', sku:'PFBH-004', price:0, image:'', description:'' } },
+			{ id: '5', x: 322.72, y: 773.28, boxWidth: 23.73, boxHeight: 24.32, partNumber: 'part7', productData: { id:8014, name:'part7', sku:'PFBH-005', price:0, image:'', description:'' } },
+			{ id: '6', x: 359.5, y: 635.94, boxWidth: 23.73, boxHeight: 24.92, partNumber: 'part8', productData: { id:8015, name:'part8', sku:'PFBH-006', price:0, image:'', description:'' } },
+			{ id: '7', x: 220.68, y: 579.88, boxWidth: 24.92, boxHeight: 24.32, partNumber: 'part9', productData: { id:8016, name:'part9', sku:'PFBH-007', price:0, image:'', description:'' } },
+			{ id: '8', x: 154.54, y: 579.59, boxWidth: 23.14, boxHeight: 23.73, partNumber: 'part10', productData: { id:8017, name:'part10', sku:'PFBH-008', price:0, image:'', description:'' } },
+			{ id: '9', x: 323.01, y: 738.28, boxWidth: 23.14, boxHeight: 24.32, partNumber: 'part10', productData: { id:8018, name:'part10', sku:'PFBH-009', price:0, image:'', description:'' } },
+			{ id: 'A', x: 319.75, y: 696.16, boxWidth: 22.54, boxHeight: 23.14, partNumber: 'part11', productData: { id:8019, name:'part11', sku:'PFBH-010', price:0, image:'', description:'' } },
+			{ id: 'C', x: 861.37, y: 220.68, boxWidth: 22.54, boxHeight: 23.73, partNumber: 'part1', productData: { id:8020, name:'part1', sku:'PFBH-011', price:0, image:'', description:'' } },
+			{ id: 'D', x: 1127.14, y: 308.78, boxWidth: 23.73, boxHeight: 24.32, partNumber: 'part5', productData: { id:8021, name:'part5', sku:'PFBH-012', price:0, image:'', description:'' } },
+			{ id: 'E', x: 968.45, y: 140.3, boxWidth: 24.32, boxHeight: 23.14, partNumber: 'part8', productData: { id:8022, name:'part8', sku:'PFBH-013', price:0, image:'', description:'' } },
+			{ id: 'F', x: 983.58, y: 309.37, boxWidth: 23.73, boxHeight: 24.32, partNumber: 'part13', productData: { id:8023, name:'part13', sku:'PFBH-014', price:0, image:'', description:'' } },
+			{ id: 'G', x: 971.42, y: 83.35, boxWidth: 23.14, boxHeight: 23.14, partNumber: 'part14', productData: { id:8024, name:'part14', sku:'PFBH-015', price:0, image:'', description:'' } },
+			{ id: 'H', x: 971.12, y: 25.21, boxWidth: 23.73, boxHeight: 24.32, partNumber: 'part15', productData: { id:8025, name:'part15', sku:'PFBH-016', price:0, image:'', description:'' } },
+			{ id: 'I', x: 1102.82, y: 25.51, boxWidth: 23.73, boxHeight: 24.92, partNumber: 'part16', productData: { id:8026, name:'part16', sku:'PFBH-017', price:0, image:'', description:'' } },
+			{ id: 'J', x: 1177.27, y: 220.68, boxWidth: 23.14, boxHeight: 23.73, partNumber: 'part17', productData: { id:8027, name:'part17', sku:'PFBH-018', price:0, image:'', description:'' } },
+			{ id: 'K', x: 1176.97, y: 25.81, boxWidth: 24.92, boxHeight: 23.14, partNumber: 'part18', productData: { id:8028, name:'part18', sku:'PFBH-019', price:0, image:'', description:'' } },
+			{ id: 'L', x: 1036.08, y: 309.07, boxWidth: 23.14, boxHeight: 23.73, partNumber: 'part19', productData: { id:8029, name:'part19', sku:'PFBH-020', price:0, image:'', description:'' } },
+			{ id: 'M', x: 1129.81, y: 220.68, boxWidth: 23.14, boxHeight: 22.54, partNumber: 'part20', productData: { id:8030, name:'part20', sku:'PFBH-021', price:0, image:'', description:'' } },
+			{ id: 'N', x: 751.03, y: 279.41, boxWidth: 22.54, boxHeight: 22.54, partNumber: 'part21', productData: { id:8031, name:'part21', sku:'PFBH-022', price:0, image:'', description:'' } },
+			{ id: 'O', x: 749.25, y: 469.25, boxWidth: 22.54, boxHeight: 23.73, partNumber: 'part22', productData: { id:8032, name:'part22', sku:'PFBH-023', price:0, image:'', description:'' } }
 		]
 	};
 
@@ -3176,15 +3312,24 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 		schematicData8.hotspots.forEach(hotspot => {
 			const el = document.createElement('div');
 			el.className = 'hotspot';
-			el.style.left = hotspot.left;
-			el.style.top = hotspot.top;
-			el.dataset.boxWidth = hotspot.boxWidth;
-			el.dataset.boxHeight = hotspot.boxHeight;
+
+			if (typeof hotspot.x === 'number' && typeof schematicData8.width === 'number') {
+				const leftPercent = (hotspot.x / schematicData8.width) * 100;
+				const topPercent = (hotspot.y / schematicData8.height) * 100;
+				el.style.left = leftPercent + '%';
+				el.style.top = topPercent + '%';
+			} else {
+				el.style.left = hotspot.left || '0%';
+				el.style.top = hotspot.top || '0%';
+			}
+
+			el.dataset.boxWidth = hotspot.boxWidth || hotspot.width || 0;
+			el.dataset.boxHeight = hotspot.boxHeight || hotspot.height || 0;
 			el.dataset.partId = hotspot.id;
 
 			const lbl = document.createElement('span');
 			lbl.className = 'hotspot-label';
-			lbl.textContent = hotspot.partNumber.split('-').pop();
+			lbl.textContent = (hotspot.partNumber || hotspot.label || hotspot.id).toString().split('-').pop();
 			el.appendChild(lbl);
 
 			el.addEventListener('click', (e) => { e.stopPropagation(); showProductPopup8(hotspot.productData, el); });
@@ -3198,8 +3343,9 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 	function adjustHotspotSizes8() {
 		const img = document.getElementById('schematicImage8');
 		const container = document.getElementById('schematicContainer8');
-		if (!img || !img.naturalWidth) return;
-		const origW = 1397, origH = 800;
+		if (!img) return;
+		const origW = img.naturalWidth || schematicData8.width || 1398;
+		const origH = img.naturalHeight || schematicData8.height || 798;
 		const displayW = img.clientWidth, displayH = img.clientHeight;
 		const scaleX = displayW / origW, scaleY = displayH / origH;
 		const hotspots = container.querySelectorAll('.hotspot');
@@ -3207,13 +3353,19 @@ when calling in your parts order.<br> <a href="tel:612-978-1007">Call 612-978-10
 		schematicData8.hotspots.forEach((hotspotData, index) => {
 			const h = hotspots[index];
 			if (!h) return;
-			
-			const leftPercent = parseFloat(hotspotData.left);
-			const topPercent = parseFloat(hotspotData.top);
-			
+
+			let leftPercent = 0, topPercent = 0;
+			if (typeof hotspotData.left === 'string') {
+				leftPercent = parseFloat(hotspotData.left);
+				topPercent = parseFloat(hotspotData.top);
+			} else if (typeof hotspotData.x === 'number' && typeof schematicData8.width === 'number') {
+				leftPercent = (hotspotData.x / schematicData8.width) * 100;
+				topPercent = (hotspotData.y / schematicData8.height) * 100;
+			}
+
 			h.style.left = leftPercent + '%';
 			h.style.top = topPercent + '%';
-			
+
 			const boxW = parseFloat(h.dataset.boxWidth||0), boxH = parseFloat(h.dataset.boxHeight||0);
 			let size = 26;
 			if (boxW && boxH) {

@@ -1,0 +1,214 @@
+{
+    "boxes": [
+        {
+            "id": "1",
+            "label": "part2",
+            "x": "154.54",
+            "y": "731.75",
+            "width": "23.14",
+            "height": "23.14",
+            "confidence": null
+        },
+        {
+            "id": "2",
+            "label": "part3",
+            "x": "271.40",
+            "y": "579.88",
+            "width": "24.32",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "3",
+            "label": "part4",
+            "x": "154.83",
+            "y": "772.98",
+            "width": "23.73",
+            "height": "22.54",
+            "confidence": null
+        },
+        {
+            "id": "4",
+            "label": "part6",
+            "x": "154.24",
+            "y": "647.81",
+            "width": "23.73",
+            "height": "23.73",
+            "confidence": null
+        },
+        {
+            "id": "5",
+            "label": "part7",
+            "x": "322.72",
+            "y": "773.28",
+            "width": "23.73",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "6",
+            "label": "part8",
+            "x": "359.50",
+            "y": "635.94",
+            "width": "23.73",
+            "height": "24.92",
+            "confidence": null
+        },
+        {
+            "id": "7",
+            "label": "part9",
+            "x": "220.68",
+            "y": "579.88",
+            "width": "24.92",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "8",
+            "label": "part10",
+            "x": "154.54",
+            "y": "579.59",
+            "width": "23.14",
+            "height": "23.73",
+            "confidence": null
+        },
+        {
+            "id": "9",
+            "label": "part10",
+            "x": "323.01",
+            "y": "738.28",
+            "width": "23.14",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "A",
+            "label": "part11",
+            "x": "319.75",
+            "y": "696.16",
+            "width": "22.54",
+            "height": "23.14",
+            "confidence": null
+        },
+        {
+            "id": "C",
+            "label": "part1",
+            "x": "861.37",
+            "y": "220.68",
+            "width": "22.54",
+            "height": "23.73",
+            "confidence": null
+        },
+        {
+            "id": "D",
+            "label": "part5",
+            "x": "1127.14",
+            "y": "308.78",
+            "width": "23.73",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "E",
+            "label": "part8",
+            "x": "968.45",
+            "y": "140.30",
+            "width": "24.32",
+            "height": "23.14",
+            "confidence": null
+        },
+        {
+            "id": "F",
+            "label": "part13",
+            "x": "983.58",
+            "y": "309.37",
+            "width": "23.73",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "G",
+            "label": "part14",
+            "x": "971.42",
+            "y": "83.35",
+            "width": "23.14",
+            "height": "23.14",
+            "confidence": null
+        },
+        {
+            "id": "H",
+            "label": "part15",
+            "x": "971.12",
+            "y": "25.21",
+            "width": "23.73",
+            "height": "24.32",
+            "confidence": null
+        },
+        {
+            "id": "I",
+            "label": "part16",
+            "x": "1102.82",
+            "y": "25.51",
+            "width": "23.73",
+            "height": "24.92",
+            "confidence": null
+        },
+        {
+            "id": "J",
+            "label": "part17",
+            "x": "1177.27",
+            "y": "220.68",
+            "width": "23.14",
+            "height": "23.73",
+            "confidence": null
+        },
+        {
+            "id": "K",
+            "label": "part18",
+            "x": "1176.97",
+            "y": "25.81",
+            "width": "24.92",
+            "height": "23.14",
+            "confidence": null
+        },
+        {
+            "id": "L",
+            "label": "part19",
+            "x": "1036.08",
+            "y": "309.07",
+            "width": "23.14",
+            "height": "23.73",
+            "confidence": null
+        },
+        {
+            "id": "M",
+            "label": "part20",
+            "x": "1129.81",
+            "y": "220.68",
+            "width": "23.14",
+            "height": "22.54",
+            "confidence": null
+        },
+        {
+            "id": "N",
+            "label": "part21",
+            "x": "751.03",
+            "y": "279.41",
+            "width": "22.54",
+            "height": "22.54",
+            "confidence": null
+        },
+        {
+            "id": "O",
+            "label": "part22",
+            "x": "749.25",
+            "y": "469.25",
+            "width": "22.54",
+            "height": "23.73",
+            "confidence": null
+        }
+    ],
+    "height": 798,
+    "key": "platinum_flatbox_handle.png",
+    "width": 1398
+}
