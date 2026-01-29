@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import wooCommerceService from '../services/woocommerce';
 
 const WooCommerceContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWooCommerce() {
   const context = useContext(WooCommerceContext);
   if (!context) {
@@ -12,7 +13,7 @@ export function useWooCommerce() {
 }
 
 export function WooCommerceProvider({ children }) {
-  const [isEnabled, setIsEnabled] = useState(wooCommerceService.isEnabled());
+  const [isEnabled, setIsEnabled] = useState(() => wooCommerceService.isEnabled());
   const [config, setConfig] = useState(wooCommerceService.config);
   const [syncStatus, setSyncStatus] = useState({
     syncing: false,
@@ -21,24 +22,23 @@ export function WooCommerceProvider({ children }) {
   });
   const [paymentGateways, setPaymentGateways] = useState([]);
 
-  useEffect(() => {
-    // Check enabled status on mount
-    setIsEnabled(wooCommerceService.isEnabled());
-    
-    // Load payment gateways if enabled
-    if (wooCommerceService.isEnabled()) {
-      loadPaymentGateways();
-    }
-  }, []);
-
-  const loadPaymentGateways = async () => {
+  const loadPaymentGateways = useCallback(async () => {
     try {
       const gateways = await wooCommerceService.getPaymentGateways();
       setPaymentGateways(gateways.filter(g => g.enabled));
     } catch (error) {
       console.error('Failed to load payment gateways:', error);
     }
-  };
+  }, []);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    // Load payment gateways if enabled on mount
+    // This is async initialization, which is appropriate for useEffect
+    if (wooCommerceService.isEnabled()) {
+      loadPaymentGateways();
+    }
+  }, [loadPaymentGateways]);
 
   const updateConfig = (newConfig) => {
     wooCommerceService.saveConfig(newConfig);

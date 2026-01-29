@@ -14,7 +14,6 @@ import {
 
 export default function VeeqoSettings() {
   const { 
-    isEnabled, 
     isConnected, 
     config, 
     syncStatus,

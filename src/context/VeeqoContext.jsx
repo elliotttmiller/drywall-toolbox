@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import veeqoService from '../services/veeqo';
 
 const VeeqoContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useVeeqo() {
   const context = useContext(VeeqoContext);
   if (!context) {
@@ -12,20 +13,14 @@ export function useVeeqo() {
 }
 
 export function VeeqoProvider({ children }) {
-  const [isEnabled, setIsEnabled] = useState(veeqoService.isEnabled());
-  const [isConnected, setIsConnected] = useState(!!veeqoService.accessToken);
+  const [isEnabled, setIsEnabled] = useState(() => veeqoService.isEnabled());
+  const [isConnected, setIsConnected] = useState(() => !!veeqoService.accessToken);
   const [config, setConfig] = useState(veeqoService.config);
   const [syncStatus, setSyncStatus] = useState({
     syncing: false,
     lastSync: null,
     error: null
   });
-
-  useEffect(() => {
-    // Check connection status on mount
-    setIsEnabled(veeqoService.isEnabled());
-    setIsConnected(!!veeqoService.accessToken);
-  }, []);
 
   const updateConfig = (newConfig) => {
     veeqoService.saveConfig(newConfig);
