@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import DOMPurify from 'dompurify';
 import { ShoppingCart, Heart, Plus, Minus, Star, Package, Truck, Shield, ChevronRight } from 'lucide-react';
-import { useCart } from '../context/CartContext';
 
 function cleanDescription(s) {
   if (!s) return '';
@@ -42,12 +41,10 @@ function renderSpecObject(obj) {
 export default function ProductDetail({ product, onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const { addToCart } = useCart();
 
   if (!product) return null;
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
     if (onAddToCart) {
       onAddToCart(product, quantity);
     }
@@ -141,15 +138,17 @@ export default function ProductDetail({ product, onAddToCart }) {
               <button
                 onClick={decrementQuantity}
                 className="px-4 py-3 hover:bg-gray-100 transition-colors text-gray-700"
+                aria-label="Decrease quantity"
               >
                 <Minus size={20} />
               </button>
-              <span className="px-6 py-3 font-bold text-lg text-gray-900 border-x-2 border-gray-200 min-w-[60px] text-center">
+              <span className="px-6 py-3 font-bold text-lg text-gray-900 border-x-2 border-gray-200 min-w-[60px] text-center" aria-label="Current quantity">
                 {quantity}
               </span>
               <button
                 onClick={incrementQuantity}
                 className="px-4 py-3 hover:bg-gray-100 transition-colors text-gray-700"
+                aria-label="Increase quantity"
               >
                 <Plus size={20} />
               </button>
@@ -170,6 +169,7 @@ export default function ProductDetail({ product, onAddToCart }) {
                   ? 'bg-red-50 border-red-300 text-red-600'
                   : 'bg-white border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-600'
               }`}
+              aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             >
               <Heart size={24} className={isWishlisted ? 'fill-current' : ''} />
             </button>

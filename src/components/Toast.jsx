@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { X, CheckCircle, AlertCircle, Info, ShoppingCart } from 'lucide-react';
 
 export default function Toast({ message, type = 'success', onClose, duration = 3000 }) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, duration);
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
+  useEffect(() => {
+    const timer = setTimeout(handleClose, duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration, handleClose]);
 
   const icons = {
     success: <CheckCircle className="w-5 h-5" />,
@@ -26,12 +27,18 @@ export default function Toast({ message, type = 'success', onClose, duration = 3
 
   return (
     <div className="fixed top-20 right-4 z-[60] animate-slideDown">
-      <div className={`${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px] max-w-md`}>
+      <div
+        role="alert"
+        aria-live="polite"
+        aria-atomic="true"
+        className={`${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 min-w-[300px] max-w-md`}
+      >
         {icons[type]}
         <span className="flex-1 font-medium">{message}</span>
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="p-1 hover:bg-white/20 rounded transition-colors"
+          aria-label="Close notification"
         >
           <X size={18} />
         </button>

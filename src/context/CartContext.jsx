@@ -13,13 +13,22 @@ export function useCart() {
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(() => {
     // Load cart from localStorage on init
-    const savedCart = localStorage.getItem('drywall-cart');
-    return savedCart ? JSON.parse(savedCart) : [];
+    try {
+      const savedCart = localStorage.getItem('drywall-cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error('Failed to load cart from localStorage:', error);
+      return [];
+    }
   });
 
   // Persist cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('drywall-cart', JSON.stringify(cartItems));
+    try {
+      localStorage.setItem('drywall-cart', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Failed to save cart to localStorage:', error);
+    }
   }, [cartItems]);
 
   const addToCart = (product, quantity = 1) => {
