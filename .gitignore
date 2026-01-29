@@ -7,3 +7,6 @@ dist/
 build/
 *.tmp
 *.cache
+.env
+.env.local
+coverage/

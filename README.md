@@ -1,58 +1,16 @@
-# Drywall Toolbox - Professional Tools & Equipment
+# React + Vite
 
-A modern, user-friendly e-commerce platform for professional drywall tools and equipment.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- **Modern UI/UX Design**: Clean, sleek interface with intuitive navigation
-- **Comprehensive Product Catalog**: Browse tools by brand, category, and specifications
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Advanced Search & Filtering**: Find the right tool quickly
-- **Shopping Cart**: Seamless checkout experience
-- **Product Details**: Detailed specifications and images
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Brands Available
+## React Compiler
 
-- TapeTech
-- Columbia
-- Level5
-- Drywall Master
-- Can-Am
-- Delko
-- Kraft
-- And many more...
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Product Categories
+## Expanding the ESLint configuration
 
-- Automatic Taping Tools
-- Mud Boxes & Pumps
-- Finishing Tools
-- Corner Tools
-- Sanding Tools
-- Safety Equipment
-- Accessories & Parts
-
-## Getting Started
-
-Simply open `index.html` in your web browser, or run:
-
-```bash
-npm start
-```
-
-## Structure
-
-- `index.html` - Homepage
-- `products.html` - Product catalog
-- `product-detail.html` - Individual product page
-- `cart.html` - Shopping cart
-- `checkout.html` - Checkout process
-- `about.html` - About us
-- `contact.html` - Contact information
-- `css/` - Stylesheets
-- `js/` - JavaScript functionality
-- `images/` - Product and brand images
-
-## License
-
-ISC
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
