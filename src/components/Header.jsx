@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { 
   Menu, 
   X, 
@@ -14,6 +15,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
+  const { getCartCount } = useCart();
 
   const isActive = (path) => location.pathname === path;
 
@@ -120,9 +122,11 @@ export default function Header() {
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
               </Link>
 
               {/* Mobile Menu Button */}

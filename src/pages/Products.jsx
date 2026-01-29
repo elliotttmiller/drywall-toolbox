@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
+import Toast from '../components/Toast';
 import { X } from 'lucide-react';
 import { loadProducts } from '../data/products';
+import { useCart } from '../context/CartContext';
 import { 
   ShoppingCart, 
   Filter, 
@@ -25,6 +27,7 @@ const categories = [
 export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   // initialize selected brands from ?brand= param (supports comma-separated)
   const params = new URLSearchParams(location.search);
@@ -40,6 +43,16 @@ export default function Products() {
   const [showFilters, setShowFilters] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'cart') => {
+    setToast({ message, type });
+  };
+
+  const handleAddToCart = (product, quantity = 1) => {
+    addToCart(product, quantity);
+    showToast(`${product.name} added to cart!`, 'cart');
+  };
 
   const openModal = (product) => {
     setModalProduct(product);
@@ -299,22 +312,31 @@ export default function Products() {
                       <p className="text-2xl font-bold text-primary-600">
                         ${product.price}
                       </p>
-                      <button className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product, 1);
+                        }}
+                        className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                      >
                         <ShoppingCart size={20} />
                       </button>
                     </div>
                     {/* Product Detail Modal - moved out of sidebar so it overlays correctly */}
                     {isModalOpen && modalProduct && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center">
-                        <div className="fixed inset-0 bg-black/50" onClick={closeModal} />
-                        <div className="relative z-10 max-w-5xl w-full mx-4">
+                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
+                        <div className="relative z-10 max-w-6xl w-full">
                           <div className="flex justify-end mb-3">
-                            <button onClick={closeModal} className="p-2 bg-white rounded-full shadow">
-                              <X size={20} />
+                            <button
+                              onClick={closeModal}
+                              className="p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow hover:bg-gray-50"
+                            >
+                              <X size={24} />
                             </button>
                           </div>
                           <div onClick={(e) => e.stopPropagation()}>
-                            <ProductDetail product={modalProduct} />
+                            <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} />
                           </div>
                         </div>
                       </div>
@@ -346,6 +368,15 @@ export default function Products() {
           </div>
         )}
       </div>
+      
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

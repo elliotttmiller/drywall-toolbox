@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { 
   ShoppingCart, 
   Trash2, 
@@ -10,50 +10,8 @@ import {
   Truck
 } from 'lucide-react';
 
-// Sample cart items
-const initialCartItems = [
-  {
-    id: 1,
-    name: 'TapeTech 7" Flat Box',
-    brand: 'TapeTech',
-    price: 289.99,
-    quantity: 2,
-    image: '/product-placeholder.jpg'
-  },
-  {
-    id: 2,
-    name: 'Level5 10" Flat Box',
-    brand: 'Level5',
-    price: 319.99,
-    quantity: 1,
-    image: '/product-placeholder.jpg'
-  },
-  {
-    id: 3,
-    name: 'Kraft Corner Bead Roller',
-    brand: 'Kraft',
-    price: 79.99,
-    quantity: 3,
-    image: '/product-placeholder.jpg'
-  }
-];
-
 export default function Cart() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
-
-  const updateQuantity = (id, change) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 500 ? 0 : 25;
@@ -115,7 +73,7 @@ export default function Cart() {
                         <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
                       </div>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeFromCart(item.id)}
                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                         aria-label="Remove item"
                       >
@@ -128,21 +86,21 @@ export default function Cart() {
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-gray-600">Quantity:</span>
                         <div className="flex items-center gap-2 border border-gray-300 rounded-lg">
-                          <button
-                            onClick={() => updateQuantity(item.id, -1)}
-                            className="p-2 hover:bg-gray-100 transition-colors rounded-l-lg"
-                            aria-label="Decrease quantity"
-                          >
-                            <Minus size={16} />
-                          </button>
-                          <span className="px-4 font-semibold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, 1)}
-                            className="p-2 hover:bg-gray-100 transition-colors rounded-r-lg"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus size={16} />
-                          </button>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-2 hover:bg-gray-100 transition-colors rounded-l-lg"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="px-4 font-semibold">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-2 hover:bg-gray-100 transition-colors rounded-r-lg"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus size={16} />
+                        </button>
                         </div>
                       </div>
 

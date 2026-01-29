@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { loadProducts } from '../data/products';
+import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
+import Toast from '../components/Toast';
 
 export default function Product() {
   const { partNumber } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'cart') => {
+    setToast({ message, type });
+  };
+
+  const handleAddToCart = (product, quantity = 1) => {
+    addToCart(product, quantity);
+    showToast(`${product.name} added to cart!`, 'cart');
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -53,8 +66,17 @@ export default function Product() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
-        <ProductDetail product={product} />
+        <ProductDetail product={product} onAddToCart={handleAddToCart} />
       </div>
+      
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
