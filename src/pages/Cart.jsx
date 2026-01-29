@@ -189,10 +189,13 @@ export default function Cart() {
                 </div>
               )}
 
-              <button className="w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 rounded-lg font-semibold text-lg transition-all shadow-md hover:shadow-lg">
+              <Link
+                to="/checkout"
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 rounded-lg font-semibold text-lg transition-all shadow-md hover:shadow-lg"
+              >
                 Proceed to Checkout
                 <ArrowRight size={20} />
-              </button>
+              </Link>
 
               <p className="text-xs text-gray-500 text-center mt-4">
                 Secure checkout with SSL encryption
