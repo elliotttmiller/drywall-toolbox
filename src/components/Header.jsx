@@ -71,7 +71,7 @@ export default function Header() {
             </nav>
 
             {/* Centered Logo */}
-            <Link to="/" className="flex flex-col items-center group lg:flex-1 flex-1 justify-center">
+            <Link to="/" className="flex flex-col items-center group flex-1 justify-center">
               <div className="flex items-center gap-3">
                 <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-2.5 rounded-xl shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
                   <Wrench className="h-7 w-7 md:h-8 md:w-8 text-white transform -rotate-45" />
