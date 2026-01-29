@@ -195,7 +195,9 @@ function showNotification(message, type = 'success') {
   setTimeout(() => {
     notification.style.animation = 'slideOut 0.3s ease-out';
     setTimeout(() => {
-      document.body.removeChild(notification);
+      if (notification.parentNode) {
+        document.body.removeChild(notification);
+      }
     }, 300);
   }, 3000);
 }
@@ -283,10 +285,26 @@ function observeElements() {
 
 // URL Parameter Helper
 function getUrlParameter(name) {
-  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-  const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-  const results = regex.exec(location.search);
-  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name) || '';
+}
+
+// Handle search on products page
+if (window.location.pathname.includes('products.html')) {
+  const searchParam = getUrlParameter('search');
+  if (searchParam) {
+    const products = document.querySelectorAll('.product-card');
+    const searchLower = searchParam.toLowerCase();
+    products.forEach(product => {
+      const title = product.querySelector('.card-title').textContent.toLowerCase();
+      const description = product.querySelector('.card-text').textContent.toLowerCase();
+      if (title.includes(searchLower) || description.includes(searchLower)) {
+        product.style.display = 'block';
+      } else {
+        product.style.display = 'none';
+      }
+    });
+  }
 }
 
 // Add CSS for notifications
