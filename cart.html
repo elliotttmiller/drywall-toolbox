@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Shopping cart - Review your selected items before checkout">
+  <title>Shopping Cart - Drywall Toolbox</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .cart-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .cart-empty {
+      text-align: center;
+      padding: var(--spacing-2xl) 0;
+    }
+    
+    .cart-empty-icon {
+      font-size: 5rem;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .cart-items {
+      background-color: white;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    
+    .cart-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto auto auto;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+    }
+    
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    
+    .cart-item-image {
+      width: 100px;
+      height: 100px;
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    
+    .cart-item-details h3 {
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    .cart-item-price {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .cart-item-quantity input {
+      width: 60px;
+      padding: var(--spacing-xs);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    
+    .cart-item-total {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 100px;
+      text-align: right;
+    }
+    
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: var(--font-size-xl);
+      cursor: pointer;
+      padding: var(--spacing-xs);
+      transition: color var(--transition-fast);
+    }
+    
+    .cart-item-remove:hover {
+      color: #ef4444;
+    }
+    
+    .cart-summary {
+      background-color: var(--bg-secondary);
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      margin-top: var(--spacing-lg);
+    }
+    
+    .cart-summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-lg);
+    }
+    
+    .cart-summary-row.total {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--primary-color);
+      padding-top: var(--spacing-md);
+      border-top: 2px solid var(--border-color);
+      margin-top: var(--spacing-md);
+    }
+    
+    @media (max-width: 768px) {
+      .cart-item {
+        grid-template-columns: 80px 1fr;
+        gap: var(--spacing-sm);
+      }
+      
+      .cart-item-quantity,
+      .cart-item-total {
+        grid-column: 2;
+      }
+      
+      .cart-item-remove {
+        grid-column: 2;
+        justify-self: end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="container">
+        <div>📞 Call us: 1-800-DRYWALL | 📧 support@drywalltoolbox.com</div>
+        <div>Free Shipping on Orders Over $500</div>
+      </div>
+    </div>
+    
+    <div class="header-main">
+      <div class="container">
+        <div class="header-content">
+          <a href="index.html" class="logo">
+            🔧 Drywall Toolbox
+          </a>
+          
+          <nav>
+            <ul class="nav-menu">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="products.html">Products</a></li>
+              <li><a href="index.html#brands">Brands</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </nav>
+          
+          <div class="search-bar">
+            <input type="search" placeholder="Search for tools, brands, or categories..." aria-label="Search products">
+            <button type="submit" aria-label="Search">🔍</button>
+          </div>
+          
+          <div class="header-actions">
+            <a href="cart.html" class="icon-btn" aria-label="Shopping cart">
+              🛒
+              <span class="badge">0</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <section style="padding: var(--spacing-2xl) 0; min-height: 60vh;">
+    <div class="container cart-container">
+      <h1 style="margin-bottom: var(--spacing-xl);">Shopping Cart</h1>
+      
+      <div id="cart-content">
+        <!-- Cart items will be dynamically inserted here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Drywall Toolbox</h3>
+          <p>Your trusted source for professional drywall tools and equipment.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Product Categories</h3>
+          <ul>
+            <li><a href="products.html?category=taping">Automatic Taping</a></li>
+            <li><a href="products.html?category=finishing">Finishing Tools</a></li>
+            <li><a href="products.html?category=corner">Corner Tools</a></li>
+            <li><a href="products.html?category=sanding">Sanding Equipment</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Customer Service</h3>
+          <ul>
+            <li>📞 Phone: 1-800-DRYWALL</li>
+            <li>📧 Email: support@drywalltoolbox.com</li>
+            <li>🕐 Hours: Mon-Fri 8am-6pm EST</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Drywall Toolbox. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Load and display cart
+    function displayCart() {
+      const cart = getCart();
+      const cartContent = document.getElementById('cart-content');
+      
+      if (cart.length === 0) {
+        cartContent.innerHTML = `
+          <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p style="margin: var(--spacing-md) 0;">Add some professional tools to get started!</p>
+            <a href="products.html" class="btn btn-primary btn-lg">Shop Products</a>
+          </div>
+        `;
+        return;
+      }
+      
+      let itemsHTML = '<div class="cart-items">';
+      
+      cart.forEach(item => {
+        const itemTotal = (parseFloat(item.price) * item.quantity).toFixed(2);
+        itemsHTML += `
+          <div class="cart-item" data-product-id="${item.id}">
+            <div class="cart-item-image">🔧</div>
+            <div class="cart-item-details">
+              <h3>${item.name}</h3>
+              <p class="cart-item-price">$${parseFloat(item.price).toFixed(2)}</p>
+            </div>
+            <div class="cart-item-quantity">
+              <label for="qty-${item.id}" style="display:block; font-size: var(--font-size-sm); margin-bottom: var(--spacing-xs);">Qty:</label>
+              <input type="number" id="qty-${item.id}" value="${item.quantity}" min="1" onchange="updateQuantity('${item.id}', this.value)">
+            </div>
+            <div class="cart-item-total">$${itemTotal}</div>
+            <button class="cart-item-remove" onclick="removeItem('${item.id}')" aria-label="Remove item">✕</button>
+          </div>
+        `;
+      });
+      
+      itemsHTML += '</div>';
+      
+      // Calculate totals
+      const subtotal = getCartTotal();
+      const shipping = subtotal > 500 ? 0 : 49.99;
+      const total = subtotal + shipping;
+      
+      itemsHTML += `
+        <div class="cart-summary">
+          <div class="cart-summary-row">
+            <span>Subtotal:</span>
+            <span>$${subtotal.toFixed(2)}</span>
+          </div>
+          <div class="cart-summary-row">
+            <span>Shipping:</span>
+            <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
+          </div>
+          <div class="cart-summary-row total">
+            <span>Total:</span>
+            <span>$${total.toFixed(2)}</span>
+          </div>
+          <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-md);">
+            <a href="products.html" class="btn btn-secondary" style="flex: 1;">Continue Shopping</a>
+            <a href="checkout.html" class="btn btn-primary" style="flex: 1;">Proceed to Checkout</a>
+          </div>
+        </div>
+      `;
+      
+      cartContent.innerHTML = itemsHTML;
+    }
+    
+    function updateQuantity(productId, quantity) {
+      updateCartQuantity(productId, quantity);
+      displayCart();
+      updateCartBadge();
+    }
+    
+    function removeItem(productId) {
+      removeFromCart(productId);
+      displayCart();
+      showNotification('Item removed from cart');
+    }
+    
+    // Display cart on page load
+    displayCart();
+  </script>
+</body>
+</html>

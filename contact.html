@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact Drywall Toolbox - Get in touch with our expert team">
+  <title>Contact Us - Drywall Toolbox</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-2xl);
+      margin-top: var(--spacing-xl);
+    }
+    
+    @media (max-width: 768px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .contact-form {
+      background-color: var(--bg-secondary);
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-primary);
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-family: var(--font-primary);
+      transition: border-color var(--transition-fast);
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+    
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+    
+    .contact-info-item {
+      background-color: white;
+      padding: var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-color);
+    }
+    
+    .contact-info-item h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-xl);
+      margin-bottom: var(--spacing-sm);
+      color: var(--primary-color);
+    }
+    
+    .contact-info-item p {
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-xs);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="container">
+        <div>📞 Call us: 1-800-DRYWALL | 📧 support@drywalltoolbox.com</div>
+        <div>Free Shipping on Orders Over $500</div>
+      </div>
+    </div>
+    
+    <div class="header-main">
+      <div class="container">
+        <div class="header-content">
+          <a href="index.html" class="logo">
+            🔧 Drywall Toolbox
+          </a>
+          
+          <nav>
+            <ul class="nav-menu">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="products.html">Products</a></li>
+              <li><a href="index.html#brands">Brands</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+          </nav>
+          
+          <div class="search-bar">
+            <input type="search" placeholder="Search for tools, brands, or categories..." aria-label="Search products">
+            <button type="submit" aria-label="Search">🔍</button>
+          </div>
+          
+          <div class="header-actions">
+            <a href="cart.html" class="icon-btn" aria-label="Shopping cart">
+              🛒
+              <span class="badge">0</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Contact Us</h1>
+        <p>Have questions? We're here to help!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section>
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Contact Form -->
+        <div>
+          <h2 style="margin-bottom: var(--spacing-md);">Send Us a Message</h2>
+          <form class="contact-form" id="contactForm">
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+              <label for="subject">Subject *</label>
+              <select id="subject" name="subject" required>
+                <option value="">Select a subject</option>
+                <option value="product-inquiry">Product Inquiry</option>
+                <option value="order-status">Order Status</option>
+                <option value="technical-support">Technical Support</option>
+                <option value="partnership">Partnership Opportunity</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="message">Message *</label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Send Message</button>
+          </form>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <h3>📞 Phone</h3>
+            <p><strong>Toll-Free:</strong> 1-800-DRYWALL</p>
+            <p><strong>Local:</strong> (555) 123-4567</p>
+            <p>Mon-Fri: 8:00 AM - 6:00 PM EST</p>
+          </div>
+          
+          <div class="contact-info-item">
+            <h3>📧 Email</h3>
+            <p><strong>General Inquiries:</strong></p>
+            <p>support@drywalltoolbox.com</p>
+            <p><strong>Sales:</strong></p>
+            <p>sales@drywalltoolbox.com</p>
+          </div>
+          
+          <div class="contact-info-item">
+            <h3>📍 Address</h3>
+            <p><strong>Drywall Toolbox</strong></p>
+            <p>123 Construction Boulevard</p>
+            <p>Suite 100</p>
+            <p>Builder City, BC 12345</p>
+          </div>
+          
+          <div class="contact-info-item">
+            <h3>💬 Live Chat</h3>
+            <p>Available Monday - Friday</p>
+            <p>9:00 AM - 5:00 PM EST</p>
+            <button class="btn btn-accent" style="margin-top: var(--spacing-sm);">Start Chat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="bg-secondary">
+    <div class="container">
+      <div class="section-header">
+        <h2>Frequently Asked Questions</h2>
+        <p>Quick answers to common questions</p>
+      </div>
+      
+      <div style="max-width: 800px; margin: 0 auto;">
+        <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-md);">
+          <h3 style="margin-bottom: var(--spacing-sm);">What are your shipping options?</h3>
+          <p style="color: var(--text-secondary);">We offer free shipping on all orders over $500. For orders under $500, standard shipping is $49.99. Expedited shipping options are available at checkout.</p>
+        </div>
+        
+        <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-md);">
+          <h3 style="margin-bottom: var(--spacing-sm);">Do you offer warranties on your products?</h3>
+          <p style="color: var(--text-secondary);">All products come with manufacturer warranties. Warranty periods vary by brand and product. Please contact us for specific warranty information.</p>
+        </div>
+        
+        <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-md);">
+          <h3 style="margin-bottom: var(--spacing-sm);">Can I return or exchange a product?</h3>
+          <p style="color: var(--text-secondary);">Yes, we accept returns within 30 days of purchase for unused items in original packaging. Contact our customer service team to initiate a return.</p>
+        </div>
+        
+        <div style="background: white; padding: var(--spacing-lg); border-radius: var(--radius-lg);">
+          <h3 style="margin-bottom: var(--spacing-sm);">Do you offer bulk discounts?</h3>
+          <p style="color: var(--text-secondary);">Yes! We offer competitive pricing for bulk orders. Contact our sales team at sales@drywalltoolbox.com for a custom quote.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Drywall Toolbox</h3>
+          <p>Your trusted source for professional drywall tools and equipment. We offer a comprehensive selection of products from the industry's leading brands.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Product Categories</h3>
+          <ul>
+            <li><a href="products.html?category=taping">Automatic Taping</a></li>
+            <li><a href="products.html?category=finishing">Finishing Tools</a></li>
+            <li><a href="products.html?category=corner">Corner Tools</a></li>
+            <li><a href="products.html?category=sanding">Sanding Equipment</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Customer Service</h3>
+          <ul>
+            <li>📞 Phone: 1-800-DRYWALL</li>
+            <li>📧 Email: support@drywalltoolbox.com</li>
+            <li>🕐 Hours: Mon-Fri 8am-6pm EST</li>
+            <li><a href="contact.html">Contact Form</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Drywall Toolbox. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Contact form submission
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      // Show success message
+      showNotification('Message sent successfully! We\'ll get back to you soon.');
+      
+      // Reset form
+      this.reset();
+    });
+  </script>
+</body>
+</html>

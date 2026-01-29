@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse our extensive collection of professional drywall tools. Filter by brand, category, and price.">
+  <title>Products - Drywall Toolbox</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .products-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--spacing-xl);
+      margin-top: var(--spacing-xl);
+    }
+    
+    @media (max-width: 968px) {
+      .products-layout {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters-sidebar {
+        position: static;
+      }
+    }
+    
+    .products-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      flex-wrap: wrap;
+      gap: var(--spacing-md);
+    }
+    
+    .sort-by {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      cursor: pointer;
+    }
+    
+    .filter-group:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="container">
+        <div>📞 Call us: 1-800-DRYWALL | 📧 support@drywalltoolbox.com</div>
+        <div>Free Shipping on Orders Over $500</div>
+      </div>
+    </div>
+    
+    <div class="header-main">
+      <div class="container">
+        <div class="header-content">
+          <a href="index.html" class="logo">
+            🔧 Drywall Toolbox
+          </a>
+          
+          <nav>
+            <ul class="nav-menu">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="products.html" class="active">Products</a></li>
+              <li><a href="index.html#brands">Brands</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </nav>
+          
+          <div class="search-bar">
+            <input type="search" placeholder="Search for tools, brands, or categories..." aria-label="Search products">
+            <button type="submit" aria-label="Search">🔍</button>
+          </div>
+          
+          <div class="header-actions">
+            <a href="cart.html" class="icon-btn" aria-label="Shopping cart">
+              🛒
+              <span class="badge">0</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section class="hero" style="padding: var(--spacing-xl) 0;">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Professional Drywall Tools</h1>
+        <p>Browse our extensive collection of professional-grade tools and equipment</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section>
+    <div class="container">
+      <div class="products-layout">
+        <!-- Filters Sidebar -->
+        <aside class="filters-sidebar">
+          <h2 style="margin-bottom: var(--spacing-lg);">Filters</h2>
+          
+          <!-- Brand Filter -->
+          <div class="filter-group">
+            <h3>Brand</h3>
+            <div class="filter-option">
+              <input type="checkbox" id="brand-tapetech" value="tapetech" data-type="brand">
+              <label for="brand-tapetech">TapeTech</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="brand-level5" value="level5" data-type="brand">
+              <label for="brand-level5">Level5</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="brand-columbia" value="columbia" data-type="brand">
+              <label for="brand-columbia">Columbia</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="brand-drywall-master" value="drywall-master" data-type="brand">
+              <label for="brand-drywall-master">Drywall Master</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="brand-delko" value="delko" data-type="brand">
+              <label for="brand-delko">Delko</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="brand-kraft" value="kraft" data-type="brand">
+              <label for="brand-kraft">Kraft</label>
+            </div>
+          </div>
+          
+          <!-- Category Filter -->
+          <div class="filter-group">
+            <h3>Category</h3>
+            <div class="filter-option">
+              <input type="checkbox" id="cat-taping" value="taping" data-type="category">
+              <label for="cat-taping">Automatic Taping</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="cat-finishing" value="finishing" data-type="category">
+              <label for="cat-finishing">Finishing Tools</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="cat-corner" value="corner" data-type="category">
+              <label for="cat-corner">Corner Tools</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="cat-sanding" value="sanding" data-type="category">
+              <label for="cat-sanding">Sanding Equipment</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="cat-pumps" value="pumps" data-type="category">
+              <label for="cat-pumps">Mud Boxes & Pumps</label>
+            </div>
+          </div>
+          
+          <!-- Price Range Filter -->
+          <div class="filter-group">
+            <h3>Price Range</h3>
+            <div class="filter-option">
+              <input type="checkbox" id="price-under-100" value="under-100" data-type="price">
+              <label for="price-under-100">Under $100</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="price-100-500" value="100-500" data-type="price">
+              <label for="price-100-500">$100 - $500</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="price-500-1000" value="500-1000" data-type="price">
+              <label for="price-500-1000">$500 - $1,000</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="price-over-1000" value="over-1000" data-type="price">
+              <label for="price-over-1000">Over $1,000</label>
+            </div>
+          </div>
+        </aside>
+        
+        <!-- Products Grid -->
+        <div>
+          <div class="products-header">
+            <h2>All Products</h2>
+            <select class="sort-by" aria-label="Sort products">
+              <option value="featured">Sort by: Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="name">Name: A to Z</option>
+            </select>
+          </div>
+          
+          <div class="grid grid-3">
+            <!-- Product 1 -->
+            <div class="card product-card" data-brand="tapetech" data-category="taping" data-price="1299">
+              <div class="product-badge">Popular</div>
+              <div class="card-img">🔧</div>
+              <div class="card-content">
+                <h3 class="card-title">TapeTech 3" Corner Finisher</h3>
+                <p class="card-text">Professional-grade corner finisher with adjustable crown settings.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$1,299</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="tt-cf3" 
+                        data-product-name="TapeTech 3in Corner Finisher" 
+                        data-product-price="1299">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="card product-card" data-brand="level5" data-category="finishing" data-price="899">
+              <div class="product-badge">Best Seller</div>
+              <div class="card-img">📏</div>
+              <div class="card-content">
+                <h3 class="card-title">Level5 10" Flat Box</h3>
+                <p class="card-text">High-capacity flat box for smooth, consistent compound application.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$899</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="l5-fb10" 
+                        data-product-name="Level5 10in Flat Box" 
+                        data-product-price="899">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="card product-card" data-brand="columbia" data-category="pumps" data-price="2499">
+              <div class="product-badge">New</div>
+              <div class="card-img">🔧</div>
+              <div class="card-content">
+                <h3 class="card-title">Columbia Drywall Pump</h3>
+                <p class="card-text">Heavy-duty automatic taping and finishing pump.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$2,499</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="col-pump1" 
+                        data-product-name="Columbia Drywall Pump" 
+                        data-product-price="2499">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 4 -->
+            <div class="card product-card" data-brand="drywall-master" data-category="corner" data-price="749">
+              <div class="card-img">📐</div>
+              <div class="card-content">
+                <h3 class="card-title">Drywall Master Corner Roller</h3>
+                <p class="card-text">Inside corner roller with adjustable angle settings.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$749</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="dm-cr1" 
+                        data-product-name="Drywall Master Corner Roller" 
+                        data-product-price="749">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 5 -->
+            <div class="card product-card" data-brand="delko" data-category="sanding" data-price="449">
+              <div class="card-img">⚙️</div>
+              <div class="card-content">
+                <h3 class="card-title">Delko Zunder Sander</h3>
+                <p class="card-text">Revolutionary sander with integrated dust collection.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$449</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="del-sand1" 
+                        data-product-name="Delko Zunder Sander" 
+                        data-product-price="449">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 6 -->
+            <div class="card product-card" data-brand="kraft" data-category="finishing" data-price="149">
+              <div class="product-badge">Sale</div>
+              <div class="card-img">✨</div>
+              <div class="card-content">
+                <h3 class="card-title">Kraft Stainless Steel Trowel Set</h3>
+                <p class="card-text">Premium stainless steel trowels in multiple sizes.</p>
+              </div>
+              <div class="card-footer">
+                <div>
+                  <span class="product-price">$149</span>
+                  <span class="product-price-old">$189</span>
+                </div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="kraft-trow1" 
+                        data-product-name="Kraft Stainless Steel Trowel Set" 
+                        data-product-price="149">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 7 -->
+            <div class="card product-card" data-brand="tapetech" data-category="taping" data-price="1899">
+              <div class="card-img">🔧</div>
+              <div class="card-content">
+                <h3 class="card-title">TapeTech Automatic Taper</h3>
+                <p class="card-text">High-performance automatic taper for professional results.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$1,899</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="tt-at1" 
+                        data-product-name="TapeTech Automatic Taper" 
+                        data-product-price="1899">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 8 -->
+            <div class="card product-card" data-brand="level5" data-category="corner" data-price="599">
+              <div class="card-img">📐</div>
+              <div class="card-content">
+                <h3 class="card-title">Level5 3.5" Angle Head</h3>
+                <p class="card-text">Precision angle head for perfect corner finishes.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$599</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="l5-ah35" 
+                        data-product-name="Level5 3.5in Angle Head" 
+                        data-product-price="599">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 9 -->
+            <div class="card product-card" data-brand="columbia" data-category="finishing" data-price="1199">
+              <div class="card-img">📏</div>
+              <div class="card-content">
+                <h3 class="card-title">Columbia 12" Flat Box</h3>
+                <p class="card-text">Large capacity flat box for fast, efficient finishing.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$1,199</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="col-fb12" 
+                        data-product-name="Columbia 12in Flat Box" 
+                        data-product-price="1199">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 10 -->
+            <div class="card product-card" data-brand="drywall-master" data-category="sanding" data-price="89">
+              <div class="card-img">⚙️</div>
+              <div class="card-content">
+                <h3 class="card-title">Drywall Master Pole Sander</h3>
+                <p class="card-text">Lightweight pole sander with swivel head design.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$89</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="dm-ps1" 
+                        data-product-name="Drywall Master Pole Sander" 
+                        data-product-price="89">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 11 -->
+            <div class="card product-card" data-brand="delko" data-category="finishing" data-price="249">
+              <div class="card-img">✨</div>
+              <div class="card-content">
+                <h3 class="card-title">Delko Banjo Taper</h3>
+                <p class="card-text">Lightweight banjo taper for tape application.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$249</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="del-banj1" 
+                        data-product-name="Delko Banjo Taper" 
+                        data-product-price="249">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Product 12 -->
+            <div class="card product-card" data-brand="kraft" data-category="finishing" data-price="69">
+              <div class="card-img">🔧</div>
+              <div class="card-content">
+                <h3 class="card-title">Kraft Mud Pan Set</h3>
+                <p class="card-text">Durable stainless steel mud pans in 3 sizes.</p>
+              </div>
+              <div class="card-footer">
+                <div class="product-price">$69</div>
+                <button class="btn btn-primary add-to-cart" 
+                        data-product-id="kraft-mp1" 
+                        data-product-name="Kraft Mud Pan Set" 
+                        data-product-price="69">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Drywall Toolbox</h3>
+          <p>Your trusted source for professional drywall tools and equipment. We offer a comprehensive selection of products from the industry's leading brands.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Product Categories</h3>
+          <ul>
+            <li><a href="products.html?category=taping">Automatic Taping</a></li>
+            <li><a href="products.html?category=finishing">Finishing Tools</a></li>
+            <li><a href="products.html?category=corner">Corner Tools</a></li>
+            <li><a href="products.html?category=sanding">Sanding Equipment</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Customer Service</h3>
+          <ul>
+            <li>📞 Phone: 1-800-DRYWALL</li>
+            <li>📧 Email: support@drywalltoolbox.com</li>
+            <li>🕐 Hours: Mon-Fri 8am-6pm EST</li>
+            <li><a href="contact.html">Contact Form</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Drywall Toolbox. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

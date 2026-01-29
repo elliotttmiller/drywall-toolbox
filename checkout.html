@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure checkout for your drywall tools order">
+  <title>Checkout - Drywall Toolbox</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .checkout-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: var(--spacing-2xl);
+      margin-top: var(--spacing-xl);
+    }
+    
+    @media (max-width: 968px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .checkout-section {
+      background-color: white;
+      padding: var(--spacing-xl);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-color);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .checkout-section h2 {
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-md);
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-primary);
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: var(--spacing-sm);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      transition: border-color var(--transition-fast);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .order-summary {
+      position: sticky;
+      top: 100px;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-sm) 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .order-item-info {
+      flex: 1;
+    }
+    
+    .order-item-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .order-item-qty {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+    
+    .order-item-price {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .order-totals {
+      margin-top: var(--spacing-md);
+      padding-top: var(--spacing-md);
+      border-top: 2px solid var(--border-color);
+    }
+    
+    .order-total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-sm);
+      font-size: var(--font-size-lg);
+    }
+    
+    .order-total-row.final {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--primary-color);
+      padding-top: var(--spacing-md);
+      border-top: 2px solid var(--border-color);
+      margin-top: var(--spacing-md);
+    }
+    
+    .payment-methods {
+      display: flex;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-md);
+    }
+    
+    .payment-method {
+      flex: 1;
+      padding: var(--spacing-md);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .payment-method:hover {
+      border-color: var(--primary-color);
+      background-color: var(--bg-secondary);
+    }
+    
+    .payment-method.active {
+      border-color: var(--primary-color);
+      background-color: var(--primary-light);
+      color: white;
+    }
+    
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md);
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      margin-top: var(--spacing-md);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="container">
+        <div>📞 Call us: 1-800-DRYWALL | 📧 support@drywalltoolbox.com</div>
+        <div>Free Shipping on Orders Over $500</div>
+      </div>
+    </div>
+    
+    <div class="header-main">
+      <div class="container">
+        <div class="header-content">
+          <a href="index.html" class="logo">
+            🔧 Drywall Toolbox
+          </a>
+          
+          <nav>
+            <ul class="nav-menu">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="products.html">Products</a></li>
+              <li><a href="index.html#brands">Brands</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </nav>
+          
+          <div class="search-bar">
+            <input type="search" placeholder="Search for tools, brands, or categories..." aria-label="Search products">
+            <button type="submit" aria-label="Search">🔍</button>
+          </div>
+          
+          <div class="header-actions">
+            <a href="cart.html" class="icon-btn" aria-label="Shopping cart">
+              🛒
+              <span class="badge">0</span>
+            </a>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <section style="padding: var(--spacing-2xl) 0;">
+    <div class="container checkout-container">
+      <h1 style="margin-bottom: var(--spacing-md);">Secure Checkout</h1>
+      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">Complete your order securely</p>
+      
+      <div class="checkout-grid">
+        <!-- Checkout Form -->
+        <div>
+          <form id="checkoutForm">
+            <!-- Shipping Information -->
+            <div class="checkout-section">
+              <h2>Shipping Information</h2>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">First Name *</label>
+                  <input type="text" id="firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="lastName">Last Name *</label>
+                  <input type="text" id="lastName" name="lastName" required>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="address">Street Address *</label>
+                <input type="text" id="address" name="address" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="address2">Apartment, suite, etc. (optional)</label>
+                <input type="text" id="address2" name="address2">
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city">City *</label>
+                  <input type="text" id="city" name="city" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="state">State *</label>
+                  <select id="state" name="state" required>
+                    <option value="">Select State</option>
+                    <option value="AL">Alabama</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                    <option value="CA">California</option>
+                    <option value="FL">Florida</option>
+                    <option value="NY">New York</option>
+                    <option value="TX">Texas</option>
+                    <!-- Add more states as needed -->
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="zipCode">ZIP Code *</label>
+                <input type="text" id="zipCode" name="zipCode" required pattern="[0-9]{5}">
+              </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="checkout-section">
+              <h2>Payment Method</h2>
+              
+              <div class="payment-methods">
+                <div class="payment-method active" data-method="credit-card">
+                  💳 Credit Card
+                </div>
+                <div class="payment-method" data-method="paypal">
+                  💰 PayPal
+                </div>
+              </div>
+              
+              <div id="credit-card-fields" style="margin-top: var(--spacing-lg);">
+                <div class="form-group">
+                  <label for="cardNumber">Card Number *</label>
+                  <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456" required>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="expiry">Expiration Date *</label>
+                    <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="cvv">CVV *</label>
+                    <input type="text" id="cvv" name="cvv" placeholder="123" required>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="cardName">Name on Card *</label>
+                  <input type="text" id="cardName" name="cardName" required>
+                </div>
+              </div>
+              
+              <div class="security-badge">
+                <span style="font-size: 1.5rem;">🔒</span>
+                <div>
+                  <strong>Secure Payment</strong><br>
+                  Your payment information is encrypted and secure
+                </div>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+              Complete Order
+            </button>
+          </form>
+        </div>
+        
+        <!-- Order Summary -->
+        <div>
+          <div class="checkout-section order-summary">
+            <h2>Order Summary</h2>
+            
+            <div id="order-items">
+              <!-- Order items will be dynamically inserted -->
+            </div>
+            
+            <div class="order-totals">
+              <div class="order-total-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">$0.00</span>
+              </div>
+              <div class="order-total-row">
+                <span>Shipping:</span>
+                <span id="shipping">$0.00</span>
+              </div>
+              <div class="order-total-row">
+                <span>Tax:</span>
+                <span id="tax">$0.00</span>
+              </div>
+              <div class="order-total-row final">
+                <span>Total:</span>
+                <span id="total">$0.00</span>
+              </div>
+            </div>
+            
+            <div style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 2px solid var(--border-color);">
+              <p style="font-size: var(--font-size-sm); color: var(--text-secondary); text-align: center;">
+                By completing your order, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Drywall Toolbox</h3>
+          <p>Your trusted source for professional drywall tools and equipment.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Product Categories</h3>
+          <ul>
+            <li><a href="products.html?category=taping">Automatic Taping</a></li>
+            <li><a href="products.html?category=finishing">Finishing Tools</a></li>
+            <li><a href="products.html?category=corner">Corner Tools</a></li>
+            <li><a href="products.html?category=sanding">Sanding Equipment</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Customer Service</h3>
+          <ul>
+            <li>📞 Phone: 1-800-DRYWALL</li>
+            <li>📧 Email: support@drywalltoolbox.com</li>
+            <li>🕐 Hours: Mon-Fri 8am-6pm EST</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Drywall Toolbox. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Load order summary
+    function loadOrderSummary() {
+      const cart = getCart();
+      const orderItemsDiv = document.getElementById('order-items');
+      
+      if (cart.length === 0) {
+        window.location.href = 'cart.html';
+        return;
+      }
+      
+      let itemsHTML = '';
+      cart.forEach(item => {
+        const itemTotal = (parseFloat(item.price) * item.quantity).toFixed(2);
+        itemsHTML += `
+          <div class="order-item">
+            <div class="order-item-info">
+              <div class="order-item-name">${item.name}</div>
+              <div class="order-item-qty">Qty: ${item.quantity}</div>
+            </div>
+            <div class="order-item-price">$${itemTotal}</div>
+          </div>
+        `;
+      });
+      
+      orderItemsDiv.innerHTML = itemsHTML;
+      
+      // Calculate totals
+      const subtotal = getCartTotal();
+      const shipping = subtotal > 500 ? 0 : 49.99;
+      const tax = subtotal * 0.08; // 8% tax
+      const total = subtotal + shipping + tax;
+      
+      document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('shipping').textContent = shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2);
+      document.getElementById('tax').textContent = '$' + tax.toFixed(2);
+      document.getElementById('total').textContent = '$' + total.toFixed(2);
+    }
+    
+    // Payment method toggle
+    document.querySelectorAll('.payment-method').forEach(method => {
+      method.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+        this.classList.add('active');
+        
+        const selectedMethod = this.dataset.method;
+        if (selectedMethod === 'paypal') {
+          document.getElementById('credit-card-fields').style.display = 'none';
+        } else {
+          document.getElementById('credit-card-fields').style.display = 'block';
+        }
+      });
+    });
+    
+    // Checkout form submission
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Show success message
+      showNotification('Order placed successfully!');
+      
+      // Clear cart
+      localStorage.removeItem('drywallToolboxCart');
+      
+      // Redirect to home after delay
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 2000);
+    });
+    
+    // Load order summary on page load
+    loadOrderSummary();
+  </script>
+</body>
+</html>
