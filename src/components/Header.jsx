@@ -45,28 +45,14 @@ export default function Header() {
       {/* Main Header */}
       <div className="border-b border-gray-200">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-2 rounded-lg shadow-lg group-hover:shadow-xl transition-shadow">
-                <Wrench className="h-6 w-6 md:h-7 md:w-7 text-white" />
-              </div>
-              <div className="hidden md:block">
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                  Drywall Toolbox
-                </h1>
-                <p className="text-xs text-gray-500">Professional Tools & Equipment</p>
-              </div>
-              <span className="md:hidden text-lg font-bold text-gray-900">Drywall Toolbox</span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
+          <div className="flex items-center justify-between h-20 md:h-24">
+            {/* Left Navigation - Desktop */}
+            <nav className="hidden lg:flex items-center gap-8 flex-1">
               <Link 
                 to="/" 
-                className={`font-medium transition-colors ${
+                className={`font-semibold text-base transition-colors ${
                   isActive('/') 
-                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
                     : 'text-gray-700 hover:text-primary-600'
                 }`}
               >
@@ -74,19 +60,40 @@ export default function Header() {
               </Link>
               <Link 
                 to="/products" 
-                className={`font-medium transition-colors ${
+                className={`font-semibold text-base transition-colors ${
                   isActive('/products') 
-                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
                     : 'text-gray-700 hover:text-primary-600'
                 }`}
               >
                 Shop
               </Link>
+            </nav>
+
+            {/* Centered Logo */}
+            <Link to="/" className="flex flex-col items-center group">
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-2.5 rounded-xl shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
+                  <Wrench className="h-7 w-7 md:h-8 md:w-8 text-white transform -rotate-45" />
+                </div>
+                <div className="text-center">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 tracking-tight">
+                    Drywall Toolbox
+                  </h1>
+                  <p className="hidden md:block text-xs font-medium text-gray-500 tracking-wider uppercase mt-0.5">
+                    Professional Tools & Equipment
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            {/* Right Navigation - Desktop */}
+            <nav className="hidden lg:flex items-center gap-8 flex-1 justify-end">
               <Link 
                 to="/about" 
-                className={`font-medium transition-colors ${
+                className={`font-semibold text-base transition-colors ${
                   isActive('/about') 
-                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
                     : 'text-gray-700 hover:text-primary-600'
                 }`}
               >
@@ -94,9 +101,9 @@ export default function Header() {
               </Link>
               <Link 
                 to="/contact" 
-                className={`font-medium transition-colors ${
+                className={`font-semibold text-base transition-colors ${
                   isActive('/contact') 
-                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
                     : 'text-gray-700 hover:text-primary-600'
                 }`}
               >
@@ -104,8 +111,8 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2 md:gap-4">
+            {/* Actions - Mobile Only */}
+            <div className="lg:hidden flex items-center gap-2 md:gap-4">
               {/* Search Button */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
@@ -132,11 +139,35 @@ export default function Header() {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all"
+                className="p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
+            </div>
+
+            {/* Desktop Actions - Search & Cart */}
+            <div className="hidden lg:flex items-center gap-3 ml-8">
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+
+              <Link
+                to="/cart"
+                className="relative p-2 text-gray-700 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-all"
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-accent-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
+              </Link>
             </div>
           </div>
         </div>
