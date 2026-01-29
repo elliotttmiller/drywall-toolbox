@@ -55,7 +55,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-linear-to-br from-primary-600 to-primary-800 text-white py-20">
+      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <Building2 className="h-16 w-16 mx-auto mb-6" />
@@ -168,7 +168,7 @@ export default function About() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-linear-to-r from-primary-600 to-primary-700 text-white">
+      <section className="py-16 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <Target className="h-12 w-12 mx-auto mb-6" />

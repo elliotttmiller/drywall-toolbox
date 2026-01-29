@@ -22,7 +22,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       {/* Top Bar */}
-      <div className="bg-linear-to-r from-primary-600 to-primary-700 text-white">
+      <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row justify-between items-center py-2 text-sm">
             <div className="flex items-center gap-4">

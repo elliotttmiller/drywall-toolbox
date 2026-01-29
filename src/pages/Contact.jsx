@@ -53,7 +53,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-linear-to-br from-primary-600 to-primary-800 text-white py-16">
+      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <MessageSquare className="h-16 w-16 mx-auto mb-6" />

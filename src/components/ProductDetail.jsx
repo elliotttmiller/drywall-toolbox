@@ -61,11 +61,11 @@ export default function ProductDetail({ product, onAddToCart }) {
   const displayPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
 
   return (
-    <div className="bg-linear-to-br from-white via-white to-gray-50 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
+    <div className="bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 p-6 lg:p-8">
         {/* Product Image Section */}
         <div className="lg:col-span-2">
-          <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden aspect-square flex items-center justify-center p-8 border-2 border-gray-200 shadow-inner">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden aspect-square flex items-center justify-center p-8 border-2 border-gray-200 shadow-inner">
             {product.image ? (
               <img 
                 src={product.image} 
@@ -127,7 +127,7 @@ export default function ProductDetail({ product, onAddToCart }) {
           )}
 
           {/* Price Section */}
-          <div className="bg-linear-to-r from-primary-50 to-accent-50 rounded-xl p-6 mb-6 border border-primary-100">
+          <div className="bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl p-6 mb-6 border border-primary-100">
             <div className="flex items-baseline gap-3">
               <span className="text-5xl font-bold text-gray-900">${displayPrice}</span>
               <span className="text-gray-500 line-through text-xl">${(parseFloat(displayPrice) * 1.2).toFixed(2)}</span>
@@ -160,7 +160,7 @@ export default function ProductDetail({ product, onAddToCart }) {
 
             <button
               onClick={handleAddToCart}
-              className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               aria-label="Add to cart"
             >
               <ShoppingCart size={24} />

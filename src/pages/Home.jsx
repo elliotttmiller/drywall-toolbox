@@ -99,7 +99,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-linear-to-br from-primary-600 via-primary-700 to-primary-800 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white overflow-hidden">
         <div className="container mx-auto px-4 py-16 md:py-24 lg:py-32 relative">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in">
@@ -111,7 +111,7 @@ export default function Home() {
             {/* CTAs removed to simplify hero */}
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-white to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
       </section>
 
       {/* Categories Section */}
@@ -207,7 +207,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-linear-to-r from-primary-600 to-primary-700 text-white">
+      <section className="py-16 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <Star className="h-12 w-12 mx-auto mb-6 text-accent-400" />

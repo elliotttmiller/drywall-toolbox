@@ -322,25 +322,6 @@ export default function Products() {
                         <ShoppingCart size={20} />
                       </button>
                     </div>
-                    {/* Product Detail Modal - moved out of sidebar so it overlays correctly */}
-                    {isModalOpen && modalProduct && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
-                        <div className="relative z-10 max-w-6xl w-full">
-                          <div className="flex justify-end mb-3">
-                            <button
-                              onClick={closeModal}
-                              className="p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow hover:bg-gray-50"
-                            >
-                              <X size={24} />
-                            </button>
-                          </div>
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} />
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -376,6 +357,26 @@ export default function Products() {
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+      
+      {/* Product Detail Modal */}
+      {isModalOpen && modalProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
+          <div className="relative z-10 max-w-6xl w-full">
+            <div className="flex justify-end mb-3">
+              <button
+                onClick={closeModal}
+                className="p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow hover:bg-gray-50"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div onClick={(e) => e.stopPropagation()}>
+              <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
