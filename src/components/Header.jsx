@@ -45,25 +45,25 @@ export default function Header() {
       {/* Main Header */}
       <div className="border-b border-gray-200">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20 md:h-24">
+          <div className="flex items-center h-20 md:h-24">
             {/* Left Navigation - Desktop */}
             <nav className="hidden lg:flex items-center gap-8 flex-1">
               <Link 
                 to="/" 
-                className={`font-semibold text-base transition-colors ${
+                className={`font-semibold text-base transition-colors pb-1 ${
                   isActive('/') 
-                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    : 'text-gray-700 hover:text-primary-600 border-b-2 border-transparent'
                 }`}
               >
                 Home
               </Link>
               <Link 
                 to="/products" 
-                className={`font-semibold text-base transition-colors ${
+                className={`font-semibold text-base transition-colors pb-1 ${
                   isActive('/products') 
-                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    : 'text-gray-700 hover:text-primary-600 border-b-2 border-transparent'
                 }`}
               >
                 Shop
@@ -71,12 +71,12 @@ export default function Header() {
             </nav>
 
             {/* Centered Logo */}
-            <Link to="/" className="flex flex-col items-center group">
+            <Link to="/" className="flex flex-col items-center group lg:flex-1 flex-1 justify-center">
               <div className="flex items-center gap-3">
                 <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-2.5 rounded-xl shadow-lg group-hover:shadow-xl transition-all group-hover:scale-105">
                   <Wrench className="h-7 w-7 md:h-8 md:w-8 text-white transform -rotate-45" />
                 </div>
-                <div className="text-center">
+                <div>
                   <h1 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 tracking-tight">
                     Drywall Toolbox
                   </h1>
@@ -91,20 +91,20 @@ export default function Header() {
             <nav className="hidden lg:flex items-center gap-8 flex-1 justify-end">
               <Link 
                 to="/about" 
-                className={`font-semibold text-base transition-colors ${
+                className={`font-semibold text-base transition-colors pb-1 ${
                   isActive('/about') 
-                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    : 'text-gray-700 hover:text-primary-600 border-b-2 border-transparent'
                 }`}
               >
                 About
               </Link>
               <Link 
                 to="/contact" 
-                className={`font-semibold text-base transition-colors ${
+                className={`font-semibold text-base transition-colors pb-1 ${
                   isActive('/contact') 
-                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 border-b-2 border-primary-600' 
+                    : 'text-gray-700 hover:text-primary-600 border-b-2 border-transparent'
                 }`}
               >
                 Contact
@@ -112,7 +112,7 @@ export default function Header() {
             </nav>
 
             {/* Actions - Mobile Only */}
-            <div className="lg:hidden flex items-center gap-2 md:gap-4">
+            <div className="lg:hidden flex items-center gap-2 md:gap-4 flex-shrink-0">
               {/* Search Button */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
