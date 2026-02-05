@@ -1,10 +1,10 @@
 # GitHub Pages Deployment Setup
 
-This document provides instructions for enabling and configuring GitHub Pages for the Drywall Toolbox website.
+This document provides instructions for deploying the Drywall Toolbox website to GitHub Pages.
 
 ## Overview
 
-The repository is now configured for automatic deployment to GitHub Pages using GitHub Actions. All pages and routes are properly configured to work with the `/drywall-toolbox/` base path.
+The repository is now configured for **fully automatic** deployment to GitHub Pages using GitHub Actions. The workflow will automatically enable GitHub Pages and deploy the site when triggered. All pages and routes are properly configured to work with the `/drywall-toolbox/` base path.
 
 ## What Has Been Configured
 
@@ -20,6 +20,7 @@ The repository is now configured for automatic deployment to GitHub Pages using 
    - Automated build and deployment on push to `main` branch
    - Manual deployment option via workflow_dispatch
    - Proper permissions configured for GitHub Pages
+   - **Automatic GitHub Pages enablement** - The workflow will automatically enable GitHub Pages if not already enabled
 
 4. **Static Pages**
    - `.nojekyll` file added to prevent Jekyll processing
@@ -27,44 +28,40 @@ The repository is now configured for automatic deployment to GitHub Pages using 
    - `hotspot-test.html` - Hotspot Position Test tool
    - All files properly copied to build output
 
-## Enabling GitHub Pages
+## Deploying to GitHub Pages
 
-To enable GitHub Pages for this repository, follow these steps:
+The site will deploy automatically when you push changes to the `main` branch. You can also trigger a manual deployment:
 
-### Step 1: Navigate to Repository Settings
+### Automatic Deployment (Recommended)
 
-1. Go to the repository on GitHub: https://github.com/elliotttmiller/drywall-toolbox
-2. Click on the **Settings** tab
-3. In the left sidebar, click on **Pages** under the "Code and automation" section
+Simply merge your changes to the `main` branch:
 
-### Step 2: Configure Source
-
-1. Under "Build and deployment", set the **Source** to "GitHub Actions"
-2. The workflow will automatically detect the `.github/workflows/deploy.yml` file
-
-### Step 3: Trigger Deployment
-
-You have two options to trigger the initial deployment:
-
-**Option A: Push to main branch**
 ```bash
 git checkout main
-git merge copilot/configure-deploy-website-github-pages
+git merge your-feature-branch
 git push origin main
 ```
 
-**Option B: Manual workflow trigger**
+The workflow will automatically:
+1. Build the React application
+2. Enable GitHub Pages (if not already enabled)
+3. Deploy the site to https://elliotttmiller.github.io/drywall-toolbox/
+
+### Manual Deployment
+
+You can also trigger deployment manually from any branch:
+
 1. Go to the **Actions** tab in the repository
 2. Select the "Deploy to GitHub Pages" workflow
 3. Click "Run workflow" button
-4. Select the branch (main or your current branch)
+4. Select the branch (typically `main`)
 5. Click "Run workflow"
 
-### Step 4: Verify Deployment
+### Verifying Deployment
 
-1. After the workflow completes (typically 2-3 minutes), go back to **Settings > Pages**
-2. You should see a message: "Your site is live at https://elliotttmiller.github.io/drywall-toolbox/"
-3. Click the link or visit the URL to view your deployed site
+1. After the workflow completes (typically 2-3 minutes), the site will be live
+2. Visit the site at: https://elliotttmiller.github.io/drywall-toolbox/
+3. You can also check **Settings > Pages** in the repository to see the deployment status
 
 ## Accessing the Website
 
@@ -88,6 +85,12 @@ All React Router pages are accessible:
 - `/settings/woocommerce` - WooCommerce settings
 
 ## Troubleshooting
+
+### GitHub Pages Not Enabled Error
+If you see an error like "Get Pages site failed" in the workflow logs, don't worry! The workflow is configured to automatically enable GitHub Pages on the first run. Simply re-run the workflow:
+1. Go to **Actions** tab
+2. Click on the failed workflow run
+3. Click "Re-run all jobs"
 
 ### Pages Not Loading
 - Ensure the base path is correct in both `vite.config.js` and `src/App.jsx`
