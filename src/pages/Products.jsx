@@ -115,7 +115,7 @@ export default function Products() {
         return sortBy === 'price-low' ? a.price - b.price : b.price - a.price;
       }
       case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
+        return b.rating - a.rating;
       default:
         return 0;
     }
