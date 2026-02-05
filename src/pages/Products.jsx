@@ -107,9 +107,13 @@ export default function Products() {
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
-        return a.price - b.price;
-      case 'price-high':
-        return b.price - a.price;
+      case 'price-high': {
+        // Handle null prices - put them at the end
+        if (!a.price && !b.price) return 0;
+        if (!a.price) return 1;
+        if (!b.price) return -1;
+        return sortBy === 'price-low' ? a.price - b.price : b.price - a.price;
+      }
       case 'rating':
         return b.rating - a.rating;
       default:
@@ -309,9 +313,15 @@ export default function Products() {
 
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between">
-                      <p className="text-2xl font-bold text-primary-600">
-                        ${product.price}
-                      </p>
+                      {product.price ? (
+                        <p className="text-2xl font-bold text-primary-600">
+                          ${product.price}
+                        </p>
+                      ) : (
+                        <p className="text-sm font-semibold text-gray-600">
+                          Call for Price
+                        </p>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
