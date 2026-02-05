@@ -107,17 +107,13 @@ export default function Products() {
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
+      case 'price-high': {
         // Handle null prices - put them at the end
         if (!a.price && !b.price) return 0;
         if (!a.price) return 1;
         if (!b.price) return -1;
-        return a.price - b.price;
-      case 'price-high':
-        // Handle null prices - put them at the end
-        if (!a.price && !b.price) return 0;
-        if (!a.price) return 1;
-        if (!b.price) return -1;
-        return b.price - a.price;
+        return sortBy === 'price-low' ? a.price - b.price : b.price - a.price;
+      }
       case 'rating':
         return (b.rating || 0) - (a.rating || 0);
       default:
