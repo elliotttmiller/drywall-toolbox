@@ -468,12 +468,12 @@ body {
     
     .alloy-button {
         padding: 14px 28px;
-        font-size: 0.75rem; /* 12px - accessible minimum for buttons */
+        font-size: 0.75rem; /* 12px - ensures readability on mobile */
     }
     
     .alloy-button-sm {
         padding: 7px 14px;
-        font-size: 0.625rem; /* 10px - minimum readable size */
+        font-size: 0.75rem; /* 12px - improved from 10px for better readability */
     }
 }
 
