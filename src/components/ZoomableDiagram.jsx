@@ -77,6 +77,8 @@ export default function ZoomableDiagram({ children, onInteractionStart, onIntera
       const newY = e.touches[0].clientY - dragStart.y;
       
       // Constrain panning to keep content visible
+      if (!contentRef.current) return;
+      
       const maxX = (contentRef.current.offsetWidth * (scale - 1)) / 2;
       const maxY = (contentRef.current.offsetHeight * (scale - 1)) / 2;
       
@@ -133,6 +135,8 @@ export default function ZoomableDiagram({ children, onInteractionStart, onIntera
     if (isDragging && scale > 1) {
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
+      
+      if (!contentRef.current) return;
       
       const maxX = (contentRef.current.offsetWidth * (scale - 1)) / 2;
       const maxY = (contentRef.current.offsetHeight * (scale - 1)) / 2;
