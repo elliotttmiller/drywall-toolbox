@@ -2,6 +2,8 @@
 
 A modern, fully responsive e-commerce platform for professional drywall tools and equipment, built with React and Lucide icons.
 
+🌐 **Live Site:** [https://elliotttmiller.github.io/drywall-toolbox/](https://elliotttmiller.github.io/drywall-toolbox/)
+
 ## 🎨 Features
 
 - **Modern React Architecture** - Built with React 19 and Vite for optimal performance
@@ -33,6 +35,11 @@ npm run build
 # Preview production build
 npm run preview
 ```
+
+### Deployment
+
+The site automatically deploys to GitHub Pages when changes are pushed to the `main` branch. See [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) for detailed deployment instructions.
+
 
 ## 📁 Project Structure
 
