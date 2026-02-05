@@ -2,6 +2,7 @@
 import { useCart } from '../context/CartContext';
 import Toast from '../components/Toast';
 import SchematicFilterBar from '../components/SchematicFilterBar';
+import ZoomableDiagram from '../components/ZoomableDiagram';
 import { loadProducts } from '../data/products';
 import schematic13Data from '../../schematics/brands/TapeTech/products/13TT_SCH_hotspots/schematic_data.json';
 import schematic13Img from '../../schematics/brands/TapeTech/products/13TT_SCH_hotspots/images/page_1.png';
@@ -23,6 +24,7 @@ export default function Parts() {
   const [toast, setToast] = useState(null);
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [isInteracting, setIsInteracting] = useState(false); // Track zoom/pan interaction
   const { addToCart } = useCart();
 
   // Load products on mount
@@ -721,80 +723,91 @@ export default function Parts() {
             )}
 
             <div className="schematic-container">
-              <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
-                {schematicImageSrc ? (
-                  <img 
-                    src={schematicImageSrc} 
-                    alt={currentSchematic.title}
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
-                ) : (
-                  currentSchematic.svg
-                )}
-                
-                {currentSchematic.parts.filter(part => !part.pageNumber || part.pageNumber === currentPage).map((part) => (
-                  <div
-                    key={part.id}
-                    className={`hotspot hotspot-${part.shape || 'circle'} ${activeHotspot === part.id ? 'active' : ''}`}
-                    style={{
-                      position: 'absolute',
-                      top: part.position.top,
-                      left: part.position.left,
-                      transform: part.rotation ? `translate(-50%, -50%) rotate(${part.rotation}deg)` : 'translate(-50%, -50%)',
-                      zIndex: 100,
-                      ...(part.width && part.height ? {
-                        width: `${part.width}%`,
-                        height: `${part.height}%`
-                      } : {})
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveHotspot(activeHotspot === part.id ? null : part.id);
-                    }}
-                    title={`${part.name} (${part.sku})`}
-                  >
-                    <div className="part-modal" onClick={(e) => e.stopPropagation()}>
-                    <h4 style={{
-                      textTransform: 'uppercase',
-                      fontSize: '0.75rem',
-                      letterSpacing: '0.1em',
-                      marginBottom: '8px'
-                    }}>
-                      {part.name}
-                    </h4>
-                    <div className="part-meta">
-                      SKU: {part.sku} | {part.material}
-                      {part.quantity > 1 && ` | Qty: ${part.quantity}`}
-                    </div>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <span style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontWeight: 800
+              <ZoomableDiagram
+                onInteractionStart={() => {
+                  setIsInteracting(true);
+                  setActiveHotspot(null); // Close any open hotspot modals during zoom/pan
+                }}
+                onInteractionEnd={() => setIsInteracting(false)}
+              >
+                <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                  {schematicImageSrc ? (
+                    <img 
+                      src={schematicImageSrc} 
+                      alt={currentSchematic.title}
+                      style={{ width: '100%', height: 'auto', display: 'block' }}
+                    />
+                  ) : (
+                    currentSchematic.svg
+                  )}
+                  
+                  {currentSchematic.parts.filter(part => !part.pageNumber || part.pageNumber === currentPage).map((part) => (
+                    <div
+                      key={part.id}
+                      className={`hotspot hotspot-${part.shape || 'circle'} ${activeHotspot === part.id ? 'active' : ''}`}
+                      style={{
+                        position: 'absolute',
+                        top: part.position.top,
+                        left: part.position.left,
+                        transform: part.rotation ? `translate(-50%, -50%) rotate(${part.rotation}deg)` : 'translate(-50%, -50%)',
+                        zIndex: 100,
+                        ...(part.width && part.height ? {
+                          width: `${part.width}%`,
+                          height: `${part.height}%`
+                        } : {}),
+                        pointerEvents: isInteracting ? 'none' : 'auto' // Disable hotspots during zoom/pan
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isInteracting) {
+                          setActiveHotspot(activeHotspot === part.id ? null : part.id);
+                        }
+                      }}
+                      title={`${part.name} (${part.sku})`}
+                    >
+                      <div className="part-modal" onClick={(e) => e.stopPropagation()}>
+                      <h4 style={{
+                        textTransform: 'uppercase',
+                        fontSize: '0.75rem',
+                        letterSpacing: '0.1em',
+                        marginBottom: '8px'
                       }}>
-                        ${part.price.toFixed(2)}
-                      </span>
-                      <button
-                        className="alloy-button"
-                        style={{
-                          padding: '8px 16px',
-                          fontSize: '0.6rem'
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(part);
-                        }}
-                      >
-                        Add
-                      </button>
+                        {part.name}
+                      </h4>
+                      <div className="part-meta">
+                        SKU: {part.sku} | {part.material}
+                        {part.quantity > 1 && ` | Qty: ${part.quantity}`}
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <span style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 800
+                        }}>
+                          ${part.price.toFixed(2)}
+                        </span>
+                        <button
+                          className="alloy-button"
+                          style={{
+                            padding: '8px 16px',
+                            fontSize: '0.6rem'
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(part);
+                          }}
+                        >
+                          Add
+                        </button>
+                      </div>
                     </div>
                   </div>
+                ))}
                 </div>
-              ))}
-              </div>
+              </ZoomableDiagram>
             </div>
           </div>
         )}

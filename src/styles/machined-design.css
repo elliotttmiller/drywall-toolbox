@@ -445,6 +445,17 @@ body {
     .tool-image {
         height: 200px;
     }
+    
+    /* Tablet hotspot improvements */
+    .hotspot {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .hotspot-rectangle {
+        min-width: 40px;
+        min-height: 22px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -475,6 +486,58 @@ body {
         padding: 7px 14px;
         font-size: 0.75rem; /* 12px - improved from 10px for better readability */
     }
+    
+    /* Mobile-optimized hotspots - larger touch targets */
+    .hotspot {
+        width: 44px;
+        height: 44px;
+        background: rgba(37, 99, 235, 0.05); /* Subtle visible background */
+        border: 2px solid rgba(37, 99, 235, 0.3);
+    }
+    
+    .hotspot-rectangle {
+        min-width: 50px;
+        min-height: 30px;
+    }
+    
+    .hotspot-square {
+        width: 48px;
+        height: 48px;
+    }
+    
+    /* Enhanced touch feedback */
+    .hotspot:active {
+        background: rgba(37, 99, 235, 0.15);
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    
+    /* Mobile-optimized part modal */
+    .part-modal {
+        width: calc(100vw - 40px);
+        max-width: 320px;
+        position: fixed;
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 
+            0 20px 50px rgba(0, 0, 0, 0.25),
+            0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    .hotspot.active .part-modal {
+        transform: translateX(-50%);
+    }
+    
+    .part-modal h4 {
+        font-size: 0.8rem !important;
+    }
+    
+    .part-meta {
+        font-size: 0.65rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -503,6 +566,23 @@ body {
         padding: 12px 24px;
         font-size: 0.75rem; /* 12px - maintains readability on small screens */
     }
+    
+    /* Extra small screen hotspot adjustments */
+    .hotspot {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .hotspot-rectangle {
+        min-width: 56px;
+        min-height: 34px;
+    }
+    
+    .part-modal {
+        width: calc(100vw - 32px);
+        max-width: 280px;
+        padding: 14px;
+    }
 }
 
 /* Responsive adjustments for schematic title + filter bar */
@@ -517,6 +597,17 @@ body {
     .schematic-title-container h3 {
         text-align: center;
         font-size: 1rem !important;
+    }
+    
+    /* Parts page responsive padding */
+    .section-enter {
+        padding: 100px 24px 60px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-enter {
+        padding: 90px 16px 40px !important;
     }
 }
 

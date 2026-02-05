@@ -1,0 +1,208 @@
+/* Zoomable Diagram Component Styles */
+
+.zoomable-diagram-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.zoomable-diagram-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  touch-action: pan-x pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.zoomable-diagram-content {
+  transform-origin: center center;
+  will-change: transform;
+  position: relative;
+  width: 100%;
+}
+
+/* Zoom Controls for Mobile */
+.zoom-controls-mobile {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  padding: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.zoom-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--primary-600);
+  position: relative;
+  overflow: hidden;
+}
+
+.zoom-control-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(96, 165, 250, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.zoom-control-btn:hover:not(.disabled)::before {
+  opacity: 1;
+}
+
+.zoom-control-btn:hover:not(.disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 
+    0 8px 24px rgba(37, 99, 235, 0.15),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+.zoom-control-btn:active:not(.disabled) {
+  transform: translateY(0) scale(0.95);
+}
+
+.zoom-control-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.zoom-control-btn svg {
+  position: relative;
+  z-index: 1;
+}
+
+.zoom-level-indicator {
+  min-width: 56px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--alloy-deep);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+}
+
+.zoom-reset-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(248, 113, 113, 0.05) 100%);
+  color: rgba(239, 68, 68, 0.9);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.zoom-reset-btn:hover:not(.disabled) {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(248, 113, 113, 0.08) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 
+    0 8px 24px rgba(239, 68, 68, 0.2),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+/* Zoom Hint */
+.zoom-hint {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 20px;
+  z-index: 998;
+  pointer-events: none;
+  opacity: 0;
+  animation: hintFadeIn 0.5s ease-out 0.5s forwards, hintFadeOut 0.5s ease-out 3s forwards;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+}
+
+@keyframes hintFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes hintFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Desktop - hide mobile controls */
+@media (min-width: 769px) {
+  .zoom-controls-mobile {
+    display: none;
+  }
+  
+  .zoom-hint {
+    display: none;
+  }
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .zoom-controls-mobile {
+    display: flex;
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .zoom-controls-mobile {
+    bottom: 16px;
+    right: 16px;
+    padding: 6px;
+    gap: 6px;
+  }
+  
+  .zoom-control-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .zoom-level-indicator {
+    min-width: 50px;
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+  
+  .zoom-hint {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+}
