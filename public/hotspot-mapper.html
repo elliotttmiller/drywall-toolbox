@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Schematic Mapper - Custom Hotspots</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .upload-area {
+            display: flex;
+            gap: 20px;
+            align-items: start;
+        }
+        .upload-box {
+            flex: 1;
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-box:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+        .upload-box.active {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn.success {
+            background: #22c55e;
+        }
+        .btn.danger {
+            background: #ef4444;
+        }
+        .config-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        .config-section.active {
+            display: block;
+        }
+        .page-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .page-preview {
+            border: 3px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        .page-preview:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .page-preview.selected-diagram {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        .page-preview.selected-legend {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .page-preview img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .page-label {
+            text-align: center;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        .page-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .badge-diagram {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .badge-legend {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .schematic-builder {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        .schematic-builder.active {
+            display: block;
+        }
+        .schematic-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .schematic-item {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+        .schematic-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .schematic-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .schematic-pages {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .workspace {
+            display: none;
+            grid-template-columns: 1fr 450px;
+            gap: 20px;
+        }
+        .workspace.active {
+            display: grid;
+        }
+        .image-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .page-selector {
+            background: #f8f9ff;
+            padding: 15px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .page-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .page-info {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .image-container {
+            position: relative;
+            background: #f0f0f0;
+            overflow: auto;
+            max-height: calc(100vh - 250px);
+        }
+        .wrapper {
+            position: relative;
+            display: inline-block;
+            min-width: 100%;
+            user-select: none;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: crosshair;
+            user-select: none;
+            pointer-events: none;
+        }
+        .wrapper.has-selection {
+            cursor: default;
+        }
+        .marker {
+            position: absolute;
+            border: 3px solid #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            transform: translate(-50%, -50%);
+            pointer-events: all;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 4px #000, 0 0 8px #000;
+            font-size: 11px;
+            z-index: 10;
+            cursor: move;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .marker:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        .marker.selected {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4);
+            z-index: 20;
+        }
+        .marker.circle {
+            border-radius: 50%;
+        }
+        .marker.square {
+            border-radius: 4px;
+        }
+        .marker.rectangle {
+            border-radius: 4px;
+        }
+        .marker.diamond {
+            border-radius: 4px;
+        }
+        .marker.diamond span {
+            display: inline-block;
+        }
+        .resize-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border: 2px solid white;
+            border-radius: 50%;
+            pointer-events: all;
+            z-index: 30;
+        }
+        .resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+        .resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+        .resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+        .resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+        .rotate-handle {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            background: #8b5cf6;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            z-index: 30;
+        }
+        .rotate-handle:active {
+            cursor: grabbing;
+        }
+        .rotate-line {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: #8b5cf6;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 29;
+        }
+        .sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        .current-schematic-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .hotspot-controls {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .hotspot-controls h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .control-group {
+            margin-bottom: 12px;
+        }
+        .control-group label {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .shape-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .shape-btn {
+            padding: 12px 8px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .shape-btn:hover {
+            border-color: #667eea;
+        }
+        .shape-btn.active {
+            border-color: #667eea;
+            background: #eff6ff;
+            font-weight: 600;
+        }
+        .shape-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+        .slider-value {
+            min-width: 35px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .progress {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .progress-text {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .progress-bar {
+            background: #e5e7eb;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e, #10b981);
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 6px;
+        }
+        .part-item {
+            background: #f8f9ff;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .part-item:hover {
+            border-color: #667eea;
+            transform: translateX(4px);
+        }
+        .part-item.active {
+            border-color: #22c55e;
+            background: #f0fdf4;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+        }
+        .part-item.done {
+            opacity: 0.6;
+            background: #f1f5f9;
+        }
+        .part-number {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+        .part-name {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+        .part-qty {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .coordinates {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #22c55e;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+        .part-item:hover .coordinates {
+            color: #16a34a;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .marker.placing {
+            animation: pulse 1s infinite;
+        }
+        .loading {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            display: none;
+        }
+        .loading.active {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .debug-log {
+            background: #1e293b;
+            color: #22c55e;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+            z-index: 100;
+        }
+        .zoom-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+        .output-code {
+            background: #1e293b;
+            color: #22c55e;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+        .info-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .info-box h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        .info-box p {
+            color: #1e40af;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .hotspot-preview {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 12px;
+        }
+        .preview-marker {
+            display: inline-block;
+            border: 3px solid #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 4px #000;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Smart Schematic Mapper - Custom Hotspots</h1>
+            <p class="subtitle">Full control: Click to place • Drag to move • Resize handles • Rotate handle • Select to edit • ESC to deselect • Delete key to remove</p>
+        </div>
+
+        <div class="upload-section" id="upload-section">
+            <div class="upload-area">
+                <div class="upload-box" onclick="document.getElementById('pdf-input').click()">
+                    <div class="upload-icon">📄</div>
+                    <h3>Upload Schematic PDF</h3>
+                    <p>Will auto-detect diagram and legend pages</p>
+                    <input type="file" id="pdf-input" accept=".pdf" onchange="handlePDFUpload(event)">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn" id="process-btn" onclick="processPDF()" disabled>Analyze PDF</button>
+                    <button class="btn danger" onclick="location.reload()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p id="loading-text">Processing...</p>
+            <div class="debug-log" id="debug-log"></div>
+        </div>
+
+        <div class="config-section" id="config-section">
+            <div class="info-box">
+                <h4>📋 Instructions</h4>
+                <p>1. <strong style="color: #3b82f6;">Blue pages</strong> = Diagram pages (contain numbered callouts)</p>
+                <p>2. <strong style="color: #22c55e;">Green pages</strong> = Legend pages (contain parts tables)</p>
+                <p>3. Click pages to toggle their type, then click "Create Schematics"</p>
+            </div>
+
+            <h3 style="color: #667eea; margin-bottom: 15px;">Select Page Types</h3>
+            <div class="page-preview-grid" id="page-preview-grid"></div>
+            
+            <button class="btn success" onclick="createSchematics()" style="width: 100%; margin-top: 20px; padding: 18px;">
+                ✓ Create Schematics from Selected Pages
+            </button>
+        </div>
+
+        <div class="schematic-builder" id="schematic-builder">
+            <h3 style="color: #667eea; margin-bottom: 15px;">🎨 Your Schematics</h3>
+            <div class="schematic-list" id="schematic-list"></div>
+            <button class="btn success" onclick="generateAllOutput()" style="margin-top: 20px;">Generate All Coordinates</button>
+            <button class="btn" onclick="exportJSON()" style="margin-top: 10px; background: #f59e0b;">Export as JSON</button>
+        </div>
+
+        <div class="workspace" id="workspace">
+            <div class="image-panel">
+                <div class="page-selector">
+                    <button class="page-btn" onclick="changePage(-1)">← Prev</button>
+                    <div class="page-info" id="page-info">Page 1</div>
+                    <button class="page-btn" onclick="changePage(1)">Next →</button>
+                    <button class="btn" onclick="backToList()" style="margin-left: auto; padding: 8px 16px; font-size: 14px;">Back</button>
+                </div>
+                <div class="image-container">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" onclick="zoom(0.1)">+</button>
+                        <button class="zoom-btn" onclick="zoom(-0.1)">−</button>
+                        <button class="zoom-btn" onclick="resetZoom()">⊙</button>
+                    </div>
+                    <div class="wrapper" id="wrapper">
+                        <img id="schematic" alt="Schematic">
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="current-schematic-header" id="current-schematic-header">
+                    Current Schematic
+                </div>
+
+                <div class="info-box" style="margin-bottom: 15px;">
+                    <h4>⌨️ Controls</h4>
+                    <p style="font-size: 12px;">• <strong>Click marker</strong> to select</p>
+                    <p style="font-size: 12px;">• <strong>Drag marker</strong> to move</p>
+                    <p style="font-size: 12px;">• <strong>Drag corners</strong> to resize</p>
+                    <p style="font-size: 12px;">• <strong>Drag ↻ handle</strong> to rotate</p>
+                    <p style="font-size: 12px;">• <strong>ESC</strong> to deselect</p>
+                    <p style="font-size: 12px;">• <strong>Delete</strong> key to remove</p>
+                </div>
+
+                <div class="hotspot-controls">
+                    <h4>🎨 Hotspot Style (Default for New Hotspots)</h4>
+                    
+                    <div class="control-group">
+                        <label>Shape</label>
+                        <div class="shape-selector">
+                            <div class="shape-btn active" onclick="selectShape('circle')" id="shape-circle">
+                                <div class="shape-icon">●</div>
+                                <div>Circle</div>
+                            </div>
+                            <div class="shape-btn" onclick="selectShape('square')" id="shape-square">
+                                <div class="shape-icon">■</div>
+                                <div>Square</div>
+                            </div>
+                            <div class="shape-btn" onclick="selectShape('rectangle')" id="shape-rectangle">
+                                <div class="shape-icon">▬</div>
+                                <div>Rectangle</div>
+                            </div>
+                            <div class="shape-btn" onclick="selectShape('diamond')" id="shape-diamond">
+                                <div class="shape-icon">◆</div>
+                                <div>Diamond</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Width: <span id="width-value">36px</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="width-slider" min="20" max="100" value="36" oninput="updateHotspotSize()">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Height: <span id="height-value">36px</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="height-slider" min="20" max="100" value="36" oninput="updateHotspotSize()">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Rotation: <span id="rotation-value">0°</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="rotation-slider" min="0" max="360" value="0" oninput="updateHotspotSize()">
+                        </div>
+                    </div>
+
+                    <div class="hotspot-preview">
+                        <div>Preview:</div>
+                        <div id="preview-marker" class="preview-marker circle" style="width: 36px; height: 36px; line-height: 30px; margin: 10px auto;">01</div>
+                    </div>
+                </div>
+
+                <div class="hotspot-controls" id="selected-hotspot-controls" style="display: none; background: #f0fdf4; border: 2px solid #22c55e;">
+                    <h4>✏️ Edit Selected Hotspot: <span id="selected-hotspot-id"></span></h4>
+                    
+                    <div class="control-group">
+                        <label>Shape</label>
+                        <div class="shape-selector">
+                            <div class="shape-btn" onclick="updateSelectedHotspotShape('circle')" id="sel-shape-circle">
+                                <div class="shape-icon">●</div>
+                                <div>Circle</div>
+                            </div>
+                            <div class="shape-btn" onclick="updateSelectedHotspotShape('square')" id="sel-shape-square">
+                                <div class="shape-icon">■</div>
+                                <div>Square</div>
+                            </div>
+                            <div class="shape-btn" onclick="updateSelectedHotspotShape('rectangle')" id="sel-shape-rectangle">
+                                <div class="shape-icon">▬</div>
+                                <div>Rectangle</div>
+                            </div>
+                            <div class="shape-btn" onclick="updateSelectedHotspotShape('diamond')" id="sel-shape-diamond">
+                                <div class="shape-icon">◆</div>
+                                <div>Diamond</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Width: <span id="sel-width-value">36px</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="sel-width-slider" min="20" max="100" value="36" oninput="updateSelectedHotspot()">
+                        </div>
+                        <input type="number" id="sel-width-input" min="10" max="200" step="1" value="36" 
+                               style="width: 100%; padding: 8px; border: 2px solid #e5e7eb; border-radius: 6px; margin-top: 6px; font-size: 13px;"
+                               oninput="updateSelectedHotspotPrecise()" placeholder="Enter width in pixels">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Height: <span id="sel-height-value">36px</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="sel-height-slider" min="20" max="100" value="36" oninput="updateSelectedHotspot()">
+                        </div>
+                        <input type="number" id="sel-height-input" min="10" max="200" step="1" value="36" 
+                               style="width: 100%; padding: 8px; border: 2px solid #e5e7eb; border-radius: 6px; margin-top: 6px; font-size: 13px;"
+                               oninput="updateSelectedHotspotPrecise()" placeholder="Enter height in pixels">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Rotation: <span id="sel-rotation-value">0°</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="sel-rotation-slider" min="0" max="360" value="0" oninput="updateSelectedHotspot()">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Position</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label style="font-size: 11px;">Left: <span id="sel-left-value">0%</span></label>
+                                <input type="number" id="sel-left-input" step="0.1" style="width: 100%; padding: 6px; border: 1px solid #e5e7eb; border-radius: 4px;" oninput="updateSelectedHotspotPosition()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11px;">Top: <span id="sel-top-value">0%</span></label>
+                                <input type="number" id="sel-top-input" step="0.1" style="width: 100%; padding: 6px; border: 1px solid #e5e7eb; border-radius: 4px;" oninput="updateSelectedHotspotPosition()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn danger" onclick="deleteSelectedHotspot()" style="width: 100%; margin-top: 10px;">
+                        🗑️ Delete Hotspot
+                    </button>
+                    
+                    <button class="btn" onclick="editSelectedPart()" id="edit-part-btn" style="width: 100%; margin-top: 8px; background: #f59e0b; display: none;">
+                        ✏️ Edit Part Info
+                    </button>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-text">Progress: <span id="progress-text">0/0</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <button class="btn" onclick="addCustomHotspot()" style="width: 100%; background: #f59e0b;">
+                        ➕ Add Custom Hotspot
+                    </button>
+                </div>
+
+                <div id="parts-list"></div>
+
+                <button class="btn success" onclick="completeSchematic()" style="width: 100%; margin-top: 15px;">
+                    Complete & Return
+                </button>
+            </div>
+        </div>
+
+        <div class="modal" id="output-modal">
+            <div class="modal-content">
+                <h2 style="color: #667eea; margin-bottom: 15px;">Generated Coordinates</h2>
+                <button class="btn success" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button class="btn" onclick="closeModal()" style="margin-left: 10px;">Close</button>
+                <div class="output-code" id="output-code"></div>
+            </div>
+        </div>
+
+        <div class="modal" id="custom-hotspot-modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;" id="custom-modal-title">➕ Add Custom Hotspot</h2>
+                
+                <div class="form-group">
+                    <label>Callout Number/ID *</label>
+                    <input type="text" id="custom-id" placeholder="e.g., 99, A1, CUSTOM" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Part Number/SKU</label>
+                    <input type="text" id="custom-sku" placeholder="e.g., 123456">
+                </div>
+                
+                <div class="form-group">
+                    <label>Part Name/Description</label>
+                    <textarea id="custom-name" placeholder="Description of the part"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" id="custom-quantity" value="1" min="1">
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn success" onclick="saveCustomHotspot()" style="flex: 1;" id="custom-save-btn">
+                        ✓ Add & Place Hotspot
+                    </button>
+                    <button class="btn" onclick="closeCustomHotspotModal()" style="flex: 0 0 auto;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfFile = null;
+        let pdfDoc = null;
+        let pageData = [];
+        let schematics = [];
+        let currentSchematic = null;
+        let currentPageIdx = 0;
+        let zoomLevel = 1;
+        let activePartId = null;
+        let selectedHotspotId = null;
+        
+        // Hotspot settings
+        let hotspotShape = 'circle';
+        let hotspotWidth = 36;
+        let hotspotHeight = 36;
+        let hotspotRotation = 0;
+        
+        // Drag and resize state
+        let isDragging = false;
+        let isResizing = false;
+        let isRotating = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let resizeHandle = null;
+        let rotateStartAngle = 0;
+
+        const img = document.getElementById('schematic');
+        const wrapper = document.getElementById('wrapper');
+
+        function log(msg) {
+            console.log(msg);
+            const debugLog = document.getElementById('debug-log');
+            debugLog.innerHTML += msg + '<br>';
+            debugLog.scrollTop = debugLog.scrollHeight;
+        }
+
+        function selectShape(shape) {
+            hotspotShape = shape;
+            document.querySelectorAll('.shape-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`shape-${shape}`).classList.add('active');
+            updatePreview();
+            renderMarkers();
+        }
+
+        function updateHotspotSize() {
+            hotspotWidth = parseInt(document.getElementById('width-slider').value);
+            hotspotHeight = parseInt(document.getElementById('height-slider').value);
+            hotspotRotation = parseInt(document.getElementById('rotation-slider').value);
+            
+            document.getElementById('width-value').textContent = hotspotWidth + 'px';
+            document.getElementById('height-value').textContent = hotspotHeight + 'px';
+            document.getElementById('rotation-value').textContent = hotspotRotation + '°';
+            
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const preview = document.getElementById('preview-marker');
+            preview.className = `preview-marker ${hotspotShape}`;
+            preview.style.width = hotspotWidth + 'px';
+            preview.style.height = hotspotHeight + 'px';
+            preview.style.lineHeight = (hotspotHeight - 6) + 'px';
+            preview.style.transform = `rotate(${hotspotRotation}deg)`;
+            
+            if (hotspotShape === 'circle') {
+                preview.style.borderRadius = '50%';
+            } else if (hotspotShape === 'diamond') {
+                preview.style.borderRadius = '4px';
+            } else {
+                preview.style.borderRadius = '4px';
+            }
+        }
+
+        async function handlePDFUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                pdfFile = file;
+                document.getElementById('process-btn').disabled = false;
+                log('PDF selected: ' + file.name);
+            }
+        }
+
+        async function processPDF() {
+            document.getElementById('upload-section').style.display = 'none';
+            document.getElementById('loading').classList.add('active');
+            
+            try {
+                log('Loading PDF...');
+                const arrayBuffer = await pdfFile.arrayBuffer();
+                pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                log(`PDF loaded: ${pdfDoc.numPages} pages`);
+
+                pageData = [];
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    log(`Processing page ${i}/${pdfDoc.numPages}...`);
+                    const page = await pdfDoc.getPage(i);
+                    
+                    const textContent = await page.getTextContent();
+                    const text = textContent.items.map(item => item.str).join(' ');
+                    
+                    const viewport = page.getViewport({scale: 1.5});
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    await page.render({canvasContext: context, viewport: viewport}).promise;
+                    
+                    const isDiagram = detectDiagramPage(text);
+                    const isLegend = detectLegendPage(text);
+                    
+                    pageData.push({
+                        pageNum: i,
+                        text: text,
+                        image: canvas.toDataURL(),
+                        thumbnail: await createThumbnail(page),
+                        type: isDiagram ? 'diagram' : (isLegend ? 'legend' : 'unknown')
+                    });
+                    
+                    log(`  Page ${i}: ${pageData[i-1].type} (${text.length} chars)`);
+                }
+
+                log('PDF analysis complete!');
+                showPageConfiguration();
+                
+            } catch (error) {
+                log('ERROR: ' + error.message);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function detectDiagramPage(text) {
+            const hasAssemblyTitle = /SUB-ASSY|ASSEMBLY/i.test(text);
+            const partNumberCount = (text.match(/\d{6}[A-Z]?/g) || []).length;
+            return hasAssemblyTitle && partNumberCount < 20;
+        }
+
+        function detectLegendPage(text) {
+            const hasTableHeaders = /Part Number|Description|Quantity|Each/i.test(text);
+            const partNumberCount = (text.match(/\d{6}[A-Z]?/g) || []).length;
+            return partNumberCount > 10 || hasTableHeaders;
+        }
+
+        async function createThumbnail(page) {
+            const viewport = page.getViewport({scale: 0.3});
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            await page.render({canvasContext: context, viewport: viewport}).promise;
+            return canvas.toDataURL();
+        }
+
+        function showPageConfiguration() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('config-section').classList.add('active');
+            
+            const grid = document.getElementById('page-preview-grid');
+            grid.innerHTML = '';
+            
+            pageData.forEach((page, idx) => {
+                const div = document.createElement('div');
+                div.className = 'page-preview';
+                if (page.type === 'diagram') div.classList.add('selected-diagram');
+                if (page.type === 'legend') div.classList.add('selected-legend');
+                
+                div.onclick = () => togglePageType(idx);
+                
+                div.innerHTML = `
+                    <img src="${page.thumbnail}" alt="Page ${page.pageNum}">
+                    <div class="page-label">Page ${page.pageNum}</div>
+                    <div class="page-type-badge ${page.type === 'diagram' ? 'badge-diagram' : (page.type === 'legend' ? 'badge-legend' : '')}" id="badge-${idx}">
+                        ${page.type === 'diagram' ? '📊 Diagram' : (page.type === 'legend' ? '📋 Legend' : '❓ Unknown')}
+                    </div>
+                `;
+                
+                grid.appendChild(div);
+            });
+        }
+
+        function togglePageType(idx) {
+            const page = pageData[idx];
+            const previews = document.querySelectorAll('.page-preview');
+            const preview = previews[idx];
+            const badge = document.getElementById(`badge-${idx}`);
+            
+            if (page.type === 'unknown') {
+                page.type = 'diagram';
+                preview.className = 'page-preview selected-diagram';
+                badge.className = 'page-type-badge badge-diagram';
+                badge.textContent = '📊 Diagram';
+            } else if (page.type === 'diagram') {
+                page.type = 'legend';
+                preview.className = 'page-preview selected-legend';
+                badge.className = 'page-type-badge badge-legend';
+                badge.textContent = '📋 Legend';
+            } else {
+                page.type = 'unknown';
+                preview.className = 'page-preview';
+                badge.className = 'page-type-badge';
+                badge.textContent = '❓ Unknown';
+            }
+        }
+
+        function createSchematics() {
+            schematics = [];
+            let currentSchematic = null;
+            
+            pageData.forEach((page, idx) => {
+                if (page.type === 'diagram') {
+                    if (currentSchematic) {
+                        schematics.push(currentSchematic);
+                    }
+                    
+                    const titleMatch = page.text.match(/([A-Z\s,]+(?:SUB-ASSY|ASSEMBLY|PARTS))/i);
+                    const title = titleMatch ? titleMatch[1].trim() : `Schematic ${schematics.length + 1}`;
+                    
+                    currentSchematic = {
+                        id: `sch-${schematics.length + 1}`,
+                        title: title,
+                        diagramPages: [page.pageNum],
+                        legendPages: [],
+                        parts: [],
+                        coordinates: {}
+                    };
+                } else if (page.type === 'legend' && currentSchematic) {
+                    currentSchematic.legendPages.push(page.pageNum);
+                    const parts = extractPartsFromLegend(page.text);
+                    currentSchematic.parts.push(...parts);
+                }
+            });
+            
+            if (currentSchematic) {
+                schematics.push(currentSchematic);
+            }
+            
+            schematics.forEach(sch => {
+                const uniqueParts = [];
+                const seenSkus = new Set();
+                
+                sch.parts.forEach(part => {
+                    if (!seenSkus.has(part.sku)) {
+                        seenSkus.add(part.sku);
+                        uniqueParts.push(part);
+                    }
+                });
+                
+                uniqueParts.sort((a, b) => a.sku.localeCompare(b.sku));
+                uniqueParts.forEach((part, idx) => {
+                    part.id = String(idx + 1).padStart(2, '0');
+                });
+                
+                sch.parts = uniqueParts;
+            });
+            
+            document.getElementById('config-section').classList.remove('active');
+            document.getElementById('schematic-builder').classList.add('active');
+            renderSchematicList();
+        }
+
+        function extractPartsFromLegend(text) {
+            const parts = [];
+            const patterns = [
+                /(\d{6}[A-Z]?)\s+([^\d\n]{8,100}?)\s+(\d+)\s*$/gm,
+                /(\d{6}[A-Z]?)\s+(.{10,100}?)\s+(\d+)\s/g,
+            ];
+            
+            for (let pattern of patterns) {
+                let match;
+                while ((match = pattern.exec(text)) !== null) {
+                    const [, sku, name, qty] = match;
+                    const cleanName = name.trim().replace(/\s+/g, ' ');
+                    
+                    if (cleanName.length > 3 && !parts.find(p => p.sku === sku)) {
+                        parts.push({
+                            id: '',
+                            sku: sku,
+                            name: cleanName,
+                            quantity: parseInt(qty) || 1
+                        });
+                    }
+                }
+            }
+            
+            return parts;
+        }
+
+        function renderSchematicList() {
+            const list = document.getElementById('schematic-list');
+            list.innerHTML = '';
+            
+            schematics.forEach(sch => {
+                const mapped = Object.keys(sch.coordinates).length;
+                const total = sch.parts.length;
+                
+                const div = document.createElement('div');
+                div.className = 'schematic-item';
+                div.innerHTML = `
+                    <div class="schematic-item-header">
+                        <div>
+                            <div class="schematic-name">${sch.title}</div>
+                            <div class="schematic-pages">
+                                📊 Diagram: Page ${sch.diagramPages.join(', ')} | 
+                                📋 Legend: Page ${sch.legendPages.join(', ')} | 
+                                🔧 ${total} parts
+                            </div>
+                        </div>
+                        <button class="btn" onclick="startMapping('${sch.id}')">
+                            ${mapped > 0 ? `Resume (${mapped}/${total})` : 'Start Mapping'}
+                        </button>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${total > 0 ? (mapped/total*100) : 0}%"></div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function startMapping(schematicId) {
+            currentSchematic = schematics.find(s => s.id === schematicId);
+            currentPageIdx = 0;
+            
+            document.getElementById('schematic-builder').classList.remove('active');
+            document.getElementById('workspace').classList.add('active');
+            document.getElementById('current-schematic-header').textContent = currentSchematic.title;
+            
+            displayCurrentPage();
+            renderPartsList();
+            updateProgress();
+            
+            if (currentSchematic.parts.length > 0) {
+                selectPart(currentSchematic.parts[0].id);
+            }
+        }
+
+        function displayCurrentPage() {
+            const pageNum = currentSchematic.diagramPages[currentPageIdx];
+            const page = pageData.find(p => p.pageNum === pageNum);
+            
+            if (page) {
+                img.src = page.image;
+                renderMarkers();
+            }
+            
+            document.getElementById('page-info').textContent = 
+                `Page ${currentPageIdx + 1} of ${currentSchematic.diagramPages.length} (PDF page ${pageNum})`;
+        }
+
+        function changePage(delta) {
+            const newIdx = currentPageIdx + delta;
+            if (newIdx >= 0 && newIdx < currentSchematic.diagramPages.length) {
+                currentPageIdx = newIdx;
+                displayCurrentPage();
+            }
+        }
+
+        function renderPartsList() {
+            const list = document.getElementById('parts-list');
+            list.innerHTML = '';
+            
+            currentSchematic.parts.forEach(part => {
+                const coord = currentSchematic.coordinates[part.id];
+                
+                const div = document.createElement('div');
+                div.className = 'part-item';
+                div.id = `part-${part.id}`;
+                if (coord) div.classList.add('done');
+                
+                const coordText = coord 
+                    ? `✓ Left: ${parseFloat(coord.left).toFixed(1)}%, Top: ${parseFloat(coord.top).toFixed(1)}%`
+                    : 'Click diagram to place';
+                
+                const customBadge = part.isCustom ? '<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 5px;">CUSTOM</span>' : '';
+                
+                div.innerHTML = `
+                    <div class="part-number">#${part.id} - ${part.sku}${customBadge}</div>
+                    <div class="part-name">${part.name}</div>
+                    <div class="part-qty">Qty: ${part.quantity}</div>
+                    <div class="coordinates" id="coords-${part.id}">
+                        ${coordText}
+                    </div>
+                `;
+                
+                div.onclick = () => selectPart(part.id);
+                list.appendChild(div);
+            });
+        }
+
+        function selectPart(partId) {
+            document.querySelectorAll('.part-item').forEach(el => el.classList.remove('active'));
+            const el = document.getElementById(`part-${partId}`);
+            if (el) {
+                el.classList.add('active');
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            activePartId = partId;
+            
+            // Deselect any selected hotspot when selecting a part to place
+            if (selectedHotspotId) {
+                selectedHotspotId = null;
+                document.getElementById('selected-hotspot-controls').style.display = 'none';
+                if (currentSchematic) {
+                    renderMarkers();
+                }
+            }
+        }
+
+        wrapper.onclick = function(e) {
+            // Don't place if clicking on a marker or handle
+            if (e.target.classList.contains('marker') || 
+                e.target.classList.contains('resize-handle') ||
+                e.target.classList.contains('rotate-handle') ||
+                e.target.closest('.marker')) {
+                return;
+            }
+
+            if (!activePartId) {
+                alert('Please select a part first!');
+                return;
+            }
+
+            const rect = img.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const leftPercent = (x / rect.width * 100).toFixed(2);
+            const topPercent = (y / rect.height * 100).toFixed(2);
+            
+            currentSchematic.coordinates[activePartId] = {
+                left: leftPercent,
+                top: topPercent,
+                page: currentSchematic.diagramPages[currentPageIdx],
+                shape: hotspotShape,
+                width: hotspotWidth,
+                height: hotspotHeight,
+                rotation: hotspotRotation || 0
+            };
+
+            document.getElementById(`coords-${activePartId}`).innerHTML = 
+                `✓ Left: ${parseFloat(leftPercent).toFixed(1)}%, Top: ${parseFloat(topPercent).toFixed(1)}%`;
+            
+            document.getElementById(`part-${activePartId}`).classList.add('done');
+            document.getElementById(`part-${activePartId}`).classList.remove('active');
+            
+            renderMarkers();
+            updateProgress();
+            
+            const idx = currentSchematic.parts.findIndex(p => p.id === activePartId);
+            if (idx < currentSchematic.parts.length - 1) {
+                selectPart(currentSchematic.parts[idx + 1].id);
+            } else {
+                activePartId = null;
+            }
+        };
+
+        function renderMarkers() {
+            document.querySelectorAll('.marker').forEach(m => m.remove());
+            
+            const currentPage = currentSchematic.diagramPages[currentPageIdx];
+            Object.entries(currentSchematic.coordinates).forEach(([partId, coord]) => {
+                if (coord.page === currentPage) {
+                    const marker = document.createElement('div');
+                    marker.className = `marker ${coord.shape || hotspotShape}`;
+                    marker.dataset.partId = partId;
+                    marker.style.left = coord.left + '%';
+                    marker.style.top = coord.top + '%';
+                    marker.style.width = (coord.width || hotspotWidth) + 'px';
+                    marker.style.height = (coord.height || hotspotHeight) + 'px';
+                    
+                    const rotation = coord.rotation || 0;
+                    marker.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+                    
+                    if (selectedHotspotId === partId) {
+                        marker.classList.add('selected');
+                    }
+                    
+                    const label = document.createElement('span');
+                    label.textContent = partId;
+                    label.style.display = 'inline-block';
+                    label.style.transform = `rotate(-${rotation}deg)`;
+                    marker.appendChild(label);
+                    
+                    // Add event listeners
+                    marker.onclick = (e) => {
+                        e.stopPropagation();
+                        selectHotspot(partId);
+                    };
+                    
+                    marker.onmousedown = (e) => {
+                        if (e.button !== 0) return; // Only left click
+                        e.stopPropagation();
+                        selectHotspot(partId);
+                        startDrag(e, partId);
+                    };
+                    
+                    wrapper.appendChild(marker);
+                    
+                    // Add resize handles and rotate handle if selected
+                    if (selectedHotspotId === partId) {
+                        addResizeHandles(marker, partId);
+                        addRotateHandle(marker, partId);
+                    }
+                }
+            });
+        }
+
+        function addResizeHandles(marker, partId) {
+            const positions = ['nw', 'ne', 'sw', 'se'];
+            positions.forEach(pos => {
+                const handle = document.createElement('div');
+                handle.className = `resize-handle ${pos}`;
+                handle.onmousedown = (e) => {
+                    e.stopPropagation();
+                    startResize(e, partId, pos);
+                };
+                marker.appendChild(handle);
+            });
+        }
+
+        function addRotateHandle(marker, partId) {
+            const line = document.createElement('div');
+            line.className = 'rotate-line';
+            marker.appendChild(line);
+            
+            const handle = document.createElement('div');
+            handle.className = 'rotate-handle';
+            handle.innerHTML = '↻';
+            handle.onmousedown = (e) => {
+                e.stopPropagation();
+                startRotate(e, partId);
+            };
+            marker.appendChild(handle);
+        }
+
+        function selectHotspot(partId) {
+            selectedHotspotId = partId;
+            const coord = currentSchematic.coordinates[partId];
+            const part = currentSchematic.parts.find(p => p.id === partId);
+            
+            // Update selected hotspot controls
+            document.getElementById('selected-hotspot-controls').style.display = 'block';
+            document.getElementById('selected-hotspot-id').textContent = `#${partId}`;
+            
+            // Show edit button only for custom parts
+            const editBtn = document.getElementById('edit-part-btn');
+            if (part && part.isCustom) {
+                editBtn.style.display = 'block';
+            } else {
+                editBtn.style.display = 'none';
+            }
+            
+            const width = coord.width || hotspotWidth;
+            const height = coord.height || hotspotHeight;
+            const rotation = coord.rotation || 0;
+            
+            // Update sliders
+            document.getElementById('sel-width-slider').value = Math.min(100, width);
+            document.getElementById('sel-height-slider').value = Math.min(100, height);
+            document.getElementById('sel-rotation-slider').value = rotation;
+            
+            // Update number inputs
+            document.getElementById('sel-width-input').value = width;
+            document.getElementById('sel-height-input').value = height;
+            
+            // Update position inputs
+            document.getElementById('sel-left-input').value = parseFloat(coord.left);
+            document.getElementById('sel-top-input').value = parseFloat(coord.top);
+            
+            // Update labels
+            document.getElementById('sel-width-value').textContent = width + 'px';
+            document.getElementById('sel-height-value').textContent = height + 'px';
+            document.getElementById('sel-rotation-value').textContent = rotation + '°';
+            document.getElementById('sel-left-value').textContent = parseFloat(coord.left).toFixed(2) + '%';
+            document.getElementById('sel-top-value').textContent = parseFloat(coord.top).toFixed(2) + '%';
+            
+            // Update shape buttons
+            document.querySelectorAll('[id^="sel-shape-"]').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`sel-shape-${coord.shape || hotspotShape}`).classList.add('active');
+            
+            renderMarkers();
+        }
+
+        function updateSelectedHotspotShape(shape) {
+            if (!selectedHotspotId) return;
+            
+            currentSchematic.coordinates[selectedHotspotId].shape = shape;
+            
+            document.querySelectorAll('[id^="sel-shape-"]').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`sel-shape-${shape}`).classList.add('active');
+            
+            renderMarkers();
+        }
+
+        function updateSelectedHotspot() {
+            if (!selectedHotspotId) return;
+            
+            const coord = currentSchematic.coordinates[selectedHotspotId];
+            coord.width = parseInt(document.getElementById('sel-width-slider').value);
+            coord.height = parseInt(document.getElementById('sel-height-slider').value);
+            coord.rotation = parseInt(document.getElementById('sel-rotation-slider').value);
+            
+            // Update all displays
+            document.getElementById('sel-width-value').textContent = coord.width + 'px';
+            document.getElementById('sel-height-value').textContent = coord.height + 'px';
+            document.getElementById('sel-rotation-value').textContent = coord.rotation + '°';
+            
+            // Sync number inputs
+            document.getElementById('sel-width-input').value = coord.width;
+            document.getElementById('sel-height-input').value = coord.height;
+            
+            renderMarkers();
+        }
+
+        function updateSelectedHotspotPrecise() {
+            if (!selectedHotspotId) return;
+            
+            const coord = currentSchematic.coordinates[selectedHotspotId];
+            const width = parseInt(document.getElementById('sel-width-input').value);
+            const height = parseInt(document.getElementById('sel-height-input').value);
+            
+            if (width >= 10 && width <= 200) {
+                coord.width = width;
+                document.getElementById('sel-width-slider').value = Math.min(100, width);
+                document.getElementById('sel-width-value').textContent = width + 'px';
+            }
+            
+            if (height >= 10 && height <= 200) {
+                coord.height = height;
+                document.getElementById('sel-height-slider').value = Math.min(100, height);
+                document.getElementById('sel-height-value').textContent = height + 'px';
+            }
+            
+            renderMarkers();
+        }
+
+        function updateSelectedHotspotPosition() {
+            if (!selectedHotspotId) return;
+            
+            const coord = currentSchematic.coordinates[selectedHotspotId];
+            coord.left = parseFloat(document.getElementById('sel-left-input').value).toFixed(2);
+            coord.top = parseFloat(document.getElementById('sel-top-input').value).toFixed(2);
+            
+            document.getElementById('sel-left-value').textContent = coord.left + '%';
+            document.getElementById('sel-top-value').textContent = coord.top + '%';
+            
+            renderMarkers();
+        }
+
+        function deleteSelectedHotspot() {
+            if (!selectedHotspotId) return;
+            
+            if (confirm(`Delete hotspot #${selectedHotspotId}?`)) {
+                delete currentSchematic.coordinates[selectedHotspotId];
+                
+                // Update part item
+                const partItem = document.getElementById(`part-${selectedHotspotId}`);
+                if (partItem) {
+                    partItem.classList.remove('done');
+                    document.getElementById(`coords-${selectedHotspotId}`).textContent = 'Click diagram to place';
+                }
+                
+                document.getElementById('selected-hotspot-controls').style.display = 'none';
+                selectedHotspotId = null;
+                
+                renderMarkers();
+                updateProgress();
+            }
+        }
+
+        function editSelectedPart() {
+            if (!selectedHotspotId) return;
+            
+            const part = currentSchematic.parts.find(p => p.id === selectedHotspotId);
+            if (!part || !part.isCustom) return;
+            
+            // Populate form with existing data
+            document.getElementById('custom-id').value = part.id;
+            document.getElementById('custom-id').disabled = true; // Don't allow changing ID
+            document.getElementById('custom-sku').value = part.sku;
+            document.getElementById('custom-name').value = part.name;
+            document.getElementById('custom-quantity').value = part.quantity;
+            
+            // Update modal title and button
+            document.getElementById('custom-modal-title').textContent = '✏️ Edit Custom Hotspot';
+            document.getElementById('custom-save-btn').textContent = '✓ Update Part Info';
+            
+            // Show modal
+            document.getElementById('custom-hotspot-modal').classList.add('active');
+        }
+
+        function startDrag(e, partId) {
+            isDragging = true;
+            const rect = img.getBoundingClientRect();
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            
+            document.body.style.cursor = 'move';
+            
+            const onMouseMove = (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const deltaXPercent = (deltaX / rect.width) * 100;
+                const deltaYPercent = (deltaY / rect.height) * 100;
+                
+                const coord = currentSchematic.coordinates[partId];
+                coord.left = (parseFloat(coord.left) + deltaXPercent).toFixed(2);
+                coord.top = (parseFloat(coord.top) + deltaYPercent).toFixed(2);
+                
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                
+                if (selectedHotspotId === partId) {
+                    document.getElementById('sel-left-input').value = parseFloat(coord.left);
+                    document.getElementById('sel-top-input').value = parseFloat(coord.top);
+                    document.getElementById('sel-left-value').textContent = coord.left + '%';
+                    document.getElementById('sel-top-value').textContent = coord.top + '%';
+                }
+                
+                renderMarkers();
+            };
+            
+            const onMouseUp = () => {
+                isDragging = false;
+                document.body.style.cursor = '';
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        function startResize(e, partId, handle) {
+            e.preventDefault();
+            isResizing = true;
+            resizeHandle = handle;
+            
+            const coord = currentSchematic.coordinates[partId];
+            const marker = document.querySelector(`[data-part-id="${partId}"]`);
+            const rect = marker.getBoundingClientRect();
+            const imgRect = img.getBoundingClientRect();
+            
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            
+            const onMouseMove = (e) => {
+                if (!isResizing) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const scaleX = imgRect.width / 100;
+                const scaleY = imgRect.height / 100;
+                
+                if (handle.includes('e')) {
+                    coord.width = Math.max(20, (coord.width || hotspotWidth) + deltaX);
+                }
+                if (handle.includes('w')) {
+                    const oldWidth = coord.width || hotspotWidth;
+                    const newWidth = Math.max(20, oldWidth - deltaX);
+                    coord.width = newWidth;
+                    coord.left = (parseFloat(coord.left) + (deltaX / scaleX)).toFixed(2);
+                }
+                if (handle.includes('s')) {
+                    coord.height = Math.max(20, (coord.height || hotspotHeight) + deltaY);
+                }
+                if (handle.includes('n')) {
+                    const oldHeight = coord.height || hotspotHeight;
+                    const newHeight = Math.max(20, oldHeight - deltaY);
+                    coord.height = newHeight;
+                    coord.top = (parseFloat(coord.top) + (deltaY / scaleY)).toFixed(2);
+                }
+                
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                
+                if (selectedHotspotId === partId) {
+                    document.getElementById('sel-width-slider').value = Math.min(100, coord.width);
+                    document.getElementById('sel-height-slider').value = Math.min(100, coord.height);
+                    document.getElementById('sel-width-input').value = coord.width;
+                    document.getElementById('sel-height-input').value = coord.height;
+                    document.getElementById('sel-width-value').textContent = coord.width + 'px';
+                    document.getElementById('sel-height-value').textContent = coord.height + 'px';
+                    document.getElementById('sel-left-input').value = parseFloat(coord.left);
+                    document.getElementById('sel-top-input').value = parseFloat(coord.top);
+                    document.getElementById('sel-left-value').textContent = coord.left + '%';
+                    document.getElementById('sel-top-value').textContent = coord.top + '%';
+                }
+                
+                renderMarkers();
+            };
+            
+            const onMouseUp = () => {
+                isResizing = false;
+                resizeHandle = null;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        function startRotate(e, partId) {
+            e.preventDefault();
+            isRotating = true;
+            
+            const coord = currentSchematic.coordinates[partId];
+            const marker = document.querySelector(`[data-part-id="${partId}"]`);
+            const rect = marker.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            rotateStartAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+            const currentRotation = coord.rotation || 0;
+            
+            const onMouseMove = (e) => {
+                if (!isRotating) return;
+                
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+                let delta = angle - rotateStartAngle;
+                
+                coord.rotation = Math.round((currentRotation + delta + 360) % 360);
+                
+                if (selectedHotspotId === partId) {
+                    document.getElementById('sel-rotation-slider').value = coord.rotation;
+                    document.getElementById('sel-rotation-value').textContent = coord.rotation + '°';
+                }
+                
+                renderMarkers();
+            };
+            
+            const onMouseUp = () => {
+                isRotating = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        function updateProgress() {
+            const done = Object.keys(currentSchematic.coordinates).length;
+            const total = currentSchematic.parts.length;
+            document.getElementById('progress-text').textContent = `${done}/${total}`;
+            document.getElementById('progress-fill').style.width = `${total > 0 ? (done/total*100) : 0}%`;
+        }
+
+        function completeSchematic() {
+            backToList();
+        }
+
+        function backToList() {
+            document.getElementById('workspace').classList.remove('active');
+            document.getElementById('schematic-builder').classList.add('active');
+            currentSchematic = null;
+            activePartId = null;
+            renderSchematicList();
+        }
+
+        function generateAllOutput() {
+            let output = '{\n';
+            
+            schematics.forEach((sch, idx) => {
+                output += `  "${sch.id}": {\n`;
+                output += `    "title": "${sch.title}",\n`;
+                output += `    "diagramPages": [${sch.diagramPages.join(', ')}],\n`;
+                output += `    "parts": [\n`;
+                
+                const mappedParts = sch.parts.filter(p => sch.coordinates[p.id]);
+                mappedParts.forEach((part, partIdx) => {
+                    const coord = sch.coordinates[part.id];
+                    output += `      {\n`;
+                    output += `        "id": "${part.id}",\n`;
+                    output += `        "sku": "${part.sku}",\n`;
+                    output += `        "name": "${part.name}",\n`;
+                    output += `        "quantity": ${part.quantity},\n`;
+                    output += `        "position": { "top": "${coord.top}%", "left": "${coord.left}%" },\n`;
+                    output += `        "hotspot": { "shape": "${coord.shape}", "width": ${coord.width}, "height": ${coord.height}, "rotation": ${coord.rotation || 0} },\n`;
+                    output += `        "page": ${coord.page}\n`;
+                    output += `      }${partIdx < mappedParts.length - 1 ? ',' : ''}\n`;
+                });
+                
+                output += `    ]\n`;
+                output += `  }${idx < schematics.length - 1 ? ',' : ''}\n`;
+            });
+            
+            output += '}';
+
+            document.getElementById('output-code').textContent = output;
+            document.getElementById('output-modal').classList.add('active');
+        }
+
+        function exportJSON() {
+            const data = {};
+            schematics.forEach(sch => {
+                data[sch.id] = {
+                    title: sch.title,
+                    diagramPages: sch.diagramPages,
+                    parts: sch.parts.filter(p => sch.coordinates[p.id]).map(p => {
+                        const coord = sch.coordinates[p.id];
+                        return {
+                            id: p.id,
+                            sku: p.sku,
+                            name: p.name,
+                            quantity: p.quantity,
+                            position: { top: coord.top + '%', left: coord.left + '%' },
+                            hotspot: { shape: coord.shape, width: coord.width, height: coord.height, rotation: coord.rotation || 0 },
+                            page: coord.page
+                        };
+                    })
+                };
+            });
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'schematic-coordinates.json';
+            a.click();
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('output-code').textContent;
+            navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+        }
+
+        function closeModal() {
+            document.getElementById('output-modal').classList.remove('active');
+        }
+
+        function addCustomHotspot() {
+            // Clear form
+            document.getElementById('custom-id').value = '';
+            document.getElementById('custom-id').disabled = false;
+            document.getElementById('custom-sku').value = '';
+            document.getElementById('custom-name').value = '';
+            document.getElementById('custom-quantity').value = '1';
+            
+            // Reset modal title and button
+            document.getElementById('custom-modal-title').textContent = '➕ Add Custom Hotspot';
+            document.getElementById('custom-save-btn').textContent = '✓ Add & Place Hotspot';
+            
+            // Show modal
+            document.getElementById('custom-hotspot-modal').classList.add('active');
+        }
+
+        function closeCustomHotspotModal() {
+            document.getElementById('custom-hotspot-modal').classList.remove('active');
+            document.getElementById('custom-id').disabled = false; // Re-enable for next time
+        }
+
+        function saveCustomHotspot() {
+            const id = document.getElementById('custom-id').value.trim();
+            const sku = document.getElementById('custom-sku').value.trim() || 'CUSTOM';
+            const name = document.getElementById('custom-name').value.trim() || 'Custom Part';
+            const quantity = parseInt(document.getElementById('custom-quantity').value) || 1;
+            
+            if (!id) {
+                alert('Please enter a callout number/ID');
+                return;
+            }
+            
+            // Check if we're editing or adding
+            const existingPart = currentSchematic.parts.find(p => p.id === id);
+            
+            if (existingPart) {
+                // Edit mode
+                existingPart.sku = sku;
+                existingPart.name = name;
+                existingPart.quantity = quantity;
+                
+                // Close modal and refresh
+                closeCustomHotspotModal();
+                renderPartsList();
+                
+                alert(`Hotspot "${id}" updated!`);
+            } else {
+                // Add mode
+                const newPart = {
+                    id: id,
+                    sku: sku,
+                    name: name,
+                    quantity: quantity,
+                    isCustom: true
+                };
+                
+                currentSchematic.parts.push(newPart);
+                
+                // Close modal and render updated list
+                closeCustomHotspotModal();
+                renderPartsList();
+                updateProgress();
+                
+                // Auto-select the new part for placement
+                selectPart(id);
+                
+                // Show success message
+                setTimeout(() => {
+                    alert(`Custom hotspot "${id}" added! Click on the diagram to place it.`);
+                }, 100);
+            }
+        }
+
+        function zoom(delta) {
+            zoomLevel = Math.max(0.5, Math.min(3, zoomLevel + delta));
+            img.style.transform = `scale(${zoomLevel})`;
+            img.style.transformOrigin = 'top left';
+        }
+
+        function resetZoom() {
+            zoomLevel = 1;
+            img.style.transform = 'scale(1)';
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && selectedHotspotId) {
+                selectedHotspotId = null;
+                document.getElementById('selected-hotspot-controls').style.display = 'none';
+                renderMarkers();
+            }
+            
+            if (e.key === 'Delete' && selectedHotspotId) {
+                deleteSelectedHotspot();
+            }
+        });
+
+        // Click outside to deselect
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.marker') && 
+                !e.target.closest('#selected-hotspot-controls') &&
+                selectedHotspotId &&
+                e.target.closest('#workspace')) {
+                selectedHotspotId = null;
+                document.getElementById('selected-hotspot-controls').style.display = 'none';
+                if (currentSchematic) {
+                    renderMarkers();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

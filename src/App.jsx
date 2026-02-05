@@ -28,7 +28,7 @@ function App() {
     <VeeqoProvider>
       <WooCommerceProvider>
         <CartProvider>
-          <Router>
+          <Router basename="/drywall-toolbox">
             {/* Background Texture */}
             <div className="machined-bg"></div>
             
