@@ -1,0 +1,143 @@
+/* Contact Page Responsive Styles */
+
+.contact-section {
+    padding: 140px 40px 80px;
+    min-height: 100vh;
+}
+
+.contact-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-title {
+    font-size: 3rem;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.contact-subtitle {
+    margin-bottom: 40px;
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+.contact-detail {
+    margin-bottom: 32px;
+}
+
+.contact-detail:last-child {
+    margin-bottom: 0;
+}
+
+.detail-label {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--tension-accent);
+    margin-bottom: 8px;
+    font-weight: 800;
+}
+
+.detail-value {
+    font-family: var(--font-mono);
+    line-height: 1.6;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-submit {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .contact-section {
+        padding: 120px 32px 60px;
+    }
+    
+    .contact-grid {
+        gap: 48px;
+    }
+    
+    .contact-title {
+        font-size: 2.5rem;
+    }
+}
+
+/* Mobile (up to 767px) */
+@media (max-width: 767px) {
+    .contact-section {
+        padding: 100px 20px 40px;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .contact-info {
+        text-align: center;
+    }
+    
+    .contact-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+    
+    .contact-subtitle {
+        margin-bottom: 32px;
+        font-size: 0.95rem;
+    }
+    
+    .contact-detail {
+        margin-bottom: 24px;
+    }
+    
+    .detail-label {
+        font-size: 0.65rem;
+    }
+    
+    .detail-value {
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra small mobile (up to 375px) */
+@media (max-width: 375px) {
+    .contact-section {
+        padding: 90px 16px 32px;
+    }
+    
+    .contact-grid {
+        gap: 32px;
+    }
+    
+    .contact-title {
+        font-size: 1.75rem;
+        margin-bottom: 16px;
+    }
+    
+    .contact-subtitle {
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+    }
+    
+    .contact-detail {
+        margin-bottom: 20px;
+    }
+}

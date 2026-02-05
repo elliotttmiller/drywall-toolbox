@@ -1,29 +1,16 @@
 ﻿import { Link } from 'react-router-dom';
 import { Wrench } from 'lucide-react';
+import '../styles/home-responsive.css';
 
 export default function Home() {
   return (
-    <section style={{ 
-      padding: '140px 40px 80px', 
-      minHeight: '100vh' 
-    }} className="section-enter">
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 0.8fr',
-        gap: '40px',
-        maxWidth: '1400px',
-        margin: '0 auto'
-      }}>
-        <div>
-          <h1 className="machined-title" style={{ marginBottom: '40px' }}>
+    <section className="home-hero section-enter">
+      <div className="home-grid">
+        <div className="home-content">
+          <h1 className="machined-title home-title">
             ENGINEERED<br />FOR PRECISION<br />WALL FINISHES.
           </h1>
-          <p style={{ 
-            maxWidth: '500px', 
-            marginBottom: '40px', 
-            fontSize: '1.1rem', 
-            opacity: 0.7 
-          }}>
+          <p className="home-description">
             The industry standard for professional drywall contractors. High-tension alloy tools 
             designed for lifelong durability and flawless execution.
           </p>
@@ -32,16 +19,9 @@ export default function Home() {
           </Link>
         </div>
         
-        <div style={{
-          background: 'var(--alloy-mid)',
-          height: '500px',
-          clipPath: 'polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <div className="home-graphic">
           <Wrench 
-            size={200} 
+            className="home-icon"
             color="var(--alloy-deep)" 
             strokeWidth={0.5}
             strokeDasharray="2 2"
