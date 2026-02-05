@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import '../styles/zoomable-diagram.css';
 
 /**
@@ -14,30 +14,20 @@ export default function ZoomableDiagram({ children, onInteractionStart, onIntera
   const contentRef = useRef(null);
   
   // Track if we're on a touch device
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isTouchDevice] = useState(() => {
+    // Initialize on mount with touch detection
+    return typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  });
   
   // Pinch zoom state
   const [initialPinchDistance, setInitialPinchDistance] = useState(null);
   const [initialScale, setInitialScale] = useState(1);
-  
-  useEffect(() => {
-    // Detect touch device
-    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
-  }, []);
   
   // Calculate distance between two touch points
   const getTouchDistance = (touch1, touch2) => {
     const dx = touch1.clientX - touch2.clientX;
     const dy = touch1.clientY - touch2.clientY;
     return Math.sqrt(dx * dx + dy * dy);
-  };
-  
-  // Get center point between two touches
-  const getTouchCenter = (touch1, touch2) => {
-    return {
-      x: (touch1.clientX + touch2.clientX) / 2,
-      y: (touch1.clientY + touch2.clientY) / 2
-    };
   };
   
   // Handle touch start for pinch zoom
@@ -52,7 +42,6 @@ export default function ZoomableDiagram({ children, onInteractionStart, onIntera
     } else if (e.touches.length === 1) {
       // Single finger pan (only if zoomed in)
       if (scale > 1) {
-        const rect = containerRef.current.getBoundingClientRect();
         setIsDragging(true);
         setDragStart({
           x: e.touches[0].clientX - position.x,
