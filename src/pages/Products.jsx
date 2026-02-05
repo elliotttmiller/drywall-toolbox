@@ -13,6 +13,7 @@ import {
   Heart,
   ChevronDown
 } from 'lucide-react';
+import '../styles/products-responsive.css';
 
 // products will be loaded from CSV at runtime
 // brands list will be derived from loaded products

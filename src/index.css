@@ -29,4 +29,21 @@
   body {
     @apply bg-white text-gray-900 antialiased;
   }
+  
+  /* Container responsive padding */
+  .container {
+    @apply px-4;
+  }
+  
+  @media (min-width: 640px) {
+    .container {
+      @apply px-6;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container {
+      @apply px-8;
+    }
+  }
 }

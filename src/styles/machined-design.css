@@ -437,6 +437,16 @@ body {
 }
 
 /* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+    .tool-card {
+        padding: 20px;
+    }
+    
+    .tool-image {
+        height: 200px;
+    }
+}
+
 @media (max-width: 768px) {
     .machined-title {
         font-size: clamp(2rem, 10vw, 3rem);
@@ -444,6 +454,54 @@ body {
     
     .cart-panel {
         width: 100%;
+        padding: 32px 24px;
+    }
+    
+    .tool-card {
+        padding: 16px;
+    }
+    
+    .tool-image {
+        height: 180px;
+        margin-bottom: 16px;
+    }
+    
+    .alloy-button {
+        padding: 14px 28px;
+        font-size: 0.75rem; /* 12px - ensures readability on mobile */
+    }
+    
+    .alloy-button-sm {
+        padding: 7px 14px;
+        font-size: 0.75rem; /* 12px - improved from 10px for better readability */
+    }
+}
+
+@media (max-width: 480px) {
+    .machined-title {
+        font-size: clamp(1.75rem, 9vw, 2.5rem);
+    }
+    
+    .cart-panel {
+        padding: 24px 20px;
+    }
+    
+    .tool-card {
+        padding: 12px;
+    }
+    
+    .tool-image {
+        height: 160px;
+        margin-bottom: 12px;
+    }
+    
+    .cart-item {
+        padding: 12px 0;
+    }
+    
+    .alloy-button {
+        padding: 12px 24px;
+        font-size: 0.75rem; /* 12px - maintains readability on small screens */
     }
 }
 

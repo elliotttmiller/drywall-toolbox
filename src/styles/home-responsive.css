@@ -1,0 +1,143 @@
+/* Home Page Responsive Styles */
+
+.home-hero {
+    padding: 140px 40px 80px;
+    min-height: 100vh;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.home-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.home-title {
+    margin-bottom: 40px;
+}
+
+.home-description {
+    max-width: 500px;
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+.home-graphic {
+    background: var(--alloy-mid);
+    height: 500px;
+    clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-icon {
+    width: 200px;
+    height: 200px;
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .home-hero {
+        padding: 120px 32px 60px;
+    }
+    
+    .home-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    
+    .home-title {
+        margin-bottom: 32px;
+        font-size: clamp(2.5rem, 6vw, 4rem);
+    }
+    
+    .home-description {
+        font-size: 1rem;
+        margin-bottom: 32px;
+    }
+    
+    .home-graphic {
+        height: 400px;
+    }
+    
+    .home-icon {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* Mobile (up to 767px) */
+@media (max-width: 767px) {
+    .home-hero {
+        padding: 100px 20px 40px;
+        min-height: auto;
+    }
+    
+    .home-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .home-content {
+        text-align: center;
+        align-items: center;
+    }
+    
+    .home-title {
+        margin-bottom: 24px;
+        font-size: clamp(2rem, 8vw, 3rem);
+    }
+    
+    .home-description {
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+        max-width: 100%;
+    }
+    
+    .home-graphic {
+        height: 300px;
+        clip-path: polygon(5% 0, 100% 0, 100% 95%, 95% 100%, 0 100%, 0 5%);
+    }
+    
+    .home-icon {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* Extra small mobile (up to 375px) */
+@media (max-width: 375px) {
+    .home-hero {
+        padding: 90px 16px 32px;
+    }
+    
+    .home-title {
+        font-size: 1.75rem;
+        line-height: 1.2; /* Balanced for large titles on small screens */
+        margin-bottom: 20px;
+    }
+    
+    .home-description {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+    
+    .home-graphic {
+        height: 250px;
+    }
+    
+    .home-icon {
+        width: 100px;
+        height: 100px;
+    }
+}

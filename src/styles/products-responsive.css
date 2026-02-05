@@ -1,0 +1,44 @@
+/* Products Page Responsive Styles */
+
+/* Ensure proper padding on mobile */
+.min-h-screen {
+    padding-top: 80px;
+}
+
+/* Products page container adjustments for mobile */
+@media (max-width: 767px) {
+    .min-h-screen {
+        padding-top: 70px;
+    }
+    
+    /* Products page header */
+    .container.mx-auto.px-4 {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    /* Product cards on mobile */
+    .grid.grid-cols-1.sm\:grid-cols-2 {
+        gap: 16px;
+    }
+    
+    /* Ensure product images scale properly */
+    .aspect-square {
+        min-height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .aspect-square {
+        min-height: 180px;
+    }
+    
+    /* Smaller text on mobile */
+    .text-4xl {
+        font-size: 2rem;
+    }
+    
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+}
