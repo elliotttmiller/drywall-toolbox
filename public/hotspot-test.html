@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hotspot Position Test</title>
+    <style>
+        body {
+            margin: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+        }
+        .schematic-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            border: 2px solid #333;
+        }
+        .schematic-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .hotspot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: #2563eb;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .hotspot-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #1e40af;
+            white-space: nowrap;
+            border: 1px solid #2563eb;
+        }
+        .hotspot:hover {
+            background: #1d4ed8;
+            width: 28px;
+            height: 28px;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e0f2fe;
+            border-left: 4px solid #0284c7;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f3f4f6;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>15" Corner Roller Assembly - Hotspot Position Test</h1>
+        
+        <div class="info">
+            <strong>Image Dimensions:</strong> 3400px × 2200px<br>
+            <strong>Total Hotspots:</strong> 14<br>
+            <strong>Instructions:</strong> Each blue dot should appear directly on its corresponding numbered callout in the diagram.
+        </div>
+
+        <div class="schematic-wrapper">
+            <img src="15TT_SCH-1.png" alt="Corner Roller Assembly">
+            
+            <div class="hotspot" style="left: 33.24%; top: 15.00%;" title="Handle Assembly">
+                <div class="hotspot-label">#01</div>
+            </div>
+            <div class="hotspot" style="left: 20.59%; top: 22.95%;" title="Coupling">
+                <div class="hotspot-label">#02</div>
+            </div>
+            <div class="hotspot" style="left: 16.18%; top: 25.23%;" title="Cotter Pin, 1/16 x 1/2">
+                <div class="hotspot-label">#03</div>
+            </div>
+            <div class="hotspot" style="left: 23.82%; top: 48.86%;" title="Corner Roller Head">
+                <div class="hotspot-label">#04</div>
+            </div>
+            <div class="hotspot" style="left: 20.88%; top: 51.59%;" title="Swivel Coupling Pin">
+                <div class="hotspot-label">#05</div>
+            </div>
+            <div class="hotspot" style="left: 12.65%; top: 48.64%;" title="Thrust Washer">
+                <div class="hotspot-label">#06</div>
+            </div>
+            <div class="hotspot" style="left: 4.41%; top: 50.00%;" title="Brass Washer">
+                <div class="hotspot-label">#07</div>
+            </div>
+            <div class="hotspot" style="left: 3.53%; top: 45.23%;" title="Roller Axle, 1/4-20 x 1 1/4 Hex.">
+                <div class="hotspot-label">#08</div>
+            </div>
+            <div class="hotspot" style="left: 5.74%; top: 43.18%;" title="Roller Bushing">
+                <div class="hotspot-label">#09</div>
+            </div>
+            <div class="hotspot" style="left: 7.35%; top: 41.82%;" title="Roller">
+                <div class="hotspot-label">#10</div>
+            </div>
+            <div class="hotspot" style="left: 11.18%; top: 34.32%;" title="Screw, 8-32 x 3/8 Fil. Hd. Nylock">
+                <div class="hotspot-label">#11</div>
+            </div>
+            <div class="hotspot" style="left: 12.79%; top: 37.27%;" title="Swivel Assy.">
+                <div class="hotspot-label">#12</div>
+            </div>
+            <div class="hotspot" style="left: 15.29%; top: 19.09%;" title="Swivel Axle">
+                <div class="hotspot-label">#13</div>
+            </div>
+            <div class="hotspot" style="left: 33.24%; top: 8.86%;" title="Handle Grip, Black">
+                <div class="hotspot-label">#14</div>
+            </div>
+        </div>
+
+        <h2>Hotspot Coordinates</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Part Number</th>
+                    <th>Description</th>
+                    <th>Pixel (X, Y)</th>
+                    <th>Percent (L, T)</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>01</td>
+                    <td>164348</td>
+                    <td>Handle Assembly</td>
+                    <td>(1130, 330)</td>
+                    <td>(33.24%, 15.00%)</td>
+                </tr>
+                <tr>
+                    <td>02</td>
+                    <td>150003F</td>
+                    <td>Coupling</td>
+                    <td>(700, 505)</td>
+                    <td>(20.59%, 22.95%)</td>
+                </tr>
+                <tr>
+                    <td>03</td>
+                    <td>059143</td>
+                    <td>Cotter Pin, 1/16 x 1/2</td>
+                    <td>(550, 555)</td>
+                    <td>(16.18%, 25.23%)</td>
+                </tr>
+                <tr>
+                    <td>04</td>
+                    <td>156001F</td>
+                    <td>Corner Roller Head</td>
+                    <td>(810, 1075)</td>
+                    <td>(23.82%, 48.86%)</td>
+                </tr>
+                <tr>
+                    <td>05</td>
+                    <td>150004F</td>
+                    <td>Swivel Coupling Pin</td>
+                    <td>(710, 1135)</td>
+                    <td>(20.88%, 51.59%)</td>
+                </tr>
+                <tr>
+                    <td>06</td>
+                    <td>150008</td>
+                    <td>Thrust Washer</td>
+                    <td>(430, 1070)</td>
+                    <td>(12.65%, 48.64%)</td>
+                </tr>
+                <tr>
+                    <td>07</td>
+                    <td>809006</td>
+                    <td>Brass Washer</td>
+                    <td>(150, 1100)</td>
+                    <td>(4.41%, 50.00%)</td>
+                </tr>
+                <tr>
+                    <td>08</td>
+                    <td>159006</td>
+                    <td>Roller Axle, 1/4-20 x 1 1/4 Hex.</td>
+                    <td>(120, 995)</td>
+                    <td>(3.53%, 45.23%)</td>
+                </tr>
+                <tr>
+                    <td>09</td>
+                    <td>150011F</td>
+                    <td>Roller Bushing</td>
+                    <td>(195, 950)</td>
+                    <td>(5.74%, 43.18%)</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>150005</td>
+                    <td>Roller</td>
+                    <td>(250, 920)</td>
+                    <td>(7.35%, 41.82%)</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>159010</td>
+                    <td>Screw, 8-32 x 3/8 Fil. Hd. Nylock</td>
+                    <td>(380, 755)</td>
+                    <td>(11.18%, 34.32%)</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>154007</td>
+                    <td>Swivel Assy.</td>
+                    <td>(435, 820)</td>
+                    <td>(12.79%, 37.27%)</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>150009</td>
+                    <td>Swivel Axle</td>
+                    <td>(520, 420)</td>
+                    <td>(15.29%, 19.09%)</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>151042</td>
+                    <td>Handle Grip, Black</td>
+                    <td>(1130, 195)</td>
+                    <td>(33.24%, 8.86%)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
