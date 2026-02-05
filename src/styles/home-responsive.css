@@ -123,7 +123,7 @@
     
     .home-title {
         font-size: 1.75rem;
-        line-height: 1.1; /* Improved from 1 for better readability */
+        line-height: 1.1; /* Provides adequate spacing for multi-line titles */
         margin-bottom: 20px;
     }
     

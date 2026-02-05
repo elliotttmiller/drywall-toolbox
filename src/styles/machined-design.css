@@ -468,12 +468,12 @@ body {
     
     .alloy-button {
         padding: 14px 28px;
-        font-size: 0.75rem; /* Increased from 0.7rem for better readability */
+        font-size: 0.75rem; /* 12px - accessible minimum for buttons */
     }
     
     .alloy-button-sm {
         padding: 7px 14px;
-        font-size: 0.625rem; /* Increased from 0.55rem for accessibility */
+        font-size: 0.625rem; /* 10px - minimum readable size */
     }
 }
 
@@ -501,7 +501,7 @@ body {
     
     .alloy-button {
         padding: 12px 24px;
-        font-size: 0.75rem; /* Increased from 0.65rem for better readability */
+        font-size: 0.75rem; /* 12px - maintains readability on small screens */
     }
 }
 
