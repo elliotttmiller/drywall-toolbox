@@ -32,7 +32,7 @@ export default function Contact() {
           </p>
 
           <div className="mb-6 sm:mb-8">
-            <h5 className="uppercase text-[0.65rem] sm:text-[0.7rem] tracking-wider mb-2" style={{ color: 'var(--tension-accent)' }}>
+            <h5 className="uppercase text-[0.65rem] sm:text-[0.7rem] tracking-wider text-primary-600 mb-2">
               Email
             </h5>
             <p className="text-sm sm:text-base break-all" style={{ fontFamily: 'var(--font-mono)' }}>
@@ -41,7 +41,7 @@ export default function Contact() {
           </div>
 
           <div>
-            <h5 className="uppercase text-[0.65rem] sm:text-[0.7rem] tracking-wider mb-2" style={{ color: 'var(--tension-accent)' }}>
+            <h5 className="uppercase text-[0.65rem] sm:text-[0.7rem] tracking-wider text-primary-600 mb-2">
               Headquarters
             </h5>
             <p className="text-sm sm:text-base" style={{ fontFamily: 'var(--font-mono)' }}>
