@@ -141,9 +141,10 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
                   ADD TO CART
                 </button>
 
+                {/* Favorite button - hidden on mobile */}
                 <button
                   onClick={() => setIsWishlisted(!isWishlisted)}
-                  className={`p-2.5 sm:p-3 rounded border transition-colors ${
+                  className={`hidden md:block p-2.5 sm:p-3 rounded border transition-colors ${
                     isWishlisted
                       ? 'bg-red-50 border-red-300 text-red-600'
                       : 'border-gray-300 text-gray-600 hover:border-red-300 hover:text-red-600'

@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { CartProvider } from './context/CartContext';
 import { VeeqoProvider } from './context/VeeqoContext';
 import { WooCommerceProvider } from './context/WooCommerceContext';
@@ -18,6 +18,17 @@ import VeeqoSettings from './pages/VeeqoSettings';
 import VeeqoCallback from './pages/VeeqoCallback';
 import WooCommerceSettings from './pages/WooCommerceSettings';
 
+// Component to scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -29,6 +40,7 @@ function App() {
       <WooCommerceProvider>
         <CartProvider>
           <Router basename="/drywall-toolbox">
+            <ScrollToTop />
             {/* Background Texture */}
             <div className="machined-bg"></div>
             
