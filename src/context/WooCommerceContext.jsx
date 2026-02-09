@@ -31,14 +31,22 @@ export function WooCommerceProvider({ children }) {
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     // Load payment gateways if enabled on mount
-    // This is async initialization, which is appropriate for useEffect
-    if (wooCommerceService.isEnabled()) {
-      loadPaymentGateways();
+    // This is async data fetching, which is a standard pattern for useEffect
+    async function fetchPaymentGateways() {
+      if (wooCommerceService.isEnabled()) {
+        try {
+          const gateways = await wooCommerceService.getPaymentGateways();
+          setPaymentGateways(gateways.filter(g => g.enabled));
+        } catch (error) {
+          console.error('Failed to load payment gateways:', error);
+        }
+      }
     }
-  }, [loadPaymentGateways]);
+    
+    fetchPaymentGateways();
+  }, []);
 
   const updateConfig = (newConfig) => {
     wooCommerceService.saveConfig(newConfig);

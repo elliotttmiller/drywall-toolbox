@@ -98,8 +98,31 @@ src/
 ## 📦 Build Output
 
 Production build generates optimized assets:
-- JavaScript: ~283 KB (85.75 KB gzipped)
-- CSS: ~34 KB (6.16 KB gzipped)
+- JavaScript: ~467 KB (136 KB gzipped)
+- CSS: ~60 KB (11 KB gzipped)
+
+## 🚀 GitHub Pages Deployment
+
+This project is configured for automatic deployment to GitHub Pages.
+
+### Live Site
+The site is deployed at: `https://elliotttmiller.github.io/drywall-toolbox/`
+
+### Deployment Process
+- **Automatic**: Pushes to the `main` branch trigger automatic deployment via GitHub Actions
+- **Manual**: Can be triggered manually from the Actions tab on GitHub
+
+### Technical Details
+- Uses Vite's base path configuration for project pages
+- Includes SPA routing support for React Router (404.html redirects)
+- GitHub Actions workflow handles building and deploying
+- `.nojekyll` file ensures proper asset loading
+
+### Repository Settings
+To enable GitHub Pages:
+1. Go to repository Settings > Pages
+2. Set Source to "GitHub Actions"
+3. The workflow will automatically deploy on push to main
 
 ## 🔒 Security
 
