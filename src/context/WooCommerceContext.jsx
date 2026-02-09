@@ -31,14 +31,14 @@ export function WooCommerceProvider({ children }) {
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     // Load payment gateways if enabled on mount
     // This is async initialization, which is appropriate for useEffect
     if (wooCommerceService.isEnabled()) {
       loadPaymentGateways();
     }
-  }, [loadPaymentGateways]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const updateConfig = (newConfig) => {
     wooCommerceService.saveConfig(newConfig);
