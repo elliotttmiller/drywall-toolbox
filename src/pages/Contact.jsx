@@ -24,7 +24,7 @@ export default function Contact() {
     <section className="section-enter px-4 sm:px-6 md:px-10 lg:px-40 pt-24 sm:pt-28 md:pt-32 lg:pt-36 pb-16 sm:pb-20 min-h-screen">
       <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20">
         <div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6" style={{ letterSpacing: '-0.02em' }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">
             GET IN TOUCH
           </h2>
           <p className="mb-6 sm:mb-8 md:mb-10 opacity-70 text-sm sm:text-base">
