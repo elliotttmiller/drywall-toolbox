@@ -3,7 +3,9 @@
 
 export async function loadProducts() {
   // load the new unified products catalog (ALS schema) by default
-  const res = await fetch('/products_catalog.csv');
+  // Use BASE_URL to ensure correct path in both dev and production (GitHub Pages)
+  const csvPath = `${import.meta.env.BASE_URL}products_catalog.csv`;
+  const res = await fetch(csvPath);
   if (!res.ok) return [];
   const text = await res.text();
   const rows = parseCSV(text);
