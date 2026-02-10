@@ -10,3 +10,4 @@ build/
 .env
 .env.local
 coverage/
+scripts/__pycache__/
