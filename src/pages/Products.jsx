@@ -80,12 +80,6 @@ export default function Products() {
       ? selectedBrands.filter(b => b !== brand) 
       : [...selectedBrands, brand];
     setSelectedBrands(newBrands);
-    // Update URL to reflect brand selection
-    if (newBrands.length > 0) {
-      navigate(`/products?brand=${newBrands.map(b => encodeURIComponent(b)).join(',')}`);
-    } else {
-      navigate('/products');
-    }
   };
 
   const resetToBrandList = () => {
@@ -107,7 +101,7 @@ export default function Products() {
     return () => { mounted = false; };
   }, []);
 
-  // Watch for URL changes to update selected brands
+  // Watch for URL changes to update selected brands (only on mount and URL changes)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const brandParam = params.get('brand');
@@ -115,14 +109,32 @@ export default function Products() {
       ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).filter(Boolean)
       : [];
     
-    // Only update if the brands from URL are different from current state
-    const brandsChanged = brandsFromUrl.length !== selectedBrands.length ||
-      brandsFromUrl.some((b, i) => b !== selectedBrands[i]);
+    // Compare as sorted sets to avoid order issues
+    const urlBrandsSet = brandsFromUrl.sort().join(',');
+    const currentBrandsSet = selectedBrands.sort().join(',');
     
-    if (brandsChanged) {
+    if (urlBrandsSet !== currentBrandsSet) {
       setSelectedBrands(brandsFromUrl);
     }
-  }, [location.search, selectedBrands]);
+  }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync selectedBrands to URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const currentBrandParam = params.get('brand') || '';
+    const expectedBrandParam = selectedBrands.length > 0 
+      ? selectedBrands.map(b => encodeURIComponent(b)).join(',')
+      : '';
+    
+    // Only navigate if URL needs to change
+    if (currentBrandParam !== expectedBrandParam) {
+      if (selectedBrands.length > 0) {
+        navigate(`/products?brand=${expectedBrandParam}`, { replace: true });
+      } else {
+        navigate('/products', { replace: true });
+      }
+    }
+  }, [selectedBrands, navigate, location.search]);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
