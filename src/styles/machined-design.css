@@ -463,6 +463,8 @@ body {
         left: 50%;
         transform: translate(-50%, -50%);
         width: min(280px, calc(100vw - 32px));
+        max-height: calc(100vh - 64px);
+        overflow-y: auto;
         z-index: 1200;
     }
     
