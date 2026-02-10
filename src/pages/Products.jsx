@@ -11,7 +11,8 @@ import {
   SlidersHorizontal,
   Star,
   Heart,
-  ChevronDown
+  ChevronDown,
+  ArrowLeft
 } from 'lucide-react';
 
 // products will be loaded from CSV at runtime
@@ -78,6 +79,13 @@ export default function Products() {
     );
   };
 
+  const resetToBrandList = () => {
+    setSelectedBrands([]);
+    setSelectedCategories([]);
+    setPriceRange([0, 3000]);
+    navigate('/products');
+  };
+
   // load products once
   useEffect(() => {
     let mounted = true;
@@ -89,6 +97,19 @@ export default function Products() {
     }).catch(() => {});
     return () => { mounted = false; };
   }, []);
+
+  // Watch for URL changes to update selected brands
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const brandParam = params.get('brand');
+    if (brandParam) {
+      const brands = brandParam.split(',').map(b => b.trim()).filter(Boolean);
+      setSelectedBrands(brands);
+    } else {
+      // No brand param means reset to brand list view
+      setSelectedBrands([]);
+    }
+  }, [location.search]);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
@@ -125,6 +146,19 @@ export default function Products() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Products</h1>
           <p className="text-gray-600">Browse our extensive collection of professional drywall tools</p>
         </div>
+
+        {/* Back to Brands button - shows when brand is selected */}
+        {selectedBrands.length > 0 && (
+          <div className="mb-6">
+            <button
+              onClick={resetToBrandList}
+              className="inline-flex items-center gap-2 px-4 py-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors font-medium"
+            >
+              <ArrowLeft size={20} />
+              Back to Brands
+            </button>
+          </div>
+        )}
 
         {selectedBrands.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
