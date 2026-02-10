@@ -40,7 +40,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
         className="fixed sm:absolute top-4 right-4 z-modal-close p-2.5 sm:p-2 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-colors border border-gray-200"
         aria-label="Close"
       >
-        <X size={24} className="sm:w-6 sm:h-6 text-gray-700" />
+        <X className="w-6 h-6 text-gray-700" />
       </button>
 
       {/* Scrollable Content with Custom Scrollbar */}
