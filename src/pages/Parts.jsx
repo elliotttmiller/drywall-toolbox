@@ -165,7 +165,7 @@ export default function Parts() {
       description: 'Complete corner roller assembly - Model TTT15TTEWOH',
       brand: 'TapeTech',
       productPartNumber: 'TTT15TTEWOH',
-      image: '/15TT_SCH-1.png',
+      image: `${import.meta.env.BASE_URL}15TT_SCH-1.png`,
       imageWidth: 3400,
       imageHeight: 2200,
       parts: [
@@ -366,7 +366,7 @@ export default function Parts() {
       description: 'Precision Corner Finisher Assembly - Model T05CF (Main Components)',
       brand: 'TapeTech',
       productPartNumber: 'T05CF',
-      image: '/T05CF_SCH-9.png',
+      image: `${import.meta.env.BASE_URL}T05CF_SCH-9.png`,
       parts: [
         { id: '499023', name: 'Finisher Blade', sku: '499023', material: 'STAINLESS-STEEL', price: 24.50, position: { top: '50.38%', left: '77.25%' }, quantity: 1 },
         { id: '800856', name: 'Main Body casting', sku: '800856', material: 'ALUMINUM', price: 85.00, position: { top: '72.35%', left: '53.70%' }, quantity: 1 },
@@ -585,7 +585,7 @@ export default function Parts() {
       brand: currentSchematic?.brand || selectedBrand || 'Parts', // Use actual brand
       price: part.price,
       part_number: part.sku,
-      image: '/placeholder-part.png', // Can be updated later with actual images
+      image: `${import.meta.env.BASE_URL}placeholder-part.png`, // Can be updated later with actual images
     };
     
     addToCart(cartProduct, 1);
