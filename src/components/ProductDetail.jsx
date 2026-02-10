@@ -33,19 +33,19 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
   const displayPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
 
   return (
-    <div className="bg-white rounded-none sm:rounded-xl lg:rounded-2xl shadow-2xl overflow-hidden animate-fadeIn w-full max-w-6xl mx-auto max-h-[92vh] sm:max-h-[90vh] flex flex-col">
-      {/* Close Button - Responsive positioning with better mobile visibility */}
+    <div className="bg-white rounded-none sm:rounded-xl lg:rounded-2xl shadow-2xl overflow-hidden animate-fadeIn w-full max-w-6xl mx-auto h-full sm:max-h-[90vh] flex flex-col">
+      {/* Close Button - Fixed/Sticky positioning for mobile, always visible */}
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 p-2 sm:p-2 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-colors border border-gray-200"
+        className="fixed sm:absolute top-4 right-4 z-modal-close p-2.5 sm:p-2 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-colors border border-gray-200"
         aria-label="Close"
       >
-        <X size={22} className="sm:w-6 sm:h-6 text-gray-700" />
+        <X className="w-6 h-6 text-gray-700" />
       </button>
 
       {/* Scrollable Content with Custom Scrollbar */}
-      <div className="overflow-y-auto custom-scrollbar">
-        <div className="p-4 sm:p-6 md:p-8 lg:p-12 pt-14 sm:pt-6">
+      <div className="overflow-y-auto custom-scrollbar h-full">
+        <div className="p-4 sm:p-6 md:p-8 lg:p-12 pt-16 sm:pt-6">
           {/* Top Section - Image Left, Details Right */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
             {/* Product Image Gallery */}

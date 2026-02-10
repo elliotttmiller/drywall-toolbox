@@ -54,6 +54,10 @@ export default {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
+      zIndex: {
+        'modal': '1100',
+        'modal-close': '1110',
+      },
     },
   },
   plugins: [],
