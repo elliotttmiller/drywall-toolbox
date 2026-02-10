@@ -60,7 +60,7 @@ export default function ProductImageGallery({ product }) {
       {/* Main Image Display */}
       <div className="relative bg-gray-50 rounded-lg p-4 sm:p-6 flex items-center justify-center min-h-[250px] sm:min-h-[300px] lg:min-h-[400px]">
         <div 
-          className="w-full max-w-sm relative"
+          className="w-full max-w-sm max-h-[300px] sm:max-h-[400px] lg:max-h-[500px] relative"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
