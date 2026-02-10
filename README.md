@@ -34,6 +34,33 @@ npm run build
 npm run preview
 ```
 
+## 🚀 Deployment
+
+This project is automatically deployed to GitHub Pages when changes are pushed to the `main` branch.
+
+### Automatic Deployment
+
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically:
+1. Builds the project with `npm run build`
+2. Deploys the `dist/` folder to GitHub Pages
+3. Makes the site available at: `https://elliotttmiller.github.io/drywall-toolbox/`
+
+### Manual Deployment
+
+To trigger a manual deployment:
+1. Go to the repository's "Actions" tab
+2. Select "Deploy to GitHub Pages" workflow
+3. Click "Run workflow" → "Run workflow"
+
+### Updating Product Prices
+
+When you update prices in `public/products_catalog.csv`:
+1. The changes are automatically detected when pushed to `main`
+2. The workflow rebuilds the site including the updated CSV
+3. The new prices appear on the live site within a few minutes
+
+**Note**: The CSV file is copied from `public/` to `dist/` during the build process, ensuring all updates are included in the deployment.
+
 ## 📁 Project Structure
 
 ```
