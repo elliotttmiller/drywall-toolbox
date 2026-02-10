@@ -21,55 +21,30 @@ export default function Contact() {
   };
 
   return (
-    <section style={{ 
-      padding: '140px 40px 80px', 
-      minHeight: '100vh' 
-    }} className="section-enter">
-      <div style={{
-        maxWidth: '1000px',
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '80px'
-      }}>
+    <section className="section-enter px-4 sm:px-6 md:px-10 lg:px-40 pt-24 sm:pt-28 md:pt-32 lg:pt-36 pb-16 sm:pb-20 min-h-screen">
+      <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20">
         <div>
-          <h2 style={{ 
-            fontSize: '3rem', 
-            marginBottom: '24px',
-            letterSpacing: '-0.02em'
-          }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">
             GET IN TOUCH
           </h2>
-          <p style={{ marginBottom: '40px', opacity: 0.7 }}>
+          <p className="mb-6 sm:mb-8 md:mb-10 opacity-70 text-sm sm:text-base">
             Technical support, bulk orders, or custom tool fabrication inquiries.
           </p>
 
-          <div style={{ marginBottom: '32px' }}>
-            <h5 style={{ 
-              textTransform: 'uppercase', 
-              fontSize: '0.7rem', 
-              letterSpacing: '0.1em', 
-              color: 'var(--tension-accent)',
-              marginBottom: '8px'
-            }}>
+          <div className="mb-6 sm:mb-8">
+            <h5 className="uppercase text-[0.65rem] sm:text-[0.7rem] tracking-wider text-primary-600 mb-2">
               Email
             </h5>
-            <p style={{ fontFamily: 'var(--font-mono)' }}>
+            <p className="text-sm sm:text-base break-all" style={{ fontFamily: 'var(--font-mono)' }}>
               ops@drywalltoolbox.com
             </p>
           </div>
 
           <div>
-            <h5 style={{ 
-              textTransform: 'uppercase', 
-              fontSize: '0.7rem', 
-              letterSpacing: '0.1em', 
-              color: 'var(--tension-accent)',
-              marginBottom: '8px'
-            }}>
+            <h5 className="uppercase text-[0.65rem] sm:text-[0.7rem] tracking-wider text-primary-600 mb-2">
               Headquarters
             </h5>
-            <p style={{ fontFamily: 'var(--font-mono)' }}>
+            <p className="text-sm sm:text-base" style={{ fontFamily: 'var(--font-mono)' }}>
               1024 Precision Way, Alloy Park<br />
               Industrial District, TX 75001
             </p>
@@ -118,8 +93,7 @@ export default function Contact() {
 
           <button 
             type="submit" 
-            className="alloy-button" 
-            style={{ width: '100%', justifyContent: 'center' }}
+            className="alloy-button w-full justify-center"
           >
             Submit Inquiry
           </button>
