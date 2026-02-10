@@ -109,9 +109,9 @@ export default function Products() {
       ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).filter(Boolean)
       : [];
     
-    // Compare as sorted sets to avoid order issues
-    const urlBrandsSet = brandsFromUrl.sort().join(',');
-    const currentBrandsSet = selectedBrands.sort().join(',');
+    // Compare as sorted sets to avoid order issues (create copies to avoid mutation)
+    const urlBrandsSet = [...brandsFromUrl].sort().join(',');
+    const currentBrandsSet = [...selectedBrands].sort().join(',');
     
     if (urlBrandsSet !== currentBrandsSet) {
       setSelectedBrands(brandsFromUrl);
