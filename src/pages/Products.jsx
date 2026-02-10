@@ -367,10 +367,18 @@ export default function Products() {
       
       {/* Product Detail Modal */}
       {isModalOpen && modalProduct && (
-        <div className="fixed inset-0 z-modal flex items-center justify-center p-0 sm:p-4">
+        <div className="fixed inset-0 z-[1100] flex items-center justify-center p-0 sm:p-4">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
+          {/* Close Button - Direct child of fixed modal wrapper to avoid stacking context issues */}
+          <button
+            onClick={closeModal}
+            className="fixed top-4 right-4 sm:absolute sm:top-4 sm:right-4 z-[1120] p-2.5 sm:p-2 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-colors border border-gray-200"
+            aria-label="Close"
+          >
+            <X className="w-6 h-6 text-gray-700" />
+          </button>
           <div className="relative z-10 w-full h-full sm:h-auto max-w-full sm:max-w-3xl md:max-w-5xl lg:max-w-6xl mx-auto">
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()} className="h-full overflow-x-hidden">
               <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} onClose={closeModal} />
             </div>
           </div>
