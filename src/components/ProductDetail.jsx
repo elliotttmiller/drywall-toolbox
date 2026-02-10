@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import Reviews from './Reviews';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, Heart, Plus, Minus, X } from 'lucide-react';
+import { Heart, Plus, Minus, X } from 'lucide-react';
+import ProductImageGallery from './ProductImageGallery';
 
 export default function ProductDetail({ product, onAddToCart, onClose }) {
   const { addToCart } = useCart();
@@ -47,23 +48,8 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
         <div className="p-4 sm:p-6 md:p-8 lg:p-12 pt-14 sm:pt-6">
           {/* Top Section - Image Left, Details Right */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
-            {/* Product Image - Compact */}
-            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 flex items-center justify-center min-h-62.5 sm:min-h-75">
-              <div className="w-full max-w-sm">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="object-contain w-full h-full"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/product-placeholder.jpg'; }}
-                  />
-                ) : (
-                  <div className="text-gray-300 flex justify-center">
-                    <ShoppingCart size={80} className="sm:w-28 sm:h-28 lg:w-32 lg:h-32" strokeWidth={1} />
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* Product Image Gallery */}
+            <ProductImageGallery product={product} />
 
             {/* Product Info - Right Side */}
             <div className="flex flex-col">

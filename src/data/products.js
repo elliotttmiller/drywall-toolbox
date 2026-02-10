@@ -23,6 +23,21 @@ export async function loadProducts() {
   let image = (r.image_1 || r.image_url || '').trim();
   if (!image && r.all_images) image = String(r.all_images).split('|')[0].trim() || '';
   if (!image) image = '/product-placeholder.jpg';
+  
+  // Collect all images (image_1 through image_9)
+  const images = [];
+  for (let i = 1; i <= 9; i++) {
+    const img = (r[`image_${i}`] || '').trim();
+    if (img) images.push(img);
+  }
+  // Fallback to all_images if no individual images found
+  if (images.length === 0 && r.all_images) {
+    const allImgs = String(r.all_images).split('|').map(s => s.trim()).filter(Boolean);
+    images.push(...allImgs);
+  }
+  // Ensure at least one image (the primary one)
+  if (images.length === 0) images.push(image);
+  
   const short_description = String(r.description_short || r.short_description || '').trim();
   const description_full = String(r.description_full || '').trim();
   const category = String(r.category || '').trim();
@@ -52,6 +67,7 @@ export async function loadProducts() {
       brand,
       url,
       image: image,
+      images: images,
       short_description,
       description_full,
       category,
