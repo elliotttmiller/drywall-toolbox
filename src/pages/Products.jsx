@@ -111,14 +111,18 @@ export default function Products() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const brandParam = params.get('brand');
-    if (brandParam) {
-      const brands = brandParam.split(',').map(b => b.trim()).filter(Boolean);
-      setSelectedBrands(brands);
-    } else {
-      // No brand param means reset to brand list view
-      setSelectedBrands([]);
+    const brandsFromUrl = brandParam 
+      ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).filter(Boolean)
+      : [];
+    
+    // Only update if the brands from URL are different from current state
+    const brandsChanged = brandsFromUrl.length !== selectedBrands.length ||
+      brandsFromUrl.some((b, i) => b !== selectedBrands[i]);
+    
+    if (brandsChanged) {
+      setSelectedBrands(brandsFromUrl);
     }
-  }, [location.search]);
+  }, [location.search, selectedBrands]);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
