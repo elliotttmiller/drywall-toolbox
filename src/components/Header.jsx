@@ -1,10 +1,11 @@
-﻿import { Link, useLocation } from 'react-router-dom';
+﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 
 export default function Header({ onCartToggle }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { getCartCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -12,6 +13,13 @@ export default function Header({ onCartToggle }) {
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  const handleToolsClick = (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    // Navigate to /products without query params to show brand list
+    navigate('/products');
+  };
 
   return (
     <header className="site-header" role="banner">
@@ -50,7 +58,7 @@ export default function Header({ onCartToggle }) {
         <div className="hidden md:contents">
           <div className="header-left">
             <nav className="nav-links" aria-label="Primary">
-              <Link to="/products" className={`nav-link ${isActive('/products') ? 'active' : ''}`}>Tools</Link>
+              <Link to="/products" onClick={handleToolsClick} className={`nav-link ${isActive('/products') ? 'active' : ''}`}>Tools</Link>
               <Link to="/parts" className={`nav-link ${isActive('/parts') ? 'active' : ''}`}>Parts</Link>
             </nav>
           </div>
@@ -87,7 +95,7 @@ export default function Header({ onCartToggle }) {
             <Link 
               to="/products" 
               className={`nav-link-mobile ${isActive('/products') ? 'active' : ''}`}
-              onClick={closeMobileMenu}
+              onClick={handleToolsClick}
             >
               Tools
             </Link>
