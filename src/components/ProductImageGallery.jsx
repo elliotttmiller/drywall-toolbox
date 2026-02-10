@@ -58,9 +58,9 @@ export default function ProductImageGallery({ product }) {
   return (
     <div className="flex flex-col gap-3 sm:gap-4">
       {/* Main Image Display */}
-      <div className="relative bg-gray-50 rounded-lg p-4 sm:p-6 flex items-center justify-center min-h-[250px] sm:min-h-[300px] lg:min-h-[400px]">
+      <div className="relative bg-gray-50 rounded-lg p-4 sm:p-6 flex items-center justify-center">
         <div 
-          className="w-full max-w-sm max-h-[300px] sm:max-h-[400px] lg:max-h-[500px] relative"
+          className="w-full h-[300px] sm:h-[400px] lg:h-[500px] flex items-center justify-center relative"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -69,7 +69,7 @@ export default function ProductImageGallery({ product }) {
             <img
               src={currentImage}
               alt={`${product?.name || 'Product'} - Image ${currentImageIndex + 1}`}
-              className="object-contain w-full h-full transition-opacity duration-300"
+              className="max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300"
               onError={(e) => { 
                 e.currentTarget.onerror = null; 
                 e.currentTarget.src = '/product-placeholder.jpg'; 
