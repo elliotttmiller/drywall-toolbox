@@ -37,8 +37,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
       {/* Close Button - Fixed/Sticky positioning for mobile, always visible */}
       <button
         onClick={onClose}
-        className="fixed sm:absolute top-4 right-4 p-2.5 sm:p-2 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-colors border border-gray-200"
-        style={{ zIndex: 1110 }}
+        className="fixed sm:absolute top-4 right-4 z-modal-close p-2.5 sm:p-2 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-colors border border-gray-200"
         aria-label="Close"
       >
         <X size={24} className="sm:w-6 sm:h-6 text-gray-700" />

@@ -367,7 +367,7 @@ export default function Products() {
       
       {/* Product Detail Modal */}
       {isModalOpen && modalProduct && (
-        <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-4" style={{ zIndex: 1100 }}>
+        <div className="fixed inset-0 z-modal flex items-center justify-center p-0 sm:p-4">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
           <div className="relative z-10 w-full h-full sm:h-auto max-w-full sm:max-w-3xl md:max-w-5xl lg:max-w-6xl mx-auto">
             <div onClick={(e) => e.stopPropagation()}>
