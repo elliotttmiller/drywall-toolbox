@@ -1,27 +1,27 @@
 brand,name,sku,upc,price,price_numeric
-Columbia Taping Tools,Columbia Sander Head,CTTCS,,,
-Columbia Taping Tools,Columbia 4' Extendable One Handle,CTTC1H,,,
-Columbia Taping Tools,Columbia 3'-5' Extendable One Handle,CTTC1HEXT,,,
-Columbia Taping Tools,Columbia Inside Corner Roller,CTTCR,,,
-Columbia Taping Tools,Columbia Outside Corner Roller,CTTCOBCR,,,
-Columbia Taping Tools,Columbia Mud Pump (Top Disconnect),CTTHMP,,,
-Columbia Taping Tools,Columbia Box Filler,CTTBF,,,
+Columbia Taping Tools,Columbia Sander Head,CTTCS,,$35.00,35.00
+Columbia Taping Tools,Columbia 4' Extendable One Handle,CTTC1H,,$80.00,80.00
+Columbia Taping Tools,Columbia 3'-5' Extendable One Handle,CTTC1HEXT,,$130.00,130.00
+Columbia Taping Tools,Columbia Inside Corner Roller,CTTCR,,$160.00,160.00
+Columbia Taping Tools,Columbia Outside Corner Roller,CTTCOBCR,,$70.00,70.00
+Columbia Taping Tools,Columbia Mud Pump (Top Disconnect),CTTHMP,,$435.00,435.00
+Columbia Taping Tools,Columbia Box Filler,CTTBF,,$75.00,75.00
 Columbia Taping Tools,Columbia Matrix Extendable Flat Box Handle,CTTMH,,,
-Columbia Taping Tools,"Columbia 10"" Flat Finishing Box",CTT10FFB,,,
-Columbia Taping Tools,"Columbia 12"" Flat Finishing Box",CTT12FFB,,,
+Columbia Taping Tools,"Columbia 10"" Flat Finishing Box",CTT10FFB,,$365.00,365.00
+Columbia Taping Tools,"Columbia 12"" Flat Finishing Box",CTT12FFB,,$405.00,405.00
 Columbia Taping Tools,Columbia Aluminum Coarse Thread Adapter,CTTPHA,,,
-Columbia Taping Tools,Columbia 2â€³ Nailspotter,CTT2NS,,,
+Columbia Taping Tools,Columbia 2â€³ Nailspotter,CTT2NS,,$195.00,195.00
 Columbia Taping Tools,Columbia Gooseneck,CTTGN,,,
-Columbia Taping Tools,Columbia 3â€³ Anglehead,CTT3AH,,,
-Columbia Taping Tools,Columbia 3â€³ Nailspotter,CTT3NS,,,
-Columbia Taping Tools,"Columbia 2.5"" Standard Corner Flusher",CTT25SF,,,
-Columbia Taping Tools,"Columbia 3"" Standard Corner Flusher",CTT3SF,,,
+Columbia Taping Tools,Columbia 3â€³ Anglehead,CTT3AH,,$420.00,420.00
+Columbia Taping Tools,Columbia 3â€³ Nailspotter,CTT3NS,,$335.00,335.00
+Columbia Taping Tools,"Columbia 2.5"" Standard Corner Flusher",CTT25SF,,$111.00,111.00
+Columbia Taping Tools,"Columbia 3"" Standard Corner Flusher",CTT3SF,,$118.00,118.00
 Columbia Taping Tools,"Columbia 36"" 180-Grip Flat Box Handle",CTT3BH,,,
-Columbia Taping Tools,Columbia 8â€³ Throttle Box,CTT8CFB,,,
-Columbia Taping Tools,Columbia 3.5â€³ Anglehead,CTT35AH,,,
+Columbia Taping Tools,Columbia 8â€³ Throttle Box,CTT8CFB,,$300.00,300.00
+Columbia Taping Tools,Columbia 3.5â€³ Anglehead,CTT35AH,,$430.00,430.00
 Columbia Taping Tools,Columbia Cover Plate Cork Seal,CTTCT87CS,,,
 Columbia Taping Tools,"Columbia 10"" Fat Boy Flat Box",CTT10FBB,,,
-Columbia Taping Tools,Columbia 2.5â€³ Anglehead,CTT25AH,,,
+Columbia Taping Tools,Columbia 2.5â€³ Anglehead,CTT25AH,,$390.00,390.00
 Columbia Taping Tools,"Columbia 42"" Compound Mud Tube",CTTCMT42,,,
 Crescent Tools,9 3/4 in Wiss Straight Cut Compound Action Snips - Yellow,COOM3R,,,
 Crescent Tools,9 3/4 in Wiss Right Cut Compound Action Snips - Red,COOM1R,,,
@@ -310,13 +310,13 @@ Demand Products,Demand Products Super Scooper EIFS Bucket Scoop,DPIBS10,,,
 Demand Products,8 in x 14 in Demand Products DuraRasp,DPIDR814,,,
 Demand Products,"Demand 1-1/4"" Metal Washer Fingers 1000-Per Box",DPIDP500,,,
 Demand Products,"Tiger Claw EIFS Wall DuraRasp 8"" x 14""",DPITC814,,,
-DeWalt,DeWalt 4.7 AMP Electric Drywall Sander - Corded,DEWDWE7800,,,
+DeWalt,DeWalt 4.7 AMP Electric Drywall Sander - Corded,DEWDWE7800,,$550.00,550.00
 DeWalt,Clutch Assembly,POR429634,,,
 DeWalt,3 in DeWALT Magnetic Bit Tip Holder,DEWDW2045B,,,
 DeWalt,DeWALT DW274 Screw Gun Brush,DEW17684602,,,
 DeWalt,8 Gallon HEPA/RRP Dust Extractor Vacuum with Automatic Filter Cleaning,DEWDWV010,,,
-DeWalt,DeWalt 20V MAX* XRÂ® Brushless Drywall Screwgun and Cut-Out Tool Combo Kit 2.0 AH,DEWDCK265D2,,,
-DeWalt,DeWalt Heavy-Duty Cut Out Tool,DEWDW660,,,
+DeWalt,DeWalt 20V MAX* XRÂ® Brushless Drywall Screwgun and Cut-Out Tool Combo Kit 2.0 AH,DEWDCK265D2,,$399.00,399.00
+DeWalt,DeWalt Heavy-Duty Cut Out Tool,DEWDW660,,$65.00,65.00
 DeWalt,Fleece Bag for DWV012 Dust Collector [5 Pack],DEWDWV9402,,,
 DeWalt,"DeWALT 5,300 RPM High Speed VSR Drywall Screwgun",DEWDW255,,,
 DeWalt,"4-1/2"" x .045"" x 7/8"" Metal Cut-Off Wheel-10 pack",DEWDWA8051T10,,,
@@ -324,7 +324,7 @@ DeWalt,"#2 Phillips 1"" Insert Bit Tips - 100 pack",DEWDW2004BL,,,
 DeWalt,DeWALT Paper Bag for DeWALT Dust Extractors,DEWDWV9401,,,
 DeWalt,Dewalt Brush for DWE7800 Dewalt Sander,DEWN402297,,,
 DeWalt,14 in DeWALT Type 1 Metal Fast Cutting Chop Saw Wheel,DEWDWA8011,,,
-DeWalt,Dewalt 20V MAX* Cordless Drywall Sander (Tool Only),DEWDCE800B,,,
+DeWalt,Dewalt 20V MAX* Cordless Drywall Sander (Tool Only),DEWDCE800B,,$475.00,475.00
 DeWalt,Steel Ball,DEW69663100,,,
 DeWalt,15' Anti-Static Hose for DeWalt Dust Extractor,DEWDWV9316,,,
 DeWalt,Belt Hook for DCF620,DEWN435687,,,
@@ -335,8 +335,8 @@ DeWalt,DeWALT 14 in Chop Saw w/ QUICK-CHANGE Keyless Blade Change System,DEWD287
 DeWalt,DeWALT 12V MAX* 3 x 360 Green Line Laser,DEWDW089LG,,,
 DeWalt,Nose Cone Assembly,DEWN435495,,,
 DeWalt,DeWALT 60V MAX Mixer/Drill w/ E-Clutch System Kit,DEWDCD130T1,,,
-DeWalt,DeWalt 20V MAX* Brushless Drywall Screw Gun (Tool Only),DEWDCF630B,,,
-DeWalt,DeWalt 20V Brushless Drywall Cordless Cut-Out Tool,DEWDCE555B,,,
+DeWalt,DeWalt 20V MAX* Brushless Drywall Screw Gun (Tool Only),DEWDCF630B,,$165.00,165.00
+DeWalt,DeWalt 20V Brushless Drywall Cordless Cut-Out Tool,DEWDCE555B,,$165.00,165.00
 DeWalt,Carbon Fiber Composite Staple Gun,DEWDWHT80276,,,
 DeWalt,DeWalt 20V MAX* XR Trak-It C6 Gas Nailer (Bare Only),DEWDGN845B,,,
 DeWalt,DeWalt 20V MAX* XR Brushless Drywall Screwgun Kit (2.0Ah),DEWDCF630D2,,,
@@ -537,8 +537,8 @@ Global Manufacturing Supply,2-Pack Motor Brush for Porter Cable 7800 Sander,GLO1
 "Gloves, Inc.",Flex Tuff Blue Latex Coated Gloves - Large,GLV9680L,,,
 "Gloves, Inc.",Flex Tuff Blue Latex Coated Palm Gloves - X-Large,GLV9680XL,,,
 Goldblatt,11 X 4.5 Curved Blade Drywall Trowel,GOLG05511,,,
-Goldblatt,"12"" Taping Knife",GOLG05000,,,
-Goldblatt,"14"" Blue Steel Taping Knife",GOLG05003,,,
+Goldblatt,"12"" Taping Knife",GOLG05000,,$11.00,11.00
+Goldblatt,"14"" Blue Steel Taping Knife",GOLG05003,,$10.00,10.00
 Goldblatt,"14"" Stainless Steel Taping Knife",GOLG05644,,,
 Goldblatt,"6"" Stainless Steel Taping Knife",GOLG05636,,,
 Goldblatt,"8"" Taping Knife",GOLG05001,,,
@@ -790,7 +790,7 @@ Johnson Level,Johnson Level 100' Job Site Inch/Metric Geared Closed Case Steel T
 Johnson Level,Johnson Level Red Lumber Crayons - 3 per pack,JLT400652,,,
 Komelon USA Corporation,Komelon Maggrip 25'  Tape Measure,KOM7125,,,
 Komelon USA Corporation,Komelon Monster MagGrip Magnetic Tape Measure 30 ft,KOM7130,,,
-Kraft,12 in Kraft Tools Heli-Arc EZ-Grip Stainless Steel Mud Pan,KRADW722,,,
+Kraft,12 in Kraft Tools Heli-Arc EZ-Grip Stainless Steel Mud Pan,KRADW722,,$32.00,32.00
 Kraft,7 1/2 in x 5 1/2 in Kraft Tools Hydra Grout Sponge,KRAST135,,,
 Kraft,14 1/4 in Kraft Tools Heli-Arc EZ-Grip Stainless Steel Mud Pan,KRADW724,,,
 Kraft,30 in Kraft Tools Hex Shaft Junior Mud Mixer,KRADC713,,,
@@ -1651,21 +1651,21 @@ Tajima,"Blue ultra-fine powdered chalk, 32 oz",TAJPLC2B900,,,
 Tajima,Plumb-Rite PZB-400 Plumb Bob Setter,TAJPZB400,,,
 "Tape-Pak, Inc.","Red Stucco Tape #234 2"" X 60yd 30 Day UV",TPI234,,,
 "Tape-Pak, Inc.","Red Stucco Tape #133 - 2"" X 60 yd.",TPI133,,,
-TapeTech,41 in - 63 in TapeTech XTender Finishing Box Handle,TTT88TTE,,,
-TapeTech,12 in TapeTech EasyClean Finishing Box,TTTEZ12TT,,,
-TapeTech,"10"" EasyClean Finishing Box",TTTEZ10TT,,,
-TapeTech,TapeTech EasyClean Loading Pump,TTT76TT,,,
+TapeTech,41 in - 63 in TapeTech XTender Finishing Box Handle,TTT88TTE,,$370.00,370.00
+TapeTech,12 in TapeTech EasyClean Finishing Box,TTTEZ12TT,,$425.00,425.00
+TapeTech,"10"" EasyClean Finishing Box",TTTEZ10TT,,$389.00,389.00
+TapeTech,TapeTech EasyClean Loading Pump,TTT76TT,,$399.00,399.00
 TapeTech,TapeTech Extension Handle,TTTXHTT,,,
 TapeTech,TapeTech Filler Adapter,TTT90TT,,,
-TapeTech,TapeTech EasyClean Automatic Taper,TTT07TT,,,
+TapeTech,TapeTech EasyClean Automatic Taper,TTT07TT,,$1599.00,1599.00
 TapeTech,TapeTech #2 Pump Repair Kit,TTT502H,,,
 TapeTech,12 in TapeTech Flat Box Repair Kit,TTT501C12,,,
-TapeTech,TapeTech Inside Corner Roller w/o Handle,TTT15TTEWOH,,,
-TapeTech,3 in TapeTech EasyRoll Adjustable Corner Finisher,TTT48TT,,,
+TapeTech,TapeTech Inside Corner Roller w/o Handle,TTT15TTEWOH,,$185.00,185.00
+TapeTech,3 in TapeTech EasyRoll Adjustable Corner Finisher,TTT48TT,,$429.00,429.00
 TapeTech,10 in TapeTech Flat Box Repair Kit,TTT501C10,,,
 TapeTech,"TapeTech 32"" Premium Finishing Knife",TTTPFK32TT,,,
-TapeTech,"8"" Corner Applicator",TTTCA08TT,,,
-TapeTech,3 1/2 in TapeTech EasyRoll Adjustable Corner Finisher,TTT48XTT,,,
+TapeTech,"8"" Corner Applicator",TTTCA08TT,,$330.00,330.00
+TapeTech,3 1/2 in TapeTech EasyRoll Adjustable Corner Finisher,TTT48XTT,,$445.00,445.00
 TapeTech,"TapeTech 24"" Premium Finishing Knife",TTTPFK24TT,,,
 TapeTech,TapeTech Bazooka Oil Aerosol Spray 8oz,TTT056707,,,
 TapeTech,TapeTech Gooseneck Adapter,TTT85TT,,,
@@ -1761,13 +1761,13 @@ True Temper,Square Point Shovel with Wood Handle,TRU40184,,,
 True Temper,"Square Point Shovel with 47"" Fiberglass Handle",TRU2585500,,,
 US Wire & Cable,GFCI Portable In Line Triple Tap with Power Block,VOL0400105,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-1/4"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [Bulk]",USG114CDWS8M,,,
-USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-1/4""  Textured Head, Coarse Thread Drywall Screw w/ TENZ [5LB]",USG114CDWS5,,,
-USG Sheetrock Screws,"USG Sheetrock Tools 6 X 1-1/4"" Textured Head, Fine Thread Drywall Screw [5LB]",USG114FDWS5,,,
+USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-1/4""  Textured Head, Coarse Thread Drywall Screw w/ TENZ [5LB]",USG114CDWS5,,$25.00,25.00
+USG Sheetrock Screws,"USG Sheetrock Tools 6 X 1-1/4"" Textured Head, Fine Thread Drywall Screw [5LB]",USG114FDWS5,,$25.00,25.00
 USG Sheetrock Screws,"6 X 1-1/4"" Textured Head, Fine Thread Drywall Screw [Bulk]",USG114FDWS8M,,,
-USG Sheetrock Screws,"USG Sheetrock Tools #6 X 2"" Textured Head, Fine Thread Drywall Screw [5LB]",USG2FDWS5,,,
+USG Sheetrock Screws,"USG Sheetrock Tools #6 X 2"" Textured Head, Fine Thread Drywall Screw [5LB]",USG2FDWS5,,$28.00,28.00
 USG Sheetrock Screws,"USG Sheetrock Tools #8 X 1/2"" Wafer Head, Zinc Self Drill Drywall Screw [5LB]",USG12WHSDFSZ5,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-1/4"" Textured Bugle Head, Self Drill Drywall Screw [5LB]",USG114SDSZ5,,,
-USG Sheetrock Screws,"USG Sheetrock Tools #6 X 2"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [5LB]",USG2CDWS5,,,
+USG Sheetrock Screws,"USG Sheetrock Tools #6 X 2"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [5LB]",USG2CDWS5,,$28.00,28.00
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 2"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [Bulk]",USG2CDWS35M,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-1/8"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [BULK]",USG118CDWS10M,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-5/8"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [Bulk]",USG158CDWS5M,,,
@@ -1777,8 +1777,8 @@ USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-5/8"" Textured Bugle Head, Self
 USG Sheetrock Screws,"6 X 1-5/8"" Textured Head, Fine Thread Drywall Screw [Bulk]",USG158FDWS5M,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 2"" Textured Head, Fine Thread Drywall Screw [Bulk]",USG2FDWS35M,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #8 X 2-3/8"" Textured Bugle Head, Self Drill Drywall Screw [5LB]",USG238SDSZ5,,,
-USG Sheetrock Screws,"6 X 1-5/8"" Textured Head, Fine Thread Drywall Screw [5LB]",USG158FDWS5,,,
-USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-5/8"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [5LB]",USG158CDWS5,,,
+USG Sheetrock Screws,"6 X 1-5/8"" Textured Head, Fine Thread Drywall Screw [5LB]",USG158FDWS5,,$27.00,27.00
+USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-5/8"" Textured Head, Coarse Thread Drywall Screw w/ TENZ [5LB]",USG158CDWS5,,$27.00,27.00
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-7/8"" Textured Bugle Head, Self Drill Drywall Screw [5LB]",USG178SDSZ5,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #6 X 1-7/8"" Textured Bugle Head, Self Drill Drywall Screw [Bulk]",USG178SDSZ4M,,,
 USG Sheetrock Screws,"USG Sheetrock Tools #7 X 7/16"" Pan Head, Grey Phosphate Sharp Point Drill Drywall Screw [5LB]",USG716PHFS5,,,
