@@ -55,7 +55,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
                     src={product.image}
                     alt={product.name}
                     className="object-contain w-full h-full"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/product-placeholder.jpg'; }}
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `${import.meta.env.BASE_URL}product-placeholder.jpg`; }}
                   />
                 ) : (
                   <div className="text-gray-300 flex justify-center">

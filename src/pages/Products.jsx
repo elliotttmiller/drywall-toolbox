@@ -276,7 +276,7 @@ export default function Products() {
                           alt={product.name}
                           className="object-contain w-full h-full"
                           loading="lazy"
-                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/product-placeholder.jpg'; }}
+                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `${import.meta.env.BASE_URL}product-placeholder.jpg`; }}
                         />
                       ) : (
                         <div className="text-gray-400"><ShoppingCart size={48} /></div>

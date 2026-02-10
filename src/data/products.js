@@ -3,7 +3,7 @@
 
 export async function loadProducts() {
   // load the new unified products catalog (ALS schema) by default
-  const res = await fetch('/products_catalog.csv');
+  const res = await fetch(`${import.meta.env.BASE_URL}products_catalog.csv`);
   if (!res.ok) return [];
   const text = await res.text();
   const rows = parseCSV(text);
@@ -20,7 +20,7 @@ export async function loadProducts() {
   // prefer image_1 (ALS) then image_url (legacy) then first of all_images
   let image = (r.image_1 || r.image_url || '').trim();
   if (!image && r.all_images) image = String(r.all_images).split('|')[0].trim() || '';
-  if (!image) image = '/product-placeholder.jpg';
+  if (!image) image = `${import.meta.env.BASE_URL}product-placeholder.jpg`;
   const short_description = String(r.description_short || r.short_description || '').trim();
   const description_full = String(r.description_full || '').trim();
   const category = String(r.category || '').trim();
