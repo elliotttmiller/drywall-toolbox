@@ -413,12 +413,11 @@ body {
 }
 
 .part-modal {
-    position: fixed;
-    top: auto;
-    bottom: auto;
+    position: absolute;
+    top: 100%;
     left: 50%;
     /* smaller initial offset so the modal feels more anchored */
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(8px);
     width: 280px;
     background: white;
     border: 1px solid var(--alloy-deep);
@@ -429,20 +428,10 @@ body {
     /* use a quicker, smooth ease-out for modal appearing */
     transition: opacity 180ms ease-out, transform 220ms ease-out, visibility 180ms;
     box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
-    /* Ensure modal stays within viewport bounds */
-    max-width: calc(100vw - 32px);
-    margin: 0 16px;
 }
 
 /* On desktop, position relative to hotspot */
 @media (min-width: 769px) {
-    .part-modal {
-        position: absolute;
-        top: 100%;
-        transform: translateX(-50%) translateY(8px);
-        margin: 0;
-    }
-    
     .hotspot.active .part-modal {
         opacity: 1;
         visibility: visible;
