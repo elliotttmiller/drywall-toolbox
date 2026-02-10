@@ -13,7 +13,9 @@ export default function Home() {
         gap: '40px',
         maxWidth: '1400px',
         margin: '0 auto'
-      }}>
+      }}
+      className="home-hero-grid"
+      >
         <div>
           <h1 className="machined-title" style={{ marginBottom: '40px' }}>
             ENGINEERED<br />FOR PRECISION<br />WALL FINISHES.
@@ -39,7 +41,9 @@ export default function Home() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
-        }}>
+        }}
+        className="home-hero-icon"
+        >
           <Wrench 
             size={200} 
             color="var(--alloy-deep)" 

@@ -430,11 +430,47 @@ body {
     box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
 }
 
-.hotspot.active .part-modal {
-    opacity: 1;
-    visibility: visible;
-    /* small gentle pop downward when active */
-    transform: translateX(-50%) translateY(12px);
+/* On desktop, position relative to hotspot */
+@media (min-width: 769px) {
+    .hotspot.active .part-modal {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(12px);
+    }
+}
+
+/* On mobile, center modal on screen with backdrop */
+@media (max-width: 768px) {
+    /* Add backdrop overlay when modal is active */
+    .hotspot.active::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(2px);
+        z-index: 1100;
+        animation: fadeIn 180ms ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .part-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(280px, calc(100vw - 32px));
+        z-index: 1200;
+    }
+    
+    .hotspot.active .part-modal {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%);
+    }
 }
 
 .part-meta {
@@ -452,6 +488,16 @@ body {
     
     .cart-panel {
         width: 100%;
+    }
+    
+    /* Hide wrench icon on mobile to prevent overflow */
+    .home-hero-icon {
+        display: none !important;
+    }
+    
+    /* Make home hero grid single column on mobile */
+    .home-hero-grid {
+        grid-template-columns: 1fr !important;
     }
 }
 
