@@ -17,10 +17,8 @@ export default function Header({ onCartToggle }) {
   const handleToolsClick = (e) => {
     e.preventDefault();
     closeMobileMenu();
-    // Always navigate to /products without query params to reset to brand list
+    // Navigate to /products without query params to show brand list
     navigate('/products');
-    // Force a re-render by triggering a location change
-    window.scrollTo(0, 0);
   };
 
   return (
@@ -60,7 +58,7 @@ export default function Header({ onCartToggle }) {
         <div className="hidden md:contents">
           <div className="header-left">
             <nav className="nav-links" aria-label="Primary">
-              <a href="/products" onClick={handleToolsClick} className={`nav-link ${isActive('/products') ? 'active' : ''}`}>Tools</a>
+              <Link to="/products" onClick={handleToolsClick} className={`nav-link ${isActive('/products') ? 'active' : ''}`}>Tools</Link>
               <Link to="/parts" className={`nav-link ${isActive('/parts') ? 'active' : ''}`}>Parts</Link>
             </nav>
           </div>
@@ -94,13 +92,13 @@ export default function Header({ onCartToggle }) {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
           <nav className="flex flex-col p-4 space-y-2">
-            <a 
-              href="/products" 
+            <Link 
+              to="/products" 
               className={`nav-link-mobile ${isActive('/products') ? 'active' : ''}`}
               onClick={handleToolsClick}
             >
               Tools
-            </a>
+            </Link>
             <Link 
               to="/parts" 
               className={`nav-link-mobile ${isActive('/parts') ? 'active' : ''}`}

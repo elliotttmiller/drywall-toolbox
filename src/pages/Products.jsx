@@ -25,6 +25,8 @@ const categories = [
   { id: 'sanding', name: 'Sanding Tools' }
 ];
 
+const MAX_PRICE = 3000;
+
 export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 3000]);
+  const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
@@ -74,15 +76,22 @@ export default function Products() {
   
 
   const toggleBrand = (brand) => {
-    setSelectedBrands(prev =>
-      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
-    );
+    const newBrands = selectedBrands.includes(brand) 
+      ? selectedBrands.filter(b => b !== brand) 
+      : [...selectedBrands, brand];
+    setSelectedBrands(newBrands);
+    // Update URL to reflect brand selection
+    if (newBrands.length > 0) {
+      navigate(`/products?brand=${newBrands.map(b => encodeURIComponent(b)).join(',')}`);
+    } else {
+      navigate('/products');
+    }
   };
 
   const resetToBrandList = () => {
     setSelectedBrands([]);
     setSelectedCategories([]);
-    setPriceRange([0, 3000]);
+    setPriceRange([0, MAX_PRICE]);
     navigate('/products');
   };
 
@@ -249,7 +258,7 @@ export default function Products() {
                     <input
                       type="range"
                       min="0"
-                      max="3000"
+                      max={MAX_PRICE}
                       step="50"
                       value={priceRange[1]}
                       onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
@@ -264,7 +273,8 @@ export default function Products() {
                     onClick={() => {
                       setSelectedBrands([]);
                       setSelectedCategories([]);
-                      setPriceRange([0, 3000]);
+                      setPriceRange([0, MAX_PRICE]);
+                      navigate('/products');
                     }}
                     className="w-full text-sm text-primary-600 hover:text-primary-700 font-medium"
                   >
@@ -377,7 +387,8 @@ export default function Products() {
                   onClick={() => {
                     setSelectedBrands([]);
                     setSelectedCategories([]);
-                    setPriceRange([0, 3000]);
+                    setPriceRange([0, MAX_PRICE]);
+                    navigate('/products');
                   }}
                   className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
