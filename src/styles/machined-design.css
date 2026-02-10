@@ -444,6 +444,8 @@ body {
     }
     
     .hotspot.active .part-modal {
+        opacity: 1;
+        visibility: visible;
         transform: translateX(-50%) translateY(12px);
     }
 }
@@ -476,13 +478,10 @@ body {
     }
     
     .hotspot.active .part-modal {
+        opacity: 1;
+        visibility: visible;
         transform: translate(-50%, -50%);
     }
-}
-
-.hotspot.active .part-modal {
-    opacity: 1;
-    visibility: visible;
 }
 
 .part-meta {
