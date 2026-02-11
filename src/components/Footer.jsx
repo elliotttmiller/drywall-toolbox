@@ -46,23 +46,20 @@ export default function Footer() {
           Navigation
         </h5>
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.6, color: 'black' }}>
+          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.9, color: 'black' }}>
             <Link to="/products" style={{ textDecoration: 'none', color: 'black' }}>
-              Catalog
+              Shop
             </Link>
           </li>
-          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.6, color: 'black' }}>
+          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.9, color: 'black' }}>
             <Link to="/parts" style={{ textDecoration: 'none', color: 'black' }}>
               Parts Schematics
             </Link>
           </li>
-          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.6, color: 'black' }}>
+          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.9, color: 'black' }}>
             <Link to="/about" style={{ textDecoration: 'none', color: 'black' }}>
-              About Us
+              About us
             </Link>
-          </li>
-          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.6, color: 'black' }}>
-            Technical Docs
           </li>
         </ul>
       </div>
@@ -88,9 +85,9 @@ export default function Footer() {
           <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.6, color: 'black' }}>
             Safety Guides
           </li>
-          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.6, color: 'black' }}>
+          <li style={{ marginBottom: '12px', fontSize: '0.85rem', opacity: 0.9, color: 'black' }}>
             <Link to="/contact" style={{ textDecoration: 'none', color: 'black' }}>
-              Contact
+              Contact Us
             </Link>
           </li>
         </ul>
