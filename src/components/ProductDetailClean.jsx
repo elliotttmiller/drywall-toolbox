@@ -72,8 +72,10 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
     setQuantity(v);
   };
 
-  const price = product.price || 0;
-  const displayPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+  // Display logic: if numeric, show two decimals; if a non-empty string (e.g. 'Contact for Price'), show it as-is
+  const displayPrice = (typeof product.price === 'number')
+    ? product.price.toFixed(2)
+    : (product.price ? String(product.price) : '');
 
   return (
     <div className="bg-linear-to-br from-white via-white to-gray-50 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">

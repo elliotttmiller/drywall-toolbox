@@ -259,8 +259,8 @@ export default function Products() {
                   <h3 className="font-semibold text-gray-900 mb-3">Price Range</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm text-gray-600">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
+                      <span>${Number(priceRange[0]).toFixed(2)}</span>
+                      <span>${Number(priceRange[1]).toFixed(2)}</span>
                     </div>
                     <input
                       type="range"
@@ -385,7 +385,7 @@ export default function Products() {
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between">
                       <p className="text-2xl font-bold text-gray-900">
-                        ${product.price}
+                        {typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : (product.price ? product.price : '')}
                       </p>
                       <button
                         onClick={(e) => {

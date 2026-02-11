@@ -29,8 +29,10 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
-  const price = product.price || 0;
-  const displayPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+  // Display logic: if numeric, show two decimals; if a non-empty string (e.g. 'Contact for Price'), show it as-is
+  const displayPrice = (typeof product.price === 'number')
+    ? product.price.toFixed(2)
+    : (product.price ? String(product.price) : '');
 
   return (
     <div className="bg-white rounded-none sm:rounded-xl lg:rounded-2xl shadow-2xl overflow-hidden animate-fadeIn w-full max-w-6xl mx-auto h-full sm:max-h-[90vh] flex flex-col relative">
