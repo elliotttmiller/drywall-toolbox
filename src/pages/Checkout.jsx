@@ -568,7 +568,7 @@ export default function Checkout() {
               {inventoryStatus && !inventoryStatus.available && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-semibold text-red-900 mb-2">Items Out of Stock</p>
                       <ul className="text-sm text-red-800 space-y-1">
@@ -593,7 +593,7 @@ export default function Checkout() {
                 <div className="space-y-3 mb-6">
                   {cartItems.map(item => (
                     <div key={item.id} className="flex justify-between text-sm">
-                      <div className="flex-grow">
+                      <div className="grow">
                         <p className="font-semibold text-gray-900">{item.name}</p>
                         <p className="text-gray-500">Qty: {item.quantity}</p>
                       </div>

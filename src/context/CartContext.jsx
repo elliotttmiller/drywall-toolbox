@@ -16,7 +16,15 @@ export function CartProvider({ children }) {
     // Load cart from localStorage on init
     try {
       const savedCart = localStorage.getItem('drywall-cart');
-      return savedCart ? JSON.parse(savedCart) : [];
+      if (!savedCart) return [];
+      // parse and normalize stored items to ensure price is numeric
+      const parsed = JSON.parse(savedCart);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map(it => ({
+        ...it,
+        price: (typeof it.price === 'number') ? it.price : (Number(String(it.price).replace(/[^0-9.-]+/g, '')) || 0),
+        quantity: Number(it.quantity) || 0
+      }));
     } catch (error) {
       console.error('Failed to load cart from localStorage:', error);
       return [];
@@ -44,12 +52,16 @@ export function CartProvider({ children }) {
             : item
         );
       } else {
+        // normalize price to numeric value (strip $ and commas). If non-numeric, default to 0
+        const priceVal = (typeof product.price === 'number')
+          ? product.price
+          : (Number(String(product.price || '').replace(/[^0-9.-]+/g, '')) || 0);
         // Add new item to cart
         return [...prevItems, {
           id: product.id,
           name: product.name,
           brand: product.brand,
-          price: product.price || 0,
+          price: priceVal,
           image: product.image,
           part_number: product.part_number,
           quantity
@@ -82,7 +94,7 @@ export function CartProvider({ children }) {
   };
 
   const getCartTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + (Number(item.price || 0) * Number(item.quantity || 0)), 0);
   };
 
   const getCartCount = () => {
