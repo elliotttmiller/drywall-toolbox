@@ -1,0 +1,72 @@
+[
+  {
+    "brand": "Advance Equipment",
+    "name": "36 in Advance Equipment Easy Mixer",
+    "sku": "AEMPM36",
+    "price": "$16.49",
+    "source": "timothystoolbox.com"
+  },
+  {
+    "brand": "Advance Equipment",
+    "name": "Advance 10\" Heli-Arc Round Bottom Mud Pan with Grip",
+    "sku": "AEM10HRG",
+    "price": "$22.90",
+    "source": "alstapingtools.com"
+  },
+  {
+    "brand": "Bon Tool",
+    "name": "Bon Tool 13\" Thin Blad Lath Hatchet w/ Wood Handle 16oz.",
+    "sku": "BON13259B8",
+    "price": "$35.35",
+    "source": "bontool.com"
+  },
+  {
+    "brand": "Bon Tool",
+    "name": "Bon Tools Outside Corner Tool SS 1/8\" w/ Wood Handle",
+    "sku": "BON85118",
+    "price": "$10.30",
+    "source": "bontool.com"
+  },
+  {
+    "brand": "Bon Tool",
+    "name": "Bon Tool 15 Gallon Plastic Mixing Barrel",
+    "sku": "BON22816",
+    "price": "$104.70",
+    "source": "bontool.com"
+  },
+  {
+    "brand": "RotoZip",
+    "name": "1/8 in RotoZip ZipBit Guidepoint Drywall Bit",
+    "sku": "RZPGP8",
+    "price": "$11.99",
+    "source": "timothystoolbox.com"
+  },
+  {
+    "brand": "RotoZip",
+    "name": "Drywall Xbit 5/32\" Diacut-Out  [10]",
+    "sku": "RZPXBDW10",
+    "price": "$39.20",
+    "source": "walltools.com"
+  },
+  {
+    "brand": "RotoZip",
+    "name": "Rotomite Collet Kit with Nut [1/4\", 1/8\", 5/32\"]",
+    "sku": "RZPCN1",
+    "price": "$17.99",
+    "source": "alstapingtools.com"
+  },
+  {
+    "brand": "RotoZip",
+    "name": "Roto Zip GP50 50pk Guide Point Drywall Zip Bit",
+    "sku": "RZPGP50",
+    "price": "$61.99",
+    "source": "timothystoolbox.com"
+  },
+  {
+    "brand": "RotoZip",
+    "name": "Standard Point Drywall Zip Bit - Set of 16 Pieces",
+    "sku": "RZPZB16",
+    "price": "$18.99",
+    "source": "timothystoolbox.com"
+  }
+]
