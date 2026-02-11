@@ -877,21 +877,21 @@ aside input[type="range"],
     .site-header-inner {
         display: grid !important;
         grid-template-columns: auto 1fr auto;
-        gap: 24px;
+        gap: 48px;
     }
     
     .header-left {
         display: flex;
         align-items: center;
-        justify-self: start;
-        gap: 16px;
+        justify-self: end;
+        gap: 24px;
     }
     
     .header-right {
         display: flex;
         align-items: center;
-        justify-self: end;
-        gap: 16px;
+        justify-self: start;
+        gap: 24px;
     }
 
     /* Limit the side columns so nav items sit closer to the centered brand mark
@@ -899,7 +899,7 @@ aside input[type="range"],
        to nudge further in/out as needed. */
     .header-left,
     .header-right {
-        max-width: 360px;
+        max-width: 200px;
     }
     
     .header-center {
@@ -971,7 +971,7 @@ aside input[type="range"],
 .cart-area {
     display: flex;
     align-items: center;
-    margin-left: 12px;
+    margin-left: 24px;
 }
 
 .cart-toggle {
