@@ -618,7 +618,7 @@ export default function Parts() {
             marginBottom: '16px',
             letterSpacing: '-0.02em'
           }}>
-            INTERACTIVE SCHEMATIC VIEWER
+            SCHEMATIC DIAGRAMS
           </h2>
         </div>
 
