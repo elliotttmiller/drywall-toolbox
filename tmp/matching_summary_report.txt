@@ -1,0 +1,102 @@
+===============================================================================
+PRODUCT PRICE RESEARCH MATCHING REPORT
+===============================================================================
+Date: $(date +"%B %d, %Y")
+
+OVERVIEW
+--------
+The task agent previously researched 102 products from preferred vendor websites
+and found prices for all of them. However, many of these products are NOT in 
+our catalog. This report shows which researched products actually exist in our
+catalog and which need price updates.
+
+MATCHING STATISTICS
+-------------------
+Total researched products:        102
+Products matched to catalog:       65 (63.7%)
+  - Need price updates:            14 (21.5% of matches)
+  - Already have prices:           51 (78.5% of matches)
+Products not in catalog:           37 (36.3%)
+
+KEY FINDINGS
+------------
+1. Only 65 out of 102 researched products (63.7%) exist in our catalog
+2. Of the 65 matching products, only 14 need price updates
+3. 51 products already have prices in the catalog (no update needed)
+4. 37 researched products (36.3%) are NOT in our catalog at all
+
+PRODUCTS NEEDING PRICE UPDATES (14 total)
+------------------------------------------
+These 14 catalog products were matched to researched prices and currently
+lack pricing information:
+
+1. Bon Tool - Outside Corner Tool SS 3/8" with Wood Handle
+   Research found: $10.30 from bontool.com
+   Match score: 1.01 (Very High)
+
+2. USG Sheetrock - 12 in MATRIX Stainless Steel Mud Pan
+   Research found: $28.99 from timothystoolbox.com
+   Match score: 0.74 (Good)
+
+3. USG Sheetrock - 6 in Jab Saw
+   Research found: $16.49 from timothystoolbox.com
+   Match score: 0.72 (Good)
+
+4. DEWALT - 12 in Right Angle Flex Shaft (possible mismatch)
+   Research found: $17.95 from drywalltooldepot.com
+   Match score: 0.73 (Good - verify this match)
+
+5-10. Johnson Abrasives - Various sanding sponges
+   Research found prices ranging from $12.49 to $59.00
+   Match scores: 0.70-0.84 (Good to Very Good)
+
+11. Richard Tools - Triangle Fine Grit Corner Sponge
+    Research found: $8.49 from timothystoolbox.com
+    Match score: 0.77 (Good)
+
+12. Ox Tools - Whip Mixer
+    Research found: $17.99 from timothystoolbox.com
+    Match score: 0.71 (Good)
+
+ALREADY PRICED PRODUCTS (51 total)
+-----------------------------------
+51 products were matched and already have prices in the catalog.
+These do not need updates. Examples include:
+
+- Advance Equipment: 36 in Easy Mixer, 10" Mud Pans, Corner Trowels
+- RotoZip: Various Zip Bits and accessories
+- USG Sheetrock: Multiple taping knives, mud pans
+- AMES: Complete line of Comfort Grip knives
+- Wal-Board: Taping knives and mixers
+- And many more...
+
+NOT IN CATALOG (37 total)
+--------------------------
+37 researched products could not be matched to catalog items. These may be:
+- Products we don't carry
+- Products with different SKUs/names than expected
+- New products not yet added to catalog
+
+Examples of unmatched products:
+- Various specialty items from preferred vendors
+- Some brand variants or specific models
+- Items that may have been discontinued or renamed
+
+NEXT STEPS
+----------
+1. Review the 14 matched products needing price updates in:
+   /tmp/matched_prices_for_update.json
+
+2. Verify the matches are accurate (especially items with scores < 0.80)
+
+3. Update catalog prices for the 14 matched products
+
+4. Optionally review the 37 unmatched products to determine if they should
+   be added to the catalog
+
+OUTPUT FILES
+------------
+- /tmp/matched_prices_for_update.json - Complete matching data with all details
+- /tmp/matching_summary_report.txt - This report
+
+===============================================================================

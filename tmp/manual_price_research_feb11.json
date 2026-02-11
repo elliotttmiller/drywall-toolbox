@@ -1,0 +1,83 @@
+[
+  {
+    "brand": "Arrow Fastener",
+    "name": "Arrow RH200S Heavy Duty Rivet Tool",
+    "sku": "ARWRH200S",
+    "price": "$22.99",
+    "price_numeric": "22.99",
+    "source": "timothystoolbox.com",
+    "price_found": true
+  },
+  {
+    "brand": "RotoZip",
+    "name": "1/8 in RotoZip ZipBit Guidepoint Drywall Bit",
+    "sku": "GP8",
+    "price": "$11.99",
+    "price_numeric": "11.99",
+    "source": "timothystoolbox.com",
+    "price_found": true
+  },
+  {
+    "brand": "RotoZip",
+    "name": "RotoZip GP16 Guide Point Drywall Bits 16-pack",
+    "sku": "GP16",
+    "price": "$22.99",
+    "price_numeric": "22.99",
+    "source": "timothystoolbox.com",
+    "price_found": true
+  },
+  {
+    "brand": "RotoZip",
+    "name": "Roto Zip GP50 50pk Guide Point Drywall Zip Bit",
+    "sku": "GP50",
+    "price": "$61.99",
+    "price_numeric": "61.99",
+    "source": "timothystoolbox.com",
+    "price_found": true
+  },
+  {
+    "brand": "Advance Equipment",
+    "name": "Advance Cool Grip Handle Taping Knife - 8\" BS",
+    "sku": "36608",
+    "price": "$15.99",
+    "price_numeric": "15.99",
+    "source": "alstapingtools.com",
+    "price_found": true
+  },
+  {
+    "brand": "Advance Equipment",
+    "name": "Advance Cool Grip Handle Taping Knife - 10\" BS",
+    "sku": "36610",
+    "price": "$16.99",
+    "price_numeric": "16.99",
+    "source": "alstapingtools.com",
+    "price_found": true
+  },
+  {
+    "brand": "Advance Equipment",
+    "name": "Advance EM94 28 inch Mud Mixer",
+    "sku": "EM94",
+    "price": "$21.00",
+    "price_numeric": "21.00",
+    "source": "alstapingtools.com",
+    "price_found": true
+  },
+  {
+    "brand": "Bon Tool",
+    "name": "Bon Tool 14 inch Stainless Steel Mud Pan",
+    "sku": "15-448",
+    "price": "$36.99",
+    "price_numeric": "36.99",
+    "source": "northerntool.com",
+    "price_found": true
+  },
+  {
+    "brand": "Atlas Gloves",
+    "name": "Atlas Therma Fit Glove with Rubber Palm",
+    "sku": "ATL451",
+    "price": "$6.99",
+    "price_numeric": "6.99",
+    "source": "acehardware.com",
+    "price_found": true
+  }
+]

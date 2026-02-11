@@ -1,0 +1,1367 @@
+[
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "36 in Advance Equipment Easy Mixer",
+      "sku": "AEMPM36",
+      "price": "$16.49",
+      "price_numeric": "16.49",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/products/advance-easy-mixer-w-36-in-shaft"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "36 in Advance Equipment Easy Mixer",
+      "sku": "AEMPM36",
+      "current_price": "$16.49",
+      "current_price_numeric": "16.49"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "10\" Heli-Arc Round Bottom Mud Pan with Grip",
+      "sku": "AEM10HRG",
+      "price": "$22.90",
+      "price_numeric": "22.90",
+      "source": "alstapingtools.com",
+      "search_url": "https://www.alstapingtools.com/advance-10-heli-arc-welded-stainless-mud-pan-rounded-bottom/"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 10\" Heli-Arc Round Bottom Mud Pan with Grip",
+      "sku": "10-hrg",
+      "current_price": "$29.95",
+      "current_price_numeric": "29.95"
+    },
+    "match_score": 1.048,
+    "match_reason": "Brand: 1.00, Name: 0.91, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "223SS Outside 90 Corner Trowel",
+      "sku": "223SS",
+      "price": "$16.99",
+      "price_numeric": "16.99",
+      "source": "alstapingtools.com",
+      "search_url": "https://www.alstapingtools.com/223ss/"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance Outside 90 Corner Trowel with Cool Grip II Handle - 223ss",
+      "sku": "223ss",
+      "current_price": "$16.99",
+      "current_price_numeric": "16.99"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "Boomerang Drywall Mud Mixer 28 inch",
+      "sku": "AEMBOOMERANG28",
+      "price": "$22.99",
+      "price_numeric": "22.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/mud-mixing-tools"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 28\" Boomerang Mixer with Pail Saver Tip - br716",
+      "sku": "br716",
+      "current_price": "$49.99",
+      "current_price_numeric": "49.99"
+    },
+    "match_score": 0.748,
+    "match_reason": "Brand: 1.00, Name: 0.41, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "Easy Mixer with 28 inch shaft",
+      "sku": "AEMEM28",
+      "price": "$15.99",
+      "price_numeric": "15.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/mud-mixing-tools"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 28\" Boomerang Mixer with Pail Saver Tip - br716",
+      "sku": "br716",
+      "current_price": "$49.99",
+      "current_price_numeric": "49.99"
+    },
+    "match_score": 0.781,
+    "match_reason": "Brand: 1.00, Name: 0.47, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "10\" Heli-Arc Welded Stainless Steel Mud Pan",
+      "sku": "AEM10HA",
+      "price": "$14.99",
+      "price_numeric": "14.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/products/advanced-10-heliarc-mud-pan"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 10\" Heli-Arc Welded Stainless Mud Pan Rounded Bottom",
+      "sku": "10-HR",
+      "current_price": "$22.90",
+      "current_price_numeric": "22.9"
+    },
+    "match_score": 0.928,
+    "match_reason": "Brand: 1.00, Name: 0.71, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "12\" Mud Pan and Tape Holder",
+      "sku": "AEMPH12",
+      "price": "$18.49",
+      "price_numeric": "18.49",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/mud-pans-1"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "12 in Advance Equipment Mud Pan and Tape Holder",
+      "sku": "AEMPH12",
+      "current_price": "$18.49",
+      "current_price_numeric": "18.49"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "12\" Heli-Arc Round Bottom Mud Pan w/ Grip",
+      "sku": "AEM12HRG",
+      "price": "$19.99",
+      "price_numeric": "19.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/mud-pans-1"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "12 in Advanced Equipment Contoured Bottom Heliarc Mud Pan",
+      "sku": "AEM12HRG",
+      "current_price": "$23.64",
+      "current_price_numeric": "23.64"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "14\" Heli-Arc Round Bottom Mud Pan w/ Grip",
+      "sku": "AEM14HRG",
+      "price": "$21.99",
+      "price_numeric": "21.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/mud-pans-1"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 14\" Heli-Arc Round Bottom Mud Pan with Grip",
+      "sku": "14-HRG",
+      "current_price": "$32.50",
+      "current_price_numeric": "32.5"
+    },
+    "match_score": 1.026,
+    "match_reason": "Brand: 1.00, Name: 0.88, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "24\" Heli-Arc Welded Stainless Steel Mud Pan",
+      "sku": "AEM24HA",
+      "price": "$36.99",
+      "price_numeric": "36.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/mud-pans"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 24\" Heli-Arc Welded Stainless Mud Pan",
+      "sku": "24-H",
+      "current_price": "$41.50",
+      "current_price_numeric": "41.5"
+    },
+    "match_score": 1.002,
+    "match_reason": "Brand: 1.00, Name: 0.84, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Advance Equipment",
+      "name": "24\" Blue Steel Taping Knife with 18\" Handle",
+      "sku": "AEM24BS",
+      "price": "$42.50",
+      "price_numeric": "42.50",
+      "source": "drywalltooldepot.com",
+      "search_url": "https://www.drywalltooldepot.com/"
+    },
+    "catalog_product": {
+      "brand": "Advance Equipment",
+      "name": "Advance 24\" Curved Blade Knife w/ 16\" Wood Hanlde",
+      "sku": "24-CB",
+      "current_price": "$43.00",
+      "current_price_numeric": "43.0"
+    },
+    "match_score": 0.803,
+    "match_reason": "Brand: 1.00, Name: 0.51, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Bon Tool",
+      "name": "13\" Thin Blade Lath Hatchet w/ Wood Handle 16oz.",
+      "sku": "BON13259B8",
+      "price": "$35.35",
+      "price_numeric": "35.35",
+      "source": "bontool.com",
+      "search_url": "https://www.bontool.com/thin-blade-lath-hatchet-13-259"
+    },
+    "catalog_product": {
+      "brand": "Bon Tool",
+      "name": "Bon Tool 13\" Thin Blad Lath Hatchet w/ Wood Handle 16oz.",
+      "sku": "BON13259B8",
+      "current_price": "$35.35",
+      "current_price_numeric": "35.35"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Bon Tool",
+      "name": "Outside Corner Tool SS 1/8\" w/ Wood Handle",
+      "sku": "BON85118",
+      "price": "$10.30",
+      "price_numeric": "10.30",
+      "source": "bontool.com",
+      "search_url": "https://www.bontool.com/outside-corner-tool-ss-1-8-wood-handle-85-118"
+    },
+    "catalog_product": {
+      "brand": "Bon Tool",
+      "name": "Bon Tool Outside Corner Tool SS 3/8\" with Wood Handle",
+      "sku": "BON85120",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 1.009,
+    "match_reason": "Brand: 1.00, Name: 0.85, Size match",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Bon Tool",
+      "name": "15 Gallon Plastic Mixing Barrel",
+      "sku": "BON22816",
+      "price": "$104.70",
+      "price_numeric": "104.70",
+      "source": "bontool.com",
+      "search_url": "https://www.bontool.com/mixing-barrel-15-gallon-plastic-22-816"
+    },
+    "catalog_product": {
+      "brand": "Bon Tool",
+      "name": "Bon Tool 15 Gallon Plastic Mixing Barrel",
+      "sku": "BON22816",
+      "current_price": "$104.70",
+      "current_price_numeric": "104.70"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RotoZip",
+      "name": "1/8 in ZipBit Guidepoint Drywall Bit (8pk)",
+      "sku": "RZPGP8",
+      "price": "$11.99",
+      "price_numeric": "11.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/products/rotozip-1-8-gp8-guide-point-drywall-cutting-bit-8-pack"
+    },
+    "catalog_product": {
+      "brand": "RotoZip",
+      "name": "1/8 in RotoZip ZipBit Guidepoint Drywall Bit",
+      "sku": "RZPGP8",
+      "current_price": "$11.99",
+      "current_price_numeric": "11.99"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RotoZip",
+      "name": "Drywall Xbit 5/32\" [10]",
+      "sku": "RZPXBDW10",
+      "price": "$39.20",
+      "price_numeric": "39.20",
+      "source": "walltools.com",
+      "search_url": "https://walltools.com/rotozip-5-32-drywall-xbits-10pack-ROTO-xb-dw10/"
+    },
+    "catalog_product": {
+      "brand": "RotoZip",
+      "name": "Drywall Xbit 5/32\" Diacut-Out  [10]",
+      "sku": "RZPXBDW10",
+      "current_price": "$39.20",
+      "current_price_numeric": "39.20"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RotoZip",
+      "name": "GP50 50pk Guide Point Drywall Zip Bit",
+      "sku": "RZPGP50",
+      "price": "$61.99",
+      "price_numeric": "61.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/products/rotozip-1-8-gp50-guide-point-drywall-cutting-bit-50-pack"
+    },
+    "catalog_product": {
+      "brand": "RotoZip",
+      "name": "Roto Zip GP50 50pk Guide Point Drywall Zip Bit",
+      "sku": "RZPGP50",
+      "current_price": "$61.99",
+      "current_price_numeric": "61.99"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RotoZip",
+      "name": "Standard Point Drywall Zip Bit 16pc",
+      "sku": "RZPZB16",
+      "price": "$18.99",
+      "price_numeric": "18.99",
+      "source": "timothystoolbox.com",
+      "search_url": "https://timothystoolbox.com/collections/drywall-bits"
+    },
+    "catalog_product": {
+      "brand": "RotoZip",
+      "name": "Standard Point Drywall Zip Bit - Set of 16 Pieces",
+      "sku": "RZPZB16",
+      "current_price": "$18.99",
+      "current_price_numeric": "18.99"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RotoZip",
+      "name": "GP50 50pk Guide Point Bit",
+      "sku": "RZPGP50-DD",
+      "price": "$77.88",
+      "price_numeric": "77.88",
+      "source": "drywalltooldepot.com",
+      "search_url": "https://www.drywalltooldepot.com/ROTOZIP-50pk-Guide-Point-Drywall-Zip-Bit-GP50-p/gp50.htm"
+    },
+    "catalog_product": {
+      "brand": "RotoZip",
+      "name": "Roto Zip GP50 50pk Guide Point Drywall Zip Bit",
+      "sku": "RZPGP50",
+      "current_price": "$61.99",
+      "current_price_numeric": "61.99"
+    },
+    "match_score": 0.923,
+    "match_reason": "Brand: 1.00, Name: 0.70, Model match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RotoZip",
+      "name": "Rotomite Collet Kit with Nut",
+      "sku": "RZPCN1",
+      "price": "$17.99",
+      "price_numeric": "17.99",
+      "source": "alstapingtools.com",
+      "search_url": "https://www.alstapingtools.com/rotozip-replacement-collet-nut-kit/"
+    },
+    "catalog_product": {
+      "brand": "RotoZip",
+      "name": "Rotomite Collet Kit with Nut [1/4\", 1/8\", 5/32\"]",
+      "sku": "RZPCN1",
+      "current_price": "$17.99",
+      "current_price_numeric": "17.99"
+    },
+    "match_score": 1.0,
+    "match_reason": "SKU exact match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "10\" Matrix Blue Steel Taping Knife",
+      "sku": "USG-10-MATRIX-BS",
+      "price": "$19.99",
+      "price_numeric": "19.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "10 in USG Sheetrock Tools MATRIX Blue Steel Finishing Knife",
+      "sku": "USG340014",
+      "current_price": "$17.96",
+      "current_price_numeric": "17.96"
+    },
+    "match_score": 0.816,
+    "match_reason": "Brand: 0.81, Name: 0.65, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "6\" Matrix SS Joint Knife",
+      "sku": "USG-6-MATRIX-SS",
+      "price": "$20.99",
+      "price_numeric": "20.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "6 in USG Sheetrock Tools MATRIX Stainless Steel Finishing Knife",
+      "sku": "USG340506",
+      "current_price": "$19.49",
+      "current_price_numeric": "19.49"
+    },
+    "match_score": 0.704,
+    "match_reason": "Brand: 0.81, Name: 0.47, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "10\" Professional Blue Steel Knife",
+      "sku": "USG-10-PRO-BS",
+      "price": "$14.49",
+      "price_numeric": "14.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "10 in USG Sheetrock Tools Professional Blue Steel Taping Knife",
+      "sku": "USG340028",
+      "current_price": "$37.49",
+      "current_price_numeric": "37.49"
+    },
+    "match_score": 0.834,
+    "match_reason": "Brand: 0.81, Name: 0.68, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "10\" Blue Steel Offset Knife",
+      "sku": "USG-10-OFFSET-BS",
+      "price": "$33.00",
+      "price_numeric": "33.00",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "10 in USG Sheetrock Tools MATRIX Blue Steel Finishing Knife",
+      "sku": "USG340014",
+      "current_price": "$17.96",
+      "current_price_numeric": "17.96"
+    },
+    "match_score": 0.736,
+    "match_reason": "Brand: 0.81, Name: 0.52, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "8\" Classic Blue Steel Knife",
+      "sku": "USG-8-CLASSIC-BS",
+      "price": "$15.99",
+      "price_numeric": "15.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "8 in USG Sheetrock Tools Professional Blue Steel Taping Knife",
+      "sku": "USG340029",
+      "current_price": "$42.49",
+      "current_price_numeric": "42.49"
+    },
+    "match_score": 0.756,
+    "match_reason": "Brand: 0.81, Name: 0.55, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "10\" Classic SS Knife",
+      "sku": "USG-10-CLASSIC-SS",
+      "price": "$18.99",
+      "price_numeric": "18.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "10 in USG Sheetrock Tools Classic Blue Steel Finishing Knife",
+      "sku": "USG340114",
+      "current_price": "$15.34",
+      "current_price_numeric": "15.34"
+    },
+    "match_score": 0.714,
+    "match_reason": "Brand: 0.81, Name: 0.48, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "12\" Classic SS Mud Pan",
+      "sku": "USG-12-MUD-PAN",
+      "price": "$23.99",
+      "price_numeric": "23.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "12 in USG Sheetrock Tools Classic Stainless Steel Drywall Mud Pan",
+      "sku": "USG340406",
+      "current_price": "$23.99",
+      "current_price_numeric": "23.99"
+    },
+    "match_score": 0.718,
+    "match_reason": "Brand: 0.81, Name: 0.49, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "12\" Matrix SS Mud Pan",
+      "sku": "USG-12-MATRIX-MP",
+      "price": "$28.99",
+      "price_numeric": "28.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "12 in USG Sheetrock Tools MATRIX Stainless Steel Mud Pan",
+      "sku": "USG340402",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.741,
+    "match_reason": "Brand: 0.81, Name: 0.53, Size match",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "USG Sheetrock",
+      "name": "6\" Drywall Jab Saw",
+      "sku": "USG-SAW-6",
+      "price": "$16.49",
+      "price_numeric": "16.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "USG Sheetrock Tools",
+      "name": "6 in USG Sheetrock Tools Jab Saw",
+      "sku": "USG340414",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.719,
+    "match_reason": "Brand: 0.81, Name: 0.49, Size match",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "8\" Comfort Grip SS Knife",
+      "sku": "AMES-8-SS-CG",
+      "price": "$9.99",
+      "price_numeric": "9.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 8\" Blue Steel Knife",
+      "sku": "RK4008",
+      "current_price": "$13.99",
+      "current_price_numeric": "13.99"
+    },
+    "match_score": 0.703,
+    "match_reason": "Brand: 1.00, Name: 0.34, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "10\" Comfort Grip SS Knife",
+      "sku": "AMES-10-SS-CG",
+      "price": "$10.49",
+      "price_numeric": "10.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 10\" Blue Steel Knife",
+      "sku": "RK4010",
+      "current_price": "$14.99",
+      "current_price_numeric": "14.99"
+    },
+    "match_score": 0.716,
+    "match_reason": "Brand: 1.00, Name: 0.36, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "12\" Comfort Grip SS Knife",
+      "sku": "AMES-12-SS-CG",
+      "price": "$10.99",
+      "price_numeric": "10.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 12\" Blue Steel Knife",
+      "sku": "RK4012",
+      "current_price": "$15.99",
+      "current_price_numeric": "15.99"
+    },
+    "match_score": 0.716,
+    "match_reason": "Brand: 1.00, Name: 0.36, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "8\" Feather-Lite BS Knife",
+      "sku": "AMES-8-FL",
+      "price": "$10.99",
+      "price_numeric": "10.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 8\" Blue Steel Knife",
+      "sku": "RK4008",
+      "current_price": "$13.99",
+      "current_price_numeric": "13.99"
+    },
+    "match_score": 0.947,
+    "match_reason": "Brand: 1.00, Name: 0.75, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "10\" Feather-Lite BS Knife",
+      "sku": "AMES-10-FL",
+      "price": "$11.99",
+      "price_numeric": "11.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 10\" Blue Steel Knife",
+      "sku": "RK4010",
+      "current_price": "$14.99",
+      "current_price_numeric": "14.99"
+    },
+    "match_score": 0.933,
+    "match_reason": "Brand: 1.00, Name: 0.72, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "8\" BS Finishing Knife",
+      "sku": "AMES-8-BS-DD",
+      "price": "$11.99",
+      "price_numeric": "11.99",
+      "source": "drywalltooldepot.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 8\" Blue Steel Knife",
+      "sku": "RK4008",
+      "current_price": "$13.99",
+      "current_price_numeric": "13.99"
+    },
+    "match_score": 0.714,
+    "match_reason": "Brand: 1.00, Name: 0.36, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "10\" BS Finishing Knife",
+      "sku": "AMES-10-BS-DD",
+      "price": "$13.99",
+      "price_numeric": "13.99",
+      "source": "drywalltooldepot.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 10\" Blue Steel Knife",
+      "sku": "RK4010",
+      "current_price": "$14.99",
+      "current_price_numeric": "14.99"
+    },
+    "match_score": 0.728,
+    "match_reason": "Brand: 1.00, Name: 0.38, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "AMES",
+      "name": "12\" BS Finishing Knife",
+      "sku": "AMES-12-BS-DD",
+      "price": "$14.99",
+      "price_numeric": "14.99",
+      "source": "drywalltooldepot.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ames",
+      "name": "Ames Feather-Lite 12\" Blue Steel Knife",
+      "sku": "RK4012",
+      "current_price": "$15.99",
+      "current_price_numeric": "15.99"
+    },
+    "match_score": 0.728,
+    "match_reason": "Brand: 1.00, Name: 0.38, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "6\" BS Taping Knife Textured",
+      "sku": "WAL-6-BS",
+      "price": "$7.00",
+      "price_numeric": "7.00",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "6 in Wal-Board Blue Steel Taping Knife w/ Textured Handle",
+      "sku": "WAL21016",
+      "current_price": "$5.68",
+      "current_price_numeric": "5.68"
+    },
+    "match_score": 0.88,
+    "match_reason": "Brand: 1.00, Name: 0.63, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "8\" BS Taping Knife Textured",
+      "sku": "WAL-8-BS",
+      "price": "$7.50",
+      "price_numeric": "7.50",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "8 in Wal-Board Blue Steel TH Taping Knife",
+      "sku": "WAL21018",
+      "current_price": "$8.00",
+      "current_price_numeric": "8"
+    },
+    "match_score": 0.804,
+    "match_reason": "Brand: 1.00, Name: 0.51, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "10\" BS Taping Knife Textured",
+      "sku": "WAL-10-BS",
+      "price": "$8.00",
+      "price_numeric": "8.00",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "10 in Wal-Board Stainless Steel Taping Knife w/ Textured Handle",
+      "sku": "WAL21040",
+      "current_price": "$6.35",
+      "current_price_numeric": "6.35"
+    },
+    "match_score": 0.864,
+    "match_reason": "Brand: 1.00, Name: 0.61, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "12\" BS Taping Knife Textured",
+      "sku": "WAL-12-BS",
+      "price": "$8.50",
+      "price_numeric": "8.50",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "12 in Wal-Board Stainless Steel Taping Knife w/ Textured Handle",
+      "sku": "WAL21042",
+      "current_price": "$9.15",
+      "current_price_numeric": "9.15"
+    },
+    "match_score": 0.864,
+    "match_reason": "Brand: 1.00, Name: 0.61, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "14\" BS Taping Knife Textured",
+      "sku": "WAL-14-BS",
+      "price": "$9.50",
+      "price_numeric": "9.50",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "6 in Wal-Board Blue Steel Taping Knife w/ Textured Handle",
+      "sku": "WAL21016",
+      "current_price": "$5.68",
+      "current_price_numeric": "5.68"
+    },
+    "match_score": 0.761,
+    "match_reason": "Brand: 1.00, Name: 0.60",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "8\" Tuff Grip BS Knife",
+      "sku": "WAL-8-TUFF",
+      "price": "$7.49",
+      "price_numeric": "7.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "8 in Wal-Board Blue Steel TH Taping Knife",
+      "sku": "WAL21018",
+      "current_price": "$8.00",
+      "current_price_numeric": "8"
+    },
+    "match_score": 0.736,
+    "match_reason": "Brand: 1.00, Name: 0.39, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "10\" Tuff Grip BS Knife",
+      "sku": "WAL-10-TUFF",
+      "price": "$8.49",
+      "price_numeric": "8.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "10 in Wal-Board Blue Steel TH Taping Knife",
+      "sku": "WAL21020",
+      "current_price": "$9.00",
+      "current_price_numeric": "9"
+    },
+    "match_score": 0.748,
+    "match_reason": "Brand: 1.00, Name: 0.41, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "12\" Tuff Grip BS Knife",
+      "sku": "WAL-12-TUFF",
+      "price": "$10.49",
+      "price_numeric": "10.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "12 in Wal-Board Blue Steel TH Taping Knife",
+      "sku": "WAL21022",
+      "current_price": "$10.00",
+      "current_price_numeric": "10"
+    },
+    "match_score": 0.748,
+    "match_reason": "Brand: 1.00, Name: 0.41, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "6\" Drywall Utility Jab Saw",
+      "sku": "WAL-SAW-6",
+      "price": "$8.79",
+      "price_numeric": "8.79",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "6 in Wal-Board Utility Knife",
+      "sku": "WAL15001",
+      "current_price": "$5.68",
+      "current_price_numeric": "5.68"
+    },
+    "match_score": 0.817,
+    "match_reason": "Brand: 1.00, Name: 0.53, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "24\" Quick Mixer",
+      "sku": "WAL-MIXER-24",
+      "price": "$12.99",
+      "price_numeric": "12.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "24 in Wal-Board Quick Mixer",
+      "sku": "WAL43001",
+      "current_price": "$15.15",
+      "current_price_numeric": "15.15"
+    },
+    "match_score": 0.91,
+    "match_reason": "Brand: 1.00, Name: 0.68, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Wal-Board",
+      "name": "36\" Quick Mixer",
+      "sku": "WAL-MIXER-36",
+      "price": "$13.99",
+      "price_numeric": "13.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Wal-Board",
+      "name": "36 in Wal-Board Quick Mixer",
+      "sku": "WAL43002",
+      "current_price": "$15.15",
+      "current_price_numeric": "15.15"
+    },
+    "match_score": 0.91,
+    "match_reason": "Brand: 1.00, Name: 0.68, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RENEGADE",
+      "name": "10\" BS Finishing Knife",
+      "sku": "REN-10-BS",
+      "price": "$7.88",
+      "price_numeric": "7.88",
+      "source": "drywalltooldepot.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Renegade",
+      "name": "10 in Renegade Tools Blue Steel Taping Knife",
+      "sku": "RGDTK10",
+      "current_price": "$8.49",
+      "current_price_numeric": "8.49"
+    },
+    "match_score": 0.777,
+    "match_reason": "Brand: 1.00, Name: 0.46, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "RENEGADE",
+      "name": "12\" BS Finishing Knife",
+      "sku": "REN-12-BS",
+      "price": "$8.38",
+      "price_numeric": "8.38",
+      "source": "drywalltooldepot.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Renegade",
+      "name": "12 in Renegade Tools Stainless Steel Taping Knife",
+      "sku": "RGDTK12SS",
+      "current_price": "$9.24",
+      "current_price_numeric": "9.24"
+    },
+    "match_score": 0.791,
+    "match_reason": "Brand: 1.00, Name: 0.49, Size match",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "DEWALT",
+      "name": "12\" BS Taping Knife",
+      "sku": "DEWALT-12-BS",
+      "price": "$17.95",
+      "price_numeric": "17.95",
+      "source": "drywalltooldepot.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "DeWalt",
+      "name": "12 in DeWALT Right Angle Flex Shaft",
+      "sku": "DEWDWARAFS",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.726,
+    "match_reason": "Brand: 1.00, Name: 0.38, Size match",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "DeWalt",
+      "name": "DWHT20123 Folding Jab Saw",
+      "sku": "DEWALT-FOLD-SAW",
+      "price": "$22.99",
+      "price_numeric": "22.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "DeWalt",
+      "name": "DeWALT Jab Saw",
+      "sku": "DEWDWHT20540",
+      "current_price": "$17.97",
+      "current_price_numeric": "17.97"
+    },
+    "match_score": 0.738,
+    "match_reason": "Brand: 1.00, Name: 0.56",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "DeWalt",
+      "name": "DWHT20540 Standard Jab Saw",
+      "sku": "DEWALT-STD-SAW",
+      "price": "$13.49",
+      "price_numeric": "13.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "DeWalt",
+      "name": "DeWALT Jab Saw",
+      "sku": "DEWDWHT20540",
+      "current_price": "$17.97",
+      "current_price_numeric": "17.97"
+    },
+    "match_score": 0.73,
+    "match_reason": "Brand: 1.00, Name: 0.55",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "TapeTech",
+      "name": "24\" Replacement Blades PFK24TT",
+      "sku": "TAPETECH-24-BLADE",
+      "price": "$58.00",
+      "price_numeric": "58.00",
+      "source": "alstapingtools.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "TapeTech",
+      "name": "Automatic Taper Replacement Cables - 3 Pack",
+      "sku": "054209-3",
+      "current_price": "$39.95",
+      "current_price_numeric": "39.95"
+    },
+    "match_score": 0.743,
+    "match_reason": "Brand: 1.00, Name: 0.57",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "TapeTech",
+      "name": "40\" Replacement Blades PFK40TT",
+      "sku": "TAPETECH-40-BLADE",
+      "price": "$95.00",
+      "price_numeric": "95.00",
+      "source": "alstapingtools.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "TapeTech",
+      "name": "Automatic Taper Replacement Cables - 3 Pack",
+      "sku": "054209-3",
+      "current_price": "$39.95",
+      "current_price_numeric": "39.95"
+    },
+    "match_score": 0.743,
+    "match_reason": "Brand: 1.00, Name: 0.57",
+    "needs_price_update": false
+  },
+  {
+    "research_product": {
+      "brand": "Johnson Abrasives",
+      "name": "Sanding Sponge Fine/Med (6pk)",
+      "sku": "JOHN-SPONGE-6",
+      "price": "$12.49",
+      "price_numeric": "12.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Johnson Abrasives",
+      "name": "Big-Grip Sanding Sponge - Fine/Medium",
+      "sku": "JAB1104",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.838,
+    "match_reason": "Brand: 1.00, Name: 0.73",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Johnson Abrasives",
+      "name": "Sanding Sponge Fine/Med (30pk)",
+      "sku": "JOHN-SPONGE-30",
+      "price": "$56.99",
+      "price_numeric": "56.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Johnson Abrasives",
+      "name": "Big-Grip Sanding Sponge - Fine/Medium",
+      "sku": "JAB1104",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.831,
+    "match_reason": "Brand: 1.00, Name: 0.72",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Johnson Abrasives",
+      "name": "Single-Angle Corner Sponge (24pk)",
+      "sku": "JOHN-SA-24",
+      "price": "$59.00",
+      "price_numeric": "59.00",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Johnson Abrasives",
+      "name": "5 in x 3 in x 1 in Johnson Abrasives Single-Angle Corner Sanding Sponge - Fine",
+      "sku": "JAB1108",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.7,
+    "match_reason": "Brand: 1.00, Name: 0.50",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Johnson Abrasives",
+      "name": "Single-Angle Corner Sponge (6pk)",
+      "sku": "JOHN-SA-6",
+      "price": "$14.99",
+      "price_numeric": "14.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Johnson Abrasives",
+      "name": "5 in x 3 in x 1 in Johnson Abrasives Single-Angle Corner Sanding Sponge - Fine",
+      "sku": "JAB1108",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.703,
+    "match_reason": "Brand: 1.00, Name: 0.50",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Richard Tools",
+      "name": "Triangle Fine Grit Corner Sponge",
+      "sku": "RICH-TRI-SPONGE",
+      "price": "$8.49",
+      "price_numeric": "8.49",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Richard",
+      "name": "Richard 9\"X2.5\" Triangle Fine Grit Corner Sponge",
+      "sku": "RIC07028",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.766,
+    "match_reason": "Brand: 0.70, Name: 0.81",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Ox Tools",
+      "name": "Pro Series Mud Pan Whip Mixer",
+      "sku": "OX-WHIP",
+      "price": "$17.99",
+      "price_numeric": "17.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ox Tools",
+      "name": "Whip Mixer",
+      "sku": "OXGP121805",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.708,
+    "match_reason": "Brand: 1.00, Name: 0.51",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Ox Tools",
+      "name": "Pro Mega Whip Mixer",
+      "sku": "OX-MEGA-WHIP",
+      "price": "$29.99",
+      "price_numeric": "29.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Ox Tools",
+      "name": "Whip Mixer",
+      "sku": "OXGP121805",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.814,
+    "match_reason": "Brand: 1.00, Name: 0.69",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Better Than Ever",
+      "name": "Super Sander Pole Sander Complete",
+      "sku": "BTE-POLE",
+      "price": "$58.99",
+      "price_numeric": "58.99",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Better Than Ever",
+      "name": "Super Sander Pole Sander",
+      "sku": "BTESS48",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.905,
+    "match_reason": "Brand: 1.00, Name: 0.84",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Trim-Tex",
+      "name": "885 Dual Angle Sanding Block (100pk)",
+      "sku": "TRIM-885-100",
+      "price": "$259.00",
+      "price_numeric": "259.00",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Trim-Tex",
+      "name": "Dual Angle Sanding Block Fine Grit [24]",
+      "sku": "TTI885F",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.827,
+    "match_reason": "Brand: 1.00, Name: 0.71",
+    "needs_price_update": true
+  },
+  {
+    "research_product": {
+      "brand": "Trim-Tex",
+      "name": "885 Dual Angle Sanding Block (24pk)",
+      "sku": "TRIM-885-24",
+      "price": "$69.00",
+      "price_numeric": "69.00",
+      "source": "timothystoolbox.com",
+      "search_url": null
+    },
+    "catalog_product": {
+      "brand": "Trim-Tex",
+      "name": "Dual Angle Sanding Block Fine Grit [24]",
+      "sku": "TTI885F",
+      "current_price": "",
+      "current_price_numeric": ""
+    },
+    "match_score": 0.867,
+    "match_reason": "Brand: 1.00, Name: 0.78",
+    "needs_price_update": true
+  }
+]
