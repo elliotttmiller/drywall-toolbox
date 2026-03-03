@@ -655,13 +655,13 @@ aside input[type="range"],
     }
 }
 
-/* On mobile, center modal on screen with backdrop */
+/* On mobile, the in-hotspot modal is hidden; the overlay modal (rendered
+   outside the transform context in Parts.jsx) is used instead. */
 @media (max-width: 768px) {
     /* Improve hotspot touch targets and tap behavior on mobile */
     .hotspot {
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
-        /* raise z-index so hotspots sit above diagram but below modal/backdrop ordering */
         z-index: 1000;
     }
 
@@ -669,165 +669,15 @@ aside input[type="range"],
     .hotspot::after {
         content: '';
         position: absolute;
-        inset: -12px; /* expand 12px outwards on all sides */
+        inset: -12px;
         background: transparent;
         border-radius: inherit;
-        pointer-events: auto; /* allow the pseudo-element to receive taps which hit the hotspot */
+        pointer-events: auto;
     }
 
-    /* Add backdrop overlay when modal is active */
-    .hotspot.active::before {
-        content: '';
-        position: fixed !important;
-        inset: 0 !important;
-        background: rgba(15, 23, 42, 0.5) !important;
-        backdrop-filter: blur(4px) !important;
-        z-index: 1100 !important;
-        animation: fadeIn 200ms ease-out !important;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    .part-modal {
-        position: fixed !important;
-        bottom: auto !important;
-        right: auto !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        width: min(80vw, 250px) !important;
-        max-width: calc(100vw - 20px) !important;
-        max-height: 55vh !important;
-        min-height: auto !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        padding: 12px !important;
-        z-index: 2100 !important; /* ensure modal always sits above the backdrop */
-        border-radius: 12px !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
-        background: white !important;
-        border: 1px solid rgba(15, 23, 42, 0.1) !important;
-        pointer-events: auto !important;
-    }
-    
-    .part-modal h4 {
-        font-size: 0.62rem !important;
-        line-height: 1.1 !important;
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-        margin: 0 0 5px 0 !important;
-        padding: 0 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.08em !important;
-    }
-    
-    .part-modal .part-meta {
-        font-size: 0.56rem !important;
-        line-height: 1.2 !important;
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-        margin-bottom: 8px !important;
-        padding: 0 !important;
-        font-family: monospace !important;
-    }
-    
-    .part-modal span {
-        word-break: break-word !important;
-        overflow-wrap: break-word !important;
-    }
-    
-    .part-modal .alloy-button {
-        padding: 5px 10px !important;
-        font-size: 0.5rem !important;
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
-        letter-spacing: 0.05em !important;
-        line-height: 1.1 !important;
-    }
-    
-    .part-modal > div:last-child {
-        display: flex !important;
-        flex-direction: row !important;
-        gap: 6px !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        flex-wrap: nowrap !important;
-    }
-    
-    .part-modal > div:last-child span:first-child {
-        font-size: 0.9rem !important;
-        font-weight: 800 !important;
-        order: 0 !important;
-        flex: 0 0 auto !important;
-        font-family: monospace !important;
-    }
-    
-    .hotspot.active .part-modal {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: translate(-50%, -50%) !important;
-    }
-
-    /* Keep in-hotspot modal available on mobile; avoid forcing it hidden here. */
-}
-
-@media (max-width: 480px) {
-    .part-modal {
-        width: min(85vw, 230px) !important;
-        max-height: 50vh !important;
-        padding: 10px !important;
-        top: 50% !important;
-    }
-    
-    .part-modal h4 {
-        font-size: 0.58rem !important;
-        margin-bottom: 4px !important;
-    }
-    
-    .part-modal .part-meta {
-        font-size: 0.53rem !important;
-        margin-bottom: 7px !important;
-        line-height: 1.1 !important;
-    }
-    
-    .part-modal > div:last-child span:first-child {
-        font-size: 0.85rem !important;
-    }
-    
-    .part-modal .alloy-button {
-        padding: 4px 8px !important;
-        font-size: 0.47rem !important;
-    }
-}
-
-@media (max-width: 360px) {
-    .part-modal {
-        width: min(90vw, 210px) !important;
-        max-height: 48vh !important;
-        padding: 8px !important;
-        top: 50% !important;
-    }
-    
-    .part-modal h4 {
-        font-size: 0.55rem !important;
-        margin-bottom: 3px !important;
-    }
-    
-    .part-modal .part-meta {
-        font-size: 0.5rem !important;
-        margin-bottom: 5px !important;
-    }
-    
-    .part-modal > div:last-child span:first-child {
-        font-size: 0.8rem !important;
-    }
-    
-    .part-modal .alloy-button {
-        padding: 3px 6px !important;
-        font-size: 0.45rem !important;
+    /* Hide in-hotspot modal on mobile — overlay handles it */
+    .hotspot .part-modal {
+        display: none !important;
     }
 }
 

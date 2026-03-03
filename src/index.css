@@ -46,3 +46,36 @@
     padding: 40px 20px !important;
   }
 }
+
+/* About page responsive grids */
+@media (max-width: 768px) {
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .about-stat-item {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    padding: 28px 16px !important;
+  }
+
+  .about-mission-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  .about-features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .about-features-grid {
+    gap: 12px !important;
+  }
+}

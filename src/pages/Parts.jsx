@@ -18,6 +18,7 @@ import schematicPAHC10Img from '../../schematics/brands/TapeTech/products/PAHC10
 
 export default function Parts() {
   const [activeHotspot, setActiveHotspot] = useState(null);
+  const [activeHotspotPart, setActiveHotspotPart] = useState(null);
   const [selectedBrand, setSelectedBrand] = useState('TapeTech');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSchematic, setSelectedSchematic] = useState('tapetech-corner-roller');
@@ -605,6 +606,12 @@ export default function Parts() {
       type: 'cart'
     });
     setActiveHotspot(null); // Close modal after adding
+    setActiveHotspotPart(null);
+  };
+
+  const closeModal = () => {
+    setActiveHotspot(null);
+    setActiveHotspotPart(null);
   };
 
   // Reset zoom/pan when schematic changes
@@ -698,7 +705,7 @@ export default function Parts() {
         minHeight: '100vh'
       }} 
       className={`section-enter ${isFullscreen ? 'fullscreen-mode' : ''}`}
-      onClick={() => setActiveHotspot(null)}
+      onClick={closeModal}
     >
       <div style={{
         maxWidth: isFullscreen ? '100%' : '1400px',
@@ -911,24 +918,17 @@ export default function Parts() {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setActiveHotspot(activeHotspot === part.id ? null : part.id);
+                      if (activeHotspot === part.id) {
+                        closeModal();
+                      } else {
+                        setActiveHotspot(part.id);
+                        setActiveHotspotPart(part);
+                      }
                     }}
                     title={`${part.name} (${part.sku})`}
                   >
+                    {/* Desktop inline modal (hidden on mobile via CSS) */}
                     <div className="part-modal" onClick={(e) => e.stopPropagation()}>
-                    {/* Close button for mobile */}
-                    <button 
-                      className="modal-close-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveHotspot(null);
-                      }}
-                      aria-label="Close"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
                     <h4 style={{
                       textTransform: 'uppercase',
                       fontSize: '0.75rem',
@@ -975,7 +975,82 @@ export default function Parts() {
         )}
       </div>
 
-      {/* Toast Notification */}
+      {/* Mobile Part Modal Overlay — rendered outside the transform context */}
+      {activeHotspotPart && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="mobile-modal-backdrop"
+            onClick={closeModal}
+          />
+          {/* Modal */}
+          <div
+            className="mobile-part-modal-overlay"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="mobile-modal-close-btn"
+              onClick={closeModal}
+              aria-label="Close"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <h4 style={{
+              textTransform: 'uppercase',
+              fontSize: '0.8rem',
+              fontWeight: '700',
+              letterSpacing: '0.08em',
+              marginBottom: '10px',
+              paddingRight: '32px',
+              lineHeight: '1.35',
+              wordBreak: 'break-word',
+              color: '#0f172a'
+            }}>
+              {activeHotspotPart.name}
+            </h4>
+            <div className="part-meta" style={{ marginBottom: '14px', fontSize: '0.78rem' }}>
+              SKU: {activeHotspotPart.sku} | {activeHotspotPart.material}
+              {activeHotspotPart.quantity > 1 && ` | Qty: ${activeHotspotPart.quantity}`}
+            </div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: '14px',
+              borderTop: '1px solid rgba(15,23,42,0.08)',
+              gap: '12px'
+            }}>
+              <span style={{
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 800,
+                fontSize: '1.3rem',
+                color: 'var(--tension-accent)'
+              }}>
+                ${activeHotspotPart.price.toFixed(2)}
+              </span>
+              <button
+                className="alloy-button"
+                style={{
+                  padding: '10px 20px',
+                  fontSize: '0.75rem',
+                  borderRadius: '8px',
+                  clipPath: 'none',
+                  fontWeight: '700'
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart(activeHotspotPart);
+                }}
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {toast && (
         <Toast
           message={toast.message}
