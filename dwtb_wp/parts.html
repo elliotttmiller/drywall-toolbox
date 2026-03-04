@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Drywall Toolbox - Parts & Schematics. Find replacement parts, technical diagrams, and service documentation for professional drywall tools.">
+    <meta name="theme-color" content="#f8fafc">
+    <title>Drywall Toolbox - Parts &amp; Schematics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ── CSS Variables ────────────────────────────────────────────────── */
+        :root {
+            --color-primary-50: #eff6ff;
+            --color-primary-100: #dbeafe;
+            --color-primary-200: #bfdbfe;
+            --color-primary-400: #60a5fa;
+            --color-primary-500: #3b82f6;
+            --color-primary-600: #2563eb;
+            --color-primary-700: #1d4ed8;
+            --alloy-base: #f8fafc;
+            --alloy-mid: #e2e8f0;
+            --alloy-deep: #2563eb;
+            --tension-accent: #2563eb;
+            --machined-border: rgba(15, 23, 42, 0.08);
+            --surface-glass: rgba(255, 255, 255, 0.7);
+            --font-main: 'Inter', sans-serif;
+            --ease-tension: cubic-bezier(0.16, 1, 0.3, 1);
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --primary-500: #3b82f6;
+        }
+
+        /* ── Reset ────────────────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { overflow-x: hidden; max-width: 100vw; }
+        body {
+            background: var(--alloy-base);
+            color: #0f172a;
+            font-family: var(--font-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ── Dot-texture background ───────────────────────────────────────── */
+        .machined-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: radial-gradient(circle at 2px 2px, var(--machined-border) 1px, transparent 0);
+            background-size: 40px 40px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* ── Section animation ────────────────────────────────────────────── */
+        .section-enter {
+            animation: sectionIn 0.6s var(--ease-tension) forwards;
+        }
+        @keyframes sectionIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; }
+        }
+
+        /* ── Typography ───────────────────────────────────────────────────── */
+        .machined-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+        }
+
+        /* ── Buttons ──────────────────────────────────────────────────────── */
+        .alloy-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            background: var(--alloy-deep);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.75rem;
+            clip-path: polygon(0% 0%, 95% 0%, 100% 25%, 100% 100%, 5% 100%, 0% 75%);
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-main);
+        }
+        .alloy-button:hover { transform: scale(1.02); }
+
+        /* ── Header ───────────────────────────────────────────────────────── */
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            width: 100%;
+            min-height: clamp(80px, 12vw, 90px);
+            background: var(--surface-glass);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--machined-border);
+            z-index: 1000;
+            padding: 0.75rem 0;
+        }
+        .site-header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 clamp(0.75rem, 3vw, 2rem);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 24px;
+            align-items: center;
+        }
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-logo-link { display: flex; align-items: center; text-decoration: none; }
+        .site-logo { width: 160px; height: auto; display: block; }
+        .nav-links { display: flex; align-items: center; gap: 18px; }
+        .nav-link {
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity 150ms ease;
+            white-space: nowrap;
+        }
+        .nav-link:hover { opacity: 0.6; }
+        .nav-link.active { color: var(--tension-accent); }
+        .header-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+            transition: opacity 150ms ease;
+        }
+        .header-icon:hover { opacity: 0.7; }
+        .cart-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: var(--tension-accent);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 0 5px;
+        }
+        .shop-dropdown-wrapper { position: relative; }
+        .shop-dropdown-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            font-family: var(--font-main);
+            transition: opacity 150ms ease;
+        }
+        .shop-dropdown-btn:hover { opacity: 0.6; }
+        .shop-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px); left: 0;
+            background: white;
+            border: 1px solid var(--machined-border);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 160px;
+            z-index: 1001;
+        }
+        .shop-dropdown-wrapper:hover .shop-dropdown-menu,
+        .shop-dropdown-wrapper:focus-within .shop-dropdown-menu { display: block; }
+        .dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            color: #0f172a;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 150ms;
+        }
+        .dropdown-item:hover { background-color: var(--alloy-base); }
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #0f172a;
+            padding: 8px;
+        }
+        .header-mobile-menu {
+            display: none;
+            border-top: 1px solid var(--machined-border);
+            background: white;
+            padding: 16px;
+        }
+        .header-mobile-menu.is-open { display: block; }
+        .mobile-nav-link {
+            display: block;
+            padding: 14px 16px;
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .mobile-nav-link:hover { color: var(--tension-accent); background: var(--color-primary-50); }
+
+        @media (max-width: 1024px) {
+            .site-header-inner {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 70px;
+                padding: 0 12px;
+            }
+            .header-left, .header-right { display: none; }
+            .header-center { flex: 1; justify-content: center; }
+            .mobile-nav-toggle { display: flex; }
+            .site-logo { width: 140px; }
+        }
+
+        /* ── Page layout ──────────────────────────────────────────────────── */
+        #page { min-height: 100vh; display: flex; flex-direction: column; }
+        #content { flex: 1; padding-top: clamp(80px, 12vw, 90px); }
+        .site-main { width: 100%; }
+
+        /* ── Parts Page ───────────────────────────────────────────────────── */
+        .parts-section {
+            padding: clamp(60px, 8vw, 100px) clamp(1rem, 5vw, 2.5rem);
+        }
+        .parts-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .parts-hero-title {
+            color: var(--primary-600);
+            margin-bottom: 8px;
+        }
+        .parts-intro {
+            max-width: 680px;
+            opacity: 0.7;
+            line-height: 1.7;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+        }
+
+        /* Schematic Viewer */
+        .parts-schematic-viewer {
+            background: white;
+            border: 1px solid var(--machined-border);
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .schematic-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+            text-align: center;
+            color: rgba(15,23,42,0.4);
+        }
+        .schematic-placeholder p {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: #0f172a;
+            opacity: 0.6;
+        }
+        .schematic-sub {
+            font-size: 0.8rem;
+            opacity: 0.5;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Filters */
+        .parts-filter-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .parts-filter-item {}
+        .machined-label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            color: var(--primary-600);
+        }
+        .machined-input {
+            padding: 12px 16px;
+            border: 1px solid var(--machined-border);
+            background: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-main);
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s;
+            color: #0f172a;
+            min-width: 180px;
+            cursor: pointer;
+        }
+        .machined-input:focus { border-color: var(--primary-600); }
+
+        /* CTA */
+        .parts-cta {
+            background: var(--color-primary-50);
+            border: 1px solid var(--color-primary-100);
+            padding: 32px;
+        }
+        .parts-cta h3 {
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            color: var(--primary-600);
+        }
+        .parts-cta p {
+            opacity: 0.7;
+            font-size: 0.875rem;
+            margin-bottom: 24px;
+        }
+
+        /* ── Footer ───────────────────────────────────────────────────────── */
+        .site-footer {
+            background: white;
+            border-top: 1px solid var(--machined-border);
+        }
+        .footer-content {
+            padding: 80px clamp(1rem, 5vw, 2.5rem);
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+        }
+        .footer-brand-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-brand-col img { width: 200px; max-width: 100%; height: auto; }
+        .footer-social-links { display: flex; gap: 16px; margin-top: 8px; }
+        .footer-social-links a { color: var(--alloy-deep); text-decoration: none; transition: opacity 0.2s; }
+        .footer-social-links a:hover { opacity: 0.7; }
+        .footer-col h5 {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            margin: 0 0 24px;
+            font-weight: 800;
+            color: var(--primary-600);
+        }
+        .footer-nav-list { list-style: none; padding: 0; margin: 0; }
+        .footer-nav-list li { margin-bottom: 12px; font-size: 0.85rem; opacity: 0.6; }
+        .footer-nav-list a { text-decoration: none; color: #0f172a; }
+        .footer-nav-list a:hover { opacity: 1; color: var(--primary-600); }
+        .footer-copyright {
+            border-top: 1px solid var(--machined-border);
+            padding: 24px 40px;
+            text-align: center;
+            background: #f8fafc;
+        }
+        .footer-copyright p { font-size: 0.8rem; color: rgba(15,23,42,0.7); margin: 0; font-weight: 500; }
+
+        @media (max-width: 768px) {
+            .footer-content { flex-direction: column; align-items: center; }
+            .footer-col { width: 100%; max-width: 360px; text-align: center; }
+            .footer-nav-list { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="machined-bg" aria-hidden="true"></div>
+
+<div id="page">
+
+    <!-- ── HEADER ──────────────────────────────────────────────────────────── -->
+    <header class="site-header" role="banner">
+        <div class="site-header-inner">
+            <div class="header-left">
+                <nav class="nav-links" aria-label="Primary Navigation">
+                    <div class="shop-dropdown-wrapper">
+                        <button class="shop-dropdown-btn" aria-haspopup="true" aria-expanded="false">
+                            Shop
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="shop-dropdown-menu" role="menu">
+                            <a class="dropdown-item" role="menuitem" href="/shop/">All Products</a>
+                            <a class="dropdown-item" role="menuitem" href="/shop/?view=brands">Brands</a>
+                        </div>
+                    </div>
+                    <a href="/parts/" class="nav-link active">Parts</a>
+                </nav>
+            </div>
+            <div class="header-center">
+                <a href="/" class="header-logo-link" aria-label="Drywall Toolbox – Home">
+                    <img src="./logo2.svg" alt="Drywall Toolbox" class="site-logo" width="160" height="53">
+                </a>
+            </div>
+            <div class="header-right">
+                <nav class="nav-links" aria-label="Secondary Navigation">
+                    <a href="/about/" class="nav-link">About</a>
+                    <a href="/contact/" class="nav-link">Contact</a>
+                </nav>
+                <div style="margin-left:12px;">
+                    <button class="header-icon" aria-label="Open cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="cart-badge">0</span>
+                    </button>
+                </div>
+            </div>
+            <button class="header-icon mobile-nav-toggle" id="mobile-cart" aria-label="Open cart" style="display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge">0</span>
+            </button>
+            <button class="mobile-nav-toggle" id="mobile-menu-toggle"
+                    aria-controls="mobile-menu" aria-expanded="false"
+                    aria-label="Toggle navigation menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true" id="icon-hamburger">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true" id="icon-close" style="display:none;">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="header-mobile-menu" role="dialog" aria-label="Mobile navigation" aria-hidden="true">
+            <nav>
+                <a href="/shop/" class="mobile-nav-link">Shop — All Products</a>
+                <a href="/shop/?view=brands" class="mobile-nav-link">Shop — Brands</a>
+                <a href="/parts/" class="mobile-nav-link active">Parts</a>
+                <a href="/about/" class="mobile-nav-link">About</a>
+                <a href="/contact/" class="mobile-nav-link">Contact</a>
+            </nav>
+        </div>
+    </header><!-- .site-header -->
+
+    <div id="content" class="site-content">
+        <main id="main" class="site-main" role="main">
+
+            <section class="section-enter parts-section">
+                <div class="parts-inner">
+
+                    <h1 class="machined-title parts-hero-title">
+                        PARTS &amp;<br>SCHEMATICS
+                    </h1>
+
+                    <p class="parts-intro">
+                        Find replacement parts, technical diagrams, and service documentation for professional drywall taping and finishing tools from all major brands.
+                    </p>
+
+                    <!-- ── SCHEMATIC VIEWER ───────────────────────────────── -->
+                    <div class="parts-schematic-viewer" role="region" aria-label="Schematic viewer">
+                        <div class="schematic-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true" style="margin-bottom:16px; opacity:0.35;">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            </svg>
+                            <p>Schematic Viewer — Coming Soon</p>
+                            <p class="schematic-sub">
+                                Interactive parts diagrams will be available here. Contact us to request a specific schematic.
+                            </p>
+                        </div>
+                    </div><!-- .parts-schematic-viewer -->
+
+                    <!-- ── FILTERS ────────────────────────────────────────── -->
+                    <div class="parts-filter-row" role="search" aria-label="Filter parts">
+
+                        <div class="parts-filter-item">
+                            <label for="parts-brand" class="machined-label">Brand</label>
+                            <select id="parts-brand" class="machined-input" name="brand">
+                                <option value="">All Brands</option>
+                                <option value="tapetech">TapeTech</option>
+                                <option value="columbia-taping-tools">Columbia Taping Tools</option>
+                                <option value="asgard">Asgard</option>
+                                <option value="surpro">SurPro</option>
+                                <option value="spray-king">Spray King</option>
+                                <option value="graco">Graco</option>
+                            </select>
+                        </div>
+
+                        <div class="parts-filter-item">
+                            <label for="parts-tool-type" class="machined-label">Tool Type</label>
+                            <select id="parts-tool-type" class="machined-input" name="tool_type">
+                                <option value="">All Types</option>
+                                <option value="automatic-taper">Automatic Taper</option>
+                                <option value="flat-box">Flat Box</option>
+                                <option value="corner-roller">Corner Roller</option>
+                                <option value="pump">Pump</option>
+                                <option value="sander">Sander</option>
+                            </select>
+                        </div>
+
+                    </div><!-- .parts-filter-row -->
+
+                    <!-- ── CTA ────────────────────────────────────────────── -->
+                    <div class="parts-cta">
+                        <h3>CAN'T FIND YOUR PART?</h3>
+                        <p>
+                            Our parts specialists can locate any component for your drywall tools. Contact us with your tool model number.
+                        </p>
+                        <a href="/contact/" class="alloy-button" style="width:auto;">Request a Part</a>
+                    </div><!-- .parts-cta -->
+
+                </div><!-- .parts-inner -->
+            </section>
+
+        </main><!-- #main -->
+    </div><!-- #content -->
+
+    <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-brand-col">
+                <a href="/" aria-label="Drywall Toolbox – Home">
+                    <img src="./logo2.svg" alt="Drywall Toolbox" width="200" height="67">
+                </a>
+                <div class="footer-social-links" aria-label="Social media links">
+                    <a href="https://instagram.com/drywalltoolbox" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" aria-hidden="true">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                    <a href="https://facebook.com/drywalltoolbox" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/drywalltoolbox" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" aria-hidden="true">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 22.43.36a9 9 0 0 1-2.83 1.08A4.48 4.48 0 0 0 16.11 0c-2.47 0-4.48 2-4.48 4.48 0 .35.04.7.11 1.03C7.69 5.33 4.07 3.6 1.64.96a4.48 4.48 0 0 0-.61 2.25c0 1.56.79 2.93 2 3.73a4.49 4.49 0 0 1-2.03-.56v.06c0 2.17 1.55 3.99 3.6 4.4a4.53 4.53 0 0 1-2.02.08 4.49 4.49 0 0 0 4.19 3.12A9 9 0 0 1 1 19.54a12.73 12.73 0 0 0 6.88 2.02c8.26 0 12.78-6.84 12.78-12.78 0-.19 0-.38-.01-.57A9.13 9.13 0 0 0 23 3z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h5>Menu</h5>
+                <ul class="footer-nav-list" role="list">
+                    <li><a href="/shop/">Shop</a></li>
+                    <li><a href="/parts/">Parts</a></li>
+                    <li><a href="/about/">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Support</h5>
+                <ul class="footer-nav-list" role="list">
+                    <li><a href="/shipping-policy/">Shipping Policy</a></li>
+                    <li><a href="/return-portal/">Return Portal</a></li>
+                    <li><a href="/safety-guides/">Safety Guides</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <p>&copy; 2026 Drywall Toolbox.</p>
+        </div>
+    </footer><!-- .site-footer -->
+
+</div><!-- #page -->
+
+<script>
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const iconHamburger = document.getElementById('icon-hamburger');
+    const iconClose = document.getElementById('icon-close');
+    const mobileCartBtn = document.getElementById('mobile-cart');
+
+    if (menuToggle && mobileMenu) {
+        menuToggle.addEventListener('click', () => {
+            const isOpen = mobileMenu.classList.toggle('is-open');
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
+            mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+            if (iconHamburger) iconHamburger.style.display = isOpen ? 'none' : 'block';
+            if (iconClose)     iconClose.style.display     = isOpen ? 'block' : 'none';
+        });
+    }
+
+    function handleResize() {
+        const isMobile = window.innerWidth <= 1024;
+        if (mobileCartBtn) mobileCartBtn.style.display = isMobile ? 'flex' : 'none';
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+</script>
+</body>
+</html>
