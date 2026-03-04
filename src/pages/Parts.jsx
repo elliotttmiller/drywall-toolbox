@@ -35,6 +35,8 @@ export default function Parts() {
   const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
   const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 });
   const [hasMoved, setHasMoved] = useState(false);
+  // Ref to track pinch zoom state without triggering re-renders
+  const pinchRef = useRef({ active: false, initDist: 0, initScale: 1, initPanX: 0, initPanY: 0, centerX: 0, centerY: 0 });
   
   const schematicContainerRef = useRef(null);
   const schematicImageRef = useRef(null);
@@ -496,10 +498,24 @@ export default function Parts() {
         touch2.clientX - touch1.clientX,
         touch2.clientY - touch1.clientY
       );
-      if (schematicImageRef.current) {
-        schematicImageRef.current.dataset.initialDistance = distance;
-        schematicImageRef.current.dataset.initialScale = scale;
-      }
+      // Record pinch midpoint relative to the container center so we can
+      // keep the focal point stationary as the user zooms.
+      const container = schematicContainerRef.current;
+      const rect = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
+      const midX = (touch1.clientX + touch2.clientX) / 2;
+      const midY = (touch1.clientY + touch2.clientY) / 2;
+      // Offset from container center (our transform-origin)
+      const centerX = midX - (rect.left + rect.width / 2);
+      const centerY = midY - (rect.top + rect.height / 2);
+      pinchRef.current = {
+        active: true,
+        initDist: distance,
+        initScale: scale,
+        initPanX: position.x,
+        initPanY: position.y,
+        centerX,
+        centerY,
+      };
     } else if (e.touches.length === 1 && scale > 1) {
       // Pan gesture (only when zoomed in) - store initial position
       // Don't preventDefault yet - let tap events through
@@ -516,8 +532,8 @@ export default function Parts() {
   }, [scale, position]);
 
   const handleTouchMove = useCallback((e) => {
-    if (e.touches.length === 2 && schematicImageRef.current) {
-      // Pinch zoom with smooth scaling
+    if (e.touches.length === 2 && pinchRef.current.active) {
+      // Pinch zoom with smooth scaling towards the pinch midpoint
       e.preventDefault();
       e.stopPropagation();
       const touch1 = e.touches[0];
@@ -526,13 +542,28 @@ export default function Parts() {
         touch2.clientX - touch1.clientX,
         touch2.clientY - touch1.clientY
       );
-      const initialDistance = parseFloat(schematicImageRef.current.dataset.initialDistance || distance);
-      const initialScale = parseFloat(schematicImageRef.current.dataset.initialScale || scale);
-      
-      // Smooth pinch zoom with proper bounds
-      const zoomFactor = distance / initialDistance;
-      const newScale = Math.min(Math.max(zoomFactor * initialScale, 1), 4);
+      const { initDist, initScale, initPanX, initPanY, centerX, centerY } = pinchRef.current;
+      const zoomFactor = distance / initDist;
+      const newScale = Math.min(Math.max(zoomFactor * initScale, 1), 4);
+
+      // Adjust pan so the pinch center stays fixed on screen:
+      // newPan = center - (center - initPan) * (newScale / initScale)
+      const ratio = newScale / initScale;
+      const newPanX = centerX - (centerX - initPanX) * ratio;
+      const newPanY = centerY - (centerY - initPanY) * ratio;
+
+      // Clamp pan to valid bounds for the new scale
+      const container = schematicContainerRef.current;
+      const containerW = container ? container.offsetWidth : 400;
+      const containerH = container ? container.offsetHeight : 400;
+      const maxPanX = ((newScale - 1) * containerW) / 2;
+      const maxPanY = ((newScale - 1) * containerH) / 2;
+
       setScale(newScale);
+      setPosition({
+        x: Math.min(Math.max(newPanX, -maxPanX), maxPanX),
+        y: Math.min(Math.max(newPanY, -maxPanY), maxPanY),
+      });
     } else if (e.touches.length === 1 && scale > 1) {
       // Check distance moved to determine if this is a drag or a tap
       const touch = e.touches[0];
@@ -550,18 +581,20 @@ export default function Parts() {
           setIsPanning(true);
         }
         
-        // Pan when zoomed - smooth panning with bounds
+        // Pan when zoomed - smooth panning with dynamic bounds
         const newX = touch.clientX - startPanPosition.x;
         const newY = touch.clientY - startPanPosition.y;
         
-        // Constrain pan to reasonable bounds
-        const maxPan = 150;
-        const constrainedX = Math.min(Math.max(newX, -maxPan), maxPan);
-        const constrainedY = Math.min(Math.max(newY, -maxPan), maxPan);
+        // Constrain pan based on scale and container size
+        const container = schematicContainerRef.current;
+        const containerW = container ? container.offsetWidth : 400;
+        const containerH = container ? container.offsetHeight : 400;
+        const maxPanX = ((scale - 1) * containerW) / 2;
+        const maxPanY = ((scale - 1) * containerH) / 2;
         
         setPosition({
-          x: constrainedX,
-          y: constrainedY
+          x: Math.min(Math.max(newX, -maxPanX), maxPanX),
+          y: Math.min(Math.max(newY, -maxPanY), maxPanY),
         });
       }
     }
@@ -569,8 +602,12 @@ export default function Parts() {
 
   const handleTouchEnd = useCallback((e) => {
     if (e.touches.length === 0) {
+      pinchRef.current.active = false;
       setIsPanning(false);
       setHasMoved(false);
+    } else if (e.touches.length === 1 && pinchRef.current.active) {
+      // Transitioned from pinch to single-touch — reset pinch tracking
+      pinchRef.current.active = false;
     }
   }, []);
 
@@ -598,6 +635,20 @@ export default function Parts() {
       e.preventDefault();
       const zoomDirection = e.deltaY > 0 ? -0.2 : 0.2;
       const newScale = Math.min(Math.max(scale + zoomDirection, 1), 4);
+      // Clamp pan to valid bounds when scale changes
+      if (newScale === 1) {
+        setPosition({ x: 0, y: 0 });
+      } else {
+        const container = schematicContainerRef.current;
+        const containerW = container ? container.offsetWidth : 400;
+        const containerH = container ? container.offsetHeight : 400;
+        const maxPanX = ((newScale - 1) * containerW) / 2;
+        const maxPanY = ((newScale - 1) * containerH) / 2;
+        setPosition(prev => ({
+          x: Math.min(Math.max(prev.x, -maxPanX), maxPanX),
+          y: Math.min(Math.max(prev.y, -maxPanY), maxPanY),
+        }));
+      }
       setScale(newScale);
     }
   };
@@ -612,6 +663,16 @@ export default function Parts() {
       const newScale = Math.max(prev - 0.5, 1);
       if (newScale === 1) {
         setPosition({ x: 0, y: 0 });
+      } else {
+        const container = schematicContainerRef.current;
+        const containerW = container ? container.offsetWidth : 400;
+        const containerH = container ? container.offsetHeight : 400;
+        const maxPanX = ((newScale - 1) * containerW) / 2;
+        const maxPanY = ((newScale - 1) * containerH) / 2;
+        setPosition(p => ({
+          x: Math.min(Math.max(p.x, -maxPanX), maxPanX),
+          y: Math.min(Math.max(p.y, -maxPanY), maxPanY),
+        }));
       }
       return newScale;
     });
@@ -807,14 +868,7 @@ export default function Parts() {
                 WebkitUserSelect: 'none',
                 userSelect: 'none',
                 position: 'relative',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                WebkitPerspective: 1000,
-                WebkitTransformZ: 0,
-                transform: 'translateZ(0)',
-                willChange: 'transform',
-                WebkitFontSmoothing: 'antialiased',
-                WebkitTextSizeAdjust: '100%'
+                willChange: scale > 1 ? 'transform' : 'auto',
               }}
             >
               <div 
@@ -829,11 +883,7 @@ export default function Parts() {
                   WebkitUserSelect: 'none',
                   userSelect: 'none',
                   pointerEvents: 'auto',
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
-                  WebkitPerspective: 1000,
                   willChange: 'transform',
-                  imageRendering: 'high-quality'
                 }}
               >
                 {schematicImageSrc ? (
@@ -845,15 +895,10 @@ export default function Parts() {
                       height: 'auto', 
                       display: 'block', 
                       pointerEvents: 'none',
-                      imageRendering: 'high-quality',
-                      WebkitImageRendering: '-webkit-optimize-contrast',
+                      imageRendering: 'auto',
                       WebkitTouchCallout: 'none',
                       WebkitUserSelect: 'none',
                       userSelect: 'none',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                      WebkitPerspective: 1000,
-                      willChange: 'transform'
                     }}
                     loading="eager"
                     decoding="async"
@@ -953,13 +998,39 @@ export default function Parts() {
             className="mobile-part-modal-overlay"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close button */}
+            <button
+              className="mobile-modal-close-btn"
+              onClick={closeModal}
+              aria-label="Close"
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                width: '34px',
+                height: '34px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(15,23,42,0.06)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                color: '#0f172a',
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
             <h4 style={{
               textTransform: 'uppercase',
               fontSize: '0.8rem',
               fontWeight: '700',
               letterSpacing: '0.08em',
               marginBottom: '10px',
-              paddingRight: '0px',
+              paddingRight: '38px',
               lineHeight: '1.35',
               wordBreak: 'break-word',
               color: '#0f172a'

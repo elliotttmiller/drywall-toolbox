@@ -163,14 +163,10 @@
     height: auto !important;
     max-width: 100% !important;
     pointer-events: none !important;
-    image-rendering: high-quality;
+    image-rendering: auto;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
-    -webkit-image-rendering: -webkit-optimize-contrast;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: pixelated;
-    -ms-interpolation-mode: nearest-neighbor;
   }
 }
 
