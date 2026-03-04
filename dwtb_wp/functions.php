@@ -9,6 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+// ─── Include Theme Files ───────────────────────────────────────────────────────
+
+require_once get_template_directory() . '/inc/template-functions.php';
+require_once get_template_directory() . '/inc/customizer.php';
+if ( class_exists( 'WooCommerce' ) ) {
+    require_once get_template_directory() . '/inc/woocommerce.php';
+}
+
 // ─── Theme Setup ───────────────────────────────────────────────────────────────
 
 function dwtb_setup() {

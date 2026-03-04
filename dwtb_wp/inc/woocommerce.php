@@ -184,6 +184,7 @@ add_action( 'wp_ajax_nopriv_dwtb_get_cart', 'dwtb_ajax_get_cart' );
  */
 function dwtb_ajax_add_to_cart() {
 	check_ajax_referer( 'dwtb_cart_nonce', 'nonce' );
+	$product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
 	$quantity   = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
 
 	if ( ! $product_id ) {
