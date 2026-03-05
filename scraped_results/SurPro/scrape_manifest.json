@@ -1,0 +1,50 @@
+{
+  "brand": "SurPro",
+  "scraped_at": "2026-03-05T04:57:51.251124+00:00",
+  "total_files": 7,
+  "downloaded": 7,
+  "skipped": 0,
+  "failed": 0,
+  "source_urls": [
+    "https://stilts.com/pages/instruction-manuals-parts-diagrams",
+    "https://stilts.com"
+  ],
+  "files": [
+    {
+      "filename": "SurPro_Stilts_Catalog_24.1.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro_Stilts_Catalog_24.1.pdf",
+      "size_bytes": 14295521
+    },
+    {
+      "filename": "SurPro-S-S1-S1X-Stilts-Manual.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro-S-S1-S1X-Stilts-Manual.pdf",
+      "size_bytes": 1925651
+    },
+    {
+      "filename": "SurPro-S2-S2X-Stilts-Manual.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro-S2-S2X-Stilts-Manual.pdf",
+      "size_bytes": 2636750
+    },
+    {
+      "filename": "SurPro-S1-Stilts-Parts-Diagram.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro-S1-Stilts-Parts-Diagram_ae91fdf1-921b-4f10-bd07-b651851ce45b.pdf",
+      "size_bytes": 978374
+    },
+    {
+      "filename": "SurPro-S1X-Stilts-Parts-Diagram.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro-S1X-Stilts-Parts-Diagram_8766f698-6904-48b7-8a72-44a7a38f60f1.pdf",
+      "size_bytes": 653380
+    },
+    {
+      "filename": "SurPro-S2-Stilts-Parts-Diagram.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro-S2-Stilts-Parts-Diagram_c3a34577-8129-41ec-8795-188fe02f706c.pdf",
+      "size_bytes": 775053
+    },
+    {
+      "filename": "SurPro-S2X-Stilts-Parts-Diagram.pdf",
+      "source_url": "https://cdn.shopify.com/s/files/1/0439/6056/5922/files/SurPro-S2X-Stilts-Parts-Diagram_45f12752-16ec-4a2f-b267-40cf7f5b82af.pdf",
+      "size_bytes": 866011
+    }
+  ],
+  "notes": "SurPro (by Columbia Taping Tools) drywall stilts. Official website: stilts.com (sur-pro.com redirects here). Files include: product catalog, user manuals for S1/S1X (single-sided) and S2/S2X (double-sided) stilts, and official parts diagrams for all 4 stilt models. Parts diagrams contain complete exploded-view schematic drawings with part numbers."
+}

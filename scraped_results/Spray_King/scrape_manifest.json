@@ -1,0 +1,16 @@
+{
+  "brand": "Spray King",
+  "scraped_at": "2026-03-05T05:01:00.737874+00:00",
+  "total_files": 0,
+  "downloaded": 0,
+  "skipped": 0,
+  "failed": 4,
+  "source_urls": [
+    "https://spray-king.com/schematics",
+    "https://spray-king.com/parts",
+    "https://spray-king.com/service-manuals",
+    "https://www.alstapingtools.com/order-parts/product-schematic-downloads/"
+  ],
+  "files": [],
+  "notes": "Spray King manufactures pneumatic/air-powered drywall texture sprayers and pressure systems. Products in our catalog include: Air to Electric Pressure Switch for Spray King. Research findings: (1) spray-king.com domain appears parked (returns a CDN redirect page with no content). (2) No Spray King schematic downloads found on authorized distributors (Al's Taping Tools, Timothy's Toolbox, Drywall Tool Depot). (3) Spray King products are OEM/private-label equipment; service schematics are distributed exclusively through authorized dealers. (4) Recommend contacting Spray King directly at info@spray-king.com or through authorized dealers for service documentation."
+}

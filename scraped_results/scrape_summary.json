@@ -1,0 +1,88 @@
+{
+  "scraped_at": "2026-03-05T05:01:46.217789+00:00",
+  "allowed_brands": [
+    "TapeTech",
+    "Columbia Taping Tools",
+    "Asgard",
+    "SurPro",
+    "Spray King",
+    "Graco"
+  ],
+  "output_dir": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results",
+  "brands": {
+    "TapeTech": {
+      "output_dir": "TapeTech",
+      "total_files": 122,
+      "downloaded": 122,
+      "failed": 0,
+      "source_urls": [
+        "https://www.tapetech.com/schematics"
+      ]
+    },
+    "Columbia Taping Tools": {
+      "output_dir": "Columbia_Taping_Tools",
+      "total_files": 15,
+      "downloaded": 15,
+      "failed": 0,
+      "source_urls": [
+        "https://www.alstapingtools.com/order-parts/product-schematic-downloads/"
+      ]
+    },
+    "Asgard": {
+      "output_dir": "Asgard",
+      "total_files": 16,
+      "downloaded": 16,
+      "failed": 3,
+      "source_urls": [
+        "https://www.tapetech.com/schematics",
+        "https://www.asgardtools.com/schematics",
+        "https://www.asgardtools.com/parts"
+      ]
+    },
+    "SurPro": {
+      "output_dir": "SurPro",
+      "total_files": 7,
+      "downloaded": 7,
+      "failed": 0,
+      "source_urls": [
+        "https://stilts.com/pages/instruction-manuals-parts-diagrams",
+        "https://stilts.com"
+      ]
+    },
+    "Spray King": {
+      "output_dir": "Spray_King",
+      "total_files": 0,
+      "downloaded": 0,
+      "failed": 4,
+      "source_urls": [
+        "https://spray-king.com/schematics",
+        "https://spray-king.com/parts",
+        "https://spray-king.com/service-manuals"
+      ]
+    },
+    "Graco": {
+      "output_dir": "Graco",
+      "total_files": 59,
+      "downloaded": 59,
+      "failed": 0,
+      "source_urls": [
+        "https://www.graco.com/us/en/sitemap.xml",
+        "https://www.graco.com/us/en/contractor/product/17e605-mark-v-hd.html",
+        "https://www.graco.com/us/en/contractor/product/17e606-mark-v-hd.html"
+      ]
+    }
+  },
+  "totals": {
+    "total_files_across_all_brands": 219,
+    "total_downloaded": 219,
+    "total_failed": 7
+  },
+  "sources": {
+    "TapeTech": "https://www.tapetech.com/schematics (official website)",
+    "Columbia Taping Tools": "https://www.alstapingtools.com/order-parts/product-schematic-downloads/ (authorized distributor)",
+    "Asgard": "https://www.tapetech.com/schematics (Asgard is a TapeTech sub-brand; EZ/EHC/PA model schematics)",
+    "SurPro": "https://stilts.com/pages/instruction-manuals-parts-diagrams (official SurPro website)",
+    "Spray King": "No public schematics found (domain parked; contact authorized dealers)",
+    "Graco": "https://www.graco.com (official website, product pages) + https://www.alstapingtools.com/order-parts/product-schematic-downloads/ (authorized distributor)"
+  }
+}

@@ -1,0 +1,385 @@
+{
+  "brand": "Graco",
+  "scraped_at": "2026-03-05T05:00:48.642495+00:00",
+  "total_files": 59,
+  "downloaded": 59,
+  "skipped": 0,
+  "failed": 0,
+  "source_urls": [
+    "https://www.graco.com/us/en/sitemap.xml",
+    "https://www.graco.com/us/en/contractor/product/17e605-mark-v-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e606-mark-v-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e607-mark-v-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e608-mark-x-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e609-mark-x-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e825-gmax-3400.html",
+    "https://www.graco.com/us/en/contractor/product/17e825k-gmax-3400.html",
+    "https://www.graco.com/us/en/contractor/product/17e826-gmax-ii-3900.html",
+    "https://www.graco.com/us/en/contractor/product/17e827-gmax-ii-3900.html",
+    "https://www.graco.com/us/en/contractor/product/17e827k-gmax-ii-3900.html",
+    "https://www.graco.com/us/en/contractor/product/17e828-gmax-ii-3900.html",
+    "https://www.graco.com/us/en/contractor/product/17e829-gmax-ii-5900.html",
+    "https://www.graco.com/us/en/contractor/product/17e830-gmax-ii-5900.html",
+    "https://www.graco.com/us/en/contractor/product/17e831-gmax-ii-5900.html",
+    "https://www.graco.com/us/en/contractor/product/17e831k-gmax-ii-5900.html",
+    "https://www.graco.com/us/en/contractor/product/17e832-gmax-ii-5900.html",
+    "https://www.graco.com/us/en/contractor/product/17e833-gmax-ii-5900.html",
+    "https://www.graco.com/us/en/contractor/product/17e834-gmax-ii-7900.html",
+    "https://www.graco.com/us/en/contractor/product/17e835-gmax-ii-7900.html",
+    "https://www.graco.com/us/en/contractor/product/17e836-gmax-ii-7900.html",
+    "https://www.graco.com/us/en/contractor/product/17e836k-gmax-ii-7900.html",
+    "https://www.graco.com/us/en/contractor/product/17e837-gmax-ii-7900.html",
+    "https://www.graco.com/us/en/contractor/product/17e838-gmax-ii-7900.html",
+    "https://www.graco.com/us/en/contractor/product/17e839-gmax-ii-5900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e839k-gmax-ii-5900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e840-gmax-ii-5900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e841-gmax-ii-7900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e841k-gmax-ii-7900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e842-gmax-ii-7900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17e843-gmax-ii-7900-hd.html",
+    "https://www.graco.com/us/en/contractor/product/17h572-texspray-rtx-1400si.html",
+    "https://www.graco.com/us/en/contractor/product/17h573-texspray-rtx-2000pi.html",
+    "https://www.graco.com/us/en/contractor/product/17h575-texspray-rtx-5000pi.html",
+    "https://www.graco.com/us/en/contractor/product/17h579-texspray-rtx-5000px.html",
+    "https://www.graco.com/us/en/contractor/product/17h581-texspray-rtx-5500px.html",
+    "https://www.graco.com/us/en/contractor/product/17u219-texspray-rtx-2500pi.html",
+    "https://www.graco.com/us/en/contractor/product/18h400-mark-xv-xt.html",
+    "https://www.graco.com/us/en/contractor/product/18h401-mark-xv-xt.html",
+    "https://www.graco.com/us/en/contractor/product/19f550-mark-v-xt.html",
+    "https://www.graco.com/us/en/contractor/product/19f552-mark-v-xt.html",
+    "https://www.graco.com/us/en/contractor/product/20b529-xt-hopper.html",
+    "https://www.graco.com/us/en/contractor/product/225877-president-101.html",
+    "https://www.graco.com/us/en/contractor/product/225886-president-101.html",
+    "https://www.graco.com/us/en/contractor/product/24w943-dutymax-gh-230-hd.html",
+    "https://www.graco.com/us/en/contractor/product/24w944-dutymax-gh-230-hd.html",
+    "https://www.graco.com/us/en/contractor/product/24w962-dutymax-gh-230-hd.html",
+    "https://www.graco.com/us/en/contractor/product/24w963-dutymax-gh-230-hd.html",
+    "https://www.graco.com/us/en/contractor/product/24w967-dutymax-gh-300-hd.html",
+    "https://www.graco.com/us/en/contractor/product/24w968-dutymax-gh-300-hd.html",
+    "https://www.graco.com/us/en/contractor/product/257030-texspray-gtx-2000ex.html",
+    "https://www.graco.com/us/en/contractor/product/258740-texspray-htx-2030.html",
+    "https://www.graco.com/us/en/contractor/product/258741-texspray-htx-20300.html",
+    "https://www.graco.com/us/en/contractor/product/25d223-dutymax-gh-675di.html",
+    "https://www.graco.com/us/en/contractor/product/25d225-dutymax-gh-675di.html",
+    "https://www.graco.com/us/en/contractor/product/25d226-dutymax-gh-675di.html",
+    "https://www.graco.com/us/en/contractor/product/25d490-texspray-fastfinish.html",
+    "https://www.graco.com/us/en/contractor/product/25d492-texspray-fastfinish-pro.html",
+    "https://www.graco.com/us/en/contractor/product/25d494-texspray-fastfinish.html",
+    "https://www.graco.com/us/en/contractor/product/25d496-texspray-fastfinish.html",
+    "https://www.graco.com/us/en/contractor/product/25d497-texspray-g-tex.html",
+    "https://www.graco.com/us/en/contractor/product/26c681-texspray-htx-2030.html",
+    "https://www.graco.com/us/en/contractor/product/26c682-texspray-htx-2030.html",
+    "https://www.graco.com/us/en/contractor/product/26c683-texspray-htx-2030.html",
+    "https://www.graco.com/us/en/contractor/product/26c684-texspray-htx-2030.html",
+    "https://www.graco.com/us/en/contractor/product/278678-texspray-htx-2030.html",
+    "https://www.graco.com/us/en/contractor/product/954088-president-101.html",
+    "https://www.alstapingtools.com/order-parts/product-schematic-downloads/"
+  ],
+  "files": [
+    {
+      "filename": "306305EN-B.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/306/306305/306305EN-B.pdf",
+      "size_bytes": 34365
+    },
+    {
+      "filename": "306402EN-F.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/306/306402/306402EN-F.pdf",
+      "size_bytes": 262519
+    },
+    {
+      "filename": "306479EN-E.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/306/306479/306479EN-E.pdf",
+      "size_bytes": 155262
+    },
+    {
+      "filename": "306494EN-K.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/306/306494/306494EN-K.pdf",
+      "size_bytes": 961805
+    },
+    {
+      "filename": "307005EN-F.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/307/307005/307005EN-F.pdf",
+      "size_bytes": 628010
+    },
+    {
+      "filename": "307765EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/msds/307765/307765EN.pdf",
+      "size_bytes": 159928
+    },
+    {
+      "filename": "308169EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/308/308169/308169EN.pdf",
+      "size_bytes": 6517642
+    },
+    {
+      "filename": "308207EN-D.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/msds/308207/308207EN-D.pdf",
+      "size_bytes": 391414
+    },
+    {
+      "filename": "308479EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/308/308479/308479EN.pdf",
+      "size_bytes": 1481350
+    },
+    {
+      "filename": "308824EN-D.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/308/308824/308824EN-D.pdf",
+      "size_bytes": 793827
+    },
+    {
+      "filename": "309489EN-F.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/309/309489/309489EN-F.pdf",
+      "size_bytes": 477183
+    },
+    {
+      "filename": "311777EN-G.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/311/311777/311777EN-G.pdf",
+      "size_bytes": 986058
+    },
+    {
+      "filename": "312145EN-K.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/312/312145/312145EN-K.pdf",
+      "size_bytes": 2005715
+    },
+    {
+      "filename": "313384EN-B.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/313/313384/313384EN-B.pdf",
+      "size_bytes": 1835764
+    },
+    {
+      "filename": "313385EN-F.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/313/313385/313385EN-F.pdf",
+      "size_bytes": 2242996
+    },
+    {
+      "filename": "313537EN-E.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/313/313537/313537EN-E.pdf",
+      "size_bytes": 1457488
+    },
+    {
+      "filename": "313888EN-F.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/313/313888/313888EN-F.pdf",
+      "size_bytes": 4695500
+    },
+    {
+      "filename": "313889EN-E.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/313/313889/313889EN-E.pdf",
+      "size_bytes": 5271230
+    },
+    {
+      "filename": "334606EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/334/334606/334606EN.pdf",
+      "size_bytes": 10287650
+    },
+    {
+      "filename": "334654EN-D.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/334/334654/334654EN-D.pdf",
+      "size_bytes": 5584116
+    },
+    {
+      "filename": "344382EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/com_documents/344/344382/344382EN.pdf",
+      "size_bytes": 6479516
+    },
+    {
+      "filename": "344383EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/com_documents/344/344383/344383EN.pdf",
+      "size_bytes": 12095645
+    },
+    {
+      "filename": "3A3258EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A3/3A3258/3A3258EN.pdf",
+      "size_bytes": 13837696
+    },
+    {
+      "filename": "3A3265EN-E.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A3/3A3265/3A3265EN-E.pdf",
+      "size_bytes": 10516521
+    },
+    {
+      "filename": "3A3373EN-C.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A3/3A3373/3A3373EN-C.pdf",
+      "size_bytes": 5196564
+    },
+    {
+      "filename": "3A3479EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A3/3A3479/3A3479EN-A.pdf",
+      "size_bytes": 4535363
+    },
+    {
+      "filename": "3A3482EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A3/3A3482/3A3482EN-A.pdf",
+      "size_bytes": 4336144
+    },
+    {
+      "filename": "3A3485EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A3/3A3485/3A3485EN-A.pdf",
+      "size_bytes": 3738457
+    },
+    {
+      "filename": "3A5369EN-E.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A5/3A5369/3A5369EN-E.pdf",
+      "size_bytes": 4133587
+    },
+    {
+      "filename": "3A5430EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A5/3A5430/3A5430EN-A.pdf",
+      "size_bytes": 4336092
+    },
+    {
+      "filename": "3A5443EN-B.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A5/3A5443/3A5443EN-B.pdf",
+      "size_bytes": 2319218
+    },
+    {
+      "filename": "3A5725EN-G.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A5/3A5725/3A5725EN-G.pdf",
+      "size_bytes": 4831931
+    },
+    {
+      "filename": "3A6285EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6285/3A6285EN.pdf",
+      "size_bytes": 2237921
+    },
+    {
+      "filename": "3A6342EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6342/3A6342EN.pdf",
+      "size_bytes": 11680988
+    },
+    {
+      "filename": "3A6400EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6400/3A6400EN.pdf",
+      "size_bytes": 8908829
+    },
+    {
+      "filename": "3A6417EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6417/3A6417EN.pdf",
+      "size_bytes": 5202699
+    },
+    {
+      "filename": "3A6418EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6418/3A6418EN-A.pdf",
+      "size_bytes": 614746
+    },
+    {
+      "filename": "3A6583EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6583/3A6583EN.pdf",
+      "size_bytes": 3894046
+    },
+    {
+      "filename": "3A6584EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6584/3A6584EN-A.pdf",
+      "size_bytes": 2888069
+    },
+    {
+      "filename": "3A6839EN-B.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A6/3A6839/3A6839EN-B.pdf",
+      "size_bytes": 1310472
+    },
+    {
+      "filename": "3A9018EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A9/3A9018/3A9018EN-A.pdf",
+      "size_bytes": 2156409
+    },
+    {
+      "filename": "3A9391EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3A9/3A9391/3A9391EN.pdf",
+      "size_bytes": 3221575
+    },
+    {
+      "filename": "3B0070EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/3B0/3B0070/3B0070EN.pdf",
+      "size_bytes": 13828246
+    },
+    {
+      "filename": "3J0626EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/com_documents/3J0/3J0626/3J0626EN.pdf",
+      "size_bytes": 7070423
+    },
+    {
+      "filename": "3J0848EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/com_documents/3J0/3J0848/3J0848EN.pdf",
+      "size_bytes": 932016
+    },
+    {
+      "filename": "MSD181EN-B.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/msds/MSD181/MSD181EN-B.pdf",
+      "size_bytes": 386107
+    },
+    {
+      "filename": "MSD188EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/msds/MSD188/MSD188EN-A.pdf",
+      "size_bytes": 328485
+    },
+    {
+      "filename": "MSD201EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/msds/MSD201/MSD201EN-A.pdf",
+      "size_bytes": 144726
+    },
+    {
+      "filename": "MSD213EN-A.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/msds/MSD213/MSD213EN-A.pdf",
+      "size_bytes": 247036
+    },
+    {
+      "filename": "X011699EN.pdf",
+      "source_url": "https://www.graco.com/content/dam/graco/tech_documents/manuals/X01/X011699/X011699EN.pdf",
+      "size_bytes": 3729426
+    },
+    {
+      "filename": "GRACO_MARK_V_DOC.pdf",
+      "description": "Graco Mark V Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/GRACO_MARK_V_DOC.pdf",
+      "size_bytes": 3708390
+    },
+    {
+      "filename": "graco_rtx_1500_schematic.pdf",
+      "description": "Graco RTX 1500 Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/graco_rtx_1500_schematic.pdf",
+      "size_bytes": 3051462
+    },
+    {
+      "filename": "RTX1500_GUN.pdf",
+      "description": "Graco RTX 1500 Gun Operation Manual",
+      "source_url": "https://www.alstapingtools.com/content/pdf/RTX1500_GUN.pdf",
+      "size_bytes": 4808602
+    },
+    {
+      "filename": "rtx_2000.pdf",
+      "description": "Graco RTX 2000 Manual",
+      "source_url": "https://www.alstapingtools.com/content/pdf/rtx_2000.pdf",
+      "size_bytes": 16128746
+    },
+    {
+      "filename": "graco_instructions.pdf",
+      "description": "Graco Mark V / Mark X / 695-1595 Manual",
+      "source_url": "https://www.alstapingtools.com/content/pdf/graco_instructions.pdf",
+      "size_bytes": 9974974
+    },
+    {
+      "filename": "GRACO_FASTFINISH.pdf",
+      "description": "Graco FastFinish 25D492 Operation Guide",
+      "source_url": "https://www.alstapingtools.com/content/pdf/GRACO_FASTFINISH.pdf",
+      "size_bytes": 4637709
+    },
+    {
+      "filename": "3A8110EN-C.pdf",
+      "description": "Graco Powerfill 3.5 Manual",
+      "source_url": "https://www.alstapingtools.com/content/pdf/3A8110EN-C.pdf",
+      "size_bytes": 3245476
+    },
+    {
+      "filename": "rtx_1500_auxilaary_air.pdf",
+      "description": "Graco RTX 1500 Auxiliary Air Kit",
+      "source_url": "https://www.alstapingtools.com/content/pdf/rtx_1500_auxilaary_air.pdf",
+      "size_bytes": 348198
+    },
+    {
+      "filename": "311777EN-F.pdf",
+      "description": "Graco TexSpray Air Spray Trigger Gun Manual",
+      "source_url": "https://www.alstapingtools.com/content/pdf/311777EN-F.pdf",
+      "size_bytes": 439554
+    }
+  ],
+  "notes": "Graco drywall/texture product manuals (English only). Products: Mark V/X/XV, TexSpray RTX series, HTX/GTX/FastFinish/T-MAX, DutyMax GH, President 101, GMAX II. Parts and repair manuals contain schematic diagrams."
+}

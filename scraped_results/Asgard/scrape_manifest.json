@@ -1,0 +1,97 @@
+{
+  "brand": "Asgard",
+  "scraped_at": "2026-03-05T04:47:14.142974+00:00",
+  "total_files": 16,
+  "downloaded": 16,
+  "skipped": 0,
+  "failed": 3,
+  "source_urls": [
+    "https://www.tapetech.com/schematics",
+    "https://www.asgardtools.com/schematics",
+    "https://www.asgardtools.com/parts",
+    "https://asgardtools.com/schematics"
+  ],
+  "files": [
+    {
+      "filename": "EHC07_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EHC07_SCH.pdf",
+      "size_bytes": 848872
+    },
+    {
+      "filename": "EHC10_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EHC10_SCH.pdf",
+      "size_bytes": 849206
+    },
+    {
+      "filename": "EHC12_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EHC12_SCH.pdf",
+      "size_bytes": 960199
+    },
+    {
+      "filename": "EZ07H_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/EZ07H_SCH.pdf",
+      "size_bytes": 635865
+    },
+    {
+      "filename": "EZ07TT_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EZ07TT_SCH.pdf",
+      "size_bytes": 202860
+    },
+    {
+      "filename": "EZ10H_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/EZ10H_SCH.pdf",
+      "size_bytes": 622049
+    },
+    {
+      "filename": "EZ10TT_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EZ10TT_SCH.pdf",
+      "size_bytes": 417531
+    },
+    {
+      "filename": "EZ12H_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/EZ12H_SCH.pdf",
+      "size_bytes": 641013
+    },
+    {
+      "filename": "EZ12TT_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EZ12TT_SCH.pdf",
+      "size_bytes": 275659
+    },
+    {
+      "filename": "EZ15TT_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/EZ15TT_SCH.pdf",
+      "size_bytes": 4008945
+    },
+    {
+      "filename": "PA07H_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/PA07H_SCH.pdf",
+      "size_bytes": 848490
+    },
+    {
+      "filename": "PA10H_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/PA10H_SCH.pdf",
+      "size_bytes": 824272
+    },
+    {
+      "filename": "PA12H_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/PA12H_SCH.pdf",
+      "size_bytes": 819272
+    },
+    {
+      "filename": "PAHC07_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/PAHC07_SCH.pdf",
+      "size_bytes": 1045148
+    },
+    {
+      "filename": "PAHC10_SCH_v2.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2025/02/PAHC10_SCH_v2.pdf",
+      "size_bytes": 1018230
+    },
+    {
+      "filename": "PAHC12_SCH.pdf",
+      "source_url": "https://tapetech.com/wp-content/uploads/2022/07/PAHC12_SCH.pdf",
+      "size_bytes": 1563301
+    }
+  ],
+  "notes": "Asgard is a TapeTech sub-brand. Schematics are hosted on tapetech.com under model codes: EZ (flat boxes), EHC (MaxxBox), PA/PAHC (power-assist). Direct Asgard website asgardtools.com returned HTTP 403 at scrape time."
+}

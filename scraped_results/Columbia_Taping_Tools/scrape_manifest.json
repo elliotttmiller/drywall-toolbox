@@ -1,0 +1,104 @@
+{
+  "brand": "Columbia Taping Tools",
+  "scraped_at": "2026-03-05T05:00:01.921747+00:00",
+  "total_files": 15,
+  "downloaded": 15,
+  "skipped": 0,
+  "failed": 0,
+  "source_urls": [
+    "https://www.alstapingtools.com/order-parts/product-schematic-downloads/"
+  ],
+  "files": [
+    {
+      "filename": "2_Wheel_Internal_Corner_Applicator.pdf",
+      "description": "Columbia 2 Wheel Inside Corner Applicator Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/2_Wheel_Internal_Corner_Applicator.pdf",
+      "size_bytes": 42371
+    },
+    {
+      "filename": "columbia_3_schematic.pdf",
+      "description": "Columbia 3\" Angle Head Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/columbia_3_schematic.pdf",
+      "size_bytes": 91758
+    },
+    {
+      "filename": "4_Wheel_Internal_Corner_Applicator.pdf",
+      "description": "Columbia 4 Wheel Corner Applicator Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/4_Wheel_Internal_Corner_Applicator.pdf",
+      "size_bytes": 48283
+    },
+    {
+      "filename": "InsideCornerRoller-2014_1_.pdf",
+      "description": "Columbia Inside Corner Roller Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/InsideCornerRoller-2014_1_.pdf",
+      "size_bytes": 57760
+    },
+    {
+      "filename": "PREDATOR_BODY_OCTOBER_2018.pdf",
+      "description": "Columbia Predator Taper Body Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/PREDATOR_BODY_OCTOBER_2018.pdf",
+      "size_bytes": 3805142
+    },
+    {
+      "filename": "PREDATOR_TAPER_HEAD.PDF",
+      "description": "Columbia Predator Taper Head Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/PREDATOR_TAPER_HEAD.PDF",
+      "size_bytes": 10443478
+    },
+    {
+      "filename": "SemiAutomaticTaper-2015.pdf",
+      "description": "Columbia Semi-Automatic Taper Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/SemiAutomaticTaper-2015.pdf",
+      "size_bytes": 3900291
+    },
+    {
+      "filename": "TaperBody-2014.PDF",
+      "description": "Columbia Taper Body Schematic 2014",
+      "source_url": "https://www.alstapingtools.com/content/pdf/TaperBody-2014.PDF",
+      "size_bytes": 142105
+    },
+    {
+      "filename": "TaperHead-2014-DS.pdf",
+      "description": "Columbia Taper Head Schematic 2014",
+      "source_url": "https://www.alstapingtools.com/content/pdf/TaperHead-2014-DS.pdf",
+      "size_bytes": 387268
+    },
+    {
+      "filename": "Operations-Manual-ENG-LOW.pdf",
+      "description": "Columbia Tools User Manual",
+      "source_url": "https://www.alstapingtools.com/content/pdf/Operations-Manual-ENG-LOW.pdf",
+      "size_bytes": 2324491
+    },
+    {
+      "filename": "Extension_Housing_Schematic.pdf",
+      "description": "Extension Housing Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/Extension_Housing_Schematic.pdf",
+      "size_bytes": 53491
+    },
+    {
+      "filename": "Matrix_Lever.pdf",
+      "description": "Matix Lever Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/Matrix_Lever.pdf",
+      "size_bytes": 64473
+    },
+    {
+      "filename": "Matrix_Handle.pdf",
+      "description": "Matrix Handle Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/Matrix_Handle.pdf",
+      "size_bytes": 81128
+    },
+    {
+      "filename": "Matrix_Head.pdf",
+      "description": "Matrix Head Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/Matrix_Head.pdf",
+      "size_bytes": 63950
+    },
+    {
+      "filename": "Matrix_Pinchbox.pdf",
+      "description": "Matrix Pinchbox Schematic",
+      "source_url": "https://www.alstapingtools.com/content/pdf/Matrix_Pinchbox.pdf",
+      "size_bytes": 54834
+    }
+  ],
+  "notes": "Columbia Taping Tools official website (columbiatapers.com) was not DNS-resolvable from this environment. Schematics sourced from Al's Taping Tools authorized distributor schematic download page: https://www.alstapingtools.com/order-parts/product-schematic-downloads/ Files include: taper body/head schematics, angle head, corner applicators, corner roller, Predator taper, Semi-Automatic taper, Matrix series (lever/handle/head/pinchbox), and the full Columbia Tools Operations Manual."
+}
