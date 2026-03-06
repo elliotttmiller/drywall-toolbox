@@ -432,6 +432,26 @@
   background: rgba(239, 68, 68, 0.24);
 }
 
+/* Zoom level indicator pill */
+.zoom-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  min-width: 44px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
 @media (max-width: 480px) {
   .schematic-zoom-controls {
     bottom: max(16px, env(safe-area-inset-bottom, 16px));

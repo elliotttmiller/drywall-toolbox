@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import Toast from '../components/Toast';
 import BrandSelector from '../components/BrandSelector';
@@ -19,6 +19,21 @@ import schematicPAHC10Img from '../../schematics/brands/TapeTech/products/PAHC10
 
 const columbiaInsideCornerRollerImg = '/drywall-toolbox/brands/Columbia/Schematics/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png';
 const columbiaMatrixBoxHandleImg = '/drywall-toolbox/brands/Columbia/Schematics/MatrixBoxHandle/Matrix_Handle-enhanced-square.png';
+
+// ─── SCHEMATIC VIEWER CONSTANTS ───────────────────────────────────────────────
+const MAX_SCALE = 5;                  // maximum zoom level
+const ZOOM_STEP = 0.5;                // zoom button increment
+const WHEEL_ZOOM_FACTOR = 1.12;       // multiplicative step for ctrl+wheel / trackpad pinch
+const DOUBLE_TAP_TIME_MS = 300;       // max ms between taps to count as double-tap
+const DOUBLE_TAP_DISTANCE_PX = 40;   // max px between taps to count as double-tap
+const DOUBLE_TAP_ZOOM_SCALE = 2.5;   // zoom level applied on double-tap
+const PAN_THRESHOLD_PX = 8;          // min drag distance before pan activates
+const INERTIA_FRICTION = 0.92;       // per-frame velocity multiplier (1 = no friction)
+const INERTIA_MIN_VEL = 0.4;         // px/frame below which inertia stops
+const VELOCITY_SMOOTHING_ALPHA = 0.75; // EMA weight for latest velocity sample
+const ZOOM_ANIMATION_MS = 250;       // CSS transition duration for animated zoom
+const WHEEL_SYNC_DEBOUNCE_MS = 150;  // ms to debounce React state sync after wheel
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function Parts() {
   // Allowed brands to display
@@ -41,29 +56,29 @@ export default function Parts() {
   const [brands, setBrands] = useState([]);
   const { addToCart } = useCart();
   
-  // Mobile zoom/pan state
+  // Zoom/pan: scale in React state drives UI elements (overflow, cursor, indicator)
   const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
-  const [isPanning, setIsPanning] = useState(false);
-  
+
   // Fullscreen is always enabled on mobile, never on desktop
   const isFullscreen = isMobile;
-  
+
   // Track window resize for mobile detection
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
-  const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 });
-  const [hasMoved, setHasMoved] = useState(false);
-  // Ref to track pinch zoom state without triggering re-renders
+
+  // Refs for live gesture state — no React re-renders during 60 fps gestures
+  const transformRef = useRef({ scale: 1, x: 0, y: 0 });
   const pinchRef = useRef({ active: false, initDist: 0, initScale: 1, initPanX: 0, initPanY: 0, centerX: 0, centerY: 0 });
-  
+  const panRef = useRef({ active: false, startClientX: 0, startClientY: 0, startPanX: 0, startPanY: 0, moved: false });
+  const velocityRef = useRef({ vx: 0, vy: 0, lastX: 0, lastY: 0, lastTime: 0 });
+  const inertiaIdRef = useRef(null);
+  const lastTapRef = useRef({ time: 0, x: 0, y: 0 });
+  const wheelSyncTimeoutRef = useRef(null);
+
   const schematicContainerRef = useRef(null);
   const schematicImageRef = useRef(null);
 
@@ -573,211 +588,331 @@ export default function Parts() {
     setActiveHotspotPart(null);
   };
 
-  // Reset zoom/pan when schematic changes
-    useEffect(() => {
-      const t = setTimeout(() => {
-        setScale(1);
-        setPosition({ x: 0, y: 0 });
-      }, 0);
-      return () => clearTimeout(t);
-    }, [selectedSchematic, currentPage]);
+  // ─── ZOOM / PAN ENGINE ───────────────────────────────────────────────────────
 
-  // Touch and zoom handlers for mobile - enhanced with smooth interactions
-  const handleTouchStart = useCallback((e) => {
-    if (e.touches.length === 2) {
-      // Pinch gesture - prevent default and calculate distance
-      e.preventDefault();
-      e.stopPropagation();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      // Record pinch midpoint relative to the container center so we can
-      // keep the focal point stationary as the user zooms.
-      const container = schematicContainerRef.current;
-      const rect = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
-      const midX = (touch1.clientX + touch2.clientX) / 2;
-      const midY = (touch1.clientY + touch2.clientY) / 2;
-      // Offset from container center (our transform-origin)
-      const centerX = midX - (rect.left + rect.width / 2);
-      const centerY = midY - (rect.top + rect.height / 2);
-      pinchRef.current = {
-        active: true,
-        initDist: distance,
-        initScale: scale,
-        initPanX: position.x,
-        initPanY: position.y,
-        centerX,
-        centerY,
-      };
-    } else if (e.touches.length === 1 && scale > 1) {
-      // Pan gesture (only when zoomed in) - store initial position
-      // Don't preventDefault yet - let tap events through
-      setTouchStartPos({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      });
-      setHasMoved(false);
-      setStartPanPosition({
-        x: e.touches[0].clientX - position.x,
-        y: e.touches[0].clientY - position.y
-      });
+  // Compute pan bounds for a given scale value
+  const clampXY = useCallback((sc, x, y) => {
+    const container = schematicContainerRef.current;
+    const imgDiv = schematicImageRef.current;
+    const containerW = container ? container.offsetWidth : 400;
+    // Use the inner div's rendered height for accurate Y bounds.
+    // Schematics are typically landscape (wider than tall), so containerW is a
+    // reasonable square fallback when the ref isn't available yet.
+    const divH = imgDiv ? imgDiv.offsetHeight : containerW;
+    const maxX = Math.max(0, (sc - 1) * containerW / 2);
+    const maxY = Math.max(0, (sc - 1) * divH / 2);
+    return {
+      x: Math.min(Math.max(x, -maxX), maxX),
+      y: Math.min(Math.max(y, -maxY), maxY),
+    };
+  }, []);
+
+  // Apply transform directly to the DOM element — bypasses React re-renders
+  // for buttery-smooth 60 fps gesture updates.
+  const applyTransform = useCallback((sc, x, y, animated = false) => {
+    const { x: cx, y: cy } = clampXY(sc, x, y);
+    transformRef.current = { scale: sc, x: cx, y: cy };
+    const el = schematicImageRef.current;
+    if (el) {
+      el.style.transition = animated
+        ? `transform ${ZOOM_ANIMATION_MS}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`
+        : 'none';
+      el.style.transform = `scale(${sc}) translate(${cx / sc}px, ${cy / sc}px)`;
     }
-  }, [scale, position]);
+    // Update container overflow / cursor immediately when crossing scale=1
+    const container = schematicContainerRef.current;
+    if (container) {
+      const zoomed = sc > 1;
+      container.style.overflow = zoomed ? 'hidden' : 'visible';
+      container.style.touchAction = zoomed ? 'none' : 'auto';
+    }
+  }, [clampXY]);
+
+  // Sync the React scale state from the live ref (drives UI: indicator, buttons)
+  const syncScale = useCallback(() => {
+    setScale(transformRef.current.scale);
+  }, []);
+
+  // ─── INERTIA ─────────────────────────────────────────────────────────────────
+
+  const stopInertia = useCallback(() => {
+    if (inertiaIdRef.current !== null) {
+      cancelAnimationFrame(inertiaIdRef.current);
+      inertiaIdRef.current = null;
+    }
+  }, []);
+
+  const startInertia = useCallback((vx, vy) => {
+    stopInertia();
+    let velX = vx;
+    let velY = vy;
+    const tick = () => {
+      velX *= INERTIA_FRICTION;
+      velY *= INERTIA_FRICTION;
+      if (Math.abs(velX) < INERTIA_MIN_VEL && Math.abs(velY) < INERTIA_MIN_VEL) {
+        syncScale();
+        inertiaIdRef.current = null;
+        return;
+      }
+      const { scale: sc, x, y } = transformRef.current;
+      applyTransform(sc, x + velX, y + velY);
+      inertiaIdRef.current = requestAnimationFrame(tick);
+    };
+    inertiaIdRef.current = requestAnimationFrame(tick);
+  }, [stopInertia, syncScale, applyTransform]);
+
+  // ─── TOUCH HANDLERS ──────────────────────────────────────────────────────────
+
+  const handleTouchStart = useCallback((e) => {
+    stopInertia();
+
+    if (e.touches.length === 2) {
+      // ── Pinch begin ──────────────────────────────────────────────
+      e.preventDefault();
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const container = schematicContainerRef.current;
+      const rect = container
+        ? container.getBoundingClientRect()
+        : { left: 0, top: 0, width: 0, height: 0 };
+      const midX = (t1.clientX + t2.clientX) / 2 - (rect.left + rect.width / 2);
+      const midY = (t1.clientY + t2.clientY) / 2 - (rect.top + rect.height / 2);
+      const { scale: sc, x, y } = transformRef.current;
+      pinchRef.current = {
+        active: true, initDist: dist, initScale: sc,
+        initPanX: x, initPanY: y, centerX: midX, centerY: midY,
+      };
+      panRef.current.active = false;
+
+    } else if (e.touches.length === 1) {
+      // ── Single-finger: check for double-tap or start pan ─────────
+      const touch = e.touches[0];
+      const now = Date.now();
+      const { time: lastTime, x: lastX, y: lastY } = lastTapRef.current;
+      const tapDist = Math.hypot(touch.clientX - lastX, touch.clientY - lastY);
+
+      if (now - lastTime < DOUBLE_TAP_TIME_MS && tapDist < DOUBLE_TAP_DISTANCE_PX) {
+        // ── Double-tap zoom ──────────────────────────────────────────
+        e.preventDefault();
+        lastTapRef.current = { time: 0, x: 0, y: 0 };
+        const { scale: sc } = transformRef.current;
+        if (sc > 1) {
+          applyTransform(1, 0, 0, true);
+          setTimeout(syncScale, ZOOM_ANIMATION_MS + 10);
+        } else {
+          const container = schematicContainerRef.current;
+          const rect = container
+            ? container.getBoundingClientRect()
+            : { left: 0, top: 0, width: 0, height: 0 };
+          const tapX = touch.clientX - (rect.left + rect.width / 2);
+          const tapY = touch.clientY - (rect.top + rect.height / 2);
+          const newScale = DOUBLE_TAP_ZOOM_SCALE;
+          // Keep the tapped content point stationary during zoom
+          const newX = tapX - tapX * newScale;
+          const newY = tapY - tapY * newScale;
+          applyTransform(newScale, newX, newY, true);
+          setTimeout(syncScale, ZOOM_ANIMATION_MS + 10);
+        }
+        return;
+      }
+
+      lastTapRef.current = { time: now, x: touch.clientX, y: touch.clientY };
+
+      const { scale: sc, x, y } = transformRef.current;
+      if (sc > 1) {
+        panRef.current = {
+          active: true,
+          startClientX: touch.clientX,
+          startClientY: touch.clientY,
+          startPanX: x,
+          startPanY: y,
+          moved: false,
+        };
+        velocityRef.current = {
+          vx: 0, vy: 0,
+          lastX: touch.clientX, lastY: touch.clientY,
+          lastTime: now,
+        };
+      }
+    }
+  }, [stopInertia, applyTransform, syncScale]);
 
   const handleTouchMove = useCallback((e) => {
     if (e.touches.length === 2 && pinchRef.current.active) {
-      // Pinch zoom with smooth scaling towards the pinch midpoint
+      // ── Pinch move ────────────────────────────────────────────────
       e.preventDefault();
-      e.stopPropagation();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
       const { initDist, initScale, initPanX, initPanY, centerX, centerY } = pinchRef.current;
-      const zoomFactor = distance / initDist;
-      const newScale = Math.min(Math.max(zoomFactor * initScale, 1), 4);
-
-      // Adjust pan so the pinch center stays fixed on screen:
-      // newPan = center - (center - initPan) * (newScale / initScale)
+      const newScale = Math.min(Math.max((dist / initDist) * initScale, 1), MAX_SCALE);
       const ratio = newScale / initScale;
-      const newPanX = centerX - (centerX - initPanX) * ratio;
-      const newPanY = centerY - (centerY - initPanY) * ratio;
+      const newX = centerX - (centerX - initPanX) * ratio;
+      const newY = centerY - (centerY - initPanY) * ratio;
+      applyTransform(newScale, newX, newY);
 
-      // Clamp pan to valid bounds for the new scale
-      const container = schematicContainerRef.current;
-      const containerW = container ? container.offsetWidth : 400;
-      const containerH = container ? container.offsetHeight : 400;
-      const maxPanX = ((newScale - 1) * containerW) / 2;
-      const maxPanY = ((newScale - 1) * containerH) / 2;
-
-      setScale(newScale);
-      setPosition({
-        x: Math.min(Math.max(newPanX, -maxPanX), maxPanX),
-        y: Math.min(Math.max(newPanY, -maxPanY), maxPanY),
-      });
-    } else if (e.touches.length === 1 && scale > 1) {
-      // Check distance moved to determine if this is a drag or a tap
+    } else if (e.touches.length === 1 && panRef.current.active) {
+      // ── Single-finger pan ─────────────────────────────────────────
       const touch = e.touches[0];
-      const moveDistance = Math.hypot(
-        touch.clientX - touchStartPos.x,
-        touch.clientY - touchStartPos.y
-      );
-      
-      if (moveDistance > 10) {
-        // Only preventDefault if user is actually dragging (threshold: 10px)
-        if (!hasMoved) {
-          e.preventDefault();
-          e.stopPropagation();
-          setHasMoved(true);
-          setIsPanning(true);
-        }
-        
-        // Pan when zoomed - smooth panning with dynamic bounds
-        const newX = touch.clientX - startPanPosition.x;
-        const newY = touch.clientY - startPanPosition.y;
-        
-        // Constrain pan based on scale and container size
+      const { startClientX, startClientY, startPanX, startPanY, moved } = panRef.current;
+      const dx = touch.clientX - startClientX;
+      const dy = touch.clientY - startClientY;
+
+      if (!moved && Math.hypot(dx, dy) < PAN_THRESHOLD_PX) return;
+
+      e.preventDefault();
+      if (!moved) {
+        panRef.current.moved = true;
         const container = schematicContainerRef.current;
-        const containerW = container ? container.offsetWidth : 400;
-        const containerH = container ? container.offsetHeight : 400;
-        const maxPanX = ((scale - 1) * containerW) / 2;
-        const maxPanY = ((scale - 1) * containerH) / 2;
-        
-        setPosition({
-          x: Math.min(Math.max(newX, -maxPanX), maxPanX),
-          y: Math.min(Math.max(newY, -maxPanY), maxPanY),
-        });
+        if (container) container.style.cursor = 'grabbing';
       }
+
+      // Track velocity (pixels per ~16 ms frame at 60 fps) with exponential smoothing
+      const now = Date.now();
+      const dt = Math.max(now - velocityRef.current.lastTime, 1);
+      const rawVx = (touch.clientX - velocityRef.current.lastX) / dt * 16; // normalise to 16ms frame
+      const rawVy = (touch.clientY - velocityRef.current.lastY) / dt * 16;
+      velocityRef.current.vx = VELOCITY_SMOOTHING_ALPHA * rawVx + (1 - VELOCITY_SMOOTHING_ALPHA) * velocityRef.current.vx;
+      velocityRef.current.vy = VELOCITY_SMOOTHING_ALPHA * rawVy + (1 - VELOCITY_SMOOTHING_ALPHA) * velocityRef.current.vy;
+      velocityRef.current.lastX = touch.clientX;
+      velocityRef.current.lastY = touch.clientY;
+      velocityRef.current.lastTime = now;
+
+      const { scale: sc } = transformRef.current;
+      applyTransform(sc, startPanX + dx, startPanY + dy);
     }
-  }, [scale, startPanPosition, touchStartPos, hasMoved]);
+  }, [applyTransform]);
 
   const handleTouchEnd = useCallback((e) => {
     if (e.touches.length === 0) {
       pinchRef.current.active = false;
-      setIsPanning(false);
-      setHasMoved(false);
-    } else if (e.touches.length === 1 && pinchRef.current.active) {
-      // Transitioned from pinch to single-touch — reset pinch tracking
-      pinchRef.current.active = false;
-    }
-  }, []);
 
-  // Setup non-passive touch event listeners to allow preventDefault
+      if (panRef.current.active && panRef.current.moved) {
+        const { vx, vy } = velocityRef.current;
+        panRef.current.active = false;
+        const container = schematicContainerRef.current;
+        const { scale: sc } = transformRef.current;
+        if (container) container.style.cursor = sc > 1 ? 'grab' : 'default';
+        if (Math.hypot(vx, vy) > 1) {
+          startInertia(vx, vy);
+          return; // syncScale called inside startInertia when done
+        }
+      }
+
+      panRef.current.active = false;
+      syncScale();
+
+    } else if (e.touches.length === 1 && pinchRef.current.active) {
+      // Pinch → single finger: hand off to pan
+      pinchRef.current.active = false;
+      const touch = e.touches[0];
+      panRef.current = {
+        active: true,
+        startClientX: touch.clientX,
+        startClientY: touch.clientY,
+        startPanX: transformRef.current.x,
+        startPanY: transformRef.current.y,
+        moved: false,
+      };
+      velocityRef.current = {
+        vx: 0, vy: 0,
+        lastX: touch.clientX, lastY: touch.clientY,
+        lastTime: Date.now(),
+      };
+    }
+  }, [syncScale, startInertia]);
+
+  // Attach non-passive touch listeners so we can call preventDefault
   useEffect(() => {
     const container = schematicContainerRef.current;
     if (!container) return;
-
-    // Attach non-passive touch listeners
     container.addEventListener('touchstart', handleTouchStart, { passive: false });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd, { passive: false });
-
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
+  }, [selectedSchematic, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
-  // Mouse wheel zoom for hybrid devices (tablets, laptops with touch)
-  const handleWheel = (e) => {
-    if (e.ctrlKey || e.metaKey) {
-      // Pinch-to-zoom on trackpad or ctrl+wheel
-      e.preventDefault();
-      const zoomDirection = e.deltaY > 0 ? -0.2 : 0.2;
-      const newScale = Math.min(Math.max(scale + zoomDirection, 1), 4);
-      // Clamp pan to valid bounds when scale changes
-      if (newScale === 1) {
-        setPosition({ x: 0, y: 0 });
-      } else {
-        const container = schematicContainerRef.current;
-        const containerW = container ? container.offsetWidth : 400;
-        const containerH = container ? container.offsetHeight : 400;
-        const maxPanX = ((newScale - 1) * containerW) / 2;
-        const maxPanY = ((newScale - 1) * containerH) / 2;
-        setPosition(prev => ({
-          x: Math.min(Math.max(prev.x, -maxPanX), maxPanX),
-          y: Math.min(Math.max(prev.y, -maxPanY), maxPanY),
-        }));
-      }
-      setScale(newScale);
+  // ─── WHEEL ZOOM (zooms towards cursor position) ───────────────────────────
+
+  const handleWheel = useCallback((e) => {
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    stopInertia();
+    const container = schematicContainerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    // Cursor offset from container center
+    const cursorX = e.clientX - (rect.left + rect.width / 2);
+    const cursorY = e.clientY - (rect.top + rect.height / 2);
+    const { scale: sc, x, y } = transformRef.current;
+    // Multiplicative zoom step — same feel regardless of current scale
+    const factor = e.deltaY < 0 ? WHEEL_ZOOM_FACTOR : 1 / WHEEL_ZOOM_FACTOR;
+    const newScale = Math.min(Math.max(sc * factor, 1), MAX_SCALE);
+    let newX, newY;
+    if (newScale <= 1) {
+      newX = 0; newY = 0;
+    } else {
+      const ratio = newScale / sc;
+      newX = cursorX - (cursorX - x) * ratio;
+      newY = cursorY - (cursorY - y) * ratio;
     }
-  };
+    applyTransform(newScale, newX, newY);
+    // Debounce React state sync so we don't re-render on every wheel tick
+    if (wheelSyncTimeoutRef.current) clearTimeout(wheelSyncTimeoutRef.current);
+    wheelSyncTimeoutRef.current = setTimeout(syncScale, WHEEL_SYNC_DEBOUNCE_MS);
+  }, [stopInertia, applyTransform, syncScale]);
 
-  // Zoom controls
-  const handleZoomIn = () => {
-    setScale(prev => Math.min(prev + 0.5, 4));
-  };
+  // ─── ZOOM BUTTONS ─────────────────────────────────────────────────────────
 
-  const handleZoomOut = () => {
-    setScale(prev => {
-      const newScale = Math.max(prev - 0.5, 1);
-      if (newScale === 1) {
-        setPosition({ x: 0, y: 0 });
-      } else {
-        const container = schematicContainerRef.current;
-        const containerW = container ? container.offsetWidth : 400;
-        const containerH = container ? container.offsetHeight : 400;
-        const maxPanX = ((newScale - 1) * containerW) / 2;
-        const maxPanY = ((newScale - 1) * containerH) / 2;
-        setPosition(p => ({
-          x: Math.min(Math.max(p.x, -maxPanX), maxPanX),
-          y: Math.min(Math.max(p.y, -maxPanY), maxPanY),
-        }));
-      }
-      return newScale;
-    });
-  };
+  const handleZoomIn = useCallback(() => {
+    stopInertia();
+    const { scale: sc, x, y } = transformRef.current;
+    applyTransform(Math.min(sc + ZOOM_STEP, MAX_SCALE), x, y, true);
+    setTimeout(syncScale, ZOOM_ANIMATION_MS + 10);
+  }, [stopInertia, applyTransform, syncScale]);
 
-  const handleResetZoom = () => {
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  };
+  const handleZoomOut = useCallback(() => {
+    stopInertia();
+    const { scale: sc, x, y } = transformRef.current;
+    const newScale = Math.max(sc - ZOOM_STEP, 1);
+    applyTransform(newScale, newScale === 1 ? 0 : x, newScale === 1 ? 0 : y, true);
+    setTimeout(syncScale, ZOOM_ANIMATION_MS + 10);
+  }, [stopInertia, applyTransform, syncScale]);
+
+  const handleResetZoom = useCallback(() => {
+    stopInertia();
+    applyTransform(1, 0, 0, true);
+    setTimeout(syncScale, ZOOM_ANIMATION_MS + 10);
+  }, [stopInertia, applyTransform, syncScale]);
+
+  // Reset zoom/pan when schematic or page changes
+  useEffect(() => {
+    stopInertia();
+    applyTransform(1, 0, 0, false);
+    syncScale();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSchematic, currentPage]);
+
+  // Re-apply live transform after any React render (guards against stale JSX style)
+  useLayoutEffect(() => {
+    const el = schematicImageRef.current;
+    if (!el) return;
+    const { scale: sc, x, y } = transformRef.current;
+    el.style.transform = `scale(${sc}) translate(${x / sc}px, ${y / sc}px)`;
+  });
+
+  // Cleanup timers/RAF on unmount
+  useEffect(() => {
+    return () => {
+      stopInertia();
+      if (wheelSyncTimeoutRef.current) clearTimeout(wheelSyncTimeoutRef.current);
+    };
+  }, [stopInertia]);
 
   return (
     <section 
@@ -825,8 +960,8 @@ export default function Parts() {
               className="back-button"
               onClick={() => {
                 setSelectedSchematic(null);
+                applyTransform(1, 0, 0, false);
                 setScale(1);
-                setPosition({ x: 0, y: 0 });
               }}
               aria-label="Back to Tools"
             >
@@ -933,31 +1068,30 @@ export default function Parts() {
                   </svg>
                 </button>
               )}
+              {scale > 1 && (
+                <span className="zoom-indicator" aria-live="polite" aria-label={`Zoom ${Math.round(scale * 10) / 10}×`}>
+                  {Math.round(scale * 10) / 10}×
+                </span>
+              )}
             </div>
 
-            <div 
+            <div
               className="schematic-container"
               ref={schematicContainerRef}
               onWheel={handleWheel}
               style={{
-                overflow: scale > 1 ? 'hidden' : 'visible',
-                touchAction: scale > 1 ? 'none' : 'auto',
-                cursor: scale > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
                 WebkitUserSelect: 'none',
                 userSelect: 'none',
                 position: 'relative',
-                willChange: scale > 1 ? 'transform' : 'auto',
               }}
             >
-              <div 
+              <div
                 ref={schematicImageRef}
-                style={{ 
-                  position: 'relative', 
-                  display: 'inline-block', 
+                style={{
+                  position: 'relative',
+                  display: 'inline-block',
                   width: '100%',
-                  transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                   transformOrigin: 'center center',
-                  transition: isPanning ? 'none' : 'transform 0.3s ease-out',
                   WebkitUserSelect: 'none',
                   userSelect: 'none',
                   pointerEvents: 'auto',
@@ -965,13 +1099,13 @@ export default function Parts() {
                 }}
               >
                 {schematicImageSrc ? (
-                  <img 
-                    src={schematicImageSrc} 
+                  <img
+                    src={schematicImageSrc}
                     alt={currentSchematic.title}
-                    style={{ 
-                      width: '100%', 
-                      height: 'auto', 
-                      display: 'block', 
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      display: 'block',
                       pointerEvents: 'none',
                       imageRendering: 'auto',
                       WebkitTouchCallout: 'none',
