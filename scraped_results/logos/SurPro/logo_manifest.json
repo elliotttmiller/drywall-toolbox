@@ -1,0 +1,16 @@
+{
+  "brand": "SurPro",
+  "scraped_at": "2026-03-06T00:57:40.082804+00:00",
+  "downloaded": 1,
+  "failed": 0,
+  "source_urls": [
+    "https://stilts.com/cdn/shop/files/SurPro_orange_block_logo_500x.png?v=1638900570"
+  ],
+  "files": [
+    {
+      "filename": "surpro_logo.png",
+      "source_url": "https://stilts.com/cdn/shop/files/SurPro_orange_block_logo_500x.png?v=1638900570",
+      "size_bytes": 8808
+    }
+  ]
+}

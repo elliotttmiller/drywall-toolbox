@@ -1,0 +1,39 @@
+{
+  "scraped_at": "2026-03-06T00:57:40.184773+00:00",
+  "elapsed_seconds": 1.5,
+  "brands": [
+    "Asgard",
+    "Columbia Taping Tools",
+    "Graco",
+    "Spray King",
+    "SurPro",
+    "TapeTech"
+  ],
+  "output_dir": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos",
+  "results": {
+    "TapeTech": {
+      "saved": true,
+      "path": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos/TapeTech/tapetech_logo.png"
+    },
+    "Asgard": {
+      "saved": true,
+      "path": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos/Asgard/asgard_logo.png"
+    },
+    "Columbia Taping Tools": {
+      "saved": true,
+      "path": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos/Columbia_Taping_Tools/columbia_taping_tools_logo.jpeg"
+    },
+    "Graco": {
+      "saved": true,
+      "path": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos/Graco/graco_logo.svg"
+    },
+    "SurPro": {
+      "saved": true,
+      "path": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos/SurPro/surpro_logo.png"
+    },
+    "Spray King": {
+      "saved": true,
+      "path": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/logos/Spray_King/spray_king_logo.gif"
+    }
+  }
+}

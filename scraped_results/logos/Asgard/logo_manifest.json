@@ -1,0 +1,16 @@
+{
+  "brand": "Asgard",
+  "scraped_at": "2026-03-06T00:57:39.634866+00:00",
+  "downloaded": 1,
+  "failed": 0,
+  "source_urls": [
+    "http://web.archive.org/web/20250825092720im_/https://asgardtools.com/wp-content/uploads/2024/11/asgard_logo_header_wglow_v3.png"
+  ],
+  "files": [
+    {
+      "filename": "asgard_logo.png",
+      "source_url": "http://web.archive.org/web/20250825092720im_/https://asgardtools.com/wp-content/uploads/2024/11/asgard_logo_header_wglow_v3.png",
+      "size_bytes": 61517
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "brand": "TapeTech",
+  "scraped_at": "2026-03-06T00:57:38.839855+00:00",
+  "downloaded": 1,
+  "failed": 0,
+  "source_urls": [
+    "https://tapetech.com/wp-content/uploads/2024/05/TapeTech_logo_2c_2024.png"
+  ],
+  "files": [
+    {
+      "filename": "tapetech_logo.png",
+      "source_url": "https://tapetech.com/wp-content/uploads/2024/05/TapeTech_logo_2c_2024.png",
+      "size_bytes": 43756
+    }
+  ]
+}

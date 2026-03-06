@@ -1,0 +1,16 @@
+{
+  "brand": "Graco",
+  "scraped_at": "2026-03-06T00:57:39.914813+00:00",
+  "downloaded": 1,
+  "failed": 0,
+  "source_urls": [
+    "https://www.graco.com/img/graco_logo.svg"
+  ],
+  "files": [
+    {
+      "filename": "graco_logo.svg",
+      "source_url": "https://www.graco.com/img/graco_logo.svg",
+      "size_bytes": 7890
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "brand": "Spray King",
+  "scraped_at": "2026-03-06T00:57:40.184381+00:00",
+  "downloaded": 1,
+  "failed": 0,
+  "source_urls": [
+    "http://web.archive.org/web/20010302101458im_/http://www.sprayking.com/images/logo3.gif"
+  ],
+  "files": [
+    {
+      "filename": "spray_king_logo.gif",
+      "source_url": "http://web.archive.org/web/20010302101458im_/http://www.sprayking.com/images/logo3.gif",
+      "size_bytes": 4886
+    }
+  ]
+}
