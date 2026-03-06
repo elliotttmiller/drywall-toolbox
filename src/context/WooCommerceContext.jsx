@@ -3,7 +3,7 @@ import wooCommerceService from '../services/woocommerce';
 
 const WooCommerceContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
+
 export function useWooCommerce() {
   const context = useContext(WooCommerceContext);
   if (!context) {

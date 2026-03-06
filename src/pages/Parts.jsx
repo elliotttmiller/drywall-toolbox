@@ -7,7 +7,7 @@ import { loadProducts } from '../data/products';
 import '../styles/mobile-schematic.css';
 
 // ---------------------------------------------------------------------------
-// Schematic JSON data — static imports (bundled by Vite at build time).
+// Schematic JSON data — static imports (bundled by webpack at build time).
 // All source files now live under public/schematics/brands/ so they are also
 // available as plain-URL assets at runtime.
 // ---------------------------------------------------------------------------
@@ -24,7 +24,7 @@ import columbiaMatrixBoxHandleData from '../../public/schematics/brands/Columbia
 // Schematic image paths — runtime URLs relative to the deployment base.
 // Files are served from public/schematics/brands/... at their original paths.
 // ---------------------------------------------------------------------------
-const _BASE = import.meta.env.BASE_URL;
+const _BASE = process.env.PUBLIC_URL;
 const schematic13Img           = `${_BASE}schematics/brands/TapeTech/products/13TT_SCH_hotspots/images/page_1.png`;
 const schematic88Img           = `${_BASE}schematics/brands/TapeTech/products/88TTR_SCH_hotspots/images/page_2.png`;
 const schematic88ImgPage3      = `${_BASE}schematics/brands/TapeTech/products/88TTR_SCH_hotspots/images/page_3.png`;

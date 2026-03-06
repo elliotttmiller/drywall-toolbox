@@ -3,7 +3,7 @@ import veeqoService from '../services/veeqo';
 
 const VeeqoContext = createContext();
 
-// eslint-disable-next-line react-refresh/only-export-components
+
 export function useVeeqo() {
   const context = useContext(VeeqoContext);
   if (!context) {
