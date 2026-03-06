@@ -1,0 +1,188 @@
+{
+  "id": "columbia-matrix-box-handle.pdf",
+  "title": "Matrix Box Handle",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "MH 10",
+      "name": "Part MH 10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 256",
+      "name": "Part FA 256",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 256B",
+      "name": "Part FA 256 (Alt)",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MH 9A",
+      "name": "Part MH 9A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 8",
+      "name": "Part HH 8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 237",
+      "name": "Part FA 237",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 229",
+      "name": "Part FA 229",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 35",
+      "name": "Part HH 35",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MH 9",
+      "name": "Part MH 9",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 383",
+      "name": "Part FA 383",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 319",
+      "name": "Part FA 319",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "MH 10": {
+      "id": "MH 10",
+      "pageNumber": 1,
+      "top": 31.59,
+      "left": 4.79,
+      "widthPx": 34,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 256": {
+      "id": "FA 256",
+      "pageNumber": 1,
+      "top": 25.77,
+      "left": 8.98,
+      "widthPx": 34,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 256B": {
+      "id": "FA 256B",
+      "pageNumber": 1,
+      "top": 10.25,
+      "left": 19.6,
+      "widthPx": 31,
+      "heightPx": 24,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "MH 9A": {
+      "id": "MH 9A",
+      "pageNumber": 1,
+      "top": 46.29,
+      "left": 18.14,
+      "widthPx": 33,
+      "heightPx": 24,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "HH 8": {
+      "id": "HH 8",
+      "pageNumber": 1,
+      "top": 13.94,
+      "left": 17.04,
+      "widthPx": 34,
+      "heightPx": 21,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 237": {
+      "id": "FA 237",
+      "pageNumber": 1,
+      "top": 37.5,
+      "left": 24.17,
+      "widthPx": 30,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 229": {
+      "id": "FA 229",
+      "pageNumber": 1,
+      "top": 34.62,
+      "left": 25.95,
+      "widthPx": 31,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "HH 35": {
+      "id": "HH 35",
+      "pageNumber": 1,
+      "top": 5.79,
+      "left": 22.34,
+      "widthPx": 31,
+      "heightPx": 23,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "MH 9": {
+      "id": "MH 9",
+      "pageNumber": 1,
+      "top": 27.39,
+      "left": 30.98,
+      "widthPx": 35,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 383": {
+      "id": "FA 383",
+      "pageNumber": 1,
+      "top": 19.97,
+      "left": 37.87,
+      "widthPx": 33,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 319": {
+      "id": "FA 319",
+      "pageNumber": 1,
+      "top": 16.7,
+      "left": 41.6,
+      "widthPx": 32,
+      "heightPx": 22,
+      "shape": "circle",
+      "rotation": 0
+    }
+  }
+}

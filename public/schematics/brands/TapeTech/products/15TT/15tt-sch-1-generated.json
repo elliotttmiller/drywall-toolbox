@@ -1,0 +1,234 @@
+{
+  "id": "15tt-sch-1",
+  "title": "YOUR_TOOL_NAME",
+  "description": "YOUR_TOOL_DESCRIPTION",
+  "image": "/15TT_SCH-1.png",
+  "imageWidth": 3400,
+  "imageHeight": 2200,
+  "parts": [
+    {
+      "id": "01",
+      "name": "Handle Assembly",
+      "sku": "164348",
+      "material": "RUBBER",
+      "price": 51.51,
+      "position": {
+        "top": "15.00%",
+        "left": "33.24%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 1130,
+        "y": 330
+      }
+    },
+    {
+      "id": "02",
+      "name": "Coupling",
+      "sku": "150003F",
+      "material": "STEEL",
+      "price": 6,
+      "position": {
+        "top": "22.95%",
+        "left": "20.59%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 700,
+        "y": 505
+      }
+    },
+    {
+      "id": "03",
+      "name": "Cotter Pin, 1/16 x 1/2",
+      "sku": "059143",
+      "material": "STAINLESS-STEEL",
+      "price": 1.5,
+      "position": {
+        "top": "25.23%",
+        "left": "16.18%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 550,
+        "y": 555
+      }
+    },
+    {
+      "id": "04",
+      "name": "Corner Roller Head",
+      "sku": "156001F",
+      "material": "POLYURETHANE",
+      "price": 48,
+      "position": {
+        "top": "48.86%",
+        "left": "23.82%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 810,
+        "y": 1075
+      }
+    },
+    {
+      "id": "05",
+      "name": "Swivel Coupling Pin",
+      "sku": "150004F",
+      "material": "STAINLESS-STEEL",
+      "price": 1.5,
+      "position": {
+        "top": "51.59%",
+        "left": "20.88%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 710,
+        "y": 1135
+      }
+    },
+    {
+      "id": "06",
+      "name": "Thrust Washer",
+      "sku": "150008",
+      "material": "BRASS",
+      "price": 2.5,
+      "position": {
+        "top": "48.64%",
+        "left": "12.65%"
+      },
+      "quantity": 4,
+      "_pixelCoords": {
+        "x": 430,
+        "y": 1070
+      }
+    },
+    {
+      "id": "07",
+      "name": "Brass Washer",
+      "sku": "809006",
+      "material": "BRASS",
+      "price": 2.5,
+      "position": {
+        "top": "50.00%",
+        "left": "4.41%"
+      },
+      "quantity": 4,
+      "_pixelCoords": {
+        "x": 150,
+        "y": 1100
+      }
+    },
+    {
+      "id": "08",
+      "name": "Roller Axle, 1/4-20 x 1 1/4 Hex.",
+      "sku": "159006",
+      "material": "STAINLESS-STEEL",
+      "price": 22,
+      "position": {
+        "top": "45.23%",
+        "left": "3.53%"
+      },
+      "quantity": 4,
+      "_pixelCoords": {
+        "x": 120,
+        "y": 995
+      }
+    },
+    {
+      "id": "09",
+      "name": "Roller Bushing",
+      "sku": "150011F",
+      "material": "POLYURETHANE",
+      "price": 8,
+      "position": {
+        "top": "43.18%",
+        "left": "5.74%"
+      },
+      "quantity": 4,
+      "_pixelCoords": {
+        "x": 195,
+        "y": 950
+      }
+    },
+    {
+      "id": "10",
+      "name": "Roller",
+      "sku": "150005",
+      "material": "POLYURETHANE",
+      "price": 22,
+      "position": {
+        "top": "41.82%",
+        "left": "7.35%"
+      },
+      "quantity": 4,
+      "_pixelCoords": {
+        "x": 250,
+        "y": 920
+      }
+    },
+    {
+      "id": "11",
+      "name": "Screw, 8-32 x 3/8 Fil. Hd. Nylock",
+      "sku": "159010",
+      "material": "STAINLESS-STEEL",
+      "price": 1.5,
+      "position": {
+        "top": "34.32%",
+        "left": "11.18%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 380,
+        "y": 755
+      }
+    },
+    {
+      "id": "12",
+      "name": "Swivel Assy.",
+      "sku": "154007",
+      "material": "STEEL",
+      "price": 15,
+      "position": {
+        "top": "37.27%",
+        "left": "12.79%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 435,
+        "y": 820
+      }
+    },
+    {
+      "id": "13",
+      "name": "Swivel Axle",
+      "sku": "150009",
+      "material": "STAINLESS-STEEL",
+      "price": 8.5,
+      "position": {
+        "top": "19.09%",
+        "left": "15.29%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 520,
+        "y": 420
+      }
+    },
+    {
+      "id": "14",
+      "name": "Handle Grip, Black",
+      "sku": "151042",
+      "material": "RUBBER",
+      "price": 8.5,
+      "position": {
+        "top": "8.86%",
+        "left": "33.24%"
+      },
+      "quantity": 1,
+      "_pixelCoords": {
+        "x": 1130,
+        "y": 195
+      }
+    }
+  ]
+}

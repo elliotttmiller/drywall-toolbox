@@ -1,0 +1,614 @@
+{
+  "id": "NS02TT_SCH.pdf",
+  "title": "NS02TT_SCH",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [
+    2
+  ],
+  "parts": [
+    {
+      "id": "059057",
+      "name": "Screw 4-40 x 3/16 Bind Hd. S.S",
+      "quantity": 2,
+      "sku": "059057"
+    },
+    {
+      "id": "059074",
+      "name": "Stopnut, 8-32 Hex, Elas., S.S.",
+      "quantity": 1,
+      "sku": "059074"
+    },
+    {
+      "id": "059225",
+      "name": "Nut 10-32 Elastic",
+      "quantity": 1,
+      "sku": "059225"
+    },
+    {
+      "id": "209042",
+      "name": "#10 Brass Washer",
+      "quantity": 1,
+      "sku": "209042"
+    },
+    {
+      "id": "209755",
+      "name": "Screw, 6-32 x 1/2 Flat Hd",
+      "quantity": 2,
+      "sku": "209755"
+    },
+    {
+      "id": "359005",
+      "name": "Screw: 6-32 X 1/4 Bind Hd.",
+      "quantity": 4,
+      "sku": "359005"
+    },
+    {
+      "id": "600005F",
+      "name": "Blade, Carbide, 2\" N.S.",
+      "quantity": 1,
+      "sku": "600005F"
+    },
+    {
+      "id": "600007",
+      "name": "2\" Skid",
+      "quantity": 1,
+      "sku": "600007"
+    },
+    {
+      "id": "600022",
+      "name": "Connector",
+      "quantity": 1,
+      "sku": "600022"
+    },
+    {
+      "id": "632026",
+      "name": "Spring, Nail Spotters",
+      "quantity": 2,
+      "sku": "632026"
+    },
+    {
+      "id": "602029F",
+      "name": "Rivet, Special",
+      "quantity": 1,
+      "sku": "602029F"
+    },
+    {
+      "id": "602035",
+      "name": "Adjustable Stop",
+      "quantity": 1,
+      "sku": "602035"
+    },
+    {
+      "id": "602045F",
+      "name": "Special Washer",
+      "quantity": 1,
+      "sku": "602045F"
+    },
+    {
+      "id": "604036",
+      "name": "Blade Clamp Assy",
+      "quantity": 1,
+      "sku": "604036"
+    },
+    {
+      "id": "609008",
+      "name": "Screw 4-40 X 1/2 Flat Hd. S.S.",
+      "quantity": 1,
+      "sku": "609008"
+    },
+    {
+      "id": "609011",
+      "name": "Screw, Rnd. Hd. S.S.",
+      "quantity": 2,
+      "sku": "609011"
+    },
+    {
+      "id": "609012",
+      "name": "Stopnut 4-40 S.S",
+      "quantity": 1,
+      "sku": "609012"
+    },
+    {
+      "id": "609015",
+      "name": "Nut Block",
+      "quantity": 1,
+      "sku": "609015"
+    },
+    {
+      "id": "609018",
+      "name": "Washer (Plastic)",
+      "quantity": 2,
+      "sku": "609018"
+    },
+    {
+      "id": "609020",
+      "name": "Friction Washer",
+      "quantity": 1,
+      "sku": "609020"
+    },
+    {
+      "id": "609048",
+      "name": "4-40X3/8 Flat Head S.S. Screw",
+      "quantity": 1,
+      "sku": "609048"
+    },
+    {
+      "id": "609049",
+      "name": "Serrated Hex Flange Nut",
+      "quantity": 4,
+      "sku": "609049"
+    },
+    {
+      "id": "609050",
+      "name": "Screw,6-32 X 3/32 Slotted Rd Hd",
+      "quantity": 5,
+      "sku": "609050"
+    },
+    {
+      "id": "630002",
+      "name": "Latch, 2\" N.S.",
+      "quantity": 1,
+      "sku": "630002"
+    },
+    {
+      "id": "630009",
+      "name": "2\" N.S. Facing",
+      "quantity": 1,
+      "sku": "630009"
+    },
+    {
+      "id": "630010",
+      "name": "2\" Hinge Block",
+      "quantity": 1,
+      "sku": "630010"
+    },
+    {
+      "id": "631015",
+      "name": "2\" N.S. Wiper",
+      "quantity": 1,
+      "sku": "631015"
+    },
+    {
+      "id": "630030",
+      "name": "2\" N.S. Insert",
+      "quantity": 1,
+      "sku": "630030"
+    },
+    {
+      "id": "634028",
+      "name": "2\"Press Plate Assy W/ New Style Tab",
+      "quantity": 1,
+      "sku": "634028"
+    },
+    {
+      "id": "638001",
+      "name": "2\" Easyclean Nail Spotter Body, No-Logo",
+      "quantity": 1,
+      "sku": "638001"
+    },
+    {
+      "id": "639020",
+      "name": "Plastic Washer",
+      "quantity": 1,
+      "sku": "639020"
+    },
+    {
+      "id": "729064",
+      "name": "8-32 X 3/8 Slotted Binding Head Screw, S",
+      "quantity": 1,
+      "sku": "729064"
+    },
+    {
+      "id": "883021",
+      "name": "NS Adapter Jam Nut",
+      "quantity": 1,
+      "sku": "883021"
+    },
+    {
+      "id": "883022",
+      "name": "NS Adapter",
+      "quantity": 1,
+      "sku": "883022"
+    },
+    {
+      "id": "883023",
+      "name": "NS Adapter Clamp",
+      "quantity": 1,
+      "sku": "883023"
+    }
+  ],
+  "coordinates": {
+    "209042": {
+      "id": "209042",
+      "pageNumber": 1,
+      "top": 33.300000000000004,
+      "left": 37.75,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "209755": {
+      "id": "209755",
+      "pageNumber": 1,
+      "top": 55.800000000000004,
+      "left": 32.7,
+      "width": 5.940000000000001,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "359005": {
+      "id": "359005",
+      "pageNumber": 1,
+      "top": 62.3,
+      "left": 77.4,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "600007": {
+      "id": "600007",
+      "pageNumber": 1,
+      "top": 54.800000000000004,
+      "left": 88.5,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "600022": {
+      "id": "600022",
+      "pageNumber": 1,
+      "top": 39.2,
+      "left": 34.949999999999996,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "602035": {
+      "id": "602035",
+      "pageNumber": 1,
+      "top": 25.8,
+      "left": 72.2,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "604036": {
+      "id": "604036",
+      "pageNumber": 1,
+      "top": 37.9,
+      "left": 88.8,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609008": {
+      "id": "609008",
+      "pageNumber": 1,
+      "top": 51.6,
+      "left": 88.9,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609011": {
+      "id": "609011",
+      "pageNumber": 1,
+      "top": 55.800000000000004,
+      "left": 39.25,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609012": {
+      "id": "609012",
+      "pageNumber": 1,
+      "top": 49.4,
+      "left": 54.949999999999996,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609015": {
+      "id": "609015",
+      "pageNumber": 1,
+      "top": 57.49999999999999,
+      "left": 62.55,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609018": {
+      "id": "609018",
+      "pageNumber": 1,
+      "top": 25.2,
+      "left": 43.9,
+      "width": 5.720000000000001,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609020": {
+      "id": "609020",
+      "pageNumber": 1,
+      "top": 37.5,
+      "left": 40.8,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609021": {
+      "id": "609021",
+      "pageNumber": 1,
+      "top": 45.2,
+      "left": 54.55,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609048": {
+      "id": "609048",
+      "pageNumber": 1,
+      "top": 47.699999999999996,
+      "left": 89.7,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609049": {
+      "id": "609049",
+      "pageNumber": 1,
+      "top": 27.3,
+      "left": 81.69999999999999,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "609050": {
+      "id": "609050",
+      "pageNumber": 1,
+      "top": 39.75,
+      "left": 62.2,
+      "width": 3.7400000000000007,
+      "height": 5.83,
+      "shape": "rectangle",
+      "rotation": 60
+    },
+    "630002": {
+      "id": "630002",
+      "pageNumber": 1,
+      "top": 45.95,
+      "left": 66.05,
+      "width": 1.6500000000000001,
+      "height": 5.83,
+      "shape": "rectangle",
+      "rotation": 90
+    },
+    "630009": {
+      "id": "630009",
+      "pageNumber": 1,
+      "top": 43,
+      "left": 89.2,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "630010": {
+      "id": "630010",
+      "pageNumber": 1,
+      "top": 60.9,
+      "left": 51.849999999999994,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "630017": {
+      "id": "630017",
+      "pageNumber": 1,
+      "top": 29.799999999999997,
+      "left": 51.65,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "630030": {
+      "id": "630030",
+      "pageNumber": 1,
+      "top": 57.199999999999996,
+      "left": 54.15,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "631015": {
+      "id": "631015",
+      "pageNumber": 1,
+      "top": 26.900000000000002,
+      "left": 63.849999999999994,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "632026": {
+      "id": "632026",
+      "pageNumber": 1,
+      "top": 53.5,
+      "left": 64.64999999999999,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "634028": {
+      "id": "634028",
+      "pageNumber": 1,
+      "top": 25.6,
+      "left": 49.15,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "638001": {
+      "id": "638001",
+      "pageNumber": 1,
+      "top": 59.9,
+      "left": 72.39999999999999,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "639020": {
+      "id": "639020",
+      "pageNumber": 1,
+      "top": 32,
+      "left": 67.10000000000001,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "709050": {
+      "id": "709050",
+      "pageNumber": 1,
+      "top": 27.1,
+      "left": 53.7,
+      "width": 5.720000000000001,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "729064": {
+      "id": "729064",
+      "pageNumber": 1,
+      "top": 43.1,
+      "left": 62.3,
+      "width": 3.7400000000000007,
+      "height": 5.720000000000001,
+      "shape": "rectangle",
+      "rotation": 60
+    },
+    "809017": {
+      "id": "809017",
+      "pageNumber": 1,
+      "top": 25,
+      "left": 59.3,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "883021": {
+      "id": "883021",
+      "pageNumber": 1,
+      "top": 52,
+      "left": 23.65,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "883022": {
+      "id": "883022",
+      "pageNumber": 1,
+      "top": 43.3,
+      "left": 29.099999999999998,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "883023": {
+      "id": "883023",
+      "pageNumber": 1,
+      "top": 42.1,
+      "left": 43.25,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "059225": {
+      "id": "059225",
+      "pageNumber": 1,
+      "top": 29.599999999999998,
+      "left": 38.25,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "602045F": {
+      "id": "602045F",
+      "pageNumber": 1,
+      "top": 27.500000000000004,
+      "left": 40.6,
+      "width": 6.380000000000002,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "059057": {
+      "id": "059057",
+      "pageNumber": 1,
+      "top": 45.4,
+      "left": 43.45,
+      "width": 5.61,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "059074": {
+      "id": "059074",
+      "pageNumber": 1,
+      "top": 28.299999999999997,
+      "left": 68.30000000000001,
+      "width": 5.5,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "600005F": {
+      "id": "600005F",
+      "pageNumber": 1,
+      "top": 34,
+      "left": 87.6,
+      "width": 6.380000000000002,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "602029F": {
+      "id": "602029F",
+      "pageNumber": 1,
+      "top": 59.8,
+      "left": 80.25,
+      "width": 6.2700000000000005,
+      "height": 1.5400000000000003,
+      "shape": "rectangle",
+      "rotation": 0
+    }
+  }
+}

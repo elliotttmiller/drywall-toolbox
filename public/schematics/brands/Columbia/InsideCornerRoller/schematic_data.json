@@ -1,0 +1,188 @@
+{
+  "id": "columbia-inside-corner-roller.pdf",
+  "title": "Inside Corner Roller",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA 288",
+      "name": "Upper Support Arm Assembly",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 11",
+      "name": "Handle Connector",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 6",
+      "name": "Bearing Support",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 262",
+      "name": "Adjustable Rod",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 12",
+      "name": "Roller Housing Left",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 1",
+      "name": "Roller Wheel - Left",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 4",
+      "name": "Corner Guide",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 2A",
+      "name": "Roller Wheel - Right Top",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 2B",
+      "name": "Roller Wheel - Right Bottom",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 3",
+      "name": "Roller Housing Right",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 299",
+      "name": "Lower Support Arm",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "CR 12": {
+      "id": "CR 12",
+      "pageNumber": 1,
+      "top": 16.21,
+      "left": 31.6,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 1": {
+      "id": "CR 1",
+      "pageNumber": 1,
+      "top": 16.41,
+      "left": 68.57,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 4": {
+      "id": "CR 4",
+      "pageNumber": 1,
+      "top": 30.69,
+      "left": 68.57,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 288": {
+      "id": "FA 288",
+      "pageNumber": 1,
+      "top": 67.39,
+      "left": 11.14,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 11": {
+      "id": "CR 11",
+      "pageNumber": 1,
+      "top": 67.28,
+      "left": 18.13,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 6": {
+      "id": "CR 6",
+      "pageNumber": 1,
+      "top": 67.39,
+      "left": 25.32,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 262": {
+      "id": "FA 262",
+      "pageNumber": 1,
+      "top": 67.39,
+      "left": 32.82,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 2A": {
+      "id": "CR 2A",
+      "pageNumber": 1,
+      "top": 67.39,
+      "left": 68.57,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 2B": {
+      "id": "CR 2B",
+      "pageNumber": 1,
+      "top": 67.29,
+      "left": 77.18,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "CR 3": {
+      "id": "CR 3",
+      "pageNumber": 1,
+      "top": 67.29,
+      "left": 85.68,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "FA 299": {
+      "id": "FA 299",
+      "pageNumber": 1,
+      "top": 67.49,
+      "left": 94.29,
+      "widthPx": 50,
+      "heightPx": 50,
+      "shape": "circle",
+      "rotation": 0
+    }
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "sch-1": {
+    "title": "Schematic 1",
+    "diagramPages": [
+      1
+    ],
+    "parts": [
+      {
+        "id": "CR-12",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "16.21%",
+          "left": "31.60%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-1",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "16.41%",
+          "left": "68.57%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-4",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "30.69%",
+          "left": "68.57%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "FA-288",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.39%",
+          "left": "11.14%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-11",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.28%",
+          "left": "18.13%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-6",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.39%",
+          "left": "25.32%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "FA-262",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.39%",
+          "left": "32.82%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-2A",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.39%",
+          "left": "68.57%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-2B",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.29%",
+          "left": "77.18%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "CR-3",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.29%",
+          "left": "85.68%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      },
+      {
+        "id": "FA-299",
+        "sku": "CUSTOM",
+        "name": "Custom Part",
+        "quantity": 1,
+        "position": {
+          "top": "67.49%",
+          "left": "94.29%"
+        },
+        "hotspot": {
+          "shape": "circle",
+          "width": 50,
+          "height": 50,
+          "rotation": 0
+        },
+        "page": 1
+      }
+    ]
+  }
+}

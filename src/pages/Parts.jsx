@@ -1,27 +1,39 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import Toast from '../components/Toast';
 import BrandSelector from '../components/BrandSelector';
 import ToolSelector from '../components/ToolSelector';
 import { loadProducts } from '../data/products';
 import '../styles/mobile-schematic.css';
-import schematic13Data from '../../schematics/brands/TapeTech/products/13TT_SCH_hotspots/schematic_data.json';
-import schematic13Img from '../../schematics/brands/TapeTech/products/13TT_SCH_hotspots/images/page_1.png';
-import schematic88Data from '../../schematics/brands/TapeTech/products/88TTR_SCH_hotspots/schematic_data.json';
-import schematic88Img from '../../schematics/brands/TapeTech/products/88TTR_SCH_hotspots/images/page_2.png';
-import schematic88ImgPage3 from '../../schematics/brands/TapeTech/products/88TTR_SCH_hotspots/images/page_3.png';
-import schematicNS02Data from '../../schematics/brands/TapeTech/products/NS02TT_SCH_hotspots/schematic_data.json';
-import schematicNS02Img from '../../schematics/brands/TapeTech/products/NS02TT_SCH_hotspots/images/page_1.png';
-import schematic73Data from '../../schematics/brands/TapeTech/products/73TT_SCH_hotspots/schematic_data.json';
-import schematic73Img from '../../schematics/brands/TapeTech/products/73TT_SCH_hotspots/images/page_2.png';
-import schematicPAHC10Data from '../../schematics/brands/TapeTech/products/PAHC10_SCH_v2_hotspots/schematic_data.json';
-import schematicPAHC10Img from '../../schematics/brands/TapeTech/products/PAHC10_SCH_v2_hotspots/images/page_1.png';
-import schematicBoxHandleData from '../../schematics/brands/TapeTech/products/Box_Handle/schematic_data.json';
-import schematicBoxHandleImg from '../../public/brands/TapeTech/BoxHandle/BH_SCH-enhanced1.png';
-import columbiaInsideCornerRollerData from '../../schematics/brands/Columbia/InsideCornerRoller/schematic_data.json';
-import columbiaMatrixBoxHandleData from '../../schematics/brands/Columbia/MatrixBoxHandle/schematic_data.json';
-const columbiaInsideCornerRollerImg = '/drywall-toolbox/brands/Columbia/Schematics/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png';
-const columbiaMatrixBoxHandleImg = '/drywall-toolbox/brands/Columbia/Schematics/MatrixBoxHandle/Matrix_Handle-enhanced-square.png';
+
+// ---------------------------------------------------------------------------
+// Schematic JSON data — static imports (bundled by Vite at build time).
+// All source files now live under public/schematics/brands/ so they are also
+// available as plain-URL assets at runtime.
+// ---------------------------------------------------------------------------
+import schematic13Data from '../../public/schematics/brands/TapeTech/products/13TT_SCH_hotspots/schematic_data.json';
+import schematic88Data from '../../public/schematics/brands/TapeTech/products/88TTR_SCH_hotspots/schematic_data.json';
+import schematicNS02Data from '../../public/schematics/brands/TapeTech/products/NS02TT_SCH_hotspots/schematic_data.json';
+import schematic73Data from '../../public/schematics/brands/TapeTech/products/73TT_SCH_hotspots/schematic_data.json';
+import schematicPAHC10Data from '../../public/schematics/brands/TapeTech/products/PAHC10_SCH_v2_hotspots/schematic_data.json';
+import schematicBoxHandleData from '../../public/schematics/brands/TapeTech/products/Box_Handle/schematic_data.json';
+import columbiaInsideCornerRollerData from '../../public/schematics/brands/Columbia/InsideCornerRoller/schematic_data.json';
+import columbiaMatrixBoxHandleData from '../../public/schematics/brands/Columbia/MatrixBoxHandle/schematic_data.json';
+
+// ---------------------------------------------------------------------------
+// Schematic image paths — runtime URLs relative to the deployment base.
+// Files are served from public/schematics/brands/... at their original paths.
+// ---------------------------------------------------------------------------
+const _BASE = import.meta.env.BASE_URL;
+const schematic13Img           = `${_BASE}schematics/brands/TapeTech/products/13TT_SCH_hotspots/images/page_1.png`;
+const schematic88Img           = `${_BASE}schematics/brands/TapeTech/products/88TTR_SCH_hotspots/images/page_2.png`;
+const schematic88ImgPage3      = `${_BASE}schematics/brands/TapeTech/products/88TTR_SCH_hotspots/images/page_3.png`;
+const schematicNS02Img         = `${_BASE}schematics/brands/TapeTech/products/NS02TT_SCH_hotspots/images/page_1.png`;
+const schematic73Img           = `${_BASE}schematics/brands/TapeTech/products/73TT_SCH_hotspots/images/page_2.png`;
+const schematicPAHC10Img       = `${_BASE}schematics/brands/TapeTech/products/PAHC10_SCH_v2_hotspots/images/page_1.png`;
+const schematicBoxHandleImg    = `${_BASE}schematics/brands/TapeTech/products/Box_Handle/BH_SCH-enhanced1.png`;
+const columbiaInsideCornerRollerImg = `${_BASE}schematics/brands/Columbia/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png`;
+const columbiaMatrixBoxHandleImg    = `${_BASE}schematics/brands/Columbia/MatrixBoxHandle/Matrix_Handle-enhanced-square.png`;
 
 export default function Parts() {
   // Allowed brands to display
@@ -69,6 +81,10 @@ export default function Parts() {
   
   const schematicContainerRef = useRef(null);
   const schematicImageRef = useRef(null);
+
+  // Desktop mouse-drag panning
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
 
   // Load products on mount
   useEffect(() => {
@@ -355,7 +371,7 @@ export default function Parts() {
       description: 'Precision Corner Finisher Assembly - Model T05CF (Main Components)',
       brand: 'TapeTech',
       productPartNumber: 'T05CF',
-      image: '/T05CF_SCH-9.png',
+      image: `${_BASE}schematics/brands/TapeTech/products/T05CF_SCH_hotspots/images/page_9.png`,
       parts: [
         { id: '499023', name: 'Finisher Blade', sku: '499023', material: 'STAINLESS-STEEL', price: 24.50, position: { top: '50.38%', left: '77.25%' }, quantity: 1 },
         { id: '800856', name: 'Main Body casting', sku: '800856', material: 'ALUMINUM', price: 85.00, position: { top: '72.35%', left: '53.70%' }, quantity: 1 },
@@ -753,34 +769,105 @@ export default function Parts() {
     };
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
-  // Mouse wheel zoom for hybrid devices (tablets, laptops with touch)
-  const handleWheel = (e) => {
+  // Mouse wheel zoom — cursor-aware, non-passive listener added via useEffect below
+  const handleWheel = useCallback((e) => {
     if (e.ctrlKey || e.metaKey) {
-      // Pinch-to-zoom on trackpad or ctrl+wheel
       e.preventDefault();
       const zoomDirection = e.deltaY > 0 ? -0.2 : 0.2;
       const newScale = Math.min(Math.max(scale + zoomDirection, 1), 4);
-      // Clamp pan to valid bounds when scale changes
+      const container = schematicContainerRef.current;
+      const imageDiv  = schematicImageRef.current;
+      const containerW = container ? container.offsetWidth  : 400;
+      const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
       if (newScale === 1) {
         setPosition({ x: 0, y: 0 });
       } else {
-        const container = schematicContainerRef.current;
-        const containerW = container ? container.offsetWidth : 400;
-        const containerH = container ? container.offsetHeight : 400;
+        // Zoom towards the cursor position
+        const rect = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: containerW, height: containerH };
+        const cursorX = e.clientX - (rect.left + rect.width  / 2);
+        const cursorY = e.clientY - (rect.top  + rect.height / 2);
+        const ratio = newScale / scale;
+        const newX = cursorX - (cursorX - position.x) * ratio;
+        const newY = cursorY - (cursorY - position.y) * ratio;
         const maxPanX = ((newScale - 1) * containerW) / 2;
         const maxPanY = ((newScale - 1) * containerH) / 2;
-        setPosition(prev => ({
-          x: Math.min(Math.max(prev.x, -maxPanX), maxPanX),
-          y: Math.min(Math.max(prev.y, -maxPanY), maxPanY),
-        }));
+        setPosition({
+          x: Math.min(Math.max(newX, -maxPanX), maxPanX),
+          y: Math.min(Math.max(newY, -maxPanY), maxPanY),
+        });
       }
       setScale(newScale);
     }
-  };
+  }, [scale, position]);
+
+  // Attach non-passive wheel listener so preventDefault() is respected
+  useEffect(() => {
+    const container = schematicContainerRef.current;
+    if (!container) return;
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
+
+  // Desktop mouse-drag panning: track start when mouse is pressed on the schematic
+  const handleMouseDown = useCallback((e) => {
+    if (e.button !== 0 || scale <= 1 || isMobile) return;
+    e.preventDefault();
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      panX: position.x,
+      panY: position.y,
+    };
+    setIsDragging(true);
+    setIsPanning(true);
+  }, [scale, position, isMobile]);
+
+  // Global mouse-move / mouse-up while dragging
+  useEffect(() => {
+    if (!isDragging) return;
+    const onMouseMove = (e) => {
+      const { x, y, panX, panY } = dragStartRef.current;
+      const newX = panX + (e.clientX - x);
+      const newY = panY + (e.clientY - y);
+      const container = schematicContainerRef.current;
+      const imageDiv  = schematicImageRef.current;
+      const containerW = container ? container.offsetWidth  : 400;
+      const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
+      const maxPanX = ((scale - 1) * containerW) / 2;
+      const maxPanY = ((scale - 1) * containerH) / 2;
+      setPosition({
+        x: Math.min(Math.max(newX, -maxPanX), maxPanX),
+        y: Math.min(Math.max(newY, -maxPanY), maxPanY),
+      });
+    };
+    const onMouseUp = () => {
+      setIsDragging(false);
+      setIsPanning(false);
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup',   onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup',   onMouseUp);
+    };
+  }, [isDragging, scale]);
 
   // Zoom controls
   const handleZoomIn = () => {
-    setScale(prev => Math.min(prev + 0.5, 4));
+    setScale(prev => {
+      const newScale = Math.min(prev + 0.5, 4);
+      const container = schematicContainerRef.current;
+      const imageDiv  = schematicImageRef.current;
+      const containerW = container ? container.offsetWidth  : 400;
+      const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
+      const maxPanX = ((newScale - 1) * containerW) / 2;
+      const maxPanY = ((newScale - 1) * containerH) / 2;
+      setPosition(p => ({
+        x: Math.min(Math.max(p.x, -maxPanX), maxPanX),
+        y: Math.min(Math.max(p.y, -maxPanY), maxPanY),
+      }));
+      return newScale;
+    });
   };
 
   const handleZoomOut = () => {
@@ -790,8 +877,9 @@ export default function Parts() {
         setPosition({ x: 0, y: 0 });
       } else {
         const container = schematicContainerRef.current;
-        const containerW = container ? container.offsetWidth : 400;
-        const containerH = container ? container.offsetHeight : 400;
+        const imageDiv  = schematicImageRef.current;
+        const containerW = container ? container.offsetWidth  : 400;
+        const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
         const maxPanX = ((newScale - 1) * containerW) / 2;
         const maxPanY = ((newScale - 1) * containerH) / 2;
         setPosition(p => ({
@@ -985,11 +1073,11 @@ export default function Parts() {
             <div 
               className="schematic-container"
               ref={schematicContainerRef}
-              onWheel={handleWheel}
+              onMouseDown={handleMouseDown}
               style={{
                 overflow: 'hidden',
                 touchAction: scale > 1 ? 'none' : 'auto',
-                cursor: scale > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
+                cursor: scale > 1 ? (isPanning || isDragging ? 'grabbing' : 'grab') : 'default',
                 WebkitUserSelect: 'none',
                 userSelect: 'none',
                 position: 'relative',
@@ -1000,19 +1088,19 @@ export default function Parts() {
                 flexDirection: 'column'
               }}
             >
+              {/* Transform wrapper — sized by the image's natural aspect ratio.
+                  Hotspots are absolutely positioned inside here so they scale
+                  and pan with the image on every zoom level and screen size. */}
               <div 
                 ref={schematicImageRef}
                 style={{ 
-                  position: 'relative', 
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
+                  position: 'relative',
+                  display: 'block',
                   width: '100%',
-                  aspectRatio: '1 / 1',
                   flex: 'none',
                   transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-                  transformOrigin: 'center top',
-                  transition: isPanning ? 'none' : 'transform 0.3s ease-out',
+                  transformOrigin: 'center center',
+                  transition: isPanning || isDragging ? 'none' : 'transform 0.3s ease-out',
                   WebkitUserSelect: 'none',
                   userSelect: 'none',
                   pointerEvents: 'auto',
@@ -1026,7 +1114,6 @@ export default function Parts() {
                     style={{ 
                       width: '100%', 
                       height: 'auto',
-                      aspectRatio: '1 / 1',
                       display: 'block', 
                       pointerEvents: 'none',
                       imageRendering: 'auto',
