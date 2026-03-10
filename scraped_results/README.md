@@ -12,28 +12,30 @@ Summary JSON:   `scrape_summary.json`
 
 | Brand | Files | Source |
 |-------|-------|--------|
-| [TapeTech](./TapeTech/) | 122 PDFs | tapetech.com/schematics (official) |
+| [TapeTech](./TapeTech/) | 68 PDFs | tapetech.com/schematics (official) |
 | [Columbia Taping Tools](./Columbia_Taping_Tools/) | 15 PDFs | alstapingtools.com (authorized distributor) |
 | [Asgard](./Asgard/) | 16 PDFs | tapetech.com/schematics (Asgard is a TapeTech sub-brand) |
 | [SurPro](./SurPro/) | 7 PDFs | stilts.com (official SurPro website) |
 | [Spray King](./Spray_King/) | 0 files | Domain parked – no public schematics found |
 | [Graco](./Graco/) | 59 PDFs | graco.com product pages + alstapingtools.com (authorized distributor) |
 
-**Total: 219 schematic/parts diagram files across 5 brands**
+**Total: 165 schematic/parts diagram files across 5 brands**
 
 ---
 
 ## Brand Details
 
-### TapeTech (122 PDFs)
-All official TapeTech tool schematics scraped from the [TapeTech Schematics page](https://www.tapetech.com/schematics).
-Covers every TapeTech tool model including:
-- Automatic tapers (03TT–98TT)
-- Flat boxes (standard, EZ, MaxxBox, Power Assist)
-- Angle boxes & heads
-- Corner tools
-- Bazooka / Continuous Flow System (CFS)
-- Pumps and handles
+### TapeTech (68 PDFs)
+Official TapeTech tool schematics scraped from the [TapeTech Schematics page](https://www.tapetech.com/schematics),
+filtered to include only models present in the current TapeTech product catalog.
+Covers all current TapeTech tool categories including:
+- Automatic tapers (03TT, 07TT, 07TT-C, ATX01TT)
+- Corner rollers & applicator heads (15TTE, 16TT, 16TT90, 17TT, 17TTE, CH55TT–CH90TT)
+- Corner applicators, nail spotters, MudRunner, corner finishers & flushers
+- EasyClean boxes (EZ07TT–EZ15TT), MaxxBox (EHC07–EHC12), Power Assist MaxxBox (PAHC07–PAHC12)
+- Continuous Flow boxes (CF07H, CF12H) and Continuous Flow Pump (CTPMP, T05CF)
+- Pumps (76TT, 76XLTT, 76TT-CA, 85T, 90T)
+- Finishing box handles, support handles, QuickBox, compound tubes, and accessory tools
 
 ### Columbia Taping Tools (15 PDFs)
 Official Columbia Taping Tools schematics sourced from
