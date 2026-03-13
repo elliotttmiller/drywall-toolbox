@@ -35,6 +35,39 @@ const schematicBoxHandleImg    = `${_BASE}schematics/brands/TapeTech/products/Bo
 const columbiaInsideCornerRollerImg = `${_BASE}schematics/brands/Columbia/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png`;
 const columbiaMatrixBoxHandleImg    = `${_BASE}schematics/brands/Columbia/MatrixBoxHandle/Matrix_Handle-enhanced-square.png`;
 
+// New TapeTech image-only schematics
+const tapeTech15TTEImg      = `${_BASE}schematics/brands/TapeTech/products/15TTE_SCH-enhanced.png`;
+const tapeTech17TTImg       = `${_BASE}schematics/brands/TapeTech/products/17TT_SCH-enhanced.png`;
+const tapeTech30TTXImg      = `${_BASE}schematics/brands/TapeTech/products/30TTX_SCH-enhanced.png`;
+const tapeTech35TTImg       = `${_BASE}schematics/brands/TapeTech/products/35TT_SCH-enhanced.png`;
+const tapeTech40TTImg       = `${_BASE}schematics/brands/TapeTech/products/40TT_SCH-enhanced.png`;
+const tapeTech45TTImg       = `${_BASE}schematics/brands/TapeTech/products/45TT_SCH-enhanced.png`;
+const tapeTech76TTCAImg     = `${_BASE}schematics/brands/TapeTech/products/76TT-CA_SCH-enhanced.png`;
+const tapeTech8000TTImg     = `${_BASE}schematics/brands/TapeTech/products/8000TT-PA_SCH-enhanced.png`;
+const tapeTech8154TTImg     = `${_BASE}schematics/brands/TapeTech/products/8154TT_SCH-enhanced.png`;
+const tapeTech85TImg        = `${_BASE}schematics/brands/TapeTech/products/85T_SCH-enhanced.png`;
+const tapeTech88TTEImg      = `${_BASE}schematics/brands/TapeTech/products/88TTE_SCH-enhanced.png`;
+const tapeTech90TImg        = `${_BASE}schematics/brands/TapeTech/products/90T_SCH-enhanced.png`;
+const tapeTechCF30TTImg     = `${_BASE}schematics/brands/TapeTech/products/CF30TT_SCH-enhanced.png`;
+const tapeTechCFHTTImg      = `${_BASE}schematics/brands/TapeTech/products/CFHTT-rA-enhanced.png`;
+const tapeTechPAHC12Img     = `${_BASE}schematics/brands/TapeTech/products/PAHC12_SCH-enhanced.png`;
+
+// New Columbia image-only schematics
+const columbia2WheelImg            = `${_BASE}schematics/brands/Columbia/2_Wheel_Internal_Corner_Applicator-enhanced.png`;
+const columbia4WheelImg            = `${_BASE}schematics/brands/Columbia/4_Wheel_Internal_Corner_Applicator-enhanced.png`;
+const columbiaExtensionHousingImg  = `${_BASE}schematics/brands/Columbia/Extension_Housing_Schematic-enhanced.png`;
+const columbiaICREnhancedImg       = `${_BASE}schematics/brands/Columbia/InsideCornerRoller-2014_1_-enhanced.png`;
+const columbiaMatrixHandleImg      = `${_BASE}schematics/brands/Columbia/Matrix_Handle-enhanced.png`;
+const columbiaMatrixHeadImg        = `${_BASE}schematics/brands/Columbia/Matrix_Head-enhanced.png`;
+const columbiaMatrixLeverImg       = `${_BASE}schematics/brands/Columbia/Matrix_Lever-enhanced.png`;
+const columbiaMatrixPinchboxImg    = `${_BASE}schematics/brands/Columbia/Matrix_Pinchbox-enhanced.png`;
+const columbiaPredatorBodyImg      = `${_BASE}schematics/brands/Columbia/PREDATOR_BODY_OCTOBER_2018-enhanced.png`;
+const columbiaPredatorTaperHeadImg = `${_BASE}schematics/brands/Columbia/PREDATOR_TAPER_HEAD-enhanced.png`;
+const columbiaSemiAutoTaperImg     = `${_BASE}schematics/brands/Columbia/SemiAutomaticTaper-2015-enhanced.png`;
+const columbiaTaperBodyImg         = `${_BASE}schematics/brands/Columbia/TaperBody-2014-enhanced.png`;
+const columbiaTaperHeadImg         = `${_BASE}schematics/brands/Columbia/TaperHead-2014-DS-enhanced.png`;
+const columbia3SchematicImg        = `${_BASE}schematics/brands/Columbia/columbia_3_schematic-enhanced.png`;
+
 export default function Parts() {
   // Allowed brands to display
   const ALLOWED_BRANDS = [
@@ -576,6 +609,269 @@ export default function Parts() {
         [columbiaMatrixBoxHandleData.diagramPages ? columbiaMatrixBoxHandleData.diagramPages[0] : 1]: columbiaMatrixBoxHandleImg
       },
       parts: matrixBoxHandleParts
+    },
+    // New TapeTech image-only schematics
+    {
+      id: 'tapetech-15tte',
+      title: '15TTE',
+      description: 'TapeTech 15TTE schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech15TTEImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-17tt',
+      title: '17TT',
+      description: 'TapeTech 17TT schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech17TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-30ttx',
+      title: '30TTX',
+      description: 'TapeTech 30TTX schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech30TTXImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-35tt',
+      title: '35TT',
+      description: 'TapeTech 35TT schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech35TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-40tt',
+      title: '40TT',
+      description: 'TapeTech 40TT schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech40TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-45tt',
+      title: '45TT',
+      description: 'TapeTech 45TT schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech45TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-76tt-ca',
+      title: '76TT-CA',
+      description: 'TapeTech 76TT-CA schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech76TTCAImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-8000tt-pa',
+      title: '8000TT-PA',
+      description: 'TapeTech 8000TT-PA schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech8000TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-8154tt',
+      title: '8154TT',
+      description: 'TapeTech 8154TT schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech8154TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-85t',
+      title: '85T',
+      description: 'TapeTech 85T schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech85TImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-88tte',
+      title: '88TTE',
+      description: 'TapeTech 88TTE schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech88TTEImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-90t',
+      title: '90T',
+      description: 'TapeTech 90T schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTech90TImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-cf30tt',
+      title: 'CF30TT',
+      description: 'TapeTech CF30TT schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTechCF30TTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-cfhtt',
+      title: 'CFHTT-rA',
+      description: 'TapeTech CFHTT-rA schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTechCFHTTImg },
+      parts: []
+    },
+    {
+      id: 'tapetech-pahc12',
+      title: 'PAHC12',
+      description: 'TapeTech PAHC12 schematic diagram',
+      brand: 'TapeTech',
+      diagramPages: [1],
+      imagePages: { 1: tapeTechPAHC12Img },
+      parts: []
+    },
+    // New Columbia image-only schematics
+    {
+      id: 'columbia-2-wheel-applicator',
+      title: '2-Wheel Internal Corner Applicator',
+      description: 'Columbia 2-Wheel Internal Corner Applicator schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbia2WheelImg },
+      parts: []
+    },
+    {
+      id: 'columbia-4-wheel-applicator',
+      title: '4-Wheel Internal Corner Applicator',
+      description: 'Columbia 4-Wheel Internal Corner Applicator schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbia4WheelImg },
+      parts: []
+    },
+    {
+      id: 'columbia-extension-housing',
+      title: 'Extension Housing',
+      description: 'Columbia Extension Housing schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaExtensionHousingImg },
+      parts: []
+    },
+    {
+      id: 'columbia-inside-corner-roller-enhanced',
+      title: 'Inside Corner Roller (2014)',
+      description: 'Columbia Inside Corner Roller 2014 enhanced schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaICREnhancedImg },
+      parts: []
+    },
+    {
+      id: 'columbia-matrix-handle',
+      title: 'Matrix Handle',
+      description: 'Columbia Matrix Handle schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaMatrixHandleImg },
+      parts: []
+    },
+    {
+      id: 'columbia-matrix-head',
+      title: 'Matrix Head',
+      description: 'Columbia Matrix Head schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaMatrixHeadImg },
+      parts: []
+    },
+    {
+      id: 'columbia-matrix-lever',
+      title: 'Matrix Lever',
+      description: 'Columbia Matrix Lever schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaMatrixLeverImg },
+      parts: []
+    },
+    {
+      id: 'columbia-matrix-pinchbox',
+      title: 'Matrix Pinchbox',
+      description: 'Columbia Matrix Pinchbox schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaMatrixPinchboxImg },
+      parts: []
+    },
+    {
+      id: 'columbia-predator-body',
+      title: 'Predator Body',
+      description: 'Columbia Predator Body schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaPredatorBodyImg },
+      parts: []
+    },
+    {
+      id: 'columbia-predator-taper-head',
+      title: 'Predator Taper Head',
+      description: 'Columbia Predator Taper Head schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaPredatorTaperHeadImg },
+      parts: []
+    },
+    {
+      id: 'columbia-semi-auto-taper',
+      title: 'Semi-Automatic Taper (2015)',
+      description: 'Columbia Semi-Automatic Taper 2015 schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaSemiAutoTaperImg },
+      parts: []
+    },
+    {
+      id: 'columbia-taper-body',
+      title: 'Taper Body (2014)',
+      description: 'Columbia Taper Body 2014 schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaTaperBodyImg },
+      parts: []
+    },
+    {
+      id: 'columbia-taper-head',
+      title: 'Taper Head (2014-DS)',
+      description: 'Columbia Taper Head 2014-DS schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbiaTaperHeadImg },
+      parts: []
+    },
+    {
+      id: 'columbia-3-schematic',
+      title: 'Columbia 3"',
+      description: 'Columbia 3" schematic diagram',
+      brand: 'Columbia Taping Tools',
+      diagramPages: [1],
+      imagePages: { 1: columbia3SchematicImg },
+      parts: []
     }
   ];
 
