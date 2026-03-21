@@ -319,14 +319,24 @@ export default function Parts() {
     },
     // Columbia Inside Corner Roller (parts-based) removed
     {
-      id: 'columbia-matrix-box-handle',
-      title: 'Matrix Box Handle',
-      description: 'Professional matrix box handle for mud application',
+      id: 'columbia-matrix',
+      title: 'Matrix',
+      description: 'Columbia Matrix series schematic diagrams',
       brand: 'Columbia Taping Tools',
-      productPartNumber: null,
-      diagramPages: columbiaMatrixBoxHandleData.diagramPages || [1],
+      diagramPages: [1, 2, 3, 4, 5],
+      pageLabels: {
+        1: 'Box Handle',
+        2: 'Head',
+        3: 'Lever',
+        4: 'Pinchbox',
+        5: 'Extension Housing'
+      },
       imagePages: {
-        [columbiaMatrixBoxHandleData.diagramPages ? columbiaMatrixBoxHandleData.diagramPages[0] : 1]: columbiaMatrixBoxHandleImg
+        1: columbiaMatrixBoxHandleImg,
+        2: columbiaMatrixHeadImg,
+        3: columbiaMatrixLeverImg,
+        4: columbiaMatrixPinchboxImg,
+        5: columbiaExtensionHousingImg
       },
       previewImage: columbiaMatrixBoxHandlePreview,
       parts: matrixBoxHandleParts
@@ -477,43 +487,7 @@ export default function Parts() {
       imagePages: { 1: columbia2WayInternalCornerImg },
       parts: []
     },
-    {
-      id: 'columbia-extension-housing',
-      title: 'Matrix Extension Housing',
-      description: 'Columbia Matrix Extension Housing schematic diagram',
-      brand: 'Columbia Taping Tools',
-      diagramPages: [1],
-      imagePages: { 1: columbiaExtensionHousingImg },
-      parts: []
-    },
     // Columbia Inside Corner Roller (enhanced image-only) removed
-    {
-      id: 'columbia-matrix-head',
-      title: 'Matrix Head',
-      description: 'Columbia Matrix Head schematic diagram',
-      brand: 'Columbia Taping Tools',
-      diagramPages: [1],
-      imagePages: { 1: columbiaMatrixHeadImg },
-      parts: []
-    },
-    {
-      id: 'columbia-matrix-lever',
-      title: 'Matrix Lever',
-      description: 'Columbia Matrix Lever schematic diagram',
-      brand: 'Columbia Taping Tools',
-      diagramPages: [1],
-      imagePages: { 1: columbiaMatrixLeverImg },
-      parts: []
-    },
-    {
-      id: 'columbia-matrix-pinchbox',
-      title: 'Matrix Pinchbox',
-      description: 'Columbia Matrix Pinchbox schematic diagram',
-      brand: 'Columbia Taping Tools',
-      diagramPages: [1],
-      imagePages: { 1: columbiaMatrixPinchboxImg },
-      parts: []
-    },
     {
       id: 'columbia-predator-body',
       title: 'Predator Body',
@@ -1018,7 +992,10 @@ export default function Parts() {
                   </button>
 
                   <div className="pager-counter" aria-hidden>
-                    {currentSchematic.diagramPages.indexOf(currentPage) + 1} / {currentSchematic.diagramPages.length}
+                    {currentSchematic.pageLabels?.[currentPage]
+                      ? `${currentSchematic.pageLabels[currentPage]} (${currentSchematic.diagramPages.indexOf(currentPage) + 1}/${currentSchematic.diagramPages.length})`
+                      : `${currentSchematic.diagramPages.indexOf(currentPage) + 1} / ${currentSchematic.diagramPages.length}`
+                    }
                   </div>
 
                   <button
