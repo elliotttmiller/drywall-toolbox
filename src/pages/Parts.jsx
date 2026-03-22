@@ -355,28 +355,28 @@ export default function Parts() {
           id: 'nav-matrix-head',
           label: 'Head Detail',
           pageNumber: 1,
-          top: '61%', left: '10%', width: '32%', height: '30%',
+          top: '60.8%', left: '2.5%', width: '33.8%', height: '37.4%',
           targetPage: 2
         },
         {
           id: 'nav-matrix-lever',
           label: 'Lever Detail',
           pageNumber: 1,
-          top: '2%', left: '55%', width: '38%', height: '16%',
+          top: '1.1%', left: '73.3%', width: '26.2%', height: '17.3%',
           targetPage: 3
         },
         {
           id: 'nav-matrix-pinchbox',
           label: 'Pinchbox Detail',
           pageNumber: 1,
-          top: '34%', left: '34%', width: '26%', height: '22%',
+          top: '31.2%', left: '30.8%', width: '23.3%', height: '20.1%',
           targetPage: 4
         },
         {
           id: 'nav-matrix-ext-housing',
           label: 'Ext. Housing Detail',
           pageNumber: 1,
-          top: '19%', left: '47%', width: '26%', height: '20%',
+          top: '30.1%', left: '55%', width: '19.2%', height: '18.4%',
           targetPage: 5
         }
       ]
