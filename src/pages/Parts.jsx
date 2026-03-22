@@ -81,6 +81,11 @@ const columbiaMudPumpPreview = `${_BASE}schematics/brands/Columbia/MudPump/TallB
 const columbiaTallBoyMudPumpImg = `${_BASE}schematics/brands/Columbia/TallBoyMudPump/TALL-BOY-MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
 const columbiaTallBoyMudPumpPreview = `${_BASE}schematics/brands/Columbia/TallBoyMudPump/TallBoyPump.jpg`;
 
+// Momentum inertia configuration for the schematic viewer pan gesture
+const MOMENTUM_MAX_VEL    = 1.5;  // px/ms — clamp to prevent wild overshooting
+const MOMENTUM_MIN_VEL    = 0.02; // px/ms — stop when slower than this
+const MOMENTUM_HALF_LIFE  = 180;  // ms    — velocity halves every 180 ms
+
 export default function Parts() {
   // Allowed brands to display
   const ALLOWED_BRANDS = [
@@ -125,6 +130,10 @@ export default function Parts() {
   const panStartRef = useRef({ x: 0, y: 0 });
   const touchStartRef = useRef({ x: 0, y: 0 });
   const hasMovedRef = useRef(false);
+  // Velocity tracking for momentum/inertia after a pan gesture
+  const velocityRef = useRef({ x: 0, y: 0 });
+  const lastMoveRef = useRef({ x: 0, y: 0, t: 0 });
+  const momentumRafRef = useRef(null);
   // Ref to track pinch zoom state without triggering re-renders
   const pinchRef = useRef({ active: false, initDist: 0, initScale: 1, initPanX: 0, initPanY: 0, centerX: 0, centerY: 0 });
   
@@ -719,13 +728,22 @@ export default function Parts() {
   // Reset zoom/pan when schematic changes
     useEffect(() => {
       const t = setTimeout(() => {
+        // Cancel any in-progress momentum
+        cancelAnimationFrame(momentumRafRef.current);
+        momentumRafRef.current = null;
+        velocityRef.current = { x: 0, y: 0 };
         transformRef.current = { scale: 1, x: 0, y: 0 };
         gestureActiveRef.current = false;
+        pinchRef.current.active = false;
+        hasMovedRef.current = false;
         const el = schematicImageRef.current;
         if (el) {
           el.style.transition = 'none';
           el.style.transform = 'scale(1) translate(0px, 0px)';
         }
+        // Restore page-scroll friendly touch-action
+        const container = schematicContainerRef.current;
+        if (container) container.style.touchAction = 'pan-y';
         setScale(1);
         setPosition({ x: 0, y: 0 });
       }, 0);
@@ -745,11 +763,18 @@ export default function Parts() {
   }, []);
 
   // Flush live ref state to React state (called after gesture ends).
-  // This triggers a re-render so the JSX inline style and cursor match reality.
+  // Also keeps touch-action in sync so the next gesture starts with the
+  // correct CSS value regardless of how the scale was changed (button/wheel/touch).
   const syncTransform = useCallback(() => {
     const { scale: s, x, y } = transformRef.current;
     setScale(s);
     setPosition({ x, y });
+    // touch-action: none when zoomed (we own all touch input);
+    // pan-y when at 1× so the page can still scroll normally.
+    const container = schematicContainerRef.current;
+    if (container) {
+      container.style.touchAction = s > 1 ? 'none' : 'pan-y';
+    }
   }, []);
 
   // After any React render, re-apply the ref transform if a gesture is active.
@@ -768,6 +793,16 @@ export default function Parts() {
 
   // Touch and zoom handlers for mobile - enhanced with smooth interactions
   const handleTouchStart = useCallback((e) => {
+    // Cancel any in-progress momentum so the user can grab the content mid-glide
+    if (momentumRafRef.current) {
+      cancelAnimationFrame(momentumRafRef.current);
+      momentumRafRef.current = null;
+      // Snap React state to the current inertia position
+      syncTransform();
+    }
+    velocityRef.current = { x: 0, y: 0 };
+    lastMoveRef.current = { x: 0, y: 0, t: 0 };
+
     if (e.touches.length === 2) {
       // Pinch gesture - prevent default and calculate distance
       e.preventDefault();
@@ -802,6 +837,9 @@ export default function Parts() {
     } else if (e.touches.length === 1 && transformRef.current.scale > 1) {
       // Pan gesture (only when zoomed in) - store initial position
       gestureActiveRef.current = true;
+      // Set touch-action to none so the browser doesn't intercept vertical scrolling
+      const container = schematicContainerRef.current;
+      if (container) container.style.touchAction = 'none';
       touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       hasMovedRef.current = false;
       panStartRef.current = {
@@ -809,7 +847,7 @@ export default function Parts() {
         y: e.touches[0].clientY - transformRef.current.y,
       };
     }
-  }, []);
+  }, [syncTransform]);
 
   const handleTouchMove = useCallback((e) => {
     if (e.touches.length === 2 && pinchRef.current.active) {
@@ -853,11 +891,14 @@ export default function Parts() {
         touch.clientY - touchStartRef.current.y
       );
       
-      if (moveDistance > 10) {
-        // Only preventDefault if user is actually dragging (threshold: 10px)
+      // Once the movement threshold is crossed, treat all subsequent events as pan.
+      // Crucially: preventDefault is called on EVERY event (not just the first) so the
+      // browser cannot steal later events for native scrolling.
+      if (moveDistance > 8 || hasMovedRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!hasMovedRef.current) {
-          e.preventDefault();
-          e.stopPropagation();
           hasMovedRef.current = true;
           setIsPanning(true);
         }
@@ -874,6 +915,17 @@ export default function Parts() {
         const maxPanX = ((s - 1) * containerW) / 2;
         const maxPanY = ((s - 1) * containerH) / 2;
 
+        // Track velocity for post-pan inertia (time-normalised, px/ms)
+        const now = performance.now();
+        const dt = now - lastMoveRef.current.t;
+        if (dt > 0 && dt < 100) {
+          velocityRef.current = {
+            x: (touch.clientX - lastMoveRef.current.x) / dt,
+            y: (touch.clientY - lastMoveRef.current.y) / dt,
+          };
+        }
+        lastMoveRef.current = { x: touch.clientX, y: touch.clientY, t: now };
+
         // Direct DOM update — no React state, no re-render, silky 60fps
         applyTransform(
           s,
@@ -884,18 +936,79 @@ export default function Parts() {
     }
   }, [applyTransform]);
 
+  // Momentum/inertia animation — runs after a pan gesture is released.
+  // Uses time-based exponential velocity decay to mimic natural deceleration.
+  const startMomentum = useCallback(() => {
+    cancelAnimationFrame(momentumRafRef.current);
+    const vel = velocityRef.current;
+    // Cap velocity to prevent wildly overshooting on a very fast swipe
+    vel.x = Math.max(-MOMENTUM_MAX_VEL, Math.min(MOMENTUM_MAX_VEL, vel.x));
+    vel.y = Math.max(-MOMENTUM_MAX_VEL, Math.min(MOMENTUM_MAX_VEL, vel.y));
+
+    if (Math.abs(vel.x) < MOMENTUM_MIN_VEL && Math.abs(vel.y) < MOMENTUM_MIN_VEL) {
+      gestureActiveRef.current = false;
+      syncTransform();
+      return;
+    }
+
+    // Keep gestureActiveRef true during momentum so useLayoutEffect continues
+    // to re-apply transformRef if a React render happens mid-inertia.
+    gestureActiveRef.current = true;
+    let lastTs = performance.now();
+
+    const tick = (ts) => {
+      const dt = ts - lastTs;
+      lastTs = ts;
+      // Exponential decay independent of frame rate
+      const decayFactor = Math.pow(0.5, dt / MOMENTUM_HALF_LIFE);
+      vel.x *= decayFactor;
+      vel.y *= decayFactor;
+
+      if (Math.abs(vel.x) < MOMENTUM_MIN_VEL && Math.abs(vel.y) < MOMENTUM_MIN_VEL) {
+        gestureActiveRef.current = false;
+        syncTransform();
+        return;
+      }
+
+      const { scale: s, x, y } = transformRef.current;
+      const container = schematicContainerRef.current;
+      const containerW = container ? container.offsetWidth : 400;
+      const containerH = container ? container.offsetHeight : 400;
+      const maxPanX = ((s - 1) * containerW) / 2;
+      const maxPanY = ((s - 1) * containerH) / 2;
+
+      let newX = x + vel.x * dt;
+      let newY = y + vel.y * dt;
+
+      // Stop against hard boundaries
+      if (newX > maxPanX) { newX = maxPanX; vel.x = 0; }
+      if (newX < -maxPanX) { newX = -maxPanX; vel.x = 0; }
+      if (newY > maxPanY) { newY = maxPanY; vel.y = 0; }
+      if (newY < -maxPanY) { newY = -maxPanY; vel.y = 0; }
+
+      applyTransform(s, newX, newY);
+      momentumRafRef.current = requestAnimationFrame(tick);
+    };
+
+    momentumRafRef.current = requestAnimationFrame(tick);
+  }, [applyTransform, syncTransform]);
+
   const handleTouchEnd = useCallback((e) => {
     if (e.touches.length === 0) {
       pinchRef.current.active = false;
-      gestureActiveRef.current = false;
       hasMovedRef.current = false;
-      // Flush live ref state to React state so cursor/toolbar reflects reality
-      syncTransform();
       setIsPanning(false);
       // Restore touch-action based on final zoom level
       const container = schematicContainerRef.current;
       if (container) {
         container.style.touchAction = transformRef.current.scale > 1 ? 'none' : 'pan-y';
+      }
+      // Start momentum inertia if pan was happening at zoom > 1
+      if (transformRef.current.scale > 1) {
+        startMomentum();
+      } else {
+        gestureActiveRef.current = false;
+        syncTransform();
       }
     } else if (e.touches.length === 1 && pinchRef.current.active) {
       // Transitioned from pinch to single-touch — reset pinch tracking
@@ -904,11 +1017,29 @@ export default function Parts() {
       const touch = e.touches[0];
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
       hasMovedRef.current = false;
+      lastMoveRef.current = { x: touch.clientX, y: touch.clientY, t: performance.now() };
+      velocityRef.current = { x: 0, y: 0 };
       panStartRef.current = {
         x: touch.clientX - transformRef.current.x,
         y: touch.clientY - transformRef.current.y,
       };
     }
+  }, [startMomentum, syncTransform]);
+
+  // Cancel any in-progress gesture cleanly — leaves the schematic in a stable state.
+  const handleTouchCancel = useCallback(() => {
+    cancelAnimationFrame(momentumRafRef.current);
+    momentumRafRef.current = null;
+    pinchRef.current.active = false;
+    gestureActiveRef.current = false;
+    hasMovedRef.current = false;
+    velocityRef.current = { x: 0, y: 0 };
+    setIsPanning(false);
+    const container = schematicContainerRef.current;
+    if (container) {
+      container.style.touchAction = transformRef.current.scale > 1 ? 'none' : 'pan-y';
+    }
+    syncTransform();
   }, [syncTransform]);
 
   // Setup non-passive touch event listeners to allow preventDefault
@@ -920,13 +1051,20 @@ export default function Parts() {
     container.addEventListener('touchstart', handleTouchStart, { passive: false });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd, { passive: false });
+    container.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchCancel);
     };
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel]);
+
+  // Cancel any running momentum animation on unmount
+  useEffect(() => {
+    return () => cancelAnimationFrame(momentumRafRef.current);
+  }, []);
 
   // Mouse wheel zoom — cursor-aware, non-passive listener added via useEffect below
   const handleWheel = useCallback((e) => {
