@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import Toast from '../components/Toast';
 import BrandSelector from '../components/BrandSelector';
@@ -119,9 +119,12 @@ export default function Parts() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
-  const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 });
-  const [hasMoved, setHasMoved] = useState(false);
+  // Ref-based gesture state — no React re-renders during touchmove for 60fps pinch/pan
+  const transformRef = useRef({ scale: 1, x: 0, y: 0 });
+  const gestureActiveRef = useRef(false);
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const hasMovedRef = useRef(false);
   // Ref to track pinch zoom state without triggering re-renders
   const pinchRef = useRef({ active: false, initDist: 0, initScale: 1, initPanX: 0, initPanY: 0, centerX: 0, centerY: 0 });
   
@@ -716,11 +719,52 @@ export default function Parts() {
   // Reset zoom/pan when schematic changes
     useEffect(() => {
       const t = setTimeout(() => {
+        transformRef.current = { scale: 1, x: 0, y: 0 };
+        gestureActiveRef.current = false;
+        const el = schematicImageRef.current;
+        if (el) {
+          el.style.transition = 'none';
+          el.style.transform = 'scale(1) translate(0px, 0px)';
+        }
         setScale(1);
         setPosition({ x: 0, y: 0 });
       }, 0);
       return () => clearTimeout(t);
     }, [selectedSchematic, currentPage]);
+
+  // Apply transform directly to the DOM element — bypasses React reconciliation
+  // for 60fps gesture handling. Updates transformRef for consistent state.
+  // Pass transition='transform 0.3s ease-out' for animated (button) zooms;
+  // leave default ('none') for all gesture-driven updates.
+  const applyTransform = useCallback((s, x, y, transition = 'none') => {
+    const el = schematicImageRef.current;
+    if (!el) return;
+    el.style.transition = transition;
+    el.style.transform = `scale(${s}) translate(${x / s}px, ${y / s}px)`;
+    transformRef.current = { scale: s, x, y };
+  }, []);
+
+  // Flush live ref state to React state (called after gesture ends).
+  // This triggers a re-render so the JSX inline style and cursor match reality.
+  const syncTransform = useCallback(() => {
+    const { scale: s, x, y } = transformRef.current;
+    setScale(s);
+    setPosition({ x, y });
+  }, []);
+
+  // After any React render, re-apply the ref transform if a gesture is active.
+  // This prevents a stale React render from overwriting the live DOM transform.
+  // Intentionally has NO dependency array — it must run after every render
+  // because a render caused by any unrelated state change could overwrite the
+  // live transform via the JSX inline style while a gesture is in progress.
+  useLayoutEffect(() => {
+    if (!gestureActiveRef.current) return;
+    const el = schematicImageRef.current;
+    if (!el) return;
+    const { scale: s, x, y } = transformRef.current;
+    el.style.transition = 'none';
+    el.style.transform = `scale(${s}) translate(${x / s}px, ${y / s}px)`;
+  });
 
   // Touch and zoom handlers for mobile - enhanced with smooth interactions
   const handleTouchStart = useCallback((e) => {
@@ -728,6 +772,10 @@ export default function Parts() {
       // Pinch gesture - prevent default and calculate distance
       e.preventDefault();
       e.stopPropagation();
+      gestureActiveRef.current = true;
+      // Immediately disable browser touch-action so viewport doesn't interfere
+      const container = schematicContainerRef.current;
+      if (container) container.style.touchAction = 'none';
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.hypot(
@@ -736,7 +784,6 @@ export default function Parts() {
       );
       // Record pinch midpoint relative to the container center so we can
       // keep the focal point stationary as the user zooms.
-      const container = schematicContainerRef.current;
       const rect = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
       const midX = (touch1.clientX + touch2.clientX) / 2;
       const midY = (touch1.clientY + touch2.clientY) / 2;
@@ -746,26 +793,23 @@ export default function Parts() {
       pinchRef.current = {
         active: true,
         initDist: distance,
-        initScale: scale,
-        initPanX: position.x,
-        initPanY: position.y,
+        initScale: transformRef.current.scale,
+        initPanX: transformRef.current.x,
+        initPanY: transformRef.current.y,
         centerX,
         centerY,
       };
-    } else if (e.touches.length === 1 && scale > 1) {
+    } else if (e.touches.length === 1 && transformRef.current.scale > 1) {
       // Pan gesture (only when zoomed in) - store initial position
-      // Don't preventDefault yet - let tap events through
-      setTouchStartPos({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      });
-      setHasMoved(false);
-      setStartPanPosition({
-        x: e.touches[0].clientX - position.x,
-        y: e.touches[0].clientY - position.y
-      });
+      gestureActiveRef.current = true;
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      hasMovedRef.current = false;
+      panStartRef.current = {
+        x: e.touches[0].clientX - transformRef.current.x,
+        y: e.touches[0].clientY - transformRef.current.y,
+      };
     }
-  }, [scale, position]);
+  }, []);
 
   const handleTouchMove = useCallback((e) => {
     if (e.touches.length === 2 && pinchRef.current.active) {
@@ -795,57 +839,77 @@ export default function Parts() {
       const maxPanX = ((newScale - 1) * containerW) / 2;
       const maxPanY = ((newScale - 1) * containerH) / 2;
 
-      setScale(newScale);
-      setPosition({
-        x: Math.min(Math.max(newPanX, -maxPanX), maxPanX),
-        y: Math.min(Math.max(newPanY, -maxPanY), maxPanY),
-      });
-    } else if (e.touches.length === 1 && scale > 1) {
+      // Direct DOM update — no React state, no re-render, silky 60fps
+      applyTransform(
+        newScale,
+        Math.min(Math.max(newPanX, -maxPanX), maxPanX),
+        Math.min(Math.max(newPanY, -maxPanY), maxPanY)
+      );
+    } else if (e.touches.length === 1 && transformRef.current.scale > 1) {
       // Check distance moved to determine if this is a drag or a tap
       const touch = e.touches[0];
       const moveDistance = Math.hypot(
-        touch.clientX - touchStartPos.x,
-        touch.clientY - touchStartPos.y
+        touch.clientX - touchStartRef.current.x,
+        touch.clientY - touchStartRef.current.y
       );
       
       if (moveDistance > 10) {
         // Only preventDefault if user is actually dragging (threshold: 10px)
-        if (!hasMoved) {
+        if (!hasMovedRef.current) {
           e.preventDefault();
           e.stopPropagation();
-          setHasMoved(true);
+          hasMovedRef.current = true;
           setIsPanning(true);
         }
         
         // Pan when zoomed - smooth panning with dynamic bounds
-        const newX = touch.clientX - startPanPosition.x;
-        const newY = touch.clientY - startPanPosition.y;
+        const newX = touch.clientX - panStartRef.current.x;
+        const newY = touch.clientY - panStartRef.current.y;
         
         // Constrain pan based on scale and container size
         const container = schematicContainerRef.current;
         const containerW = container ? container.offsetWidth : 400;
         const containerH = container ? container.offsetHeight : 400;
-        const maxPanX = ((scale - 1) * containerW) / 2;
-        const maxPanY = ((scale - 1) * containerH) / 2;
-        
-        setPosition({
-          x: Math.min(Math.max(newX, -maxPanX), maxPanX),
-          y: Math.min(Math.max(newY, -maxPanY), maxPanY),
-        });
+        const s = transformRef.current.scale;
+        const maxPanX = ((s - 1) * containerW) / 2;
+        const maxPanY = ((s - 1) * containerH) / 2;
+
+        // Direct DOM update — no React state, no re-render, silky 60fps
+        applyTransform(
+          s,
+          Math.min(Math.max(newX, -maxPanX), maxPanX),
+          Math.min(Math.max(newY, -maxPanY), maxPanY)
+        );
       }
     }
-  }, [scale, startPanPosition, touchStartPos, hasMoved]);
+  }, [applyTransform]);
 
   const handleTouchEnd = useCallback((e) => {
     if (e.touches.length === 0) {
       pinchRef.current.active = false;
+      gestureActiveRef.current = false;
+      hasMovedRef.current = false;
+      // Flush live ref state to React state so cursor/toolbar reflects reality
+      syncTransform();
       setIsPanning(false);
-      setHasMoved(false);
+      // Restore touch-action based on final zoom level
+      const container = schematicContainerRef.current;
+      if (container) {
+        container.style.touchAction = transformRef.current.scale > 1 ? 'none' : 'pan-y';
+      }
     } else if (e.touches.length === 1 && pinchRef.current.active) {
       // Transitioned from pinch to single-touch — reset pinch tracking
       pinchRef.current.active = false;
+      // Keep gestureActiveRef true; set up pan start for the remaining finger
+      const touch = e.touches[0];
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      hasMovedRef.current = false;
+      panStartRef.current = {
+        x: touch.clientX - transformRef.current.x,
+        y: touch.clientY - transformRef.current.y,
+      };
     }
-  }, []);
+  }, [syncTransform]);
 
   // Setup non-passive touch event listeners to allow preventDefault
   useEffect(() => {
@@ -868,32 +932,34 @@ export default function Parts() {
   const handleWheel = useCallback((e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
+      const { scale: currentScale, x: currentX, y: currentY } = transformRef.current;
       const zoomDirection = e.deltaY > 0 ? -0.2 : 0.2;
-      const newScale = Math.min(Math.max(scale + zoomDirection, 1), 4);
+      const newScale = Math.min(Math.max(currentScale + zoomDirection, 1), 4);
       const container = schematicContainerRef.current;
       const imageDiv  = schematicImageRef.current;
       const containerW = container ? container.offsetWidth  : 400;
       const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
       if (newScale === 1) {
-        setPosition({ x: 0, y: 0 });
+        applyTransform(1, 0, 0);
       } else {
         // Zoom towards the cursor position
         const rect = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: containerW, height: containerH };
         const cursorX = e.clientX - (rect.left + rect.width  / 2);
         const cursorY = e.clientY - (rect.top  + rect.height / 2);
-        const ratio = newScale / scale;
-        const newX = cursorX - (cursorX - position.x) * ratio;
-        const newY = cursorY - (cursorY - position.y) * ratio;
+        const ratio = newScale / currentScale;
+        const newX = cursorX - (cursorX - currentX) * ratio;
+        const newY = cursorY - (cursorY - currentY) * ratio;
         const maxPanX = ((newScale - 1) * containerW) / 2;
         const maxPanY = ((newScale - 1) * containerH) / 2;
-        setPosition({
-          x: Math.min(Math.max(newX, -maxPanX), maxPanX),
-          y: Math.min(Math.max(newY, -maxPanY), maxPanY),
-        });
+        applyTransform(
+          newScale,
+          Math.min(Math.max(newX, -maxPanX), maxPanX),
+          Math.min(Math.max(newY, -maxPanY), maxPanY)
+        );
       }
-      setScale(newScale);
+      syncTransform();
     }
-  }, [scale, position]);
+  }, [applyTransform, syncTransform]);
 
   // Attach non-passive wheel listener so preventDefault() is respected
   useEffect(() => {
@@ -905,17 +971,17 @@ export default function Parts() {
 
   // Desktop mouse-drag panning: track start when mouse is pressed on the schematic
   const handleMouseDown = useCallback((e) => {
-    if (e.button !== 0 || scale <= 1 || isMobile) return;
+    if (e.button !== 0 || transformRef.current.scale <= 1 || isMobile) return;
     e.preventDefault();
     dragStartRef.current = {
       x: e.clientX,
       y: e.clientY,
-      panX: position.x,
-      panY: position.y,
+      panX: transformRef.current.x,
+      panY: transformRef.current.y,
     };
     setIsDragging(true);
     setIsPanning(true);
-  }, [scale, position, isMobile]);
+  }, [isMobile]);
 
   // Global mouse-move / mouse-up while dragging
   useEffect(() => {
@@ -928,14 +994,17 @@ export default function Parts() {
       const imageDiv  = schematicImageRef.current;
       const containerW = container ? container.offsetWidth  : 400;
       const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
-      const maxPanX = ((scale - 1) * containerW) / 2;
-      const maxPanY = ((scale - 1) * containerH) / 2;
-      setPosition({
-        x: Math.min(Math.max(newX, -maxPanX), maxPanX),
-        y: Math.min(Math.max(newY, -maxPanY), maxPanY),
-      });
+      const s = transformRef.current.scale;
+      const maxPanX = ((s - 1) * containerW) / 2;
+      const maxPanY = ((s - 1) * containerH) / 2;
+      applyTransform(
+        s,
+        Math.min(Math.max(newX, -maxPanX), maxPanX),
+        Math.min(Math.max(newY, -maxPanY), maxPanY)
+      );
     };
     const onMouseUp = () => {
+      syncTransform();
       setIsDragging(false);
       setIsPanning(false);
     };
@@ -945,50 +1014,47 @@ export default function Parts() {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup',   onMouseUp);
     };
-  }, [isDragging, scale]);
+  }, [isDragging, applyTransform, syncTransform]);
 
-  // Zoom controls
+  // Zoom controls — button-triggered, animated via CSS transition
   const handleZoomIn = () => {
-    setScale(prev => {
-      const newScale = Math.min(prev + 0.5, 4);
+    const currentScale = transformRef.current.scale;
+    const newScale = Math.min(currentScale + 0.5, 4);
+    const container = schematicContainerRef.current;
+    const imageDiv  = schematicImageRef.current;
+    const containerW = container ? container.offsetWidth  : 400;
+    const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
+    const maxPanX = ((newScale - 1) * containerW) / 2;
+    const maxPanY = ((newScale - 1) * containerH) / 2;
+    const clampedX = Math.min(Math.max(transformRef.current.x, -maxPanX), maxPanX);
+    const clampedY = Math.min(Math.max(transformRef.current.y, -maxPanY), maxPanY);
+    applyTransform(newScale, clampedX, clampedY, 'transform 0.3s ease-out');
+    syncTransform();
+  };
+
+  const handleZoomOut = () => {
+    const currentScale = transformRef.current.scale;
+    const newScale = Math.max(currentScale - 0.5, 1);
+    if (newScale === 1) {
+      applyTransform(1, 0, 0, 'transform 0.3s ease-out');
+      syncTransform();
+    } else {
       const container = schematicContainerRef.current;
       const imageDiv  = schematicImageRef.current;
       const containerW = container ? container.offsetWidth  : 400;
       const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
       const maxPanX = ((newScale - 1) * containerW) / 2;
       const maxPanY = ((newScale - 1) * containerH) / 2;
-      setPosition(p => ({
-        x: Math.min(Math.max(p.x, -maxPanX), maxPanX),
-        y: Math.min(Math.max(p.y, -maxPanY), maxPanY),
-      }));
-      return newScale;
-    });
-  };
-
-  const handleZoomOut = () => {
-    setScale(prev => {
-      const newScale = Math.max(prev - 0.5, 1);
-      if (newScale === 1) {
-        setPosition({ x: 0, y: 0 });
-      } else {
-        const container = schematicContainerRef.current;
-        const imageDiv  = schematicImageRef.current;
-        const containerW = container ? container.offsetWidth  : 400;
-        const containerH = imageDiv   ? imageDiv.offsetHeight : (container ? container.offsetHeight : 400);
-        const maxPanX = ((newScale - 1) * containerW) / 2;
-        const maxPanY = ((newScale - 1) * containerH) / 2;
-        setPosition(p => ({
-          x: Math.min(Math.max(p.x, -maxPanX), maxPanX),
-          y: Math.min(Math.max(p.y, -maxPanY), maxPanY),
-        }));
-      }
-      return newScale;
-    });
+      const clampedX = Math.min(Math.max(transformRef.current.x, -maxPanX), maxPanX);
+      const clampedY = Math.min(Math.max(transformRef.current.y, -maxPanY), maxPanY);
+      applyTransform(newScale, clampedX, clampedY, 'transform 0.3s ease-out');
+      syncTransform();
+    }
   };
 
   const handleResetZoom = () => {
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
+    applyTransform(1, 0, 0, 'transform 0.3s ease-out');
+    syncTransform();
   };
 
   return (
@@ -1176,12 +1242,14 @@ export default function Parts() {
               onMouseDown={handleMouseDown}
               style={{
                 overflow: 'hidden',
-                touchAction: scale > 1 ? 'none' : 'auto',
+                // touch-action is managed entirely via CSS (.schematic-container sets
+                // pan-y) and direct DOM writes in gesture handlers ('none' during pinch,
+                // restored after). Keeping it out of JSX style prevents React renders
+                // from overriding the gesture handler's direct DOM changes.
                 cursor: scale > 1 ? (isPanning || isDragging ? 'grabbing' : 'grab') : 'default',
                 WebkitUserSelect: 'none',
                 userSelect: 'none',
                 position: 'relative',
-                willChange: scale > 1 ? 'transform' : 'auto',
                 flex: 1,
                 minHeight: 0,
                 display: 'flex',
@@ -1190,7 +1258,9 @@ export default function Parts() {
             >
               {/* Transform wrapper — sized by the image's natural aspect ratio.
                   Hotspots are absolutely positioned inside here so they scale
-                  and pan with the image on every zoom level and screen size. */}
+                  and pan with the image on every zoom level and screen size.
+                  The transform is driven directly via DOM style during gestures
+                  (applyTransform) and synced to React state afterwards. */}
               <div 
                 ref={schematicImageRef}
                 style={{ 
@@ -1200,11 +1270,17 @@ export default function Parts() {
                   flex: 'none',
                   transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                   transformOrigin: 'center center',
-                  transition: isPanning || isDragging ? 'none' : 'transform 0.3s ease-out',
+                  // transition is controlled entirely via applyTransform's direct
+                  // DOM writes: 'transform 0.3s ease-out' for button zooms,
+                  // 'none' for gesture-driven updates. Not set in JSX to avoid
+                  // React renders overriding the programmatic value.
                   WebkitUserSelect: 'none',
                   userSelect: 'none',
                   pointerEvents: 'auto',
+                  // Always promote to GPU compositor layer for crisp high-res rendering
                   willChange: 'transform',
+                  WebkitBackfaceVisibility: 'hidden',
+                  backfaceVisibility: 'hidden',
                 }}
               >
                 {schematicImageSrc ? (
@@ -1216,6 +1292,8 @@ export default function Parts() {
                       height: 'auto',
                       display: 'block', 
                       pointerEvents: 'none',
+                      // 'auto' lets the browser choose the best quality algorithm
+                      // (typically high-quality bicubic on modern engines)
                       imageRendering: 'auto',
                       WebkitTouchCallout: 'none',
                       WebkitUserSelect: 'none',

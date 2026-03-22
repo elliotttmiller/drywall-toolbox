@@ -141,6 +141,17 @@
   width: 100%;
   max-width: 100%;
   aspect-ratio: auto;
+  /* Base touch-action: allow vertical page scroll, we handle pinch/horizontal */
+  touch-action: pan-y;
+}
+
+/* Transform wrapper — GPU-composited for pixel-perfect rendering at all zoom levels */
+.schematic-container > div[style] {
+  -webkit-transform: translateZ(0);
+  /* will-change: transform set via inline style always; backface-visibility prevents
+     subpixel blurring in WebKit when the composited layer is promoted */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 @media (max-width: 768px) {
@@ -155,6 +166,7 @@
     min-height: 400px;
     margin-bottom: 0px;
     flex-grow: 1;
+    touch-action: pan-y;
   }
 
   .schematic-container img {
@@ -163,7 +175,10 @@
     height: auto !important;
     max-width: 100% !important;
     pointer-events: none !important;
+    /* 'auto' = best-quality resampling (typically bicubic on mobile engines) */
     image-rendering: auto;
+    /* WebKit-specific: optimise sharpness when scaling high-res source images */
+    -webkit-optimize-contrast: auto;
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
