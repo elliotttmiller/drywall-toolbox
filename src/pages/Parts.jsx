@@ -144,7 +144,7 @@ export default function Parts() {
         width:   c && c.width   ? c.width   : null,
         height:  c && c.height  ? c.height  : null,
         widthPx: c && c.widthPx ? c.widthPx : null,
-        heightPx:c && c.heightPx? c.heightPx: null,
+        heightPx: c && c.heightPx ? c.heightPx : null,
         rotation: c && c.rotation ? c.rotation : 0
       };
     });
