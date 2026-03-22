@@ -1,74 +1,342 @@
 {
-  "id": "columbia-matrix-box-handle.pdf",
-  "title": "Matrix Box Handle",
+  "id": "columbia-matrix-box-handle",
+  "title": "Predator Matrix Handle",
   "diagramPages": [
-    1
+    1,
+    2,
+    3,
+    4,
+    5
   ],
   "legendPages": [],
   "parts": [
     {
       "id": "MH 10",
-      "name": "Part MH 10",
+      "name": "MH 10",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA 256",
-      "name": "Part FA 256",
+      "name": "FA 256",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA 256B",
-      "name": "Part FA 256 (Alt)",
+      "name": "FA 256B",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "MH 9A",
-      "name": "Part MH 9A",
+      "name": "MH 9A",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "HH 8",
-      "name": "Part HH 8",
+      "name": "HH 8",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA 237",
-      "name": "Part FA 237",
+      "name": "FA 237",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA 229",
-      "name": "Part FA 229",
+      "name": "FA 229",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "HH 35",
-      "name": "Part HH 35",
+      "name": "HH 35",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "MH 9",
-      "name": "Part MH 9",
+      "name": "MH 9",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA 383",
-      "name": "Part FA 383",
+      "name": "FA 383",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA 319",
-      "name": "Part FA 319",
+      "name": "FA 319",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 5",
+      "name": "MH 5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 6",
+      "name": "MH 6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 3",
+      "name": "MH 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 4",
+      "name": "MH 4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-FA 758",
+      "name": "FA 758",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-FA 252",
+      "name": "FA 252",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 2",
+      "name": "MH 2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 14",
+      "name": "MH 14",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 15",
+      "name": "MH 15",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 7",
+      "name": "MH 7",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 20",
+      "name": "MH 20",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 1",
+      "name": "MH 1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 8",
+      "name": "MH 8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 17",
+      "name": "MH 17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p2-MH 16",
+      "name": "MH 16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 4",
+      "name": "MH 4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 21",
+      "name": "MH 21",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 23",
+      "name": "MH 23",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 22",
+      "name": "MH 22",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 11",
+      "name": "MH 11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-FA 376",
+      "name": "FA 376",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 3A",
+      "name": "MH 3A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-FA 345",
+      "name": "FA 345",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 34",
+      "name": "MH 34",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p3-MH 3",
+      "name": "MH 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-FA 379",
+      "name": "FA 379",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-FA 380",
+      "name": "FA 380",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 25",
+      "name": "MH 25",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 13",
+      "name": "MH 13",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 24",
+      "name": "MH 24",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 16",
+      "name": "MH 16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 12",
+      "name": "MH 12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 17",
+      "name": "MH 17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 18",
+      "name": "MH 18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p4-MH 19",
+      "name": "MH 19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-HH 57",
+      "name": "HH 57",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-HH 30",
+      "name": "HH 30",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-FA 317",
+      "name": "FA 317",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-HH 33",
+      "name": "HH 33",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-FA 237",
+      "name": "FA 237",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-HH 32",
+      "name": "HH 32",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-HH 5",
+      "name": "HH 5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-FA 229",
+      "name": "FA 229",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "p5-FA 257",
+      "name": "FA 257",
       "quantity": 1,
       "sku": ""
     }
@@ -77,110 +345,550 @@
     "MH 10": {
       "id": "MH 10",
       "pageNumber": 1,
-      "top": 31.59,
-      "left": 4.79,
-      "widthPx": 34,
-      "heightPx": 26,
+      "top": 10.94,
+      "left": 53.92,
+      "widthPx": 26,
+      "heightPx": 34,
       "shape": "circle",
       "rotation": 0
     },
     "FA 256": {
       "id": "FA 256",
       "pageNumber": 1,
-      "top": 25.77,
-      "left": 8.98,
-      "widthPx": 34,
-      "heightPx": 26,
+      "top": 20.54,
+      "left": 43.97,
+      "widthPx": 26,
+      "heightPx": 34,
       "shape": "circle",
       "rotation": 0
     },
     "FA 256B": {
       "id": "FA 256B",
       "pageNumber": 1,
-      "top": 10.25,
-      "left": 19.6,
-      "widthPx": 31,
-      "heightPx": 24,
+      "top": 44.81,
+      "left": 17.5,
+      "widthPx": 24,
+      "heightPx": 31,
       "shape": "circle",
       "rotation": 0
     },
     "MH 9A": {
       "id": "MH 9A",
       "pageNumber": 1,
-      "top": 46.29,
-      "left": 18.14,
-      "widthPx": 33,
-      "heightPx": 24,
+      "top": 41.46,
+      "left": 79.0,
+      "widthPx": 24,
+      "heightPx": 33,
       "shape": "circle",
       "rotation": 0
     },
     "HH 8": {
       "id": "HH 8",
       "pageNumber": 1,
-      "top": 13.94,
-      "left": 17.04,
-      "widthPx": 34,
-      "heightPx": 21,
+      "top": 38.95,
+      "left": 23.79,
+      "widthPx": 21,
+      "heightPx": 34,
       "shape": "circle",
       "rotation": 0
     },
     "FA 237": {
       "id": "FA 237",
       "pageNumber": 1,
-      "top": 37.5,
-      "left": 24.17,
-      "widthPx": 30,
-      "heightPx": 26,
+      "top": 55.25,
+      "left": 64.0,
+      "widthPx": 26,
+      "heightPx": 30,
       "shape": "circle",
       "rotation": 0
     },
     "FA 229": {
       "id": "FA 229",
       "pageNumber": 1,
-      "top": 34.62,
-      "left": 25.95,
-      "widthPx": 31,
-      "heightPx": 26,
+      "top": 59.32,
+      "left": 59.08,
+      "widthPx": 26,
+      "heightPx": 31,
       "shape": "circle",
       "rotation": 0
     },
     "HH 35": {
       "id": "HH 35",
       "pageNumber": 1,
-      "top": 5.79,
-      "left": 22.34,
-      "widthPx": 31,
-      "heightPx": 23,
+      "top": 51.06,
+      "left": 9.88,
+      "widthPx": 23,
+      "heightPx": 31,
       "shape": "circle",
       "rotation": 0
     },
     "MH 9": {
       "id": "MH 9",
       "pageNumber": 1,
-      "top": 27.39,
-      "left": 30.98,
-      "widthPx": 35,
-      "heightPx": 26,
+      "top": 70.81,
+      "left": 46.75,
+      "widthPx": 26,
+      "heightPx": 35,
       "shape": "circle",
       "rotation": 0
     },
     "FA 383": {
       "id": "FA 383",
       "pageNumber": 1,
-      "top": 19.97,
-      "left": 37.87,
-      "widthPx": 33,
-      "heightPx": 26,
+      "top": 86.55,
+      "left": 34.08,
+      "widthPx": 26,
+      "heightPx": 33,
       "shape": "circle",
       "rotation": 0
     },
     "FA 319": {
       "id": "FA 319",
       "pageNumber": 1,
-      "top": 16.7,
-      "left": 41.6,
+      "top": 95.09,
+      "left": 28.5,
+      "widthPx": 22,
+      "heightPx": 32,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 5": {
+      "id": "p2-MH 5",
+      "pageNumber": 2,
+      "top": 3.0,
+      "left": 73.0,
       "widthPx": 32,
-      "heightPx": 22,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 6": {
+      "id": "p2-MH 6",
+      "pageNumber": 2,
+      "top": 9.0,
+      "left": 77.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 3": {
+      "id": "p2-MH 3",
+      "pageNumber": 2,
+      "top": 15.0,
+      "left": 59.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 4": {
+      "id": "p2-MH 4",
+      "pageNumber": 2,
+      "top": 25.0,
+      "left": 17.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-FA 758": {
+      "id": "p2-FA 758",
+      "pageNumber": 2,
+      "top": 23.0,
+      "left": 33.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-FA 252": {
+      "id": "p2-FA 252",
+      "pageNumber": 2,
+      "top": 23.0,
+      "left": 65.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 2": {
+      "id": "p2-MH 2",
+      "pageNumber": 2,
+      "top": 29.0,
+      "left": 67.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 14": {
+      "id": "p2-MH 14",
+      "pageNumber": 2,
+      "top": 37.0,
+      "left": 25.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 15": {
+      "id": "p2-MH 15",
+      "pageNumber": 2,
+      "top": 37.0,
+      "left": 51.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 7": {
+      "id": "p2-MH 7",
+      "pageNumber": 2,
+      "top": 35.0,
+      "left": 61.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 20": {
+      "id": "p2-MH 20",
+      "pageNumber": 2,
+      "top": 45.0,
+      "left": 39.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 1": {
+      "id": "p2-MH 1",
+      "pageNumber": 2,
+      "top": 57.0,
+      "left": 43.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 8": {
+      "id": "p2-MH 8",
+      "pageNumber": 2,
+      "top": 63.0,
+      "left": 35.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 17": {
+      "id": "p2-MH 17",
+      "pageNumber": 2,
+      "top": 63.0,
+      "left": 47.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p2-MH 16": {
+      "id": "p2-MH 16",
+      "pageNumber": 2,
+      "top": 71.0,
+      "left": 43.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 4": {
+      "id": "p3-MH 4",
+      "pageNumber": 3,
+      "top": 18.8,
+      "left": 43.5,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 21": {
+      "id": "p3-MH 21",
+      "pageNumber": 3,
+      "top": 21.0,
+      "left": 65.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 23": {
+      "id": "p3-MH 23",
+      "pageNumber": 3,
+      "top": 26.7,
+      "left": 82.9,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 22": {
+      "id": "p3-MH 22",
+      "pageNumber": 3,
+      "top": 37.1,
+      "left": 82.9,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 11": {
+      "id": "p3-MH 11",
+      "pageNumber": 3,
+      "top": 44.0,
+      "left": 46.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-FA 376": {
+      "id": "p3-FA 376",
+      "pageNumber": 3,
+      "top": 56.4,
+      "left": 27.4,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 3A": {
+      "id": "p3-MH 3A",
+      "pageNumber": 3,
+      "top": 59.0,
+      "left": 50.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-FA 345": {
+      "id": "p3-FA 345",
+      "pageNumber": 3,
+      "top": 60.4,
+      "left": 83.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 34": {
+      "id": "p3-MH 34",
+      "pageNumber": 3,
+      "top": 69.9,
+      "left": 35.4,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p3-MH 3": {
+      "id": "p3-MH 3",
+      "pageNumber": 3,
+      "top": 75.0,
+      "left": 52.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-FA 379": {
+      "id": "p4-FA 379",
+      "pageNumber": 4,
+      "top": 6.9,
+      "left": 48.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-FA 380": {
+      "id": "p4-FA 380",
+      "pageNumber": 4,
+      "top": 13.4,
+      "left": 42.3,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 25": {
+      "id": "p4-MH 25",
+      "pageNumber": 4,
+      "top": 13.7,
+      "left": 68.3,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 13": {
+      "id": "p4-MH 13",
+      "pageNumber": 4,
+      "top": 18.2,
+      "left": 38.1,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 24": {
+      "id": "p4-MH 24",
+      "pageNumber": 4,
+      "top": 17.7,
+      "left": 72.1,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 16": {
+      "id": "p4-MH 16",
+      "pageNumber": 4,
+      "top": 24.4,
+      "left": 32.8,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 12": {
+      "id": "p4-MH 12",
+      "pageNumber": 4,
+      "top": 32.0,
+      "left": 26.2,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 17": {
+      "id": "p4-MH 17",
+      "pageNumber": 4,
+      "top": 33.1,
+      "left": 72.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 18": {
+      "id": "p4-MH 18",
+      "pageNumber": 4,
+      "top": 47.3,
+      "left": 69.1,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p4-MH 19": {
+      "id": "p4-MH 19",
+      "pageNumber": 4,
+      "top": 86.8,
+      "left": 63.7,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-HH 57": {
+      "id": "p5-HH 57",
+      "pageNumber": 5,
+      "top": 21.0,
+      "left": 37.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-HH 30": {
+      "id": "p5-HH 30",
+      "pageNumber": 5,
+      "top": 19.0,
+      "left": 45.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-FA 317": {
+      "id": "p5-FA 317",
+      "pageNumber": 5,
+      "top": 19.0,
+      "left": 59.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-HH 33": {
+      "id": "p5-HH 33",
+      "pageNumber": 5,
+      "top": 43.2,
+      "left": 63.6,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-FA 237": {
+      "id": "p5-FA 237",
+      "pageNumber": 5,
+      "top": 44.5,
+      "left": 51.8,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-HH 32": {
+      "id": "p5-HH 32",
+      "pageNumber": 5,
+      "top": 46.9,
+      "left": 28.8,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-HH 5": {
+      "id": "p5-HH 5",
+      "pageNumber": 5,
+      "top": 49.0,
+      "left": 29.0,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-FA 229": {
+      "id": "p5-FA 229",
+      "pageNumber": 5,
+      "top": 62.1,
+      "left": 83.8,
+      "widthPx": 32,
+      "heightPx": 26,
+      "shape": "circle",
+      "rotation": 0
+    },
+    "p5-FA 257": {
+      "id": "p5-FA 257",
+      "pageNumber": 5,
+      "top": 57.0,
+      "left": 73.0,
+      "widthPx": 32,
+      "heightPx": 26,
       "shape": "circle",
       "rotation": 0
     }

@@ -812,3 +812,95 @@
 }
 
 
+
+/* =============================================
+   NAVIGATION HOTSPOTS
+   Clickable overlay zones that navigate between
+   schematic pages (e.g. click head → head detail)
+   ============================================= */
+
+/* Base navigation hotspot */
+.nav-hotspot {
+  position: absolute;
+  cursor: pointer;
+  border: 2px dashed rgba(56, 189, 248, 0.55);
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.07);
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 4px 6px;
+  transition: background 200ms ease, border-color 200ms ease;
+  box-sizing: border-box;
+  -webkit-touch-callout: none;
+  user-select: none;
+  animation: navHotspotPulse 3s ease-in-out infinite;
+}
+
+@keyframes navHotspotPulse {
+  0%,  100% { border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.06); }
+  50%        { border-color: rgba(56, 189, 248, 0.75); background: rgba(56, 189, 248, 0.12); }
+}
+
+.nav-hotspot:hover,
+.nav-hotspot:focus-visible {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.90);
+  animation: none;
+}
+
+.nav-hotspot:active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 1);
+}
+
+/* Label badge inside each nav hotspot */
+.nav-hotspot-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(14, 165, 233, 0.88);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.nav-hotspot:hover .nav-hotspot-label,
+.nav-hotspot:focus-visible .nav-hotspot-label {
+  opacity: 1;
+}
+
+/* On mobile, always show the label (no hover) */
+@media (max-width: 768px) {
+  .nav-hotspot {
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgba(56, 189, 248, 0.60);
+    background: rgba(56, 189, 248, 0.09);
+    animation: none;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .nav-hotspot-label {
+    opacity: 1;
+    font-size: 0.55rem;
+    padding: 2px 5px;
+  }
+}
+
+/* Arrow icon inside the label */
+.nav-hotspot-label svg {
+  flex-shrink: 0;
+  stroke: #fff;
+}

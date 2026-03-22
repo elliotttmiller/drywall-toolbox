@@ -13,6 +13,7 @@ import '../styles/mobile-schematic.css';
 // their imports removed here so the build won't require them.
 // ---------------------------------------------------------------------------
 import columbiaMatrixBoxHandleData from '../../public/schematics/brands/Columbia/MatrixBoxHandle/schematic_data.json';
+import columbiaPredatorTaperData   from '../../public/schematics/brands/Columbia/PredatorTaper/schematic_data.json';
 
 // ---------------------------------------------------------------------------
 // Schematic image paths — runtime URLs relative to the deployment base.
@@ -119,31 +120,39 @@ export default function Parts() {
 
   // Columbia Inside Corner Roller removed from parts schematics per request.
 
-  // Build Columbia Matrix Box Handle schematic parts from JSON data
-  const matrixBoxHandleParts = (columbiaMatrixBoxHandleData && columbiaMatrixBoxHandleData.parts) ? columbiaMatrixBoxHandleData.parts.map((p) => {
-    const coords = columbiaMatrixBoxHandleData.coordinates || {};
-    const c = coords[p.id] || coords[String(Number(p.id))] || null;
-    // Use percentage-based positioning directly from JSON (already in percentage format)
-    const top = c && c.top !== undefined ? `${c.top}%` : '50%';
-    const left = c && c.left !== undefined ? `${c.left}%` : '50%';
-    const pageNumber = c && c.pageNumber ? c.pageNumber : (columbiaMatrixBoxHandleData.diagramPages && columbiaMatrixBoxHandleData.diagramPages[0]) || 1;
-    return {
-      id: p.id,
-      name: p.name,
-      sku: p.sku || p.SKU || '',
-      quantity: p.quantity || 1,
-      material: p.material || 'UNKNOWN',
-      price: p.price || 0,
-      position: { top, left },
-      pageNumber,
-      shape: c && c.shape ? c.shape : 'circle',
-      width: c && c.width ? c.width : null,
-      height: c && c.height ? c.height : null,
-      widthPx: c && c.widthPx ? c.widthPx : null,
-      heightPx: c && c.heightPx ? c.heightPx : null,
-      rotation: c && c.rotation ? c.rotation : 0
-    };
-  }) : [];
+  // Helper: build part-hotspot array from a schematic JSON data object
+  const buildPartsFromData = (data) => {
+    if (!data || !data.parts) return [];
+    const coords = data.coordinates || {};
+    return data.parts.map((p) => {
+      const c = coords[p.id] || null;
+      const top  = c && c.top  !== undefined ? `${c.top}%`  : '50%';
+      const left = c && c.left !== undefined ? `${c.left}%` : '50%';
+      const pageNumber = c && c.pageNumber
+        ? c.pageNumber
+        : (data.diagramPages && data.diagramPages[0]) || 1;
+      return {
+        id: p.id,
+        name: p.name,
+        sku: p.sku || '',
+        quantity: p.quantity || 1,
+        material: p.material || 'UNKNOWN',
+        price: p.price || 0,
+        position: { top, left },
+        pageNumber,
+        shape: c && c.shape ? c.shape : 'circle',
+        width:   c && c.width   ? c.width   : null,
+        height:  c && c.height  ? c.height  : null,
+        widthPx: c && c.widthPx ? c.widthPx : null,
+        heightPx:c && c.heightPx? c.heightPx: null,
+        rotation: c && c.rotation ? c.rotation : 0
+      };
+    });
+  };
+
+  // Build parts arrays from JSON data
+  const matrixBoxHandleParts  = buildPartsFromData(columbiaMatrixBoxHandleData);
+  const predatorTaperParts    = buildPartsFromData(columbiaPredatorTaperData);
 
   const schematics = [
     {
@@ -339,7 +348,38 @@ export default function Parts() {
         5: columbiaExtensionHousingImg
       },
       previewImage: columbiaMatrixBoxHandlePreview,
-      parts: matrixBoxHandleParts
+      parts: matrixBoxHandleParts,
+      // Navigation hotspots: click a physical region to jump to its detail page
+      navHotspots: [
+        {
+          id: 'nav-matrix-head',
+          label: 'Head Detail',
+          pageNumber: 1,
+          top: '61%', left: '10%', width: '32%', height: '30%',
+          targetPage: 2
+        },
+        {
+          id: 'nav-matrix-lever',
+          label: 'Lever Detail',
+          pageNumber: 1,
+          top: '2%', left: '55%', width: '38%', height: '16%',
+          targetPage: 3
+        },
+        {
+          id: 'nav-matrix-pinchbox',
+          label: 'Pinchbox Detail',
+          pageNumber: 1,
+          top: '34%', left: '34%', width: '26%', height: '22%',
+          targetPage: 4
+        },
+        {
+          id: 'nav-matrix-ext-housing',
+          label: 'Ext. Housing Detail',
+          pageNumber: 1,
+          top: '19%', left: '47%', width: '26%', height: '20%',
+          targetPage: 5
+        }
+      ]
     },
     {
       id: 'columbia-predator-taper',
@@ -356,7 +396,17 @@ export default function Parts() {
         2: columbiaPredatorTaperHeadNewImg
       },
       previewImage: columbiaPredatorTaperPreview,
-      parts: []
+      parts: predatorTaperParts,
+      // Navigation hotspot: click the head region on Body page → Head detail
+      navHotspots: [
+        {
+          id: 'nav-taper-head',
+          label: 'Head Detail',
+          pageNumber: 1,
+          top: '5%', left: '28%', width: '44%', height: '28%',
+          targetPage: 2
+        }
+      ]
     },
     // New TapeTech image-only schematics
     {
@@ -1144,6 +1194,49 @@ export default function Parts() {
                   </div>
                 </div>
               ))}
+
+                {/* Navigation hotspots — click a tool region to jump to its detail page */}
+                {(currentSchematic.navHotspots || [])
+                  .filter(nh => nh.pageNumber === currentPage)
+                  .map((nh) => (
+                    <div
+                      key={nh.id}
+                      className="nav-hotspot"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Navigate to ${nh.label}`}
+                      style={{
+                        position: 'absolute',
+                        top: nh.top,
+                        left: nh.left,
+                        width: nh.width,
+                        height: nh.height,
+                        zIndex: 80,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentPage(nh.targetPage);
+                        setActiveHotspot(null);
+                        setActiveHotspotPart(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setCurrentPage(nh.targetPage);
+                          setActiveHotspot(null);
+                          setActiveHotspotPart(null);
+                        }
+                      }}
+                    >
+                      <span className="nav-hotspot-label">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                        {nh.label}
+                      </span>
+                    </div>
+                  ))
+                }
             </div>
           </div>
         </div>
