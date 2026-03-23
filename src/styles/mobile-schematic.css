@@ -139,40 +139,41 @@
    Fully responsive padding and spacing
    ============================================= */
 @media (max-width: 480px) {
-  /* Parts page uses responsive padding for extra small screens */
+  /* Side padding only — top padding is handled per-page via var(--header-height) */
   .section-enter:not(.fullscreen-mode) {
     padding-left: clamp(8px, 1.5vw, 12px) !important;
     padding-right: clamp(8px, 1.5vw, 12px) !important;
-    padding-top: clamp(10px, 2vw, 16px) !important;
   }
 
+  /* Fullscreen mode (Parts page mobile): push below fixed header */
   .fullscreen-mode {
-    padding: clamp(50px, 10vw, 60px) 0 0 !important;
+    padding: var(--header-height, 70px) 0 0 !important;
   }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
-  /* Parts page uses responsive padding for tablets */
+  /* Side padding only — top padding is handled per-page via var(--header-height) */
   .section-enter:not(.fullscreen-mode) {
     padding-left: clamp(10px, 2vw, 16px) !important;
     padding-right: clamp(10px, 2vw, 16px) !important;
-    padding-top: clamp(12px, 2.5vw, 20px) !important;
   }
 
+  /* Fullscreen mode (Parts page mobile): push below fixed header */
   .fullscreen-mode {
-    padding: clamp(55px, 10vw, 65px) 0 0 !important;
+    padding: var(--header-height, 70px) 0 0 !important;
   }
 }
 
 @media (min-width: 769px) {
+  /* Side padding only — top padding is handled per-page via var(--header-height) */
   .section-enter:not(.fullscreen-mode) {
     padding-left: clamp(16px, 2.5vw, 24px) !important;
     padding-right: clamp(16px, 2.5vw, 24px) !important;
-    padding-top: clamp(16px, 2.5vw, 24px) !important;
   }
 
+  /* Fullscreen mode is never applied on desktop (isFullscreen = isMobile in Parts.jsx) */
   .fullscreen-mode {
-    padding: clamp(60px, 8vw, 80px) 0 0 !important;
+    padding: var(--header-height, 70px) 0 0 !important;
   }
 }
 
@@ -210,14 +211,11 @@
     padding: 0;
   }
 
+  /* Transform wrapper: must size to the image so hotspot % positions align correctly */
   .schematic-container > div[style*="position: relative"] {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    flex: 0 0 auto !important;
+    display: block !important;
     width: 100% !important;
-    height: 100% !important;
-    min-height: 100% !important;
   }
 
   .schematic-container img {
@@ -225,7 +223,6 @@
     width: 100% !important;
     height: auto !important;
     max-width: 100% !important;
-    max-height: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
     image-rendering: crisp-edges !important;
@@ -248,14 +245,11 @@
     position: relative !important;
   }
 
+  /* Transform wrapper: must size to the image so hotspot % positions align correctly */
   .schematic-container > div[style*="position: relative"] {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    flex: 0 0 auto !important;
+    display: block !important;
     width: 100% !important;
-    height: 100% !important;
-    min-height: 100% !important;
   }
 
   .schematic-container img {
@@ -263,7 +257,6 @@
     width: 100% !important;
     height: auto !important;
     max-width: 100% !important;
-    max-height: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
     image-rendering: crisp-edges !important;
@@ -288,14 +281,11 @@
     align-items: stretch !important;
   }
 
+  /* Transform wrapper: must size to the image so hotspot % positions align correctly */
   .schematic-container > div[style*="position: relative"] {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    flex: 0 0 auto !important;
+    display: block !important;
     width: 100% !important;
-    height: 100% !important;
-    min-height: 100% !important;
   }
 
   .schematic-container img {
@@ -303,7 +293,6 @@
     width: 100% !important;
     height: auto !important;
     max-width: 100% !important;
-    max-height: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
     image-rendering: crisp-edges !important;
