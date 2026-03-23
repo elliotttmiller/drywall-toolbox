@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <>
     <section style={{ 
-      padding: 'calc(clamp(80px, 12vw, 140px) + 2.5rem) clamp(1rem, 5vw, 2.5rem) clamp(1.5rem, 5vw, 2.5rem)',
+      padding: 'calc(var(--header-height, 70px) + 2.5rem) clamp(1rem, 5vw, 2.5rem) clamp(1.5rem, 5vw, 2.5rem)',
       minHeight: '100vh'
     }} className="section-enter home-hero-section">
       <div style={{

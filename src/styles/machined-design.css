@@ -22,6 +22,16 @@
     --primary-400: var(--color-primary-400, #60a5fa);
     --primary-100: var(--color-primary-100, #dbeafe);
     --accent-500: var(--color-accent-500, #2563eb);
+
+    /* Fluid header height — keep in sync with .site-header min-height.
+       Includes safe-area-inset-top so content is never hidden on notched phones. */
+    --header-height: calc(clamp(70px, 12vw, 140px) + env(safe-area-inset-top, 0px));
+
+    /* Safe-area insets for notched / PWA devices */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
 }
 
 * {
@@ -255,7 +265,9 @@ body {
     width: 400px;
     max-width: 100%;
     background: white;
-    padding: 40px;
+    padding: clamp(20px, 5vw, 40px);
+    padding-bottom: max(clamp(20px, 5vw, 40px), var(--safe-bottom));
+    padding-right: max(clamp(20px, 5vw, 40px), var(--safe-right));
     transform: translateX(100%);
     transition: transform 0.5s var(--ease-tension);
     overflow-y: auto;
@@ -409,23 +421,23 @@ aside input[type="range"],
 }
 
 /* --- SITE FOOTER RESPONSIVE TWEAKS --- */
+/* Fluid footer padding using clamp for all screen sizes */
+.footer-main-content {
+    padding: clamp(32px, 6vw, 80px) clamp(16px, 5vw, 40px);
+}
+
+.footer-copyright {
+    padding: clamp(14px, 2.5vw, 24px) clamp(16px, 5vw, 40px);
+    padding-bottom: max(clamp(14px, 2.5vw, 24px), var(--safe-bottom, 0px));
+    padding-left: max(clamp(16px, 5vw, 40px), var(--safe-left, 0px));
+    padding-right: max(clamp(16px, 5vw, 40px), var(--safe-right, 0px));
+}
+
 /* Center Navigation and Support columns on small screens */
 @media (max-width: 640px) {
     .site-footer {
-        padding: 40px 20px;
         grid-template-columns: 1fr !important; /* stack columns */
         gap: 24px;
-    }
-
-    /* Reduce padding on main footer content area */
-    .site-footer > div:first-child {
-        padding: 20px 0 12px 0 !important;
-        gap: 16px !important;
-    }
-
-    /* Reduce padding on copyright section */
-    .site-footer > div:last-child {
-        padding: 12px 20px !important;
     }
 
     /* target columns that should center their content on mobile */
@@ -788,13 +800,16 @@ aside input[type="range"],
     left: 0;
     right: 0;
     width: 100%;
-    min-height: clamp(80px, 12vw, 140px);
+    /* --header-height already includes safe-area-inset-top so min-height is correct on notched devices */
+    min-height: var(--header-height);
     background: var(--surface-glass);
     backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--machined-border);
     z-index: 1000;
     overflow: hidden;
     padding: 0.75rem 0;
+    /* Push nav content below iOS notch / status-bar */
+    padding-top: max(0.75rem, var(--safe-top));
 }
 
 /* Desktop Layout - Grid with centered branding */
@@ -808,6 +823,8 @@ aside input[type="range"],
     align-items: center;
     justify-content: space-between;
     padding: 0 clamp(0.75rem, 3vw, 2rem);
+    padding-left: max(clamp(0.75rem, 3vw, 2rem), var(--safe-left));
+    padding-right: max(clamp(0.75rem, 3vw, 2rem), var(--safe-right));
 }
 
 /* Desktop: Grid layout for screens >= 768px */
@@ -1024,10 +1041,17 @@ aside input[type="range"],
 }
 
 /* Mobile Layout - Flexbox with centered branding */
-/* Mobile Layout - Flexbox with centered branding */
+/* On mobile (≤767px) the header uses a compact fixed 70px height instead of
+   the fluid clamp, trading vertical space for more content visibility. */
 @media (max-width: 767px) {
+    :root {
+        /* 70px matches the fixed site-header min-height below */
+        --header-height: calc(70px + env(safe-area-inset-top, 0px));
+    }
+
     .site-header {
-        min-height: 70px;
+        /* Matches --header-height base (without safe-area, which is added as padding-top) */
+        min-height: var(--header-height);
     }
 
     .site-header-inner {
@@ -1035,16 +1059,16 @@ aside input[type="range"],
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 12px;
+        padding: 0 max(12px, var(--safe-left));
         gap: 12px;
     }
 
     body {
-        padding-top: 80px;
+        padding-top: 0;
     }
 
     .logo-image-mobile {
-        width: 220px;
+        width: clamp(160px, 60vw, 220px);
         height: auto;
     }
 
@@ -1058,32 +1082,16 @@ aside input[type="range"],
     }
 
     .home-hero-section {
-        padding-top: calc(70px + 2.5rem) !important;
+        padding-top: calc(var(--header-height) + 2.5rem) !important;
     }
 }
 
 /* --- PAGE SPACING FIX --- */
-/* Ensure all full-page divs account for fixed header */
-.min-h-screen {
-    padding-top: 140px;
-}
-
-/* Override excessive top padding on pages */
-/* Account for fixed header on all pages */
-section[style*="padding: '140px"] {
-    padding-top: 140px !important;
-}
-
-/* All page wrappers get header spacing */
+/* Full-page wrappers: push content below the fluid fixed header.
+   The --header-height variable is kept in sync with the header's actual
+   min-height so content is never hidden behind it. */
 div.min-h-screen {
-    padding-top: 140px !important;
-}
-
-/* Mobile header is smaller (70px), adjust padding */
-@media (max-width: 767px) {
-    div.min-h-screen {
-        padding-top: 70px !important;
-    }
+    padding-top: var(--header-height) !important;
 }
 
 /* --- TABLET (iPad-like) LAYOUT --- */
@@ -1097,8 +1105,6 @@ div.min-h-screen {
 
     #root {
         max-width: 100%;
-        margin: 0 auto;
-        padding: 1.5rem;
     }
 
     /* === TYPOGRAPHY: Fluid scaling for readability === */

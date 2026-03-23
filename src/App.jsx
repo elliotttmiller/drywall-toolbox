@@ -46,7 +46,7 @@ function App() {
             
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
               <Header onCartToggle={toggleCart} />
-              <main style={{ flexGrow: 1, paddingTop: '72px' }}>
+              <main style={{ flexGrow: 1 }}>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />

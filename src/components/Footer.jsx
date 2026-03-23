@@ -14,11 +14,10 @@ export default function Footer() {
       flexDirection: 'column'
     }}>
       {/* Main footer content */}
-      <div style={{
-        padding: '80px 40px',
+      <div className="footer-main-content" style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: '40px'
+        gap: 'clamp(24px, 4vw, 40px)'
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', order: 3 }}>
           <h3 style={{
@@ -192,9 +191,8 @@ export default function Footer() {
       </div>
 
       {/* Copyright Footer */}
-      <div style={{
+      <div className="footer-copyright" style={{
         borderTop: '1px solid var(--machined-border)',
-        padding: '24px 40px',
         textAlign: 'center',
         backgroundColor: '#f8fafc'
       }}>
