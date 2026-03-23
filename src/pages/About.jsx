@@ -70,12 +70,12 @@ export default function About() {
   const brands = ['TapeTech', 'Columbia', 'DeWalt', 'Hyde', 'Warner', 'Marshalltown', 'Goldblatt', 'Wal-Board'];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', paddingTop: 'clamp(80px, 15vw, 140px)' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', paddingTop: 'var(--header-height, 70px)' }}>
 
       {/* Hero */}
       <section style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%)',
-        padding: '80px 24px 100px',
+        padding: 'clamp(48px, 8vw, 80px) clamp(16px, 4vw, 24px) clamp(56px, 10vw, 100px)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -89,19 +89,19 @@ export default function About() {
         }} />
         <div style={{
           position: 'absolute',
-          top: '-120px',
-          right: '-120px',
-          width: '500px',
-          height: '500px',
+          top: 'clamp(-80px, -10vw, -120px)',
+          right: 'clamp(-80px, -10vw, -120px)',
+          width: 'clamp(200px, 40vw, 500px)',
+          height: 'clamp(200px, 40vw, 500px)',
           background: 'radial-gradient(circle, rgba(96,165,250,0.15) 0%, transparent 70%)',
           pointerEvents: 'none'
         }} />
         <div style={{
           position: 'absolute',
-          bottom: '-80px',
-          left: '-80px',
-          width: '400px',
-          height: '400px',
+          bottom: 'clamp(-50px, -8vw, -80px)',
+          left: 'clamp(-50px, -8vw, -80px)',
+          width: 'clamp(160px, 35vw, 400px)',
+          height: 'clamp(160px, 35vw, 400px)',
           background: 'radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%)',
           pointerEvents: 'none'
         }} />
@@ -178,7 +178,7 @@ export default function About() {
         background: '#ffffff',
         borderBottom: '1px solid rgba(15,23,42,0.06)'
       }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 24px)' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
@@ -186,7 +186,7 @@ export default function About() {
           }} className="about-stats-grid">
             {stats.map((stat, i) => (
               <div key={i} style={{
-                padding: '40px 24px',
+                padding: 'clamp(24px, 4vw, 40px) clamp(12px, 2vw, 24px)',
                 textAlign: 'center',
                 borderRight: i < stats.length - 1 ? '1px solid rgba(15,23,42,0.06)' : 'none'
               }} className="about-stat-item">
@@ -213,12 +213,12 @@ export default function About() {
       </section>
 
       {/* Mission Statement */}
-      <section style={{ padding: '96px 24px', background: '#f8fafc' }}>
+      <section style={{ padding: 'clamp(48px, 8vw, 96px) clamp(16px, 4vw, 24px)', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '80px',
+            gap: 'clamp(32px, 5vw, 80px)',
             alignItems: 'center'
           }} className="about-mission-grid">
             {/* Left: Text */}
@@ -269,7 +269,7 @@ export default function About() {
               <div style={{
                 background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)',
                 borderRadius: '20px',
-                padding: '48px 40px',
+                padding: 'clamp(24px, 4vw, 48px) clamp(20px, 4vw, 40px)',
                 color: 'white',
                 position: 'relative',
                 overflow: 'hidden'
@@ -318,9 +318,9 @@ export default function About() {
       </section>
 
       {/* Features Grid */}
-      <section style={{ padding: '96px 24px', background: '#ffffff' }}>
+      <section style={{ padding: 'clamp(48px, 8vw, 96px) clamp(16px, 4vw, 24px)', background: '#ffffff' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(32px, 5vw, 64px)' }}>
             <div style={{
               display: 'inline-block',
               fontSize: '0.7rem',
@@ -359,13 +359,13 @@ export default function About() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '24px'
+            gap: 'clamp(12px, 2vw, 24px)'
           }} className="about-features-grid">
             {features.map((feature, i) => (
               <div key={i} style={{
                 background: '#f8fafc',
                 borderRadius: '16px',
-                padding: '32px',
+                padding: 'clamp(20px, 3vw, 32px)',
                 border: '1px solid rgba(15,23,42,0.06)',
                 transition: 'all 0.25s ease',
                 cursor: 'default'
@@ -420,7 +420,7 @@ export default function About() {
 
       {/* Brands strip */}
       <section style={{
-        padding: '64px 24px',
+        padding: 'clamp(32px, 6vw, 64px) clamp(16px, 4vw, 24px)',
         background: '#f8fafc',
         borderTop: '1px solid rgba(15,23,42,0.06)',
         borderBottom: '1px solid rgba(15,23,42,0.06)'
@@ -474,7 +474,7 @@ export default function About() {
 
       {/* CTA */}
       <section style={{
-        padding: '96px 24px',
+        padding: 'clamp(48px, 8vw, 96px) clamp(16px, 4vw, 24px)',
         background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%)',
         position: 'relative',
         overflow: 'hidden'

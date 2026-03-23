@@ -21,7 +21,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="section-enter px-4 sm:px-6 md:px-10 lg:px-40 pt-36 pb-16 sm:pb-20 min-h-screen">
+    <section className="section-enter px-4 sm:px-6 md:px-10 lg:px-40 pb-16 sm:pb-20 min-h-screen" style={{ paddingTop: 'calc(var(--header-height, 70px) + clamp(1.5rem, 3vw, 2.5rem))' }}>
       <div className="max-w-250 mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 md:gap-16 lg:gap-20">
         <div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">
