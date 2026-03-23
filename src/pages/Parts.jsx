@@ -1111,7 +1111,7 @@ export default function Parts() {
   return (
     <section 
       style={{ 
-        padding: isFullscreen ? '60px 0 0' : 'clamp(20px, 5vw, 40px) clamp(1rem, 5vw, 2.5rem) clamp(160px, 30vw, 280px)',
+        padding: isFullscreen ? 'var(--header-height, 70px) 0 0' : 'calc(var(--header-height, 70px) + clamp(12px, 2vw, 20px)) clamp(1rem, 5vw, 2.5rem) clamp(160px, 30vw, 280px)',
         minHeight: '100vh'
       }} 
       className={`section-enter ${isFullscreen ? 'fullscreen-mode' : ''}`}
@@ -1313,14 +1313,7 @@ export default function Parts() {
                 ref={schematicImageRef}
                 style={{ 
                   position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
                   width: '100%',
-                  height: '100%',
-                  minHeight: '100%',
-                  flex: 1,
                   transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                   transformOrigin: 'center center',
                   transition: isPanning || isDragging ? 'none' : 'transform 0.3s ease-out',
@@ -1339,7 +1332,7 @@ export default function Parts() {
                       height: 'auto',
                       display: 'block', 
                       pointerEvents: 'none',
-                      imageRendering: 'auto',
+                      imageRendering: 'crisp-edges',
                       WebkitTouchCallout: 'none',
                       WebkitUserSelect: 'none',
                       userSelect: 'none',

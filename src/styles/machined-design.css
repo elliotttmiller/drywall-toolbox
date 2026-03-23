@@ -22,6 +22,13 @@
     --primary-400: var(--color-primary-400, #60a5fa);
     --primary-100: var(--color-primary-100, #dbeafe);
     --accent-500: var(--color-accent-500, #2563eb);
+
+    /* Fluid header height — keep in sync with .site-header actual rendered height.
+       Formula: logo max-height (clamp(90px, 12vw, 137px)) + 24px global padding
+       (0.75rem top + 0.75rem bottom) + safe-area-inset-top.
+       Mobile (≤767px) and tablet (641-1024px) override this with their own values
+       that match their respective paddings (which are reset to 0/safe-area only). */
+    --header-height: calc(clamp(90px, 12vw, 137px) + 24px + env(safe-area-inset-top, 0px));
 }
 
 * {
@@ -1004,8 +1011,17 @@ aside input[type="range"],
 /* Mobile Layout - Flexbox with centered branding */
 /* Mobile Layout - Flexbox with centered branding */
 @media (max-width: 767px) {
+    :root {
+        --header-height: calc(70px + env(safe-area-inset-top, 0px));
+    }
+
     .site-header {
-        min-height: 70px;
+        /* On mobile the header height is determined entirely by site-header-inner
+           (height: 70px below) + safe-area-inset-top.  Override the desktop
+           0.75rem top/bottom padding so actual rendered height == --header-height
+           and content is not accidentally hidden behind the fixed bar. */
+        min-height: var(--header-height);
+        padding: env(safe-area-inset-top, 0px) 0 0;
     }
 
     .site-header-inner {
@@ -1107,9 +1123,17 @@ div.min-h-screen {
     }
 
     /* === HEADER: Enhanced mobile-first hybrid layout === */
+    /* Override --header-height for tablet range so it matches the actual
+       header min-height set below, preventing content from being hidden
+       behind the fixed header on 641-1024px viewports.
+       Also reset top/bottom padding so actual header height == --header-height. */
+    :root {
+        --header-height: calc(clamp(80px, 12vw, 120px) + env(safe-area-inset-top, 0px));
+    }
+
     .site-header {
-        padding: 0.75rem clamp(0.75rem, 3vw, 1.5rem);
-        min-height: clamp(80px, 12vw, 120px);
+        padding: env(safe-area-inset-top, 0px) clamp(0.75rem, 3vw, 1.5rem) 0;
+        min-height: var(--header-height);
     }
 
     .site-header .site-header-inner {
