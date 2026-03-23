@@ -101,14 +101,16 @@
   z-index: 0;
 }
 
-.brand-card:hover {
-  border-color: var(--tension-accent);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  transform: translateY(-4px);
-}
+@media (hover: hover) {
+  .brand-card:hover {
+    border-color: var(--tension-accent);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
 
-.brand-card:hover .brand-card-background {
-  opacity: 0.08;
+  .brand-card:hover .brand-card-background {
+    opacity: 0.08;
+  }
 }
 
 .brand-card-content {
@@ -135,9 +137,11 @@
   overflow: hidden;
 }
 
-.brand-card:hover .brand-logo-placeholder {
-  border-color: var(--tension-accent);
-  background: linear-gradient(135deg, var(--surface-secondary) 0%, var(--surface-elevated) 100%);
+@media (hover: hover) {
+  .brand-card:hover .brand-logo-placeholder {
+    border-color: var(--tension-accent);
+    background: linear-gradient(135deg, var(--surface-secondary) 0%, var(--surface-elevated) 100%);
+  }
 }
 
 .brand-logo-placeholder .placeholder-icon {
@@ -147,8 +151,10 @@
   transition: color 0.4s ease-out;
 }
 
-.brand-card:hover .brand-logo-placeholder .placeholder-icon {
-  color: var(--tension-accent);
+@media (hover: hover) {
+  .brand-card:hover .brand-logo-placeholder .placeholder-icon {
+    color: var(--tension-accent);
+  }
 }
 
 .brand-name {
@@ -160,8 +166,10 @@
   transition: color 0.4s ease-out;
 }
 
-.brand-card:hover .brand-name {
-  color: var(--tension-accent);
+@media (hover: hover) {
+  .brand-card:hover .brand-name {
+    color: var(--tension-accent);
+  }
 }
 
 /* Responsive Design */
@@ -196,16 +204,6 @@
     animation-delay: 0s;
   }
 
-  .brand-card:hover {
-    border-color: var(--alloy-edge);
-    box-shadow: none;
-    transform: none;
-  }
-
-  .brand-card:hover .brand-card-background {
-    opacity: 0;
-  }
-
   .brand-card-background {
     transition: none;
   }
@@ -214,24 +212,11 @@
     transition: none;
   }
 
-  .brand-card:hover .brand-logo-placeholder {
-    border-color: var(--alloy-edge);
-    background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--surface-secondary) 100%);
-  }
-
   .brand-logo-placeholder .placeholder-icon {
     transition: none;
   }
 
-  .brand-card:hover .brand-logo-placeholder .placeholder-icon {
-    color: var(--text-tertiary);
-  }
-
   .brand-name {
     transition: none;
-  }
-
-  .brand-card:hover .brand-name {
-    color: var(--text-primary);
   }
 }

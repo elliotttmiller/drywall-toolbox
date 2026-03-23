@@ -29,9 +29,11 @@
   position: relative;
 }
 
-.back-button:hover {
-  color: var(--tension-accent);
-  transform: translateX(-4px);
+@media (hover: hover) {
+  .back-button:hover {
+    color: var(--tension-accent);
+    transform: translateX(-4px);
+  }
 }
 
 .back-button::before {
@@ -47,9 +49,11 @@
   transition: transform 0.3s ease-out;
 }
 
-.back-button:hover::before {
-  transform: scaleX(1);
-  transform-origin: left;
+@media (hover: hover) {
+  .back-button:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 .back-button svg {
@@ -129,14 +133,16 @@
   z-index: 0;
 }
 
-.tool-card:hover {
-  border-color: var(--tension-accent);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
-  transform: translateY(-6px);
-}
+@media (hover: hover) {
+  .tool-card:hover {
+    border-color: var(--tension-accent);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px);
+  }
 
-.tool-card:hover .tool-card-background {
-  opacity: 0.08;
+  .tool-card:hover .tool-card-background {
+    opacity: 0.08;
+  }
 }
 
 .tool-card-content {
@@ -163,9 +169,11 @@
   overflow: hidden;
 }
 
-.tool-card:hover .tool-image-placeholder {
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--surface-secondary) 0%, var(--surface-elevated) 100%);
+@media (hover: hover) {
+  .tool-card:hover .tool-image-placeholder {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--surface-secondary) 0%, var(--surface-elevated) 100%);
+  }
 }
 
 .tool-image-placeholder .placeholder-icon {
@@ -175,8 +183,10 @@
   transition: color 0.4s ease-out;
 }
 
-.tool-card:hover .tool-image-placeholder .placeholder-icon {
-  color: var(--tension-accent);
+@media (hover: hover) {
+  .tool-card:hover .tool-image-placeholder .placeholder-icon {
+    color: var(--tension-accent);
+  }
 }
 
 .tool-name {
@@ -190,8 +200,10 @@
   text-align: center;
 }
 
-.tool-card:hover .tool-name {
-  color: var(--tension-accent);
+@media (hover: hover) {
+  .tool-card:hover .tool-name {
+    color: var(--tension-accent);
+  }
 }
 
 /* =============================================
@@ -270,14 +282,16 @@
   z-index: 0;
 }
 
-.category-card:hover {
-  border-color: var(--tension-accent);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  transform: translateY(-4px);
-}
+@media (hover: hover) {
+  .category-card:hover {
+    border-color: var(--tension-accent);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
 
-.category-card:hover .category-card-background {
-  opacity: 0.08;
+  .category-card:hover .category-card-background {
+    opacity: 0.08;
+  }
 }
 
 .category-card-content {
@@ -300,8 +314,10 @@
   line-height: 1.3;
 }
 
-.category-card:hover .category-name {
-  color: var(--tension-accent);
+@media (hover: hover) {
+  .category-card:hover .category-name {
+    color: var(--tension-accent);
+  }
 }
 
 .category-count {
@@ -340,17 +356,8 @@
     transition: none;
   }
 
-  .back-button:hover {
-    color: var(--text-primary);
-    transform: none;
-  }
-
   .back-button::before {
     transition: none;
-  }
-
-  .back-button:hover::before {
-    transform: scaleX(0);
   }
 
   .header-content h2 {
@@ -382,16 +389,6 @@
     animation-delay: 0s;
   }
 
-  .tool-card:hover {
-    border-color: var(--alloy-edge);
-    box-shadow: none;
-    transform: none;
-  }
-
-  .tool-card:hover .tool-card-background {
-    opacity: 0;
-  }
-
   .tool-card-background {
     transition: none;
   }
@@ -401,27 +398,14 @@
     transition: none;
   }
 
-  .tool-card:hover .tool-image-placeholder {
-    border-color: var(--alloy-edge);
-    background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--surface-secondary) 100%);
-  }
-
   .tool-image-placeholder .placeholder-icon {
     width: 32px;
     height: 32px;
     transition: none;
   }
 
-  .tool-card:hover .tool-image-placeholder .placeholder-icon {
-    color: var(--text-tertiary);
-  }
-
   .tool-name {
     font-size: 1.15rem;
     transition: none;
-  }
-
-  .tool-card:hover .tool-name {
-    color: var(--text-primary);
   }
 }
