@@ -92,12 +92,14 @@
   opacity: 1;
 }
 
-.filter-trigger:hover {
-  border-color: rgba(37, 99, 235, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 
-    0 8px 24px rgba(37, 99, 235, 0.12),
-    0 2px 8px rgba(15, 23, 42, 0.06);
+@media (hover: hover) {
+    .filter-trigger:hover {
+        border-color: rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 
+            0 8px 24px rgba(37, 99, 235, 0.12),
+            0 2px 8px rgba(15, 23, 42, 0.06);
+    }
 }
 
 .filter-section.expanded .filter-trigger {
@@ -271,8 +273,10 @@
   opacity: 1;
 }
 
-.filter-option:hover {
-  transform: translateX(4px);
+@media (hover: hover) {
+    .filter-option:hover {
+        transform: translateX(4px);
+    }
 }
 
 .filter-option.active {

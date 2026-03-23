@@ -98,8 +98,10 @@ body {
     cursor: pointer;
 }
 
-.alloy-button:hover {
-    transform: scale(1.02);
+@media (hover: hover) {
+    .alloy-button:hover {
+        transform: scale(1.02);
+    }
 }
 
 .alloy-button-sm {
@@ -135,7 +137,9 @@ body {
 
 .quantity-btn:active { transform: translateY(1px) scale(0.995); }
 
-.quantity-btn:hover { background: rgba(2,6,23,0.04); }
+@media (hover: hover) {
+    .quantity-btn:hover { background: rgba(2,6,23,0.04); }
+}
 
 .quantity-decrease { border-radius: 999px; }
 .quantity-increase { border-radius: 999px; background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); color: #fff; }
@@ -168,7 +172,9 @@ body {
     transition: transform 200ms var(--ease-tension), box-shadow 200ms var(--ease-tension);
 }
 
-.btn-add-to-cart:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 22px 48px rgba(37,99,235,0.14); }
+@media (hover: hover) {
+    .btn-add-to-cart:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 22px 48px rgba(37,99,235,0.14); }
+}
 
 .btn-wishlist {
     display: inline-flex;
@@ -192,9 +198,11 @@ body {
     transition: all 0.4s var(--ease-tension);
 }
 
-.tool-card:hover {
-    border-color: var(--alloy-deep);
-    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1);
+@media (hover: hover) {
+    .tool-card:hover {
+        border-color: var(--alloy-deep);
+        box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1);
+    }
 }
 
 .tool-image {
@@ -509,9 +517,11 @@ aside input[type="range"],
     transition: all 180ms var(--ease-tension);
 }
 
-.pager-pill:hover:not(:disabled) {
-    background: rgba(37,99,235,0.08);
-    transform: translateY(-2px);
+@media (hover: hover) {
+    .pager-pill:hover:not(:disabled) {
+        background: rgba(37,99,235,0.08);
+        transform: translateY(-2px);
+    }
 }
 
 .pager-pill:disabled,
@@ -620,22 +630,24 @@ aside input[type="range"],
     border-radius: 4px;
 }
 
-/* Enlarge hotspot on hover for easier clicking */
-.hotspot:hover {
-    background: rgba(37, 99, 235, 0.08);
-    /* softer, tighter shadow to avoid the large spread effect */
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.06);
-    transform: translate(-50%, -50%) scale(1.08);
-}
+/* Enlarge hotspot on hover for easier clicking — pointer devices only */
+@media (hover: hover) {
+    .hotspot:hover {
+        background: rgba(37, 99, 235, 0.08);
+        /* softer, tighter shadow to avoid the large spread effect */
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.06);
+        transform: translate(-50%, -50%) scale(1.08);
+    }
 
-.hotspot-circle:hover {
-    /* Prefer scale transform over abrupt width/height change for smoother animation */
-    transform: translate(-50%, -50%) scale(1.12);
-}
+    .hotspot-circle:hover {
+        /* Prefer scale transform over abrupt width/height change for smoother animation */
+        transform: translate(-50%, -50%) scale(1.12);
+    }
 
-.hotspot-rectangle:hover,
-.hotspot-square:hover {
-    transform: translate(-50%, -50%) scale(1.12);
+    .hotspot-rectangle:hover,
+    .hotspot-square:hover {
+        transform: translate(-50%, -50%) scale(1.12);
+    }
 }
 
 @keyframes pulse {
@@ -864,8 +876,10 @@ aside input[type="range"],
     line-height: 1;
 }
 
-.logo-image:hover {
-    transform: scale(1.05);
+@media (hover: hover) {
+    .logo-image:hover {
+        transform: scale(1.05);
+    }
 }
 
 /* SVG Logo - Mobile */
@@ -881,8 +895,10 @@ aside input[type="range"],
     line-height: 1;
 }
 
-.logo-image-mobile:hover {
-    transform: scale(1.05);
+@media (hover: hover) {
+    .logo-image-mobile:hover {
+        transform: scale(1.05);
+    }
 }
 
 .brand-mark {
@@ -1234,9 +1250,11 @@ div.min-h-screen {
         transition: all 300ms ease;
     }
 
-    .tool-card:hover {
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-        transform: translateY(-4px);
+    @media (hover: hover) {
+        .tool-card:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
     }
 
     .tool-image {
@@ -1401,9 +1419,11 @@ div.min-h-screen {
         height: 32px;
     }
 
-    .hotspot:hover {
-        transform: translate(-50%, -50%) scale(1.15);
-        background: rgba(37, 99, 235, 0.12);
+    @media (hover: hover) {
+        .hotspot:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            background: rgba(37, 99, 235, 0.12);
+        }
     }
 
     /* Increase hotspot size on tablet for better touch targets */
@@ -1413,8 +1433,10 @@ div.min-h-screen {
             height: 40px;
         }
 
-        .hotspot:hover {
-            transform: translate(-50%, -50%) scale(1.2);
+        @media (hover: hover) {
+            .hotspot:hover {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
         }
     }
 
