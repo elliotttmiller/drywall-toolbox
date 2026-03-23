@@ -1034,6 +1034,10 @@ aside input[type="range"],
     .brand-title {
         font-size: 0.95rem;
     }
+
+    .home-hero-section {
+        padding-top: calc(70px + 1.25rem) !important;
+    }
 }
 
 /* --- PAGE SPACING FIX --- */
