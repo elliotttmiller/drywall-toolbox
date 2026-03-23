@@ -34,7 +34,7 @@
 /* Mobile responsive spacing adjustments */
 @media (max-width: 768px) {
   .home-hero-section {
-    padding: 100px 20px 80px !important;
+    padding: 120px 20px 80px !important;
     min-height: auto !important;
   }
   
