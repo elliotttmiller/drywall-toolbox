@@ -577,10 +577,12 @@
   padding: 0;
 }
 
-.zoom-control-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.95);
+@media (hover: hover) {
+    .zoom-control-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.16);
+        color: rgba(255, 255, 255, 0.95);
+    }
 }
 
 .zoom-control-btn:active {
@@ -605,10 +607,12 @@
   color: rgba(248, 113, 113, 0.9);
 }
 
-.reset-btn:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: rgba(248, 113, 113, 0.95);
+@media (hover: hover) {
+    .reset-btn:hover {
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: rgba(248, 113, 113, 0.95);
+    }
 }
 
 .reset-btn:active {
@@ -855,10 +859,11 @@
     font-weight: 600;
   }
 
-  /* When hovering on desktop, keep the subtle translate but ensure it's
-     visible and doesn't move under the header. */
-  .back-button:hover {
-    transform: translateX(-4px);
+  /* When hovering on desktop (pointer devices only), keep the subtle translate. */
+  @media (hover: hover) {
+      .back-button:hover {
+          transform: translateX(-4px);
+      }
   }
 
   .back-button svg {
