@@ -1,0 +1,567 @@
+{
+  "id": "columbia-semi-automatic-taper",
+  "title": "Semi-Automatic Taper",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA341",
+      "name": "FA341",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT18",
+      "name": "SAT18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT17",
+      "name": "SAT17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT4",
+      "name": "SAT4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA234",
+      "name": "FA234",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA337",
+      "name": "FA337",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA258",
+      "name": "FA258",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA238",
+      "name": "FA238",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA340",
+      "name": "FA340",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA285",
+      "name": "FA285",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA324",
+      "name": "FA324",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT15",
+      "name": "SAT15",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT16",
+      "name": "SAT16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT2",
+      "name": "SAT2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT1",
+      "name": "SAT1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT120",
+      "name": "CT120",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT3",
+      "name": "SAT3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA392",
+      "name": "FA392",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT8",
+      "name": "SAT8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT12",
+      "name": "SAT12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA345",
+      "name": "FA345",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT5",
+      "name": "SAT5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT6",
+      "name": "SAT6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT21",
+      "name": "SAT21",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT13",
+      "name": "SAT13",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT11",
+      "name": "SAT11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT7",
+      "name": "SAT7",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SATA14",
+      "name": "SATA14",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT9",
+      "name": "SAT9",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA224",
+      "name": "FA224",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA390",
+      "name": "FA390",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT10",
+      "name": "SAT10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT20",
+      "name": "SAT20",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT19",
+      "name": "SAT19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT22",
+      "name": "SAT22",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA391",
+      "name": "FA391",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA341": {
+      "name": "FA341",
+      "pageNumber": 1,
+      "top": 3.3,
+      "left": 58.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA341"
+    },
+    "SAT18": {
+      "name": "SAT18",
+      "pageNumber": 1,
+      "top": 7.4,
+      "left": 52.6,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT18"
+    },
+    "SAT17": {
+      "name": "SAT17",
+      "pageNumber": 1,
+      "top": 2.5,
+      "left": 88.9,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT17"
+    },
+    "FA239": {
+      "name": "FA239",
+      "pageNumber": 1,
+      "top": 13.1,
+      "left": 11.9,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA239"
+    },
+    "SAT4": {
+      "name": "SAT4",
+      "pageNumber": 1,
+      "top": 16.8,
+      "left": 10.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT4"
+    },
+    "FA234": {
+      "name": "FA234",
+      "pageNumber": 1,
+      "top": 21.4,
+      "left": 12.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA234"
+    },
+    "FA337": {
+      "name": "FA337",
+      "pageNumber": 1,
+      "top": 18.3,
+      "left": 36.7,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA337"
+    },
+    "FA258": {
+      "name": "FA258",
+      "pageNumber": 1,
+      "top": 14.1,
+      "left": 51.2,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA258"
+    },
+    "FA238": {
+      "name": "FA238",
+      "pageNumber": 1,
+      "top": 17.9,
+      "left": 52.6,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA238"
+    },
+    "FA340": {
+      "name": "FA340",
+      "pageNumber": 1,
+      "top": 20.8,
+      "left": 53.9,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA340"
+    },
+    "FA285": {
+      "name": "FA285",
+      "pageNumber": 1,
+      "top": 24.9,
+      "left": 71.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA285"
+    },
+    "FA324": {
+      "name": "FA324",
+      "pageNumber": 1,
+      "top": 21.3,
+      "left": 82.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA324"
+    },
+    "SAT15": {
+      "name": "SAT15",
+      "pageNumber": 1,
+      "top": 15.8,
+      "left": 88.4,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT15"
+    },
+    "SAT16": {
+      "name": "SAT16",
+      "pageNumber": 1,
+      "top": 29.0,
+      "left": 84.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT16"
+    },
+    "SAT2": {
+      "name": "SAT2",
+      "pageNumber": 1,
+      "top": 29.2,
+      "left": 30.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT2"
+    },
+    "SAT1": {
+      "name": "SAT1",
+      "pageNumber": 1,
+      "top": 30.7,
+      "left": 42.3,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT1"
+    },
+    "CT120": {
+      "name": "CT120",
+      "pageNumber": 1,
+      "top": 35.1,
+      "left": 93.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CT120"
+    },
+    "SAT3": {
+      "name": "SAT3",
+      "pageNumber": 1,
+      "top": 39.1,
+      "left": 3.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT3"
+    },
+    "FA392": {
+      "name": "FA392",
+      "pageNumber": 1,
+      "top": 37.5,
+      "left": 55.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA392"
+    },
+    "SAT8": {
+      "name": "SAT8",
+      "pageNumber": 1,
+      "top": 43.8,
+      "left": 50.6,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT8"
+    },
+    "SAT12": {
+      "name": "SAT12",
+      "pageNumber": 1,
+      "top": 39.4,
+      "left": 62.7,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT12"
+    },
+    "FA345": {
+      "name": "FA345",
+      "pageNumber": 1,
+      "top": 44.5,
+      "left": 62.9,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA345"
+    },
+    "SAT5": {
+      "name": "SAT5",
+      "pageNumber": 1,
+      "top": 43.8,
+      "left": 12.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT5"
+    },
+    "SAT6": {
+      "name": "SAT6",
+      "pageNumber": 1,
+      "top": 44.9,
+      "left": 27.2,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT6"
+    },
+    "SAT21": {
+      "name": "SAT21",
+      "pageNumber": 1,
+      "top": 48.1,
+      "left": 60.4,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT21"
+    },
+    "SAT13": {
+      "name": "SAT13",
+      "pageNumber": 1,
+      "top": 46.4,
+      "left": 89.4,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT13"
+    },
+    "SAT11": {
+      "name": "SAT11",
+      "pageNumber": 1,
+      "top": 50.6,
+      "left": 91.2,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT11"
+    },
+    "SAT7": {
+      "name": "SAT7",
+      "pageNumber": 1,
+      "top": 55.1,
+      "left": 95.2,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT7"
+    },
+    "SATA14": {
+      "name": "SATA14",
+      "pageNumber": 1,
+      "top": 53.6,
+      "left": 8.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SATA14"
+    },
+    "SAT9": {
+      "name": "SAT9",
+      "pageNumber": 1,
+      "top": 55.4,
+      "left": 29.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT9"
+    },
+    "FA224": {
+      "name": "FA224",
+      "pageNumber": 1,
+      "top": 58.3,
+      "left": 26.3,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA224"
+    },
+    "FA390": {
+      "name": "FA390",
+      "pageNumber": 1,
+      "top": 60.4,
+      "left": 32.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA390"
+    },
+    "SAT10": {
+      "name": "SAT10",
+      "pageNumber": 1,
+      "top": 52.5,
+      "left": 50.7,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT10"
+    },
+    "SAT20": {
+      "name": "SAT20",
+      "pageNumber": 1,
+      "top": 56.8,
+      "left": 54.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT20"
+    },
+    "SAT19": {
+      "name": "SAT19",
+      "pageNumber": 1,
+      "top": 61.9,
+      "left": 51.7,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT19"
+    },
+    "SAT22": {
+      "name": "SAT22",
+      "pageNumber": 1,
+      "top": 58.6,
+      "left": 60.2,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SAT22"
+    },
+    "FA391": {
+      "name": "FA391",
+      "pageNumber": 1,
+      "top": 62.9,
+      "left": 67.4,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA391"
+    }
+  }
+}

@@ -1,0 +1,432 @@
+{
+  "id": "columbia-angle-head",
+  "title": "Angle Head",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA235",
+      "name": "FA235",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH6",
+      "name": "AH6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH7-2.5\"",
+      "name": "AH7-2.5\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH7-3\"",
+      "name": "AH7-3\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH3-3\"",
+      "name": "AH3-3\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH18",
+      "name": "AH18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH16",
+      "name": "AH16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA245",
+      "name": "FA245",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH5",
+      "name": "AH5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA236",
+      "name": "FA236",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH4",
+      "name": "AH4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH2-3\"L",
+      "name": "AH2-3\"L",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH8",
+      "name": "AH8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH9",
+      "name": "AH9",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA258",
+      "name": "FA258",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH1",
+      "name": "AH1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH2-3\"R",
+      "name": "AH2-3\"R",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA221",
+      "name": "FA221",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH11",
+      "name": "AH11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH12",
+      "name": "AH12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA210",
+      "name": "FA210",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH1-3.5\"",
+      "name": "AH1-3.5\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH23",
+      "name": "AH23",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA228",
+      "name": "FA228",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH21",
+      "name": "AH21",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH20",
+      "name": "AH20",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "AH22",
+      "name": "AH22",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA235": {
+      "name": "FA235",
+      "pageNumber": 1,
+      "top": 9.2,
+      "left": 37.0,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA235"
+    },
+    "AH6": {
+      "name": "AH6",
+      "pageNumber": 1,
+      "top": 8.0,
+      "left": 43.8,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH6"
+    },
+    "AH7-2.5\"": {
+      "name": "AH7-2.5\"",
+      "pageNumber": 1,
+      "top": 8.0,
+      "left": 50.9,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH7-2.5\""
+    },
+    "AH7-3\"": {
+      "name": "AH7-3\"",
+      "pageNumber": 1,
+      "top": 8.0,
+      "left": 56.0,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH7-3\""
+    },
+    "AH3-3\"": {
+      "name": "AH3-3\"",
+      "pageNumber": 1,
+      "top": 28.6,
+      "left": 31.4,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH3-3\""
+    },
+    "FA239": {
+      "name": "FA239",
+      "pageNumber": 1,
+      "top": 28.4,
+      "left": 39.2,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA239"
+    },
+    "AH18": {
+      "name": "AH18",
+      "pageNumber": 1,
+      "top": 28.7,
+      "left": 45.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH18"
+    },
+    "AH16": {
+      "name": "AH16",
+      "pageNumber": 1,
+      "top": 32.0,
+      "left": 27.3,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH16"
+    },
+    "FA245": {
+      "name": "FA245",
+      "pageNumber": 1,
+      "top": 32.6,
+      "left": 45.1,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA245"
+    },
+    "AH5": {
+      "name": "AH5",
+      "pageNumber": 1,
+      "top": 32.0,
+      "left": 54.4,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH5"
+    },
+    "FA236": {
+      "name": "FA236",
+      "pageNumber": 1,
+      "top": 40.2,
+      "left": 16.4,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA236"
+    },
+    "AH4": {
+      "name": "AH4",
+      "pageNumber": 1,
+      "top": 50.6,
+      "left": 5.7,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH4"
+    },
+    "AH2-3\"L": {
+      "name": "AH2-3\"L",
+      "pageNumber": 1,
+      "top": 53.6,
+      "left": 10.3,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH2-3\"L"
+    },
+    "AH8": {
+      "name": "AH8",
+      "pageNumber": 1,
+      "top": 62.5,
+      "left": 24.7,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH8"
+    },
+    "AH9": {
+      "name": "AH9",
+      "pageNumber": 1,
+      "top": 63.5,
+      "left": 29.4,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH9"
+    },
+    "FA258": {
+      "name": "FA258",
+      "pageNumber": 1,
+      "top": 63.7,
+      "left": 37.3,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA258"
+    },
+    "AH1": {
+      "name": "AH1",
+      "pageNumber": 1,
+      "top": 64.0,
+      "left": 41.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH1"
+    },
+    "AH2-3\"R": {
+      "name": "AH2-3\"R",
+      "pageNumber": 1,
+      "top": 53.6,
+      "left": 55.0,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH2-3\"R"
+    },
+    "FA221": {
+      "name": "FA221",
+      "pageNumber": 1,
+      "top": 17.1,
+      "left": 75.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA221"
+    },
+    "AH11": {
+      "name": "AH11",
+      "pageNumber": 1,
+      "top": 17.1,
+      "left": 83.9,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH11"
+    },
+    "AH12": {
+      "name": "AH12",
+      "pageNumber": 1,
+      "top": 30.4,
+      "left": 86.1,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH12"
+    },
+    "FA210": {
+      "name": "FA210",
+      "pageNumber": 1,
+      "top": 40.8,
+      "left": 75.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA210"
+    },
+    "AH1-3.5\"": {
+      "name": "AH1-3.5\"",
+      "pageNumber": 1,
+      "top": 38.4,
+      "left": 87.0,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH1-3.5\""
+    },
+    "AH23": {
+      "name": "AH23",
+      "pageNumber": 1,
+      "top": 67.7,
+      "left": 71.8,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH23"
+    },
+    "FA228": {
+      "name": "FA228",
+      "pageNumber": 1,
+      "top": 67.6,
+      "left": 75.2,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA228"
+    },
+    "AH21": {
+      "name": "AH21",
+      "pageNumber": 1,
+      "top": 67.1,
+      "left": 78.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH21"
+    },
+    "AH20": {
+      "name": "AH20",
+      "pageNumber": 1,
+      "top": 67.1,
+      "left": 81.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH20"
+    },
+    "AH22": {
+      "name": "AH22",
+      "pageNumber": 1,
+      "top": 67.1,
+      "left": 83.8,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "AH22"
+    }
+  }
+}

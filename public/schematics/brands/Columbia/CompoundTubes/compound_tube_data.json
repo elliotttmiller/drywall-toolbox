@@ -1,0 +1,252 @@
+{
+  "id": "columbia-compound-tube",
+  "title": "Compound Tube",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "CMT8",
+      "name": "CMT8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA323",
+      "name": "FA323",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA28",
+      "name": "FA28",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT110",
+      "name": "CT110",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT111",
+      "name": "CT111",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT2",
+      "name": "CMT2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA286",
+      "name": "FA286",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT115A",
+      "name": "CT115A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA219",
+      "name": "FA219",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA256",
+      "name": "FA256",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA23",
+      "name": "FA23",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT1-24\"",
+      "name": "CMT1-24\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT1A-24\"",
+      "name": "CMT1A-24\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT5",
+      "name": "CMT5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA235",
+      "name": "FA235",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "CMT8": {
+      "name": "CMT8",
+      "pageNumber": 1,
+      "top": 11.15,
+      "left": 39.9,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CMT8"
+    },
+    "FA323": {
+      "name": "FA323",
+      "pageNumber": 1,
+      "top": 11.75,
+      "left": 18.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA323"
+    },
+    "FA28": {
+      "name": "FA28",
+      "pageNumber": 1,
+      "top": 16.55,
+      "left": 18.25,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA28"
+    },
+    "CT110": {
+      "name": "CT110",
+      "pageNumber": 1,
+      "top": 20.95,
+      "left": 20.95,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CT110"
+    },
+    "CT111": {
+      "name": "CT111",
+      "pageNumber": 1,
+      "top": 19.15,
+      "left": 43.95,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CT111"
+    },
+    "CMT2": {
+      "name": "CMT2",
+      "pageNumber": 1,
+      "top": 22.95,
+      "left": 77.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CMT2"
+    },
+    "FA286": {
+      "name": "FA286",
+      "pageNumber": 1,
+      "top": 25.8,
+      "left": 22.55,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA286"
+    },
+    "CT115A": {
+      "name": "CT115A",
+      "pageNumber": 1,
+      "top": 28.75,
+      "left": 79.25,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CT115A"
+    },
+    "FA219": {
+      "name": "FA219",
+      "pageNumber": 1,
+      "top": 33.35,
+      "left": 80.7,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA219"
+    },
+    "FA256": {
+      "name": "FA256",
+      "pageNumber": 1,
+      "top": 36.25,
+      "left": 48.9,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA256"
+    },
+    "FA23": {
+      "name": "FA23",
+      "pageNumber": 1,
+      "top": 37.75,
+      "left": 82.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA23"
+    },
+    "CMT1-24\"": {
+      "name": "CMT1-24\"",
+      "pageNumber": 1,
+      "top": 55.35,
+      "left": 89.75,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CMT1-24\""
+    },
+    "CMT1A-24\"": {
+      "name": "CMT1A-24\"",
+      "pageNumber": 1,
+      "top": 63.55,
+      "left": 26.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CMT1A-24\""
+    },
+    "CMT5": {
+      "name": "CMT5",
+      "pageNumber": 1,
+      "top": 85.65,
+      "left": 90.85,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CMT5"
+    },
+    "FA239": {
+      "name": "FA239",
+      "pageNumber": 1,
+      "top": 89.75,
+      "left": 94.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA239"
+    },
+    "FA235": {
+      "name": "FA235",
+      "pageNumber": 1,
+      "top": 94.25,
+      "left": 93.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA235"
+    }
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "id": "columbia-corner-cobra",
+  "title": "Corner Cobra",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "CC12",
+      "name": "CC12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA358",
+      "name": "FA358",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC17",
+      "name": "CC17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA355",
+      "name": "FA355",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH21",
+      "name": "HH21",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC2",
+      "name": "CC2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC3",
+      "name": "CC3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC18",
+      "name": "CC18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA28",
+      "name": "FA28",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA359",
+      "name": "FA359",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CLT15",
+      "name": "CLT15",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA360",
+      "name": "FA360",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC16",
+      "name": "CC16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC1A",
+      "name": "CC1A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC19",
+      "name": "CC19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA292",
+      "name": "FA292",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "CC12": {
+      "name": "CC12",
+      "pageNumber": 1,
+      "top": 23.15,
+      "left": 41.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC12"
+    },
+    "FA358": {
+      "name": "FA358",
+      "pageNumber": 1,
+      "top": 23.4,
+      "left": 30.35,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA358"
+    },
+    "CC17": {
+      "name": "CC17",
+      "pageNumber": 1,
+      "top": 29.05,
+      "left": 32.6,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC17"
+    },
+    "FA355": {
+      "name": "FA355",
+      "pageNumber": 1,
+      "top": 34.1,
+      "left": 79.3,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA355"
+    },
+    "HH21": {
+      "name": "HH21",
+      "pageNumber": 1,
+      "top": 40.7,
+      "left": 83.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "HH21"
+    },
+    "CC2": {
+      "name": "CC2",
+      "pageNumber": 1,
+      "top": 46.85,
+      "left": 84.4,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC2"
+    },
+    "CC3": {
+      "name": "CC3",
+      "pageNumber": 1,
+      "top": 52.6,
+      "left": 54.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC3"
+    },
+    "CC18": {
+      "name": "CC18",
+      "pageNumber": 1,
+      "top": 55.35,
+      "left": 79.3,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC18"
+    },
+    "FA28": {
+      "name": "FA28",
+      "pageNumber": 1,
+      "top": 58.05,
+      "left": 92.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA28"
+    },
+    "FA359": {
+      "name": "FA359",
+      "pageNumber": 1,
+      "top": 61.7,
+      "left": 48.75,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA359"
+    },
+    "CLT15": {
+      "name": "CLT15",
+      "pageNumber": 1,
+      "top": 62.0,
+      "left": 16.8,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CLT15"
+    },
+    "FA360": {
+      "name": "FA360",
+      "pageNumber": 1,
+      "top": 69.1,
+      "left": 89.25,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA360"
+    },
+    "CC16": {
+      "name": "CC16",
+      "pageNumber": 1,
+      "top": 74.6,
+      "left": 92.5,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC16"
+    },
+    "CC1A": {
+      "name": "CC1A",
+      "pageNumber": 1,
+      "top": 82.25,
+      "left": 54.35,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC1A"
+    },
+    "CC19": {
+      "name": "CC19",
+      "pageNumber": 1,
+      "top": 88.2,
+      "left": 66.6,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CC19"
+    },
+    "FA292": {
+      "name": "FA292",
+      "pageNumber": 1,
+      "top": 89.35,
+      "left": 81.2,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA292"
+    }
+  }
+}

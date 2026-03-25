@@ -1,0 +1,162 @@
+{
+  "id": "columbia-tomahawk-smoothing-blades",
+  "title": "Tomahawk Smoothing Blades",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA327",
+      "name": "FA327",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA272",
+      "name": "FA272",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA271",
+      "name": "FA271",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB7",
+      "name": "SB7",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB2-12IN",
+      "name": "SB2-12IN",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB5",
+      "name": "SB5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB6",
+      "name": "SB6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB4",
+      "name": "SB4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB1-12IN",
+      "name": "SB1-12IN",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SB3",
+      "name": "SB3",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA327": {
+      "name": "FA327",
+      "pageNumber": 1,
+      "top": 6.3,
+      "left": 56.0,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA327"
+    },
+    "FA272": {
+      "name": "FA272",
+      "pageNumber": 1,
+      "top": 12.1,
+      "left": 48.2,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA272"
+    },
+    "FA271": {
+      "name": "FA271",
+      "pageNumber": 1,
+      "top": 17.5,
+      "left": 47.8,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA271"
+    },
+    "SB7": {
+      "name": "SB7",
+      "pageNumber": 1,
+      "top": 51.5,
+      "left": 42.8,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "SB7"
+    },
+    "SB2-12IN": {
+      "name": "SB2-12IN",
+      "pageNumber": 1,
+      "top": 78.0,
+      "left": 37.5,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "SB2-12IN"
+    },
+    "SB5": {
+      "name": "SB5",
+      "pageNumber": 1,
+      "top": 17.2,
+      "left": 74.5,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SB5"
+    },
+    "SB6": {
+      "name": "SB6",
+      "pageNumber": 1,
+      "top": 19.0,
+      "left": 76.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SB6"
+    },
+    "SB4": {
+      "name": "SB4",
+      "pageNumber": 1,
+      "top": 25.5,
+      "left": 21.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SB4"
+    },
+    "SB1-12IN": {
+      "name": "SB1-12IN",
+      "pageNumber": 1,
+      "top": 32.3,
+      "left": 72.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SB1-12IN"
+    },
+    "SB3": {
+      "name": "SB3",
+      "pageNumber": 1,
+      "top": 53.0,
+      "left": 72.0,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "SB3"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "id": "columbia-sander-head",
+  "title": "Sander Head",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA366",
+      "name": "FA366",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S5",
+      "name": "S5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA364",
+      "name": "FA364",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S6",
+      "name": "S6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA365",
+      "name": "FA365",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S4",
+      "name": "S4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S1",
+      "name": "S1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S2",
+      "name": "S2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S3",
+      "name": "S3",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA366": {
+      "name": "FA366",
+      "pageNumber": 1,
+      "top": 14.1,
+      "left": 21.1,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA366"
+    },
+    "S5": {
+      "name": "S5",
+      "pageNumber": 1,
+      "top": 12.3,
+      "left": 42.2,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "S5"
+    },
+    "FA364": {
+      "name": "FA364",
+      "pageNumber": 1,
+      "top": 18.8,
+      "left": 48.1,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA364"
+    },
+    "S6": {
+      "name": "S6",
+      "pageNumber": 1,
+      "top": 26.5,
+      "left": 42.0,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "S6"
+    },
+    "FA365": {
+      "name": "FA365",
+      "pageNumber": 1,
+      "top": 32.0,
+      "left": 52.2,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "FA365"
+    },
+    "S4": {
+      "name": "S4",
+      "pageNumber": 1,
+      "top": 26.3,
+      "left": 10.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "S4"
+    },
+    "S1": {
+      "name": "S1",
+      "pageNumber": 1,
+      "top": 42.0,
+      "left": 34.4,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "S1"
+    },
+    "S2": {
+      "name": "S2",
+      "pageNumber": 1,
+      "top": 47.6,
+      "left": 9.6,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "S2"
+    },
+    "S3": {
+      "name": "S3",
+      "pageNumber": 1,
+      "top": 67.9,
+      "left": 34.4,
+      "shape": "circle",
+      "rotation": 0,
+      "id": "S3"
+    }
+  }
+}

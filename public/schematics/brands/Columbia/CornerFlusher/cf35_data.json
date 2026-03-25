@@ -1,0 +1,57 @@
+{
+  "id": "columbia-standard-corner-flusher",
+  "title": "Standard Corner Flusher 3.5\"",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "CF1D-3.5\"",
+      "name": "CF1D-3.5\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CF1S-3.5\"",
+      "name": "CF1S-3.5\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA256",
+      "name": "FA256",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "CF1D-3.5\"": {
+      "name": "CF1D-3.5\"",
+      "pageNumber": 1,
+      "top": 9.7,
+      "left": 57.25,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CF1D-3.5\""
+    },
+    "CF1S-3.5\"": {
+      "name": "CF1S-3.5\"",
+      "pageNumber": 1,
+      "top": 12.4,
+      "left": 57.15,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "CF1S-3.5\""
+    },
+    "FA256": {
+      "name": "FA256",
+      "pageNumber": 1,
+      "top": 33.95,
+      "left": 86.1,
+      "shape": "rectangle",
+      "rotation": 0,
+      "id": "FA256"
+    }
+  }
+}
