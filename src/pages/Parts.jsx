@@ -12,32 +12,32 @@ import '../styles/mobile-schematic.css';
 // schematics removed by request have been deleted from the public assets and
 // their imports removed here so the build won't require them.
 // ---------------------------------------------------------------------------
-import columbiaMatrixBoxHandleData from '../../public/schematics/brands/Columbia/Handles/MatrixBoxHandle/schematic_data.json';
-import columbiaPredatorTaperData   from '../../public/schematics/brands/Columbia/AutomaticTapers/PredatorTaper/schematic_data.json';
-import columbiaStandardOutsideCornerRollerData from '../../public/schematics/brands/Columbia/CornerRollers/StandardOutsideCornerRoller/schematic_data.json';
-import columbiaInsideCornerRollerData from '../../public/schematics/brands/Columbia/CornerRollers/InsideCornerRoller/schematic_data.json';
-import columbiaThrottleBoxData from '../../public/schematics/brands/Columbia/CornerBoxes/ThrottleBox/schematic_data.json';
-import columbiaAutomaticFlatBoxData from '../../public/schematics/brands/Columbia/FinishingBoxes/AutomaticFlatBox/schematic_data.json';
-import columbiaFlatBoxData from '../../public/schematics/brands/Columbia/FinishingBoxes/FlatBox/schematic_data.json';
-import columbiaFatBoyBoxData from '../../public/schematics/brands/Columbia/FinishingBoxes/FatBoyBox/schematic_data.json';
-import columbiaTallBoyMudPumpData from '../../public/schematics/brands/Columbia/Pumps/TallBoyMudPump/schematic_data.json';
-import columbiaNailspotterData from '../../public/schematics/brands/Columbia/Nailspotters/Nailspotter/schematic_data.json';
-import columbiaTomahawkData from '../../public/schematics/brands/Columbia/SmoothingBlades/TomahawkSmoothingBlades/schematic_data.json';
-import columbiaSemiAutomaticTaperData from '../../public/schematics/brands/Columbia/SemiAutomaticTapers/SemiAutomaticTaper/schematic_data.json';
-import columbiaSanderHeadData from '../../public/schematics/brands/Columbia/Sanders/SanderHead/schematic_data.json';
-import columbiaAngleHeadData from '../../public/schematics/brands/Columbia/Angleheads/AngleHead/schematic_data.json';
-import columbiaMudPumpData from '../../public/schematics/brands/Columbia/Pumps/MudPump/schematic_data.json';
-import columbiaCornerCobraData from '../../public/schematics/brands/Columbia/CornerRollers/CornerCobra/schematic_data.json';
-import columbiaCompoundTubeDataJson from '../../public/schematics/brands/Columbia/CompoundTubes/CompoundTube/compound_tube_data.json';
-import columbiaCf35Data from '../../public/schematics/brands/Columbia/CornerFlushers/StandardCornerFlusher/cf35_data.json';
+import columbiaMatrixBoxHandleData from '../../public/brands/Columbia/Schematics/Handles/MatrixBoxHandle/schematic_data.json';
+import columbiaPredatorTaperData   from '../../public/brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/schematic_data.json';
+import columbiaStandardOutsideCornerRollerData from '../../public/brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/schematic_data.json';
+import columbiaInsideCornerRollerData from '../../public/brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/schematic_data.json';
+import columbiaThrottleBoxData from '../../public/brands/Columbia/Schematics/CornerBoxes/ThrottleBox/schematic_data.json';
+import columbiaAutomaticFlatBoxData from '../../public/brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/schematic_data.json';
+import columbiaFlatBoxData from '../../public/brands/Columbia/Schematics/FinishingBoxes/FlatBox/schematic_data.json';
+import columbiaFatBoyBoxData from '../../public/brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/schematic_data.json';
+import columbiaTallBoyMudPumpData from '../../public/brands/Columbia/Schematics/Pumps/TallBoyMudPump/schematic_data.json';
+import columbiaNailspotterData from '../../public/brands/Columbia/Schematics/Nailspotters/Nailspotter/schematic_data.json';
+import columbiaTomahawkData from '../../public/brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/schematic_data.json';
+import columbiaSemiAutomaticTaperData from '../../public/brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/schematic_data.json';
+import columbiaSanderHeadData from '../../public/brands/Columbia/Schematics/Sanders/SanderHead/schematic_data.json';
+import columbiaAngleHeadData from '../../public/brands/Columbia/Schematics/Angleheads/AngleHead/schematic_data.json';
+import columbiaMudPumpData from '../../public/brands/Columbia/Schematics/Pumps/MudPump/schematic_data.json';
+import columbiaCornerCobraData from '../../public/brands/Columbia/Schematics/CornerRollers/CornerCobra/schematic_data.json';
+import columbiaCompoundTubeDataJson from '../../public/brands/Columbia/Schematics/CompoundTubes/CompoundTube/compound_tube_data.json';
+import columbiaCf35Data from '../../public/brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/cf35_data.json';
 
 // ---------------------------------------------------------------------------
 // Schematic image paths — runtime URLs relative to the deployment base.
-// Files are served from public/schematics/brands/... at their original paths.
+// Columbia files are served from public/brands/Columbia/Schematics/... at their original paths.
 // ---------------------------------------------------------------------------
 const _BASE = process.env.PUBLIC_URL;
-const columbiaMatrixBoxHandleImg    = `${_BASE}schematics/brands/Columbia/Handles/MatrixBoxHandle/Matrix_Handle-enhanced.png`;
-const columbiaMatrixBoxHandlePreview = `${_BASE}schematics/brands/Columbia/Handles/MatrixBoxHandle/columbia_matrix_box_handle.jpg`;
+const columbiaMatrixBoxHandleImg    = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Matrix_Handle-enhanced.png`;
+const columbiaMatrixBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/columbia_matrix_box_handle.jpg`;
 
 // New TapeTech image-only schematics
 const tapeTech15TTEImg      = `${_BASE}schematics/brands/TapeTech/products/15TTE_SCH-enhanced.png`;
@@ -57,68 +57,68 @@ const tapeTechCFHTTImg      = `${_BASE}schematics/brands/TapeTech/products/CFHTT
 const tapeTechPAHC12Img     = `${_BASE}schematics/brands/TapeTech/products/PAHC12_SCH-enhanced.png`;
 
 // New Columbia image-only schematics
-const columbia2WayInternalCornerImg = `${_BASE}schematics/brands/Columbia/Applicators/TwoWayInternalCorner/2_Way_Internal_Corner_Applicator-1-enhanced.png`;
-const columbia2WayInternalCornerPreview = `${_BASE}schematics/brands/Columbia/Applicators/TwoWayInternalCorner/Two-Way_Internal_Corner_Applicator.jpg`;
-const columbiaExtensionHousingImg  = `${_BASE}schematics/brands/Columbia/Handles/MatrixBoxHandle/Extension_Housing_Schematic-1-enhanced.png`;
-const columbiaExternalCornerApplicatorImg = `${_BASE}schematics/brands/Columbia/Applicators/ExternalCorner/8_Wheel_External_Corner_Applicator-1-enhanced.png`;
-const columbiaExternalCornerApplicatorPreview = `${_BASE}schematics/brands/Columbia/Applicators/ExternalCorner/External_90_Aplicator_CEXT90_-_FRONT.jpg`;
+const columbia2WayInternalCornerImg = `${_BASE}brands/Columbia/Schematics/Applicators/TwoWayInternalCorner/2_Way_Internal_Corner_Applicator-1-enhanced.png`;
+const columbia2WayInternalCornerPreview = `${_BASE}brands/Columbia/Schematics/Applicators/TwoWayInternalCorner/Two-Way_Internal_Corner_Applicator.jpg`;
+const columbiaExtensionHousingImg  = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Extension_Housing_Schematic-1-enhanced.png`;
+const columbiaExternalCornerApplicatorImg = `${_BASE}brands/Columbia/Schematics/Applicators/ExternalCorner/8_Wheel_External_Corner_Applicator-1-enhanced.png`;
+const columbiaExternalCornerApplicatorPreview = `${_BASE}brands/Columbia/Schematics/Applicators/ExternalCorner/External_90_Aplicator_CEXT90_-_FRONT.jpg`;
 // (Inside Corner Roller images/data intentionally removed from parts schematics)
-const columbiaMatrixHeadImg        = `${_BASE}schematics/brands/Columbia/Handles/MatrixBoxHandle/Matrix_Head-enhanced-enhanced.png`;
-const columbiaMatrixLeverImg       = `${_BASE}schematics/brands/Columbia/Handles/MatrixBoxHandle/Matrix_Lever-1-enhanced.png`;
-const columbiaMatrixPinchboxImg    = `${_BASE}schematics/brands/Columbia/Handles/MatrixBoxHandle/Matrix_Pinchbox-1-enhanced.png`;
-const columbiaPredatorTaperPreview = `${_BASE}schematics/brands/Columbia/AutomaticTapers/PredatorTaper/predator_taper.jpg`;
-const columbiaPredatorTaperBodyImg = `${_BASE}schematics/brands/Columbia/AutomaticTapers/PredatorTaper/predator_taper_body.png`;
-const columbiaPredatorTaperHeadNewImg = `${_BASE}schematics/brands/Columbia/AutomaticTapers/PredatorTaper/predator_taper_head.png`;
-const columbiaStandardOutsideCornerRollerImg = `${_BASE}schematics/brands/Columbia/CornerRollers/StandardOutsideCornerRoller/OutsideCornerRollers-2016-1-enhanced.png`;
-const columbiaStandardOutsideCornerRollerPreview = `${_BASE}schematics/brands/Columbia/CornerRollers/StandardOutsideCornerRoller/External_90_Aplicator.jpg`;
-const columbiaInsideCornerRollerImg = `${_BASE}schematics/brands/Columbia/CornerRollers/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png`;
-const columbiaInsideCornerRollerPreview = `${_BASE}schematics/brands/Columbia/CornerRollers/InsideCornerRoller/cornerroller.jpg`;
-const columbiaThrottleBoxImg = `${_BASE}schematics/brands/Columbia/CornerBoxes/ThrottleBox/CORNER-BOX-SCHEMATIC-enhanced.png`;
-const columbiaThrottleBoxPreview = `${_BASE}schematics/brands/Columbia/CornerBoxes/ThrottleBox/throttlebox8small.jpg`;
-const columbiaAutomaticFlatBoxImg = `${_BASE}schematics/brands/Columbia/FinishingBoxes/AutomaticFlatBox/AUTO-BOX-SCHEMATIC-2022-enhanced.png`;
-const columbiaAutomaticFlatBoxPreview = `${_BASE}schematics/brands/Columbia/FinishingBoxes/AutomaticFlatBox/automaticbox-1.jpg`;
-const columbiaFlatBoxImg = `${_BASE}schematics/brands/Columbia/FinishingBoxes/FlatBox/FLAT-BOX-HINGED-SCHEMATIC-2022-enhanced.png`;
-const columbiaFlatBoxPreview = `${_BASE}schematics/brands/Columbia/FinishingBoxes/FlatBox/2023flatbox.jpg`;
-const columbiaFatBoyBoxImg = `${_BASE}schematics/brands/Columbia/FinishingBoxes/FatBoyBox/fat_boy_box.png`;
-const columbiaFatBoyBoxPreview = `${_BASE}schematics/brands/Columbia/FinishingBoxes/FatBoyBox/InsideTrackBoxFrontSmall.png`;
-const columbiaAngleHeadImg = `${_BASE}schematics/brands/Columbia/Angleheads/AngleHead/AngleHead-2014-3-enhanced.png`;
-const columbiaAngleHeadPreview = `${_BASE}schematics/brands/Columbia/Angleheads/AngleHead/angleheadbacksquare.jpg`;
-const columbiaGooseneckAdapterImg = `${_BASE}schematics/brands/Columbia/Pumps/GooseneckAdapter/Gooseneck-1-1-enhanced.png`;
-const columbiaGooseneckAdapterPreview = `${_BASE}schematics/brands/Columbia/Pumps/GooseneckAdapter/goosenecksquare.jpg`;
-const columbiaMudPumpImg = `${_BASE}schematics/brands/Columbia/Pumps/MudPump/MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
-const columbiaMudPumpPreview = `${_BASE}schematics/brands/Columbia/Pumps/MudPump/TallBoyMudpumps.jpg`;
-const columbiaTallBoyMudPumpImg = `${_BASE}schematics/brands/Columbia/Pumps/TallBoyMudPump/TALL-BOY-MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
-const columbiaTallBoyMudPumpPreview = `${_BASE}schematics/brands/Columbia/Pumps/TallBoyMudPump/TallBoyPump.jpg`;
-const columbiaNailspotterImg = `${_BASE}schematics/brands/Columbia/Nailspotters/Nailspotter/NAIL-SPOTTER-SCHEMATIC-2022-enhanced.png`;
-const columbiaNailspotterPreview = `${_BASE}schematics/brands/Columbia/Nailspotters/Nailspotter/2023Nailspotter3inch.jpg`;
-const columbiaTomahawkSmoothingBladesImg = `${_BASE}schematics/brands/Columbia/SmoothingBlades/TomahawkSmoothingBlades/TOMAHAWK-SCHEMATIC-2022-enhanced.png`;
-const columbiaTomahawkSmoothingBladesPreview = `${_BASE}schematics/brands/Columbia/SmoothingBlades/TomahawkSmoothingBlades/Tomahawksmoothingblade.jpg`;
-const columbiaStandardCornerFlusherImg = `${_BASE}schematics/brands/Columbia/CornerFlushers/StandardCornerFlusher/3.5INCH-CORNER-FLUSHER-SCHEMATIC-2015-enhanced.png`;
-const columbiaStandardCornerFlusherPreview = `${_BASE}schematics/brands/Columbia/CornerFlushers/StandardCornerFlusher/3inchflusher.png`;
-const columbiaDirectCornerFlusherImg = `${_BASE}schematics/brands/Columbia/CornerFlushers/DirectCornerFlusher/DirectStandardFlusher-2015-enhanced.png`;
-const columbiaDirectCornerFlusherPreview = `${_BASE}schematics/brands/Columbia/CornerFlushers/DirectCornerFlusher/2.5_Direct_Flusher_2.5DF.jpg`;
-const columbiaComboFlusherImg = `${_BASE}schematics/brands/Columbia/CornerFlushers/ComboFlusher/Classic_Combo_Flusher-1-enhanced.png`;
-const columbiaComboFlusherPreview = `${_BASE}schematics/brands/Columbia/CornerFlushers/ComboFlusher/combo_flusher.jpg`;
-const columbiaSanderHeadImg = `${_BASE}schematics/brands/Columbia/Sanders/SanderHead/SANDER-HEAD-SCHEMATIC-enhanced.png`;
-const columbiaSanderHeadPreview = `${_BASE}schematics/brands/Columbia/Sanders/SanderHead/sanderwhandlesquaresmall.jpg`;
-const columbiaCompoundTubeImg = `${_BASE}schematics/brands/Columbia/CompoundTubes/CompoundTube/COMPOUND-TUBE-SCHEMATIC-2022-enhanced.png`;
-const columbiaCompoundTubePreview = `${_BASE}schematics/brands/Columbia/CompoundTubes/CompoundTube/compoundtubesquare.jpg`;
-const columbiaCamLockTubeImg = `${_BASE}schematics/brands/Columbia/CompoundTubes/CamLockTube/Cam_Lock_Tube_2019-enhanced.png`;
-const columbiaCamLockTubePreview = `${_BASE}schematics/brands/Columbia/CompoundTubes/CamLockTube/camlocktubesquare.jpg`;
-const columbiaSemiAutomaticTaperImg = `${_BASE}schematics/brands/Columbia/SemiAutomaticTapers/SemiAutomaticTaper/SEMI-AUTOMATIC-TAPER-SCHEMATIC-2022-enhanced.png`;
-const columbiaSemiAutomaticTaperPreview = `${_BASE}schematics/brands/Columbia/SemiAutomaticTapers/SemiAutomaticTaper/semiautotapersquare.jpg`;
-const columbiaOneImg = `${_BASE}schematics/brands/Columbia/Handles/ColumbiaOne/Columbia_One-enhanced.png`;
-const columbiaOnePreview = `${_BASE}schematics/brands/Columbia/Handles/ColumbiaOne/columbiaonesquare.jpg`;
-const columbiaLongExtendableHandleImg = `${_BASE}schematics/brands/Columbia/Handles/LongExtendableHandle/extendable-handle-enhanced.png`;
-const columbiaLongExtendableHandlePreview = `${_BASE}schematics/brands/Columbia/Handles/LongExtendableHandle/corner_roller_handle_extendible.jpg`;
-const columbiaFlatBoxHandleImg = `${_BASE}schematics/brands/Columbia/Handles/FlatBoxHandle/180GripBoxHandle-2014-enhanced.png`;
-const columbiaFlatBoxHandlePreview = `${_BASE}schematics/brands/Columbia/Handles/FlatBoxHandle/boxhandle.jpg`;
-const columbiaClosetMonsterFlatBoxHandleImg = `${_BASE}schematics/brands/Columbia/Handles/ClosetMonster/ClosetMonster-2015-enhanced.png`;
-const columbiaClosetMonsterFlatBoxHandlePreview = `${_BASE}schematics/brands/Columbia/Handles/ClosetMonster/closet_monster_copy.jpg`;
-const columbiaBoxFillerImg = `${_BASE}schematics/brands/Columbia/Pumps/BoxFiller/Box_Filler.png`;
-const columbiaBoxFillerPreview = `${_BASE}schematics/brands/Columbia/Pumps/BoxFiller/boxfiller.jpg`;
-const columbiaCornerCobraImg = `${_BASE}schematics/brands/Columbia/CornerRollers/CornerCobra/CORNER-COBRA-SCHEMATIC.2024-enhanced.png`;
-const columbiaCornerCobraPreview = `${_BASE}schematics/brands/Columbia/CornerRollers/CornerCobra/NEWCORNERCOBRA-scaled.png`;
+const columbiaMatrixHeadImg        = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Matrix_Head-enhanced-enhanced.png`;
+const columbiaMatrixLeverImg       = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Matrix_Lever-1-enhanced.png`;
+const columbiaMatrixPinchboxImg    = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Matrix_Pinchbox-1-enhanced.png`;
+const columbiaPredatorTaperPreview = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper.jpg`;
+const columbiaPredatorTaperBodyImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper_body.png`;
+const columbiaPredatorTaperHeadNewImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper_head.png`;
+const columbiaStandardOutsideCornerRollerImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/OutsideCornerRollers-2016-1-enhanced.png`;
+const columbiaStandardOutsideCornerRollerPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/External_90_Aplicator.jpg`;
+const columbiaInsideCornerRollerImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png`;
+const columbiaInsideCornerRollerPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/cornerroller.jpg`;
+const columbiaThrottleBoxImg = `${_BASE}brands/Columbia/Schematics/CornerBoxes/ThrottleBox/CORNER-BOX-SCHEMATIC-enhanced.png`;
+const columbiaThrottleBoxPreview = `${_BASE}brands/Columbia/Schematics/CornerBoxes/ThrottleBox/throttlebox8small.jpg`;
+const columbiaAutomaticFlatBoxImg = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/AUTO-BOX-SCHEMATIC-2022-enhanced.png`;
+const columbiaAutomaticFlatBoxPreview = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/automaticbox-1.jpg`;
+const columbiaFlatBoxImg = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FlatBox/FLAT-BOX-HINGED-SCHEMATIC-2022-enhanced.png`;
+const columbiaFlatBoxPreview = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FlatBox/2023flatbox.jpg`;
+const columbiaFatBoyBoxImg = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/fat_boy_box.png`;
+const columbiaFatBoyBoxPreview = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/InsideTrackBoxFrontSmall.png`;
+const columbiaAngleHeadImg = `${_BASE}brands/Columbia/Schematics/Angleheads/AngleHead/AngleHead-2014-3-enhanced.png`;
+const columbiaAngleHeadPreview = `${_BASE}brands/Columbia/Schematics/Angleheads/AngleHead/angleheadbacksquare.jpg`;
+const columbiaGooseneckAdapterImg = `${_BASE}brands/Columbia/Schematics/Pumps/GooseneckAdapter/Gooseneck-1-1-enhanced.png`;
+const columbiaGooseneckAdapterPreview = `${_BASE}brands/Columbia/Schematics/Pumps/GooseneckAdapter/goosenecksquare.jpg`;
+const columbiaMudPumpImg = `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
+const columbiaMudPumpPreview = `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/TallBoyMudpumps.jpg`;
+const columbiaTallBoyMudPumpImg = `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TALL-BOY-MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
+const columbiaTallBoyMudPumpPreview = `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TallBoyPump.jpg`;
+const columbiaNailspotterImg = `${_BASE}brands/Columbia/Schematics/Nailspotters/Nailspotter/NAIL-SPOTTER-SCHEMATIC-2022-enhanced.png`;
+const columbiaNailspotterPreview = `${_BASE}brands/Columbia/Schematics/Nailspotters/Nailspotter/2023Nailspotter3inch.jpg`;
+const columbiaTomahawkSmoothingBladesImg = `${_BASE}brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/TOMAHAWK-SCHEMATIC-2022-enhanced.png`;
+const columbiaTomahawkSmoothingBladesPreview = `${_BASE}brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/Tomahawksmoothingblade.jpg`;
+const columbiaStandardCornerFlusherImg = `${_BASE}brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/3.5INCH-CORNER-FLUSHER-SCHEMATIC-2015-enhanced.png`;
+const columbiaStandardCornerFlusherPreview = `${_BASE}brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/3inchflusher.png`;
+const columbiaDirectCornerFlusherImg = `${_BASE}brands/Columbia/Schematics/CornerFlushers/DirectCornerFlusher/DirectStandardFlusher-2015-enhanced.png`;
+const columbiaDirectCornerFlusherPreview = `${_BASE}brands/Columbia/Schematics/CornerFlushers/DirectCornerFlusher/2.5_Direct_Flusher_2.5DF.jpg`;
+const columbiaComboFlusherImg = `${_BASE}brands/Columbia/Schematics/CornerFlushers/ComboFlusher/Classic_Combo_Flusher-1-enhanced.png`;
+const columbiaComboFlusherPreview = `${_BASE}brands/Columbia/Schematics/CornerFlushers/ComboFlusher/combo_flusher.jpg`;
+const columbiaSanderHeadImg = `${_BASE}brands/Columbia/Schematics/Sanders/SanderHead/SANDER-HEAD-SCHEMATIC-enhanced.png`;
+const columbiaSanderHeadPreview = `${_BASE}brands/Columbia/Schematics/Sanders/SanderHead/sanderwhandlesquaresmall.jpg`;
+const columbiaCompoundTubeImg = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CompoundTube/COMPOUND-TUBE-SCHEMATIC-2022-enhanced.png`;
+const columbiaCompoundTubePreview = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CompoundTube/compoundtubesquare.jpg`;
+const columbiaCamLockTubeImg = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CamLockTube/Cam_Lock_Tube_2019-enhanced.png`;
+const columbiaCamLockTubePreview = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CamLockTube/camlocktubesquare.jpg`;
+const columbiaSemiAutomaticTaperImg = `${_BASE}brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/SEMI-AUTOMATIC-TAPER-SCHEMATIC-2022-enhanced.png`;
+const columbiaSemiAutomaticTaperPreview = `${_BASE}brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/semiautotapersquare.jpg`;
+const columbiaOneImg = `${_BASE}brands/Columbia/Schematics/Handles/ColumbiaOne/Columbia_One-enhanced.png`;
+const columbiaOnePreview = `${_BASE}brands/Columbia/Schematics/Handles/ColumbiaOne/columbiaonesquare.jpg`;
+const columbiaLongExtendableHandleImg = `${_BASE}brands/Columbia/Schematics/Handles/LongExtendableHandle/extendable-handle-enhanced.png`;
+const columbiaLongExtendableHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/LongExtendableHandle/corner_roller_handle_extendible.jpg`;
+const columbiaFlatBoxHandleImg = `${_BASE}brands/Columbia/Schematics/Handles/FlatBoxHandle/180GripBoxHandle-2014-enhanced.png`;
+const columbiaFlatBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/FlatBoxHandle/boxhandle.jpg`;
+const columbiaClosetMonsterFlatBoxHandleImg = `${_BASE}brands/Columbia/Schematics/Handles/ClosetMonster/ClosetMonster-2015-enhanced.png`;
+const columbiaClosetMonsterFlatBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/ClosetMonster/closet_monster_copy.jpg`;
+const columbiaBoxFillerImg = `${_BASE}brands/Columbia/Schematics/Pumps/BoxFiller/Box_Filler.png`;
+const columbiaBoxFillerPreview = `${_BASE}brands/Columbia/Schematics/Pumps/BoxFiller/boxfiller.jpg`;
+const columbiaCornerCobraImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/CORNER-COBRA-SCHEMATIC.2024-enhanced.png`;
+const columbiaCornerCobraPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/NEWCORNERCOBRA-scaled.png`;
 
 export default function Parts() {
   // Allowed brands to display
