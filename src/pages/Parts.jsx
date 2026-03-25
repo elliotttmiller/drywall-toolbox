@@ -66,8 +66,8 @@ const columbiaMatrixHeadImg        = `${_BASE}brands/Columbia/Schematics/Handles
 const columbiaMatrixLeverImg       = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Lever/Matrix_Lever-1-enhanced.png`;
 const columbiaMatrixPinchboxImg    = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Pinchbox/Matrix_Pinchbox-1-enhanced.png`;
 const columbiaPredatorTaperPreview = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper.jpg`;
-const columbiaPredatorTaperBodyImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper_body.png`;
-const columbiaPredatorTaperHeadNewImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper_head.png`;
+const columbiaPredatorTaperBodyImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/Body/predator_taper_body.png`;
+const columbiaPredatorTaperHeadNewImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/Head/predator_taper_head.png`;
 const columbiaStandardOutsideCornerRollerImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/OutsideCornerRollers-2016-1-enhanced.png`;
 const columbiaStandardOutsideCornerRollerPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/External_90_Aplicator.jpg`;
 const columbiaInsideCornerRollerImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png`;
@@ -287,6 +287,13 @@ export default function Parts() {
         5: columbiaExtensionHousingImg
       },
       previewImage: columbiaMatrixBoxHandlePreview,
+      navHotspots: [
+        ...(columbiaMatrixBoxHandleBoxHandleData.navHotspots || []),
+        ...(columbiaMatrixBoxHandleHeadData.navHotspots || []),
+        ...(columbiaMatrixBoxHandleLeverData.navHotspots || []),
+        ...(columbiaMatrixBoxHandlePinchboxData.navHotspots || []),
+        ...(columbiaMatrixBoxHandleExtensionHousingData.navHotspots || []),
+      ],
       parts: [...matrixBoxHandleBoxHandleParts, ...matrixBoxHandleHeadParts, ...matrixBoxHandleLeverParts, ...matrixBoxHandlePinchboxParts, ...matrixBoxHandleExtensionHousingParts]
     },
     {
@@ -305,6 +312,10 @@ export default function Parts() {
         2: columbiaPredatorTaperHeadNewImg
       },
       previewImage: columbiaPredatorTaperPreview,
+      navHotspots: [
+        ...(columbiaPredatorTaperBodyData.navHotspots || []),
+        ...(columbiaPredatorTaperHeadData.navHotspots || []),
+      ],
       parts: [...predatorTaperBodyParts, ...predatorTaperHeadParts]
     },
     // TapeTech Extendable Support Handle schematic
