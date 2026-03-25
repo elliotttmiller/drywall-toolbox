@@ -408,6 +408,15 @@ aside input[type="range"],
 }
 
 /* --- SITE FOOTER RESPONSIVE TWEAKS --- */
+/* footer-grid: single column on small screens */
+@media (max-width: 640px) {
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 28px !important;
+        padding: 32px 20px !important;
+    }
+}
+
 /* Center Navigation and Support columns on small screens */
 @media (max-width: 640px) {
     .site-footer {
