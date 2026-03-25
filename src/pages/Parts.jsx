@@ -21,6 +21,7 @@ import columbiaAutomaticFlatBoxData from '../../public/schematics/brands/Columbi
 import columbiaFlatBoxData from '../../public/schematics/brands/Columbia/FlatBox/schematic_data.json';
 import columbiaFatBoyBoxData from '../../public/schematics/brands/Columbia/FatBoyBox/schematic_data.json';
 import columbiaTallBoyMudPumpData from '../../public/schematics/brands/Columbia/TallBoyMudPump/schematic_data.json';
+import columbiaNailspotterData from '../../public/schematics/brands/Columbia/Nailspotter/schematic_data.json';
 
 // ---------------------------------------------------------------------------
 // Schematic image paths — runtime URLs relative to the deployment base.
@@ -215,6 +216,7 @@ export default function Parts() {
   const flatBoxParts = buildPartsFromData(columbiaFlatBoxData);
   const fatBoyBoxParts = buildPartsFromData(columbiaFatBoyBoxData);
   const tallBoyMudPumpParts = buildPartsFromData(columbiaTallBoyMudPumpData);
+  const nailspotterParts = buildPartsFromData(columbiaNailspotterData);
 
   const schematics = [
     {
@@ -709,7 +711,7 @@ export default function Parts() {
       diagramPages: [1],
       imagePages: { 1: columbiaNailspotterImg },
       previewImage: columbiaNailspotterPreview,
-      parts: []
+      parts: nailspotterParts
     },
     {
       id: 'columbia-tomahawk-smoothing-blades',

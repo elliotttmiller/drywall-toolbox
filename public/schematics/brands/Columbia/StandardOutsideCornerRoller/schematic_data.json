@@ -117,7 +117,7 @@
       "left": 31.75,
       "width": 3.08,
       "height": 2.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "mjyatjgay": {
@@ -127,7 +127,7 @@
       "left": 33.71,
       "width": 2.38,
       "height": 2.18,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "p5lg9gy3k": {
@@ -137,7 +137,7 @@
       "left": 16.0,
       "width": 1.96,
       "height": 2.18,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "qy3o3z37m": {
@@ -147,7 +147,7 @@
       "left": 21.42,
       "width": 2.5,
       "height": 2.62,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "it3rg52he": {
@@ -157,7 +157,7 @@
       "left": 22.12,
       "width": 2.21,
       "height": 2.34,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "t0jyu4c9z": {
@@ -167,7 +167,7 @@
       "left": 12.08,
       "width": 3.25,
       "height": 2.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "l16952mag": {
@@ -177,7 +177,7 @@
       "left": 6.12,
       "width": 2.58,
       "height": 2.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "bbg4a50wj": {
@@ -187,7 +187,7 @@
       "left": 22.25,
       "width": 3.25,
       "height": 2.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "dmr4ak7hs": {
@@ -197,7 +197,7 @@
       "left": 24.54,
       "width": 2.21,
       "height": 2.23,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "getswge04": {
@@ -207,7 +207,7 @@
       "left": 15.42,
       "width": 2.46,
       "height": 2.29,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "t4t1xwf7d": {
@@ -217,7 +217,7 @@
       "left": 15.71,
       "width": 2.08,
       "height": 2.18,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "oodosw7gi": {
@@ -227,7 +227,7 @@
       "left": 22.46,
       "width": 2.88,
       "height": 2.34,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "hu7i5px4t": {
@@ -237,7 +237,7 @@
       "left": 22.21,
       "width": 3.25,
       "height": 2.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "xj0gwdvbq": {
@@ -247,7 +247,7 @@
       "left": 6.17,
       "width": 2.12,
       "height": 2.18,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "apdbqgo3b": {
@@ -257,7 +257,7 @@
       "left": 6.17,
       "width": 2.58,
       "height": 2.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "c116cv4kk": {
@@ -267,7 +267,7 @@
       "left": 10.29,
       "width": 2.75,
       "height": 2.73,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "9s6n1m2iq": {
@@ -277,7 +277,7 @@
       "left": 6.17,
       "width": 2.54,
       "height": 2.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     }
   }

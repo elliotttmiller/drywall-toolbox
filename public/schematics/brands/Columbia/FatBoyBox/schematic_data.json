@@ -285,7 +285,7 @@
       "left": 3.98,
       "width": 2.67,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 280": {
@@ -295,7 +295,7 @@
       "left": 3.83,
       "width": 3.08,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FF8 32": {
@@ -305,7 +305,7 @@
       "left": 3.83,
       "width": 3.08,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 268": {
@@ -315,7 +315,7 @@
       "left": 3.5,
       "width": 3.42,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 238": {
@@ -325,7 +325,7 @@
       "left": 3.5,
       "width": 3.42,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 7A": {
@@ -335,7 +335,7 @@
       "left": 3.5,
       "width": 3.42,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FF8 12": {
@@ -345,7 +345,7 @@
       "left": 1.5,
       "width": 3.17,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 16A": {
@@ -355,7 +355,7 @@
       "left": 1.5,
       "width": 3.17,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 11": {
@@ -365,7 +365,7 @@
       "left": 1.38,
       "width": 3.17,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FF8 19": {
@@ -375,7 +375,7 @@
       "left": 1.35,
       "width": 3.33,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 230": {
@@ -385,7 +385,7 @@
       "left": 6.25,
       "width": 3.25,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 2S2": {
@@ -395,7 +395,7 @@
       "left": 10.67,
       "width": 3.42,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 241": {
@@ -405,7 +405,7 @@
       "left": 14.5,
       "width": 3.17,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 4B": {
@@ -415,7 +415,7 @@
       "left": 17.83,
       "width": 3.5,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "HFB 17": {
@@ -425,7 +425,7 @@
       "left": 18.25,
       "width": 3.58,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 233": {
@@ -435,7 +435,7 @@
       "left": 13.0,
       "width": 3.17,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 2A": {
@@ -445,7 +445,7 @@
       "left": 16.83,
       "width": 3.08,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 221": {
@@ -455,7 +455,7 @@
       "left": 17.92,
       "width": 3.33,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "HFB8 14-10": {
@@ -465,7 +465,7 @@
       "left": 11.33,
       "width": 4.08,
       "height": 4.24,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 271": {
@@ -475,7 +475,7 @@
       "left": 21.58,
       "width": 3.5,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 19": {
@@ -485,7 +485,7 @@
       "left": 22.67,
       "width": 3.33,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 258": {
@@ -495,7 +495,7 @@
       "left": 29.83,
       "width": 3.08,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 2S-10": {
@@ -505,7 +505,7 @@
       "left": 39.08,
       "width": 3.75,
       "height": 4.24,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 9-10": {
@@ -515,7 +515,7 @@
       "left": 26.92,
       "width": 3.33,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FF8A 10-10": {
@@ -525,7 +525,7 @@
       "left": 52.42,
       "width": 3.92,
       "height": 4.24,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 8": {
@@ -535,7 +535,7 @@
       "left": 59.83,
       "width": 3.08,
       "height": 3.01,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 7": {
@@ -545,7 +545,7 @@
       "left": 64.83,
       "width": 3.42,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 247": {
@@ -555,7 +555,7 @@
       "left": 67.58,
       "width": 3.5,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 231": {
@@ -565,7 +565,7 @@
       "left": 67.42,
       "width": 3.5,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 12": {
@@ -575,7 +575,7 @@
       "left": 67.42,
       "width": 3.5,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "HFFB 1A": {
@@ -585,7 +585,7 @@
       "left": 62.0,
       "width": 3.42,
       "height": 3.91,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FF8 4C": {
@@ -595,7 +595,7 @@
       "left": 62.0,
       "width": 3.17,
       "height": 3.46,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 38": {
@@ -605,7 +605,7 @@
       "left": 56.92,
       "width": 3.08,
       "height": 3.24,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 37": {
@@ -615,7 +615,7 @@
       "left": 61.0,
       "width": 3.67,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 41": {
@@ -625,7 +625,7 @@
       "left": 66.17,
       "width": 3.08,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 43": {
@@ -635,7 +635,7 @@
       "left": 70.33,
       "width": 3.5,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 44": {
@@ -645,7 +645,7 @@
       "left": 74.92,
       "width": 3.42,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 42": {
@@ -655,7 +655,7 @@
       "left": 52.42,
       "width": 3.25,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 40-10": {
@@ -665,7 +665,7 @@
       "left": 61.0,
       "width": 3.83,
       "height": 4.24,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 275": {
@@ -675,7 +675,7 @@
       "left": 55.75,
       "width": 3.58,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB SA": {
@@ -685,7 +685,7 @@
       "left": 50.92,
       "width": 3.25,
       "height": 3.57,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 279": {
@@ -695,7 +695,7 @@
       "left": 29.42,
       "width": 3.42,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FA 272": {
@@ -705,7 +705,7 @@
       "left": 24.75,
       "width": 3.42,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 4A": {
@@ -715,7 +715,7 @@
       "left": 19.92,
       "width": 3.5,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     },
     "FFB 16": {
@@ -725,7 +725,7 @@
       "left": 15.33,
       "width": 3.5,
       "height": 3.68,
-      "shape": "rect",
+      "shape": "rectangle",
       "rotation": 0
     }
   }

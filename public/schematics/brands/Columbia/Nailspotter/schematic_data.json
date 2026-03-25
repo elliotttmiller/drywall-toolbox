@@ -1,0 +1,668 @@
+{
+  "id": "columbia-nailspotter",
+  "title": "Nailspotter 3\"",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA371",
+      "name": "FA371",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS14A",
+      "name": "HNS14A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS12A",
+      "name": "HNS12A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA280",
+      "name": "FA280",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA375",
+      "name": "FA375",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS10A",
+      "name": "HNS10A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS14-PR",
+      "name": "HNS14-PR",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA314",
+      "name": "FA314",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS 13",
+      "name": "HNS 13",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS10",
+      "name": "HNS10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS19-3'",
+      "name": "HNS19-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS18",
+      "name": "HNS18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA268",
+      "name": "FA268",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS12",
+      "name": "HNS12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA271",
+      "name": "FA271",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB38",
+      "name": "FFB38",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA231",
+      "name": "FA231",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB4C",
+      "name": "FFB4C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS4-3'",
+      "name": "HNS4-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB16",
+      "name": "FFB16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS20",
+      "name": "HNS20",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA218",
+      "name": "FA218",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA214",
+      "name": "FA214",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA241",
+      "name": "FA241",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB32A",
+      "name": "FFB32A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS15-3'",
+      "name": "HNS15-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA260",
+      "name": "FA260",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB1A",
+      "name": "FFB1A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS1-3'",
+      "name": "HNS1-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB32",
+      "name": "FFB32",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA228",
+      "name": "FA228",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA247",
+      "name": "FA247",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS2-3'",
+      "name": "HNS2-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS 3",
+      "name": "HNS 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA234",
+      "name": "FA234",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS9-3'",
+      "name": "HNS9-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS7-3'",
+      "name": "HNS7-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS8-3'",
+      "name": "HNS8-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA254",
+      "name": "FA254",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA252",
+      "name": "FA252",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HNS2A",
+      "name": "HNS2A",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA371": {
+      "id": "FA371",
+      "pageNumber": 1,
+      "top": 20.03,
+      "left": 1.73,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS14A": {
+      "id": "HNS14A",
+      "pageNumber": 1,
+      "top": 27.97,
+      "left": 2.17,
+      "width": 1.21,
+      "height": 3.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS12A": {
+      "id": "HNS12A",
+      "pageNumber": 1,
+      "top": 11.91,
+      "left": 3.81,
+      "width": 1.21,
+      "height": 3.91,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA280": {
+      "id": "FA280",
+      "pageNumber": 1,
+      "top": 15.38,
+      "left": 22.26,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA375": {
+      "id": "FA375",
+      "pageNumber": 1,
+      "top": 19.88,
+      "left": 4.89,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS10A": {
+      "id": "HNS10A",
+      "pageNumber": 1,
+      "top": 34.54,
+      "left": 4.04,
+      "width": 1.21,
+      "height": 3.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS14-PR": {
+      "id": "HNS14-PR",
+      "pageNumber": 1,
+      "top": 24.86,
+      "left": 8.25,
+      "width": 1.21,
+      "height": 5.13,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA314": {
+      "id": "FA314",
+      "pageNumber": 1,
+      "top": 3.27,
+      "left": 8.94,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS 13": {
+      "id": "HNS 13",
+      "pageNumber": 1,
+      "top": 7.55,
+      "left": 9.85,
+      "width": 1.21,
+      "height": 3.57,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS10": {
+      "id": "HNS10",
+      "pageNumber": 1,
+      "top": 37.55,
+      "left": 6.15,
+      "width": 1.21,
+      "height": 3.57,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS19-3'": {
+      "id": "HNS19-3'",
+      "pageNumber": 1,
+      "top": 44.9,
+      "left": 6.25,
+      "width": 1.21,
+      "height": 4.46,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS18": {
+      "id": "HNS18",
+      "pageNumber": 1,
+      "top": 47.01,
+      "left": 8.71,
+      "width": 1.21,
+      "height": 3.07,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA268": {
+      "id": "FA268",
+      "pageNumber": 1,
+      "top": 16.02,
+      "left": 11.0,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS12": {
+      "id": "HNS12",
+      "pageNumber": 1,
+      "top": 11.5,
+      "left": 11.21,
+      "width": 1.21,
+      "height": 3.12,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA271": {
+      "id": "FA271",
+      "pageNumber": 1,
+      "top": 25.05,
+      "left": 10.93,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFB38": {
+      "id": "FFB38",
+      "pageNumber": 1,
+      "top": 20.72,
+      "left": 11.83,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA231": {
+      "id": "FA231",
+      "pageNumber": 1,
+      "top": 32.31,
+      "left": 13.25,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFB4C": {
+      "id": "FFB4C",
+      "pageNumber": 1,
+      "top": 12.79,
+      "left": 15.46,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS4-3'": {
+      "id": "HNS4-3'",
+      "pageNumber": 1,
+      "top": 24.38,
+      "left": 13.02,
+      "width": 1.21,
+      "height": 4.07,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFB16": {
+      "id": "FFB16",
+      "pageNumber": 1,
+      "top": 35.93,
+      "left": 14.4,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS20": {
+      "id": "HNS20",
+      "pageNumber": 1,
+      "top": 39.23,
+      "left": 11.88,
+      "width": 1.21,
+      "height": 3.12,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA218": {
+      "id": "FA218",
+      "pageNumber": 1,
+      "top": 49.11,
+      "left": 14.25,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA214": {
+      "id": "FA214",
+      "pageNumber": 1,
+      "top": 32.87,
+      "left": 35.17,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA241": {
+      "id": "FA241",
+      "pageNumber": 1,
+      "top": 12.17,
+      "left": 18.71,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFB32A": {
+      "id": "FFB32A",
+      "pageNumber": 1,
+      "top": 24.53,
+      "left": 18.36,
+      "width": 1.21,
+      "height": 3.35,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS15-3'": {
+      "id": "HNS15-3'",
+      "pageNumber": 1,
+      "top": 4.48,
+      "left": 17.14,
+      "width": 1.21,
+      "height": 4.46,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA260": {
+      "id": "FA260",
+      "pageNumber": 1,
+      "top": 28.35,
+      "left": 20.17,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFB1A": {
+      "id": "FFB1A",
+      "pageNumber": 1,
+      "top": 40.0,
+      "left": 22.04,
+      "width": 1.21,
+      "height": 2.9,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS1-3'": {
+      "id": "HNS1-3'",
+      "pageNumber": 1,
+      "top": 31.14,
+      "left": 22.93,
+      "width": 1.21,
+      "height": 4.02,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFB32": {
+      "id": "FFB32",
+      "pageNumber": 1,
+      "top": 16.01,
+      "left": 24.05,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA228": {
+      "id": "FA228",
+      "pageNumber": 1,
+      "top": 16.8,
+      "left": 25.83,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA247": {
+      "id": "FA247",
+      "pageNumber": 1,
+      "top": 46.15,
+      "left": 24.71,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS2-3'": {
+      "id": "HNS2-3'",
+      "pageNumber": 1,
+      "top": 25.17,
+      "left": 25.83,
+      "width": 1.21,
+      "height": 4.02,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS 3": {
+      "id": "HNS 3",
+      "pageNumber": 1,
+      "top": 36.89,
+      "left": 26.67,
+      "width": 1.21,
+      "height": 3.12,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA234": {
+      "id": "FA234",
+      "pageNumber": 1,
+      "top": 17.78,
+      "left": 28.03,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS9-3'": {
+      "id": "HNS9-3'",
+      "pageNumber": 1,
+      "top": 31.64,
+      "left": 28.5,
+      "width": 1.21,
+      "height": 4.02,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS7-3'": {
+      "id": "HNS7-3'",
+      "pageNumber": 1,
+      "top": 18.09,
+      "left": 30.01,
+      "width": 1.21,
+      "height": 4.02,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS8-3'": {
+      "id": "HNS8-3'",
+      "pageNumber": 1,
+      "top": 15.47,
+      "left": 31.7,
+      "width": 1.21,
+      "height": 4.02,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA254": {
+      "id": "FA254",
+      "pageNumber": 1,
+      "top": 16.71,
+      "left": 34.16,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA252": {
+      "id": "FA252",
+      "pageNumber": 1,
+      "top": 26.67,
+      "left": 36.79,
+      "width": 1.21,
+      "height": 2.96,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HNS2A": {
+      "id": "HNS2A",
+      "pageNumber": 1,
+      "top": 31.42,
+      "left": 37.54,
+      "width": 1.21,
+      "height": 3.18,
+      "shape": "rectangle",
+      "rotation": 0
+    }
+  }
+}

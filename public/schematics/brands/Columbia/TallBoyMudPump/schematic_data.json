@@ -1,898 +1,796 @@
-[
-  {
-    "id": "aa8rm0ivw",
-    "label": "HP48",
-    "box_2d": [
-      70,
-      198,
-      100,
-      274
-    ],
-    "part_box_2d": [
-      112,
-      176,
-      138,
-      236
-    ]
-  },
-  {
-    "id": "a7k1bvfs6",
-    "label": "CT40",
-    "box_2d": [
-      132,
-      111.32129081172324,
-      163,
-      177.32129081172326
-    ],
-    "part_box_2d": [
-      126,
-      158,
-      154,
-      173
-    ]
-  },
-  {
-    "id": "os8nau12y",
-    "label": "HB48B",
-    "box_2d": [
-      163,
-      114.83935459413837,
-      193,
-      191.83935459413837
-    ],
-    "part_box_2d": [
-      136,
-      167,
-      160,
-      176
-    ]
-  },
-  {
-    "id": "tw6os4ghh",
-    "label": "HP48A",
-    "box_2d": [
-      210.66667938232422,
-      163.92843458118205,
-      241.66667938232422,
-      250.92843458118205
-    ],
-    "part_box_2d": [
-      126,
-      232,
-      147,
-      245
-    ]
-  },
-  {
-    "id": "68ob7hfxf",
-    "label": "MP5",
-    "box_2d": [
-      18,
-      561,
-      49,
-      624
-    ],
-    "part_box_2d": [
-      38,
-      487,
-      76,
-      529
-    ]
-  },
-  {
-    "id": "sjyl24uwp",
-    "label": "MP23A",
-    "box_2d": [
-      40,
-      387,
-      71,
-      472
-    ],
-    "part_box_2d": [
-      80,
-      483,
-      89,
-      525
-    ]
-  },
-  {
-    "id": "155kvs1lz",
-    "label": "MP23",
-    "box_2d": [
-      52.33332061767578,
-      576.3214951704914,
-      82.33332061767578,
-      654.3214951704914
-    ],
-    "part_box_2d": [
-      88,
-      480,
-      102,
-      521
-    ]
-  },
-  {
-    "id": "kdeekdobx",
-    "label": "FA294",
-    "box_2d": [
-      103,
-      570.9286389399502,
-      134,
-      650.9286389399502
-    ],
-    "part_box_2d": [
-      108,
-      514,
-      121,
-      529
-    ]
-  },
-  {
-    "id": "7u8rasg7q",
-    "label": "MP33A",
-    "box_2d": [
-      72,
-      370.2501341104416,
-      103,
-      455.2501341104416
-    ],
-    "part_box_2d": [
-      113,
-      386,
-      154,
-      427
-    ]
-  },
-  {
-    "id": "5ex8tqbdg",
-    "label": "MP25",
-    "box_2d": [
-      143,
-      311,
-      173,
-      386
-    ],
-    "part_box_2d": [
-      167,
-      378,
-      188,
-      398
-    ]
-  },
-  {
-    "id": "y37y9m1wc",
-    "label": "MP25",
-    "box_2d": [
-      175.66664123535156,
-      311.92843458118205,
-      206.66664123535156,
-      386.92843458118205
-    ],
-    "part_box_2d": [
-      168,
-      418,
-      188,
-      439
-    ]
-  },
-  {
-    "id": "d3l9g60zc",
-    "label": "FA307",
-    "box_2d": [
-      218.66667938232422,
-      305.2320064659114,
-      249.66667938232422,
-      385.2320064659114
-    ],
-    "part_box_2d": [
-      186,
-      450,
-      200,
-      468
-    ]
-  },
-  {
-    "id": "rc3hp75ht",
-    "label": "HP4",
-    "box_2d": [
-      229,
-      523,
-      260,
-      585
-    ],
-    "part_box_2d": [
-      108,
-      426,
-      202,
-      570
-    ]
-  },
-  {
-    "id": "g2eq2mjob",
-    "label": "MP36",
-    "box_2d": [
-      186,
-      541,
-      216,
-      616
-    ],
-    "part_box_2d": [
-      178,
-      516,
-      198,
-      540
-    ]
-  },
-  {
-    "id": "4zvigwvis",
-    "label": "FA301",
-    "box_2d": [
-      127.66667938232422,
-      675.7141470422645,
-      158.66667938232422,
-      756.7141470422645
-    ],
-    "part_box_2d": [
-      161,
-      611,
-      176,
-      629
-    ]
-  },
-  {
-    "id": "nsx4e29f2",
-    "label": "FA290",
-    "box_2d": [
-      151.66664123535156,
-      756.3392140974853,
-      182.66664123535156,
-      836.3392140974853
-    ],
-    "part_box_2d": [
-      184,
-      685,
-      202,
-      705
-    ]
-  },
-  {
-    "id": "rpb3fwb67",
-    "label": "MP6",
-    "box_2d": [
-      194,
-      668.9107156541882,
-      224,
-      730.9107156541882
-    ],
-    "part_box_2d": [
-      168,
-      593,
-      277,
-      683
-    ]
-  },
-  {
-    "id": "9a46v9k7v",
-    "label": "FA300",
-    "box_2d": [
-      266.6666793823242,
-      528.6071437694588,
-      297.6666793823242,
-      608.6071437694588
-    ],
-    "part_box_2d": [
-      257,
-      589,
-      277,
-      612
-    ]
-  },
-  {
-    "id": "3w9zmc4wv",
-    "label": "FA292",
-    "box_2d": [
-      317.3333206176758,
-      521.9109200129564,
-      348.3333206176758,
-      602.9109200129564
-    ],
-    "part_box_2d": [
-      258,
-      632,
-      274,
-      651
-    ]
-  },
-  {
-    "id": "nx22rq9uj",
-    "label": "TBMP8B",
-    "box_2d": [
-      188,
-      802.017923285762,
-      219,
-      897.017923285762
-    ],
-    "part_box_2d": [
-      241,
-      677,
-      294,
-      761
-    ]
-  },
-  {
-    "id": "e3l2pw8u0",
-    "label": "FA303",
-    "box_2d": [
-      231,
-      816.1606454058616,
-      262,
-      896.1606454058616
-    ],
-    "part_box_2d": [
-      264,
-      758,
-      286,
-      800
-    ]
-  },
-  {
-    "id": "hqcjbyxcd",
-    "label": "FA346",
-    "box_2d": [
-      268,
-      821,
-      299,
-      902
-    ],
-    "part_box_2d": [
-      272,
-      796,
-      290,
-      816
-    ]
-  },
-  {
-    "id": "bebwqz8sd",
-    "label": "TBMP11",
-    "box_2d": [
-      284.66664123535156,
-      142,
-      315.66664123535156,
-      237
-    ],
-    "part_box_2d": [
-      67,
-      192,
-      644,
-      345
-    ]
-  },
-  {
-    "id": "jmh4thrwt",
-    "label": "HP44",
-    "box_2d": [
-      293,
-      321,
-      323,
-      397
-    ],
-    "part_box_2d": [
-      240,
-      386,
-      303,
-      489
-    ]
-  },
-  {
-    "id": "7x5yu493t",
-    "label": "HP47",
-    "box_2d": [
-      365,
-      483,
-      396,
-      546
-    ],
-    "part_box_2d": [
-      229,
-      418,
-      243,
-      489
-    ]
-  },
-  {
-    "id": "uhahlvtha",
-    "label": "FA304",
-    "box_2d": [
-      338.66664123535156,
-      774.8570735211322,
-      369.66664123535156,
-      854.8570735211322
-    ],
-    "part_box_2d": [
-      384,
-      698,
-      398,
-      714
-    ]
-  },
-  {
-    "id": "nfji0fdlu",
-    "label": "TBMP8C",
-    "box_2d": [
-      411,
-      501,
-      442,
-      596
-    ],
-    "part_box_2d": [
-      362,
-      608,
-      432,
-      759
-    ]
-  },
-  {
-    "id": "s6dixr08e",
-    "label": "TBMP1",
-    "box_2d": [
-      409,
-      293.14292647886776,
-      439,
-      377.14292647886776
-    ],
-    "part_box_2d": [
-      231,
-      284,
-      836,
-      502
-    ]
-  },
-  {
-    "id": "lsxtnsd14",
-    "label": "TBMP8",
-    "box_2d": [
-      579,
-      483,
-      609,
-      568
-    ],
-    "part_box_2d": [
-      242,
-      518,
-      938,
-      761
-    ]
-  },
-  {
-    "id": "ms7h5jpqf",
-    "label": "MP7D",
-    "box_2d": [
-      391,
-      819.0358465715241,
-      422,
-      884.0358465715241
-    ],
-    "part_box_2d": [
-      434,
-      784,
-      451,
-      805
-    ]
-  },
-  {
-    "id": "2mzynivq7",
-    "label": "MP7A",
-    "box_2d": [
-      461,
-      873,
-      491,
-      948
-    ],
-    "part_box_2d": [
-      435,
-      808,
-      558,
-      860
-    ]
-  },
-  {
-    "id": "7m7zvwso1",
-    "label": "MP7C",
-    "box_2d": [
-      498,
-      692,
-      529,
-      757
-    ],
-    "part_box_2d": [
-      488,
-      765,
-      499,
-      783
-    ]
-  },
-  {
-    "id": "ue77r29r0",
-    "label": "FA287",
-    "box_2d": [
-      561,
-      746,
-      591,
-      827
-    ],
-    "part_box_2d": [
-      524,
-      791,
-      541,
-      806
-    ]
-  },
-  {
-    "id": "b8dgnt40y",
-    "label": "FA308",
-    "box_2d": [
-      638,
-      240,
-      669,
-      321
-    ],
-    "part_box_2d": [
-      647,
-      204,
-      664,
-      239
-    ]
-  },
-  {
-    "id": "jv4vxxdx0",
-    "label": "MP3",
-    "box_2d": [
-      660,
-      92,
-      691,
-      154
-    ],
-    "part_box_2d": [
-      671,
-      160,
-      696,
-      230
-    ]
-  },
-  {
-    "id": "y735t55b3",
-    "label": "MP13A",
-    "box_2d": [
-      674.6666412353516,
-      271,
-      705.6666412353516,
-      356
-    ],
-    "part_box_2d": [
-      696,
-      160,
-      721,
-      229
-    ]
-  },
-  {
-    "id": "vgng4sym8",
-    "label": "MP39",
-    "box_2d": [
-      714,
-      237,
-      745,
-      299
-    ],
-    "part_box_2d": [
-      722,
-      169,
-      744,
-      202
-    ]
-  },
-  {
-    "id": "12f06k9rl",
-    "label": "MP14",
-    "box_2d": [
-      734,
-      61,
-      765,
-      136
-    ],
-    "part_box_2d": [
-      740,
-      139,
-      773,
-      220
-    ]
-  },
-  {
-    "id": "jq6c9814b",
-    "label": "MP13",
-    "box_2d": [
-      767,
-      40,
-      798,
-      102
-    ],
-    "part_box_2d": [
-      783,
-      126,
-      818,
-      205
-    ]
-  },
-  {
-    "id": "o6rjcps6d",
-    "label": "MP13",
-    "box_2d": [
-      773,
-      231,
-      804,
-      293
-    ],
-    "part_box_2d": [
-      786,
-      127,
-      816,
-      205
-    ]
-  },
-  {
-    "id": "tg87wp3mx",
-    "label": "FA303",
-    "box_2d": [
-      803,
-      33,
-      834,
-      114
-    ],
-    "part_box_2d": [
-      822,
-      131,
-      837,
-      157
-    ]
-  },
-  {
-    "id": "xn2gitb2o",
-    "label": "HB48B",
-    "box_2d": [
-      811,
-      188,
-      841,
-      263
-    ],
-    "part_box_2d": [
-      816,
-      174,
-      835,
-      189
-    ]
-  },
-  {
-    "id": "jfevfx2mi",
-    "label": "FA306",
-    "box_2d": [
-      850,
-      42.857277879900394,
-      881,
-      122.8572778799004
-    ],
-    "part_box_2d": [
-      834,
-      137,
-      876,
-      169
-    ]
-  },
-  {
-    "id": "gka9yyq6y",
-    "label": "HP48A",
-    "box_2d": [
-      744,
-      394,
-      774,
-      481
-    ],
-    "part_box_2d": [
-      820,
-      277,
-      841,
-      295
-    ]
-  },
-  {
-    "id": "yo3axh557",
-    "label": "FA270",
-    "box_2d": [
-      806.6667175292969,
-      424.24992975167345,
-      837.6667175292969,
-      505.24992975167345
-    ],
-    "part_box_2d": [
-      826,
-      297,
-      855,
-      366
-    ]
-  },
-  {
-    "id": "hky3l5949",
-    "label": "MP3",
-    "box_2d": [
-      842,
-      367.28585295773553,
-      873,
-      429.28585295773553
-    ],
-    "part_box_2d": [
-      844,
-      289,
-      868,
-      357
-    ]
-  },
-  {
-    "id": "kklr5ghog",
-    "label": "CT40",
-    "box_2d": [
-      887,
-      47,
-      918,
-      118
-    ],
-    "part_box_2d": [
-      878,
-      158,
-      906,
-      175
-    ]
-  },
-  {
-    "id": "bx4ntk7s2",
-    "label": "TBMP2",
-    "box_2d": [
-      876.6666412353516,
-      413.71414704226447,
-      906.6666412353516,
-      498.71414704226447
-    ],
-    "part_box_2d": [
-      861,
-      272,
-      897,
-      344
-    ]
-  },
-  {
-    "id": "uotbmb9km",
-    "label": "FA350",
-    "box_2d": [
-      901,
-      381,
-      932,
-      462
-    ],
-    "part_box_2d": [
-      894,
-      303,
-      920,
-      332
-    ]
-  },
-  {
-    "id": "48pib8fbt",
-    "label": "HP48L",
-    "box_2d": [
-      926,
-      69,
-      957,
-      151
-    ],
-    "part_box_2d": [
-      865,
-      176,
-      890,
-      253
-    ]
-  },
-  {
-    "id": "q37ebwq7x",
-    "label": "TBMP24",
-    "box_2d": [
-      932,
-      180,
-      963,
-      275
-    ],
-    "part_box_2d": [
-      902,
-      258,
-      934,
-      340
-    ]
-  },
-  {
-    "id": "ri25mo2wk",
-    "label": "FA210",
-    "box_2d": [
-      937,
-      343,
-      968,
-      424
-    ],
-    "part_box_2d": [
-      921,
-      290,
-      939,
-      311
-    ]
-  },
-  {
-    "id": "tzxli3d9c",
-    "label": "MP8A",
-    "box_2d": [
-      881,
-      639.8749968068943,
-      912,
-      714.8749968068943
-    ],
-    "part_box_2d": [
-      912,
-      516,
-      943,
-      647
-    ]
-  },
-  {
-    "id": "txyl8bxik",
-    "label": "FFH14",
-    "box_2d": [
-      716.3332824707031,
-      731.7143514010327,
-      747.3332824707031,
-      816.7143514010327
-    ],
-    "part_box_2d": [
-      641,
-      801,
-      800,
-      887
-    ]
-  },
-  {
-    "id": "wvz2g75e5",
-    "label": "MP7E",
-    "box_2d": [
-      752.6667175292969,
-      925,
-      782.6667175292969,
-      1000
-    ],
-    "part_box_2d": [
-      794,
-      915,
-      841,
-      965
-    ]
-  },
-  {
-    "id": "3ef8r4jqm",
-    "label": "FA313",
-    "box_2d": [
-      833,
-      786.982076714238,
-      863,
-      867.982076714238
-    ],
-    "part_box_2d": [
-      792,
-      916,
-      840,
-      966
-    ]
+{
+  "id": "columbia-tall-boy-mud-pump",
+  "title": "Tall Boy Mud Pump",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "MP5",
+      "name": "MP5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP23A",
+      "name": "MP23A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HP48",
+      "name": "HP48",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP23",
+      "name": "MP23",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA294",
+      "name": "FA294",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP33A",
+      "name": "MP33A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT40",
+      "name": "CT40",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA301",
+      "name": "FA301",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HB48B",
+      "name": "HB48B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP36",
+      "name": "MP36",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP25",
+      "name": "MP25",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA290",
+      "name": "FA290",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HP48A",
+      "name": "HP48A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP6",
+      "name": "MP6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HP4",
+      "name": "HP4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA307",
+      "name": "FA307",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP8B",
+      "name": "TBMP8B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA300",
+      "name": "FA300",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP11",
+      "name": "TBMP11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA303",
+      "name": "FA303",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA346",
+      "name": "FA346",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HP44",
+      "name": "HP44",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA292",
+      "name": "FA292",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HP47",
+      "name": "HP47",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA304",
+      "name": "FA304",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP8C",
+      "name": "TBMP8C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP1",
+      "name": "TBMP1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP7D",
+      "name": "MP7D",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP7A",
+      "name": "MP7A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP7C",
+      "name": "MP7C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP8",
+      "name": "TBMP8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA287",
+      "name": "FA287",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA308",
+      "name": "FA308",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP3",
+      "name": "MP3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP13A",
+      "name": "MP13A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP39",
+      "name": "MP39",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP14",
+      "name": "MP14",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFH14",
+      "name": "FFH14",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP13",
+      "name": "MP13",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP7E",
+      "name": "MP7E",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA270",
+      "name": "FA270",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA306",
+      "name": "FA306",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA313",
+      "name": "FA313",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP2",
+      "name": "TBMP2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HP48L",
+      "name": "HP48L",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA350",
+      "name": "FA350",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP8A",
+      "name": "MP8A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "TBMP24",
+      "name": "TBMP24",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA210",
+      "name": "FA210",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "MP5": {
+      "id": "MP5",
+      "pageNumber": 1,
+      "top": 46.73,
+      "left": 1.82,
+      "width": 3.01,
+      "height": 5.08,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP23A": {
+      "id": "MP23A",
+      "pageNumber": 1,
+      "top": 32.25,
+      "left": 4.69,
+      "width": 2.9,
+      "height": 8.0,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HP48": {
+      "id": "HP48",
+      "pageNumber": 1,
+      "top": 17.82,
+      "left": 7.92,
+      "width": 2.9,
+      "height": 6.08,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP23": {
+      "id": "MP23",
+      "pageNumber": 1,
+      "top": 48.21,
+      "left": 5.73,
+      "width": 3.01,
+      "height": 5.83,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA294": {
+      "id": "FA294",
+      "pageNumber": 1,
+      "top": 47.92,
+      "left": 12.05,
+      "width": 2.9,
+      "height": 6.67,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP33A": {
+      "id": "MP33A",
+      "pageNumber": 1,
+      "top": 29.92,
+      "left": 9.38,
+      "width": 2.9,
+      "height": 8.0,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "CT40": {
+      "id": "CT40",
+      "pageNumber": 1,
+      "top": 3.33,
+      "left": 99.55,
+      "width": 2.9,
+      "height": 6.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA301": {
+      "id": "FA301",
+      "pageNumber": 1,
+      "top": 56.67,
+      "left": 14.25,
+      "width": 2.9,
+      "height": 6.83,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HB48B": {
+      "id": "HB48B",
+      "pageNumber": 1,
+      "top": 16.17,
+      "left": 89.4,
+      "width": 2.9,
+      "height": 7.92,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP36": {
+      "id": "MP36",
+      "pageNumber": 1,
+      "top": 44.21,
+      "left": 20.98,
+      "width": 3.01,
+      "height": 6.83,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP25": {
+      "id": "MP25",
+      "pageNumber": 1,
+      "top": 25.42,
+      "left": 20.87,
+      "width": 2.9,
+      "height": 6.75,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA290": {
+      "id": "FA290",
+      "pageNumber": 1,
+      "top": 63.84,
+      "left": 17.08,
+      "width": 2.9,
+      "height": 6.92,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HP48A": {
+      "id": "HP48A",
+      "pageNumber": 1,
+      "top": 32.67,
+      "left": 83.37,
+      "width": 2.9,
+      "height": 8.0,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP6": {
+      "id": "MP6",
+      "pageNumber": 1,
+      "top": 55.1,
+      "left": 22.51,
+      "width": 2.9,
+      "height": 5.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HP4": {
+      "id": "HP4",
+      "pageNumber": 1,
+      "top": 43.0,
+      "left": 24.89,
+      "width": 3.01,
+      "height": 5.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA307": {
+      "id": "FA307",
+      "pageNumber": 1,
+      "top": 25.08,
+      "left": 25.89,
+      "width": 2.9,
+      "height": 7.08,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP8B": {
+      "id": "TBMP8B",
+      "pageNumber": 1,
+      "top": 66.75,
+      "left": 20.94,
+      "width": 2.9,
+      "height": 8.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA300": {
+      "id": "FA300",
+      "pageNumber": 1,
+      "top": 43.33,
+      "left": 30.92,
+      "width": 2.9,
+      "height": 7.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP11": {
+      "id": "TBMP11",
+      "pageNumber": 1,
+      "top": 10.92,
+      "left": 32.03,
+      "width": 2.9,
+      "height": 8.0,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA303": {
+      "id": "FA303",
+      "pageNumber": 1,
+      "top": 2.42,
+      "left": 89.96,
+      "width": 2.9,
+      "height": 7.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA346": {
+      "id": "FA346",
+      "pageNumber": 1,
+      "top": 67.31,
+      "left": 29.72,
+      "width": 2.9,
+      "height": 7.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HP44": {
+      "id": "HP44",
+      "pageNumber": 1,
+      "top": 26.33,
+      "left": 33.48,
+      "width": 2.9,
+      "height": 6.42,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA292": {
+      "id": "FA292",
+      "pageNumber": 1,
+      "top": 43.33,
+      "left": 36.05,
+      "width": 2.9,
+      "height": 7.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HP47": {
+      "id": "HP47",
+      "pageNumber": 1,
+      "top": 39.75,
+      "left": 40.74,
+      "width": 3.01,
+      "height": 6.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA304": {
+      "id": "FA304",
+      "pageNumber": 1,
+      "top": 64.27,
+      "left": 38.1,
+      "width": 2.9,
+      "height": 7.67,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP8C": {
+      "id": "TBMP8C",
+      "pageNumber": 1,
+      "top": 41.58,
+      "left": 46.76,
+      "width": 2.9,
+      "height": 9.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP1": {
+      "id": "TBMP1",
+      "pageNumber": 1,
+      "top": 23.33,
+      "left": 45.98,
+      "width": 3.01,
+      "height": 8.25,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP7D": {
+      "id": "MP7D",
+      "pageNumber": 1,
+      "top": 67.25,
+      "left": 43.45,
+      "width": 3.01,
+      "height": 6.67,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP7A": {
+      "id": "MP7A",
+      "pageNumber": 1,
+      "top": 72.67,
+      "left": 50.6,
+      "width": 3.01,
+      "height": 6.75,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP7C": {
+      "id": "MP7C",
+      "pageNumber": 1,
+      "top": 57.0,
+      "left": 56.25,
+      "width": 2.9,
+      "height": 7.0,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP8": {
+      "id": "TBMP8",
+      "pageNumber": 1,
+      "top": 39.58,
+      "left": 63.95,
+      "width": 2.9,
+      "height": 8.25,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA287": {
+      "id": "FA287",
+      "pageNumber": 1,
+      "top": 61.58,
+      "left": 63.28,
+      "width": 2.9,
+      "height": 7.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA308": {
+      "id": "FA308",
+      "pageNumber": 1,
+      "top": 19.75,
+      "left": 71.43,
+      "width": 2.9,
+      "height": 7.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP3": {
+      "id": "MP3",
+      "pageNumber": 1,
+      "top": 30.0,
+      "left": 93.97,
+      "width": 2.9,
+      "height": 5.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP13A": {
+      "id": "MP13A",
+      "pageNumber": 1,
+      "top": 22.15,
+      "left": 75.15,
+      "width": 2.9,
+      "height": 7.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP39": {
+      "id": "MP39",
+      "pageNumber": 1,
+      "top": 19.17,
+      "left": 79.46,
+      "width": 2.9,
+      "height": 6.83,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP14": {
+      "id": "MP14",
+      "pageNumber": 1,
+      "top": 3.92,
+      "left": 82.03,
+      "width": 2.9,
+      "height": 7.0,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FFH14": {
+      "id": "FFH14",
+      "pageNumber": 1,
+      "top": 61.0,
+      "left": 79.58,
+      "width": 2.9,
+      "height": 7.58,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP13": {
+      "id": "MP13",
+      "pageNumber": 1,
+      "top": 3.0,
+      "left": 86.16,
+      "width": 2.9,
+      "height": 6.75,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP7E": {
+      "id": "MP7E",
+      "pageNumber": 1,
+      "top": 77.0,
+      "left": 83.82,
+      "width": 2.9,
+      "height": 6.33,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA270": {
+      "id": "FA270",
+      "pageNumber": 1,
+      "top": 35.08,
+      "left": 90.51,
+      "width": 2.9,
+      "height": 7.42,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA306": {
+      "id": "FA306",
+      "pageNumber": 1,
+      "top": 3.25,
+      "left": 95.2,
+      "width": 2.9,
+      "height": 7.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA313": {
+      "id": "FA313",
+      "pageNumber": 1,
+      "top": 65.08,
+      "left": 92.97,
+      "width": 2.9,
+      "height": 7.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP2": {
+      "id": "TBMP2",
+      "pageNumber": 1,
+      "top": 34.0,
+      "left": 97.32,
+      "width": 2.9,
+      "height": 8.5,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "HP48L": {
+      "id": "HP48L",
+      "pageNumber": 1,
+      "top": 5.5,
+      "left": 103.68,
+      "width": 2.9,
+      "height": 7.67,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA350": {
+      "id": "FA350",
+      "pageNumber": 1,
+      "top": 30.67,
+      "left": 101.12,
+      "width": 2.9,
+      "height": 7.75,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "MP8A": {
+      "id": "MP8A",
+      "pageNumber": 1,
+      "top": 53.17,
+      "left": 98.55,
+      "width": 2.9,
+      "height": 7.08,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "TBMP24": {
+      "id": "TBMP24",
+      "pageNumber": 1,
+      "top": 14.67,
+      "left": 104.35,
+      "width": 2.9,
+      "height": 9.42,
+      "shape": "rectangle",
+      "rotation": 0
+    },
+    "FA210": {
+      "id": "FA210",
+      "pageNumber": 1,
+      "top": 28.17,
+      "left": 104.91,
+      "width": 2.9,
+      "height": 7.42,
+      "shape": "rectangle",
+      "rotation": 0
+    }
   }
-]
+}
