@@ -105,148 +105,167 @@
   ],
   "coordinates": {
     "CC12": {
-      "name": "CC12",
-      "pageNumber": 1,
-      "top": 23.15,
-      "left": 41.0,
+      "id": "CC12",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 41.0,
+      "y_pct": 23.15,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC12"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA358": {
-      "name": "FA358",
-      "pageNumber": 1,
-      "top": 23.4,
-      "left": 30.35,
+      "id": "FA358",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 30.35,
+      "y_pct": 23.4,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA358"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC17": {
-      "name": "CC17",
-      "pageNumber": 1,
-      "top": 29.05,
-      "left": 32.6,
+      "id": "CC17",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 32.6,
+      "y_pct": 29.05,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC17"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA355": {
-      "name": "FA355",
-      "pageNumber": 1,
-      "top": 34.1,
-      "left": 79.3,
+      "id": "FA355",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.3,
+      "y_pct": 34.1,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA355"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "HH21": {
-      "name": "HH21",
-      "pageNumber": 1,
-      "top": 40.7,
-      "left": 83.1,
+      "id": "HH21",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 83.1,
+      "y_pct": 40.7,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "HH21"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC2": {
-      "name": "CC2",
-      "pageNumber": 1,
-      "top": 46.85,
-      "left": 84.4,
+      "id": "CC2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.4,
+      "y_pct": 46.85,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC2"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC3": {
-      "name": "CC3",
-      "pageNumber": 1,
-      "top": 52.6,
-      "left": 54.1,
+      "id": "CC3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.1,
+      "y_pct": 52.6,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC3"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC18": {
-      "name": "CC18",
-      "pageNumber": 1,
-      "top": 55.35,
-      "left": 79.3,
+      "id": "CC18",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.3,
+      "y_pct": 55.35,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC18"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA28": {
-      "name": "FA28",
-      "pageNumber": 1,
-      "top": 58.05,
-      "left": 92.8,
+      "id": "FA28",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 92.8,
+      "y_pct": 58.05,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA28"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA359": {
-      "name": "FA359",
-      "pageNumber": 1,
-      "top": 61.7,
-      "left": 48.75,
+      "id": "FA359",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 48.75,
+      "y_pct": 61.7,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA359"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CLT15": {
-      "name": "CLT15",
-      "pageNumber": 1,
-      "top": 62.0,
-      "left": 16.8,
+      "id": "CLT15",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 16.8,
+      "y_pct": 62.0,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CLT15"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA360": {
-      "name": "FA360",
-      "pageNumber": 1,
-      "top": 69.1,
-      "left": 89.25,
+      "id": "FA360",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.25,
+      "y_pct": 69.1,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA360"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC16": {
-      "name": "CC16",
-      "pageNumber": 1,
-      "top": 74.6,
-      "left": 92.5,
+      "id": "CC16",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 92.5,
+      "y_pct": 74.6,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC16"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC1A": {
-      "name": "CC1A",
-      "pageNumber": 1,
-      "top": 82.25,
-      "left": 54.35,
+      "id": "CC1A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.35,
+      "y_pct": 82.25,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC1A"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CC19": {
-      "name": "CC19",
-      "pageNumber": 1,
-      "top": 88.2,
-      "left": 66.6,
+      "id": "CC19",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66.6,
+      "y_pct": 88.2,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CC19"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA292": {
-      "name": "FA292",
-      "pageNumber": 1,
-      "top": 89.35,
-      "left": 81.2,
+      "id": "FA292",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 81.2,
+      "y_pct": 89.35,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA292"
+      "pageNumber": 1,
+      "rotation": 0
     }
-  }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
 }

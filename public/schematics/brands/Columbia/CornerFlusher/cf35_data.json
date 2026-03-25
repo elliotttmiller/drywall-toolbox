@@ -27,31 +27,37 @@
   ],
   "coordinates": {
     "CF1D-3.5\"": {
-      "name": "CF1D-3.5\"",
-      "pageNumber": 1,
-      "top": 9.7,
-      "left": 57.25,
+      "id": "CF1D-3.5\"",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 57.25,
+      "y_pct": 9.7,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CF1D-3.5\""
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CF1S-3.5\"": {
-      "name": "CF1S-3.5\"",
-      "pageNumber": 1,
-      "top": 12.4,
-      "left": 57.15,
+      "id": "CF1S-3.5\"",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 57.15,
+      "y_pct": 12.4,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CF1S-3.5\""
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA256": {
-      "name": "FA256",
-      "pageNumber": 1,
-      "top": 33.95,
-      "left": 86.1,
+      "id": "FA256",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 86.1,
+      "y_pct": 33.95,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA256"
+      "pageNumber": 1,
+      "rotation": 0
     }
-  }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
 }

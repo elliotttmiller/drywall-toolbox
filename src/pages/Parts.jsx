@@ -186,14 +186,27 @@ export default function Parts() {
 
   // Columbia Inside Corner Roller removed from parts schematics per request.
 
-  // Helper: build part-hotspot array from a schematic JSON data object
+  // Helper: build part-hotspot array from a schematic JSON data object.
+  // Supports both the official schema (x_pct / y_pct, 4 dp) and the legacy
+  // top / left format for backward compatibility.
+  //
+  // Official formula:
+  //   x_pct = round((center_x_px / image_natural_width)  * 100, 4)  → CSS left
+  //   y_pct = round((center_y_px / image_natural_height) * 100, 4)  → CSS top
   const buildPartsFromData = (data) => {
     if (!data || !data.parts) return [];
     const coords = data.coordinates || {};
     return data.parts.map((p) => {
       const c = coords[p.id] || null;
-      const top  = c && c.top  !== undefined ? `${c.top}%`  : '50%';
-      const left = c && c.left !== undefined ? `${c.left}%` : '50%';
+      // x_pct = horizontal = CSS left; y_pct = vertical = CSS top
+      const leftVal = c
+        ? (c.x_pct !== undefined ? c.x_pct : (c.left !== undefined ? c.left : 50))
+        : 50;
+      const topVal  = c
+        ? (c.y_pct !== undefined ? c.y_pct : (c.top  !== undefined ? c.top  : 50))
+        : 50;
+      const top  = `${topVal}%`;
+      const left = `${leftVal}%`;
       const pageNumber = c && c.pageNumber
         ? c.pageNumber
         : (data.diagramPages && data.diagramPages[0]) || 1;
@@ -211,7 +224,11 @@ export default function Parts() {
         height:  c && c.height  ? c.height  : null,
         widthPx: c && c.widthPx ? c.widthPx : null,
         heightPx: c && c.heightPx ? c.heightPx : null,
-        rotation: c && c.rotation ? c.rotation : 0
+        rotation: c && c.rotation ? c.rotation : 0,
+        // Pass through official schema fields for optional consumer use
+        xPx:  c && c.x_px  !== null && c.x_px  !== undefined ? c.x_px  : null,
+        yPx:  c && c.y_px  !== null && c.y_px  !== undefined ? c.y_px  : null,
+        bbox: c && c.bbox ? c.bbox : null,
       };
     });
   };

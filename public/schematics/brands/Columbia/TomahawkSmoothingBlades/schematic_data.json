@@ -69,94 +69,107 @@
   ],
   "coordinates": {
     "FA327": {
-      "name": "FA327",
-      "pageNumber": 1,
-      "top": 6.3,
-      "left": 56.0,
+      "id": "FA327",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 56.0,
+      "y_pct": 6.3,
       "shape": "circle",
-      "rotation": 0,
-      "id": "FA327"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA272": {
-      "name": "FA272",
-      "pageNumber": 1,
-      "top": 12.1,
-      "left": 48.2,
+      "id": "FA272",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 48.2,
+      "y_pct": 12.1,
       "shape": "circle",
-      "rotation": 0,
-      "id": "FA272"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA271": {
-      "name": "FA271",
-      "pageNumber": 1,
-      "top": 17.5,
-      "left": 47.8,
+      "id": "FA271",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 47.8,
+      "y_pct": 17.5,
       "shape": "circle",
-      "rotation": 0,
-      "id": "FA271"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB7": {
-      "name": "SB7",
-      "pageNumber": 1,
-      "top": 51.5,
-      "left": 42.8,
+      "id": "SB7",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 42.8,
+      "y_pct": 51.5,
       "shape": "circle",
-      "rotation": 0,
-      "id": "SB7"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB2-12IN": {
-      "name": "SB2-12IN",
-      "pageNumber": 1,
-      "top": 78.0,
-      "left": 37.5,
+      "id": "SB2-12IN",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 37.5,
+      "y_pct": 78.0,
       "shape": "circle",
-      "rotation": 0,
-      "id": "SB2-12IN"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB5": {
-      "name": "SB5",
-      "pageNumber": 1,
-      "top": 17.2,
-      "left": 74.5,
+      "id": "SB5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 74.5,
+      "y_pct": 17.2,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "SB5"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB6": {
-      "name": "SB6",
-      "pageNumber": 1,
-      "top": 19.0,
-      "left": 76.0,
+      "id": "SB6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.0,
+      "y_pct": 19.0,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "SB6"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB4": {
-      "name": "SB4",
-      "pageNumber": 1,
-      "top": 25.5,
-      "left": 21.0,
+      "id": "SB4",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 21.0,
+      "y_pct": 25.5,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "SB4"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB1-12IN": {
-      "name": "SB1-12IN",
-      "pageNumber": 1,
-      "top": 32.3,
-      "left": 72.0,
+      "id": "SB1-12IN",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 72.0,
+      "y_pct": 32.3,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "SB1-12IN"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "SB3": {
-      "name": "SB3",
-      "pageNumber": 1,
-      "top": 53.0,
-      "left": 72.0,
+      "id": "SB3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 72.0,
+      "y_pct": 53.0,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "SB3"
+      "pageNumber": 1,
+      "rotation": 0
     }
-  }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
 }

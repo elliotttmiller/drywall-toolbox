@@ -322,523 +322,838 @@
   "coordinates": {
     "FFB44": {
       "id": "FFB44",
-      "pageNumber": 1,
-      "top": 46.65,
-      "left": 3.17,
-      "width": 2.42,
-      "height": 6.03,
+      "x_px": 52.5,
+      "y_px": 445.0,
+      "x_pct": 4.375,
+      "y_pct": 49.6652,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 38,
+        "y": 418,
+        "w": 29,
+        "h": 54
+      }
     },
     "FFB43": {
       "id": "FFB43",
-      "pageNumber": 1,
-      "top": 40.85,
-      "left": 6.17,
-      "width": 2.42,
-      "height": 5.92,
+      "x_px": 88.5,
+      "y_px": 392.5,
+      "x_pct": 7.375,
+      "y_pct": 43.8058,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 74,
+        "y": 366,
+        "w": 29,
+        "h": 53
+      }
     },
     "FA274": {
       "id": "FA274",
-      "pageNumber": 1,
-      "top": 12.28,
-      "left": 11.5,
-      "width": 2.5,
-      "height": 6.14,
+      "x_px": 153.0,
+      "y_px": 137.5,
+      "x_pct": 12.75,
+      "y_pct": 15.346,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 138,
+        "y": 110,
+        "w": 30,
+        "h": 55
+      }
     },
     "FA268": {
       "id": "FA268",
-      "pageNumber": 1,
-      "top": 36.72,
-      "left": 10.08,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 250.5,
+      "y_px": 202.5,
+      "x_pct": 20.875,
+      "y_pct": 22.6004,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 236,
+        "y": 175,
+        "w": 29,
+        "h": 55
+      }
     },
     "FFB37": {
       "id": "FFB37",
-      "pageNumber": 1,
-      "top": 57.81,
-      "left": 7.92,
-      "width": 2.5,
-      "height": 6.14,
+      "x_px": 110.0,
+      "y_px": 545.5,
+      "x_pct": 9.1667,
+      "y_pct": 60.8817,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 95,
+        "y": 518,
+        "w": 30,
+        "h": 55
+      }
     },
     "FFB41": {
       "id": "FFB41",
-      "pageNumber": 1,
-      "top": 52.79,
-      "left": 11.83,
-      "width": 2.42,
-      "height": 6.14,
+      "x_px": 156.5,
+      "y_px": 500.5,
+      "x_pct": 13.0417,
+      "y_pct": 55.8594,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 142,
+        "y": 473,
+        "w": 29,
+        "h": 55
+      }
     },
     "HFFB3": {
       "id": "HFFB3",
-      "pageNumber": 1,
-      "top": 75.0,
-      "left": 8.58,
-      "width": 2.42,
-      "height": 6.03,
+      "x_px": 117.5,
+      "y_px": 699.0,
+      "x_pct": 9.7917,
+      "y_pct": 78.0134,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 103,
+        "y": 672,
+        "w": 29,
+        "h": 54
+      }
     },
     "FA275": {
       "id": "FA275",
-      "pageNumber": 1,
-      "top": 30.13,
-      "left": 13.08,
-      "width": 2.42,
-      "height": 6.25,
+      "x_px": 171.5,
+      "y_px": 298.0,
+      "x_pct": 14.2917,
+      "y_pct": 33.2589,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 157,
+        "y": 270,
+        "w": 29,
+        "h": 56
+      }
     },
     "FFB17": {
       "id": "FFB17",
-      "pageNumber": 1,
-      "top": 60.38,
-      "left": 12.83,
-      "width": 2.42,
-      "height": 6.36,
+      "x_px": 168.5,
+      "y_px": 569.5,
+      "x_pct": 14.0417,
+      "y_pct": 63.5603,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 154,
+        "y": 541,
+        "w": 29,
+        "h": 57
+      }
     },
     "FFB8": {
       "id": "FFB8",
-      "pageNumber": 1,
-      "top": 89.51,
-      "left": 11.25,
-      "width": 2.5,
-      "height": 5.58,
+      "x_px": 768.0,
+      "y_px": 326.5,
+      "x_pct": 64.0,
+      "y_pct": 36.4397,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 753,
+        "y": 303,
+        "w": 30,
+        "h": 47
+      }
     },
     "FFB7": {
       "id": "FFB7",
-      "pageNumber": 1,
-      "top": 92.6,
-      "left": 14.78,
-      "width": 2.42,
-      "height": 5.69,
+      "x_px": 191.8334,
+      "y_px": 855.2111,
+      "x_pct": 15.9861,
+      "y_pct": 95.4477,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 177.3334,
+        "y": 829.7111,
+        "w": 29.0,
+        "h": 51.0
+      }
     },
     "FA327": {
       "id": "FA327",
-      "pageNumber": 1,
-      "top": 50.89,
-      "left": 19.42,
-      "width": 2.42,
-      "height": 6.25,
+      "x_px": 247.5,
+      "y_px": 484.0,
+      "x_pct": 20.625,
+      "y_pct": 54.0179,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 233,
+        "y": 456,
+        "w": 29,
+        "h": 56
+      }
     },
     "FFB5A": {
       "id": "FFB5A",
-      "pageNumber": 1,
-      "top": 29.13,
-      "left": 16.83,
-      "width": 2.42,
-      "height": 7.59,
+      "x_px": 216.5,
+      "y_px": 295.0,
+      "x_pct": 18.0417,
+      "y_pct": 32.9241,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 202,
+        "y": 261,
+        "w": 29,
+        "h": 68
+      }
     },
     "FFB42": {
       "id": "FFB42",
-      "pageNumber": 1,
-      "top": 39.17,
-      "left": 18.06,
-      "width": 2.42,
-      "height": 6.03,
+      "x_px": 231.1662,
+      "y_px": 378.0,
+      "x_pct": 19.2639,
+      "y_pct": 42.1875,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 216.6662,
+        "y": 351,
+        "w": 29.0,
+        "h": 54
+      }
     },
     "FFB1B": {
       "id": "FFB1B",
-      "pageNumber": 1,
-      "top": 10.83,
-      "left": 24.0,
-      "width": 2.42,
-      "height": 6.36,
+      "x_px": 302.5,
+      "y_px": 125.5,
+      "x_pct": 25.2083,
+      "y_pct": 14.0067,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 288,
+        "y": 97,
+        "w": 29,
+        "h": 57
+      }
     },
     "FA271": {
       "id": "FA271",
-      "pageNumber": 1,
-      "top": 39.27,
-      "left": 21.28,
-      "width": 2.42,
-      "height": 6.25,
+      "x_px": 269.8329,
+      "y_px": 379.867,
+      "x_pct": 22.4861,
+      "y_pct": 42.3959,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 255.3329,
+        "y": 351.867,
+        "w": 29.0,
+        "h": 56.0
+      }
     },
     "FA272": {
       "id": "FA272",
-      "pageNumber": 1,
-      "top": 48.35,
-      "left": 22.5,
-      "width": 2.42,
-      "height": 6.14,
+      "x_px": 284.5001,
+      "y_px": 460.7444,
+      "x_pct": 23.7083,
+      "y_pct": 51.4224,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 270.0001,
+        "y": 433.2444,
+        "w": 29.0,
+        "h": 55.0
+      }
     },
     "FFB32A": {
       "id": "FFB32A",
-      "pageNumber": 1,
-      "top": 95.65,
-      "left": 22.83,
-      "width": 2.5,
-      "height": 7.59,
+      "x_px": 289.0,
+      "y_px": 876.5,
+      "x_pct": 24.0833,
+      "y_pct": 97.8237,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 274,
+        "y": 857,
+        "w": 30,
+        "h": 39
+      }
     },
     "FFB40-10\"": {
       "id": "FFB40-10\"",
-      "pageNumber": 1,
-      "top": 24.89,
-      "left": 27.58,
-      "width": 2.42,
-      "height": 9.82,
+      "x_px": 345.5,
+      "y_px": 267.0,
+      "x_pct": 28.7917,
+      "y_pct": 29.7991,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 331,
+        "y": 223,
+        "w": 29,
+        "h": 88
+      }
     },
     "FFB4A": {
       "id": "FFB4A",
-      "pageNumber": 1,
-      "top": 50.33,
-      "left": 25.67,
-      "width": 2.42,
-      "height": 6.36,
+      "x_px": 322.5,
+      "y_px": 479.5,
+      "x_pct": 26.875,
+      "y_pct": 53.5156,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 308,
+        "y": 451,
+        "w": 29,
+        "h": 57
+      }
     },
     "FA280": {
       "id": "FA280",
-      "pageNumber": 1,
-      "top": 95.08,
-      "left": 26.42,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 331.9999,
+      "y_px": 873.9779,
+      "x_pct": 27.6667,
+      "y_pct": 97.5422,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 316.9999,
+        "y": 851.9557,
+        "w": 30.0,
+        "h": 44.0443
+      }
     },
     "HFFB1A-10'": {
       "id": "HFFB1A-10'",
-      "pageNumber": 1,
-      "top": 74.55,
-      "left": 29.92,
-      "width": 2.42,
-      "height": 11.27,
+      "x_px": 373.5,
+      "y_px": 718.5,
+      "x_pct": 31.125,
+      "y_pct": 80.1897,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 359,
+        "y": 668,
+        "w": 29,
+        "h": 101
+      }
     },
     "FFB32": {
       "id": "FFB32",
-      "pageNumber": 1,
-      "top": 94.56,
-      "left": 30.0,
-      "width": 2.5,
-      "height": 6.03,
+      "x_px": 374.9999,
+      "y_px": 871.6111,
+      "x_pct": 31.25,
+      "y_pct": 97.278,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 359.9999,
+        "y": 847.2223,
+        "w": 30.0,
+        "h": 48.7777
+      }
     },
     "FFB4B": {
       "id": "FFB4B",
-      "pageNumber": 1,
-      "top": 52.23,
-      "left": 29.0,
-      "width": 2.5,
-      "height": 6.36,
+      "x_px": 363.0,
+      "y_px": 496.5,
+      "x_pct": 30.25,
+      "y_pct": 55.4129,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 348,
+        "y": 468,
+        "w": 30,
+        "h": 57
+      }
     },
     "HFFB14-10\"": {
       "id": "HFFB14-10\"",
-      "pageNumber": 1,
-      "top": 10.83,
-      "left": 34.17,
-      "width": 2.42,
-      "height": 11.27,
+      "x_px": 424.5,
+      "y_px": 147.5,
+      "x_pct": 35.375,
+      "y_pct": 16.4621,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 410,
+        "y": 97,
+        "w": 29,
+        "h": 101
+      }
     },
     "FA228": {
       "id": "FA228",
-      "pageNumber": 1,
-      "top": 92.97,
-      "left": 33.42,
-      "width": 2.5,
-      "height": 6.14,
+      "x_px": 416.0,
+      "y_px": 860.5,
+      "x_pct": 34.6667,
+      "y_pct": 96.0379,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 401,
+        "y": 833,
+        "w": 30,
+        "h": 55
+      }
     },
     "FFB12": {
       "id": "FFB12",
-      "pageNumber": 1,
-      "top": 69.2,
-      "left": 32.83,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 409.0,
+      "y_px": 648.0,
+      "x_pct": 34.0833,
+      "y_pct": 72.3214,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 394,
+        "y": 620,
+        "w": 30,
+        "h": 56
+      }
     },
     "FFB38": {
       "id": "FFB38",
-      "pageNumber": 1,
-      "top": 26.23,
-      "left": 33.67,
-      "width": 2.42,
-      "height": 6.36,
+      "x_px": 418.5,
+      "y_px": 263.5,
+      "x_pct": 34.875,
+      "y_pct": 29.4085,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 404,
+        "y": 235,
+        "w": 29,
+        "h": 57
+      }
     },
     "FFB16": {
       "id": "FFB16",
-      "pageNumber": 1,
-      "top": 38.84,
-      "left": 31.17,
-      "width": 2.42,
-      "height": 6.36,
+      "x_px": 388.5,
+      "y_px": 376.5,
+      "x_pct": 32.375,
+      "y_pct": 42.0201,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 374,
+        "y": 348,
+        "w": 29,
+        "h": 57
+      }
     },
     "FFB4C": {
       "id": "FFB4C",
-      "pageNumber": 1,
-      "top": 22.99,
-      "left": 36.58,
-      "width": 2.42,
-      "height": 6.36,
+      "x_px": 453.5,
+      "y_px": 234.5,
+      "x_pct": 37.7917,
+      "y_pct": 26.1719,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 439,
+        "y": 206,
+        "w": 29,
+        "h": 57
+      }
     },
     "FA241": {
       "id": "FA241",
-      "pageNumber": 1,
-      "top": 51.12,
-      "left": 37.83,
-      "width": 2.5,
-      "height": 6.14,
+      "x_px": 469.0,
+      "y_px": 485.5,
+      "x_pct": 39.0833,
+      "y_pct": 54.1853,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 454,
+        "y": 458,
+        "w": 30,
+        "h": 55
+      }
     },
     "FFB35": {
       "id": "FFB35",
-      "pageNumber": 1,
-      "top": 71.09,
-      "left": 37.42,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 464.0,
+      "y_px": 665.0,
+      "x_pct": 38.6667,
+      "y_pct": 74.2188,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 449,
+        "y": 637,
+        "w": 30,
+        "h": 56
+      }
     },
     "FA234": {
       "id": "FA234",
-      "pageNumber": 1,
-      "top": 95.09,
-      "left": 38.75,
-      "width": 2.42,
-      "height": 6.25,
+      "x_px": 479.5,
+      "y_px": 874.0,
+      "x_pct": 39.9583,
+      "y_pct": 97.5446,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 465,
+        "y": 852,
+        "w": 29,
+        "h": 44
+      }
     },
     "FFB11-10\"": {
       "id": "FFB11-10\"",
-      "pageNumber": 1,
-      "top": 81.58,
-      "left": 39.83,
-      "width": 2.42,
-      "height": 9.71,
+      "x_px": 492.5,
+      "y_px": 774.5,
+      "x_pct": 41.0417,
+      "y_pct": 86.4397,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 478,
+        "y": 731,
+        "w": 29,
+        "h": 87
+      }
     },
     "HFFB4-10'": {
       "id": "HFFB4-10'",
-      "pageNumber": 1,
-      "top": 34.6,
-      "left": 40.25,
-      "width": 2.42,
-      "height": 10.16,
+      "x_px": 497.5,
+      "y_px": 355.5,
+      "x_pct": 41.4583,
+      "y_pct": 39.6763,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 483,
+        "y": 310,
+        "w": 29,
+        "h": 91
+      }
     },
     "FFB25-10\"": {
       "id": "FFB25-10\"",
-      "pageNumber": 1,
-      "top": 93.75,
-      "left": 41.75,
-      "width": 2.5,
-      "height": 9.82,
+      "x_px": 516.0,
+      "y_px": 868.0,
+      "x_pct": 43.0,
+      "y_pct": 96.875,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 501,
+        "y": 840,
+        "w": 30,
+        "h": 56
+      }
     },
     "FFB18": {
       "id": "FFB18",
-      "pageNumber": 1,
-      "top": 70.65,
-      "left": 41.75,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 516.0,
+      "y_px": 661.0,
+      "x_pct": 43.0,
+      "y_pct": 73.7723,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 501,
+        "y": 633,
+        "w": 30,
+        "h": 56
+      }
     },
     "FA231": {
       "id": "FA231",
-      "pageNumber": 1,
-      "top": 9.82,
-      "left": 43.17,
-      "width": 2.5,
-      "height": 6.14,
+      "x_px": 533.0,
+      "y_px": 115.5,
+      "x_pct": 44.4167,
+      "y_pct": 12.8906,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 518,
+        "y": 88,
+        "w": 30,
+        "h": 55
+      }
     },
     "FA258": {
       "id": "FA258",
-      "pageNumber": 1,
-      "top": 89.51,
-      "left": 45.17,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 557.0,
+      "y_px": 830.0,
+      "x_pct": 46.4167,
+      "y_pct": 92.6339,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 542,
+        "y": 802,
+        "w": 30,
+        "h": 56
+      }
     },
     "FA221": {
       "id": "FA221",
-      "pageNumber": 1,
-      "top": 97.99,
-      "left": 47.0,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 579.0,
+      "y_px": 887.0,
+      "x_pct": 48.25,
+      "y_pct": 98.9955,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 564,
+        "y": 878,
+        "w": 30,
+        "h": 18
+      }
     },
     "FA230": {
       "id": "FA230",
-      "pageNumber": 1,
-      "top": 83.93,
-      "left": 49.58,
-      "width": 2.42,
-      "height": 6.25,
+      "x_px": 609.5,
+      "y_px": 780.0,
+      "x_pct": 50.7917,
+      "y_pct": 87.0536,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 595,
+        "y": 752,
+        "w": 29,
+        "h": 56
+      }
     },
     "FA233": {
       "id": "FA233",
-      "pageNumber": 1,
-      "top": 65.51,
-      "left": 53.08,
-      "width": 2.42,
-      "height": 6.14,
+      "x_px": 651.5,
+      "y_px": 614.5,
+      "x_pct": 54.2917,
+      "y_pct": 68.5826,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 637,
+        "y": 587,
+        "w": 29,
+        "h": 55
+      }
     },
     "FA247": {
       "id": "FA247",
-      "pageNumber": 1,
-      "top": 14.96,
-      "left": 53.75,
-      "width": 2.42,
-      "height": 6.14,
+      "x_px": 659.5,
+      "y_px": 161.5,
+      "x_pct": 54.9583,
+      "y_pct": 18.0246,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 645,
+        "y": 134,
+        "w": 29,
+        "h": 55
+      }
     },
     "FA232": {
       "id": "FA232",
-      "pageNumber": 1,
-      "top": 79.69,
-      "left": 54.42,
-      "width": 2.5,
-      "height": 6.14,
+      "x_px": 668.0,
+      "y_px": 741.5,
+      "x_pct": 55.6667,
+      "y_pct": 82.7567,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 653,
+        "y": 714,
+        "w": 30,
+        "h": 55
+      }
     },
     "FFB2A": {
       "id": "FFB2A",
-      "pageNumber": 1,
-      "top": 75.0,
-      "left": 57.75,
-      "width": 2.5,
-      "height": 6.47,
+      "x_px": 708.0,
+      "y_px": 701.0,
+      "x_pct": 59.0,
+      "y_pct": 78.2366,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 693,
+        "y": 672,
+        "w": 30,
+        "h": 58
+      }
     },
     "FA238": {
       "id": "FA238",
-      "pageNumber": 1,
-      "top": 13.17,
-      "left": 59.33,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 727.0,
+      "y_px": 146.0,
+      "x_pct": 60.5833,
+      "y_pct": 16.2946,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 712,
+        "y": 118,
+        "w": 30,
+        "h": 56
+      }
     },
     "HFFB1-10'": {
       "id": "HFFB1-10'",
-      "pageNumber": 1,
-      "top": 42.86,
-      "left": 62.75,
-      "width": 2.5,
-      "height": 9.93,
+      "x_px": 768.0,
+      "y_px": 428.5,
+      "x_pct": 64.0,
+      "y_pct": 47.8237,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 753,
+        "y": 384,
+        "w": 30,
+        "h": 89
+      }
     },
     "FFB2-10'": {
       "id": "FFB2-10'",
-      "pageNumber": 1,
-      "top": 56.7,
-      "left": 62.67,
-      "width": 2.5,
-      "height": 8.71,
+      "x_px": 767.0,
+      "y_px": 547.0,
+      "x_pct": 63.9167,
+      "y_pct": 61.0491,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 752,
+        "y": 508,
+        "w": 30,
+        "h": 78
+      }
     },
     "FFB19": {
       "id": "FFB19",
-      "pageNumber": 1,
-      "top": 64.06,
-      "left": 66.0,
-      "width": 2.5,
-      "height": 6.25,
+      "x_px": 807.0,
+      "y_px": 602.0,
+      "x_pct": 67.25,
+      "y_pct": 67.1875,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 792,
+        "y": 574,
+        "w": 30,
+        "h": 56
+      }
     },
     "FFB9-10'": {
       "id": "FFB9-10'",
-      "pageNumber": 1,
-      "top": 90.07,
-      "left": 66.17,
-      "width": 2.5,
-      "height": 8.71,
+      "x_px": 809.0,
+      "y_px": 846.0,
+      "x_pct": 67.4167,
+      "y_pct": 94.4196,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 794,
+        "y": 807,
+        "w": 30,
+        "h": 78
+      }
     },
     "FFB7A": {
       "id": "FFB7A",
-      "pageNumber": 1,
-      "top": 30.47,
-      "left": 66.08,
-      "width": 2.5,
-      "height": 6.58,
+      "x_px": 808.0,
+      "y_px": 302.5,
+      "x_pct": 67.3333,
+      "y_pct": 33.7612,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 793,
+        "y": 273,
+        "w": 30,
+        "h": 59
+      }
     },
     "FFB10-10\"": {
       "id": "FFB10-10\"",
-      "pageNumber": 1,
-      "top": 61.61,
-      "left": 69.17,
-      "width": 2.5,
-      "height": 9.82,
+      "x_px": 845.0,
+      "y_px": 596.0,
+      "x_pct": 70.4167,
+      "y_pct": 66.5179,
       "shape": "rectangle",
-      "rotation": 0
+      "pageNumber": 1,
+      "rotation": 0,
+      "bbox": {
+        "x": 830,
+        "y": 552,
+        "w": 30,
+        "h": 88
+      }
     }
-  }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1200,
+  "image_natural_height": 896
 }

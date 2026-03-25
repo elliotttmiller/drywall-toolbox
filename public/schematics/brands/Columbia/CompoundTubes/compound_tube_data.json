@@ -105,148 +105,167 @@
   ],
   "coordinates": {
     "CMT8": {
-      "name": "CMT8",
-      "pageNumber": 1,
-      "top": 11.15,
-      "left": 39.9,
+      "id": "CMT8",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 39.9,
+      "y_pct": 11.15,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CMT8"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA323": {
-      "name": "FA323",
-      "pageNumber": 1,
-      "top": 11.75,
-      "left": 18.1,
+      "id": "FA323",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.1,
+      "y_pct": 11.75,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA323"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA28": {
-      "name": "FA28",
-      "pageNumber": 1,
-      "top": 16.55,
-      "left": 18.25,
+      "id": "FA28",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.25,
+      "y_pct": 16.55,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA28"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CT110": {
-      "name": "CT110",
-      "pageNumber": 1,
-      "top": 20.95,
-      "left": 20.95,
+      "id": "CT110",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 20.95,
+      "y_pct": 20.95,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CT110"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CT111": {
-      "name": "CT111",
-      "pageNumber": 1,
-      "top": 19.15,
-      "left": 43.95,
+      "id": "CT111",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 43.95,
+      "y_pct": 19.15,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CT111"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CMT2": {
-      "name": "CMT2",
-      "pageNumber": 1,
-      "top": 22.95,
-      "left": 77.8,
+      "id": "CMT2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.8,
+      "y_pct": 22.95,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CMT2"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA286": {
-      "name": "FA286",
-      "pageNumber": 1,
-      "top": 25.8,
-      "left": 22.55,
+      "id": "FA286",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 22.55,
+      "y_pct": 25.8,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA286"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CT115A": {
-      "name": "CT115A",
-      "pageNumber": 1,
-      "top": 28.75,
-      "left": 79.25,
+      "id": "CT115A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.25,
+      "y_pct": 28.75,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CT115A"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA219": {
-      "name": "FA219",
-      "pageNumber": 1,
-      "top": 33.35,
-      "left": 80.7,
+      "id": "FA219",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 80.7,
+      "y_pct": 33.35,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA219"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA256": {
-      "name": "FA256",
-      "pageNumber": 1,
-      "top": 36.25,
-      "left": 48.9,
+      "id": "FA256",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 48.9,
+      "y_pct": 36.25,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA256"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA23": {
-      "name": "FA23",
-      "pageNumber": 1,
-      "top": 37.75,
-      "left": 82.8,
+      "id": "FA23",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 82.8,
+      "y_pct": 37.75,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA23"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CMT1-24\"": {
-      "name": "CMT1-24\"",
-      "pageNumber": 1,
-      "top": 55.35,
-      "left": 89.75,
+      "id": "CMT1-24\"",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.75,
+      "y_pct": 55.35,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CMT1-24\""
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CMT1A-24\"": {
-      "name": "CMT1A-24\"",
-      "pageNumber": 1,
-      "top": 63.55,
-      "left": 26.8,
+      "id": "CMT1A-24\"",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 26.8,
+      "y_pct": 63.55,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CMT1A-24\""
+      "pageNumber": 1,
+      "rotation": 0
     },
     "CMT5": {
-      "name": "CMT5",
-      "pageNumber": 1,
-      "top": 85.65,
-      "left": 90.85,
+      "id": "CMT5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 90.85,
+      "y_pct": 85.65,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "CMT5"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA239": {
-      "name": "FA239",
-      "pageNumber": 1,
-      "top": 89.75,
-      "left": 94.1,
+      "id": "FA239",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 94.1,
+      "y_pct": 89.75,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA239"
+      "pageNumber": 1,
+      "rotation": 0
     },
     "FA235": {
-      "name": "FA235",
-      "pageNumber": 1,
-      "top": 94.25,
-      "left": 93.8,
+      "id": "FA235",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 93.8,
+      "y_pct": 94.25,
       "shape": "rectangle",
-      "rotation": 0,
-      "id": "FA235"
+      "pageNumber": 1,
+      "rotation": 0
     }
-  }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1792,
+  "image_natural_height": 2400
 }
