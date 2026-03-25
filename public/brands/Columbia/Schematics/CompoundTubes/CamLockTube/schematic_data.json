@@ -1,6 +1,6 @@
 {
-  "id": "1774439024479",
-  "title": "Cam_Lock_Tube_2019-enhanced",
+  "id": "columbia-cam-lock-tube",
+  "title": "Cam Lock Tube",
   "diagramPages": [
     1
   ],
@@ -93,18 +93,6 @@
     {
       "id": "CT 111",
       "name": "CT 111",
-      "quantity": 1,
-      "sku": ""
-    },
-    {
-      "id": "FA 286",
-      "name": "FA 286",
-      "quantity": 1,
-      "sku": ""
-    },
-    {
-      "id": "CMT 8",
-      "name": "CMT 8",
       "quantity": 1,
       "sku": ""
     },
