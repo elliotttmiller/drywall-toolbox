@@ -144,6 +144,7 @@ export default function Parts() {
   // Selection flow state
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [selectedSchematic, setSelectedSchematic] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Schematic viewer state
   const [activeHotspot, setActiveHotspot] = useState(null);
@@ -681,6 +682,18 @@ export default function Parts() {
   // Filter schematics to only include tools from allowed brands
   const allowedSchematics = schematics.filter(s => !s.brand || ALLOWED_BRANDS.includes(s.brand));
 
+  // Filter schematics by search query across brand, category, and tool name
+  const searchResults = searchQuery.trim()
+    ? allowedSchematics.filter(s => {
+        const q = searchQuery.toLowerCase().trim();
+        return (
+          s.title?.toLowerCase().includes(q) ||
+          s.brand?.toLowerCase().includes(q) ||
+          s.category?.toLowerCase().includes(q)
+        );
+      })
+    : [];
+
   // When schematic changes we reset the page in the schematic selector's onChange handler below.
   const currentSchematic = allowedSchematics.find(s => s.id === selectedSchematic);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1017,6 +1030,17 @@ export default function Parts() {
           onSelectBrand={(brand) => {
             setSelectedBrand(brand);
             setSelectedSchematic(null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          searchQuery={searchQuery}
+          onSearchChange={(e) => setSearchQuery(e.target.value)}
+          searchResults={searchResults}
+          onSelectSchematic={(schematic) => {
+            const firstPage = (schematic.diagramPages && schematic.diagramPages[0]) || 1;
+            setSelectedBrand(schematic.brand);
+            setSelectedSchematic(schematic.id);
+            setCurrentPage(firstPage);
+            setSearchQuery('');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         />
