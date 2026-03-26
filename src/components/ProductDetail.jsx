@@ -3,6 +3,19 @@ import Reviews from './Reviews';
 import { useCart } from '../context/CartContext';
 import { Heart, Plus, Minus, X } from 'lucide-react';
 import ProductImageGallery from './ProductImageGallery';
+import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
+import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
+import surproLogo from '/brands/SurPro/surpro_logo.svg';
+import asgardLogo from '/brands/Asgard/asgard_logo.svg';
+import gracoLogo from '/brands/Graco/graco_logo.svg';
+
+const BRAND_LOGOS = {
+  'Columbia Taping Tools': columbiaLogo,
+  'TapeTech': tapeTechLogo,
+  'SurPro': surproLogo,
+  'Asgard': asgardLogo,
+  'Graco': gracoLogo,
+};
 
 export default function ProductDetail({ product, onAddToCart, onClose }) {
   const { addToCart } = useCart();
@@ -193,6 +206,15 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
             <div className="pb-4 sm:pb-6 md:pb-8">
               {activeTab === 'description' && (
                 <div>
+                  {BRAND_LOGOS[product.brand] && (
+                    <div className="flex justify-center mb-5 sm:mb-6">
+                      <img
+                        src={BRAND_LOGOS[product.brand]}
+                        alt={`${product.brand} logo`}
+                        className="h-12 sm:h-16 w-auto object-contain"
+                      />
+                    </div>
+                  )}
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Description</h3>
                   {product.description_full ? (
                     <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-3 sm:space-y-4 text-sm sm:text-base">
