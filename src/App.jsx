@@ -14,6 +14,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Product from './pages/Product';
 import Parts from './pages/Parts';
+import Repairs from './pages/Repairs';
 import VeeqoSettings from './pages/VeeqoSettings';
 import VeeqoCallback from './pages/VeeqoCallback';
 import WooCommerceSettings from './pages/WooCommerceSettings';
@@ -55,6 +56,7 @@ function App() {
                   <Route path="/products" element={<Products />} />
                   <Route path="/product/:partNumber" element={<Product />} />
                   <Route path="/parts" element={<Parts />} />
+                  <Route path="/repairs" element={<Repairs />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/about" element={<About />} />
