@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
 import BackButton from '../components/BackButton';
 import SearchBar from '../components/SearchBar';
@@ -36,13 +37,19 @@ const ALLOWED_BRANDS = [
 const MAX_PRICE = 3000;
 
 export default function AllProducts() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
+
+  // Initialize search query from URL param for deep-linking (e.g. from MobileSearch)
+  const urlParams = new URLSearchParams(location.search);
+  const searchParam = urlParams.get('search');
 
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
   const [showFilters, setShowFilters] = useState(false);
@@ -101,6 +108,20 @@ export default function AllProducts() {
     }).catch(() => {});
     return () => { mounted = false; };
   }, []);
+
+  // Sync searchQuery to URL for shareable links
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const currentSearchParam = params.get('search') || '';
+    const expectedSearchParam = searchQuery ? encodeURIComponent(searchQuery) : '';
+
+    if (currentSearchParam !== expectedSearchParam) {
+      const newParams = new URLSearchParams();
+      if (searchQuery) newParams.set('search', searchQuery);
+      const newSearch = newParams.toString();
+      navigate(newSearch ? `/all-products?${newSearch}` : '/all-products', { replace: true });
+    }
+  }, [searchQuery, navigate, location.search]);
 
   const filteredProducts = (products || []).filter(product => {
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;

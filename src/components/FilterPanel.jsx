@@ -68,10 +68,11 @@ export default function FilterPanel({
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay - positioned below the fixed site header */}
       {isOpen && (
         <div
-          className="filter-panel-overlay fixed inset-0 bg-black/30 z-40 backdrop-blur-sm"
+          className="filter-panel-overlay fixed left-0 right-0 bottom-0 bg-black/30 z-40 backdrop-blur-sm"
+          style={{ top: 'var(--header-height)' }}
           onClick={onClose}
         />
       )}
@@ -103,6 +104,7 @@ export default function FilterPanel({
         <div
           ref={panelRef}
           className="fixed inset-0 z-50 pointer-events-none lg:hidden"
+          style={{ top: 'var(--header-height)' }}
         >
           {/* Tap outside to close indicator */}
           <div 
@@ -115,7 +117,7 @@ export default function FilterPanel({
           />
           
           <div className="pointer-events-auto">
-            <div className="fixed left-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-2xl overflow-y-auto flex flex-col">
+            <div className="fixed left-0 bottom-0 w-full max-w-sm bg-white shadow-2xl overflow-y-auto flex flex-col" style={{ top: 'var(--header-height)' }}>
               <div className="sticky top-0 bg-white border-b border-gray-200 px-3 py-3 flex items-center justify-between shrink-0">
                 <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
                   <Sliders size={18} />

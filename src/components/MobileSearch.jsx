@@ -46,8 +46,8 @@ export default function MobileSearch({ onClose = () => {} }) {
   };
 
   const handleViewAllResults = () => {
-    // Navigate to products page with search query
-    navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+    // Navigate to all-products page with search query
+    navigate(`/all-products?search=${encodeURIComponent(searchQuery)}`);
     setIsOpen(false);
     onClose(); // Close the mobile menu;
   };
