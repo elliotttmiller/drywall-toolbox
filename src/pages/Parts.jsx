@@ -6,6 +6,20 @@ import ToolSelector from '../components/ToolSelector';
 import { loadProducts } from '../data/products';
 import '../styles/mobile-schematic.css';
 
+import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
+import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
+import surproLogo from '/brands/SurPro/surpro_logo.svg';
+import asgardLogo from '/brands/Asgard/asgard_logo.svg';
+import gracoLogo from '/brands/Graco/graco_logo.svg';
+
+const brandLogos = {
+  'TapeTech': tapeTechLogo,
+  'Columbia Taping Tools': columbiaLogo,
+  'SurPro': surproLogo,
+  'Asgard': asgardLogo,
+  'Graco': gracoLogo
+};
+
 // ---------------------------------------------------------------------------
 // Schematic JSON data — static imports (bundled by webpack at build time).
 // Keep only the schematics that are still included in the UI. TapeTech
@@ -1116,15 +1130,29 @@ export default function Parts() {
             flexShrink: 0,
             padding: 'clamp(12px, 2vw, 20px)'
           }}>
-            <h3 style={{ 
-              fontSize: 'clamp(1rem, 3vw, 1.5rem)', 
-              margin: '0 0 8px 0',
-              letterSpacing: '-0.02em',
-              color: 'var(--text-secondary)',
-              fontWeight: 600
-            }}>
-              {currentSchematic?.brand}
-            </h3>
+            {brandLogos[currentSchematic?.brand] ? (
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                <img
+                  src={brandLogos[currentSchematic.brand]}
+                  alt={`${currentSchematic.brand} logo`}
+                  style={{
+                    height: 'clamp(2.5rem, 6vw, 4rem)',
+                    width: 'auto',
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
+            ) : (
+              <h3 style={{ 
+                fontSize: 'clamp(1rem, 3vw, 1.5rem)', 
+                margin: '0 0 8px 0',
+                letterSpacing: '-0.02em',
+                color: 'var(--text-secondary)',
+                fontWeight: 600
+              }}>
+                {currentSchematic?.brand}
+              </h3>
+            )}
             <h2 style={{ 
               fontSize: 'clamp(1.5rem, 5vw, 3rem)', 
               margin: '0',
