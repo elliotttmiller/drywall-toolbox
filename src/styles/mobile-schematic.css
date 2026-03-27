@@ -200,7 +200,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Ultra-small phones (320px - 480px): Compact sizing */
@@ -227,12 +226,10 @@
     max-width: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
-    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: auto !important;
     -webkit-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
   }
 }
 
@@ -263,12 +260,10 @@
     max-width: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
-    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: auto !important;
     -webkit-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
   }
 }
 
@@ -301,11 +296,9 @@
     max-width: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
-    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: auto !important;
     -webkit-user-select: none;
     user-select: none;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
   }
 }
 
@@ -879,12 +872,7 @@
   max-width: 100%;
   height: auto;
   display: block;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  image-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -892,7 +880,6 @@
 /* High-DPI displays: use high-quality rendering */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .schematic-container img {
-    image-rendering: -webkit-optimize-contrast;
     image-rendering: auto;
   }
 }

@@ -187,8 +187,6 @@ export default function Parts() {
   const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
   const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 });
   const [hasMoved, setHasMoved] = useState(false);
-  const [lastTouchTime, setLastTouchTime] = useState(0);
-  const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [lastTapTime, setLastTapTime] = useState(0);
   const [lastTapPos, setLastTapPos] = useState({ x: 0, y: 0 });
   const [forceUpdate, setForceUpdate] = useState(0);
@@ -794,12 +792,10 @@ export default function Parts() {
       };
     } else if (e.touches.length === 1 && scale > 1) {
       // Pan gesture (only when zoomed in) - store initial position
-      const now = Date.now();
       setTouchStartPos({
         x: e.touches[0].clientX,
         y: e.touches[0].clientY
       });
-      setLastTouchTime(now);
       setHasMoved(false);
       setStartPanPosition({
         x: e.touches[0].clientX - position.x,
@@ -860,16 +856,6 @@ export default function Parts() {
           gestureActiveRef.current = true;
           setForceUpdate(prev => prev + 1);
         }
-        
-        // Calculate velocity for momentum
-        const now = Date.now();
-        const timeDelta = now - lastTouchTime;
-        if (timeDelta > 0) {
-          const velX = (touch.clientX - touchStartPos.x) / timeDelta * 16;
-          const velY = (touch.clientY - touchStartPos.y) / timeDelta * 16;
-          setVelocity({ x: velX, y: velY });
-        }
-        setLastTouchTime(now);
         
         // Pan when zoomed - smooth panning with dynamic bounds
         const newX = touch.clientX - startPanPosition.x;
@@ -944,55 +930,15 @@ export default function Parts() {
         }
       }
       
-      // Apply momentum if user was panning
-      if (hasMoved && scale > 1) {
-        const now = Date.now();
-        const timeDelta = now - lastTouchTime;
-        if (timeDelta < 100 && (Math.abs(velocity.x) > 0.5 || Math.abs(velocity.y) > 0.5)) {
-          // Apply momentum decay
-          const momentumDecay = 0.95;
-          let currentVelX = velocity.x;
-          let currentVelY = velocity.y;
-          let currentX = position.x;
-          let currentY = position.y;
-          
-          const animate = () => {
-            currentVelX *= momentumDecay;
-            currentVelY *= momentumDecay;
-            currentX += currentVelX;
-            currentY += currentVelY;
-            
-            const container = schematicContainerRef.current;
-            const containerW = container ? container.offsetWidth : 400;
-            const containerH = container ? container.offsetHeight : 400;
-            const maxPanX = Math.max(0, ((scale - 1) * containerW) / 2);
-            const maxPanY = Math.max(0, ((scale - 1) * containerH) / 2);
-            
-            currentX = Math.min(Math.max(currentX, -maxPanX), maxPanX);
-            currentY = Math.min(Math.max(currentY, -maxPanY), maxPanY);
-            
-            setPosition({ x: currentX, y: currentY });
-            
-            if (Math.abs(currentVelX) > 0.1 || Math.abs(currentVelY) > 0.1) {
-              requestAnimationFrame(animate);
-            }
-          };
-          requestAnimationFrame(animate);
-        }
-      }
-      
       setIsPanning(false);
       setHasMoved(false);
-      setVelocity({ x: 0, y: 0 });
     } else if (e.touches.length === 1 && pinchRef.current.active) {
       // Transitioned from pinch to single-touch — reset pinch tracking cleanly
       pinchRef.current.active = false;
       // Keep gesture active if user continues with single finger
       if (scale > 1) {
-        const now = Date.now();
         const touch = e.touches[0];
         setTouchStartPos({ x: touch.clientX, y: touch.clientY });
-        setLastTouchTime(now);
         setHasMoved(false);
         setStartPanPosition({
           x: touch.clientX - position.x,
@@ -1002,7 +948,7 @@ export default function Parts() {
         gestureActiveRef.current = false;
       }
     }
-  }, [hasMoved, scale, lastTouchTime, velocity, position, lastTapTime, lastTapPos]);
+  }, [hasMoved, scale, position, lastTapTime, lastTapPos]);
 
   // Setup non-passive touch event listeners to allow preventDefault
   useEffect(() => {
@@ -1407,13 +1353,10 @@ export default function Parts() {
                       height: 'auto',
                       display: 'block', 
                       pointerEvents: 'none',
-                      imageRendering: scale > 1.5 ? '-webkit-optimize-contrast' : 'auto',
+                      imageRendering: 'auto',
                       WebkitTouchCallout: 'none',
                       WebkitUserSelect: 'none',
                       userSelect: 'none',
-                      WebkitBackfaceVisibility: 'hidden',
-                      backfaceVisibility: 'hidden',
-                      transform: 'translateZ(0)',
                     }}
                     loading="eager"
                     decoding="async"
