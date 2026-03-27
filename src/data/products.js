@@ -34,7 +34,8 @@ export async function loadProducts() {
   
   const short_description = String(r.description_short || r.short_description || '').trim();
   const description_full = String(r.description_full || '').trim();
-  const category = String(r.category || '').trim();
+  const descriptionText = short_description || description_full;
+  const category = String(r.category || '').trim() || inferCategory(name, descriptionText);
     // specifications: if present (legacy), parse it; otherwise synthesize from description_full
     let specifications = null;
     if (r.specifications) {
@@ -73,6 +74,31 @@ export async function loadProducts() {
     };
   });
   return products;
+}
+
+/**
+ * Derive a category ID from a product's name and description.
+ * Returns one of: 'taping' | 'finishing' | 'corner' | 'mudboxes' | 'sanding' | ''
+ */
+function inferCategory(name, description) {
+  const text = (name + ' ' + (description || '')).toLowerCase();
+
+  // Sanding tools
+  if (/\bsand(er|ing)?\b/.test(text)) return 'sanding';
+
+  // Mud Boxes & Pumps (check before taping to avoid "loading pump" matching taping)
+  if (/loading pump|gooseneck|compound tube|mud tube|mud pan|box filler|filler adapt|hot mud pump|mud pump|pump repair/.test(text)) return 'mudboxes';
+
+  // Automatic Taping
+  if (/automatic taper|auto taper|\btaper\b|\btaping\b|taping tool|\bbanjo\b|predator taper|semi[ -]auto(matic)?|bazooka/.test(text)) return 'taping';
+
+  // Corner Tools
+  if (/corner roller|angle head|angle box|corner flush|\bflusher\b|corner applicat|corner finish|bead roller|corner cobra|inside corner|outside corner|inside 90|outside 90|\bl-trim\b|nail spot|nailspot|throttle[ -]?box/.test(text)) return 'corner';
+
+  // Finishing Tools
+  if (/flat box|finishing box|smoothing blade|flat finisher|finishing knife|putty knife|joint knife|box handle|tomahawk|sabre|wipe[ -]down/.test(text)) return 'finishing';
+
+  return '';
 }
 
 function tryParseJSON(s) {

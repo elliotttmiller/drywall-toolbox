@@ -382,14 +382,6 @@ export default function Products() {
                 >
                   <Filter size={16} />
                 </button>
-                {showFilters && (
-                  <div className="absolute top-full left-0 w-64 bg-white shadow-lg border border-gray-300 rounded-lg mt-2 p-4 transition-transform transform origin-top scale-y-100">
-                    <div className="flex flex-col gap-4">
-                      {/* Add filter options here */}
-                      <p>Filter options go here</p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
