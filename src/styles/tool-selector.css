@@ -66,6 +66,18 @@
   text-align: center;
 }
 
+.brand-header-logo {
+  display: block;
+  margin: 0 auto clamp(4px, 1vw, 8px);
+  height: clamp(2rem, 5vw, 3rem);
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-header-logo--columbia {
+  height: clamp(6rem, 15vw, 9rem);
+}
+
 
 
 .tools-grid {
@@ -430,6 +442,13 @@
     font-size: 1.75rem;
   }
 
+  .brand-header-logo {
+    height: clamp(1.5rem, 8vw, 2.5rem);
+  }
+
+  .brand-header-logo--columbia {
+    height: clamp(4.5rem, 24vw, 7.5rem);
+  }
   .tools-grid {
     grid-template-columns: 1fr;
     gap: 16px;

@@ -1062,6 +1062,7 @@ export default function Parts() {
         /* Show ToolSelector if brand selected but no schematic */
         <ToolSelector
           brand={selectedBrand}
+          brandLogo={brandLogos[selectedBrand]}
           tools={allowedSchematics.filter(s => s.brand === selectedBrand)}
           onSelectTool={(tool) => {
             setSelectedSchematic(tool.id);

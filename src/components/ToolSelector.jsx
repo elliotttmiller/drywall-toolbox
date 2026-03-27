@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../styles/tool-selector.css';
 import BackButton from './BackButton';
 
-export default function ToolSelector({ brand, tools, onSelectTool, onBack }) {
+export default function ToolSelector({ brand, brandLogo, tools, onSelectTool, onBack }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   // Group tools by category if they have categories defined
@@ -34,7 +34,14 @@ export default function ToolSelector({ brand, tools, onSelectTool, onBack }) {
           label={selectedCategory ? "Categories" : "Brands"}
         />
         <div className="header-content">
-          <h2>{selectedCategory || brand}</h2>
+          {brandLogo && (
+            <img
+              src={brandLogo}
+              alt={`${brand} logo`}
+              className={`brand-header-logo${brand === 'Columbia Taping Tools' ? ' brand-header-logo--columbia' : ''}`}
+            />
+          )}
+          {selectedCategory && <h2>{selectedCategory}</h2>}
         </div>
       </div>
 
