@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to HostGator
 
 on:
   push:
@@ -6,18 +6,10 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,23 +26,34 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          PUBLIC_URL: /drywall-toolbox
+          # Deploy to the domain root — no subdirectory prefix needed
+          PUBLIC_URL: ''
+          # WordPress & WooCommerce API credentials (injected from GitHub Actions secrets)
+          REACT_APP_WP_BASE_URL:        ${{ secrets.REACT_APP_WP_BASE_URL }}
+          REACT_APP_WC_CONSUMER_KEY:    ${{ secrets.REACT_APP_WC_CONSUMER_KEY }}
+          REACT_APP_WC_CONSUMER_SECRET: ${{ secrets.REACT_APP_WC_CONSUMER_SECRET }}
+          # Keep legacy VITE_ vars populated so the WooCommerce settings UI still works
+          VITE_WOOCOMMERCE_STORE_URL:        ${{ secrets.REACT_APP_WP_BASE_URL }}
+          VITE_WOOCOMMERCE_CONSUMER_KEY:     ${{ secrets.REACT_APP_WC_CONSUMER_KEY }}
+          VITE_WOOCOMMERCE_CONSUMER_SECRET:  ${{ secrets.REACT_APP_WC_CONSUMER_SECRET }}
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # Deploy the compiled React app to /public_html/ on HostGator.
+      # The /wp/ subdirectory (WordPress) lives on the server and must never
+      # be overwritten by FTP — it is excluded via the `exclude` list below.
+      # Docs: https://github.com/SamKirkland/FTP-Deploy-Action
+      - name: Deploy to HostGator via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          path: './dist'
+          server:     ${{ secrets.FTP_SERVER }}
+          username:   ${{ secrets.FTP_USERNAME }}
+          password:   ${{ secrets.FTP_PASSWORD }}
+          local-dir:  ./dist/
+          server-dir: /public_html/
+          # Prevent the FTP action from deleting or overwriting the WordPress
+          # installation that lives in /public_html/wp/ on the server.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            wp/**
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

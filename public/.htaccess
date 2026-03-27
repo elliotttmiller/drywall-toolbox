@@ -1,7 +1,60 @@
 # Disable directory listing
 Options -Indexes
 
-# Rewrite rules
+# ─── React Router + WordPress pass-through ───────────────────────────────────
+#
+# Rule order:
+#   1. Pass any /wp/* request straight through to WordPress (no rewriting).
+#   2. Serve existing static files and directories directly.
+#   3. Fall back to index.html for every other path so React Router handles it.
+#
+# This prevents 404 errors on hard-refresh of React Router paths while
+# ensuring WordPress (installed in /wp/) is never intercepted.
+#
+# References:
+#   React Router deployment: https://reactrouter.com/en/main/guides/deploying
+#   Apache mod_rewrite: https://httpd.apache.org/docs/current/mod/mod_rewrite.html
+# ─────────────────────────────────────────────────────────────────────────────
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /
+
+    # 1. Pass /wp/ requests through to WordPress without modification
+    RewriteCond %{REQUEST_URI} ^/wp/ [NC]
+    RewriteRule ^ - [L]
+
+    # 2. Serve real files and directories directly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # 3. Route everything else to index.html (React Router)
+    RewriteRule ^ index.html [QSA,L]
+</IfModule>
+
+# ─── Compression ─────────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# ─── Browser caching ─────────────────────────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    # index.html must never be cached so users always get the latest build
+    ExpiresByType text/html                "access plus 0 seconds"
+    # Hashed asset filenames (webpack contenthash) allow long-lived caching —
+    # the filename changes automatically whenever the content changes, so
+    # browsers always fetch the latest version.
+    ExpiresByType text/css                 "access plus 1 year"
+    ExpiresByType application/javascript   "access plus 1 year"
+    ExpiresByType image/svg+xml            "access plus 1 year"
+    ExpiresByType image/png                "access plus 1 year"
+    ExpiresByType image/jpeg               "access plus 1 year"
+    ExpiresByType image/webp               "access plus 1 year"
+    ExpiresByType application/json         "access plus 1 day"
 </IfModule>

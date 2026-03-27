@@ -116,6 +116,11 @@ module.exports = (env, argv) => {
       'import.meta.env.VITE_WOOCOMMERCE_STORE_URL':  JSON.stringify(process.env.VITE_WOOCOMMERCE_STORE_URL  || ''),
       'import.meta.env.VITE_WOOCOMMERCE_CONSUMER_KEY':    JSON.stringify(process.env.VITE_WOOCOMMERCE_CONSUMER_KEY    || ''),
       'import.meta.env.VITE_WOOCOMMERCE_CONSUMER_SECRET': JSON.stringify(process.env.VITE_WOOCOMMERCE_CONSUMER_SECRET || ''),
+
+      // HostGator / headless-WP deployment vars (injected from GitHub Actions secrets)
+      'process.env.REACT_APP_WP_BASE_URL':          JSON.stringify(process.env.REACT_APP_WP_BASE_URL          || ''),
+      'process.env.REACT_APP_WC_CONSUMER_KEY':      JSON.stringify(process.env.REACT_APP_WC_CONSUMER_KEY      || ''),
+      'process.env.REACT_APP_WC_CONSUMER_SECRET':   JSON.stringify(process.env.REACT_APP_WC_CONSUMER_SECRET   || ''),
     }),
 
     // Generate dist/index.html from the project root template

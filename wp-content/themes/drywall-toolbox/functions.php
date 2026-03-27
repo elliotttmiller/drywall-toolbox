@@ -211,3 +211,48 @@ function drywall_toolbox_customize_register_social( $wp_customize ) {
     }
 }
 add_action( 'customize_register', 'drywall_toolbox_customize_register_social' );
+
+/**
+ * Allow the React front-end (served from the domain root) to make
+ * cross-origin requests to the WordPress & WooCommerce REST API endpoints
+ * that live in the /wp subdirectory.
+ *
+ * Uses the officially documented WordPress REST API hook so that CORS headers
+ * are only appended to REST API responses, not to every WordPress page.
+ *
+ * Reference: https://developer.wordpress.org/rest-api/extending-the-rest-api/
+ *            https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+ */
+function drywall_toolbox_rest_cors_headers() {
+    // React app origin — the domain root (no /wp subdir).
+    // Update this value if the front-end domain changes.
+    $allowed_origin = defined( 'REACT_APP_ORIGIN' )
+        ? REACT_APP_ORIGIN
+        : 'https://drywalltoolbox.com';
+
+    // Sanitize the incoming Origin header before any comparison.
+    $request_origin = isset( $_SERVER['HTTP_ORIGIN'] )
+        ? esc_url_raw( wp_unslash( $_SERVER['HTTP_ORIGIN'] ) )
+        : '';
+
+    // Only emit the header when the request actually comes from our React app.
+    if ( $request_origin === $allowed_origin ) {
+        header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $allowed_origin ) );
+    }
+
+    header( 'Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS' );
+    header( 'Access-Control-Allow-Credentials: true' );
+    header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce' );
+
+    // Respond immediately to pre-flight OPTIONS requests.
+    $request_method = isset( $_SERVER['REQUEST_METHOD'] )
+        ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) )
+        : '';
+
+    if ( 'OPTIONS' === $request_method ) {
+        status_header( 200 );
+        exit();
+    }
+}
+add_action( 'rest_api_init', 'drywall_toolbox_rest_cors_headers' );
+
