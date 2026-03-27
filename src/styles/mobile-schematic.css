@@ -225,7 +225,7 @@
     max-width: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
-    image-rendering: crisp-edges !important;
+    image-rendering: auto !important;
     -webkit-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
@@ -259,7 +259,7 @@
     max-width: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
-    image-rendering: crisp-edges !important;
+    image-rendering: auto !important;
     -webkit-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
@@ -295,7 +295,7 @@
     max-width: 100% !important;
     object-fit: contain !important;
     pointer-events: none !important;
-    image-rendering: crisp-edges !important;
+    image-rendering: auto !important;
     -webkit-user-select: none;
     user-select: none;
   }

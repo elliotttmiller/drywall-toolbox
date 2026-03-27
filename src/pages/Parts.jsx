@@ -184,12 +184,20 @@ export default function Parts() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const [startPanPosition, setStartPanPosition] = useState({ x: 0, y: 0 });
-  const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 });
-  const [hasMoved, setHasMoved] = useState(false);
   // Ref to track pinch zoom state without triggering re-renders
   const pinchRef = useRef({ active: false, initDist: 0, initScale: 1, initPanX: 0, initPanY: 0, centerX: 0, centerY: 0 });
-  
+
+  // Live gesture refs — updated every touch-move frame, bypassing React state
+  // to avoid re-renders (and the 0.3s CSS transition they would re-trigger).
+  const liveScaleRef        = useRef(1);
+  const livePanRef          = useRef({ x: 0, y: 0 });
+  const rafRef              = useRef(null);
+  const isGestureActiveRef  = useRef(false);
+  // Single-touch pan tracking (refs instead of state to avoid re-renders)
+  const touchStartPosRef    = useRef({ x: 0, y: 0 });
+  const startPanPositionRef = useRef({ x: 0, y: 0 });
+  const hasMovedRef         = useRef(false);
+
   const schematicContainerRef = useRef(null);
   const schematicImageRef = useRef(null);
 
@@ -753,130 +761,197 @@ export default function Parts() {
       return () => clearTimeout(t);
     }, [selectedSchematic, currentPage]);
 
-  // Touch and zoom handlers for mobile - enhanced with smooth interactions
-  const handleTouchStart = useCallback((e) => {
-    if (e.touches.length === 2) {
-      // Pinch gesture - prevent default and calculate distance
-      e.preventDefault();
-      e.stopPropagation();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      // Record pinch midpoint relative to the container center so we can
-      // keep the focal point stationary as the user zooms.
-      const container = schematicContainerRef.current;
-      const rect = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
-      const midX = (touch1.clientX + touch2.clientX) / 2;
-      const midY = (touch1.clientY + touch2.clientY) / 2;
-      // Offset from container center (our transform-origin)
-      const centerX = midX - (rect.left + rect.width / 2);
-      const centerY = midY - (rect.top + rect.height / 2);
-      pinchRef.current = {
-        active: true,
-        initDist: distance,
-        initScale: scale,
-        initPanX: position.x,
-        initPanY: position.y,
-        centerX,
-        centerY,
-      };
-    } else if (e.touches.length === 1 && scale > 1) {
-      // Pan gesture (only when zoomed in) - store initial position
-      // Don't preventDefault yet - let tap events through
-      setTouchStartPos({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-      });
-      setHasMoved(false);
-      setStartPanPosition({
-        x: e.touches[0].clientX - position.x,
-        y: e.touches[0].clientY - position.y
-      });
+  // Keep live gesture refs in sync with committed React state.
+  // Guarded so we never clobber in-flight gesture values.
+  useEffect(() => {
+    if (!isGestureActiveRef.current) {
+      liveScaleRef.current     = scale;
+      livePanRef.current       = { x: position.x, y: position.y };
     }
   }, [scale, position]);
 
-  const handleTouchMove = useCallback((e) => {
-    if (e.touches.length === 2 && pinchRef.current.active) {
-      // Pinch zoom with smooth scaling towards the pinch midpoint
+  // Helper: apply transform + disable transition directly on the DOM element
+  // (skips React render cycle for 60 fps smoothness during gestures).
+  const applyLiveTransform = useCallback((s, px, py) => {
+    const el = schematicImageRef.current;
+    if (!el) return;
+    el.style.transition = 'none';
+    el.style.transform  = `scale(${s}) translate(${px / s}px, ${py / s}px)`;
+  }, []);
+
+  // Touch and zoom handlers for mobile — smooth, no-jank pinch-zoom & pan
+  const handleTouchStart = useCallback((e) => {
+    if (e.touches.length === 2) {
+      // Pinch gesture — capture initial state
       e.preventDefault();
       e.stopPropagation();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
+
+      isGestureActiveRef.current = true;
+      hasMovedRef.current        = false;
+
+      const touch1   = e.touches[0];
+      const touch2   = e.touches[1];
+      const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+      // Record pinch midpoint relative to the container center
+      const container = schematicContainerRef.current;
+      const rect      = container ? container.getBoundingClientRect() : { left: 0, top: 0, width: 0, height: 0 };
+      const midX      = (touch1.clientX + touch2.clientX) / 2;
+      const midY      = (touch1.clientY + touch2.clientY) / 2;
+      const centerX   = midX - (rect.left + rect.width  / 2);
+      const centerY   = midY - (rect.top  + rect.height / 2);
+
+      // Disable CSS transition immediately (before any paint)
+      const el = schematicImageRef.current;
+      if (el) el.style.transition = 'none';
+
+      pinchRef.current = {
+        active:    true,
+        initDist:  distance,
+        initScale: liveScaleRef.current,
+        initPanX:  livePanRef.current.x,
+        initPanY:  livePanRef.current.y,
+        centerX,
+        centerY,
+      };
+    } else if (e.touches.length === 1 && liveScaleRef.current > 1) {
+      // Single-touch pan (only when zoomed in)
+      isGestureActiveRef.current = true;
+      hasMovedRef.current        = false;
+
+      const touch = e.touches[0];
+      touchStartPosRef.current    = { x: touch.clientX, y: touch.clientY };
+      startPanPositionRef.current = {
+        x: touch.clientX - livePanRef.current.x,
+        y: touch.clientY - livePanRef.current.y,
+      };
+
+      // Disable transition immediately
+      const el = schematicImageRef.current;
+      if (el) el.style.transition = 'none';
+    }
+  }, []); // No state deps — uses only live refs
+
+  const handleTouchMove = useCallback((e) => {
+    if (e.touches.length === 2 && pinchRef.current.active) {
+      // Pinch zoom — direct DOM update, no React setState
+      e.preventDefault();
+      e.stopPropagation();
+
+      const touch1   = e.touches[0];
+      const touch2   = e.touches[1];
+      const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
       const { initDist, initScale, initPanX, initPanY, centerX, centerY } = pinchRef.current;
       const zoomFactor = distance / initDist;
-      const newScale = Math.min(Math.max(zoomFactor * initScale, 1), 4);
+      const newScale   = Math.min(Math.max(zoomFactor * initScale, 1), 4);
 
-      // Adjust pan so the pinch center stays fixed on screen:
-      // newPan = center - (center - initPan) * (newScale / initScale)
-      const ratio = newScale / initScale;
+      // Keep focal point stationary: pan = center − (center − initPan) * (newScale / initScale)
+      const ratio  = newScale / initScale;
       const newPanX = centerX - (centerX - initPanX) * ratio;
       const newPanY = centerY - (centerY - initPanY) * ratio;
 
-      // Clamp pan to valid bounds for the new scale
-      const container = schematicContainerRef.current;
-      const containerW = container ? container.offsetWidth : 400;
+      // Clamp to valid bounds
+      const container  = schematicContainerRef.current;
+      const containerW = container ? container.offsetWidth  : 400;
       const containerH = container ? container.offsetHeight : 400;
-      const maxPanX = ((newScale - 1) * containerW) / 2;
-      const maxPanY = ((newScale - 1) * containerH) / 2;
+      const maxPanX    = ((newScale - 1) * containerW) / 2;
+      const maxPanY    = ((newScale - 1) * containerH) / 2;
+      const clampedX   = Math.min(Math.max(newPanX, -maxPanX), maxPanX);
+      const clampedY   = Math.min(Math.max(newPanY, -maxPanY), maxPanY);
 
-      setScale(newScale);
-      setPosition({
-        x: Math.min(Math.max(newPanX, -maxPanX), maxPanX),
-        y: Math.min(Math.max(newPanY, -maxPanY), maxPanY),
+      // Update live refs (no setState → no React re-render)
+      liveScaleRef.current   = newScale;
+      livePanRef.current     = { x: clampedX, y: clampedY };
+
+      // Apply via rAF for a single paint per frame (cancels any queued rAF)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        applyLiveTransform(newScale, clampedX, clampedY);
       });
-    } else if (e.touches.length === 1 && scale > 1) {
-      // Check distance moved to determine if this is a drag or a tap
-      const touch = e.touches[0];
+
+    } else if (e.touches.length === 1 && liveScaleRef.current > 1) {
+      // Single-touch pan
+      const touch        = e.touches[0];
       const moveDistance = Math.hypot(
-        touch.clientX - touchStartPos.x,
-        touch.clientY - touchStartPos.y
+        touch.clientX - touchStartPosRef.current.x,
+        touch.clientY - touchStartPosRef.current.y
       );
-      
+
       if (moveDistance > 10) {
-        // Only preventDefault if user is actually dragging (threshold: 10px)
-        if (!hasMoved) {
+        if (!hasMovedRef.current) {
           e.preventDefault();
           e.stopPropagation();
-          setHasMoved(true);
-          setIsPanning(true);
+          hasMovedRef.current = true;
+          // Directly set grabbing cursor without triggering a React re-render
+          const containerEl = schematicContainerRef.current;
+          if (containerEl) containerEl.style.cursor = 'grabbing';
         }
-        
-        // Pan when zoomed - smooth panning with dynamic bounds
-        const newX = touch.clientX - startPanPosition.x;
-        const newY = touch.clientY - startPanPosition.y;
-        
-        // Constrain pan based on scale and container size
-        const container = schematicContainerRef.current;
-        const containerW = container ? container.offsetWidth : 400;
+
+        const s          = liveScaleRef.current;
+        const newX       = touch.clientX - startPanPositionRef.current.x;
+        const newY       = touch.clientY - startPanPositionRef.current.y;
+        const container  = schematicContainerRef.current;
+        const containerW = container ? container.offsetWidth  : 400;
         const containerH = container ? container.offsetHeight : 400;
-        const maxPanX = ((scale - 1) * containerW) / 2;
-        const maxPanY = ((scale - 1) * containerH) / 2;
-        
-        setPosition({
-          x: Math.min(Math.max(newX, -maxPanX), maxPanX),
-          y: Math.min(Math.max(newY, -maxPanY), maxPanY),
+        const maxPanX    = ((s - 1) * containerW) / 2;
+        const maxPanY    = ((s - 1) * containerH) / 2;
+        const clampedX   = Math.min(Math.max(newX, -maxPanX), maxPanX);
+        const clampedY   = Math.min(Math.max(newY, -maxPanY), maxPanY);
+
+        livePanRef.current = { x: clampedX, y: clampedY };
+
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+          applyLiveTransform(s, clampedX, clampedY);
         });
       }
     }
-  }, [scale, startPanPosition, touchStartPos, hasMoved]);
+  }, [applyLiveTransform]); // No state deps — uses only live refs
 
   const handleTouchEnd = useCallback((e) => {
-    if (e.touches.length === 0) {
-      pinchRef.current.active = false;
-      setIsPanning(false);
-      setHasMoved(false);
-    } else if (e.touches.length === 1 && pinchRef.current.active) {
-      // Transitioned from pinch to single-touch — reset pinch tracking
-      pinchRef.current.active = false;
+    // Cancel any pending animation frame
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
-  }, []);
+
+    if (e.touches.length === 0) {
+      // All fingers lifted — commit final values to React state
+      pinchRef.current.active    = false;
+      isGestureActiveRef.current = false;
+      hasMovedRef.current        = false;
+
+      const finalScale = liveScaleRef.current;
+      const finalPan   = { ...livePanRef.current };
+
+      // Apply final transform with no transition before React takes over
+      applyLiveTransform(finalScale, finalPan.x, finalPan.y);
+
+      // Reset cursor
+      const containerEl = schematicContainerRef.current;
+      if (containerEl) containerEl.style.cursor = '';
+
+      // Sync React state (single batched re-render with correct final values)
+      setScale(finalScale);
+      setPosition(finalPan);
+      setIsPanning(false);
+
+    } else if (e.touches.length === 1 && pinchRef.current.active) {
+      // One finger lifted during pinch — transition to single-touch pan
+      pinchRef.current.active = false;
+      hasMovedRef.current     = false;
+
+      // Set up pan tracking from the remaining finger
+      const remainingTouch        = e.touches[0];
+      touchStartPosRef.current    = { x: remainingTouch.clientX, y: remainingTouch.clientY };
+      startPanPositionRef.current = {
+        x: remainingTouch.clientX - livePanRef.current.x,
+        y: remainingTouch.clientY - livePanRef.current.y,
+      };
+      // isGestureActiveRef stays true — still in a potential pan
+    }
+  }, [applyLiveTransform]);
 
   // Setup non-passive touch event listeners to allow preventDefault
   useEffect(() => {
@@ -1281,7 +1356,7 @@ export default function Parts() {
                       height: 'auto',
                       display: 'block', 
                       pointerEvents: 'none',
-                      imageRendering: 'crisp-edges',
+                      imageRendering: 'auto',
                       WebkitTouchCallout: 'none',
                       WebkitUserSelect: 'none',
                       userSelect: 'none',
