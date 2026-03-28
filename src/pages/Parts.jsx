@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import Toast from '../components/Toast';
 import BrandSelector from '../components/BrandSelector';
 import ToolSelector from '../components/ToolSelector';
 import { loadProducts } from '../data/products';
+import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import '../styles/mobile-schematic.css';
 
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
@@ -145,6 +147,14 @@ const columbiaBoxFillerPreview = `${_BASE}brands/Columbia/Schematics/Pumps/BoxFi
 const columbiaCornerCobraImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/CORNER-COBRA-SCHEMATIC.2024-enhanced.png`;
 const columbiaCornerCobraPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/NEWCORNERCOBRA-scaled.png`;
 
+// Build a static schematic-id → brand lookup from SCHEMATIC_DEFINITIONS so the
+// URL-param handler can resolve the correct brand without needing the full
+// schematics array (which is built inside the component).
+const SCHEMATIC_ID_TO_BRAND = {};
+Object.entries(SCHEMATIC_DEFINITIONS).forEach(([brand, list]) => {
+  list.forEach(({ id }) => { SCHEMATIC_ID_TO_BRAND[id] = brand; });
+});
+
 export default function Parts() {
   // Allowed brands to display
   const ALLOWED_BRANDS = [
@@ -154,6 +164,8 @@ export default function Parts() {
     'SurPro',
     'Graco'
   ];
+
+  const location = useLocation();
 
   // Selection flow state
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -212,6 +224,17 @@ export default function Parts() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Pre-select brand + schematic when a ?schematic=<id> query param is present
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const schematicId = params.get('schematic');
+    if (!schematicId) return;
+    const brand = SCHEMATIC_ID_TO_BRAND[schematicId];
+    if (!brand) return;
+    setSelectedBrand(brand);
+    setSelectedSchematic(schematicId);
+  }, [location.search]);
 
   // Schematic data for tools
 

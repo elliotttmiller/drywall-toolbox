@@ -1,9 +1,10 @@
 /**
  * schematicMappings.js
- * 
+ *
  * Cross-reference between schematic IDs (from Parts.jsx) and product names/SKUs
  * in the products catalog. This allows us to show only products that have
- * detailed schematics in the TrendingProducts component.
+ * detailed schematics in the TrendingProducts component, and to link product
+ * detail pages to the correct replacement-parts schematic diagram.
  */
 
 // Defined schematics from Parts.jsx organized by brand
@@ -161,4 +162,139 @@ export function getSchematicToProductMap(allProducts) {
   });
   
   return map;
+}
+
+/**
+ * Returns the schematic ID that best matches the given product, or null if
+ * no schematic exists for it.  Currently covers Columbia Taping Tools only.
+ *
+ * Matching priority: more-specific keyword checks always appear before
+ * catch-all checks for the same product family.
+ *
+ * @param {Object} product - A product object from the catalog
+ * @returns {string|null} schematic ID (e.g. 'columbia-flat-box') or null
+ */
+export function getSchematicIdForProduct(product) {
+  if (!product) return null;
+  // Currently only Columbia Taping Tools products have schematics
+  if (product.brand !== 'Columbia Taping Tools') return null;
+
+  const name = (product.name || '').toLowerCase();
+
+  // ── Handles ──────────────────────────────────────────────────────────────
+  if (name.includes('closet monster')) return 'columbia-closet-monster-flat-box-handle';
+  // "Matrix Extendable" and "Short Matrix" handles are the Matrix handle system
+  if (name.includes('matrix') && name.includes('handle') && !name.includes('long extendable')) return 'columbia-matrix';
+  // The Long Extendable Handle (56"–76") is its own schematic
+  if (name.includes('long extendable') && name.includes('handle')) return 'columbia-long-extendable-handle';
+  // Flat Box Handles (180-Grip, Featherweight, Bent, or plain)
+  if (name.includes('flat box handle')) return 'columbia-flat-box-handle';
+
+  // ── Automatic Tapers ─────────────────────────────────────────────────────
+  // Check for predator/automatic taper BEFORE checking "columbia one" handle
+  if (name.includes('predator') && name.includes('taper')) return 'columbia-predator-taper';
+  if (name.includes('carbon fiber') && name.includes('taper')) return 'columbia-predator-taper';
+  if (name.includes('automatic taper')) return 'columbia-predator-taper';
+  if (name.includes('sawed off') && name.includes('taper')) return 'columbia-predator-taper';
+  if (name.includes('mini automatic taper')) return 'columbia-predator-taper';
+
+  // ── Semi-Automatic Tapers ────────────────────────────────────────────────
+  if (name.includes('semi-automatic') || name.includes('semi auto')) return 'columbia-semi-automatic-taper';
+  if (name.includes('semi automatic')) return 'columbia-semi-automatic-taper';
+
+  // ── Columbia One Handle (after taper checks above) ───────────────────────
+  if (name.includes('columbia one') && !name.includes('taper') && !name.includes('predator')) return 'columbia-one';
+  if (name.includes('one handle') && !name.includes('taper')) return 'columbia-one';
+  if (name.includes('one extendable') && name.includes('handle') && !name.includes('taper')) return 'columbia-one';
+
+  // ── Finishing Boxes ───────────────────────────────────────────────────────
+  // Throttle Box (angle box) before generic flat box
+  if (name.includes('throttle') || name.includes('throttlebox') || name.includes('angle box')) return 'columbia-throttle-box';
+  // Inside-Track Fat Boy before generic Fat Boy
+  if (name.includes('inside track') && name.includes('fat boy')) return 'columbia-fat-boy-box';
+  // Automatic Assist before generic fat-boy or flat box
+  if (name.includes('automatic assist') && name.includes('flat box')) return 'columbia-automatic-flat-box';
+  // Fat Boy (no automatic assist) – also covers Fat Boy combos
+  if (name.includes('fat boy') && (name.includes('flat box') || name.includes('finisher') || name.includes('finishing'))) return 'columbia-fat-boy-box';
+  // Hinged flat finisher / plain flat box
+  if (name.includes('flat box') || name.includes('flat finisher box') || name.includes('finishing box')) return 'columbia-flat-box';
+
+  // ── Compound Tubes ────────────────────────────────────────────────────────
+  if (name.includes('cam-lock') || name.includes('cam lock')) return 'columbia-cam-lock-tube';
+  if (
+    name.includes('compound mud tube') ||
+    name.includes('compound tube') ||
+    (name.includes('drywall corner finishing') && name.includes('tube'))
+  ) return 'columbia-compound-tube';
+
+  // ── Corner Applicators ────────────────────────────────────────────────────
+  if (name.includes('corner cobra')) return 'columbia-corner-cobra';
+  if (name.includes('inside corner applicator')) return 'columbia-inside-corner-applicator';
+  if (
+    name.includes('2-way internal corner') ||
+    name.includes('two-way internal corner') ||
+    name.includes('inside 90 applicator') ||
+    name.includes('inside 90 degree mud head')
+  ) return 'columbia-2-way-internal-corner';
+  if (
+    name.includes('external corner applicator') ||
+    (name.includes('outside 90 corner') && name.includes('applicator')) ||
+    name.includes('outside corner bead mud applicator') ||
+    name.includes('outside 90 corner applicator head') ||
+    name.includes('l-trim mud applicator') ||
+    name.includes('outside corner applicator')
+  ) return 'columbia-external-corner-applicator';
+
+  // ── Corner Rollers ────────────────────────────────────────────────────────
+  if (name.includes('standard outside 90 corner bead roller')) return 'columbia-standard-outside-corner-roller';
+  if (name.includes('superwide outside 90')) return 'columbia-standard-outside-corner-roller';
+  if (name.includes('outside bullnose corner roller')) return 'columbia-standard-outside-corner-roller';
+  // "Outside Corner Bead Roller" without "applicator" text
+  if (name.includes('outside') && name.includes('corner bead roller')) return 'columbia-standard-outside-corner-roller';
+  if (name.includes('inside corner roller')) return 'columbia-inside-corner-roller';
+  if (name.includes('corner roller')) return 'columbia-inside-corner-roller';
+
+  // ── Corner Flushers ───────────────────────────────────────────────────────
+  if (name.includes('combo flusher')) return 'columbia-combo-flusher';
+  if (
+    (name.includes('direct') && name.includes('corner flusher')) ||
+    name.includes('widetrack direct')
+  ) return 'columbia-direct-corner-flusher';
+  if (name.includes('corner flusher')) return 'columbia-standard-corner-flusher';
+
+  // ── Pumps / Loading ───────────────────────────────────────────────────────
+  if (name.includes('box filler')) return 'columbia-box-filler';
+  if (name.includes('tall boy') && (name.includes('pump') || name.includes('loading'))) return 'columbia-tall-boy-mud-pump';
+  if (name.includes('gooseneck')) return 'columbia-gooseneck-adapter';
+  if (name.includes('hot mud pump') || (name.includes('mud pump') && !name.includes('tall boy'))) return 'columbia-mud-pump';
+
+  // ── Angle Heads ───────────────────────────────────────────────────────────
+  if (name.includes('angle head')) return 'columbia-angle-head';
+
+  // ── Nail Spotters ─────────────────────────────────────────────────────────
+  if (name.includes('nail spotter') || name.includes('nailspotter')) return 'columbia-nailspotter';
+
+  // ── Smoothing Blades ──────────────────────────────────────────────────────
+  if (
+    name.includes('tomahawk') ||
+    name.includes('sabre smoothing blade') ||
+    name.includes('smoothing blade') ||
+    name.includes('tomalock')
+  ) return 'columbia-tomahawk-smoothing-blades';
+
+  // ── Sanders ───────────────────────────────────────────────────────────────
+  if (name.includes('sander') || name.includes('pole sander')) return 'columbia-sander-head';
+
+  return null;
+}
+
+/**
+ * Builds the URL path for the Parts page pre-selected to a given schematic.
+ *
+ * @param {string} schematicId  - e.g. 'columbia-flat-box'
+ * @returns {string} URL path   - e.g. '/parts?schematic=columbia-flat-box'
+ */
+export function buildPartsUrl(schematicId) {
+  if (!schematicId) return '/parts';
+  return `/parts?schematic=${encodeURIComponent(schematicId)}`;
 }

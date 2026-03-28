@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Reviews from './Reviews';
@@ -10,6 +11,7 @@ import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
 import asgardLogo from '/brands/Asgard/asgard_logo.svg';
 import gracoLogo from '/brands/Graco/graco_logo.svg';
+import { getSchematicIdForProduct, buildPartsUrl } from '../data/schematicMappings';
 
 const BRAND_LOGOS = {
   'Columbia Taping Tools': columbiaLogo,
@@ -26,6 +28,10 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
   const [activeTab, setActiveTab] = useState('description');
 
   if (!product) return null;
+
+  // Determine if this product has a matching schematic diagram
+  const schematicId = getSchematicIdForProduct(product);
+  const partsUrl = schematicId ? buildPartsUrl(schematicId) : null;
 
   const handleAddToCart = () => {
     if (onAddToCart) {
@@ -226,6 +232,29 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
                     </div>
                   ) : (
                     <p className="text-gray-500">No description available.</p>
+                  )}
+
+                  {/* Replacement Parts Section – shown only when a schematic exists */}
+                  {partsUrl && (
+                    <div className="mt-8 pt-6 border-t border-gray-200">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                        Find replacement parts for this tool here
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        View the official schematic diagram to identify and order the exact replacement parts you need.
+                      </p>
+                      <Link
+                        to={partsUrl}
+                        onClick={onClose}
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors text-sm sm:text-base"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <circle cx="11" cy="11" r="8" />
+                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        View Parts Schematic
+                      </Link>
+                    </div>
                   )}
                 </div>
               )}
