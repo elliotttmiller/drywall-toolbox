@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Reviews from './Reviews';
 import { useCart } from '../context/CartContext';
 import { Heart, Plus, Minus, X } from 'lucide-react';
@@ -217,46 +219,10 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
                   )}
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Description</h3>
                   {product.description_full ? (
-                    <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-3 sm:space-y-4 text-sm sm:text-base">
-                      {product.description_full.split(/\n\n+/).map((paragraph, idx) => {
-                        const trimmed = paragraph.trim();
-                        if (!trimmed) return null;
-                        
-                        // Check if it's a bullet point or list item
-                        if (trimmed.match(/^[-•*]\s/)) {
-                          const items = trimmed.split(/\n/).filter(line => line.trim());
-                          return (
-                            <ul key={idx} className="list-none space-y-1.5 sm:space-y-2 ml-0">
-                              {items.map((item, i) => (
-                                <li key={i} className="text-gray-700">
-                                  <strong className="font-semibold text-gray-900">
-                                    {item.replace(/^[-•*]\s*/, '').split('–')[0]}
-                                  </strong>
-                                  {item.includes('–') && (
-                                    <span> – {item.split('–').slice(1).join('–')}</span>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        }
-                        
-                        // Check if it looks like a heading (short, no period at end)
-                        if (trimmed.length < 60 && !trimmed.endsWith('.') && !trimmed.endsWith(',')) {
-                          return (
-                            <h4 key={idx} className="font-bold text-sm sm:text-base text-gray-900 mt-4 sm:mt-6 first:mt-0">
-                              {trimmed}
-                            </h4>
-                          );
-                        }
-                        
-                        // Regular paragraph
-                        return (
-                          <p key={idx} className="text-gray-700 leading-relaxed text-sm sm:text-base">
-                            {trimmed}
-                          </p>
-                        );
-                      })}
+                    <div className="prose prose-sm max-w-none text-gray-700 prose-headings:text-gray-900 prose-strong:text-gray-900 prose-table:text-sm prose-th:font-semibold prose-th:text-gray-900 prose-td:text-gray-700">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {product.description_full}
+                      </ReactMarkdown>
                     </div>
                   ) : (
                     <p className="text-gray-500">No description available.</p>
