@@ -1,0 +1,57 @@
+name: Deploy WordPress Theme & Plugin to HostGator
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'themes/**'
+      - 'plugins/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: FTP Deploy to HostGator
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Full history so changed-files detection works
+
+      - name: Deploy themes and plugins via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server:           ${{ secrets.HOSTGATOR_FTP_HOST }}
+          username:         ${{ secrets.HOSTGATOR_FTP_USER }}
+          password:         ${{ secrets.HOSTGATOR_FTP_PASS }}
+          # HostGator shared hosting: deploy into wp-content/
+          server-dir:       /public_html/wp-content/
+          local-dir:        ./
+          # Only sync theme and plugin directories
+          include:          |
+            themes/**
+            plugins/**
+          # Exclude sensitive and development-only files
+          exclude:          |
+            **/.git/**
+            **/.github/**
+            **/node_modules/**
+            **/.env
+            **/.env.*
+            **/logs/**
+            **/*.log
+            **/dist/**
+            **/build/**
+            **/coverage/**
+            **/.DS_Store
+            **/wp-config.php
+            **/.htaccess
+          # Safety: log what will be transferred but do not delete remote files
+          # that are not in the local source (preserves WP core & uploads).
+          dangerous-clean-slate: false
+          log-level:        standard
+          dry-run:          false

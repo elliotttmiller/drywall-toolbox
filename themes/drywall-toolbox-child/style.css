@@ -1,0 +1,328 @@
+/*
+Theme Name: Drywall Toolbox Child
+Theme URI: https://drywalltoolbox.com
+Description: Child theme for Drywall Toolbox — Industrial Professional design override.
+Author: Drywall Toolbox
+Author URI: https://drywalltoolbox.com
+Template: twentytwentyfour
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: drywall-toolbox-child
+*/
+
+/* =========================================================
+   INDUSTRIAL PROFESSIONAL — Design Tokens (CSS Variables)
+   ========================================================= */
+:root {
+  /* Brand Colors */
+  --dtb-primary:        #1a1a2e;   /* Deep navy — authority, precision */
+  --dtb-secondary:      #16213e;   /* Dark slate — structural depth */
+  --dtb-accent:         #e94560;   /* Industrial red — calls to action */
+  --dtb-accent-alt:     #f5a623;   /* Amber yellow — warnings / highlights */
+  --dtb-surface:        #0f3460;   /* Mid-blue — card surfaces */
+  --dtb-bg:             #f4f4f4;   /* Off-white page background */
+  --dtb-bg-dark:        #1a1a2e;   /* Dark section backgrounds */
+  --dtb-text:           #1c1c1c;   /* Near-black body text */
+  --dtb-text-light:     #ffffff;   /* White text on dark surfaces */
+  --dtb-text-muted:     #6b7280;   /* Muted / secondary labels */
+  --dtb-border:         #d1d5db;   /* Subtle borders */
+  --dtb-border-dark:    #374151;   /* Dark-mode borders */
+
+  /* Typography */
+  --dtb-font-heading:   'Oswald', 'Impact', 'Arial Narrow', sans-serif;
+  --dtb-font-body:      'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  --dtb-font-mono:      'Courier New', Courier, monospace;
+
+  --dtb-fs-xs:   0.75rem;    /* 12px */
+  --dtb-fs-sm:   0.875rem;   /* 14px */
+  --dtb-fs-base: 1rem;       /* 16px */
+  --dtb-fs-lg:   1.125rem;   /* 18px */
+  --dtb-fs-xl:   1.25rem;    /* 20px */
+  --dtb-fs-2xl:  1.5rem;     /* 24px */
+  --dtb-fs-3xl:  1.875rem;   /* 30px */
+  --dtb-fs-4xl:  2.25rem;    /* 36px */
+
+  /* Spacing */
+  --dtb-space-xs:  0.25rem;
+  --dtb-space-sm:  0.5rem;
+  --dtb-space-md:  1rem;
+  --dtb-space-lg:  1.5rem;
+  --dtb-space-xl:  2rem;
+  --dtb-space-2xl: 3rem;
+  --dtb-space-3xl: 4rem;
+
+  /* Radii */
+  --dtb-radius-sm:  3px;
+  --dtb-radius-md:  6px;
+  --dtb-radius-lg:  12px;
+
+  /* Shadows */
+  --dtb-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.20);
+  --dtb-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --dtb-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.30);
+}
+
+/* =========================================================
+   BASE — Mobile-first global resets
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--dtb-font-body);
+  font-size: var(--dtb-fs-base);
+  line-height: 1.6;
+  color: var(--dtb-text);
+  background-color: var(--dtb-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--dtb-font-heading);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--dtb-primary);
+  margin-top: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+a {
+  color: var(--dtb-accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover,
+a:focus {
+  color: var(--dtb-accent-alt);
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =========================================================
+   BUTTONS — High-contrast Industrial style
+   ========================================================= */
+.wp-block-button__link,
+.dtb-btn {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  font-family: var(--dtb-font-heading);
+  font-size: var(--dtb-fs-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid transparent;
+  border-radius: var(--dtb-radius-md);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.dtb-btn-primary,
+.wp-block-button__link {
+  background-color: var(--dtb-accent);
+  color: var(--dtb-text-light);
+  border-color: var(--dtb-accent);
+}
+
+.dtb-btn-primary:hover,
+.wp-block-button__link:hover {
+  background-color: #c73652;
+  border-color: #c73652;
+  color: var(--dtb-text-light);
+  text-decoration: none;
+}
+
+.dtb-btn-secondary {
+  background-color: transparent;
+  color: var(--dtb-primary);
+  border-color: var(--dtb-primary);
+}
+
+.dtb-btn-secondary:hover {
+  background-color: var(--dtb-primary);
+  color: var(--dtb-text-light);
+  text-decoration: none;
+}
+
+/* =========================================================
+   HEADER / NAVIGATION
+   ========================================================= */
+.site-header {
+  background-color: var(--dtb-primary);
+  border-bottom: 3px solid var(--dtb-accent);
+  padding: var(--dtb-space-md) 0;
+}
+
+.site-branding .site-title a {
+  font-family: var(--dtb-font-heading);
+  font-size: var(--dtb-fs-2xl);
+  color: var(--dtb-text-light);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.site-branding .site-description {
+  font-size: var(--dtb-fs-sm);
+  color: var(--dtb-accent-alt);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+/* Primary Navigation */
+.primary-navigation ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dtb-space-sm);
+}
+
+.primary-navigation a {
+  font-family: var(--dtb-font-heading);
+  font-size: var(--dtb-fs-sm);
+  font-weight: 700;
+  color: var(--dtb-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--dtb-space-xs) var(--dtb-space-sm);
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.primary-navigation a:hover,
+.primary-navigation .current-menu-item > a {
+  color: var(--dtb-accent);
+  border-color: var(--dtb-accent);
+  text-decoration: none;
+}
+
+/* =========================================================
+   HERO / BANNER SECTION
+   ========================================================= */
+.dtb-hero {
+  background: linear-gradient(135deg, var(--dtb-primary) 0%, var(--dtb-surface) 100%);
+  color: var(--dtb-text-light);
+  padding: var(--dtb-space-3xl) var(--dtb-space-md);
+  text-align: center;
+}
+
+.dtb-hero h1 {
+  color: var(--dtb-text-light);
+  font-size: clamp(var(--dtb-fs-3xl), 6vw, var(--dtb-fs-4xl));
+  margin-bottom: var(--dtb-space-md);
+}
+
+.dtb-hero p {
+  font-size: var(--dtb-fs-lg);
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 600px;
+  margin: 0 auto var(--dtb-space-xl);
+}
+
+/* =========================================================
+   CARDS / PRODUCT TILES
+   ========================================================= */
+.dtb-card {
+  background-color: #ffffff;
+  border: 1px solid var(--dtb-border);
+  border-radius: var(--dtb-radius-lg);
+  box-shadow: var(--dtb-shadow-sm);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dtb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--dtb-shadow-md);
+}
+
+.dtb-card__body {
+  padding: var(--dtb-space-lg);
+}
+
+.dtb-card__title {
+  font-size: var(--dtb-fs-xl);
+  margin-bottom: var(--dtb-space-sm);
+}
+
+.dtb-card__meta {
+  font-size: var(--dtb-fs-sm);
+  color: var(--dtb-text-muted);
+  margin-bottom: var(--dtb-space-md);
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.site-footer {
+  background-color: var(--dtb-bg-dark);
+  color: rgba(255, 255, 255, 0.75);
+  padding: var(--dtb-space-2xl) var(--dtb-space-md) var(--dtb-space-md);
+  font-size: var(--dtb-fs-sm);
+  border-top: 3px solid var(--dtb-accent);
+}
+
+.site-footer a {
+  color: var(--dtb-accent-alt);
+}
+
+.site-footer a:hover {
+  color: #ffffff;
+}
+
+.site-footer .site-info {
+  text-align: center;
+  padding-top: var(--dtb-space-md);
+  border-top: 1px solid var(--dtb-border-dark);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* =========================================================
+   UTILITIES
+   ========================================================= */
+.dtb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================================
+   RESPONSIVE — Tablet (640px+)
+   ========================================================= */
+@media (min-width: 640px) {
+  .dtb-hero {
+    padding: var(--dtb-space-3xl) var(--dtb-space-xl);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — Desktop (1024px+)
+   ========================================================= */
+@media (min-width: 1024px) {
+  .dtb-hero {
+    padding: calc(var(--dtb-space-3xl) * 1.5) var(--dtb-space-2xl);
+  }
+
+  .dtb-hero h1 {
+    font-size: var(--dtb-fs-4xl);
+  }
+}

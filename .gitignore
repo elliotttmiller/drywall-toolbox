@@ -13,3 +13,46 @@ coverage/
 .amazonq
 .venv
 
+# ---------------------------------------------------------------
+# WordPress — NEVER commit these files
+# ---------------------------------------------------------------
+
+# Core WordPress files (only themes/ and plugins/ belong in this repo)
+wp-admin/
+wp-includes/
+wp-*.php
+xmlrpc.php
+license.txt
+readme.html
+
+# Sensitive configuration — provide snippets in README.md instead
+wp-config.php
+wp-config-local.php
+wp-config-*.php
+
+# Server configuration — provide snippets in README.md instead
+.htaccess
+
+# WordPress uploads (binary assets; use Media Library, not Git)
+wp-content/uploads/
+
+# WordPress object/page cache
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+
+# WordPress core wp-content sub-directories (when a full WP install is present)
+# NOTE: themes/ and plugins/ at the repo root are our source code and ARE tracked.
+wp-content/plugins/
+wp-content/themes/
+
+# Composer / PHP dependency directories
+vendor/
+
+# OS artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
