@@ -1,6 +1,6 @@
 import {PassThrough} from 'stream';
 import {renderToPipeableStream} from 'react-dom/server';
-import {RemixServer} from 'react-router-dom';
+import {RemixServer} from 'react-router';
 import {isbot} from 'isbot';
 import {addDocumentResponseHeaders} from '@shopify/hydrogen';
 

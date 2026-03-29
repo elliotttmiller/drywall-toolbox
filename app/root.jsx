@@ -8,8 +8,7 @@ import {
   useLoaderData,
   useRouteError,
   isRouteErrorResponse,
-} from 'react-router-dom';
-import {Analytics} from '@shopify/hydrogen';
+} from 'react-router';
 import {CartProvider} from '~/context/CartContext';
 import {VeeqoProvider} from '~/context/VeeqoContext';
 import Header from '~/components/Header';
@@ -30,9 +29,6 @@ export async function loader({context}) {
     publicStoreDomain: env?.PUBLIC_STORE_DOMAIN || '',
     publicStorefrontToken: env?.PUBLIC_STOREFRONT_API_TOKEN || '',
     storefrontApiVersion: env?.PUBLIC_STOREFRONT_API_VERSION || '2024-10',
-    shopAnalytics: {
-      shopId: env?.PUBLIC_STOREFRONT_ID || '',
-    },
   };
 }
 
@@ -66,8 +62,7 @@ function ShopifyConfigInjector({publicStoreDomain, publicStorefrontToken, storef
 }
 
 export default function App() {
-  const {publicStoreDomain, publicStorefrontToken, storefrontApiVersion, shopAnalytics} =
-    useLoaderData();
+  const {publicStoreDomain, publicStorefrontToken, storefrontApiVersion} = useLoaderData();
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
@@ -89,7 +84,6 @@ export default function App() {
             <Footer />
           </div>
           <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
-          <Analytics.Provider shopId={shopAnalytics.shopId} />
         </CartProvider>
       </VeeqoProvider>
     </>

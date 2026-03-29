@@ -1,0 +1,192 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  :root {
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    
+    /* Accent colors now match primary blue for consistency */
+    --color-accent-50: #eff6ff;
+    --color-accent-100: #dbeafe;
+    --color-accent-200: #bfdbfe;
+    --color-accent-300: #93c5fd;
+    --color-accent-400: #60a5fa;
+    --color-accent-500: #2563eb;
+    --color-accent-600: #1d4ed8;
+    --color-accent-700: #1e40af;
+    --color-accent-800: #1e3a8a;
+    --color-accent-900: #1e3a8a;
+  }
+
+  /* GLOBAL FIX: Scroll padding for anchor links */
+  html {
+    scroll-padding-top: var(--header-height, 70px);
+  }
+
+  body {
+    @apply bg-white text-gray-900 antialiased;
+    margin: 0;
+    padding: 0;
+  }
+
+  main {
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+  }
+}
+
+/* UTILITY: Page wrapper - primarily for styling/organization
+   Header spacing is handled globally by body { padding-top: var(--header-height) }
+   This class is kept for semantic organization of page containers */
+
+/* Mobile optimization: ensure no conflicting padding from page internals */
+@media (max-width: 639px) {
+  /* Remove top padding from first child divs that might add extra spacing */
+  .page-wrapper > div:first-child {
+    padding-top: 0 !important;
+  }
+}
+
+/* Mobile responsive spacing adjustments */
+@media (max-width: 768px) {
+  .home-hero-section {
+    padding: 100px 20px 80px !important;
+    min-height: auto !important;
+  }
+  
+  .schematic-section {
+    padding: 80px 20px 20px !important;
+  }
+  
+  .site-footer {
+    padding: 40px 20px !important;
+  }
+}
+
+/* About page responsive grids */
+@media (max-width: 768px) {
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .about-stat-item {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    padding: 28px 16px !important;
+  }
+
+  .about-mission-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  .about-features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .about-features-grid {
+    gap: 12px !important;
+  }
+}
+
+/* ===== CRITICAL: Mobile Zoom Prevention for Input Fields ===== */
+/* 
+  iOS Safari auto-zooms on input focus if font-size < 16px.
+  Setting font-size: 16px prevents the zoom behavior.
+  This is a critical mobile UX optimization.
+*/
+
+/* All input elements */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+textarea,
+select {
+  /* Prevent iOS Safari zoom on focus */
+  font-size: 16px !important;
+  /* Improve touch targeting */
+  padding: 12px 10px;
+  /* Smooth focus transition */
+  transition: all 0.2s ease-out;
+  /* Prevent text scaling */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Specific mobile search input - ensure no zoom */
+.mobile-search-input {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 8px;
+}
+
+/* Prevent browser default styling on iOS */
+input,
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Disable iOS Safari zoom on input focus */
+  font-size: 16px;
+}
+
+/* Prevent zoom on input focus for iPhone */
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Disable double-tap zoom on buttons and clickable elements */
+button,
+a,
+[role="button"],
+.mobile-search-result-item {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* Prevent text selection delay on touch devices */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scrolling on iOS */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

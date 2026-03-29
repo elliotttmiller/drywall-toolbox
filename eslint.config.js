@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'build', 'node_modules', '.react-router']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -15,8 +15,7 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
-        // webpack DefinePlugin replaces process.env.* at compile time
-        process: 'readonly',
+        ...globals.node,
       },
       parserOptions: {
         ecmaVersion: 'latest',

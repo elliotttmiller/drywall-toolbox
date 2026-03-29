@@ -1,5 +1,5 @@
-import {json} from 'react-router-dom';
-import {useLoaderData} from 'react-router-dom';
+import {json} from 'react-router';
+import {useLoaderData} from 'react-router';
 import {normalizeProduct} from '~/lib/normalizeProduct';
 import {PRODUCT_QUERY} from '~/lib/shopify.server';
 import Product from '~/pages/Product';

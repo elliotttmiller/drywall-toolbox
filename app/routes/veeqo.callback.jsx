@@ -1,4 +1,4 @@
-import {json} from 'react-router-dom';
+import {json} from 'react-router';
 import VeeqoCallback from '~/pages/VeeqoCallback';
 
 export const meta = () => [

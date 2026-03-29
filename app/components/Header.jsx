@@ -1,4 +1,4 @@
-﻿import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useCart } from '~/context/CartContext';
 import { ShoppingCart, Menu, X, ChevronDown } from 'lucide-react';

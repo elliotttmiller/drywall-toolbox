@@ -1,4 +1,4 @@
-import {json} from 'react-router-dom';
+import {json} from 'react-router';
 import Products from '~/pages/Products';
 
 export const meta = () => [

@@ -1,4 +1,4 @@
-import {json} from 'react-router-dom';
+import {json} from 'react-router';
 import Home from '~/pages/Home';
 
 export const meta = () => [

@@ -1,0 +1,1133 @@
+/*
+  MOBILE SCHEMATIC VIEWER ENHANCEMENTS
+  Optimized for touch interaction, zoom, and pan with full responsiveness
+*/
+
+/* =============================================
+   ROOT FLUID SIZING
+   Base responsive scaling across all viewports
+   ============================================= */
+:root {
+  /* Responsive spacing based on viewport width */
+  --spacing-xs: clamp(8px, 2vw, 12px);
+  --spacing-sm: clamp(12px, 2.5vw, 16px);
+  --spacing-md: clamp(16px, 3vw, 24px);
+  --spacing-lg: clamp(20px, 4vw, 32px);
+  --spacing-xl: clamp(28px, 5vw, 40px);
+  
+  /* Responsive text sizing */
+  --text-xs: clamp(12px, 2vw, 14px);
+  --text-sm: clamp(13px, 2.2vw, 16px);
+  --text-base: clamp(14px, 2.5vw, 18px);
+  --text-lg: clamp(16px, 3vw, 20px);
+  --text-xl: clamp(18px, 3.5vw, 24px);
+  
+  /* Responsive border radius */
+  --radius-sm: clamp(4px, 1vw, 6px);
+  --radius-md: clamp(6px, 1.5vw, 8px);
+  --radius-lg: clamp(8px, 2vw, 12px);
+}
+
+/* =============================================
+   MOBILE OVERLAY MODAL
+   Rendered outside the CSS transform context so
+   position:fixed always anchors to the viewport.
+   Hidden on desktop; shown only on mobile.
+   ============================================= */
+
+/* Hidden by default (desktop) */
+.mobile-modal-backdrop,
+.mobile-part-modal-overlay {
+  display: none;
+}
+
+/* Show overlay elements only on mobile */
+@media (max-width: 768px) {
+  .mobile-modal-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10200;
+    animation: backdropFadeIn 220ms ease-out;
+  }
+
+  @keyframes backdropFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .mobile-part-modal-overlay {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10300;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.28),
+      0 8px 20px rgba(0, 0, 0, 0.14),
+      0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    padding: 24px 20px 20px;
+    /* Responsive width — never wider than the screen */
+    width: min(calc(100vw - 40px), 380px);
+    max-height: min(calc(100vh - 120px), 80vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    pointer-events: auto;
+    animation: overlaySlideIn 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes overlaySlideIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -44%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  /* On mobile, hide the in-hotspot modal since the overlay handles it */
+  .hotspot .part-modal {
+    display: none !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .mobile-part-modal-overlay {
+    width: min(calc(100vw - 28px), 340px);
+    max-height: min(calc(100vh - 100px), 75vh);
+    padding: 20px 16px 16px;
+    border-radius: 18px;
+  }
+
+  .mobile-modal-close-btn {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Notch-safe area support */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .mobile-part-modal-overlay {
+      max-width: min(
+        calc(100vw - max(20px, env(safe-area-inset-left)) - max(20px, env(safe-area-inset-right))),
+        380px
+      );
+      max-height: min(
+        calc(100vh - max(40px, env(safe-area-inset-top)) - max(60px, env(safe-area-inset-bottom))),
+        80vh
+      );
+    }
+  }
+}
+
+/* =============================================
+   MOBILE SECTION PADDING & LAYOUT
+   Fully responsive padding and spacing
+   ============================================= */
+@media (max-width: 480px) {
+  /* Side padding only — top padding is handled per-page via var(--header-height) */
+  .section-enter:not(.fullscreen-mode) {
+    padding-left: clamp(8px, 1.5vw, 12px) !important;
+    padding-right: clamp(8px, 1.5vw, 12px) !important;
+  }
+
+  /* Fullscreen mode (Parts page mobile): push below fixed header */
+  .fullscreen-mode {
+    padding: var(--header-height, 70px) 0 0 !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Side padding only — top padding is handled per-page via var(--header-height) */
+  .section-enter:not(.fullscreen-mode) {
+    padding-left: clamp(10px, 2vw, 16px) !important;
+    padding-right: clamp(10px, 2vw, 16px) !important;
+  }
+
+  /* Fullscreen mode (Parts page mobile): push below fixed header */
+  .fullscreen-mode {
+    padding: var(--header-height, 70px) 0 0 !important;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Side padding only — top padding is handled per-page via var(--header-height) */
+  .section-enter:not(.fullscreen-mode) {
+    padding-left: clamp(16px, 2.5vw, 24px) !important;
+    padding-right: clamp(16px, 2.5vw, 24px) !important;
+  }
+
+  /* Fullscreen mode is never applied on desktop (isFullscreen = isMobile in Parts.jsx) */
+  .fullscreen-mode {
+    padding: var(--header-height, 70px) 0 0 !important;
+  }
+}
+
+/* =============================================
+   SCHEMATIC CONTAINER — RESPONSIVE ACROSS ALL SIZES
+   Fluid sizing, proper aspect ratio handling, and full viewport utilization
+   ============================================= */
+.schematic-container {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--machined-border);
+  padding: 0;
+  margin: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: pan-x pan-y pinch-zoom;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* Ultra-small phones (320px - 480px): Compact sizing */
+@media (max-width: 480px) {
+  .schematic-container {
+    min-height: clamp(300px, 70vh, 450px);
+    border-radius: var(--radius-sm);
+    flex: 1 !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Transform wrapper: must size to the image so hotspot % positions align correctly */
+  .schematic-container > div[style*="position: relative"] {
+    flex: 0 0 auto !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .schematic-container img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+    image-rendering: auto !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+}
+
+/* Tablets and larger phones (481px - 768px): Medium sizing */
+@media (min-width: 481px) and (max-width: 768px) {
+  .schematic-container {
+    min-height: clamp(380px, 75vh, 600px);
+    border-radius: var(--radius-md);
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    position: relative !important;
+  }
+
+  /* Transform wrapper: must size to the image so hotspot % positions align correctly */
+  .schematic-container > div[style*="position: relative"] {
+    flex: 0 0 auto !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .schematic-container img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+    image-rendering: auto !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+}
+
+/* Desktop and large tablets (769px+): Full sizing */
+@media (min-width: 769px) {
+  .schematic-container {
+    min-height: clamp(500px, 80vh, 100vh);
+    height: 100%;
+    border-radius: var(--radius-lg);
+    padding-top: 0;
+    overflow: hidden;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+
+  /* Transform wrapper: must size to the image so hotspot % positions align correctly */
+  .schematic-container > div[style*="position: relative"] {
+    flex: 0 0 auto !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .schematic-container img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+    image-rendering: auto !important;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Large desktop (1200px+): Maximum comfort */
+@media (min-width: 1200px) {
+  .schematic-container {
+    min-height: clamp(600px, 85vh, 100vh);
+  }
+}
+
+/* =============================================
+   HOTSPOTS — MOBILE TOUCH TARGETS
+   Responsive across all screen sizes with proper scaling
+   ============================================= */
+.hotspot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  /* Allow inline styles to override default dimensions for flexible hotspot sizes */
+  box-sizing: border-box;
+}
+
+/* Desktop (1024px+): Small precise hotspots with hover effects */
+@media (min-width: 1024px) {
+  .hotspot {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    transition: transform 180ms ease-out, box-shadow 180ms ease-out, background-color 180ms ease-out;
+  }
+
+  .hotspot-rectangle {
+    border-radius: 1px;
+  }
+}
+
+/* Tablet landscape (769px - 1023px): Medium hotspots */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .hotspot {
+    min-width: 12px;
+    min-height: 12px;
+    transition: transform 180ms ease-out, box-shadow 180ms ease-out, background-color 180ms ease-out;
+  }
+
+  .hotspot-rectangle {
+    min-width: 14px !important;
+    min-height: 10px !important;
+    border-radius: 1px;
+  }
+}
+
+/* Tablet portrait & large phones (481px - 768px): Larger hotspots */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hotspot {
+    min-width: 16px;
+    min-height: 16px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: auto !important;
+    transition: none !important;
+  }
+
+  .hotspot:hover {
+    transform: translate(-50%, -50%) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .hotspot-rectangle {
+    min-width: 18px !important;
+    min-height: 12px !important;
+    border-radius: 1px;
+  }
+}
+
+/* Small phones (max-width: 480px): Extra large hotspots for better touchability */
+@media (max-width: 480px) {
+  .hotspot {
+    min-width: 20px;
+    min-height: 20px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: auto !important;
+    transition: none !important;
+  }
+
+  .hotspot:hover {
+    transform: translate(-50%, -50%) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .hotspot-rectangle {
+    min-width: 22px !important;
+    min-height: 14px !important;
+    border-radius: 1px;
+  }
+}
+
+/* Extra small phones (max-width: 360px): Responsive scaling */
+@media (max-width: 360px) {
+  .hotspot {
+    min-width: 16px;
+    min-height: 16px;
+  }
+
+  .hotspot-rectangle {
+    min-width: 18px !important;
+    min-height: 12px !important;
+  }
+}
+
+/* =============================================
+   SCHEMATIC ZOOM CONTROLS — RESPONSIVE TOOLBAR
+   Mobile (floating, bottom-center) & Desktop (inline, top-left)
+   Sleek, subtle, and minimalist design with fluid sizing
+   ============================================= */
+.schematic-zoom-controls {
+  display: none; /* hidden by default */
+  position: fixed;
+  bottom: max(var(--spacing-md), env(safe-area-inset-bottom, 16px));
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(6px, 1.5vw, 10px);
+  z-index: 900;
+  pointer-events: none;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.schematic-zoom-controls > * {
+  pointer-events: auto;
+}
+
+/* Mobile: Floating toolbar at bottom */
+@media (max-width: 480px) {
+  .schematic-zoom-controls {
+    display: flex;
+    animation: slideInFromBottom 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
+    gap: clamp(4px, 1vw, 6px);
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .schematic-zoom-controls {
+    display: flex;
+    animation: slideInFromBottom 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
+    gap: clamp(6px, 1.5vw, 8px);
+  }
+}
+
+/* Desktop: Inline toolbar at top-left, integrated with schematic container */
+@media (min-width: 769px) {
+  .schematic-zoom-controls {
+    position: absolute;
+    top: clamp(10px, 1.5vw, 16px);
+    left: clamp(10px, 1.5vw, 16px);
+    right: auto;
+    bottom: auto;
+    transform: none;
+    z-index: 100;
+    display: flex;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    padding: clamp(6px, 1.5vw, 10px) clamp(8px, 1.5vw, 12px);
+    border-radius: 10px;
+    gap: clamp(4px, 1vw, 6px);
+  }
+}
+
+/* Mobile: additional zoom control styles */
+@media (max-width: 768px) {
+  .zoom-control-btn {
+    transition: none !important;
+  }
+
+  .zoom-control-btn:active {
+    transform: none;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .zoom-control-btn:focus-visible {
+    outline: none;
+  }
+
+  @keyframes slideInFromBottom {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+}
+
+/* Desktop: tablet-size zoom controls adjustments */
+@media (min-width: 769px) {
+  .zoom-control-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  .zoom-control-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .zoom-indicator {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    min-width: 40px;
+  }
+}
+
+/* Safe area for devices with home indicator */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .section-enter:not(.fullscreen-mode) {
+      padding-left: max(12px, env(safe-area-inset-left)) !important;
+      padding-right: max(12px, env(safe-area-inset-right)) !important;
+    }
+  }
+}
+
+.zoom-control-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  padding: 0;
+}
+
+.zoom-control-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.zoom-control-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.zoom-control-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.zoom-control-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+.reset-btn {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: rgba(248, 113, 113, 0.9);
+}
+
+.reset-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: rgba(248, 113, 113, 0.95);
+}
+
+.reset-btn:active {
+  background: rgba(239, 68, 68, 0.24);
+}
+
+@media (max-width: 480px) {
+  .schematic-zoom-controls {
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .zoom-control-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  .zoom-control-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
+  }
+}
+
+/* =============================================
+   SCHEMATIC PAGER — FULLY RESPONSIVE
+   ============================================= */
+.schematic-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.5vw, 8px);
+  padding: clamp(6px, 1.5vw, 10px) clamp(8px, 2vw, 12px);
+  background: rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-lg);
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 480px) {
+  .schematic-pager-top {
+    padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px) !important;
+    gap: clamp(4px, 1vw, 6px) !important;
+    margin-bottom: clamp(8px, 2vw, 12px) !important;
+  }
+
+  .pager-pill {
+    width: clamp(32px, 8vw, 36px) !important;
+    height: clamp(32px, 8vw, 36px) !important;
+    font-size: clamp(11px, 2vw, 13px) !important;
+    padding: clamp(6px, 1.5vw, 8px) !important;
+  }
+
+  .pager-pill svg {
+    width: clamp(12px, 3vw, 14px);
+    height: clamp(12px, 3vw, 14px);
+    stroke-width: 2.5;
+  }
+
+  .pager-counter {
+    font-size: clamp(11px, 2vw, 13px);
+    padding: 0 clamp(6px, 1.5vw, 8px);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .schematic-pager-top {
+    padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 12px) !important;
+    gap: clamp(6px, 1.5vw, 8px) !important;
+    margin-bottom: clamp(10px, 2vw, 14px) !important;
+  }
+
+  .pager-pill {
+    width: clamp(36px, 8vw, 40px) !important;
+    height: clamp(36px, 8vw, 40px) !important;
+    font-size: clamp(12px, 2vw, 14px) !important;
+    padding: clamp(8px, 1.5vw, 10px) !important;
+  }
+
+  .pager-pill svg {
+    width: clamp(14px, 3vw, 16px);
+    height: clamp(14px, 3vw, 16px);
+    stroke-width: 2.5;
+  }
+
+  .pager-counter {
+    font-size: clamp(12px, 2vw, 14px);
+    padding: 0 clamp(8px, 2vw, 12px);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 769px) {
+  .schematic-pager {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .schematic-pager-top {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .pager-pill {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 0.85rem !important;
+    padding: 8px !important;
+    transition: all 0.2s ease-out;
+  }
+
+  .pager-pill svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
+  }
+
+  .pager-counter {
+    font-size: 0.9rem;
+    padding: 0 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+/* =============================================
+   SCHEMATIC TITLE CONTAINER — MOBILE RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .schematic-title-container {
+    margin-bottom: 12px !important;
+    padding: 10px 12px !important;
+    border-radius: 6px !important;
+    gap: 8px !important;
+    flex-direction: column !important;
+  }
+
+  .schematic-title-container h3 {
+    font-size: 0.9rem !important;
+    text-align: center !important;
+    white-space: normal !important;
+    margin: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .schematic-title-container {
+    margin-bottom: 10px !important;
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+
+  .schematic-title-container h3 {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* =============================================
+   FULLSCREEN MODE
+   ============================================= */
+.fullscreen-mode .schematic-container {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .fullscreen-mode .schematic-container {
+    min-height: calc(100vh - 120px);
+  }
+}
+
+/* Mobile: ensure the back button is visible, clickable, and has proper touch target size */
+@media (max-width: 768px) {
+  .back-button {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .back-button:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .back-button:active {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .back-button svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .back-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    min-height: 40px;
+  }
+
+  .back-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Desktop: ensure the top-left "Back" button in schematic view sits above
+   the fixed site header and remains visible and clickable. Also add a subtle
+   background so it remains readable over schematic images. */
+@media (min-width: 769px) {
+  .back-button {
+    position: relative;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+    color: var(--text-primary);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  /* When hovering on desktop, keep the subtle translate but ensure it's
+     visible and doesn't move under the header. */
+  .back-button:hover {
+    transform: translateX(-4px);
+  }
+
+  .back-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* =============================================
+   MISCELLANEOUS
+   ============================================= */
+/* Prevent text selection during pan gestures */
+.schematic-container[style*="cursor: grab"],
+.schematic-container[style*="cursor: grabbing"] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Scrollbar for schematic image */
+.schematic-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* High-DPI displays: use high-quality rendering */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .schematic-container img {
+    image-rendering: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* =============================================
+   TABLET SCHEMATIC ENHANCEMENTS (641px - 1024px)
+   Mobile-first scaling with improved touch UX
+   ============================================= */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Tablet modal: larger and better positioned */
+  .mobile-part-modal-overlay {
+    width: min(calc(100vw - 48px), 420px);
+    max-height: min(calc(100vh - 140px), 85vh);
+    padding: 28px 24px 24px;
+    border-radius: 16px;
+    box-shadow:
+      0 28px 70px rgba(0, 0, 0, 0.24),
+      0 10px 24px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  .mobile-modal-close-btn {
+    width: 36px;
+    height: 36px;
+    top: 14px;
+    right: 14px;
+    border-radius: 10px;
+  }
+
+  /* Tablet backdrop: slightly more visible */
+  .mobile-modal-backdrop {
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  /* Schematic container spacing */
+  .schematic-container {
+    margin-bottom: 2rem;
+    border-radius: 8px;
+  }
+
+  /* Hotspots: smaller, more precise touch targets on tablet */
+  .hotspot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  /* Schematic pager: better visibility on tablet */
+  .schematic-pager {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .pager-pill {
+    width: 40px;
+    height: 40px;
+    font-size: 0.95rem;
+  }
+
+  .pager-counter {
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    border-radius: 999px;
+  }
+
+  /* Compact controls: tablet sizing */
+  .compact-controls {
+    flex-direction: row;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .compact-select {
+    min-width: 160px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    min-height: 44px;
+    background-position: right 12px center;
+  }
+
+  .compact-select:focus {
+    box-shadow: 0 12px 32px rgba(2, 6, 23, 0.1);
+  }
+
+  /* Section padding: balanced for tablet */
+  section:not(.fullscreen-mode) {
+    padding: 2.5rem 1.5rem !important;
+  }
+
+  /* Filter bar: tablet-friendly */
+  .schematic-filter-bar {
+    padding: 1.25rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Ensure smooth interactions */
+  .hotspot,
+  .pager-pill,
+  .compact-select,
+  button[class*="modal"] {
+    transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Part modal content spacing */
+  .part-modal h3,
+  .mobile-part-modal-overlay h3 {
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .part-modal p,
+  .mobile-part-modal-overlay p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Part modal list items */
+  .part-modal ul,
+  .mobile-part-modal-overlay ul {
+    margin: 1rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .part-modal li,
+  .mobile-part-modal-overlay li {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Action buttons in modal */
+  .part-modal .btn-add-to-cart,
+  .mobile-part-modal-overlay .btn-add-to-cart {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  /* Improved spacing for readability on tablet */
+  .part-modal .part-modal-section,
+  .mobile-part-modal-overlay section {
+    margin-bottom: 1rem;
+  }
+
+  .part-modal .part-modal-section:last-child,
+  .mobile-part-modal-overlay section:last-child {
+    margin-bottom: 0;
+  }
+}
+
+
+
+/* =============================================
+   NAVIGATION HOTSPOTS
+   Clickable overlay zones that navigate between
+   schematic pages (e.g. click head → head detail)
+   ============================================= */
+
+/* Base navigation hotspot */
+.nav-hotspot {
+  position: absolute;
+  cursor: pointer;
+  border: 2px dashed rgba(56, 189, 248, 0.55);
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.07);
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 4px 6px;
+  transition: background 200ms ease, border-color 200ms ease;
+  box-sizing: border-box;
+  -webkit-touch-callout: none;
+  user-select: none;
+  animation: navHotspotPulse 3s ease-in-out infinite;
+}
+
+@keyframes navHotspotPulse {
+  0%,  100% { border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.06); }
+  50%        { border-color: rgba(56, 189, 248, 0.75); background: rgba(56, 189, 248, 0.12); }
+}
+
+.nav-hotspot:hover,
+.nav-hotspot:focus-visible {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.90);
+  animation: none;
+}
+
+.nav-hotspot:active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 1);
+}
+
+/* Label badge inside each nav hotspot */
+.nav-hotspot-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(14, 165, 233, 0.88);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.nav-hotspot:hover .nav-hotspot-label,
+.nav-hotspot:focus-visible .nav-hotspot-label {
+  opacity: 1;
+}
+
+/* On mobile, always show the label (no hover) */
+@media (max-width: 768px) {
+  .nav-hotspot {
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgba(56, 189, 248, 0.60);
+    background: rgba(56, 189, 248, 0.09);
+    animation: none;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .nav-hotspot-label {
+    opacity: 1;
+    font-size: 0.55rem;
+    padding: 2px 5px;
+  }
+}
+
+/* Arrow icon inside the label */
+.nav-hotspot-label svg {
+  flex-shrink: 0;
+  stroke: #fff;
+}

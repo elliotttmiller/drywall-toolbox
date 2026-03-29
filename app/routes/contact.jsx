@@ -1,4 +1,4 @@
-import {json, redirect} from 'react-router-dom';
+import {json, redirect} from 'react-router';
 import Contact from '~/pages/Contact';
 
 export const meta = () => [

@@ -1,4 +1,4 @@
-import {json} from 'react-router-dom';
+import {json} from 'react-router';
 import VeeqoSettings from '~/pages/VeeqoSettings';
 
 export const meta = () => [

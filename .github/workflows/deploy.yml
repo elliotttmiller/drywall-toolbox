@@ -1,62 +1,43 @@
-name: Deploy WordPress Theme & Plugin to HostGator
+name: Deploy to Shopify Oxygen
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'wp/wp-content/**'
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: FTP Deploy to HostGator
+    name: Build & Deploy to Oxygen
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      deployments: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Debug repository layout
-        run: |
-          echo "PWD=$(pwd)"
-          echo "-- root files --"
-          ls -la
-          echo "-- wp folder --"
-          ls -la wp || true
-          echo "-- wp/wp-content --"
-          ls -la wp/wp-content || true
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Deploy themes and plugins via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Build Hydrogen app
+        run: npm run build
+        env:
+          PUBLIC_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          PUBLIC_STOREFRONT_API_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_API_TOKEN }}
+          PRIVATE_STOREFRONT_API_TOKEN: ${{ secrets.SHOPIFY_PRIVATE_STOREFRONT_TOKEN }}
+          PUBLIC_STOREFRONT_API_VERSION: '2024-10'
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+
+      - name: Deploy to Oxygen
+        uses: shopify/oxygenctl-action@v1
         with:
-          server: ${{ secrets.HOSTGATOR_FTP_HOST }}
-          username: ${{ secrets.HOSTGATOR_FTP_USER }}
-          password: ${{ secrets.HOSTGATOR_FTP_PASS }}
-          protocol: ftps
-          port: 21
-          server-dir: /wp-content/
-          local-dir: ./wp/wp-content/
-          exclude: |
-            **/.git*
-            **/.github/**
-            **/node_modules/**
-            **/*.log
-            **/.env*
-            **/.gitignore
-            **/README.md
-            **/twentytwenty*/**
-            **/yith-wonder/**
-            **/*.bak
-          dangerous-clean-slate: false
-          log-level: verbose
-          dry-run: false
-          timeout: 60000
-
-      - name: Deployment complete
-        if: always()
-        run: echo "✓ Deployed to HostGator at $(date)"
+          oxygen-deployment-token: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN }}
+          path: ./build/worker
