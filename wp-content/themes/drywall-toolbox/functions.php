@@ -9,6 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+// Load WooCommerce taxonomy setup helper (idempotent; self-guards via get_option flag).
+require_once get_template_directory() . '/inc/setup-taxonomy.php';
+
+// Load image download & WebP conversion helper (chunked; admin-URL or WP-CLI triggered).
+require_once get_template_directory() . '/inc/image-optimizer.php';
+
 /**
  * Set up theme defaults and register support for various WordPress features.
  */
