@@ -1,0 +1,201 @@
+import { useState } from 'react';
+import Reviews from './Reviews';
+import DOMPurify from 'dompurify';
+import { useCart } from '~/context/CartContext';
+import { ShoppingCart, Heart, Plus, Minus, Star, Package, Truck, Shield, ChevronRight } from 'lucide-react';
+
+function cleanDescription(s) {
+  if (!s) return '';
+  const cleaned = s.replace(/^\s*Product Details Resources\s*[:\-–—]?\s*/i, '').trim();
+  return cleaned.replace(/\s{2,}/g, ' ');
+}
+
+function renderSpecObject(obj) {
+  if (!obj) return null;
+  if (obj.full_description) {
+    const fd = cleanDescription(String(obj.full_description));
+    const looksLikeHtml = /<[^>]+>/.test(fd);
+    if (looksLikeHtml) {
+      const clean = DOMPurify.sanitize(fd);
+      return <div dangerouslySetInnerHTML={{ __html: clean }} />;
+    }
+    return (
+      <div className="space-y-3 text-sm text-gray-700">
+        {fd.split(/\r?\n\s*\r?\n/).map((para, i) => (
+          <p key={i}>{para.trim()}</p>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+      {Object.entries(obj).map(([k, v]) => (
+        <li key={k} className="wrap-break-word">
+          <strong className="text-gray-900">{k}:</strong>{' '}
+          {typeof v === 'object' ? <pre className="inline whitespace-pre-wrap">{JSON.stringify(v)}</pre> : <span>{cleanDescription(String(v))}</span>}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default function ProductDetail({ product, onAddToCart, onClose }) {
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  if (!product) return null;
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product, quantity);
+    } else {
+      // fallback to cart context
+      addToCart(product, quantity);
+    }
+    // close the modal naturally after adding to cart when provided
+    try {
+      if (typeof onClose === 'function') {
+        setTimeout(() => onClose(), 220);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  const incrementQuantity = () => setQuantity(prev => prev + 1);
+  const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  const onQuantityChange = (e) => {
+    const v = parseInt(e.target.value, 10);
+    if (Number.isNaN(v) || v < 1) return setQuantity(1);
+    setQuantity(v);
+  };
+
+  const price = product.price || 0;
+  const displayPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+
+  return (
+    <div className="bg-linear-to-br from-white via-white to-gray-50 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 p-6 lg:p-8">
+        {/* Product Image Section */}
+        <div className="lg:col-span-2">
+          <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden aspect-square flex items-center justify-center p-8 border-2 border-gray-200 shadow-inner">
+            {product.image ? (
+              <img src={product.image} alt={product.name} className="object-contain w-full h-full hover:scale-105 transition-transform duration-300" />
+            ) : (
+              <div className="text-gray-300"><ShoppingCart size={80} strokeWidth={1.5} /></div>
+            )}
+          </div>
+
+          {/* Features Icons */}
+          <div className="grid grid-cols-3 gap-3 mt-4">
+            <div className="bg-white rounded-lg p-3 text-center shadow-sm border border-gray-100">
+              <Truck className="w-5 h-5 mx-auto mb-1 text-primary-600" />
+              <p className="text-xs text-gray-600 font-medium">Fast Shipping</p>
+            </div>
+            <div className="bg-white rounded-lg p-3 text-center shadow-sm border border-gray-100">
+              <Shield className="w-5 h-5 mx-auto mb-1 text-green-600" />
+              <p className="text-xs text-gray-600 font-medium">Warranty</p>
+            </div>
+            <div className="bg-white rounded-lg p-3 text-center shadow-sm border border-gray-100">
+              <Package className="w-5 h-5 mx-auto mb-1 text-accent-600" />
+              <p className="text-xs text-gray-600 font-medium">In Stock</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Details Section */}
+        <div className="lg:col-span-3 flex flex-col">
+          {/* Brand & Rating */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="inline-block px-3 py-1 bg-primary-100 text-primary-700 text-sm font-semibold rounded-full">{product.brand}</span>
+              <div className="text-sm text-gray-500">Reviews below</div>
+          </div>
+
+          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3 leading-tight">{product.name}</h1>
+
+          {product.part_number && (
+            <p className="text-sm text-gray-500 mb-4">Part #: <span className="font-mono font-medium text-gray-700">{product.part_number}</span></p>
+          )}
+
+          {product.short_description && <p className="text-gray-700 mb-6 leading-relaxed">{product.short_description}</p>}
+
+          <div className="bg-linear-to-r from-primary-50 to-accent-50 rounded-xl p-6 mb-6 border border-primary-100">
+            <div className="flex items-baseline gap-3">
+              <span className="text-5xl font-bold text-gray-900">${displayPrice}</span>
+              <span className="text-gray-500 line-through text-xl">${(parseFloat(displayPrice) * 1.2).toFixed(2)}</span>
+              <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">-20%</span>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">Free shipping on orders over $500</p>
+          </div>
+
+          <div className="flex flex-wrap gap-4 mb-6 items-center">
+            {/* Modernized quantity control */}
+            <div className="quantity-control">
+              <button
+                type="button"
+                onClick={decrementQuantity}
+                className="quantity-btn quantity-decrease"
+                aria-label="Decrease quantity"
+              >
+                <Minus size={18} />
+              </button>
+
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={onQuantityChange}
+                className="quantity-input"
+                aria-label="Quantity"
+              />
+
+              <button
+                type="button"
+                onClick={incrementQuantity}
+                className="quantity-btn quantity-increase"
+                aria-label="Increase quantity"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+
+            <button onClick={handleAddToCart} className="btn-add-to-cart" aria-label="Add to cart">
+              <ShoppingCart size={20} />
+              <span>Add to Cart</span>
+            </button>
+
+            <button onClick={() => setIsWishlisted(!isWishlisted)} className={`btn-wishlist ${isWishlisted ? 'wishlisted' : ''}`} aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
+              <Heart size={20} className={isWishlisted ? 'fill-current' : ''} />
+            </button>
+          </div>
+
+          {product.specifications && (
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="flex items-center gap-2 font-bold text-xl text-gray-900 mb-4"><ChevronRight className="text-primary-600" size={24} /> Specifications</h3>
+              <div className="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">
+                {typeof product.specifications === 'string' ? (() => {
+                  try {
+                    const parsed = JSON.parse(product.specifications);
+                    return renderSpecObject(parsed);
+                  } catch {
+                    const cleaned = cleanDescription(product.specifications);
+                    const looksLikeHtml = /<[^>]+>/.test(cleaned);
+                    if (looksLikeHtml) {
+                      const safe = DOMPurify.sanitize(cleaned);
+                      return <div dangerouslySetInnerHTML={{ __html: safe }} />;
+                    }
+                    return <pre className="whitespace-pre-wrap">{cleaned}</pre>;
+                  }
+                })() : renderSpecObject(product.specifications)}
+              </div>
+            </div>
+          )}
+          {/* Reviews: replace placeholder UI with real-time reviews component */}
+          <Reviews productId={product.part_number || product.id || product.name} />
+        </div>
+      </div>
+    </div>
+  );
+}
