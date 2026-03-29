@@ -1,0 +1,744 @@
+{
+  "id": "1774452060368",
+  "title": "predator_taper_body",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "CT119",
+      "name": "CT119",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT119A",
+      "name": "CT119A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT121B",
+      "name": "CT121B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA362",
+      "name": "FA362",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT120",
+      "name": "CT120",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT118A",
+      "name": "CT118A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA292",
+      "name": "FA292",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT106A",
+      "name": "CT106A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA298",
+      "name": "FA298",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT115",
+      "name": "CT115",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT123A",
+      "name": "CT123A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP23A",
+      "name": "MP23A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT117A",
+      "name": "CT117A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT122A",
+      "name": "CT122A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT116A",
+      "name": "CT116A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT116A",
+      "name": "CT116A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT116A",
+      "name": "CT116A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT115A",
+      "name": "CT115A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA237",
+      "name": "FA237",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP9C",
+      "name": "MP9C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT104",
+      "name": "CT104",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT105",
+      "name": "CT105",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT130",
+      "name": "CT130",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA249",
+      "name": "FA249",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT127",
+      "name": "CT127",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA207",
+      "name": "FA207",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA218",
+      "name": "FA218",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CTA128",
+      "name": "CTA128",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA234",
+      "name": "FA234",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT103",
+      "name": "CT103",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA295",
+      "name": "FA295",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA342",
+      "name": "FA342",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT128A",
+      "name": "CT128A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA291",
+      "name": "FA291",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA286",
+      "name": "FA286",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA286",
+      "name": "FA286",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT107",
+      "name": "CT107",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT112",
+      "name": "CT112",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT110",
+      "name": "CT110",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT111",
+      "name": "CT111",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT109",
+      "name": "CT109",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT72",
+      "name": "CT72",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT126PA",
+      "name": "CT126PA",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CPT125B",
+      "name": "CPT125B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT124B",
+      "name": "CT124B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT124A",
+      "name": "CT124A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA374",
+      "name": "FA374",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA207",
+      "name": "FA207",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "CT119": {
+      "id": "CT119",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 40.23661222108794,
+      "y_pct": 10.500009766006485,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT119A": {
+      "id": "CT119A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 33.17665888872685,
+      "y_pct": 15.299970701980545,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT121B": {
+      "id": "CT121B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 51.913341111273155,
+      "y_pct": 15.250000000000002,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA362": {
+      "id": "FA362",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 49.903317777453694,
+      "y_pct": 19.59996093597406,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT120": {
+      "id": "CT120",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 63.099999999999994,
+      "y_pct": 9.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT118A": {
+      "id": "CT118A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66.88998833309027,
+      "y_pct": 15.65,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA292": {
+      "id": "FA292",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 86.44999999999999,
+      "y_pct": 9.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT106A": {
+      "id": "CT106A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 87.03667055563659,
+      "y_pct": 15.399980467987032,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA298": {
+      "id": "FA298",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 87.33998833309028,
+      "y_pct": 20.999970701980544,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT115": {
+      "id": "CT115",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 94.43667055563658,
+      "y_pct": 22.449843743896245,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT123A": {
+      "id": "CT123A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 43.55,
+      "y_pct": 26.25,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP23A": {
+      "id": "MP23A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 69.6,
+      "y_pct": 25.550000000000004,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT117A": {
+      "id": "CT117A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 44.65,
+      "y_pct": 33.849999999999994,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT122A": {
+      "id": "CT122A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 59.10000000000001,
+      "y_pct": 35.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT116A": {
+      "id": "CT116A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 82.5,
+      "y_pct": 40.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT115A": {
+      "id": "CT115A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 88.25,
+      "y_pct": 34.79995116996758,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA237": {
+      "id": "FA237",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 95.55,
+      "y_pct": 42.650000000000006,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP9C": {
+      "id": "MP9C",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 83.6,
+      "y_pct": 49.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT104": {
+      "id": "CT104",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 81.15,
+      "y_pct": 54.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT105": {
+      "id": "CT105",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.1,
+      "y_pct": 58.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT130": {
+      "id": "CT130",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 14.953317777453696,
+      "y_pct": 37.19998046798703,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA249": {
+      "id": "FA249",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 33.226658888726845,
+      "y_pct": 38.599990233993516,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT127": {
+      "id": "CT127",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 20.799999999999997,
+      "y_pct": 49.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA207": {
+      "id": "FA207",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 50.75,
+      "y_pct": 96.25,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA218": {
+      "id": "FA218",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 35.2,
+      "y_pct": 52.95,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CTA128": {
+      "id": "CTA128",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 7,
+      "y_pct": 54.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA234": {
+      "id": "FA234",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 20.75,
+      "y_pct": 55.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT103": {
+      "id": "CT103",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 45.15,
+      "y_pct": 48.95,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA295": {
+      "id": "FA295",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 46.95,
+      "y_pct": 39.849999999999994,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA342": {
+      "id": "FA342",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 6,
+      "y_pct": 61.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT128A": {
+      "id": "CT128A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 25.099999999999998,
+      "y_pct": 61.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA291": {
+      "id": "FA291",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.95,
+      "y_pct": 78.25,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA286": {
+      "id": "FA286",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 26.45,
+      "y_pct": 70.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT107": {
+      "id": "CT107",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 33.2,
+      "y_pct": 66.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT112": {
+      "id": "CT112",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 38.55,
+      "y_pct": 83.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT110": {
+      "id": "CT110",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 32.9,
+      "y_pct": 88.05000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT111": {
+      "id": "CT111",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 30.3,
+      "y_pct": 92.95,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT109": {
+      "id": "CT109",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 22.213329444363428,
+      "y_pct": 93.95001953201296,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT72": {
+      "id": "CT72",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 14.366647221817122,
+      "y_pct": 94.79999023399353,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT126PA": {
+      "id": "CT126PA",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 72.87002333381946,
+      "y_pct": 57.65,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CPT125B": {
+      "id": "CPT125B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 55.53335277818288,
+      "y_pct": 77.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT124B": {
+      "id": "CT124B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.75,
+      "y_pct": 71.19999999999999,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT124A": {
+      "id": "CT124A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 57.4,
+      "y_pct": 84.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA374": {
+      "id": "FA374",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 39.75,
+      "y_pct": 95.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "navHotspots": [],
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
+}

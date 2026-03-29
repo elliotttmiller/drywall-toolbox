@@ -1,0 +1,759 @@
+{
+  "id": "1774487185507",
+  "title": "fat_boy_box",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FFB 32A",
+      "name": "FFB 32A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 280",
+      "name": "FA 280",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FF8 32",
+      "name": "FF8 32",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 268",
+      "name": "FA 268",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 238",
+      "name": "FA 238",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 7A",
+      "name": "FFB 7A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FF8 12",
+      "name": "FF8 12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 16A",
+      "name": "FFB 16A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 11",
+      "name": "FFB 11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FF8 19",
+      "name": "FF8 19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 230",
+      "name": "FA 230",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 232",
+      "name": "FA 232",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 233",
+      "name": "FA 233",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 2A",
+      "name": "FFB 2A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 221",
+      "name": "FA 221",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 19",
+      "name": "FFB 19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 258",
+      "name": "FA 258",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 2S-10",
+      "name": "FFB 2S-10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 9-10",
+      "name": "FFB 9-10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FF8A 10-10",
+      "name": "FF8A 10-10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 8",
+      "name": "FFB 8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 238",
+      "name": "FA 238",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 7",
+      "name": "FFB 7",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 247",
+      "name": "FA 247",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 231",
+      "name": "FA 231",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 12",
+      "name": "FFB 12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HFFB 1A",
+      "name": "HFFB 1A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FF8 4C",
+      "name": "FF8 4C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 231",
+      "name": "FA 231",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 44",
+      "name": "FFB 44",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 43",
+      "name": "FFB 43",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 41",
+      "name": "FFB 41",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 37",
+      "name": "FFB 37",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 38",
+      "name": "FFB 38",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 268",
+      "name": "FA 268",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 42",
+      "name": "FFB 42",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 275",
+      "name": "FA 275",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 40-10",
+      "name": "FFB 40-10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB SA",
+      "name": "FFB SA",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 271",
+      "name": "FA 271",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 279",
+      "name": "FA 279",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 272",
+      "name": "FA 272",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 4A",
+      "name": "FFB 4A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 16",
+      "name": "FFB 16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HFBB 14-10",
+      "name": "HFBB 14-10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 271",
+      "name": "FA 271",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HFB 17",
+      "name": "HFB 17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FFB 4B",
+      "name": "FFB 4B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 241",
+      "name": "FA 241",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FFB 32A": {
+      "id": "FFB 32A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 36.65,
+      "y_pct": 6.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 280": {
+      "id": "FA 280",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 40.5,
+      "y_pct": 6.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FF8 32": {
+      "id": "FF8 32",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 44.3,
+      "y_pct": 6.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 268": {
+      "id": "FA 268",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 32,
+      "y_pct": 70.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 238": {
+      "id": "FA 238",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 82.7,
+      "y_pct": 76.9,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 7A": {
+      "id": "FFB 7A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 55.599999999999994,
+      "y_pct": 6.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FF8 12": {
+      "id": "FF8 12",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 63.550000000000004,
+      "y_pct": 3.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 16A": {
+      "id": "FFB 16A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 74.65666254682955,
+      "y_pct": 3.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 11": {
+      "id": "FFB 11",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.63553705882367,
+      "y_pct": 3.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FF8 19": {
+      "id": "FF8 19",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.16666254682954,
+      "y_pct": 3.7199999999999998,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 230": {
+      "id": "FA 230",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.41666254682953,
+      "y_pct": 9.32,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 232": {
+      "id": "FA 232",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.36000000000001,
+      "y_pct": 14.636668459621028,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 233": {
+      "id": "FA 233",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 69.9,
+      "y_pct": 17.650000000000002,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 2A": {
+      "id": "FFB 2A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 71.29999999999998,
+      "y_pct": 22.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 221": {
+      "id": "FA 221",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.25,
+      "y_pct": 23.95,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 19": {
+      "id": "FFB 19",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 73.85,
+      "y_pct": 29.149986991543894,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 258": {
+      "id": "FA 258",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.25,
+      "y_pct": 37.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 2S-10": {
+      "id": "FFB 2S-10",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.4,
+      "y_pct": 49.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 9-10": {
+      "id": "FFB 9-10",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.85,
+      "y_pct": 34.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FF8A 10-10": {
+      "id": "FF8A 10-10",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.30000000000001,
+      "y_pct": 65.4,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 8": {
+      "id": "FFB 8",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 87.1,
+      "y_pct": 73.7,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 7": {
+      "id": "FFB 7",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 78.42443822215355,
+      "y_pct": 79.79990894080726,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 247": {
+      "id": "FA 247",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 73.94999999999999,
+      "y_pct": 83.30000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 231": {
+      "id": "FA 231",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 47.099999999999994,
+      "y_pct": 85.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 12": {
+      "id": "FFB 12",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 57.150000000000006,
+      "y_pct": 83.30000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HFFB 1A": {
+      "id": "HFFB 1A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 51.7,
+      "y_pct": 76.9,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FF8 4C": {
+      "id": "FF8 4C",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 45.95,
+      "y_pct": 76.9,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 44": {
+      "id": "FFB 44",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 41.7,
+      "y_pct": 92.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 43": {
+      "id": "FFB 43",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 39.448887837662014,
+      "y_pct": 86.85000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 41": {
+      "id": "FFB 41",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 36.92443822215356,
+      "y_pct": 81.43333916997199,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 37": {
+      "id": "FFB 37",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 34.45,
+      "y_pct": 76,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 38": {
+      "id": "FFB 38",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 42.8,
+      "y_pct": 70.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 42": {
+      "id": "FFB 42",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 29.6,
+      "y_pct": 65.10000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 275": {
+      "id": "FA 275",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.7,
+      "y_pct": 69.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 40-10": {
+      "id": "FFB 40-10",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 15.6,
+      "y_pct": 75.49998699154389,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB SA": {
+      "id": "FFB SA",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 9.9,
+      "y_pct": 63.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 271": {
+      "id": "FA 271",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 40.95,
+      "y_pct": 28.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 279": {
+      "id": "FA 279",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.799999999999997,
+      "y_pct": 37.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 272": {
+      "id": "FA 272",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.799999999999997,
+      "y_pct": 32,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 4A": {
+      "id": "FFB 4A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.799999999999997,
+      "y_pct": 26.4,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 16": {
+      "id": "FFB 16",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.799999999999997,
+      "y_pct": 20.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HFBB 14-10": {
+      "id": "HFBB 14-10",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 24.624449615508453,
+      "y_pct": 16.26663481311579,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HFB 17": {
+      "id": "HFB 17",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 43.45,
+      "y_pct": 24.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FFB 4B": {
+      "id": "FFB 4B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 38.95,
+      "y_pct": 23.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 241": {
+      "id": "FA 241",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 37.2,
+      "y_pct": 19.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1200,
+  "image_natural_height": 896
+}

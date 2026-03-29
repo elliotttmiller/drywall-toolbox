@@ -1,0 +1,357 @@
+{
+  "id": "1774449071020",
+  "title": "180GripBoxHandle-2014-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA 302",
+      "name": "FA 302",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 7",
+      "name": "BH 7",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 268",
+      "name": "FA 268",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 26",
+      "name": "BH 26",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 312",
+      "name": "FA 312",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH2",
+      "name": "BH2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 6",
+      "name": "BH 6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 1",
+      "name": "BH 1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 265",
+      "name": "FA 265",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 257",
+      "name": "FA 257",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 260",
+      "name": "FA 260",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 5",
+      "name": "BH 5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 311",
+      "name": "FA 311",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 8-3'",
+      "name": "BH 8-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 9-3'",
+      "name": "BH 9-3'",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 260",
+      "name": "FA 260",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 202",
+      "name": "FA 202",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 4",
+      "name": "BH 4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 3",
+      "name": "BH 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 11",
+      "name": "BH 11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 276",
+      "name": "FA 276",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "BH 24A",
+      "name": "BH 24A",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA 302": {
+      "id": "FA 302",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.25,
+      "y_pct": 39.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 7": {
+      "id": "BH 7",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.399999999999999,
+      "y_pct": 45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 268": {
+      "id": "FA 268",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.399999999999999,
+      "y_pct": 50.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 26": {
+      "id": "BH 26",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.45,
+      "y_pct": 55.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 312": {
+      "id": "FA 312",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 4.9,
+      "y_pct": 60.849999999999994,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH2": {
+      "id": "BH2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 12.299999999999999,
+      "y_pct": 61,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 6": {
+      "id": "BH 6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 21.799999999999997,
+      "y_pct": 72.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 1": {
+      "id": "BH 1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 21.799999999999997,
+      "y_pct": 78.45,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 265": {
+      "id": "FA 265",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 28.7,
+      "y_pct": 72.69999999999999,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 257": {
+      "id": "FA 257",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 28.7,
+      "y_pct": 66.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 260": {
+      "id": "FA 260",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.15,
+      "y_pct": 34.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 5": {
+      "id": "BH 5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 42.5,
+      "y_pct": 66.9,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 311": {
+      "id": "FA 311",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 24.85,
+      "y_pct": 50.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 8-3'": {
+      "id": "BH 8-3'",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 51.400000000000006,
+      "y_pct": 55.650000000000006,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 9-3'": {
+      "id": "BH 9-3'",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 51.45,
+      "y_pct": 30.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 202": {
+      "id": "FA 202",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.15,
+      "y_pct": 42,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 4": {
+      "id": "BH 4",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.3,
+      "y_pct": 41.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 3": {
+      "id": "BH 3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.3,
+      "y_pct": 15.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 11": {
+      "id": "BH 11",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 91.5,
+      "y_pct": 21.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 276": {
+      "id": "FA 276",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 95.19999999999999,
+      "y_pct": 25.200000000000003,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "BH 24A": {
+      "id": "BH 24A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 91.7,
+      "y_pct": 41.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1024,
+  "image_natural_height": 1024
+}

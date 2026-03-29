@@ -1,0 +1,633 @@
+{
+  "id": "1774486834350",
+  "title": "SEMI-AUTOMATIC-TAPER-SCHEMATIC-2022-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT4",
+      "name": "SAT4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA234",
+      "name": "FA234",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT5",
+      "name": "SAT5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA337",
+      "name": "FA337",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA258",
+      "name": "FA258",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA341",
+      "name": "FA341",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT18",
+      "name": "SAT18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT17",
+      "name": "SAT17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT15",
+      "name": "SAT15",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA324",
+      "name": "FA324",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA238",
+      "name": "FA238",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA340",
+      "name": "FA340",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA324",
+      "name": "FA324",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA285",
+      "name": "FA285",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT17",
+      "name": "SAT17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT16",
+      "name": "SAT16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT120",
+      "name": "CT120",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT13",
+      "name": "SAT13",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT11",
+      "name": "SAT11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT7",
+      "name": "SAT7",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA391",
+      "name": "FA391",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT22",
+      "name": "SAT22",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT20",
+      "name": "SAT20",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT19",
+      "name": "SAT19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT10",
+      "name": "SAT10",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT21",
+      "name": "SAT21",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA390",
+      "name": "FA390",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA224",
+      "name": "FA224",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT9",
+      "name": "SAT9",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT15",
+      "name": "SAT15",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT17",
+      "name": "SAT17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT6",
+      "name": "SAT6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT8",
+      "name": "SAT8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA392",
+      "name": "FA392",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT12",
+      "name": "SAT12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA345",
+      "name": "FA345",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT1",
+      "name": "SAT1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT2",
+      "name": "SAT2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT3",
+      "name": "SAT3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT120",
+      "name": "CT120",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "SAT13",
+      "name": "SAT13",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA239": {
+      "id": "FA239",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 22.72444961550845,
+      "y_pct": 57.95002601691222,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT4": {
+      "id": "SAT4",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 19.59002471902278,
+      "y_pct": 20.03329026428071,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA234": {
+      "id": "FA234",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 19.91447433453123,
+      "y_pct": 24.89997398308779,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT5": {
+      "id": "SAT5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 13.4,
+      "y_pct": 58.89999999999999,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA337": {
+      "id": "FA337",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 42.988887837662006,
+      "y_pct": 18.97,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA258": {
+      "id": "FA258",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 58.70111216233799,
+      "y_pct": 14.200013008456107,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA341": {
+      "id": "FA341",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 64.17001235951139,
+      "y_pct": 2.599986991543893,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT18": {
+      "id": "SAT18",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 62.575561777846445,
+      "y_pct": 7.666663080757944,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT17": {
+      "id": "SAT17",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 20.8,
+      "y_pct": 66.1333261615159,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT15": {
+      "id": "SAT15",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 27.35,
+      "y_pct": 73.8999869915439,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA324": {
+      "id": "FA324",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 74.00333745317047,
+      "y_pct": 24.436668459621032,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA238": {
+      "id": "FA238",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 62.2,
+      "y_pct": 18.533344548835082,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA340": {
+      "id": "FA340",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 61.276662546829535,
+      "y_pct": 22.566647821571898,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA285": {
+      "id": "FA285",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.63441350313079,
+      "y_pct": 28.13322522200017,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT16": {
+      "id": "SAT16",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 82.39334981268185,
+      "y_pct": 36.466538375059955,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT120": {
+      "id": "CT120",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 16.748899231016907,
+      "y_pct": 73.2666478215719,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT13": {
+      "id": "SAT13",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 13.2,
+      "y_pct": 93.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT11": {
+      "id": "SAT11",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 90.45,
+      "y_pct": 67.33331090232983,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT7": {
+      "id": "SAT7",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 88.1511007689831,
+      "y_pct": 81.03321984313709,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA391": {
+      "id": "FA391",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.75,
+      "y_pct": 82.16658503002131,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT22": {
+      "id": "SAT22",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 68.6,
+      "y_pct": 77.09989593235116,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT20": {
+      "id": "SAT20",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 60.6,
+      "y_pct": 75.19999999999999,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT19": {
+      "id": "SAT19",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 57.873337453170464,
+      "y_pct": 82.36655676237913,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT10": {
+      "id": "SAT10",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.75,
+      "y_pct": 71.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT21": {
+      "id": "SAT21",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 63.47556177784644,
+      "y_pct": 66.19996097463167,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA390": {
+      "id": "FA390",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 41.87332509365907,
+      "y_pct": 80.06668909767015,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA224": {
+      "id": "FA224",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 31.81888783766201,
+      "y_pct": 78.73664782157189,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT9": {
+      "id": "SAT9",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 38.58,
+      "y_pct": 73.26332616151589,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT6": {
+      "id": "SAT6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 33.15,
+      "y_pct": 67.30000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT8": {
+      "id": "SAT8",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.17998764048861,
+      "y_pct": 55.03331628119292,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA392": {
+      "id": "FA392",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 68.15,
+      "y_pct": 39.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT12": {
+      "id": "SAT12",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 64.55,
+      "y_pct": 49.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA345": {
+      "id": "FA345",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66.42553899113665,
+      "y_pct": 55.933303272736815,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT1": {
+      "id": "SAT1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 43.32666254682954,
+      "y_pct": 34.36667071035097,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT2": {
+      "id": "SAT2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 34.75,
+      "y_pct": 31.866670710350974,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "SAT3": {
+      "id": "SAT3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 3.8000000000000003,
+      "y_pct": 50.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
+}

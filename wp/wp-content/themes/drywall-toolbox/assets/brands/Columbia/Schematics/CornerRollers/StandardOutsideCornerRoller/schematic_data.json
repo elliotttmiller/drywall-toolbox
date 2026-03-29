@@ -1,0 +1,287 @@
+{
+  "id": "1774485214744",
+  "title": "OutsideCornerRollers-2016-1-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA 290",
+      "name": "FA 290",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 2B",
+      "name": "OCR 2B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 3",
+      "name": "OCR 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 6",
+      "name": "OCR 6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 1",
+      "name": "OCR 1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 2A",
+      "name": "OCR 2A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 2C",
+      "name": "OCR 2C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 3A",
+      "name": "OCR 3A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 299",
+      "name": "FA 299",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 2D",
+      "name": "OCR 2D",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "OCR 5",
+      "name": "OCR 5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 312",
+      "name": "FA 312",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 274",
+      "name": "FA 274",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 6",
+      "name": "CR 6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CR 11",
+      "name": "CR 11",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 288",
+      "name": "FA 288",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 301",
+      "name": "FA 301",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA 290": {
+      "id": "FA 290",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 36.400000000000006,
+      "y_pct": 18.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 2B": {
+      "id": "OCR 2B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 44.5,
+      "y_pct": 18.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 3": {
+      "id": "OCR 3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 53.10000000000001,
+      "y_pct": 18.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 6": {
+      "id": "OCR 6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 70.65,
+      "y_pct": 18.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 1": {
+      "id": "OCR 1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 70.35,
+      "y_pct": 28.200000000000003,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 2A": {
+      "id": "OCR 2A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.432273762721536,
+      "y_pct": 33.616124355194486,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 2C": {
+      "id": "OCR 2C",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 11.798899231016904,
+      "y_pct": 57.95,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 3A": {
+      "id": "OCR 3A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.298887837662008,
+      "y_pct": 57.953352178428105,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 299": {
+      "id": "FA 299",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 25.25,
+      "y_pct": 58.78344323762086,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 2D": {
+      "id": "OCR 2D",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.2,
+      "y_pct": 80.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "OCR 5": {
+      "id": "OCR 5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 51.400000000000006,
+      "y_pct": 54.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 312": {
+      "id": "FA 312",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 51.3,
+      "y_pct": 62.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 274": {
+      "id": "FA 274",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 71.7511007689831,
+      "y_pct": 55.80002601691221,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CR 6": {
+      "id": "CR 6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 81.15,
+      "y_pct": 40.23332616151589,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CR 11": {
+      "id": "CR 11",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 86.72889923101691,
+      "y_pct": 40.06667833994399,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 288": {
+      "id": "FA 288",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 92.15,
+      "y_pct": 40.39998699154389,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 301": {
+      "id": "FA 301",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 61.6,
+      "y_pct": 84.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
+}

@@ -1,0 +1,145 @@
+{
+  "id": "1774489351955",
+  "title": "ICA1-2-2015",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "ICA 1",
+      "name": "ICA 1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 4L",
+      "name": "ICA 4L",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 3",
+      "name": "ICA 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 2",
+      "name": "ICA 2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 377",
+      "name": "FA 377",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 4R",
+      "name": "ICA 4R",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 3",
+      "name": "ICA 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 2",
+      "name": "ICA 2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 377",
+      "name": "FA 377",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CF 4S",
+      "name": "CF 4S",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "ICA 1": {
+      "id": "ICA 1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 49.418895436622265,
+      "y_pct": 9.880316795854963,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "ICA 4L": {
+      "id": "ICA 4L",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 36.05,
+      "y_pct": 18.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "ICA 3": {
+      "id": "ICA 3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 69.89,
+      "y_pct": 23.950316795854963,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "ICA 2": {
+      "id": "ICA 2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.11889543662227,
+      "y_pct": 29.12936640829008,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 377": {
+      "id": "FA 377",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 81.76945967036474,
+      "y_pct": 34.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "ICA 4R": {
+      "id": "ICA 4R",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 63.11835510698702,
+      "y_pct": 18.254532809953062,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CF 4S": {
+      "id": "CF 4S",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 34.86,
+      "y_pct": 76.02423202156912,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1200,
+  "image_natural_height": 896
+}

@@ -1,0 +1,171 @@
+{
+  "id": "1774486542771",
+  "title": "SANDER-HEAD-SCHEMATIC-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA366",
+      "name": "FA366",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S5",
+      "name": "S5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA364",
+      "name": "FA364",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S4",
+      "name": "S4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S6",
+      "name": "S6",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA365",
+      "name": "FA365",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S1",
+      "name": "S1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S2",
+      "name": "S2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S4",
+      "name": "S4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S2",
+      "name": "S2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "S3",
+      "name": "S3",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA366": {
+      "id": "FA366",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 28.15,
+      "y_pct": 21.4,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "S5": {
+      "id": "S5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 48.31889923101691,
+      "y_pct": 23.06333154037897,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA364": {
+      "id": "FA364",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 57.75,
+      "y_pct": 27.69998699154389,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "S4": {
+      "id": "S4",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.15666254682952,
+      "y_pct": 48.629999999999995,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "S6": {
+      "id": "S6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.445562744002935,
+      "y_pct": 37.666652323031784,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA365": {
+      "id": "FA365",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 59.22666254682953,
+      "y_pct": 45.23328713614757,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "S1": {
+      "id": "S1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 39.67666254682953,
+      "y_pct": 45.48332616151589,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "S2": {
+      "id": "S2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.72888687150552,
+      "y_pct": 58.500039025368324,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "S3": {
+      "id": "S3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 24.752212931321083,
+      "y_pct": 84.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
+}

@@ -1,0 +1,111 @@
+{
+  "id": "1774486048761",
+  "title": "Box_Filler",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "MP 9A",
+      "name": "MP 9A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 9C",
+      "name": "MP 9C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 34",
+      "name": "MP 34",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 23A",
+      "name": "MP 23A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 9",
+      "name": "MP 9",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 33A",
+      "name": "MP 33A",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "MP 9A": {
+      "id": "MP 9A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 25.7,
+      "y_pct": 29.200000000000003,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 9C": {
+      "id": "MP 9C",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 71.94999999999999,
+      "y_pct": 25.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 34": {
+      "id": "MP 34",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 25.7,
+      "y_pct": 39.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 23A": {
+      "id": "MP 23A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 25.7,
+      "y_pct": 50.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 9": {
+      "id": "MP 9",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 25.7,
+      "y_pct": 61,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 33A": {
+      "id": "MP 33A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 68.80000000000001,
+      "y_pct": 85.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1792,
+  "image_natural_height": 2400
+}

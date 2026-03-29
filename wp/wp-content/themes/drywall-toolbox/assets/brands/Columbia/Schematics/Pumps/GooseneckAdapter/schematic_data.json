@@ -1,0 +1,79 @@
+{
+  "id": "1774486001058",
+  "title": "Gooseneck-1-1-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "MP 27B",
+      "name": "MP 27B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 23A",
+      "name": "MP 23A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 27C",
+      "name": "MP 27C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "MP 27",
+      "name": "MP 27",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "MP 27B": {
+      "id": "MP 27B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.1,
+      "y_pct": 29.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 23A": {
+      "id": "MP 23A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.85,
+      "y_pct": 42,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 27C": {
+      "id": "MP 27C",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.85,
+      "y_pct": 52.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "MP 27": {
+      "id": "MP 27",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.85,
+      "y_pct": 63.7,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1792,
+  "image_natural_height": 2400
+}

@@ -1,0 +1,271 @@
+{
+  "id": "columbia-corner-cobra",
+  "title": "Corner Cobra",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "CC12",
+      "name": "CC12",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA358",
+      "name": "FA358",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC17",
+      "name": "CC17",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA355",
+      "name": "FA355",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH21",
+      "name": "HH21",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC2",
+      "name": "CC2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC3",
+      "name": "CC3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC18",
+      "name": "CC18",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA28",
+      "name": "FA28",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA359",
+      "name": "FA359",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CLT15",
+      "name": "CLT15",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA360",
+      "name": "FA360",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC16",
+      "name": "CC16",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC1A",
+      "name": "CC1A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CC19",
+      "name": "CC19",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA292",
+      "name": "FA292",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "CC12": {
+      "id": "CC12",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 41.0,
+      "y_pct": 23.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA358": {
+      "id": "FA358",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 30.35,
+      "y_pct": 23.4,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC17": {
+      "id": "CC17",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 32.6,
+      "y_pct": 29.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA355": {
+      "id": "FA355",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.3,
+      "y_pct": 34.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH21": {
+      "id": "HH21",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 83.1,
+      "y_pct": 40.7,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC2": {
+      "id": "CC21",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 84.4,
+      "y_pct": 46.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC3": {
+      "id": "CC3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.1,
+      "y_pct": 52.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC18": {
+      "id": "CC18",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.3,
+      "y_pct": 55.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA28": {
+      "id": "FA285",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 92.8,
+      "y_pct": 58.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA359": {
+      "id": "FA359",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 48.75,
+      "y_pct": 61.7,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CLT15": {
+      "id": "CLT15",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 16.8,
+      "y_pct": 62.0,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA360": {
+      "id": "FA360",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.25,
+      "y_pct": 69.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC16": {
+      "id": "CC16",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 92.5,
+      "y_pct": 74.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC1A": {
+      "id": "CC1A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 54.35,
+      "y_pct": 82.25,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CC19": {
+      "id": "CC19",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66.6,
+      "y_pct": 88.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA292": {
+      "id": "FA292",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 81.2,
+      "y_pct": 89.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2400,
+  "image_natural_height": 1792
+}

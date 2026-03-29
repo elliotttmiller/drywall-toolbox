@@ -1,0 +1,113 @@
+{
+  "id": "1774489740506",
+  "title": "ICA1-4-2015",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "ICA 1",
+      "name": "ICA 1",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 3",
+      "name": "ICA 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 2",
+      "name": "ICA 2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 377",
+      "name": "FA 377",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 3",
+      "name": "ICA 3",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "ICA 2",
+      "name": "ICA 2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 377",
+      "name": "FA 377",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CF 4S",
+      "name": "CF 4S",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "ICA 1": {
+      "id": "ICA 1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 49.800000000000004,
+      "y_pct": 8.499973983087788,
+      "shape": "rectangle",
+      "pageNumber": 2,
+      "rotation": 0
+    },
+    "ICA 3": {
+      "id": "ICA 3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66.22776331581262,
+      "y_pct": 17.7,
+      "shape": "rectangle",
+      "pageNumber": 2,
+      "rotation": 0
+    },
+    "ICA 2": {
+      "id": "ICA 2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 72.8,
+      "y_pct": 21.549999999999997,
+      "shape": "rectangle",
+      "pageNumber": 2,
+      "rotation": 0
+    },
+    "FA 377": {
+      "id": "FA 377",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.15,
+      "y_pct": 26.3,
+      "shape": "rectangle",
+      "pageNumber": 2,
+      "rotation": 0
+    },
+    "CF 4S": {
+      "id": "CF 4S",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 35.75443822215356,
+      "y_pct": 74.91667383848412,
+      "shape": "rectangle",
+      "pageNumber": 2,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1200,
+  "image_natural_height": 896
+}

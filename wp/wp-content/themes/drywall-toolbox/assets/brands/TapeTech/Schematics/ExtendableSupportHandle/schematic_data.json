@@ -1,0 +1,303 @@
+{
+  "id": "1774451011470",
+  "title": "XHTT_SCH",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "059619 X 2 W LOCTITE 263 (RED)",
+      "name": "059619 X 2 W LOCTITE 263 (RED)",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883020",
+      "name": "883020",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883011",
+      "name": "883011",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "499023",
+      "name": "499023",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883014",
+      "name": "883014",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "882013",
+      "name": "882013",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "889017",
+      "name": "889017",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "059037 X 2 W LOCTITE 425",
+      "name": "059037 X 2 W LOCTITE 425",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883003",
+      "name": "883003",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "889057",
+      "name": "889057",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "880053",
+      "name": "880053",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883001G",
+      "name": "883001G",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883005",
+      "name": "883005",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "880060",
+      "name": "880060",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "882039",
+      "name": "882039",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "059619 X 2 W LOCTITE 425",
+      "name": "059619 X 2 W LOCTITE 425",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "880061",
+      "name": "880061",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "883002",
+      "name": "883002",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "499023": {
+      "id": "499023",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.05,
+      "y_pct": 17.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "880053": {
+      "id": "880053",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 78.44999999999999,
+      "y_pct": 44.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "880060": {
+      "id": "880060",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 19,
+      "y_pct": 74.19999999999999,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "880061": {
+      "id": "880061",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 26.15,
+      "y_pct": 41.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "882013": {
+      "id": "882013",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 93.44999999999999,
+      "y_pct": 15.65,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "882039": {
+      "id": "882039",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 5.65,
+      "y_pct": 59.8,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883002": {
+      "id": "883002",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 35.5,
+      "y_pct": 30.900000000000002,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883003": {
+      "id": "883003",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 95.5,
+      "y_pct": 35.400000000000006,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883005": {
+      "id": "883005",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 26.15,
+      "y_pct": 71.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883011": {
+      "id": "883011",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 78.35,
+      "y_pct": 11.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883014": {
+      "id": "883014",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 90.69999999999999,
+      "y_pct": 10.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883020": {
+      "id": "883020",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 65.05000000000001,
+      "y_pct": 11.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "889017": {
+      "id": "889017",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.5,
+      "y_pct": 29.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "889057": {
+      "id": "889057",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 95.1,
+      "y_pct": 45.65,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "059619 X 2 W LOCTITE 263 (RED)": {
+      "id": "059619 X 2 W LOCTITE 263 (RED)",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 56.900000000000006,
+      "y_pct": 13,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "059037 X 2 W LOCTITE 425": {
+      "id": "059037 X 2 W LOCTITE 425",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66.85,
+      "y_pct": 32.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "883001G": {
+      "id": "883001G",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 66,
+      "y_pct": 59.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "059619 X 2 W LOCTITE 425": {
+      "id": "059619 X 2 W LOCTITE 425",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 8.600000000000001,
+      "y_pct": 44.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 2048,
+  "image_natural_height": 2048
+}

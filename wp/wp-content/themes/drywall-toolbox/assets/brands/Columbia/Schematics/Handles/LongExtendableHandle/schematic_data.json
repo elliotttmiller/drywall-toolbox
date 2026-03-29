@@ -1,0 +1,245 @@
+{
+  "id": "1774487491697",
+  "title": "extendable-handle-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FG 4-45",
+      "name": "FG 4-45",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 31",
+      "name": "HH 31",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 32",
+      "name": "HH 32",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 317",
+      "name": "FA 317",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 30",
+      "name": "HH 30",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 33",
+      "name": "HH 33",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 5",
+      "name": "HH 5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 237",
+      "name": "FA 237",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 256",
+      "name": "FA 256",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 321",
+      "name": "FA 321",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FG 3A",
+      "name": "FG 3A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "EXT 35",
+      "name": "EXT 35",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH 10A",
+      "name": "HH 10A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA 256",
+      "name": "FA 256",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "HH10 EXTLONG",
+      "name": "HH10 EXTLONG",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FG 4-45": {
+      "id": "FG 4-45",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 36.3,
+      "y_pct": 25.050000000000004,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH 31": {
+      "id": "HH 31",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.2,
+      "y_pct": 49.150000000000006,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH 32": {
+      "id": "HH 32",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 24.950000000000003,
+      "y_pct": 40.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 317": {
+      "id": "FA 317",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 9.05,
+      "y_pct": 57.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH 30": {
+      "id": "HH 30",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 10.45,
+      "y_pct": 74.35,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH 33": {
+      "id": "HH 33",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 14.049999999999999,
+      "y_pct": 81.85,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH 5": {
+      "id": "HH 5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 20,
+      "y_pct": 82.7,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 237": {
+      "id": "FA 237",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 27.9,
+      "y_pct": 76.1,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 256": {
+      "id": "FA 256",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.65,
+      "y_pct": 25,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA 321": {
+      "id": "FA 321",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 38.65,
+      "y_pct": 57.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FG 3A": {
+      "id": "FG 3A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 32.449999999999996,
+      "y_pct": 91.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "EXT 35": {
+      "id": "EXT 35",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 76.85,
+      "y_pct": 13.75,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH 10A": {
+      "id": "HH 10A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.77443822215355,
+      "y_pct": 9.233370565747293,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "HH10 EXTLONG": {
+      "id": "HH10 EXTLONG",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.15,
+      "y_pct": 52.21663481311579,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1200,
+  "image_natural_height": 896
+}

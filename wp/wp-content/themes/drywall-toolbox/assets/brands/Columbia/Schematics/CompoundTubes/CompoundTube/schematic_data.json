@@ -1,0 +1,375 @@
+{
+  "id": "1774450092972",
+  "title": "COMPOUND-TUBE-SCHEMATIC-2022-enhanced",
+  "diagramPages": [
+    1
+  ],
+  "legendPages": [],
+  "parts": [
+    {
+      "id": "FA323",
+      "name": "FA323",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT8",
+      "name": "CMT8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA286",
+      "name": "FA286",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT111",
+      "name": "CT111",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT110",
+      "name": "CT110",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT111",
+      "name": "CT111",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT8",
+      "name": "CMT8",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA286",
+      "name": "FA286",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA284",
+      "name": "FA284",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT4",
+      "name": "CMT4",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA256",
+      "name": "FA256",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT1A-24\"",
+      "name": "CMT1A-24\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "EXT35",
+      "name": "EXT35",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CFB5B",
+      "name": "CFB5B",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CFB5A",
+      "name": "CFB5A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CFB5C",
+      "name": "CFB5C",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT2",
+      "name": "CMT2",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CT115A",
+      "name": "CT115A",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA219",
+      "name": "FA219",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT1-24\"",
+      "name": "CMT1-24\"",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT5",
+      "name": "CMT5",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA239",
+      "name": "FA239",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "FA235",
+      "name": "FA235",
+      "quantity": 1,
+      "sku": ""
+    },
+    {
+      "id": "CMT6",
+      "name": "CMT6",
+      "quantity": 1,
+      "sku": ""
+    }
+  ],
+  "coordinates": {
+    "FA323": {
+      "id": "FA323",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 18.2,
+      "y_pct": 11.55,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT8": {
+      "id": "CMT8",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 44.800000000000004,
+      "y_pct": 23.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA286": {
+      "id": "FA286",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 22.284833106623417,
+      "y_pct": 25.499960935974062,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT111": {
+      "id": "CT111",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 44.08033378675316,
+      "y_pct": 19.349990233993516,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT110": {
+      "id": "CT110",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 20.75,
+      "y_pct": 21.5,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA284": {
+      "id": "FA284",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 44.55,
+      "y_pct": 30.9,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT4": {
+      "id": "CMT4",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 24.049999999999997,
+      "y_pct": 32.9,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA256": {
+      "id": "FA256",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 48.650000000000006,
+      "y_pct": 36.65,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT1A-24\"": {
+      "id": "CMT1A-24\"",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 26.75,
+      "y_pct": 63.6,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "EXT35": {
+      "id": "EXT35",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 37.3,
+      "y_pct": 90.25,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CFB5B": {
+      "id": "CFB5B",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 73.44999999999999,
+      "y_pct": 8.05,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CFB5A": {
+      "id": "CFB5A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.95,
+      "y_pct": 15.2,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CFB5C": {
+      "id": "CFB5C",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 75.95,
+      "y_pct": 18.599970701980546,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT2": {
+      "id": "CMT2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 77.48516689337659,
+      "y_pct": 22.949990233993514,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CT115A": {
+      "id": "CT115A",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 79.6241655331171,
+      "y_pct": 28.59998046798703,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA219": {
+      "id": "FA219",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 80.72416553311709,
+      "y_pct": 32.899960935974065,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA239": {
+      "id": "FA239",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 94,
+      "y_pct": 89.60003906402594,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT1-24\"": {
+      "id": "CMT1-24\"",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 89.26066757350634,
+      "y_pct": 55.249990233993515,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT5": {
+      "id": "CMT5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 91.4,
+      "y_pct": 85.55000000000001,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "FA235": {
+      "id": "FA235",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 93.71516689337658,
+      "y_pct": 93.75004883003243,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "CMT6": {
+      "id": "CMT6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 69.5,
+      "y_pct": 94.3,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 1792,
+  "image_natural_height": 2400
+}
