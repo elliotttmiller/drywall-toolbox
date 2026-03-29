@@ -1,0 +1,1743 @@
+{
+  "updated_products": [
+    {
+      "sku": "STAPER",
+      "name": "Columbia \"Sawed Off\" Mini Automatic Taper",
+      "changes": {
+        "Dimensions": {
+          "old": "39 in (990 mm)",
+          "new": "39\" x 6.75\" x 6.75\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~7 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Head, Steel Components"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Compact 39\" length for tight spaces (closets/crawlspaces); Same head mechanics as standard taper"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "CTR-42A\" (Blades), CTR-72\" (Cable), CTR-63 (Needles)"
+        }
+      }
+    },
+    {
+      "sku": "10FBBA",
+      "name": "Columbia 10\" Automatic Assist Drywall Tool Flat Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Spring-Loaded Axle"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Combines high capacity with automatic assist; Heavy-duty springs"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "10FFB",
+      "name": "Columbia 10\" Drywall Flat Finishing Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "5.5\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Stainless Steel Blades"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Bead wheel axle standard (prevents wear); Manual sweep grip (except 5.5\"); Replaceable blades/shoes"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-5.5 to FFBR-9-14\" (Blades), FFBR-7-7A\" (Shoes), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "10FBB",
+      "name": "Columbia 10\" Fat Boy Drywall Flat Finishing Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "+40% Mud Capacity; Deeper chamber for high volume; Reduces pump refills"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "10ITFB",
+      "name": "Columbia 10\" Inside Track Fat Boy Flat Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Wheels located inside side plates; Allows running over obstacles (pot lights/beads) without tipping"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "12FFB",
+      "name": "Columbia 12\" Drywall Flat Finishing Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "5.5\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Stainless Steel Blades"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Bead wheel axle standard (prevents wear); Manual sweep grip (except 5.5\"); Replaceable blades/shoes"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-5.5 to FFBR-9-14\" (Blades), FFBR-7-7A\" (Shoes), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "12FBBA",
+      "name": "Columbia 12\" Fat Boy Automatic Assist Drywall Flat Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Spring-Loaded Axle"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Combines high capacity with automatic assist; Heavy-duty springs"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "12FBB",
+      "name": "Columbia 12\" Fat Boy Drywall Flat Finishing Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "+40% Mud Capacity; Deeper chamber for high volume; Reduces pump refills"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "14FFBA",
+      "name": "Columbia 14\" Automatic Assist Drywall Flat Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Spring-Loaded Axle"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Spring-loaded axle applies pressure to mud; \"Easy Push\" operation; Reduces user fatigue by 50%"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-14\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "14FFB",
+      "name": "Columbia 14\" Drywall Flat Finishing Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "5.5\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Stainless Steel Blades"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Bead wheel axle standard (prevents wear); Manual sweep grip (except 5.5\"); Replaceable blades/shoes"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-5.5 to FFBR-9-14\" (Blades), FFBR-7-7A\" (Shoes), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "2AH",
+      "name": "Columbia 2\" Angle Head w/ Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": "2 inches",
+          "new": "2\", 2.5\", 3\", 3.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Welded Stainless Steel Wings"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Precision machined; Wheels included; Side blades set .002\" lower than main blade (\"Thumbnail Click\")"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "AHR-BK-2\", AHR-BK-2.5\", AHR-BK-3\" (Blade Kits), AHR-K (Maint. Kit)"
+        }
+      }
+    },
+    {
+      "sku": "2.5AH",
+      "name": "Columbia 2.5\" Angle Head w/ Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2\", 2.5\", 3\", 3.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Welded Stainless Steel Wings"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Precision machined; Wheels included; Side blades set .002\" lower than main blade (\"Thumbnail Click\")"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "AHR-BK-2\", AHR-BK-2.5\", AHR-BK-3\" (Blade Kits), AHR-K (Maint. Kit)"
+        }
+      }
+    },
+    {
+      "sku": "CMT24",
+      "name": "Columbia 24\" Drywall Corner Finishing Compound Mud Tube",
+      "changes": {
+        "Dimensions": {
+          "old": "24 inches",
+          "new": "24\", 32\", 42\", 55\" Lengths"
+        },
+        "Weight": {
+          "old": null,
+          "new": "1.27 kg (42\" model)"
+        },
+        "Materials": {
+          "old": "Anodized Aluminum",
+          "new": "Machined Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Smooth interior finish; Compatible with semi-auto taper; Cam lock or threaded options"
+        }
+      }
+    },
+    {
+      "sku": "3AH",
+      "name": "Columbia 3\" Angle Head w/ Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": "3\"",
+          "new": "2\", 2.5\", 3\", 3.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Welded Stainless Steel Wings"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Precision machined; Wheels included; Side blades set .002\" lower than main blade (\"Thumbnail Click\")"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "AHR-BK-2\", AHR-BK-2.5\", AHR-BK-3\" (Blade Kits), AHR-K (Maint. Kit)"
+        }
+      }
+    },
+    {
+      "sku": "3.5AH",
+      "name": "Columbia 3.5\" Angle Head w/ Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": "3.5 inches",
+          "new": "2\", 2.5\", 3\", 3.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Welded Stainless Steel Wings"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Precision machined; Wheels included; Side blades set .002\" lower than main blade (\"Thumbnail Click\")"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "AHR-BK-2\", AHR-BK-2.5\", AHR-BK-3\" (Blade Kits), AHR-K (Maint. Kit)"
+        }
+      }
+    },
+    {
+      "sku": "CLT32",
+      "name": "Columbia 32\" Cam-Lock Compound Mud Tube",
+      "changes": {
+        "Dimensions": {
+          "old": "32\"",
+          "new": "24\", 32\", 42\", 55\" Lengths"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Machined Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Quick-release cam lock mechanism; Reduces fill time"
+        }
+      }
+    },
+    {
+      "sku": "CMT32",
+      "name": "Columbia 32\" Drywall Corner Finishing Compound Mud Tube",
+      "changes": {
+        "Dimensions": {
+          "old": "32 inches",
+          "new": "24\", 32\", 42\", 55\" Lengths"
+        },
+        "Weight": {
+          "old": null,
+          "new": "1.27 kg (42\" model)"
+        },
+        "Materials": {
+          "old": "Anodized Aluminum",
+          "new": "Machined Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Smooth interior finish; Compatible with semi-auto taper; Cam lock or threaded options"
+        }
+      }
+    },
+    {
+      "sku": "3BH",
+      "name": "Columbia 36\" 180-Grip Featherweight Flat Box Handle",
+      "changes": {
+        "Dimensions": {
+          "old": "36 inches",
+          "new": "3', 4', 5', 6'"
+        },
+        "Weight": {
+          "old": null,
+          "new": "2-4 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Continuous braking over 180° range; Ergonomic grip"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Brake pads, locking pins"
+        }
+      }
+    },
+    {
+      "sku": "CLT42",
+      "name": "Columbia 42\" Cam-Lock Compound Mud Tube",
+      "changes": {
+        "Dimensions": {
+          "old": "42 inches",
+          "new": "24\", 32\", 42\", 55\" Lengths"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Machined Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Quick-release cam lock mechanism; Reduces fill time"
+        }
+      }
+    },
+    {
+      "sku": "CMT42",
+      "name": "Columbia 42\" Drywall Corner Finishing Compound Mud Tube",
+      "changes": {
+        "Dimensions": {
+          "old": "42\"",
+          "new": "24\", 32\", 42\", 55\" Lengths"
+        },
+        "Weight": {
+          "old": null,
+          "new": "1.27 kg (42\" model)"
+        },
+        "Materials": {
+          "old": "Anodized Aluminum",
+          "new": "Machined Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Smooth interior finish; Compatible with semi-auto taper; Cam lock or threaded options"
+        }
+      }
+    },
+    {
+      "sku": "4BH",
+      "name": "Columbia 48\" 180-Grip Featherweight Flat Box Handle",
+      "changes": {
+        "Dimensions": {
+          "old": "48\"",
+          "new": "3', 4', 5', 6'"
+        },
+        "Weight": {
+          "old": null,
+          "new": "2-4 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Continuous braking over 180° range; Ergonomic grip"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Brake pads, locking pins"
+        }
+      }
+    },
+    {
+      "sku": "5.5FFB",
+      "name": "Columbia 5.5\" Drywall Flat Finisher Box",
+      "changes": {
+        "Dimensions": {
+          "old": "5.5\"",
+          "new": "5.5\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Stainless Steel Blades"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Bead wheel axle standard (prevents wear); Manual sweep grip (except 5.5\"); Replaceable blades/shoes"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-5.5 to FFBR-9-14\" (Blades), FFBR-7-7A\" (Shoes), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "CLT55",
+      "name": "Columbia 55\" Cam-Lock Compound Mud Tube",
+      "changes": {
+        "Dimensions": {
+          "old": "55 inches",
+          "new": "24\", 32\", 42\", 55\" Lengths"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Machined Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Quick-release cam lock mechanism; Reduces fill time"
+        }
+      }
+    },
+    {
+      "sku": "5BH",
+      "name": "Columbia 60\" 180-Grip Featherweight Flat Box Handle",
+      "changes": {
+        "Dimensions": {
+          "old": "60 inches",
+          "new": "3', 4', 5', 6'"
+        },
+        "Weight": {
+          "old": null,
+          "new": "2-4 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Continuous braking over 180° range; Ergonomic grip"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Brake pads, locking pins"
+        }
+      }
+    },
+    {
+      "sku": "7CFB",
+      "name": "Columbia 7\" ThrottleBox Angle Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "7\", 8\""
+        },
+        "Materials": {
+          "old": "Billet Aluminum & Steel",
+          "new": "Billet Aluminum Cone"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Specially angled cone for tight corners; Rust-proof aluminum vs. nickel-plated steel"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades, gaskets"
+        }
+      }
+    },
+    {
+      "sku": "6BH",
+      "name": "Columbia 72\" 180-Grip Featherweight Flat Box Handle",
+      "changes": {
+        "Dimensions": {
+          "old": "72 inches",
+          "new": "3', 4', 5', 6'"
+        },
+        "Weight": {
+          "old": null,
+          "new": "2-4 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Continuous braking over 180° range; Ergonomic grip"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Brake pads, locking pins"
+        }
+      }
+    },
+    {
+      "sku": "8FFB",
+      "name": "Columbia 8\" Drywall Flat Finisher Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "5.5\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Stainless Steel Blades"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Bead wheel axle standard (prevents wear); Manual sweep grip (except 5.5\"); Replaceable blades/shoes"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-5.5 to FFBR-9-14\" (Blades), FFBR-7-7A\" (Shoes), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "8FBBA",
+      "name": "Columbia 8\" Fat Boy Automatic Assist Drywall Flat Box",
+      "changes": {
+        "Dimensions": {
+          "old": "8\"",
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Spring-Loaded Axle"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Combines high capacity with automatic assist; Heavy-duty springs"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "8FBB",
+      "name": "Columbia 8\" Fat Boy Drywall Flat Finishing Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "+40% Mud Capacity; Deeper chamber for high volume; Reduces pump refills"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "8ITFB",
+      "name": "Columbia 8\" Inside Track Fat Boy Flat Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "8\", 10\", 12\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Wheels located inside side plates; Allows running over obstacles (pot lights/beads) without tipping"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-8 to FFBR-9-12\" (Blades), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "8CFB",
+      "name": "Columbia 8\" ThrottleBox Angle Box",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "7\", 8\""
+        },
+        "Materials": {
+          "old": "Billet",
+          "new": "Billet Aluminum Cone"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Specially angled cone for tight corners; Rust-proof aluminum vs. nickel-plated steel"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades, gaskets"
+        }
+      }
+    },
+    {
+      "sku": "IA90",
+      "name": "Columbia Inside 90 Degree Mud Head",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "L-Trim, Inside/Outside 90°"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": "UHMW (Ultra-High Molecular Weight)",
+          "new": "UHMW Plastic (Grooved) or Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "L-Trim, Inside/Outside 90° applicators"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Blade replacements, gaskets"
+        }
+      }
+    },
+    {
+      "sku": "AHA",
+      "name": "Columbia Angle Head Ball Adapter",
+      "changes": {
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Adapts angle heads to Columbia One Handle system"
+        }
+      }
+    },
+    {
+      "sku": "TAPER",
+      "name": "Columbia Automatic Taper",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "53\" x 6.75\" x 6.75\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "9 lbs (4.08 kg)"
+        },
+        "Materials": {
+          "old": "Billet Aluminum, Stainless Steel",
+          "new": "Billet Aluminum Head, Steel Components, Aluminum Tube"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Pump-action cutting sleeve on Teflon slides; Cam Lock Cap; Brake on taper wheel; Holds 500ft tape roll"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "CTR-42A\" (Blades), CTR-72\" (Cable), CTR-63\" (Needles), CTR-1 (Maint. Kit)"
+        }
+      }
+    },
+    {
+      "sku": "BF",
+      "name": "Columbia Box Filler",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Standard"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~3 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Patented design; Fast fill for flat boxes; Cam lock option available"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Gaskets, seals"
+        }
+      }
+    },
+    {
+      "sku": "CMH",
+      "name": "Columbia Closet Monster 18\" Flat Box Handle",
+      "changes": {
+        "Dimensions": {
+          "old": "18\"",
+          "new": "~19\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Short handle for tight spaces; Adjustable wingnut angle"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Wingnut, pivot pins"
+        }
+      }
+    },
+    {
+      "sku": "3CSF",
+      "name": "Columbia Combo Flusher",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 3.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.75 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Combines flushing and finishing in one pass; Wide track options available"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades"
+        }
+      }
+    },
+    {
+      "sku": "CC",
+      "name": "Columbia Corner Cobra Adjustable Inside & Outside Corner Roller",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Structural Bead (No-Coat)"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Hardened Steel, Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Pivoting head (85°-180°); Applies bead to inside/outside angles; Replaces manual taping for bead"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "CC-RK (Repair Kit)"
+        }
+      }
+    },
+    {
+      "sku": "CR",
+      "name": "Columbia Corner Roller",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Internal 90° Tape Embed"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.75 lbs"
+        },
+        "Materials": {
+          "old": "Stainless Steel, Delrin",
+          "new": "Hardened Steel / Delrin Wheels"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Split wheel design reduces drag; Adjustable head; Embeds tape prior to angle heading"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "CRA-2 (Wheel Kit - 4 wheels/bushings)"
+        }
+      }
+    },
+    {
+      "sku": "7FFB",
+      "name": "Columbia Drywall Taping Tools 7” Hinged Flat Finisher Box",
+      "changes": {
+        "Dimensions": {
+          "old": "7\"",
+          "new": "5.5\" to 14\" Width"
+        },
+        "Weight": {
+          "old": null,
+          "new": "Varies by size"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Body, Stainless Steel Blades"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Bead wheel axle standard (prevents wear); Manual sweep grip (except 5.5\"); Replaceable blades/shoes"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "FFBR-9-5.5 to FFBR-9-14\" (Blades), FFBR-7-7A\" (Shoes), FFBA-36 (Wheels)"
+        }
+      }
+    },
+    {
+      "sku": "HMP",
+      "name": "Columbia Hot Mud Pump",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "20\" x 8\" x 6\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "9-11 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Anodized Aluminum Cylinder, Stainless Shaft"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Air-tight seal for easy priming; 20° angled handle; Top disconnect for cleaning"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "MPR-1\" (Maint. Kit), MP-24 (Screen)"
+        }
+      }
+    },
+    {
+      "sku": "FMH",
+      "name": "Columbia L-Trim Mud Applicator Head",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "L-Trim, Inside/Outside 90°"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": "UHMW (Ultra-High Molecular Weight Polyethylene)",
+          "new": "UHMW Plastic (Grooved) or Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "L-Trim, Inside/Outside 90° applicators"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Blade replacements, gaskets"
+        }
+      }
+    },
+    {
+      "sku": "MH",
+      "name": "Columbia Matrix Extendable Flat Box Handle",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Variable (29\"-76\")"
+        },
+        "Weight": {
+          "old": null,
+          "new": "3-5 lbs"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "All-mechanical (no hydraulics); 90° grip for control; Lightweight"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Locking pins, grip pads"
+        }
+      }
+    },
+    {
+      "sku": "MHL",
+      "name": "Columbia Matrix Long Extendable Drywall Flat Box Handle 56\" to 76\"",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Variable (29\"-76\")"
+        },
+        "Weight": {
+          "old": null,
+          "new": "3-5 lbs"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "All-mechanical (no hydraulics); 90° grip for control; Lightweight"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Locking pins, grip pads"
+        }
+      }
+    },
+    {
+      "sku": "C1HEXT",
+      "name": "Columbia One Extendable Handle 3'-5'",
+      "changes": {
+        "Weight": {
+          "old": null,
+          "new": "~1.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hydraulic-free extension; Twist lock"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Locking mechanism replacements"
+        }
+      }
+    },
+    {
+      "sku": "C1H",
+      "name": "Columbia One Handle",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Fixed"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Universal fit for Angle Heads, Rollers, Nail Spotters; Reduces tool count"
+        }
+      }
+    },
+    {
+      "sku": "CBNCR",
+      "name": "Columbia Outside Bullnose Corner Roller",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Bullnose Bead"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Hardened Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Profiles bullnose bead"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Wheel replacement kits"
+        }
+      }
+    },
+    {
+      "sku": "CS",
+      "name": "Columbia Pole Sander Head Only",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Standard"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~2 lbs"
+        },
+        "Materials": {
+          "old": "Machine Billet",
+          "new": "Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Replacement head for Phantom; \"No Flip\" technology"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Screen attachments"
+        }
+      }
+    },
+    {
+      "sku": "SPTAPER",
+      "name": "Columbia Predator \"Sawed Off\" Mini Carbon Fiber Automatic Taper",
+      "changes": {
+        "Dimensions": {
+          "old": "42\"",
+          "new": "39\" x 6.5\" x 6.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~5 lbs"
+        },
+        "Materials": {
+          "old": "Carbon Fiber",
+          "new": "Carbon Fiber Tube, Billet Aluminum Head"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Carbon fiber compact version; Ideal for low ceilings; Quick release cap"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "CTR-42A\" (Blades), CTR-72\" (Cable), CTR-63 (Needles)"
+        }
+      }
+    },
+    {
+      "sku": "SAT",
+      "name": "Columbia Semi Auto Taper Drywall Taping Tool",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "22.5\" x 6\" x 3.5\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "2 lbs (0.9 kg)"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "\"Bucket Taper\"; Tape spool with brake; Laser engraved instructions; Fits standard 5-gal bucket"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "CTR-42A\" (Blades), CTR-1 (Maint. Kit)"
+        }
+      }
+    },
+    {
+      "sku": "MHS",
+      "name": "Columbia Short Matrix Flat Box Handle 29\"-39\"",
+      "changes": {
+        "Dimensions": {
+          "old": "29\" - 39\"",
+          "new": "Variable (29\"-76\")"
+        },
+        "Weight": {
+          "old": null,
+          "new": "3-5 lbs"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "All-mechanical (no hydraulics); 90° grip for control; Lightweight"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Locking pins, grip pads"
+        }
+      }
+    },
+    {
+      "sku": "TBGN",
+      "name": "Columbia Tall Boy Gooseneck",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Curved Spout"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Flexible/Tubular spout for hard-to-reach fills; Tall Boy version available"
+        }
+      }
+    },
+    {
+      "sku": "TBMP",
+      "name": "Columbia Tall Boy Loading Pump",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Extended Height"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~12 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Anodized Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Allows standing operation; Fits 30-gallon pails; Reduces back strain"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "MPR-1\" (Maint. Kit), MP-24 (Screen)"
+        }
+      }
+    },
+    {
+      "sku": "2NS",
+      "name": "Columbia 2\" Nail Spotter",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2\", 3\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hinged door for easy cleaning; Adjustable thumb tension; Lightweight design"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "HNS7-2\", HNS7-3\" (Blades), HNS-12A\", HNS-13 (Pivot Kit)"
+        }
+      }
+    },
+    {
+      "sku": "2.5DF",
+      "name": "Columbia 2.5\" Direct Drywall Corner Flusher",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Direct feed design; Eliminates need for separate corner box in some workflows"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades"
+        }
+      }
+    },
+    {
+      "sku": "2.5SF",
+      "name": "Columbia 2.5\" Standard Drywall Corner Flusher with Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "0.5 - 1 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Cone, Stainless Steel Valve"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hand-ground on granite plate; Solid stainless valve (no welds); Thumb release door stop"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades (e.g., 3SF-Blade)"
+        }
+      }
+    },
+    {
+      "sku": "3DF",
+      "name": "Columbia 3\" Direct Drywall Corner Flusher",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Direct feed design; Eliminates need for separate corner box in some workflows"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades"
+        }
+      }
+    },
+    {
+      "sku": "3NS",
+      "name": "Columbia 3\" Hinged Nail Spotter",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2\", 3\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hinged door for easy cleaning; Adjustable thumb tension; Lightweight design"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "HNS7-2\", HNS7-3\" (Blades), HNS-12A\", HNS-13 (Pivot Kit)"
+        }
+      }
+    },
+    {
+      "sku": "3SF",
+      "name": "Columbia 3\" Standard Drywall Corner Flusher with Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "0.5 - 1 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Cone, Stainless Steel Valve"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hand-ground on granite plate; Solid stainless valve (no welds); Thumb release door stop"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades (e.g., 3SF-Blade)"
+        }
+      }
+    },
+    {
+      "sku": "3WTDF",
+      "name": "Columbia 3\" Widetrack Direct Drywall Corner Flusher",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Direct feed design; Eliminates need for separate corner box in some workflows"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades"
+        }
+      }
+    },
+    {
+      "sku": "3.5DF",
+      "name": "Columbia 3.5\" Direct Drywall Corner Flusher with Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum, Stainless Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Direct feed design; Eliminates need for separate corner box in some workflows"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades"
+        }
+      }
+    },
+    {
+      "sku": "3.5SF",
+      "name": "Columbia 3.5\" Standard Drywall Corner Flusher with Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "0.5 - 1 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Cone, Stainless Steel Valve"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hand-ground on granite plate; Solid stainless valve (no welds); Thumb release door stop"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades (e.g., 3SF-Blade)"
+        }
+      }
+    },
+    {
+      "sku": "4SF",
+      "name": "Columbia 4\" Standard Drywall Corner Flusher with Wheels",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "2.5\" - 4\""
+        },
+        "Weight": {
+          "old": null,
+          "new": "0.5 - 1 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Billet Aluminum Cone, Stainless Steel Valve"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Hand-ground on granite plate; Solid stainless valve (no welds); Thumb release door stop"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Size-specific blades (e.g., 3SF-Blade)"
+        }
+      }
+    },
+    {
+      "sku": "COBCR",
+      "name": "Columbia Standard Outside 90 Corner Bead Roller",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Standard Bead"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Hardened Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Profiles standard metal bead"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Wheel replacement kits"
+        }
+      }
+    },
+    {
+      "sku": "COBCRW",
+      "name": "Columbia Superwide Outside 90 Corner Bead Roller",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "Wide Bead"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~1 lb"
+        },
+        "Materials": {
+          "old": null,
+          "new": "Hardened Steel"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "Profiles wide structural bead"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Wheel replacement kits"
+        }
+      }
+    },
+    {
+      "sku": "OA90",
+      "name": "Columbia Tools Drywall Outside Corner Bead Mud Applicator",
+      "changes": {
+        "Dimensions": {
+          "old": null,
+          "new": "L-Trim, Inside/Outside 90°"
+        },
+        "Weight": {
+          "old": null,
+          "new": "~0.5 lbs"
+        },
+        "Materials": {
+          "old": null,
+          "new": "UHMW Plastic (Grooved) or Billet Aluminum"
+        },
+        "Key Technical Specifications": {
+          "old": null,
+          "new": "L-Trim, Inside/Outside 90° applicators"
+        },
+        "Replacement Parts": {
+          "old": null,
+          "new": "Blade replacements, gaskets"
+        }
+      }
+    }
+  ],
+  "matched_skus": [
+    "STAPER",
+    "10FBBA",
+    "10FFB",
+    "10FBB",
+    "10ITFB",
+    "12FFB",
+    "12FBBA",
+    "12FBB",
+    "14FFBA",
+    "14FFB",
+    "2AH",
+    "2.5AH",
+    "CMT24",
+    "3AH",
+    "3.5AH",
+    "CLT32",
+    "CMT32",
+    "3BH",
+    "CLT42",
+    "CMT42",
+    "4BH",
+    "5.5FFB",
+    "CLT55",
+    "5BH",
+    "7CFB",
+    "6BH",
+    "8FFB",
+    "8FBBA",
+    "8FBB",
+    "8ITFB",
+    "8CFB",
+    "IA90",
+    "AHA",
+    "TAPER",
+    "BF",
+    "CMH",
+    "3CSF",
+    "CC",
+    "CR",
+    "7FFB",
+    "HMP",
+    "FMH",
+    "MH",
+    "MHL",
+    "C1HEXT",
+    "C1H",
+    "CBNCR",
+    "CS",
+    "SPTAPER",
+    "SAT",
+    "MHS",
+    "TBGN",
+    "TBMP",
+    "2NS",
+    "2.5DF",
+    "2.5SF",
+    "3DF",
+    "3NS",
+    "3SF",
+    "3WTDF",
+    "3.5DF",
+    "3.5SF",
+    "4SF",
+    "COBCR",
+    "COBCRW",
+    "OA90"
+  ],
+  "unmatched_spec_skus": [
+    "PTAPER",
+    "CMT55",
+    "CLT24",
+    "8FFBA",
+    "10FFBA",
+    "12FFBA",
+    "12ITFB",
+    "3WTSF",
+    "4DF",
+    "2.5CSF",
+    "3WTCSF",
+    "3.5CSF",
+    "COBCRE",
+    "TBBF",
+    "GN",
+    "HNSA-5-2",
+    "HNSA-5-3",
+    "CHXL",
+    "TL-3-8",
+    "PDDM",
+    "ROADCASE"
+  ]
+}
