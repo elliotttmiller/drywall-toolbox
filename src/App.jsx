@@ -14,6 +14,7 @@ import Checkout from './pages/Checkout';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Product from './pages/Product';
+import CategoryPage from './pages/CategoryPage';
 import Parts from './pages/Parts';
 import Repairs from './pages/Repairs';
 import VeeqoSettings from './pages/VeeqoSettings';
@@ -55,8 +56,10 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
+                  <Route path="/products/:id" element={<Product />} />
                   <Route path="/all-products" element={<AllProducts />} />
                   <Route path="/product/:partNumber" element={<Product />} />
+                  <Route path="/category/:slug" element={<CategoryPage />} />
                   <Route path="/parts" element={<Parts />} />
                   <Route path="/repairs" element={<Repairs />} />
                   <Route path="/cart" element={<Cart />} />

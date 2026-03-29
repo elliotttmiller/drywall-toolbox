@@ -1,35 +1,45 @@
+# ─── Force HTTPS ──────────────────────────────────────────────────────────────
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ─── React Router — Client-Side Routing ───────────────────────────────────────
+# Must appear BEFORE the WordPress block
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Pass direct file and directory requests through unchanged
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Exclude WordPress admin and API paths — these go to WordPress
+  RewriteCond %{REQUEST_URI} !^/wp-admin [NC]
+  RewriteCond %{REQUEST_URI} !^/wp-login\.php [NC]
+  RewriteCond %{REQUEST_URI} !^/wp-json [NC]
+  RewriteCond %{REQUEST_URI} !^/wp-content [NC]
+  RewriteCond %{REQUEST_URI} !^/wp-includes [NC]
+  RewriteCond %{REQUEST_URI} !^/wp/ [NC]
+  RewriteCond %{REQUEST_URI} !^/xmlrpc\.php [NC]
+
+  # All other requests → serve React app
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# ─── BEGIN WordPress ───────────────────────────────────────────────────────────
+# DO NOT REMOVE — required for wp-admin and WooCommerce to function
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# ─── END WordPress ─────────────────────────────────────────────────────────────
+
 # Disable directory listing
 Options -Indexes
-
-# ─── React Router + WordPress pass-through ───────────────────────────────────
-#
-# Rule order:
-#   1. Pass any /wp/* request straight through to WordPress (no rewriting).
-#   2. Serve existing static files and directories directly.
-#   3. Fall back to index.html for every other path so React Router handles it.
-#
-# This prevents 404 errors on hard-refresh of React Router paths while
-# ensuring WordPress (installed in /wp/) is never intercepted.
-#
-# References:
-#   React Router deployment: https://reactrouter.com/en/main/guides/deploying
-#   Apache mod_rewrite: https://httpd.apache.org/docs/current/mod/mod_rewrite.html
-# ─────────────────────────────────────────────────────────────────────────────
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-
-    # 1. Pass /wp/ requests through to WordPress without modification
-    RewriteCond %{REQUEST_URI} ^/wp/ [NC]
-    RewriteRule ^ - [L]
-
-    # 2. Serve real files and directories directly
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-
-    # 3. Route everything else to index.html (React Router)
-    RewriteRule ^ index.html [QSA,L]
-</IfModule>
 
 # ─── Compression ─────────────────────────────────────────────────────────────
 <IfModule mod_deflate.c>
@@ -47,9 +57,7 @@ Options -Indexes
     ExpiresActive On
     # index.html must never be cached so users always get the latest build
     ExpiresByType text/html                "access plus 0 seconds"
-    # Hashed asset filenames (webpack contenthash) allow long-lived caching —
-    # the filename changes automatically whenever the content changes, so
-    # browsers always fetch the latest version.
+    # Hashed asset filenames (webpack contenthash) allow long-lived caching
     ExpiresByType text/css                 "access plus 1 year"
     ExpiresByType application/javascript   "access plus 1 year"
     ExpiresByType image/svg+xml            "access plus 1 year"

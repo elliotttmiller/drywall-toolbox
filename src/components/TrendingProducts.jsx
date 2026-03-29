@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { loadProducts } from '../data/products';
+import { getProducts as wcGetProducts } from '../services/api';
 import { filterProductsWithSchematics } from '../data/schematicMappings';
 import { ShoppingCart, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -41,7 +42,8 @@ export default function TrendingProducts() {
 
   useEffect(() => {
     let mounted = true;
-    loadProducts().then((loadedProducts) => {
+    const loader = process.env.REACT_APP_WC_BASE_URL ? wcGetProducts() : loadProducts();
+    loader.then((loadedProducts) => {
       if (!mounted) return;
       // Get Columbia products that have schematics in Parts
       // These are all tools/products we have detailed interactive schematics for

@@ -8,6 +8,7 @@ import FilterPanel from '../components/FilterPanel';
 import Toast from '../components/Toast';
 import { X } from 'lucide-react';
 import { loadProducts } from '../data/products';
+import { getProducts as wcGetProducts } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { 
   ShoppingCart, 
@@ -115,10 +116,13 @@ export default function Products() {
     navigate('/products');
   };
 
-  // load products once
+  // load products once — prefer WooCommerce API, fall back to CSV
   useEffect(() => {
     let mounted = true;
-    loadProducts().then(list => {
+    const loader = process.env.REACT_APP_WC_BASE_URL
+      ? wcGetProducts()
+      : loadProducts();
+    loader.then(list => {
       if (!mounted) return;
       setProducts(list);
       const unique = Array.from(new Set(list.map(p => p.brand).filter(Boolean))).sort();

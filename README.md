@@ -1,50 +1,57 @@
 # Drywall Toolbox
 
-Professional frontend and WordPress theme for Drywall Toolbox — a responsive storefront and product catalog for professional drywall tools.
+Headless React storefront for Drywalltoolbox.com — powered by WordPress + WooCommerce as the backend CMS.
+
+**Architecture:** React SPA (webpack) → WooCommerce REST API v3 → HostGator shared hosting
 
 This repository contains:
 
-- A React-based storefront and admin UI (in `src/`) used for the public site and internal tools.
+- A React SPA (`src/`) that fetches all product and category data from the WooCommerce REST API. No static product data is bundled — WordPress is the single source of truth.
 
-- WordPress theme and plugin code under `wp/wp-content/` that are deployed to production.
+- WordPress theme and plugin code under `wp/wp-content/` that are deployed to HostGator.
 
-- GitHub Actions workflows to deploy theme and plugin assets to HostGator via FTPS.
+- GitHub Actions workflows to deploy theme/plugin assets to HostGator via FTPS.
 
-This README explains how to run the project locally, what lives where, and how to deploy to HostGator safely.
-
-Table of contents
-
-- Quick start (local development)
-
-- Repository layout
-
-- WordPress deployment (HostGator)
-
-- CI/CD (GitHub Actions)
-
-- Troubleshooting & support
+---
 
 ## Quick start — local development
 
 ### Requirements
 
-- Node.js 16+ and npm/yarn
+- Node.js 18+ and npm
 
-Commands
+### Environment configuration
 
-```powershell
+Copy `.env.example` to `.env.local` and fill in your WooCommerce credentials.  
+**Never commit `.env*` files containing real credentials.**
+
+```
+# .env.local
+REACT_APP_WC_BASE_URL=https://drywalltoolbox.com/wp-json/wc/v3
+REACT_APP_WC_CONSUMER_KEY=ck_your_consumer_key_here
+REACT_APP_WC_CONSUMER_SECRET=cs_your_consumer_secret_here
+REACT_APP_WP_BASE_URL=https://drywalltoolbox.com
+```
+
+WooCommerce API keys are generated in **WP Admin → WooCommerce → Settings → Advanced → REST API** (Read/Write permissions).
+
+### Commands
+
+```bash
 # install dependencies
 npm install
 
-# start dev server (React)
+# start dev server (proxies WooCommerce API from live site)
 npm run dev
 
-# build for production
+# production build → outputs to dist/
 npm run build
 
-# preview production build
-npm run preview
+# lint source files
+npm run lint
 ```
+
+---
 
 ## Repository layout
 
@@ -54,9 +61,55 @@ Key folders and files:
 
 - `src/`, `public/` — React site source and static assets.
 
+- `src/services/api.js` — Centralized WooCommerce REST API module (single source of truth for all data fetching).
+
+- `src/hooks/useFetch.js` — Shared loading/error/empty-state hook for API calls.
+
 - `.github/workflows/deploy.yml` — GitHub Actions workflow that deploys `wp/wp-content` to HostGator.
 
-- `css/styles.css` — Centralized site CSS used by both React and WordPress frontends.
+- `public/.htaccess` — React Router SPA fallback + WordPress/WooCommerce API pass-through rules.
+
+## React frontend — HostGator deploy (FTP)
+
+The React build is a fully static output — no Node.js runtime is required on HostGator.
+
+### 1. Build locally
+
+```bash
+npm run build
+```
+
+This produces a `dist/` directory of optimized HTML/CSS/JS.
+
+### 2. Upload to HostGator via FTP
+
+Our FTP connection to HostGator is already configured and operational.
+
+1. Open your FTP client (FileZilla) using the existing HostGator credentials.
+2. Navigate to `public_html/` in the remote panel.
+3. Navigate to your local `dist/` folder in the local panel.
+4. Select **all contents** of `dist/` and upload to `public_html/`.
+5. Overwrite existing files when prompted.
+
+> Leave WordPress core files in place — they coexist with the React build. The `public/.htaccess` file routes requests correctly between React and WordPress.
+
+### 3. Verify
+
+- `https://drywalltoolbox.com` → React storefront
+- `https://drywalltoolbox.com/wp-admin` → WordPress admin
+- `https://drywalltoolbox.com/wp-json/wc/v3/products` → WooCommerce JSON
+
+### Required GitHub Actions secrets
+
+| Secret | Description |
+|--------|-------------|
+| `REACT_APP_WC_BASE_URL` | `https://drywalltoolbox.com/wp-json/wc/v3` |
+| `REACT_APP_WC_CONSUMER_KEY` | WooCommerce consumer key (`ck_…`) |
+| `REACT_APP_WC_CONSUMER_SECRET` | WooCommerce consumer secret (`cs_…`) |
+| `REACT_APP_WP_BASE_URL` | `https://drywalltoolbox.com` |
+| `HOSTGATOR_FTP_HOST` | HostGator FTP hostname |
+| `HOSTGATOR_FTP_USER` | HostGator cPanel FTP username |
+| `HOSTGATOR_FTP_PASS` | HostGator cPanel FTP password |
 
 ## WordPress deployment (HostGator)
 

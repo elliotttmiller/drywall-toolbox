@@ -9,6 +9,8 @@ build/
 *.cache
 .env
 .env.local
+.env.development
+.env.production
 coverage/
 .amazonq
 .venv

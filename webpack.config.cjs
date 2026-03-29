@@ -119,6 +119,7 @@ module.exports = (env, argv) => {
 
       // HostGator / headless-WP deployment vars (injected from GitHub Actions secrets)
       'process.env.REACT_APP_WP_BASE_URL':          JSON.stringify(process.env.REACT_APP_WP_BASE_URL          || ''),
+      'process.env.REACT_APP_WC_BASE_URL':          JSON.stringify(process.env.REACT_APP_WC_BASE_URL          || ''),
       'process.env.REACT_APP_WC_CONSUMER_KEY':      JSON.stringify(process.env.REACT_APP_WC_CONSUMER_KEY      || ''),
       'process.env.REACT_APP_WC_CONSUMER_SECRET':   JSON.stringify(process.env.REACT_APP_WC_CONSUMER_SECRET   || ''),
     }),
