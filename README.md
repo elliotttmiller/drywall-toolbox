@@ -6,7 +6,7 @@ This repository contains:
 
 - A React-based storefront and admin UI (in `src/`) used for the public site and internal tools.
 
-- WordPress theme and plugin code under `wp-content/` that are deployed to production.
+- WordPress theme and plugin code under `wp/wp-content/` that are deployed to production.
 
 - GitHub Actions workflows to deploy theme and plugin assets to HostGator via FTPS.
 
@@ -50,11 +50,11 @@ npm run preview
 
 Key folders and files:
 
-- `wp-content/` — WordPress theme and plugin code targeted for production.
+- `wp/wp-content/` — WordPress theme and plugin code targeted for production.
 
 - `src/`, `public/` — React site source and static assets.
 
-- `.github/workflows/deploy.yml` — GitHub Actions workflow that deploys `wp-content` to HostGator.
+- `.github/workflows/deploy.yml` — GitHub Actions workflow that deploys `wp/wp-content` to HostGator.
 
 - `css/styles.css` — Centralized site CSS used by both React and WordPress frontends.
 
@@ -62,9 +62,9 @@ Key folders and files:
 
 Overview
 
-- We deploy theme and plugin assets (the `wp-content` subtree) to HostGator using a GitHub Action (FTPS).
+- We deploy theme and plugin assets (the `wp/wp-content` subtree) to HostGator using a GitHub Action (FTPS).
 
-- The action uploads only `wp-content/themes/...` and `wp-content/plugins/...` to the server — it does not modify WordPress core files.
+- The action uploads only `wp/wp-content/themes/...` and `wp/wp-content/plugins/...` to the server — it does not modify WordPress core files.
 
 Before you deploy
 
@@ -76,13 +76,13 @@ Before you deploy
 
 ### Manual deploy options
 
-- FileZilla / WinSCP: connect with explicit FTPS, upload `wp-content/themes/drywall-toolbox/` and the plugin folder to the remote `wp-content/` path.
+- FileZilla / WinSCP: connect with explicit FTPS, upload `wp/wp-content/themes/drywall-toolbox/` and the plugin folder to the remote `public_html/wp-content/` path.
 
 - cPanel File Manager: upload and extract ZIP archives when convenient.
 
 ## Automated deploy (GitHub Actions)
 
-The repository includes a GitHub Actions workflow that runs on pushes to `main` when files under `wp-content/themes/**` or `wp-content/plugins/**` change. The workflow uses `SamKirkland/FTP-Deploy-Action` to upload files over FTPS.
+The repository includes a GitHub Actions workflow that runs on pushes to `main` when files under `wp/wp-content/**` change. The workflow uses `SamKirkland/FTP-Deploy-Action` to upload files over FTPS.
 
 Recommended workflow steps
 

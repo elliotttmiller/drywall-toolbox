@@ -20,9 +20,12 @@ defined( 'ABSPATH' ) || exit;
 // CONSTANTS
 // ---------------------------------------------------------------------------
 
-define( 'DTB_VERSION',     '1.0.0' );
-define( 'DTB_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
-define( 'DTB_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
+// Use defined() guards so these constants coexist with the theme's
+// DTB_THEME_VERSION / DTB_THEME_DIR / DTB_THEME_URI constants without any
+// collision regardless of load order.
+defined( 'DTB_VERSION'    ) || define( 'DTB_VERSION',    '1.0.0' );
+defined( 'DTB_PLUGIN_DIR' ) || define( 'DTB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+defined( 'DTB_PLUGIN_URL' ) || define( 'DTB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // ---------------------------------------------------------------------------
 // 1. CUSTOM POST TYPE — PRODUCT (drywall tool listing)
@@ -32,6 +35,7 @@ define( 'DTB_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
  * Register a "Tool" custom post type for drywall product listings.
  */
 function dtb_register_post_types() {
+    // ── dtb_tool — primary product listing post type ──────────────────────────
     $labels = array(
         'name'               => __( 'Tools',             'dtb-custom-functionality' ),
         'singular_name'      => __( 'Tool',              'dtb-custom-functionality' ),
@@ -47,14 +51,56 @@ function dtb_register_post_types() {
     );
 
     register_post_type( 'dtb_tool', array(
-        'labels'             => $labels,
-        'public'             => true,
-        'has_archive'        => true,
-        'rewrite'            => array( 'slug' => 'tools' ),
-        'supports'           => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
-        'show_in_rest'       => true,   // Enable Gutenberg editor
-        'menu_icon'          => 'dashicons-hammer',
-        'menu_position'      => 5,
+        'labels'         => $labels,
+        'public'         => true,
+        'has_archive'    => true,
+        'rewrite'        => array( 'slug' => 'tools' ),
+        'supports'       => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
+        'show_in_rest'   => true,
+        'menu_icon'      => 'dashicons-hammer',
+        'menu_position'  => 5,
+    ) );
+
+    // ── dtb_product — generic product post type used by the theme ─────────────
+    register_post_type( 'dtb_product', array(
+        'labels' => array(
+            'name'               => __( 'Products',           'dtb-custom-functionality' ),
+            'singular_name'      => __( 'Product',            'dtb-custom-functionality' ),
+            'add_new'            => __( 'Add New Product',    'dtb-custom-functionality' ),
+            'add_new_item'       => __( 'Add New Product',    'dtb-custom-functionality' ),
+            'edit_item'          => __( 'Edit Product',       'dtb-custom-functionality' ),
+            'view_item'          => __( 'View Product',       'dtb-custom-functionality' ),
+            'search_items'       => __( 'Search Products',    'dtb-custom-functionality' ),
+            'not_found'          => __( 'No products found.', 'dtb-custom-functionality' ),
+            'not_found_in_trash' => __( 'No products in trash.', 'dtb-custom-functionality' ),
+        ),
+        'public'        => true,
+        'has_archive'   => true,
+        'rewrite'       => array( 'slug' => 'product' ),
+        'supports'      => array( 'title', 'editor', 'thumbnail', 'custom-fields', 'excerpt' ),
+        'menu_icon'     => 'dashicons-cart',
+        'show_in_rest'  => true,
+    ) );
+
+    // ── dtb_schematic — parts schematic post type ──────────────────────────────
+    register_post_type( 'dtb_schematic', array(
+        'labels' => array(
+            'name'               => __( 'Schematics',           'dtb-custom-functionality' ),
+            'singular_name'      => __( 'Schematic',            'dtb-custom-functionality' ),
+            'add_new'            => __( 'Add New Schematic',    'dtb-custom-functionality' ),
+            'add_new_item'       => __( 'Add New Schematic',    'dtb-custom-functionality' ),
+            'edit_item'          => __( 'Edit Schematic',       'dtb-custom-functionality' ),
+            'view_item'          => __( 'View Schematic',       'dtb-custom-functionality' ),
+            'search_items'       => __( 'Search Schematics',    'dtb-custom-functionality' ),
+            'not_found'          => __( 'No schematics found.', 'dtb-custom-functionality' ),
+            'not_found_in_trash' => __( 'No schematics in trash.', 'dtb-custom-functionality' ),
+        ),
+        'public'        => true,
+        'has_archive'   => true,
+        'rewrite'       => array( 'slug' => 'schematic' ),
+        'supports'      => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
+        'menu_icon'     => 'dashicons-format-image',
+        'show_in_rest'  => true,
     ) );
 }
 add_action( 'init', 'dtb_register_post_types' );

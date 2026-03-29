@@ -11,7 +11,7 @@
 get_header();
 ?>
 
-<main id="main" class="site-main">
+<div class="site-main section-enter" id="main">
     <?php
     if ( have_posts() ) {
         while ( have_posts() ) {
@@ -56,7 +56,7 @@ get_header();
                 <footer class="entry-footer">
                     <?php
                     if ( is_singular() ) {
-                        echo __( 'Posted on ', 'drywall-toolbox' ) . get_the_date();
+                        echo esc_html__( 'Posted on ', 'drywall-toolbox' ) . esc_html( get_the_date() );
                     }
                     ?>
                 </footer><!-- .entry-footer -->
@@ -69,7 +69,7 @@ get_header();
         echo '<p>' . esc_html__( 'No posts found.', 'drywall-toolbox' ) . '</p>';
     }
     ?>
-</main><!-- #main -->
+</div><!-- #main -->
 
 <?php
 get_footer();

@@ -10,9 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'DTB_VERSION', '1.0.0' );
-define( 'DTB_THEME_DIR', get_template_directory() );
-define( 'DTB_THEME_URI', get_template_directory_uri() );
+// Guard constants so this theme can coexist with the DTB plugin (which also
+// defines DTB_VERSION). The theme-specific constants use unique names to avoid
+// any collision regardless of load order.
+defined( 'DTB_THEME_VERSION' ) || define( 'DTB_THEME_VERSION', '1.0.0' );
+defined( 'DTB_THEME_DIR' )     || define( 'DTB_THEME_DIR', get_template_directory() );
+defined( 'DTB_THEME_URI' )     || define( 'DTB_THEME_URI', get_template_directory_uri() );
 
 // ─── THEME SETUP ────────────────────────────────────────────────────────────
 function dtb_setup() {
@@ -50,7 +53,7 @@ function dtb_enqueue_assets() {
         'drywall-toolbox-style',
         get_stylesheet_uri(),
         [],
-        DTB_VERSION
+        DTB_THEME_VERSION
     );
 
     // Google Fonts
@@ -66,7 +69,7 @@ function dtb_enqueue_assets() {
         'dtb-main',
         DTB_THEME_URI . '/js/main.js',
         [],
-        DTB_VERSION,
+        DTB_THEME_VERSION,
         true
     );
 
@@ -75,7 +78,7 @@ function dtb_enqueue_assets() {
         'dtb-cart',
         DTB_THEME_URI . '/js/cart.js',
         [ 'dtb-main' ],
-        DTB_VERSION,
+        DTB_THEME_VERSION,
         true
     );
 
@@ -85,7 +88,7 @@ function dtb_enqueue_assets() {
             'dtb-products',
             DTB_THEME_URI . '/js/products.js',
             [ 'dtb-main', 'dtb-cart' ],
-            DTB_VERSION,
+            DTB_THEME_VERSION,
             true
         );
     }
@@ -96,7 +99,7 @@ function dtb_enqueue_assets() {
             'dtb-parts',
             DTB_THEME_URI . '/js/parts.js',
             [ 'dtb-main' ],
-            DTB_VERSION,
+            DTB_THEME_VERSION,
             true
         );
     }
@@ -107,7 +110,7 @@ function dtb_enqueue_assets() {
             'dtb-repairs',
             DTB_THEME_URI . '/js/repairs.js',
             [ 'dtb-main' ],
-            DTB_VERSION,
+            DTB_THEME_VERSION,
             true
         );
     }
@@ -124,43 +127,10 @@ function dtb_enqueue_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'dtb_enqueue_assets' );
 
-// ─── CUSTOM POST TYPES ──────────────────────────────────────────────────────
-function dtb_register_post_types() {
-    // DTB Product
-    register_post_type( 'dtb_product', [
-        'labels' => [
-            'name'               => __( 'Products', 'drywall-toolbox' ),
-            'singular_name'      => __( 'Product', 'drywall-toolbox' ),
-            'add_new'            => __( 'Add New Product', 'drywall-toolbox' ),
-            'add_new_item'       => __( 'Add New Product', 'drywall-toolbox' ),
-            'edit_item'          => __( 'Edit Product', 'drywall-toolbox' ),
-            'view_item'          => __( 'View Product', 'drywall-toolbox' ),
-            'search_items'       => __( 'Search Products', 'drywall-toolbox' ),
-            'not_found'          => __( 'No products found', 'drywall-toolbox' ),
-        ],
-        'public'       => true,
-        'has_archive'  => true,
-        'rewrite'      => [ 'slug' => 'product' ],
-        'supports'     => [ 'title', 'editor', 'thumbnail', 'custom-fields', 'excerpt' ],
-        'menu_icon'    => 'dashicons-cart',
-        'show_in_rest' => true,
-    ] );
-
-    // DTB Schematic
-    register_post_type( 'dtb_schematic', [
-        'labels' => [
-            'name'          => __( 'Schematics', 'drywall-toolbox' ),
-            'singular_name' => __( 'Schematic', 'drywall-toolbox' ),
-        ],
-        'public'       => true,
-        'has_archive'  => true,
-        'rewrite'      => [ 'slug' => 'schematic' ],
-        'supports'     => [ 'title', 'editor', 'thumbnail', 'custom-fields' ],
-        'menu_icon'    => 'dashicons-format-image',
-        'show_in_rest' => true,
-    ] );
-}
-add_action( 'init', 'dtb_register_post_types' );
+// NOTE: Custom post types (dtb_tool, dtb_product, dtb_schematic) and the
+// dtb_brand taxonomy are registered by the DTB Custom Functionality plugin.
+// Post-type registration belongs in a plugin so that content is not lost if
+// the theme is ever switched.  Do NOT add register_post_type() calls here.
 
 // ─── AJAX: CONTACT FORM ─────────────────────────────────────────────────────
 function dtb_handle_contact_form() {
@@ -242,10 +212,12 @@ function dtb_widgets_init() {
 }
 add_action( 'widgets_init', 'dtb_widgets_init' );
 
-// ─── TEMPLATE REDIRECT FOR PAGES ────────────────────────────────────────────
-// Flush rewrite rules on activation
-function dtb_rewrite_flush() {
-    dtb_register_post_types();
+// ─── REWRITE FLUSH ON THEME SWITCH ──────────────────────────────────────────
+// register_activation_hook() has no effect inside a theme's functions.php.
+// The correct hook for themes is after_switch_theme, which fires once when
+// this theme is activated and ensures custom post-type rewrite rules are
+// flushed so their archive/single URLs resolve correctly.
+function dtb_theme_activation_flush() {
     flush_rewrite_rules();
 }
-register_activation_hook( __FILE__, 'dtb_rewrite_flush' );
+add_action( 'after_switch_theme', 'dtb_theme_activation_flush' );

@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Debug repository layout
+      - name: Validate wp-content structure
         run: |
           echo "PWD=$(pwd)"
           echo "-- root files --"
@@ -30,6 +30,10 @@ jobs:
           ls -la wp || true
           echo "-- wp/wp-content --"
           ls -la wp/wp-content || true
+          echo "-- themes --"
+          ls -la wp/wp-content/themes || true
+          echo "-- plugins --"
+          ls -la wp/wp-content/plugins || true
 
       - name: Deploy themes and plugins via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -39,7 +43,11 @@ jobs:
           password: ${{ secrets.HOSTGATOR_FTP_PASS }}
           protocol: ftps
           port: 21
-          server-dir: /wp-content/
+          # server-dir must match the FTP account's document-root on HostGator.
+          # If the FTP account's home is the cPanel user home directory, use
+          # /public_html/wp-content/.  If the FTP account's home is already
+          # public_html/, use /wp-content/. Adjust to match your cPanel setup.
+          server-dir: /public_html/wp-content/
           local-dir: ./wp/wp-content/
           exclude: |
             **/.git*
@@ -59,4 +67,4 @@ jobs:
 
       - name: Deployment complete
         if: always()
-        run: echo "✓ Deployed to HostGator at $(date)"
+        run: echo "✓ Deployed to HostGator at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
