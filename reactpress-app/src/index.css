@@ -1,0 +1,11 @@
+/* Global resets for the ReactPress app — kept minimal to avoid
+   interfering with the surrounding WordPress theme styles. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}

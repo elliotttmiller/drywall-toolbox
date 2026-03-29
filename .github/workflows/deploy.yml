@@ -1,4 +1,4 @@
-name: Deploy WordPress Theme & Plugin to HostGator
+name: Deploy to HostGator (WordPress + ReactPress)
 
 on:
   push:
@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - 'wp/wp-content/**'
+      - 'reactpress-app/**'
   workflow_dispatch:
 
 jobs:
-  deploy:
-    name: FTP Deploy to HostGator
+  # ─── Job 1: Deploy WordPress theme & plugin ──────────────────────────────
+  deploy-wordpress:
+    name: Deploy WordPress Theme & Plugin
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,6 +67,70 @@ jobs:
           dry-run: false
           timeout: 60000
 
-      - name: Deployment complete
+      - name: WordPress deployment complete
         if: always()
-        run: echo "✓ Deployed to HostGator at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        run: echo "✓ WordPress assets deployed to HostGator at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+  # ─── Job 2: Build React app and deploy to ReactPress directory ────────────
+  deploy-reactpress:
+    name: Build & Deploy ReactPress App (contacts)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: reactpress-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: reactpress-app
+        run: npm ci
+
+      - name: Build React app (Vite)
+        working-directory: reactpress-app
+        run: npm run build
+        # Produces reactpress-app/dist/ with assets rooted at
+        # /wp-content/reactpress/apps/contacts/ (set in vite.config.js)
+
+      - name: Verify dist output
+        run: |
+          echo "-- dist contents --"
+          ls -la reactpress-app/dist/
+          echo "-- dist/assets --"
+          ls -la reactpress-app/dist/assets/ || true
+
+      - name: Deploy dist to ReactPress directory via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.HOSTGATOR_FTP_HOST }}
+          username: ${{ secrets.HOSTGATOR_FTP_USER }}
+          password: ${{ secrets.HOSTGATOR_FTP_PASS }}
+          protocol: ftps
+          port: 21
+          # Uploads ONLY the built dist/ contents to the ReactPress app directory.
+          # The ReactPress plugin on WordPress will serve index.html from here.
+          # Adjust the path if your WordPress install is in a subdirectory
+          # (e.g., /public_html/website_a246e6a8/wp-content/reactpress/apps/contacts/).
+          server-dir: /public_html/wp-content/reactpress/apps/contacts/
+          local-dir: ./reactpress-app/dist/
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/*.map
+          dangerous-clean-slate: false
+          log-level: verbose
+          dry-run: false
+          timeout: 60000
+
+      - name: ReactPress deployment complete
+        if: always()
+        run: echo "✓ ReactPress app deployed to HostGator at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"

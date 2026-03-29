@@ -1,0 +1,123 @@
+/* Drywall Toolbox — ReactPress Contact App
+ * Scoped under .dtb-contact-app to avoid collisions with the WordPress theme. */
+
+:root {
+  --dtb-primary: #1a73e8;
+  --dtb-primary-hover: #1558b0;
+  --dtb-success: #34a853;
+  --dtb-text: #202124;
+  --dtb-muted: #5f6368;
+  --dtb-border: #dadce0;
+  --dtb-radius: 8px;
+  --dtb-font: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.dtb-contact-app {
+  font-family: var(--dtb-font);
+  color: var(--dtb-text);
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.dtb-contact-app h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.dtb-contact-intro {
+  color: var(--dtb-muted);
+  margin: 0 0 1.75rem;
+  line-height: 1.6;
+}
+
+/* Form */
+.dtb-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dtb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dtb-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--dtb-text);
+}
+
+.dtb-field input,
+.dtb-field textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--dtb-border);
+  border-radius: var(--dtb-radius);
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--dtb-text);
+  transition: border-color 0.15s;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dtb-field input:focus,
+.dtb-field textarea:focus {
+  outline: none;
+  border-color: var(--dtb-primary);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+.dtb-field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Submit button */
+.dtb-submit-btn {
+  align-self: flex-start;
+  padding: 0.65rem 1.5rem;
+  background: var(--dtb-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--dtb-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.dtb-submit-btn:hover {
+  background: var(--dtb-primary-hover);
+}
+
+.dtb-submit-btn:active {
+  transform: scale(0.98);
+}
+
+/* Success message */
+.dtb-contact-success {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--dtb-success);
+  border-radius: var(--dtb-radius);
+  background: #e6f4ea;
+  color: #1e4620;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .dtb-contact-app {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .dtb-submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
