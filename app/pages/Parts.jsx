@@ -70,7 +70,7 @@ import tapeTechExtendableSupportHandleData from '../../public/brands/TapeTech/Sc
 // Schematic image paths — runtime URLs relative to the deployment base.
 // Columbia files are served from public/brands/Columbia/Schematics/... at their original paths.
 // ---------------------------------------------------------------------------
-const _BASE = process.env.PUBLIC_URL;
+const _BASE = import.meta.env.BASE_URL || '/';
 const columbiaMatrixBoxHandleImg    = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/BoxHandle/Matrix_Handle-enhanced.png`;
 const columbiaMatrixBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/BoxHandle/columbia_matrix_box_handle.jpg`;
 
