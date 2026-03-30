@@ -30,9 +30,9 @@ frontend/node_modules/
 # WordPress — wp/ subdirectory (NEVER commit these files)
 # ---------------------------------------------------------------
 # WordPress core is installed in wp/ on the server, not tracked here.
-# Only wp/wp-content/themes/ and wp/wp-content/mu-plugins/ are tracked.
+# Tracked: wp/wp-content/themes/, wp/wp-content/mu-plugins/, wp/wp-config-sample.php
 
-# WordPress core files installed in wp/ — not tracked
+# WordPress core files (match anywhere in wp/ tree — wp-admin/, wp-includes/, etc.)
 wp-admin/
 wp-includes/
 wp-*.php
@@ -40,11 +40,10 @@ xmlrpc.php
 license.txt
 readme.html
 
-# Track the configuration sample but never the real config
-# (wp-*.php above would match wp-config-sample.php — re-include it explicitly)
+# Keep the sample config (wp-*.php above would otherwise exclude it)
 !wp/wp-config-sample.php
 
-# Sensitive configuration — manually edit on the server, never commit
+# Sensitive configuration — configure manually on the server, never commit
 wp-config.php
 wp-config-local.php
 wp-config-*.php
@@ -61,9 +60,10 @@ wp-content/advanced-cache.php
 wp-content/wp-cache-config.php
 
 # WordPress content tracked in this repo (wp/wp-content/):
-#   wp/wp-content/themes/drywall-toolbox/   — legacy theme (style.css, functions.php, index.php)
-#   wp/wp-content/themes/headless-base/     — active minimal headless theme
-#   wp/wp-content/mu-plugins/dtb-cors.php   — CORS mu-plugin (auto-loaded)
+#   wp/wp-content/themes/drywall-toolbox/           — legacy theme (kept until headless-base validated)
+#   wp/wp-content/themes/headless-base/             — active minimal headless theme (zero frontend output)
+#   wp/wp-content/mu-plugins/dtb-cors.php           — CORS mu-plugin (auto-loaded)
+#   wp/wp-content/mu-plugins/dtb-schematics-api.php — Schematic media manifest REST endpoint
 # All other installed themes and all plugins are installed on the server only.
 wp-content/themes/twenty*/
 wp-content/themes/yith*/
@@ -72,8 +72,21 @@ wp-content/plugins/
 # Composer / PHP dependency directories
 vendor/
 
+# ---------------------------------------------------------------
+# Schematic images — managed via WordPress Media Library (WebP)
+# ---------------------------------------------------------------
+# Run scripts/convert_schematics_to_webp.py to convert PNG/JPG → WebP.
+# Run scripts/upload_schematics_to_wp.py to upload to WP Media Library.
+# After confirming all images are live in WP, delete the originals locally
+# and these gitignore patterns will prevent them from being re-added.
+#
+# The schematic_data.json metadata files ARE tracked (small JSON, no binary).
+public/brands/*/Schematics/**/*.png
+public/brands/*/Schematics/**/*.jpg
+public/brands/*/Schematics/**/*.jpeg
+public/brands/*/Schematics/**/*.webp
+
 # OS artifacts
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-

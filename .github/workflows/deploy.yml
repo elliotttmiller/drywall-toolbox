@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'frontend/**'
-      - 'wp-content/**'
+      - 'wp/**'
       - '.htaccess'
       - 'index.php'
       - '.github/workflows/deploy.yml'
@@ -116,12 +116,12 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout repository (wp-content + root files)
+      - name: Checkout repository (wp/ + root files)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           sparse-checkout: |
-            wp-content
+            wp
             .htaccess
             index.php
 
@@ -135,8 +135,8 @@ jobs:
         run: |
           echo "── dist ──"
           ls -la dist/ || true
-          echo "── wp-content ──"
-          ls -la wp-content/ || true
+          echo "── wp/wp-content ──"
+          ls -la wp/wp-content/ || true
           echo "── root files ──"
           ls -la .htaccess index.php 2>/dev/null || true
 
@@ -146,7 +146,7 @@ jobs:
           echo "Dry-run mode: displaying deploy plan."
           echo
           echo "Would deploy dist/ → ${{ github.event.inputs.remote_root }}/dist/"
-          echo "Would deploy wp-content/ → ${{ github.event.inputs.remote_root }}/wp-content/"
+          echo "Would deploy wp/wp-content/ → ${{ github.event.inputs.remote_root }}/wp/wp-content/"
           echo "Would deploy .htaccess → ${{ github.event.inputs.remote_root }}/.htaccess"
           echo "Would deploy index.php → ${{ github.event.inputs.remote_root }}/index.php"
 
@@ -172,7 +172,7 @@ jobs:
           dry-run: "${{ github.event.inputs.dry_run == 'true' }}"
           timeout: 300000
 
-      - name: Deploy wp-content/ via FTPS
+      - name: Deploy wp/wp-content/ via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server:   ${{ secrets.HOSTGATOR_FTP_HOST }}
@@ -180,8 +180,8 @@ jobs:
           password: ${{ secrets.HOSTGATOR_FTP_PASS }}
           protocol: ftps
           port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
-          server-dir: /home1/benconklin/public_html/website_a246e6a8/wp-content/
-          local-dir:  ./wp-content/
+          server-dir: /home1/benconklin/public_html/website_a246e6a8/wp/wp-content/
+          local-dir:  ./wp/wp-content/
           exclude: |
             **/.git*
             **/.github/**
@@ -196,9 +196,6 @@ jobs:
             **/*.map
             **/products_catalog.csv
             **/catalog/**
-            # Schematic image folders — large static assets; upload once via File Manager.
-            **/assets/brands/Columbia/Schematics/**
-            **/assets/brands/TapeTech/Schematics/**
           dangerous-clean-slate: false
           log-level: verbose
           dry-run: "${{ github.event.inputs.dry_run == 'true' }}"
@@ -214,6 +211,7 @@ jobs:
           echo "  Timestamp     : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           echo "  Dry run       : ${{ github.event.inputs.dry_run == 'true' }}"
           echo "  JS chunks     : $(find dist/assets/js -name '*.js' 2>/dev/null | wc -l) files"
+          echo "  WP theme      : wp/wp-content/themes/headless-base/"
           echo "────────────────────────────────────────────"
 
   verify:

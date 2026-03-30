@@ -13,10 +13,10 @@ Headless React storefront for Drywalltoolbox.com — powered by WordPress + WooC
 ```
 ├── frontend/                  ← React source + build tooling (canonical)
 │   ├── src/
-│   │   ├── api/               ← API clients: client.js, auth.js, products.js, cart.js
+│   │   ├── api/               ← API clients: client.js, auth.js, products.js, cart.js, schematics.js
 │   │   ├── components/
 │   │   ├── context/
-│   │   ├── hooks/
+│   │   ├── hooks/             ← useFetch.js, useSchematicMedia.js
 │   │   ├── pages/
 │   │   ├── services/          ← Legacy API modules (kept for compat)
 │   │   └── styles/
@@ -27,19 +27,36 @@ Headless React storefront for Drywalltoolbox.com — powered by WordPress + WooC
 │   ├── .env.production        ← Non-secret production URLs (committed)
 │   ├── .env.development       ← Non-secret dev URLs (committed)
 │   └── package.json
+├── public/                    ← Static brand assets served by webpack
+│   └── brands/
+│       ├── Columbia/          ← Logo SVG + Schematics/ (JSON metadata only; images in WP)
+│       ├── TapeTech/          ← Logo SVG + Schematics/ (JSON metadata only; images in WP)
+│       ├── Asgard/            ← Logo SVG
+│       ├── Graco/             ← Logo SVG
+│       └── SurPro/            ← Logo SVG
 ├── dist/                      ← CI build output only (gitignored)
 │   ├── index.html
 │   └── assets/
-├── wp-content/                ← WordPress content (deployed to /wp/wp-content/)
-│   ├── themes/
-│   │   ├── drywall-toolbox/   ← Legacy theme (keep until headless-base validated)
-│   │   └── headless-base/     ← New minimal headless theme
-│   └── mu-plugins/
-│       └── dtb-cors.php       ← CORS proxy mu-plugin (auto-loaded)
+├── wp/                        ← WordPress installation (at /wp/ subpath)
+│   ├── wp-content/            ← Custom WordPress content (deployed to server wp/wp-content/)
+│   │   ├── themes/
+│   │   │   ├── drywall-toolbox/   ← Legacy theme (kept until headless-base validated)
+│   │   │   └── headless-base/     ← Active minimal headless theme (zero frontend output)
+│   │   └── mu-plugins/
+│   │       ├── dtb-cors.php           ← CORS proxy mu-plugin (auto-loaded)
+│   │       └── dtb-schematics-api.php ← Schematic image manifest REST endpoint
+│   ├── .htaccess              ← WordPress internal mod_rewrite rules
+│   ├── index.php              ← WordPress bootstrap entry point
+│   └── wp-config-sample.php   ← Configuration template (copy to wp-config.php on server)
+├── scripts/
+│   ├── convert_schematics_to_webp.py  ← Batch PNG/JPG → WebP conversion
+│   ├── upload_schematics_to_wp.py     ← Batch upload to WP Media Library
+│   └── convert_to_woocommerce.py      ← Catalog CSV utility
+├── archive/                   ← Legacy root files (historical reference only)
 ├── .htaccess                  ← Root traffic director (HTTPS, WP routing, SPA catch-all)
 ├── index.php                  ← Thin passthrough
 └── .github/workflows/
-    └── deploy.yml             ← CI: build frontend → deploy dist/ + wp-content/
+    └── deploy.yml             ← CI: build frontend → deploy dist/ + wp/wp-content/
 ```
 
 ---
@@ -108,6 +125,7 @@ Credentials (`VITE_WC_AUTH_USER`, `VITE_WC_AUTH_PASS`) live in GitHub Actions se
 | `auth.js` | `login()`, `logout()`, `refreshToken()`, `getCurrentUser()` |
 | `products.js` | `getProducts()`, `getProductById()`, `getProductsByCategory()`, `searchProducts()` |
 | `cart.js` | WooCommerce Store API: `getCart()`, `addToCart()`, `updateCartItem()`, `removeCartItem()`, `clearCart()` |
+| `schematics.js` | `fetchSchematicMediaManifest()` — fetches WebP image manifest from WP Media Library |
 
 ---
 
@@ -118,27 +136,73 @@ WordPress lives in `/wp/` on the server (not at the domain root). Configuration:
 - `WP_HOME` = `https://drywalltoolbox.com`
 - `WP_SITEURL` = `https://drywalltoolbox.com/wp`
 
+See `wp/wp-config-sample.php` for the full configuration template.
+
 ### Active Plugins Required
 
 - WooCommerce
 - JWT Authentication for WP REST API (`jwt-authentication-for-wp-rest-api`)
 
-### Must-Use Plugin
+### Must-Use Plugins
 
-`wp-content/mu-plugins/dtb-cors.php` — handles CORS headers for all REST API responses.  
+| File | Purpose |
+|------|---------|
+| `wp/wp-content/mu-plugins/dtb-cors.php` | CORS headers for all REST API responses |
+| `wp/wp-content/mu-plugins/dtb-schematics-api.php` | `GET /wp-json/dtb/v1/schematics/media` manifest endpoint |
+
 No activation needed — mu-plugins load automatically.
 
 ### Headless Theme
 
-`wp-content/themes/headless-base/` — minimal headless theme with no frontend output.  
+`wp/wp-content/themes/headless-base/` — minimal headless theme with no frontend output.  
 REST API menu endpoint: `GET /wp-json/headless/v1/menus/<location>`
+
+---
+
+## Schematic Images — WordPress Media Library Migration
+
+Schematic diagrams and preview images are managed in the **WordPress Media Library as WebP** rather than tracked as static files in the repository.
+
+### Why WebP + WP Media?
+
+- **Smaller files** — WebP is typically 25–35% smaller than equivalent PNG/JPG
+- **CDN-ready** — WP media URLs integrate cleanly with caching plugins and CDNs
+- **Admin-managed** — Images can be swapped in `wp-admin` without a code deploy
+- **Leaner git repo** — 57 MB of binary images removed from version control
+
+### Migration Steps
+
+```bash
+# 1. Convert existing PNG/JPG schematic images to WebP
+python scripts/convert_schematics_to_webp.py
+
+# 2. Set WP credentials (use Application Password from wp-admin → Profile)
+export WP_BASE_URL=https://drywalltoolbox.com/wp
+export WP_AUTH_USER=admin
+export WP_AUTH_PASS="xxxx xxxx xxxx xxxx xxxx xxxx"
+
+# 3. Dry-run first to see what would be uploaded
+python scripts/upload_schematics_to_wp.py --dry-run
+
+# 4. Upload all schematics to WP Media Library
+python scripts/upload_schematics_to_wp.py
+
+# 5. Verify the manifest endpoint returns all images
+curl https://drywalltoolbox.com/wp/wp-json/dtb/v1/schematics/media | python3 -m json.tool
+
+# 6. Once confirmed, delete original PNG/JPG from public/brands/*/Schematics/
+#    (schematic_data.json files remain — they contain parts metadata, not images)
+```
+
+The React frontend uses `useSchematicMedia()` hook to fetch the manifest at runtime.  
+If WP is unavailable, it falls back to static PNG/JPG paths automatically.
 
 ---
 
 ## CI/CD — GitHub Actions
 
 Workflow: `.github/workflows/deploy.yml`  
-Trigger: push to `main` when `frontend/**` or `wp-content/**` changes.
+Trigger: push to `main` when `frontend/**` or `wp/**` changes.
 
 **Build job:**
 1. `cd frontend && npm ci`
@@ -149,7 +213,7 @@ Trigger: push to `main` when `frontend/**` or `wp-content/**` changes.
 
 **Deploy job:**
 1. Deploy `dist/` → `website_a246e6a8/dist/` via FTPS
-2. Deploy `wp-content/` → `website_a246e6a8/wp-content/` via FTPS
+2. Deploy `wp/wp-content/` → `website_a246e6a8/wp/wp-content/` via FTPS
 
 ### Required GitHub Secrets
 
@@ -184,10 +248,12 @@ After deploying to production, verify:
 - [ ] `https://drywalltoolbox.com/wp/wp-json/` returns WP REST API index JSON
 - [ ] `https://drywalltoolbox.com/wp/wp-json/wc/v3/products` returns product data
 - [ ] `https://drywalltoolbox.com/wp/wp-json/jwt-auth/v1/token` accepts POST, returns token
+- [ ] `https://drywalltoolbox.com/wp/wp-json/dtb/v1/schematics/media` returns schematic image manifest
 - [ ] React Router client-side navigation works on all routes (no 404 on refresh)
 - [ ] CORS headers present on all `/wp/wp-json/` responses
 - [ ] OPTIONS preflight requests return 200 with correct headers
 - [ ] No `VITE_*` secrets exposed in compiled JS bundle (verify in browser DevTools)
+- [ ] Schematic diagrams on Parts page load WebP images from WP Media Library
 - [ ] GitHub Actions deploy runs on push to `main`, builds cleanly, deploys to `dist/`
 
 ---
@@ -195,7 +261,7 @@ After deploying to production, verify:
 ## Security
 
 - No credentials, passwords, or API keys committed to the repository.
-- `wp-config.php` is gitignored — configure manually in cPanel.
+- `wp-config.php` is gitignored — configure manually in cPanel using `wp/wp-config-sample.php` as the template.
 - All secrets are GitHub Actions secrets only.
 - CORS restricted to `drywalltoolbox.com` and `localhost:5173` (dev).
 - Security headers set in `.htaccess` (X-Frame-Options, X-Content-Type-Options, etc.).

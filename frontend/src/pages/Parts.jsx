@@ -6,6 +6,7 @@ import BrandSelector from '../components/BrandSelector';
 import ToolSelector from '../components/ToolSelector';
 import { loadProducts } from '../data/products';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
+import { useSchematicMedia } from '../hooks/useSchematicMedia';
 import '../styles/mobile-schematic.css';
 
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
@@ -67,85 +68,162 @@ import columbiaLongExtendableHandleData from '/brands/Columbia/Schematics/Handle
 import tapeTechExtendableSupportHandleData from '/brands/TapeTech/Schematics/ExtendableSupportHandle/schematic_data.json';
 
 // ---------------------------------------------------------------------------
-// Schematic image paths — runtime URLs relative to the deployment base.
-// Columbia files are served from public/brands/Columbia/Schematics/... at their original paths.
+// Schematic image paths — static fallbacks served from public/brands/…
+// Primary source: WordPress Media Library WebP images (via useSchematicMedia).
+// Fallback: original PNG/JPG files from public/brands/ (used before WP upload).
+//
+// Migration: run scripts/convert_schematics_to_webp.py then
+//            scripts/upload_schematics_to_wp.py to populate WP Media Library.
+//            Once confirmed, originals in public/brands/*/Schematics/ can be deleted.
 // ---------------------------------------------------------------------------
 const _BASE = process.env.PUBLIC_URL;
-const columbiaMatrixBoxHandleImg    = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/BoxHandle/Matrix_Handle-enhanced.png`;
-const columbiaMatrixBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/BoxHandle/columbia_matrix_box_handle.jpg`;
 
-// TapeTech Extendable Support Handle schematic
-const tapeTechExtendableSupportHandleImg = `${_BASE}brands/TapeTech/Schematics/ExtendableSupportHandle/XHTT_SCH.png`;
-const tapeTechExtendableSupportHandlePreview = `${_BASE}brands/TapeTech/Schematics/ExtendableSupportHandle/XHTT_SCH.png`;
-
-// New Columbia image-only schematics
-const columbia2WayInternalCornerImg = `${_BASE}brands/Columbia/Schematics/Applicators/TwoWayInternalCorner/2_Way_Internal_Corner_Applicator-1-enhanced.png`;
-const columbia2WayInternalCornerPreview = `${_BASE}brands/Columbia/Schematics/Applicators/TwoWayInternalCorner/Two-Way_Internal_Corner_Applicator.jpg`;
-const columbiaExtensionHousingImg  = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/ExtensionHousing/Extension_Housing_Schematic-1-enhanced.png`;
-const columbiaExternalCornerApplicatorImg = `${_BASE}brands/Columbia/Schematics/Applicators/ExternalCorner/8_Wheel_External_Corner_Applicator-1-enhanced.png`;
-const columbiaExternalCornerApplicatorPreview = `${_BASE}brands/Columbia/Schematics/Applicators/ExternalCorner/External_90_Aplicator_CEXT90_-_FRONT.jpg`;
-const columbiaInsideCornerApplicator2WheelImg = `${_BASE}brands/Columbia/Schematics/Applicators/InsideCornerApplicator/2Wheel/ICA1-2-2015.png`;
-const columbiaInsideCornerApplicator4WheelImg = `${_BASE}brands/Columbia/Schematics/Applicators/InsideCornerApplicator/4Wheel/ICA1-4-2015.png`;
-const columbiaInsideCornerApplicatorPreview = `${_BASE}brands/Columbia/Schematics/Applicators/InsideCornerApplicator/Inside_Corner_Applicator_4_Wheels_ICA1-4_-_BACK.jpg`;
-// (Inside Corner Roller images/data intentionally removed from parts schematics)
-const columbiaMatrixHeadImg        = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Head/Matrix_Head-enhanced-enhanced.png`;
-const columbiaMatrixLeverImg       = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Lever/Matrix_Lever-1-enhanced.png`;
-const columbiaMatrixPinchboxImg    = `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Pinchbox/Matrix_Pinchbox-1-enhanced.png`;
-const columbiaPredatorTaperPreview = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper.jpg`;
-const columbiaPredatorTaperBodyImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/Body/predator_taper_body.png`;
-const columbiaPredatorTaperHeadNewImg = `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/Head/predator_taper_head.png`;
-const columbiaStandardOutsideCornerRollerImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/OutsideCornerRollers-2016-1-enhanced.png`;
-const columbiaStandardOutsideCornerRollerPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/External_90_Aplicator.jpg`;
-const columbiaInsideCornerRollerImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png`;
-const columbiaInsideCornerRollerPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/cornerroller.jpg`;
-const columbiaThrottleBoxImg = `${_BASE}brands/Columbia/Schematics/CornerBoxes/ThrottleBox/CORNER-BOX-SCHEMATIC-enhanced.png`;
-const columbiaThrottleBoxPreview = `${_BASE}brands/Columbia/Schematics/CornerBoxes/ThrottleBox/throttlebox8small.jpg`;
-const columbiaAutomaticFlatBoxImg = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/AUTO-BOX-SCHEMATIC-2022-enhanced.png`;
-const columbiaAutomaticFlatBoxPreview = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/automaticbox-1.jpg`;
-const columbiaFlatBoxImg = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FlatBox/FLAT-BOX-HINGED-SCHEMATIC-2022-enhanced.png`;
-const columbiaFlatBoxPreview = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FlatBox/2023flatbox.jpg`;
-const columbiaFatBoyBoxImg = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/fat_boy_box.png`;
-const columbiaFatBoyBoxPreview = `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/InsideTrackBoxFrontSmall.png`;
-const columbiaAngleHeadImg = `${_BASE}brands/Columbia/Schematics/Angleheads/AngleHead/AngleHead-2014-3-enhanced.png`;
-const columbiaAngleHeadPreview = `${_BASE}brands/Columbia/Schematics/Angleheads/AngleHead/angleheadbacksquare.jpg`;
-const columbiaGooseneckAdapterImg = `${_BASE}brands/Columbia/Schematics/Pumps/GooseneckAdapter/Gooseneck-1-1-enhanced.png`;
-const columbiaGooseneckAdapterPreview = `${_BASE}brands/Columbia/Schematics/Pumps/GooseneckAdapter/goosenecksquare.jpg`;
-const columbiaMudPumpImg = `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
-const columbiaMudPumpSubAssembliesImg = `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/MUD-PUMP-SUB-ASSEMBLIES-2022-enhanced.png`;
-const columbiaMudPumpPreview = `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/TallBoyMudpumps.jpg`;
-const columbiaTallBoyMudPumpImg = `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TALL-BOY-MUD-PUMP-SCHEMATIC-2022-enhanced.png`;
-const columbiaTallBoyMudPumpSubAssembliesImg = `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TALL-BOY-MUD-PUMP-SUB-ASSEMBLIES-2022-enhanced.png`;
-const columbiaTallBoyMudPumpPreview = `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TallBoyPump.jpg`;
-const columbiaNailspotterImg = `${_BASE}brands/Columbia/Schematics/Nailspotters/Nailspotter/NAIL-SPOTTER-SCHEMATIC-2022-enhanced.png`;
-const columbiaNailspotterPreview = `${_BASE}brands/Columbia/Schematics/Nailspotters/Nailspotter/2023Nailspotter3inch.jpg`;
-const columbiaTomahawkSmoothingBladesImg = `${_BASE}brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/TOMAHAWK-SCHEMATIC-2022-enhanced.png`;
-const columbiaTomahawkSmoothingBladesPreview = `${_BASE}brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/Tomahawksmoothingblade.jpg`;
-const columbiaStandardCornerFlusherImg = `${_BASE}brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/3.5INCH-CORNER-FLUSHER-SCHEMATIC-2015-enhanced.png`;
-const columbiaStandardCornerFlusherPreview = `${_BASE}brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/3inchflusher.png`;
-const columbiaDirectCornerFlusherImg = `${_BASE}brands/Columbia/Schematics/CornerFlushers/DirectCornerFlusher/DirectStandardFlusher-2015-enhanced.png`;
-const columbiaDirectCornerFlusherPreview = `${_BASE}brands/Columbia/Schematics/CornerFlushers/DirectCornerFlusher/2.5_Direct_Flusher_2.5DF.jpg`;
-const columbiaComboFlusherImg = `${_BASE}brands/Columbia/Schematics/CornerFlushers/ComboFlusher/Classic_Combo_Flusher-1-enhanced.png`;
-const columbiaComboFlusherPreview = `${_BASE}brands/Columbia/Schematics/CornerFlushers/ComboFlusher/combo_flusher.jpg`;
-const columbiaSanderHeadImg = `${_BASE}brands/Columbia/Schematics/Sanders/SanderHead/SANDER-HEAD-SCHEMATIC-enhanced.png`;
-const columbiaSanderHeadPreview = `${_BASE}brands/Columbia/Schematics/Sanders/SanderHead/sanderwhandlesquaresmall.jpg`;
-const columbiaCompoundTubeImg = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CompoundTube/COMPOUND-TUBE-SCHEMATIC-2022-enhanced.png`;
-const columbiaCompoundTubePreview = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CompoundTube/compoundtubesquare.jpg`;
-const columbiaCamLockTubeImg = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CamLockTube/Cam_Lock_Tube_2019-enhanced.png`;
-const columbiaCamLockTubePreview = `${_BASE}brands/Columbia/Schematics/CompoundTubes/CamLockTube/camlocktubesquare.jpg`;
-const columbiaSemiAutomaticTaperImg = `${_BASE}brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/SEMI-AUTOMATIC-TAPER-SCHEMATIC-2022-enhanced.png`;
-const columbiaSemiAutomaticTaperPreview = `${_BASE}brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/semiautotapersquare.jpg`;
-const columbiaOneImg = `${_BASE}brands/Columbia/Schematics/Handles/ColumbiaOne/Columbia_One-enhanced.png`;
-const columbiaOnePreview = `${_BASE}brands/Columbia/Schematics/Handles/ColumbiaOne/columbiaonesquare.jpg`;
-const columbiaLongExtendableHandleImg = `${_BASE}brands/Columbia/Schematics/Handles/LongExtendableHandle/extendable-handle-enhanced.png`;
-const columbiaLongExtendableHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/LongExtendableHandle/corner_roller_handle_extendible.jpg`;
-const columbiaFlatBoxHandleImg = `${_BASE}brands/Columbia/Schematics/Handles/FlatBoxHandle/180GripBoxHandle-2014-enhanced.png`;
-const columbiaFlatBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/FlatBoxHandle/boxhandle.jpg`;
-const columbiaClosetMonsterFlatBoxHandleImg = `${_BASE}brands/Columbia/Schematics/Handles/ClosetMonster/ClosetMonster-2015-enhanced.png`;
-const columbiaClosetMonsterFlatBoxHandlePreview = `${_BASE}brands/Columbia/Schematics/Handles/ClosetMonster/closet_monster_copy.jpg`;
-const columbiaBoxFillerImg = `${_BASE}brands/Columbia/Schematics/Pumps/BoxFiller/Box_Filler.png`;
-const columbiaBoxFillerPreview = `${_BASE}brands/Columbia/Schematics/Pumps/BoxFiller/boxfiller.jpg`;
-const columbiaCornerCobraImg = `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/CORNER-COBRA-SCHEMATIC.2024-enhanced.png`;
-const columbiaCornerCobraPreview = `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/NEWCORNERCOBRA-scaled.png`;
+// Static fallback image paths (PNG/JPG originals, served from public/)
+const _fallbacks = {
+  'columbia-matrix': {
+    pages: {
+      1: `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/BoxHandle/Matrix_Handle-enhanced.png`,
+      2: `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Head/Matrix_Head-enhanced-enhanced.png`,
+      3: `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Lever/Matrix_Lever-1-enhanced.png`,
+      4: `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/Pinchbox/Matrix_Pinchbox-1-enhanced.png`,
+      5: `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/ExtensionHousing/Extension_Housing_Schematic-1-enhanced.png`,
+    },
+    preview: `${_BASE}brands/Columbia/Schematics/Handles/MatrixBoxHandle/BoxHandle/columbia_matrix_box_handle.jpg`,
+  },
+  'columbia-predator-taper': {
+    pages: {
+      1: `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/Body/predator_taper_body.png`,
+      2: `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/Head/predator_taper_head.png`,
+    },
+    preview: `${_BASE}brands/Columbia/Schematics/AutomaticTapers/PredatorTaper/predator_taper.jpg`,
+  },
+  'tapetech-extendable-support-handle': {
+    pages: { 1: `${_BASE}brands/TapeTech/Schematics/ExtendableSupportHandle/XHTT_SCH.png` },
+    preview: `${_BASE}brands/TapeTech/Schematics/ExtendableSupportHandle/XHTT_02-300x300.jpg`,
+  },
+  'columbia-2-way-internal-corner': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Applicators/TwoWayInternalCorner/2_Way_Internal_Corner_Applicator-1-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Applicators/TwoWayInternalCorner/Two-Way_Internal_Corner_Applicator.jpg`,
+  },
+  'columbia-external-corner-applicator': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Applicators/ExternalCorner/8_Wheel_External_Corner_Applicator-1-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Applicators/ExternalCorner/External_90_Aplicator_CEXT90_-_FRONT.jpg`,
+  },
+  'columbia-inside-corner-applicator': {
+    pages: {
+      1: `${_BASE}brands/Columbia/Schematics/Applicators/InsideCornerApplicator/2Wheel/ICA1-2-2015.png`,
+      2: `${_BASE}brands/Columbia/Schematics/Applicators/InsideCornerApplicator/4Wheel/ICA1-4-2015.png`,
+    },
+    preview: `${_BASE}brands/Columbia/Schematics/Applicators/InsideCornerApplicator/Inside_Corner_Applicator_4_Wheels_ICA1-4_-_BACK.jpg`,
+  },
+  // (Inside Corner Roller images/data intentionally removed from parts schematics)
+  'columbia-standard-outside-corner-roller': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/OutsideCornerRollers-2016-1-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerRollers/StandardOutsideCornerRoller/External_90_Aplicator.jpg`,
+  },
+  'columbia-inside-corner-roller': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/InsideCornerRoller-2014_1_-enhanced-squared.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerRollers/InsideCornerRoller/cornerroller.jpg`,
+  },
+  'columbia-throttle-box': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerBoxes/ThrottleBox/CORNER-BOX-SCHEMATIC-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerBoxes/ThrottleBox/throttlebox8small.jpg`,
+  },
+  'columbia-automatic-flat-box': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/AUTO-BOX-SCHEMATIC-2022-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/FinishingBoxes/AutomaticFlatBox/automaticbox-1.jpg`,
+  },
+  'columbia-flat-box': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FlatBox/FLAT-BOX-HINGED-SCHEMATIC-2022-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FlatBox/2023flatbox.jpg`,
+  },
+  'columbia-fat-boy-box': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/fat_boy_box.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/FinishingBoxes/FatBoyBox/InsideTrackBoxFrontSmall.png`,
+  },
+  'columbia-angle-head': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Angleheads/AngleHead/AngleHead-2014-3-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Angleheads/AngleHead/angleheadbacksquare.jpg`,
+  },
+  'columbia-gooseneck-adapter': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Pumps/GooseneckAdapter/Gooseneck-1-1-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Pumps/GooseneckAdapter/goosenecksquare.jpg`,
+  },
+  'columbia-mud-pump': {
+    pages: {
+      1: `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/MUD-PUMP-SUB-ASSEMBLIES-2022-enhanced.png`,
+      2: `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/MUD-PUMP-SCHEMATIC-2022-enhanced.png`,
+    },
+    preview: `${_BASE}brands/Columbia/Schematics/Pumps/MudPump/TallBoyMudpumps.jpg`,
+  },
+  'columbia-tall-boy-mud-pump': {
+    pages: {
+      1: `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TALL-BOY-MUD-PUMP-SUB-ASSEMBLIES-2022-enhanced.png`,
+      2: `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TALL-BOY-MUD-PUMP-SCHEMATIC-2022-enhanced.png`,
+    },
+    preview: `${_BASE}brands/Columbia/Schematics/Pumps/TallBoyMudPump/TallBoyPump.jpg`,
+  },
+  'columbia-nailspotter': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Nailspotters/Nailspotter/NAIL-SPOTTER-SCHEMATIC-2022-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Nailspotters/Nailspotter/2023Nailspotter3inch.jpg`,
+  },
+  'columbia-tomahawk-smoothing-blades': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/TOMAHAWK-SCHEMATIC-2022-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/SmoothingBlades/TomahawkSmoothingBlades/Tomahawksmoothingblade.jpg`,
+  },
+  'columbia-standard-corner-flusher': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/3.5INCH-CORNER-FLUSHER-SCHEMATIC-2015-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerFlushers/StandardCornerFlusher/3inchflusher.png`,
+  },
+  'columbia-direct-corner-flusher': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerFlushers/DirectCornerFlusher/DirectStandardFlusher-2015-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerFlushers/DirectCornerFlusher/2.5_Direct_Flusher_2.5DF.jpg`,
+  },
+  'columbia-combo-flusher': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerFlushers/ComboFlusher/Classic_Combo_Flusher-1-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerFlushers/ComboFlusher/combo_flusher.jpg`,
+  },
+  'columbia-sander-head': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Sanders/SanderHead/SANDER-HEAD-SCHEMATIC-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Sanders/SanderHead/sanderwhandlesquaresmall.jpg`,
+  },
+  'columbia-compound-tube': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CompoundTubes/CompoundTube/COMPOUND-TUBE-SCHEMATIC-2022-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CompoundTubes/CompoundTube/compoundtubesquare.jpg`,
+  },
+  'columbia-cam-lock-tube': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CompoundTubes/CamLockTube/Cam_Lock_Tube_2019-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CompoundTubes/CamLockTube/camlocktubesquare.jpg`,
+  },
+  'columbia-semi-automatic-taper': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/SEMI-AUTOMATIC-TAPER-SCHEMATIC-2022-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/SemiAutomaticTapers/SemiAutomaticTaper/semiautotapersquare.jpg`,
+  },
+  'columbia-one': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Handles/ColumbiaOne/Columbia_One-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Handles/ColumbiaOne/columbiaonesquare.jpg`,
+  },
+  'columbia-long-extendable-handle': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Handles/LongExtendableHandle/extendable-handle-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Handles/LongExtendableHandle/corner_roller_handle_extendible.jpg`,
+  },
+  'columbia-flat-box-handle': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Handles/FlatBoxHandle/180GripBoxHandle-2014-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Handles/FlatBoxHandle/boxhandle.jpg`,
+  },
+  'columbia-closet-monster-flat-box-handle': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Handles/ClosetMonster/ClosetMonster-2015-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Handles/ClosetMonster/closet_monster_copy.jpg`,
+  },
+  'columbia-box-filler': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/Pumps/BoxFiller/Box_Filler.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/Pumps/BoxFiller/boxfiller.jpg`,
+  },
+  'columbia-corner-cobra': {
+    pages: { 1: `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/CORNER-COBRA-SCHEMATIC.2024-enhanced.png` },
+    preview: `${_BASE}brands/Columbia/Schematics/CornerRollers/CornerCobra/NEWCORNERCOBRA-scaled.png`,
+  },
+};
 
 // Build a static schematic-id → brand lookup from SCHEMATIC_DEFINITIONS so the
 // URL-param handler can resolve the correct brand without needing the full
@@ -166,6 +244,22 @@ export default function Parts() {
   ];
 
   const location = useLocation();
+
+  // WP Media Library schematic manifest (WebP, preferred over static fallbacks)
+  const { manifest: schematicManifest } = useSchematicMedia();
+
+  // Helper: resolve a diagram page URL — WP manifest WebP takes priority,
+  //         falls back to static PNG/JPG from public/brands/ until WP is populated.
+  const schImg = useCallback((id, page) => {
+    const wpUrl = schematicManifest?.[id]?.pages?.[String(page)]?.url;
+    return wpUrl ?? _fallbacks[id]?.pages?.[page];
+  }, [schematicManifest]);
+
+  // Helper: resolve a preview image URL — same WP-first, static-fallback pattern.
+  const schPrev = useCallback((id) => {
+    const wpUrl = schematicManifest?.[id]?.preview;
+    return wpUrl ?? _fallbacks[id]?.preview;
+  }, [schematicManifest]);
 
   // Selection flow state
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -201,7 +295,7 @@ export default function Parts() {
   const [hasMoved, setHasMoved] = useState(false);
   const [lastTapTime, setLastTapTime] = useState(0);
   const [lastTapPos, setLastTapPos] = useState({ x: 0, y: 0 });
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [, setForceUpdate] = useState(0);
   // Ref to track pinch zoom state without triggering re-renders
   const pinchRef = useRef({ active: false, initDist: 0, initScale: 1, initPanX: 0, initPanY: 0, centerX: 0, centerY: 0 });
   // Ref to track any active gesture for synchronous transition control
@@ -340,13 +434,13 @@ export default function Parts() {
         5: 'Extension Housing'
       },
       imagePages: {
-        1: columbiaMatrixBoxHandleImg,
-        2: columbiaMatrixHeadImg,
-        3: columbiaMatrixLeverImg,
-        4: columbiaMatrixPinchboxImg,
-        5: columbiaExtensionHousingImg
+        1: schImg('columbia-matrix', 1),
+        2: schImg('columbia-matrix', 2),
+        3: schImg('columbia-matrix', 3),
+        4: schImg('columbia-matrix', 4),
+        5: schImg('columbia-matrix', 5)
       },
-      previewImage: columbiaMatrixBoxHandlePreview,
+      previewImage: schPrev('columbia-matrix'),
       navHotspots: [
         ...(columbiaMatrixBoxHandleBoxHandleData.navHotspots || []),
         ...(columbiaMatrixBoxHandleHeadData.navHotspots || []),
@@ -368,10 +462,10 @@ export default function Parts() {
         2: 'Head'
       },
       imagePages: {
-        1: columbiaPredatorTaperBodyImg,
-        2: columbiaPredatorTaperHeadNewImg
+        1: schImg('columbia-predator-taper', 1),
+        2: schImg('columbia-predator-taper', 2)
       },
-      previewImage: columbiaPredatorTaperPreview,
+      previewImage: schPrev('columbia-predator-taper'),
       navHotspots: [
         ...(columbiaPredatorTaperBodyData.navHotspots || []),
         ...(columbiaPredatorTaperHeadData.navHotspots || []),
@@ -386,8 +480,8 @@ export default function Parts() {
       brand: 'TapeTech',
       category: 'Handles',
       diagramPages: [1],
-      imagePages: { 1: tapeTechExtendableSupportHandleImg },
-      previewImage: tapeTechExtendableSupportHandlePreview,
+      imagePages: { 1: schImg('tapetech-extendable-support-handle', 1) },
+      previewImage: schPrev('tapetech-extendable-support-handle'),
       parts: tapeTechExtendableSupportHandleParts
     },
     {
@@ -397,8 +491,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Applicators',
       diagramPages: [1],
-      imagePages: { 1: columbia2WayInternalCornerImg },
-      previewImage: columbia2WayInternalCornerPreview,
+      imagePages: { 1: schImg('columbia-2-way-internal-corner', 1) },
+      previewImage: schPrev('columbia-2-way-internal-corner'),
       parts: twoWayInternalCornerApplicatorParts
     },
     {
@@ -408,8 +502,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Applicators',
       diagramPages: [1],
-      imagePages: { 1: columbiaExternalCornerApplicatorImg },
-      previewImage: columbiaExternalCornerApplicatorPreview,
+      imagePages: { 1: schImg('columbia-external-corner-applicator', 1) },
+      previewImage: schPrev('columbia-external-corner-applicator'),
       parts: externalCornerApplicatorParts
     },
     {
@@ -424,10 +518,10 @@ export default function Parts() {
         2: '4-Wheel'
       },
       imagePages: {
-        1: columbiaInsideCornerApplicator2WheelImg,
-        2: columbiaInsideCornerApplicator4WheelImg
+        1: schImg('columbia-inside-corner-applicator', 1),
+        2: schImg('columbia-inside-corner-applicator', 2)
       },
-      previewImage: columbiaInsideCornerApplicatorPreview,
+      previewImage: schPrev('columbia-inside-corner-applicator'),
       parts: [...insideCornerApplicator2WheelParts, ...insideCornerApplicator4WheelParts]
     },
     {
@@ -437,8 +531,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Rollers',
       diagramPages: [1],
-      imagePages: { 1: columbiaStandardOutsideCornerRollerImg },
-      previewImage: columbiaStandardOutsideCornerRollerPreview,
+      imagePages: { 1: schImg('columbia-standard-outside-corner-roller', 1) },
+      previewImage: schPrev('columbia-standard-outside-corner-roller'),
       parts: standardOutsideCornerRollerParts
     },
     {
@@ -448,8 +542,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Rollers',
       diagramPages: [1],
-      imagePages: { 1: columbiaInsideCornerRollerImg },
-      previewImage: columbiaInsideCornerRollerPreview,
+      imagePages: { 1: schImg('columbia-inside-corner-roller', 1) },
+      previewImage: schPrev('columbia-inside-corner-roller'),
       parts: insideCornerRollerParts
     },
     {
@@ -459,8 +553,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Boxes',
       diagramPages: [1],
-      imagePages: { 1: columbiaThrottleBoxImg },
-      previewImage: columbiaThrottleBoxPreview,
+      imagePages: { 1: schImg('columbia-throttle-box', 1) },
+      previewImage: schPrev('columbia-throttle-box'),
       parts: throttleBoxParts
     },
     {
@@ -470,8 +564,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Finishing Boxes',
       diagramPages: [1],
-      imagePages: { 1: columbiaAutomaticFlatBoxImg },
-      previewImage: columbiaAutomaticFlatBoxPreview,
+      imagePages: { 1: schImg('columbia-automatic-flat-box', 1) },
+      previewImage: schPrev('columbia-automatic-flat-box'),
       parts: automaticFlatBoxParts
     },
     {
@@ -481,8 +575,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Finishing Boxes',
       diagramPages: [1],
-      imagePages: { 1: columbiaFlatBoxImg },
-      previewImage: columbiaFlatBoxPreview,
+      imagePages: { 1: schImg('columbia-flat-box', 1) },
+      previewImage: schPrev('columbia-flat-box'),
       parts: flatBoxParts
     },
     {
@@ -492,8 +586,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Finishing Boxes',
       diagramPages: [1],
-      imagePages: { 1: columbiaFatBoyBoxImg },
-      previewImage: columbiaFatBoyBoxPreview,
+      imagePages: { 1: schImg('columbia-fat-boy-box', 1) },
+      previewImage: schPrev('columbia-fat-boy-box'),
       parts: fatBoyBoxParts
     },
     {
@@ -503,8 +597,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Angleheads',
       diagramPages: [1],
-      imagePages: { 1: columbiaAngleHeadImg },
-      previewImage: columbiaAngleHeadPreview,
+      imagePages: { 1: schImg('columbia-angle-head', 1) },
+      previewImage: schPrev('columbia-angle-head'),
       parts: angleHeadParts
     },
     {
@@ -514,8 +608,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Pumps',
       diagramPages: [1],
-      imagePages: { 1: columbiaGooseneckAdapterImg },
-      previewImage: columbiaGooseneckAdapterPreview,
+      imagePages: { 1: schImg('columbia-gooseneck-adapter', 1) },
+      previewImage: schPrev('columbia-gooseneck-adapter'),
       parts: gooseneckAdapterParts
     },
     {
@@ -530,10 +624,10 @@ export default function Parts() {
         2: 'Schematic'
       },
       imagePages: {
-        1: columbiaMudPumpSubAssembliesImg,
-        2: columbiaMudPumpImg
+        1: schImg('columbia-mud-pump', 1),
+        2: schImg('columbia-mud-pump', 2)
       },
-      previewImage: columbiaMudPumpPreview,
+      previewImage: schPrev('columbia-mud-pump'),
       parts: mudPumpParts
     },
     {
@@ -548,10 +642,10 @@ export default function Parts() {
         2: 'Schematic'
       },
       imagePages: {
-        1: columbiaTallBoyMudPumpSubAssembliesImg,
-        2: columbiaTallBoyMudPumpImg
+        1: schImg('columbia-tall-boy-mud-pump', 1),
+        2: schImg('columbia-tall-boy-mud-pump', 2)
       },
-      previewImage: columbiaTallBoyMudPumpPreview,
+      previewImage: schPrev('columbia-tall-boy-mud-pump'),
       parts: tallBoyMudPumpParts
     },
     {
@@ -561,8 +655,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Nailspotters',
       diagramPages: [1],
-      imagePages: { 1: columbiaNailspotterImg },
-      previewImage: columbiaNailspotterPreview,
+      imagePages: { 1: schImg('columbia-nailspotter', 1) },
+      previewImage: schPrev('columbia-nailspotter'),
       parts: nailspotterParts
     },
     {
@@ -572,8 +666,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Smoothing Blades',
       diagramPages: [1],
-      imagePages: { 1: columbiaTomahawkSmoothingBladesImg },
-      previewImage: columbiaTomahawkSmoothingBladesPreview,
+      imagePages: { 1: schImg('columbia-tomahawk-smoothing-blades', 1) },
+      previewImage: schPrev('columbia-tomahawk-smoothing-blades'),
       parts: tomahawkParts
     },
     {
@@ -583,8 +677,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Flushers',
       diagramPages: [1],
-      imagePages: { 1: columbiaStandardCornerFlusherImg },
-      previewImage: columbiaStandardCornerFlusherPreview,
+      imagePages: { 1: schImg('columbia-standard-corner-flusher', 1) },
+      previewImage: schPrev('columbia-standard-corner-flusher'),
       parts: cf35Parts
     },
     {
@@ -594,8 +688,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Flushers',
       diagramPages: [1],
-      imagePages: { 1: columbiaDirectCornerFlusherImg },
-      previewImage: columbiaDirectCornerFlusherPreview,
+      imagePages: { 1: schImg('columbia-direct-corner-flusher', 1) },
+      previewImage: schPrev('columbia-direct-corner-flusher'),
       parts: columbiaDirectCornerFlusherData?.parts || []
     },
     {
@@ -605,8 +699,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Flushers',
       diagramPages: [1],
-      imagePages: { 1: columbiaComboFlusherImg },
-      previewImage: columbiaComboFlusherPreview,
+      imagePages: { 1: schImg('columbia-combo-flusher', 1) },
+      previewImage: schPrev('columbia-combo-flusher'),
       parts: columbiaComboFlusherData?.parts || []
     },
     {
@@ -616,8 +710,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Sanders',
       diagramPages: [1],
-      imagePages: { 1: columbiaSanderHeadImg },
-      previewImage: columbiaSanderHeadPreview,
+      imagePages: { 1: schImg('columbia-sander-head', 1) },
+      previewImage: schPrev('columbia-sander-head'),
       parts: sanderHeadParts
     },
     {
@@ -627,8 +721,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Compound Tubes',
       diagramPages: [1],
-      imagePages: { 1: columbiaCompoundTubeImg },
-      previewImage: columbiaCompoundTubePreview,
+      imagePages: { 1: schImg('columbia-compound-tube', 1) },
+      previewImage: schPrev('columbia-compound-tube'),
       parts: compoundTubeParts
     },
     {
@@ -638,8 +732,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Compound Tubes',
       diagramPages: [1],
-      imagePages: { 1: columbiaCamLockTubeImg },
-      previewImage: columbiaCamLockTubePreview,
+      imagePages: { 1: schImg('columbia-cam-lock-tube', 1) },
+      previewImage: schPrev('columbia-cam-lock-tube'),
       parts: camLockTubeParts
     },
     {
@@ -649,8 +743,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Semi-Automatic Tapers',
       diagramPages: [1],
-      imagePages: { 1: columbiaSemiAutomaticTaperImg },
-      previewImage: columbiaSemiAutomaticTaperPreview,
+      imagePages: { 1: schImg('columbia-semi-automatic-taper', 1) },
+      previewImage: schPrev('columbia-semi-automatic-taper'),
       parts: semiAutomaticTaperParts
     },
     {
@@ -660,8 +754,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Handles',
       diagramPages: [1],
-      imagePages: { 1: columbiaOneImg },
-      previewImage: columbiaOnePreview,
+      imagePages: { 1: schImg('columbia-one', 1) },
+      previewImage: schPrev('columbia-one'),
       parts: columbiaOneParts
     },
     {
@@ -671,8 +765,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Handles',
       diagramPages: [1],
-      imagePages: { 1: columbiaLongExtendableHandleImg },
-      previewImage: columbiaLongExtendableHandlePreview,
+      imagePages: { 1: schImg('columbia-long-extendable-handle', 1) },
+      previewImage: schPrev('columbia-long-extendable-handle'),
       parts: longExtendableHandleParts
     },
     {
@@ -682,8 +776,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Handles',
       diagramPages: [1],
-      imagePages: { 1: columbiaFlatBoxHandleImg },
-      previewImage: columbiaFlatBoxHandlePreview,
+      imagePages: { 1: schImg('columbia-flat-box-handle', 1) },
+      previewImage: schPrev('columbia-flat-box-handle'),
       parts: flatBoxHandleParts
     },
     {
@@ -693,8 +787,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Handles',
       diagramPages: [1],
-      imagePages: { 1: columbiaClosetMonsterFlatBoxHandleImg },
-      previewImage: columbiaClosetMonsterFlatBoxHandlePreview,
+      imagePages: { 1: schImg('columbia-closet-monster-flat-box-handle', 1) },
+      previewImage: schPrev('columbia-closet-monster-flat-box-handle'),
       parts: closetMonsterParts
     },
     {
@@ -704,8 +798,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Pumps',
       diagramPages: [1],
-      imagePages: { 1: columbiaBoxFillerImg },
-      previewImage: columbiaBoxFillerPreview,
+      imagePages: { 1: schImg('columbia-box-filler', 1) },
+      previewImage: schPrev('columbia-box-filler'),
       parts: boxFillerParts
     },
     {
@@ -715,8 +809,8 @@ export default function Parts() {
       brand: 'Columbia Taping Tools',
       category: 'Corner Rollers',
       diagramPages: [1],
-      imagePages: { 1: columbiaCornerCobraImg },
-      previewImage: columbiaCornerCobraPreview,
+      imagePages: { 1: schImg('columbia-corner-cobra', 1) },
+      previewImage: schPrev('columbia-corner-cobra'),
       parts: cornerCobraParts
     }
   ];
