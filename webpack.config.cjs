@@ -42,7 +42,13 @@ module.exports = (envFlags, argv) => {
 
   // Normalise PUBLIC_URL — strip trailing slashes; empty = serve from root.
   const PUBLIC_URL  = env('PUBLIC_URL').replace(/\/+$/, '');
-  const publicPath  = isDev ? '/' : (PUBLIC_URL ? `${PUBLIC_URL}/` : '/');
+  // In production the React build lives inside the WordPress theme directory.
+  // publicPath must point here so webpack's runtime can resolve lazy-loaded
+  // route chunks (e.g. assets/js/Products.hash.chunk.js).  If PUBLIC_URL is
+  // explicitly set (e.g. a full HTTPS URL) that value wins; otherwise we fall
+  // back to the theme-relative path.
+  const WP_THEME_DIST = '/wp-content/themes/drywall-toolbox/dist';
+  const publicPath  = isDev ? '/' : (PUBLIC_URL ? `${PUBLIC_URL}/` : `${WP_THEME_DIST}/`);
 
   // Production writes directly into the WordPress theme for zero-copy CI deploys.
   const outputPath = isDev
@@ -226,6 +232,8 @@ module.exports = (envFlags, argv) => {
             from: 'public',
             to:   '.',
             globOptions: {
+              // dot: true ensures dotfiles (e.g. public/.htaccess) are included.
+              dot: true,
               ignore: [
                 // HtmlWebpackPlugin owns index.html
                 '**/index.html',

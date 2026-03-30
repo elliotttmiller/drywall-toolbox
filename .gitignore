@@ -46,9 +46,13 @@ wp-content/advanced-cache.php
 wp-content/wp-cache-config.php
 
 # WordPress core wp-content sub-directories (when a full WP install is present)
-# NOTE: themes/ and plugins/ at the repo root are our source code and ARE tracked.
+# wp-content/themes/drywall-toolbox/ IS tracked — it contains the theme's PHP
+# source files (style.css, functions.php, index.php).  The dist/ subdirectory
+# (webpack build output) is excluded by the top-level `dist/` rule above.
+# All other installed themes (twentytwenty*, etc.) are not part of this repo.
+wp-content/themes/twenty*/
+wp-content/themes/yith*/
 wp-content/plugins/
-wp-content/themes/
 
 # Composer / PHP dependency directories
 vendor/

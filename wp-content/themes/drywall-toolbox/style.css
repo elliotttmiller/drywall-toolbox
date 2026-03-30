@@ -1,0 +1,13 @@
+/*
+Theme Name: Drywall Toolbox
+Theme URI: https://drywalltoolbox.com
+Author: Elliott Miller
+Author URI: https://drywalltoolbox.com
+Description: Headless WordPress theme for the Drywall Toolbox React SPA storefront. All frontend rendering is handled by a React application built with Webpack and served from the dist/ subdirectory. WordPress and WooCommerce act as the headless CMS and REST API backend.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
+License: ISC
+Text Domain: drywall-toolbox
+*/
