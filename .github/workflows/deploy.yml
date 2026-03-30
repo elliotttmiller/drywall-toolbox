@@ -145,10 +145,34 @@ jobs:
         run: |
           echo "Dry-run mode: displaying deploy plan."
           echo
+          echo "Would deploy .htaccess + index.php → ${{ github.event.inputs.remote_root }}/"
           echo "Would deploy dist/ → ${{ github.event.inputs.remote_root }}/dist/"
           echo "Would deploy wp/wp-content/ → ${{ github.event.inputs.remote_root }}/wp/wp-content/"
-          echo "Would deploy .htaccess → ${{ github.event.inputs.remote_root }}/.htaccess"
-          echo "Would deploy index.php → ${{ github.event.inputs.remote_root }}/index.php"
+
+      - name: Stage root files for deployment
+        run: |
+          mkdir -p root-deploy
+          cp .htaccess index.php root-deploy/
+          echo "── root-deploy contents ──"
+          ls -la root-deploy/
+
+      - name: Deploy root files (.htaccess, index.php) via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.HOSTGATOR_FTP_HOST }}
+          username: ${{ secrets.HOSTGATOR_FTP_USER }}
+          password: ${{ secrets.HOSTGATOR_FTP_PASS }}
+          protocol: ftps
+          port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
+          server-dir: /home1/benconklin/public_html/website_a246e6a8/
+          local-dir:  ./root-deploy/
+          exclude: |
+            **/.git*
+            **/.github/**
+          dangerous-clean-slate: false
+          log-level: verbose
+          dry-run: "${{ github.event.inputs.dry_run == 'true' }}"
+          timeout: 60000
 
       - name: Deploy dist/ via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -211,7 +235,8 @@ jobs:
           echo "  Timestamp     : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           echo "  Dry run       : ${{ github.event.inputs.dry_run == 'true' }}"
           echo "  JS chunks     : $(find dist/assets/js -name '*.js' 2>/dev/null | wc -l) files"
-          echo "  WP theme      : wp/wp-content/themes/headless-base/"
+          echo "  WP theme      : wp/wp-content/themes/headless-base/ (active headless theme)"
+          echo "  Root .htaccess: .htaccess → website root (React Router + WP routing)"
           echo "────────────────────────────────────────────"
 
   verify:

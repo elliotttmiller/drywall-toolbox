@@ -86,6 +86,11 @@ public/brands/*/Schematics/**/*.jpg
 public/brands/*/Schematics/**/*.jpeg
 public/brands/*/Schematics/**/*.webp
 
+# Local backup directories (large binary files — not needed in the repo)
+# The originals live here after scripts/convert_schematics_to_webp.py backs them up.
+# To restore: copy back from backups/ and re-run the upload script.
+backups/
+
 # OS artifacts
 Thumbs.db
 ehthumbs.db

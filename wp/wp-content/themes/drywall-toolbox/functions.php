@@ -30,8 +30,12 @@ function dtb_theme_setup() {
 
 add_action( 'wp_enqueue_scripts', 'dtb_enqueue_react_app' );
 function dtb_enqueue_react_app() {
-    $dist_path = get_template_directory() . '/dist';
-    $dist_uri  = get_template_directory_uri() . '/dist';
+    // WordPress is installed in the /wp/ subdirectory.
+    // The React build lives in dist/ at the website root (one level above ABSPATH).
+    // ABSPATH = /path/to/website/wp/  →  dirname(ABSPATH) = /path/to/website/
+    $site_root = rtrim( dirname( rtrim( ABSPATH, '/' ) ), '/' );
+    $dist_path = $site_root . '/dist';
+    $dist_uri  = rtrim( home_url(), '/' ) . '/dist';
     $manifest  = $dist_path . '/asset-manifest.json';
 
     if ( ! file_exists( $manifest ) ) {

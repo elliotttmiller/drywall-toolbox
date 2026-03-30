@@ -12,6 +12,7 @@ DTB Schematics Media API plugin (dtb-schematics-api.php):
 
 Dependencies:
     pip install requests
+    pip install Pillow   # only needed when --auto-convert is used
 
 Configuration (create a .env or export environment variables before running):
     WP_BASE_URL      WordPress URL, e.g. https://drywalltoolbox.com/wp
@@ -30,6 +31,15 @@ Usage (run from repo root):
     # Re-upload all, overwriting existing media by slug:
     python scripts/upload_schematics_to_wp.py --overwrite
 
+    # Auto-convert PNG/JPG → WebP on the fly when the .webp file is missing.
+    # Useful after restoring backups/ or when running the first-time upload.
+    # Falls back to PNG/JPG originals at the same path (sans extension):
+    python scripts/upload_schematics_to_wp.py --auto-convert
+
+    # Point to a backup directory that mirrors the public/brands/ tree:
+    python scripts/upload_schematics_to_wp.py --auto-convert \\
+        --source-root backups/schematics_non_webp_20260330-051523
+
 Naming convention:
     Diagram images are uploaded with slug: dtb-schem-{schematic-id}-p{page}
     Preview images are uploaded with slug: dtb-schem-{schematic-id}-preview
@@ -39,9 +49,10 @@ Naming convention:
 """
 
 import argparse
+import io
 import os
-import re
 import sys
+import tempfile
 from pathlib import Path
 
 try:
@@ -252,7 +263,6 @@ SCHEMATICS_MANIFEST = {
     },
 }
 
-
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def _slug_for(schematic_id: str, page: int | None, is_preview: bool) -> str:
@@ -260,6 +270,66 @@ def _slug_for(schematic_id: str, page: int | None, is_preview: bool) -> str:
     if is_preview:
         return f"dtb-schem-{schematic_id}-preview"
     return f"dtb-schem-{schematic_id}-p{page}"
+
+
+def _find_source_image(
+    webp_path: Path,
+    source_root: Path | None,
+    repo_root: Path,
+) -> Path | None:
+    """Locate the best source image for a manifest entry.
+
+    Priority:
+      1. The expected .webp file at ``webp_path``.
+      2. A PNG/JPG sibling of ``webp_path`` (same dir, different extension).
+      3. If ``source_root`` is given, same relative path under that root
+         (trying .webp, then .png/.jpg/.jpeg).
+
+    Returns the first existing Path, or None if nothing is found.
+    """
+    if webp_path.exists():
+        return webp_path
+
+    # Look for a PNG/JPG sibling alongside the expected WebP path.
+    for ext in ('.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'):
+        candidate = webp_path.with_suffix(ext)
+        if candidate.exists():
+            return candidate
+
+    if source_root is not None:
+        # Compute the path relative to the repo root, then graft onto source_root.
+        try:
+            rel = webp_path.relative_to(repo_root)
+        except ValueError:
+            rel = webp_path  # fallback: use as-is
+
+        # Try the WebP path first, then PNG/JPG variants.
+        for ext in ('.webp', '.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG'):
+            candidate = (source_root / rel).with_suffix(ext)
+            if candidate.exists():
+                return candidate
+
+    return None
+
+
+def _convert_to_webp_bytes(src: Path, quality: int = 90) -> bytes:
+    """Convert an image file to WebP and return the raw bytes.
+
+    Requires Pillow (``pip install Pillow``).
+    """
+    try:
+        from PIL import Image  # type: ignore[import]
+    except ImportError:
+        sys.exit(
+            "ERROR: Pillow is required for --auto-convert.  "
+            "Install it with:  pip install Pillow\n"
+        )
+    buf = io.BytesIO()
+    with Image.open(src) as img:
+        if img.mode not in ('RGB', 'RGBA'):
+            img = img.convert('RGB')
+        img.save(buf, format='WEBP', quality=quality, method=6)
+    return buf.getvalue()
 
 
 def _find_existing_by_slug(session: "requests.Session", api_base: str, slug: str) -> dict | None:
@@ -297,17 +367,32 @@ def _upload_media(
     schematic_id: str,
     page: str,
     img_type: str,
+    *,
+    webp_bytes: bytes | None = None,
 ) -> dict:
-    """Upload a file and return the new media item dict."""
-    with filepath.open("rb") as f:
-        r = session.post(
-            f"{api_base}/media",
-            headers={
-                "Content-Disposition": f'attachment; filename="{filepath.name}"',
-                "Content-Type": "image/webp",
-            },
-            data=f,
-        )
+    """Upload a file (or pre-converted bytes) and return the new media item dict.
+
+    If ``webp_bytes`` is provided, those bytes are uploaded directly as WebP
+    regardless of the source ``filepath`` format.  The upload filename is
+    always ``<slug>.webp`` so the Media Library stores a clean WebP file.
+    """
+    # Determine the upload filename and content to send.
+    if webp_bytes is not None:
+        upload_name = f"{slug}.webp"
+        data = webp_bytes
+    else:
+        upload_name = filepath.name
+        with filepath.open("rb") as f:
+            data = f.read()
+
+    r = session.post(
+        f"{api_base}/media",
+        headers={
+            "Content-Disposition": f'attachment; filename="{upload_name}"',
+            "Content-Type": "image/webp",
+        },
+        data=data,
+    )
     r.raise_for_status()
     media = r.json()
     media_id = media["id"]
@@ -333,9 +418,41 @@ def _upload_media(
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Upload schematic WebP images to WordPress Media Library")
-    parser.add_argument("--dry-run",   action="store_true", help="Print upload plan without uploading")
-    parser.add_argument("--overwrite", action="store_true", help="Delete and re-upload existing media items")
+    parser = argparse.ArgumentParser(
+        description="Upload schematic WebP images to WordPress Media Library",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  # Normal upload (WebP files must already exist):\n"
+            "  python scripts/upload_schematics_to_wp.py\n\n"
+            "  # Auto-convert PNG/JPG → WebP on the fly when .webp is missing:\n"
+            "  python scripts/upload_schematics_to_wp.py --auto-convert\n\n"
+            "  # Use backed-up PNG/JPG originals as the source:\n"
+            "  python scripts/upload_schematics_to_wp.py --auto-convert \\\n"
+            "      --source-root backups/schematics_non_webp_20260330-051523\n"
+        ),
+    )
+    parser.add_argument("--dry-run",      action="store_true", help="Print upload plan without uploading")
+    parser.add_argument("--overwrite",    action="store_true", help="Delete and re-upload existing media items")
+    parser.add_argument(
+        "--auto-convert",
+        action="store_true",
+        help=(
+            "When the expected .webp file is missing, automatically locate the "
+            "PNG/JPG original and convert it to WebP before uploading.  "
+            "Requires Pillow: pip install Pillow."
+        ),
+    )
+    parser.add_argument(
+        "--source-root",
+        default=None,
+        help=(
+            "Alternate root directory to search for source images when the "
+            "expected path is missing.  The script mirrors the public/brands/ "
+            "tree under this root.  Example: "
+            "backups/schematics_non_webp_20260330-051523"
+        ),
+    )
     args = parser.parse_args()
 
     wp_base = os.environ.get("WP_BASE_URL", "").rstrip("/")
@@ -350,6 +467,13 @@ def main() -> None:
     api_base = f"{wp_base}/wp-json/wp/v2"
     repo_root = Path(__file__).parent.parent.resolve()
 
+    source_root: Path | None = None
+    if args.source_root:
+        source_root = (repo_root / args.source_root).resolve()
+        if not source_root.exists():
+            sys.exit(f"ERROR: --source-root path does not exist: {source_root}")
+        print(f"Source root: {source_root}")
+
     session = requests.Session()
     session.auth = (auth_user, auth_pass)
     # Some servers return 406 Not Acceptable when no Accept header is provided.
@@ -362,72 +486,87 @@ def main() -> None:
 
     total = ok = skip = error = 0
 
+    def _process_one(
+        rel_path: str,
+        slug: str,
+        title: str,
+        schematic_id: str,
+        page: str,
+        img_type: str,
+    ) -> None:
+        nonlocal ok, skip, error, total
+        total += 1
+        webp_path = repo_root / rel_path
+
+        # Locate source image — either the expected .webp or a convertible original.
+        src = _find_source_image(webp_path, source_root, repo_root)
+
+        if src is None:
+            hint = (
+                " (use --auto-convert --source-root <backup-dir> to upload from backups)"
+                if not args.auto_convert
+                else " (not found in backups either — check paths)"
+            )
+            print(f"  MISS  {rel_path}{hint}")
+            error += 1
+            return
+
+        needs_convert = src.suffix.lower() != ".webp"
+
+        if needs_convert and not args.auto_convert:
+            print(
+                f"  SKIP  {slug}  ← {src.name} "
+                f"(PNG/JPG found but --auto-convert not set)"
+            )
+            skip += 1
+            return
+
+        if args.dry_run:
+            conv_note = f" [will convert {src.suffix} → webp]" if needs_convert else ""
+            print(f"  DRY   {slug}  ← {src.name}{conv_note}")
+            ok += 1
+            return
+
+        existing = _find_existing_by_slug(session, api_base, slug)
+        if existing and not args.overwrite:
+            print(f"  SKIP  {slug}  (already in Media Library)")
+            skip += 1
+            return
+        if existing and args.overwrite:
+            _delete_media(session, api_base, existing["id"])
+
+        try:
+            webp_bytes = _convert_to_webp_bytes(src) if needs_convert else None
+        except Exception as exc:  # noqa: BLE001 — Pillow or I/O error during conversion
+            print(f"  ERROR {slug}: conversion failed — {exc}")
+            error += 1
+            return
+
+        try:
+            _upload_media(
+                session, api_base, src, slug, title,
+                schematic_id, page, img_type,
+                webp_bytes=webp_bytes,
+            )
+            conv_note = f" (converted from {src.suffix})" if needs_convert else ""
+            print(f"  OK    {slug}{conv_note}")
+            ok += 1
+        except requests.RequestException as exc:
+            print(f"  ERROR {slug}: upload failed — {exc}")
+            error += 1
+
     for schematic_id, data in SCHEMATICS_MANIFEST.items():
         # Process diagram pages
         for page_num, rel_path in data["pages"].items():
-            total += 1
-            src = repo_root / rel_path
-            slug = _slug_for(schematic_id, page_num, is_preview=False)
+            slug  = _slug_for(schematic_id, page_num, is_preview=False)
             title = f"DTB Schematic — {schematic_id} — Page {page_num}"
-
-            if not src.exists():
-                print(f"  MISS  {rel_path}  (run convert_schematics_to_webp.py first)")
-                error += 1
-                continue
-
-            if args.dry_run:
-                print(f"  DRY   {slug}  ← {src.name}")
-                ok += 1
-                continue
-
-            existing = _find_existing_by_slug(session, api_base, slug)
-            if existing and not args.overwrite:
-                print(f"  SKIP  {slug}  (already in Media Library)")
-                skip += 1
-                continue
-            if existing and args.overwrite:
-                _delete_media(session, api_base, existing["id"])
-
-            try:
-                _upload_media(session, api_base, src, slug, title, schematic_id, str(page_num), "diagram")
-                print(f"  OK    {slug}")
-                ok += 1
-            except Exception as exc:  # noqa: BLE001
-                print(f"  ERROR {slug}: {exc}")
-                error += 1
+            _process_one(rel_path, slug, title, schematic_id, str(page_num), "diagram")
 
         # Process preview image
         if data.get("preview"):
-            total += 1
-            src = repo_root / data["preview"]
-            slug = _slug_for(schematic_id, None, is_preview=True)
+            slug  = _slug_for(schematic_id, None, is_preview=True)
             title = f"DTB Schematic Preview — {schematic_id}"
-
-            if not src.exists():
-                print(f"  MISS  {data['preview']}  (run convert_schematics_to_webp.py first)")
-                error += 1
-                continue
-
-            if args.dry_run:
-                print(f"  DRY   {slug}  ← {src.name}")
-                ok += 1
-                continue
-
-            existing = _find_existing_by_slug(session, api_base, slug)
-            if existing and not args.overwrite:
-                print(f"  SKIP  {slug}  (already in Media Library)")
-                skip += 1
-                continue
-            if existing and args.overwrite:
-                _delete_media(session, api_base, existing["id"])
-
-            try:
-                _upload_media(session, api_base, src, slug, title, schematic_id, "0", "preview")
-                print(f"  OK    {slug}")
-                ok += 1
-            except Exception as exc:  # noqa: BLE001
-                print(f"  ERROR {slug}: {exc}")
-                error += 1
+            _process_one(data["preview"], slug, title, schematic_id, "0", "preview")
 
     print(f"\n{'Dry-run summary' if args.dry_run else 'Summary'}:")
     print(f"  Total   : {total}")
@@ -435,12 +574,12 @@ def main() -> None:
     print(f"  Skipped : {skip}")
     print(f"  Errors  : {error}")
 
-    if not args.dry_run and error == 0:
+    if not args.dry_run and error == 0 and ok > 0:
         print(
             "\n✓ All images uploaded.\n"
             "  Verify at: GET /wp-json/dtb/v1/schematics/media\n"
-            "  Once confirmed, schematic PNG/JPG originals in public/brands/*/Schematics/ "
-            "can be deleted."
+            "  Once confirmed, the local source images can be deleted.\n"
+            "  PNG/JPG originals in backups/ can be removed once WP images are confirmed live."
         )
 
 
