@@ -1,234 +1,209 @@
 # Drywall Toolbox
 
-Headless React storefront for Drywalltoolbox.com — powered by WordPress + WooCommerce as the backend CMS.
+Headless React storefront for Drywalltoolbox.com — powered by WordPress + WooCommerce as the headless CMS/API backend.
 
-**Architecture:** React SPA (webpack) → WooCommerce REST API v3 → HostGator shared hosting
---
-This repository contains:
-
-- A React SPA (`src/`) that fetches all product and category data from the WooCommerce REST API. No static product data is bundled — WordPress is the single source of truth.
-
-- WordPress theme and plugin code under `wp-content/` that are deployed to HostGator.
-
-- GitHub Actions workflows to deploy theme/plugin assets to HostGator via FTPS.
+**Architecture:** React SPA (`frontend/`) → builds to `dist/` → served from domain root  
+**Backend:** WordPress + WooCommerce in `/wp/` subdirectory → REST API only  
+**Hosting:** HostGator shared hosting, deployed via GitHub Actions FTPS
 
 ---
 
-## Quick start — local development
+## Repository Layout
+
+```
+├── frontend/                  ← React source + build tooling (canonical)
+│   ├── src/
+│   │   ├── api/               ← API clients: client.js, auth.js, products.js, cart.js
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── services/          ← Legacy API modules (kept for compat)
+│   │   └── styles/
+│   ├── public/                ← Static assets copied verbatim into dist/
+│   ├── server/                ← Reviews dev server (not deployed)
+│   ├── webpack.config.cjs     ← Build config (outputs to ../dist/)
+│   ├── vite.config.js         ← Vite config (alternative build tool)
+│   ├── .env.production        ← Non-secret production URLs (committed)
+│   ├── .env.development       ← Non-secret dev URLs (committed)
+│   └── package.json
+├── dist/                      ← CI build output only (gitignored)
+│   ├── index.html
+│   └── assets/
+├── wp-content/                ← WordPress content (deployed to /wp/wp-content/)
+│   ├── themes/
+│   │   ├── drywall-toolbox/   ← Legacy theme (keep until headless-base validated)
+│   │   └── headless-base/     ← New minimal headless theme
+│   └── mu-plugins/
+│       └── dtb-cors.php       ← CORS proxy mu-plugin (auto-loaded)
+├── .htaccess                  ← Root traffic director (HTTPS, WP routing, SPA catch-all)
+├── index.php                  ← Thin passthrough
+└── .github/workflows/
+    └── deploy.yml             ← CI: build frontend → deploy dist/ + wp-content/
+```
+
+---
+
+## Quick Start — Local Development
 
 ### Requirements
 
-- Node.js 18+ and npm
+- Node.js 20+ and npm
 
-### Environment configuration
+### Setup
 
-Copy `.env.example` to `.env.local` and fill in your WooCommerce credentials.  
-**Never commit `.env*` files containing real credentials.**
-
-```
-# .env.local
-REACT_APP_WC_BASE_URL=https://drywalltoolbox.com/wp-json/wc/v3
-REACT_APP_WC_CONSUMER_KEY=ck_your_consumer_key_here
-REACT_APP_WC_CONSUMER_SECRET=cs_your_consumer_secret_here
-REACT_APP_WP_BASE_URL=https://drywalltoolbox.com
+```bash
+# Install frontend dependencies
+cd frontend
+npm install
 ```
 
-WooCommerce API keys are generated in **WP Admin → WooCommerce → Settings → Advanced → REST API** (Read/Write permissions).
+Development env vars are pre-configured in `frontend/.env.development` (localhost defaults, no secrets).  
+For WooCommerce API credentials, create `frontend/.env.local` (gitignored):
+
+```
+# frontend/.env.local — never commit this file
+VITE_WC_AUTH_USER=your_wp_application_password_username
+VITE_WC_AUTH_PASS=your_wp_application_password
+```
 
 ### Commands
 
 ```bash
-# install dependencies
-npm install
+cd frontend
 
-# start dev server (proxies WooCommerce API from live site)
+# Start webpack dev server on http://localhost:5173
 npm run dev
 
-# production build → outputs to dist/
+# Production build → outputs to ../dist/ (repo root)
 npm run build
 
-# lint source files
+# Lint source files
 npm run lint
 ```
 
 ---
 
-## Repository layout
+## API Architecture
 
-Key folders and files:
+### Environment Variables (VITE_*)
 
-- `wp-content/` — WordPress theme and plugin code targeted for production.
+| Variable | Description |
+|----------|-------------|
+| `VITE_WP_API_BASE` | WordPress REST API base (e.g. `https://drywalltoolbox.com/wp/wp-json/wp/v2`) |
+| `VITE_WC_API_BASE` | WooCommerce REST API base (e.g. `.../wp/wp-json/wc/v3`) |
+| `VITE_JWT_ENDPOINT` | JWT token endpoint |
+| `VITE_SITE_URL` | Site root URL |
+| `VITE_WC_AUTH_USER` | WooCommerce Application Password username (**secret**) |
+| `VITE_WC_AUTH_PASS` | WooCommerce Application Password (**secret**) |
 
-- `src/`, `public/` — React site source and static assets.
+Non-secret URL variables are in `frontend/.env.production` and `frontend/.env.development`.  
+Credentials (`VITE_WC_AUTH_USER`, `VITE_WC_AUTH_PASS`) live in GitHub Actions secrets only.
 
-- `src/services/api.js` — Centralized WooCommerce REST API module (single source of truth for all data fetching).
+### API Clients (`frontend/src/api/`)
 
-- `src/hooks/useFetch.js` — Shared loading/error/empty-state hook for API calls.
+| File | Description |
+|------|-------------|
+| `client.js` | Axios base clients: `wpClient` (JWT) and `wcClient` (App Password) |
+| `auth.js` | `login()`, `logout()`, `refreshToken()`, `getCurrentUser()` |
+| `products.js` | `getProducts()`, `getProductById()`, `getProductsByCategory()`, `searchProducts()` |
+| `cart.js` | WooCommerce Store API: `getCart()`, `addToCart()`, `updateCartItem()`, `removeCartItem()`, `clearCart()` |
 
-- `.github/workflows/deploy.yml` — GitHub Actions workflow that deploys `wp-content` to HostGator.
+---
 
-- `public/.htaccess` — React Router SPA fallback + WordPress/WooCommerce API pass-through rules.
+## WordPress Setup
 
-## React frontend — HostGator deploy (FTP)
+WordPress lives in `/wp/` on the server (not at the domain root). Configuration:
 
-The React build is a fully static output — no Node.js runtime is required on HostGator.
+- `WP_HOME` = `https://drywalltoolbox.com`
+- `WP_SITEURL` = `https://drywalltoolbox.com/wp`
 
-### 1. Build locally
+### Active Plugins Required
 
-```bash
-npm run build
-```
+- WooCommerce
+- JWT Authentication for WP REST API (`jwt-authentication-for-wp-rest-api`)
 
-This produces a `dist/` directory of optimized HTML/CSS/JS.
+### Must-Use Plugin
 
-### 2. Upload to HostGator via FTP
+`wp-content/mu-plugins/dtb-cors.php` — handles CORS headers for all REST API responses.  
+No activation needed — mu-plugins load automatically.
 
-Our FTP connection to HostGator is already configured and operational.
+### Headless Theme
 
-1. Open your FTP client (FileZilla) using the existing HostGator credentials.
-2. Navigate to `public_html/` in the remote panel.
-3. Navigate to your local `dist/` folder in the local panel.
-4. Select **all contents** of `dist/` and upload to `public_html/`.
-5. Overwrite existing files when prompted.
+`wp-content/themes/headless-base/` — minimal headless theme with no frontend output.  
+REST API menu endpoint: `GET /wp-json/headless/v1/menus/<location>`
 
-> Leave WordPress core files in place — they coexist with the React build. The `public/.htaccess` file routes requests correctly between React and WordPress.
+---
 
-### 3. Verify
+## CI/CD — GitHub Actions
 
-- `https://drywalltoolbox.com` → React storefront
-- `https://drywalltoolbox.com/wp-admin` → WordPress admin
-- `https://drywalltoolbox.com/wp-json/wc/v3/products` → WooCommerce JSON
+Workflow: `.github/workflows/deploy.yml`  
+Trigger: push to `main` when `frontend/**` or `wp-content/**` changes.
 
-### Required GitHub Actions secrets
+**Build job:**
+1. `cd frontend && npm ci`
+2. `cd frontend && npm run build` → output to `dist/`
+3. Validate `dist/index.html` exists
+4. Prune `.map` files
+5. Upload `dist/` as workflow artifact
+
+**Deploy job:**
+1. Deploy `dist/` → `website_a246e6a8/dist/` via FTPS
+2. Deploy `wp-content/` → `website_a246e6a8/wp-content/` via FTPS
+
+### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
-| `REACT_APP_WC_BASE_URL` | `https://drywalltoolbox.com/wp-json/wc/v3` |
-| `REACT_APP_WC_CONSUMER_KEY` | WooCommerce consumer key (`ck_…`) |
-| `REACT_APP_WC_CONSUMER_SECRET` | WooCommerce consumer secret (`cs_…`) |
-| `REACT_APP_WP_BASE_URL` | `https://drywalltoolbox.com` |
 | `HOSTGATOR_FTP_HOST` | HostGator FTP hostname |
 | `HOSTGATOR_FTP_USER` | HostGator cPanel FTP username |
 | `HOSTGATOR_FTP_PASS` | HostGator cPanel FTP password |
+| `HOSTGATOR_FTP_PORT` | FTP port (usually `21`) |
+| `VITE_WP_API_BASE` | WordPress REST API base URL |
+| `VITE_WC_API_BASE` | WooCommerce REST API base URL |
+| `VITE_JWT_ENDPOINT` | JWT token endpoint URL |
+| `VITE_SITE_URL` | Production site URL |
+| `VITE_WC_AUTH_USER` | WooCommerce Application Password username |
+| `VITE_WC_AUTH_PASS` | WooCommerce Application Password |
+| `REACT_APP_WP_BASE_URL` | WordPress root URL (legacy compat) |
+| `REACT_APP_WC_BASE_URL` | WooCommerce REST API base (legacy compat) |
+| `REACT_APP_WC_CONSUMER_KEY` | WooCommerce consumer key (legacy compat) |
+| `REACT_APP_WC_CONSUMER_SECRET` | WooCommerce consumer secret (legacy compat) |
+| `VITE_WOOCOMMERCE_STORE_URL` | WooCommerce store URL (legacy compat) |
+| `VITE_WOOCOMMERCE_CONSUMER_KEY` | WooCommerce consumer key (legacy compat) |
+| `VITE_WOOCOMMERCE_CONSUMER_SECRET` | WooCommerce consumer secret (legacy compat) |
 
-## WordPress deployment (HostGator)
+---
 
+## Validation Checklist
 
-Overview
+After deploying to production, verify:
 
-- We deploy theme and plugin assets (the `wp-content` subtree) to HostGator using a GitHub Action (FTPS).
+- [ ] `https://drywalltoolbox.com` loads React app (`dist/index.html`)
+- [ ] `https://drywalltoolbox.com/wp/wp-admin/` loads WordPress admin
+- [ ] `https://drywalltoolbox.com/wp/wp-json/` returns WP REST API index JSON
+- [ ] `https://drywalltoolbox.com/wp/wp-json/wc/v3/products` returns product data
+- [ ] `https://drywalltoolbox.com/wp/wp-json/jwt-auth/v1/token` accepts POST, returns token
+- [ ] React Router client-side navigation works on all routes (no 404 on refresh)
+- [ ] CORS headers present on all `/wp/wp-json/` responses
+- [ ] OPTIONS preflight requests return 200 with correct headers
+- [ ] No `VITE_*` secrets exposed in compiled JS bundle (verify in browser DevTools)
+- [ ] GitHub Actions deploy runs on push to `main`, builds cleanly, deploys to `dist/`
 
-- The action uploads only `wp-content/themes/...` and `wp-content/plugins/...` to the server — it does not modify WordPress core files.
+---
 
-Before you deploy
+## Security
 
-1. Create a full backup of the remote site (cPanel → File Manager or ZIP of `public_html/`).
+- No credentials, passwords, or API keys committed to the repository.
+- `wp-config.php` is gitignored — configure manually in cPanel.
+- All secrets are GitHub Actions secrets only.
+- CORS restricted to `drywalltoolbox.com` and `localhost:5173` (dev).
+- Security headers set in `.htaccess` (X-Frame-Options, X-Content-Type-Options, etc.).
+- XML-RPC disabled in WordPress theme.
+- JWT tokens stored in `localStorage`, cleared on 401.
 
-2. Add repository secrets in GitHub: `HOSTGATOR_FTP_HOST`, `HOSTGATOR_FTP_USER`, `HOSTGATOR_FTP_PASS`.
-
-3. Verify the FTP account in cPanel (username, host, password) and test with a client (FileZilla) using explicit FTPS on port 21.
-
-### Manual deploy options
-
-. FileZilla / WinSCP: connect with explicit FTPS, upload `wp-content/themes/drywall-toolbox/` and the plugin folder to the remote `public_html/wp-content/` path.
-
-- cPanel File Manager: upload and extract ZIP archives when convenient.
-
-## Automated deploy (GitHub Actions)
-
-The repository includes a GitHub Actions workflow that runs on pushes to `main` when files under `wp-content/**` change. The workflow uses `SamKirkland/FTP-Deploy-Action` to upload files over FTPS.
-
-Recommended workflow steps
-
-1. Set secrets in the GitHub repository (no credentials in code).
-
-2. Run the workflow in `dry-run: true` mode first to validate connectivity.
-
-3. When satisfied, set `dry-run: false` and trigger the workflow to perform the real upload.
-
-## Troubleshooting
-
-- Connection errors (ENOTFOUND): verify `HOSTGATOR_FTP_HOST` value and DNS.
-- Authentication failures (530): verify username and password, test locally with FileZilla, reset the FTP password in cPanel if needed.
-- If FTPS is not available for your account, ask HostGator to enable SFTP or switch the workflow to SFTP with the correct server path.
-
-## Support & contact
-
-If you need help with deployment or credentials, contact the site administrator or the developer listed in `package.json`.
+---
 
 ## License
 
-MIT — see LICENSE file (if present) for details.
-
-If you'd like, I can expand any section (detailed cPanel steps, troubleshooting flow, or contributor guidelines) or commit this README change and push it for you.
-
-
-- Verify the three GitHub Secrets (`HOSTGATOR_FTP_HOST`, `HOSTGATOR_FTP_USER`, `HOSTGATOR_FTP_PASS`) are set correctly.
-- In cPanel → **FTP Accounts**, confirm the account is active and test credentials with an FTP client (FileZilla).
-- Check that the FTP port (21) is not blocked; try SFTP on port 22 if available.
-
-### Site Shows "Installation Failed" or 500 Error After Deploy
-
-- Check HostGator **Error Logs** in cPanel → **Metrics → Errors**.
-- Confirm `wp-config.php` is present in `public_html/` (it won't be deployed by CI/CD — you added it manually).
-- Confirm `.htaccess` is present in `public_html/`.
-
-### Styles Not Loading (Child Theme)
-
-- In wp-admin → **Appearance → Themes**, confirm the **parent theme (Twenty Twenty-Four)** is installed (not just activated — it must be present).
-- Check wp-admin → **Appearance → Theme File Editor** is disabled (expected — `DISALLOW_FILE_EDIT true` is set).
-- Hard-refresh the browser (`Ctrl+Shift+R` / `Cmd+Shift+R`).
-
-### WordPress Login Redirect Loop
-
-- This usually means `WP_HOME` / `WP_SITEURL` do not match the actual URL.
-- In cPanel File Manager, edit `wp-config.php` and confirm both values are `https://drywalltoolbox.com` (no trailing slash).
-
-### HTTPS Redirect Not Working
-
-- Confirm the SSL certificate is active in cPanel → **SSL/TLS → Manage SSL Sites**.
-- Confirm the `.htaccess` `RewriteRule` for HTTPS is in place (Phase 4).
-- On HostGator shared hosting, `mod_rewrite` is enabled by default; if it still fails, contact HostGator support.
-
-### Custom Post Type (Tools) Returns 404
-
-- Navigate to wp-admin → **Settings → Permalinks** and click **Save Changes** without changing anything — this flushes the rewrite rules.
-
-### CI/CD Not Triggering
-
-- Confirm you pushed to the `main` branch (not `master` or another branch).
-- Confirm the changed files are inside `themes/**` or `plugins/**` (the workflow's `paths` filter).
-- Use the **workflow_dispatch** manual trigger to force a run.
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-| ------- | ----------- |
-| Frontend SPA | React 19, React Router, Lucide React, Tailwind CSS, Vite/Webpack |
-| WordPress Theme | Child theme of Twenty Twenty-Four, PHP 8+, CSS custom properties |
-| WordPress Plugin | Vanilla PHP, Custom Post Type (dtb_tool), Custom Taxonomy (dtb_brand) |
-| CI/CD | GitHub Actions (GitHub Pages + HostGator FTP deploy) |
-| Hosting | HostGator Shared Hosting, cPanel, Softaculous WordPress |
-
----
-
-## 🔒 Security
-
-- No credentials, passwords, or API keys committed to the repository.
-- `wp-config.php` and `.htaccess` are git-ignored; configuration is managed manually in cPanel.
-- XML-RPC disabled via WordPress filter and `.htaccess` block.
-- Security headers set in both PHP (`functions.php`) and `.htaccess`.
-- Author enumeration protection in child theme `functions.php`.
-- WordPress version number removed from HTML output.
-
----
-
-## 📄 License
-
-ISC
-
----
-
-Built with ❤️ for professional contractors.
+ISC — Built for professional drywall contractors.

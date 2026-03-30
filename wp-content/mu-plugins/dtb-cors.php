@@ -1,0 +1,99 @@
+<?php
+/**
+ * DTB CORS Proxy — Must-Use Plugin
+ *
+ * Handles CORS headers for the WordPress REST API and WooCommerce Store API,
+ * enabling the React SPA (served from the domain root) to call /wp/wp-json/*
+ * endpoints without browser cross-origin errors.
+ *
+ * Installation: place this file in wp-content/mu-plugins/
+ * (mu-plugins load automatically — no activation step needed).
+ *
+ * @package drywall-toolbox
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Attach CORS header logic as early as possible, before any output.
+ *
+ * Priority 1 ensures this runs before WooCommerce or other plugins
+ * that may also hook into plugins_loaded.
+ */
+add_action( 'plugins_loaded', 'dtb_cors_init', 1 );
+
+function dtb_cors_init() {
+	// Handle OPTIONS preflight immediately — return 200 with headers, then exit.
+	if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'OPTIONS' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		dtb_send_cors_headers();
+		header( 'Content-Length: 0' );
+		header( 'Content-Type: text/plain' );
+		// Bypass WordPress entirely for preflight.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		http_response_code( 200 );
+		exit;
+	}
+
+	// For all other REST API requests, hook into rest_api_init to replace
+	// the default WordPress CORS handler with ours.
+	add_action( 'rest_api_init', 'dtb_cors_rest_api_init', 1 );
+}
+
+/**
+ * Replace the default WordPress CORS filter with the DTB handler.
+ * Must be done at rest_api_init (not earlier) so $GLOBALS['wp']->query_vars
+ * is populated and REST routes are registered.
+ */
+function dtb_cors_rest_api_init() {
+	remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+	add_filter( 'rest_pre_serve_request', 'dtb_filter_cors_headers' );
+}
+
+/**
+ * Filter callback — sends CORS headers and returns $value untouched so the
+ * rest of WordPress response processing continues normally.
+ *
+ * @param  mixed $value  Passed through unchanged.
+ * @return mixed
+ */
+function dtb_filter_cors_headers( $value ) {
+	dtb_send_cors_headers();
+	return $value;
+}
+
+/**
+ * Emit the CORS response headers.
+ *
+ * Allowed origins:
+ *  • Production: https://drywalltoolbox.com
+ *  • Local dev:  http://localhost:5173 and http://127.0.0.1:5173
+ *
+ * The Origin header is validated against the allowlist before being echoed
+ * back — this prevents open CORS reflection vulnerabilities.
+ */
+function dtb_send_cors_headers() {
+	$allowed_origins = [
+		'https://drywalltoolbox.com',
+		'http://localhost:5173',
+		'http://127.0.0.1:5173',
+	];
+
+	// Read the raw Origin header before any sanitisation.
+	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
+		? wp_unslash( $_SERVER['HTTP_ORIGIN'] )  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		: '';
+
+	if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), $allowed_origins, true ) ) {
+		// Validate then reflect the allowlisted origin.
+		header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
+	} else {
+		// Unknown or absent origin — fall back to production origin.
+		header( 'Access-Control-Allow-Origin: https://drywalltoolbox.com' );
+	}
+
+	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
+	header( 'Access-Control-Allow-Credentials: true' );
+	header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With' );
+	header( 'Access-Control-Max-Age: 86400' );   // Cache preflight for 24 h
+	header( 'Vary: Origin' );
+}

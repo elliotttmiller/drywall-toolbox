@@ -7,13 +7,24 @@ dist/
 build/
 *.tmp
 *.cache
-.env
-.env.local
-.env.development
-.env.production
 coverage/
 .amazonq
 .venv
+
+# Root-level env files — never commit real secrets
+/.env
+/.env.local
+/.env.development
+/.env.production
+
+# frontend/ env files are committed (non-secret URL config only; no credentials)
+# frontend/.env.development  — committed (localhost defaults)
+# frontend/.env.production   — committed (production URLs; no secrets)
+# Secrets (WC keys, JWT key, FTP credentials) live in GitHub Actions secrets only.
+
+# frontend build artifacts
+frontend/dist/
+frontend/node_modules/
 
 # ---------------------------------------------------------------
 # WordPress — NEVER commit these files
@@ -32,9 +43,6 @@ wp-config.php
 wp-config-local.php
 wp-config-*.php
 
-# Server configuration — provide snippets in README.md instead
-.htaccess
-
 # WordPress uploads (binary assets; use Media Library, not Git)
 wp-content/uploads/
 
@@ -47,9 +55,10 @@ wp-content/wp-cache-config.php
 
 # WordPress core wp-content sub-directories (when a full WP install is present)
 # wp-content/themes/drywall-toolbox/ IS tracked — it contains the theme's PHP
-# source files (style.css, functions.php, index.php).  The dist/ subdirectory
-# (webpack build output) is excluded by the top-level `dist/` rule above.
-# All other installed themes (twentytwenty*, etc.) are not part of this repo.
+# source files (style.css, functions.php, index.php).
+# wp-content/themes/headless-base/ IS tracked — new minimal headless theme.
+# wp-content/mu-plugins/ IS tracked — CORS mu-plugin lives here.
+# All other installed themes and all plugins are NOT part of this repo.
 wp-content/themes/twenty*/
 wp-content/themes/yith*/
 wp-content/plugins/
