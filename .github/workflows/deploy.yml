@@ -115,6 +115,13 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      # REMOTE_ROOT is the absolute path on HostGator to the website root.
+      # For push events github.event.inputs.remote_root is undefined, so we
+      # fall back to the hardcoded production path.  For workflow_dispatch it
+      # uses the caller-supplied value (which defaults to the same path).
+      REMOTE_ROOT: ${{ github.event.inputs.remote_root || '/home1/benconklin/public_html/website_a246e6a8' }}
+
     steps:
       - name: Checkout repository (wp/ + root files)
         uses: actions/checkout@v4
@@ -145,9 +152,9 @@ jobs:
         run: |
           echo "Dry-run mode: displaying deploy plan."
           echo
-          echo "Would deploy .htaccess + index.php → ${{ github.event.inputs.remote_root }}/"
-          echo "Would deploy dist/ → ${{ github.event.inputs.remote_root }}/dist/"
-          echo "Would deploy wp/wp-content/ → ${{ github.event.inputs.remote_root }}/wp/wp-content/"
+          echo "Would deploy .htaccess + index.php → ${{ env.REMOTE_ROOT }}/"
+          echo "Would deploy dist/ → ${{ env.REMOTE_ROOT }}/dist/"
+          echo "Would deploy wp/wp-content/ → ${{ env.REMOTE_ROOT }}/wp/wp-content/"
 
       - name: Stage root files for deployment
         run: |
@@ -164,7 +171,7 @@ jobs:
           password: ${{ secrets.HOSTGATOR_FTP_PASS }}
           protocol: ftps
           port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
-          server-dir: ${{ github.event.inputs.remote_root }}
+          server-dir: ${{ env.REMOTE_ROOT }}/
           local-dir:  ./root-deploy/
           exclude: |
             **/.git*
@@ -182,7 +189,7 @@ jobs:
           password: ${{ secrets.HOSTGATOR_FTP_PASS }}
           protocol: ftps
           port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
-          server-dir: ${{ github.event.inputs.remote_root }}/dist/
+          server-dir: ${{ env.REMOTE_ROOT }}/dist/
           local-dir:  ./dist/
           exclude: |
             **/.git*
@@ -191,7 +198,7 @@ jobs:
             **/*.log
             **/.env*
             **/*.map
-          dangerous-clean-slate: false
+          dangerous-clean-slate: true
           log-level: verbose
           dry-run: "${{ github.event.inputs.dry_run == 'true' }}"
           timeout: 300000
@@ -204,7 +211,7 @@ jobs:
           password: ${{ secrets.HOSTGATOR_FTP_PASS }}
           protocol: ftps
           port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
-          server-dir: ${{ github.event.inputs.remote_root }}/wp/wp-content/
+          server-dir: ${{ env.REMOTE_ROOT }}/wp/wp-content/
           local-dir:  ./wp/wp-content/
           exclude: |
             **/.git*
@@ -234,6 +241,7 @@ jobs:
           echo "  Triggered by  : ${{ github.actor }}"
           echo "  Timestamp     : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           echo "  Dry run       : ${{ github.event.inputs.dry_run == 'true' }}"
+          echo "  Remote root   : ${{ env.REMOTE_ROOT }}"
           echo "  JS chunks     : $(find dist/assets/js -name '*.js' 2>/dev/null | wc -l) files"
           echo "  WP theme      : wp/wp-content/themes/headless-base/ (active headless theme)"
           echo "  Root .htaccess: .htaccess → website root (React Router + WP routing)"
@@ -246,30 +254,36 @@ jobs:
     if: success() && github.event.inputs.dry_run != 'true'
 
     steps:
-      - name: Check dist/index.html on live site
+      - name: Check React SPA on live site
         run: |
-          URL="https://drywalltoolbox.com/dist/index.html"
-          echo "Probing: $URL"
+          # The SPA is served via the .htaccess catch-all — verify the homepage
+          # returns 200 and that a deep-link also resolves (React Router handles it).
+          URL="https://drywalltoolbox.com/"
+          echo "Probing homepage: $URL"
           for attempt in 1 2 3; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || echo "000")
             echo "Attempt $attempt — HTTP $code"
             if [ "$code" = "200" ]; then
-              echo "✓ dist/index.html is reachable."
-              exit 0
+              echo "✓ Homepage is reachable."
+              break
             fi
             [ "$attempt" -lt 3 ] && sleep 15
           done
-          echo "⚠ dist/index.html not reachable after 3 attempts (status $code)."
-          exit 0
+          if [ "$code" != "200" ]; then
+            echo "⚠ Homepage not reachable after 3 attempts (status $code)."
+            exit 1
+          fi
 
       - name: Check site homepage reachability
         run: |
-          code=$(curl -s -o /dev/null -w "%{http_code}" "https://drywalltoolbox.com/" || echo "000")
-          echo "Homepage HTTP status: $code"
+          # Verify a deep SPA route resolves — the .htaccess catch-all and React Router
+          # must both work for this to return 200.
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://drywalltoolbox.com/products" || echo "000")
+          echo "Deep-link /products HTTP status: $code"
           if [ "$code" != "200" ] && [ "$code" != "301" ] && [ "$code" != "302" ]; then
-            echo "⚠ Homepage returned unexpected status $code."
+            echo "⚠ /products route returned unexpected status $code."
           else
-            echo "✓ Homepage is reachable."
+            echo "✓ /products deep-link is reachable."
           fi
 
       - name: Check WordPress REST API

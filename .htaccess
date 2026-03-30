@@ -47,8 +47,9 @@ Options -Indexes
 # ─── Browser Caching ──────────────────────────────────────────────────────────
 <IfModule mod_expires.c>
     ExpiresActive On
-    # HTML — short TTL (React SPA shell updates infrequently)
-    ExpiresByType text/html                "access plus 1 hour"
+    # HTML — no caching for SPA shell (index.html contains hashed asset references;
+    # a stale index.html would try to load old JS/CSS hashes that may no longer exist)
+    ExpiresByType text/html                "access plus 0 seconds"
     # Content-hashed assets — very long TTL
     ExpiresByType text/css                 "access plus 1 year"
     ExpiresByType application/javascript   "access plus 1 year"

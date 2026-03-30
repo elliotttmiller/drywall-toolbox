@@ -29,6 +29,31 @@ const VeeqoSettings      = lazy(() => import('./pages/VeeqoSettings'));
 const VeeqoCallback      = lazy(() => import('./pages/VeeqoCallback'));
 const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
 
+// ─── 404 Not Found page ───────────────────────────────────────────────────────
+// Rendered for any URL that doesn't match a defined route.
+function NotFound() {
+  return (
+    <div style={{
+      display:        'flex',
+      flexDirection:  'column',
+      alignItems:     'center',
+      justifyContent: 'center',
+      minHeight:      '60vh',
+      textAlign:      'center',
+      padding:        '2rem',
+      color:          '#888',
+    }}>
+      <h1 style={{ fontSize: '4rem', fontWeight: 700, margin: 0 }}>404</h1>
+      <p style={{ fontSize: '1.1rem', margin: '0.75rem 0 1.5rem' }}>
+        Page not found
+      </p>
+      <a href="/" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+        Return to home
+      </a>
+    </div>
+  );
+}
+
 // ─── Loading fallback ─────────────────────────────────────────────────────────
 // Shown while a route chunk is being fetched. Keep it lightweight — no imports.
 function PageLoader() {
@@ -61,9 +86,11 @@ function App() {
   const toggleCart = () => setCartOpen(prev => !prev);
   const closeCart  = () => setCartOpen(false);
 
-  // Support deployment to a sub-path (e.g. GitHub Pages).
-  // In production PUBLIC_URL is injected by webpack DefinePlugin.
-  const basename = process.env.PUBLIC_URL || '/';
+  // The app is always served at the domain root by the .htaccess catch-all rule.
+  // Hardcode basename to '/' — using process.env.PUBLIC_URL would evaluate to
+  // '/dist/' (the asset public path), which is correct for asset loading but
+  // wrong for React Router — it would expect all URLs to start with /dist/.
+  const basename = '/';
 
   return (
     <VeeqoProvider>
@@ -103,6 +130,8 @@ function App() {
                     <Route path="/settings/veeqo"        element={<VeeqoSettings />} />
                     <Route path="/veeqo/callback"        element={<VeeqoCallback />} />
                     <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
+                    {/* Catch-all: any unmatched route renders a 404 page */}
+                    <Route path="*"                      element={<NotFound />} />
                   </Routes>
                 </Suspense>
               </main>
