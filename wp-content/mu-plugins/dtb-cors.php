@@ -25,7 +25,7 @@ add_action( 'plugins_loaded', 'dtb_cors_init', 1 );
 function dtb_cors_init() {
 	// Handle OPTIONS preflight immediately — return 200 with headers, then exit.
 	if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'OPTIONS' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
-		dtb_send_cors_headers();
+		dtb_mu_emit_cors_headers();
 		header( 'Content-Length: 0' );
 		header( 'Content-Type: text/plain' );
 		// Bypass WordPress entirely for preflight.
@@ -57,12 +57,15 @@ function dtb_cors_rest_api_init() {
  * @return mixed
  */
 function dtb_filter_cors_headers( $value ) {
-	dtb_send_cors_headers();
+	dtb_mu_emit_cors_headers();
 	return $value;
 }
 
 /**
  * Emit the CORS response headers.
+ *
+ * Function name is prefixed `dtb_mu_` to avoid conflicts with any theme or
+ * plugin that may define its own `dtb_send_cors_headers()` function.
  *
  * Allowed origins:
  *  • Production: https://drywalltoolbox.com
@@ -71,7 +74,7 @@ function dtb_filter_cors_headers( $value ) {
  * The Origin header is validated against the allowlist before being echoed
  * back — this prevents open CORS reflection vulnerabilities.
  */
-function dtb_send_cors_headers() {
+function dtb_mu_emit_cors_headers() {
 	$allowed_origins = [
 		'https://drywalltoolbox.com',
 		'http://localhost:5173',
