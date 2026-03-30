@@ -59,6 +59,11 @@ jobs:
           VITE_WOOCOMMERCE_CONSUMER_SECRET: ${{ secrets.VITE_WOOCOMMERCE_CONSUMER_SECRET }}
           PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
 
+      - name: Clean up dist folder before deploy
+        run: |
+          find wp/wp-content/themes/drywall-toolbox/dist -name "*.map" -delete 2>/dev/null || true
+          find wp/wp-content/themes/drywall-toolbox/dist -name "*.log" -delete 2>/dev/null || true
+
       - name: Deploy themes and plugins via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -89,7 +94,8 @@ jobs:
           dangerous-clean-slate: false
           log-level: verbose
           dry-run: false
-          timeout: 60000
+          sftp: false
+          timeout: 300000
 
       - name: Deployment complete
         if: always()
