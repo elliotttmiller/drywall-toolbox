@@ -27,10 +27,12 @@ frontend/dist/
 frontend/node_modules/
 
 # ---------------------------------------------------------------
-# WordPress — NEVER commit these files
+# WordPress — wp/ subdirectory (NEVER commit these files)
 # ---------------------------------------------------------------
+# WordPress core is installed in wp/ on the server, not tracked here.
+# Only wp/wp-content/themes/ and wp/wp-content/mu-plugins/ are tracked.
 
-# Core WordPress files (only themes/ and plugins/ belong in this repo)
+# WordPress core files installed in wp/ — not tracked
 wp-admin/
 wp-includes/
 wp-*.php
@@ -38,27 +40,31 @@ xmlrpc.php
 license.txt
 readme.html
 
-# Sensitive configuration — provide snippets in README.md instead
+# Track the configuration sample but never the real config
+# (wp-*.php above would match wp-config-sample.php — re-include it explicitly)
+!wp/wp-config-sample.php
+
+# Sensitive configuration — manually edit on the server, never commit
 wp-config.php
 wp-config-local.php
 wp-config-*.php
+!wp/wp-config-sample.php
 
 # WordPress uploads (binary assets; use Media Library, not Git)
 wp-content/uploads/
 
-# WordPress object/page cache
+# WordPress object/page cache and generated files
 wp-content/cache/
 wp-content/upgrade/
 wp-content/backup-db/
 wp-content/advanced-cache.php
 wp-content/wp-cache-config.php
 
-# WordPress core wp-content sub-directories (when a full WP install is present)
-# wp-content/themes/drywall-toolbox/ IS tracked — it contains the theme's PHP
-# source files (style.css, functions.php, index.php).
-# wp-content/themes/headless-base/ IS tracked — new minimal headless theme.
-# wp-content/mu-plugins/ IS tracked — CORS mu-plugin lives here.
-# All other installed themes and all plugins are NOT part of this repo.
+# WordPress content tracked in this repo (wp/wp-content/):
+#   wp/wp-content/themes/drywall-toolbox/   — legacy theme (style.css, functions.php, index.php)
+#   wp/wp-content/themes/headless-base/     — active minimal headless theme
+#   wp/wp-content/mu-plugins/dtb-cors.php   — CORS mu-plugin (auto-loaded)
+# All other installed themes and all plugins are installed on the server only.
 wp-content/themes/twenty*/
 wp-content/themes/yith*/
 wp-content/plugins/

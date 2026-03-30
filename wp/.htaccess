@@ -1,0 +1,18 @@
+# ─── WordPress /wp/ subdirectory — internal mod_rewrite rules ─────────────────
+# These rules live inside the /wp/ directory itself and tell WordPress how to
+# route its own internal requests.  The domain-root .htaccess handles routing
+# from the public URL space (e.g. /wp-admin/ → /wp/wp-admin/).
+#
+# Standard WordPress subdirectory installation pattern.
+# RewriteBase must match the subdirectory WordPress is installed in.
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /wp/
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /wp/index.php [L]
+</IfModule>
+# END WordPress
