@@ -59,8 +59,18 @@ jobs:
           VITE_WOOCOMMERCE_CONSUMER_SECRET: ${{ secrets.VITE_WOOCOMMERCE_CONSUMER_SECRET }}
           PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
 
+      - name: Prune generated maps & large CSVs before upload
+        run: |
+          echo "Pruning source maps and large CSVs to speed up upload..."
+          # remove source maps from the generated theme dist (if any)
+          if [ -d "wp/wp-content/themes/drywall-toolbox/dist" ]; then
+            find wp/wp-content/themes/drywall-toolbox/dist -type f -name "*.map" -print -delete || true
+          fi
+          # remove large products CSV if present in the theme assets
+          find wp/wp-content/themes/drywall-toolbox -type f -name "products_catalog.csv" -print -delete || true
+
       - name: Deploy themes and plugins via FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOSTGATOR_FTP_HOST }}
           username: ${{ secrets.HOSTGATOR_FTP_USER }}
@@ -92,16 +102,6 @@ jobs:
           log-level: verbose
           dry-run: false
           timeout: 300000
-
-      - name: Prune generated maps & large CSVs before upload
-        run: |
-          echo "Pruning source maps and large CSVs to speed up upload..."
-          # remove source maps from the generated theme dist (if any)
-          if [ -d "wp/wp-content/themes/drywall-toolbox/dist" ]; then
-            find wp/wp-content/themes/drywall-toolbox/dist -type f -name "*.map" -print -delete || true
-          fi
-          # remove large products CSV if present in the theme assets
-          find wp/wp-content/themes/drywall-toolbox -type f -name "products_catalog.csv" -print -delete || true
 
       - name: Deployment complete
         if: always()
