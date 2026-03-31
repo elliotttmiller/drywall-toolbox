@@ -243,25 +243,6 @@ jobs:
           dry-run: ${{ github.event.inputs.dry_run == 'true' }}
           timeout: 60000
 
-      - name: FTPS pre-deploy write test (verify STOR works in target dir)
-        run: |
-          set -euo pipefail
-          echo "Installing lftp for pre-deploy test..."
-          if ! command -v lftp >/dev/null 2>&1; then
-            sudo apt-get update -y && sudo apt-get install -y lftp
-          fi
-
-          echo "Creating small test file..."
-          TESTFILE="/tmp/ftp_write_test_$(date +%s).txt"
-          echo "ftp write test $(date -u)" > "$TESTFILE"
-
-          echo "Attempting to upload test file to target assets/js directory and to a test chunk filename"
-          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" -e "set ftp:ssl-allow yes; set ssl:verify-certificate no; cd ${{ env.SERVER_DIR }}/dist/assets/js || exit 2; pwd; ls -la; put $TESTFILE -o .ftp-test-upload.txt; put $TESTFILE -o 983.4fdf2754.chunk.js; bye" "${{ secrets.HOSTGATOR_FTP_HOST }}"
-        env:
-          HOST: ${{ secrets.HOSTGATOR_FTP_HOST }}
-          USER: ${{ secrets.HOSTGATOR_FTP_USER }}
-          PASS: ${{ secrets.HOSTGATOR_FTP_PASS }}
-
       - name: Deploy React assets (dist/ → root, NOT to /dist/ subdirectory) via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

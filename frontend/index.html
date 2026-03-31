@@ -21,17 +21,26 @@
       WooCommerce core-profiler safety guard
       ──────────────────────────────────────
       WooCommerce 7+ ships a React-based admin app (core-profiler.js) that can
-      execute on any page where WordPress injects its scripts. If that bundle
+      execute on any page where WordPress injects its scripts.  If that bundle
       runs before its data is ready it throws:
         "Uncaught TypeError: Cannot read properties of undefined (reading 'title')"
-      The primary fix is the dtb-disable-wc-admin.php mu-plugin (server-side).
-      This inline script is a belt-and-suspenders guard: it pre-seeds the global
-      objects the component reads so that, if the bundle does execute, it finds
-      valid data instead of undefined and does not crash.
+
+      Root cause (WooCommerce 9.9+):
+        core-profiler.js reads wcSettings.countryData[countryCode].title where
+        countryCode may be "US:CA" (country:state).  countryData only contains
+        bare keys ("US"), so the lookup returns undefined and .title throws.
+
+      The primary fix is dtb-disable-wc-admin.php (server-side, seven layers).
+      This inline script is a belt-and-suspenders client-side guard: it
+        1. Pre-seeds wcAdmin.profile so existing checks pass.
+        2. Intercepts future window.wcSettings assignments via defineProperty so
+           countryData lookups automatically strip state suffixes ("US:CA" → "US")
+           and never return a bare undefined that would crash on .title access.
     -->
     <script>
       (function () {
-        if (!window.wcAdmin) window.wcAdmin = {};
+        /* ── 1. Pre-seed wcAdmin.profile ─────────────────────────────────── */
+        if (!window.wcAdmin) { window.wcAdmin = {}; }
         if (!window.wcAdmin.profile) {
           window.wcAdmin.profile = {
             title: '',
@@ -42,9 +51,63 @@
             skipped: true
           };
         }
-        if (!window.wcSettings) window.wcSettings = {};
-        if (!window.wcSettings.admin) {
-          window.wcSettings.admin = { defaultDateRange: 'period=month&compare=previous_year' };
+
+        /* ── 2. Guard wcSettings ─────────────────────────────────────────── */
+        function applyWcSettingsGuard(s) {
+          if (!s || typeof s !== 'object') { return s; }
+
+          /* Ensure .admin exists (used by some WC admin scripts). */
+          if (!s.admin) {
+            s.admin = { defaultDateRange: 'period=month&compare=previous_year' };
+          }
+
+          /* Wrap countryData so "CC:State" lookups resolve to "CC" entries
+             and never return undefined. */
+          if (s.countryData && typeof Proxy !== 'undefined') {
+            var _cd = s.countryData;
+            s.countryData = new Proxy(_cd, {
+              get: function (target, prop) {
+                if (typeof prop !== 'string') { return target[prop]; }
+                if (Object.prototype.hasOwnProperty.call(target, prop)) {
+                  return target[prop];
+                }
+                var bare = prop.split(':')[0];
+                if (Object.prototype.hasOwnProperty.call(target, bare)) {
+                  return target[bare];
+                }
+                /* Safe stub — .title and .label will never throw. */
+                return { title: bare, label: bare, currency_pos: 'left' };
+              }
+            });
+          }
+
+          /* Ensure onboarding profile fields exist. */
+          if (!s.onboarding) { s.onboarding = {}; }
+          if (!s.onboarding.profile) { s.onboarding.profile = {}; }
+          var prof = s.onboarding.profile;
+          if (prof.completed === undefined) { prof.completed = true; }
+          if (prof.skipped   === undefined) { prof.skipped   = true; }
+          if (!prof.industries) { prof.industries = []; }
+          if (!prof.products)   { prof.products   = []; }
+          if (!prof.business_extensions) { prof.business_extensions = []; }
+
+          return s;
+        }
+
+        /* Intercept future window.wcSettings = {...} assignments. */
+        var _wcs = window.wcSettings || null;
+        try {
+          Object.defineProperty(window, 'wcSettings', {
+            configurable: true,
+            enumerable:   true,
+            get: function () { return _wcs; },
+            set: function (v) { _wcs = applyWcSettingsGuard(v); }
+          });
+          if (_wcs) { applyWcSettingsGuard(_wcs); }
+        } catch (e) {
+          /* Fallback for browsers where defineProperty is unavailable
+             or the property is already non-configurable. */
+          if (window.wcSettings) { applyWcSettingsGuard(window.wcSettings); }
         }
       })();
     </script>
