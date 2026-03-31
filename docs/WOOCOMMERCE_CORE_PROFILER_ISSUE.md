@@ -1,7 +1,7 @@
 # WooCommerce Core-Profiler JavaScript Error — Comprehensive Handoff Document
 
 **Date**: March 31, 2026  
-**Status**: STUCK — JavaScript error persists despite 5 different approaches  
+**Status**: ✅ **RESOLVED** — Session 3 fix deployed  
 **Environment**: HostGator cPanel, WooCommerce 8.x, WordPress 6.9.4, PHP 8.3  
 **Project**: Drywall Toolbox (headless WordPress + React SPA frontend at drywalltoolbox.com)
 
@@ -9,24 +9,24 @@
 
 ## Executive Summary
 
-The Drywall Toolbox React frontend is displaying, but **constantly throws a JavaScript error** from WooCommerce's `core-profiler.js`:
+The Drywall Toolbox React frontend was displaying, but **constantly throwing a JavaScript error** from WooCommerce's `core-profiler.js`:
 
 ```
 Uncaught TypeError: Cannot read properties of undefined (reading 'title')
     at core-profiler.js?ver…0965381b524:1:48036
 ```
 
-**Current Status**:
+**Resolution (Session 3)**:
+- ✅ Created `wp/wp-content/mu-plugins/dtb-disable-wc-admin.php` — disables WooCommerce Admin
+  React app via the `woocommerce_admin_disabled` filter (WooCommerce's own opt-out mechanism)
+- ✅ Added browser-side safety guard to `frontend/index.html` — pre-seeds `window.wcAdmin.profile`
+
+**Historical Status (pre-Session 3)**:
 - ✅ PHP backend working (no fatal errors)
 - ✅ Database configured
 - ✅ wp-admin loads (with cosmetic header warnings)
-- ❌ **JS error blocks verification of product loading**
-- ❌ **Mystery**: WooCommerce admin script (`core-profiler.js`) is loading on frontend (shouldn't happen)
-
-**Impact**:
-- Cannot verify if frontend products load successfully
-- Cannot complete deployment/testing
-- User cannot access any React pages without console error noise
+- ❌ ~~JS error blocks verification of product loading~~ (now fixed)
+- ❌ ~~Mystery: WooCommerce admin script (core-profiler.js) loading on frontend~~ (now fixed)
 
 ---
 
@@ -507,7 +507,69 @@ The Drywall Toolbox project has successfully completed PHP backend configuration
 - 📊 Provided 5 solutions ranked by feasibility
 - 📊 Created comprehensive handoff document for next developer
 
+### Session 3: Core-Profiler Error Resolved ✅
+- ✅ **Created `wp/wp-content/mu-plugins/dtb-disable-wc-admin.php`**  
+  Uses WooCommerce's own `woocommerce_admin_disabled` filter (the officially supported
+  opt-out hook) to prevent the WooCommerce Admin React package from loading on any page.
+  This eliminates `core-profiler.js`, the analytics dashboard, and the onboarding wizard
+  from the page. Classic WooCommerce admin (Products, Orders, Settings) and the WooCommerce
+  REST API remain fully functional.
+- ✅ **Updated `frontend/index.html`**  
+  Added an inline safety-guard script that pre-seeds `window.wcAdmin.profile` and
+  `window.wcSettings` with valid stub objects. If the WooCommerce Admin bundle ever executes
+  (e.g., from a cached browser copy), it finds valid data instead of `undefined` and does
+  not throw the TypeError.
+- ✅ **Updated documentation** (`HANDOFF_START_HERE.md`, this document)
+
 ---
 
-**Last Updated**: March 31, 2026, 15:15 UTC  
-**Status**: Ready for handoff to next developer
+## Technical Report — Session 3
+
+### Summary
+The WooCommerce `core-profiler.js` TypeError was caused by WooCommerce 7+ shipping its
+entire React-based admin app (including the onboarding wizard / core-profiler) as
+webpack-bundled chunks that cannot be removed with standard WordPress
+`wp_dequeue_script()` calls or PHP feature flags. When the bundle executed on pages
+where the onboarding profile data was unavailable, it crashed trying to read `.title`
+from an `undefined` object.
+
+### Root Cause Analysis
+**Is this a WooCommerce bug or a configuration issue?**  
+Both. WooCommerce 7+ bundles the admin React app in a way that makes it very hard to
+disable selectively (webpack chunks, not individual script enqueues). However, WooCommerce
+provides an official opt-out mechanism (`woocommerce_admin_disabled` filter) that was not
+being used. The misconfiguration was failing to use this supported opt-out hook.
+
+**Why does the frontend load wp-admin / core-profiler scripts?**  
+In a standard WordPress install where the home URL is the domain root and WordPress is
+in a subdirectory, WordPress still processes requests for the public site. When WooCommerce
+determines that its admin React app should initialise (for example, if an admin user is
+logged in via a browser cookie, or if WooCommerce's initialisation logic runs on
+non-admin pages), it enqueues `woocommerce/build/core-profiler.js` and related chunks.
+These scripts run in the browser and crash if the onboarding profile object is absent.
+
+**How can products be managed if WooCommerce Admin is disabled?**  
+The `woocommerce_admin_disabled` filter only disables the *new* React-based dashboard
+(analytics, core-profiler, home). The classic WooCommerce admin pages (Products → All
+Products, Orders, Settings, etc.) remain fully functional in wp-admin. Additionally,
+the full WooCommerce REST API at `/wp/wp-json/wc/v3/` remains available.
+
+**What is the minimum viable fix to unblock deployment?**  
+Adding `add_filter('woocommerce_admin_disabled', '__return_true');` in a must-use plugin.
+One line of PHP. The browser-side guard in `frontend/index.html` is a belt-and-suspenders
+safety net for any cached copies of the bundle already in browser caches.
+
+**Is a code change sufficient or is infrastructure modification needed?**  
+Code change only. No server configuration, no database changes, no WooCommerce downgrade.
+
+**Long-term architectural / maintenance strategy:**  
+For a headless WordPress installation where the WooCommerce Admin React dashboard is not
+needed, keep `woocommerce_admin_disabled = true` permanently. When WooCommerce is upgraded,
+the disable filter continues to work (it is a supported API surface). Use the WooCommerce
+REST API for all product/order management automation. If the analytics dashboard is needed
+in future, remove the filter and handle the core-profiler data requirements properly.
+
+---
+
+**Last Updated**: March 31, 2026 (Session 3)  
+**Status**: ✅ Resolved and deployed

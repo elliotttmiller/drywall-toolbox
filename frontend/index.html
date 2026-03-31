@@ -17,6 +17,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
+    <!--
+      WooCommerce core-profiler safety guard
+      ──────────────────────────────────────
+      WooCommerce 7+ ships a React-based admin app (core-profiler.js) that can
+      execute on any page where WordPress injects its scripts. If that bundle
+      runs before its data is ready it throws:
+        "Uncaught TypeError: Cannot read properties of undefined (reading 'title')"
+      The primary fix is the dtb-disable-wc-admin.php mu-plugin (server-side).
+      This inline script is a belt-and-suspenders guard: it pre-seeds the global
+      objects the component reads so that, if the bundle does execute, it finds
+      valid data instead of undefined and does not crash.
+    -->
+    <script>
+      (function () {
+        if (!window.wcAdmin) window.wcAdmin = {};
+        if (!window.wcAdmin.profile) {
+          window.wcAdmin.profile = {
+            title: '',
+            industries: [],
+            products: [],
+            business_extensions: [],
+            completed: true,
+            skipped: true
+          };
+        }
+        if (!window.wcSettings) window.wcSettings = {};
+        if (!window.wcSettings.admin) {
+          window.wcSettings.admin = { defaultDateRange: 'period=month&compare=previous_year' };
+        }
+      })();
+    </script>
     <div id="root"></div>
     <!-- webpack HtmlWebpackPlugin injects the bundle script automatically -->
   </body>
