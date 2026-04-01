@@ -3,8 +3,8 @@
 process_catalog_images.py
 
 Downloads external product-part images referenced in wp-catalog.csv, converts
-them to WebP format, and updates the CSV to use self-hosted drywalltoolbox.com
-URLs.
+them to WebP format, saves them under frontend/public/brands/, and updates the
+CSV to use self-hosted drywalltoolbox.com URLs.
 
 Background
 ----------
@@ -18,16 +18,19 @@ site's own domain is preferred for:
 
 Directory / URL structure
 -------------------------
-Downloaded images are saved locally under parts-images/ and later uploaded to
-the WordPress Media Library.  The URL convention mirrors the WP uploads path:
+Downloaded images are saved under frontend/public/brands/ and are served as
+static assets from the React frontend build (webpack copies public/ → dist/).
 
-  Local file : parts-images/<brand_slug>/<sku_slug>.webp
-  WP URL     : https://drywalltoolbox.com/wp/wp-content/uploads/parts/<brand_slug>/<sku_slug>.webp
+  Local file : frontend/public/brands/<BrandDir>/<sku_slug>.webp
+  Public URL : https://drywalltoolbox.com/brands/<BrandDir>/<sku_slug>.webp
 
 Where:
-  brand_slug – brand name lower-cased with spaces replaced by hyphens
-               (e.g. "Columbia Taping Tools" → "columbia-taping-tools")
-  sku_slug   – SKU lower-cased, with non-alphanumeric chars replaced by hyphens
+  BrandDir  – canonical brand directory name (see BRAND_DIR_MAP below):
+               "Columbia Taping Tools" → "Columbia"
+               "TapeTech"             → "TapeTech"
+               "Graco"                → "Graco"
+               "Level5"               → "Level5"
+  sku_slug  – SKU lower-cased, with non-alphanumeric chars replaced by hyphens
                (e.g. "050023F" → "050023f")
 
 ID column
@@ -45,7 +48,7 @@ Usage
     python3 scripts/process_catalog_images.py
     python3 scripts/process_catalog_images.py --dry-run
     python3 scripts/process_catalog_images.py --limit 20 --delay 1.0
-    python3 scripts/process_catalog_images.py --output-dir /tmp/parts-images
+    python3 scripts/process_catalog_images.py --output-dir /tmp/brands-images
 
 Options
 -------
@@ -53,14 +56,16 @@ Options
     --limit N      Process only the first N rows that have external images.
     --delay SEC    Seconds to pause between HTTP requests (default: 0.5).
     --output-dir   Directory to write converted WebP files
-                   (default: parts-images/ next to this script's repo root).
+                   (default: frontend/public/brands/ in the repo root).
     --csv-in       Path to the input CSV (default: wp-catalog.csv in repo root).
     --csv-out      Path to write the updated CSV (default: same as --csv-in).
 
 After running
 -------------
-Upload the contents of parts-images/ to the WordPress Media Library (mirroring
-the sub-directory layout) so that the new drywalltoolbox.com URLs resolve.
+The WebP files are placed directly under the React frontend's public/brands/
+directory.  They are automatically included in the production build (webpack
+copies frontend/public/ → dist/) and served at:
+    https://drywalltoolbox.com/brands/<BrandDir>/<sku_slug>.webp
 """
 
 import argparse
@@ -99,10 +104,25 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT  = os.path.dirname(SCRIPT_DIR)
 
 DEFAULT_CSV_PATH    = os.path.join(REPO_ROOT, "wp-catalog.csv")
-DEFAULT_OUTPUT_DIR  = os.path.join(REPO_ROOT, "parts-images")
+DEFAULT_OUTPUT_DIR  = os.path.join(REPO_ROOT, "frontend", "public", "brands")
 DTB_DOMAIN          = "drywalltoolbox.com"
-DTB_UPLOADS_BASE    = "https://drywalltoolbox.com/wp/wp-content/uploads/parts"
+DTB_BRANDS_BASE     = "https://drywalltoolbox.com/brands"
 MANIFEST_FILENAME   = "image-manifest.csv"
+
+# ---------------------------------------------------------------------------
+# Brand directory mapping
+# Maps the "Brands" CSV value to the canonical subdirectory name under
+# frontend/public/brands/.  Unmapped brands fall back to the raw brand name.
+# ---------------------------------------------------------------------------
+
+BRAND_DIR_MAP = {
+    "Columbia Taping Tools": "Columbia",
+    "TapeTech":              "TapeTech",
+    "Graco":                 "Graco",
+    "Level5":                "Level5",
+    "Asgard":                "Asgard",
+    "SurPro":                "SurPro",
+}
 
 # ---------------------------------------------------------------------------
 # HTTP session
@@ -173,20 +193,31 @@ def is_external_image(url: str) -> bool:
     return bool(host) and DTB_DOMAIN not in host
 
 
+def brand_dir(brand: str) -> str:
+    """
+    Return the canonical brand directory name under frontend/public/brands/.
+    Falls back to a slugified version of the brand name for unmapped brands.
+    """
+    if not brand:
+        return "unknown-brand"
+    return BRAND_DIR_MAP.get(brand, brand_slug(brand))
+
+
 def build_local_path(output_dir: str, brand: str, sku: str) -> Path:
     """
     Return the absolute local path where the WebP image should be written.
-    Structure: <output_dir>/<brand_slug>/<sku_slug>.webp
+    Structure: <output_dir>/<BrandDir>/<sku_slug>.webp
     """
-    return Path(output_dir) / brand_slug(brand) / (sku_slug(sku) + ".webp")
+    return Path(output_dir) / brand_dir(brand) / (sku_slug(sku) + ".webp")
 
 
 def build_dtb_url(brand: str, sku: str) -> str:
     """
-    Return the drywalltoolbox.com URL for a part's WebP image.
-    Structure: https://drywalltoolbox.com/wp/wp-content/uploads/parts/<brand_slug>/<sku_slug>.webp
+    Return the drywalltoolbox.com URL for a product's WebP image served from
+    the React frontend static assets.
+    Structure: https://drywalltoolbox.com/brands/<BrandDir>/<sku_slug>.webp
     """
-    return f"{DTB_UPLOADS_BASE}/{brand_slug(brand)}/{sku_slug(sku)}.webp"
+    return f"{DTB_BRANDS_BASE}/{brand_dir(brand)}/{sku_slug(sku)}.webp"
 
 
 # ---------------------------------------------------------------------------
@@ -359,8 +390,7 @@ def process_catalog(
         # Write manifest
         # ------------------------------------------------------------------
         if manifest_rows:
-            manifest_path = os.path.join(output_dir, MANIFEST_FILENAME)
-            os.makedirs(output_dir, exist_ok=True)
+            manifest_path = os.path.join(REPO_ROOT, MANIFEST_FILENAME)
             manifest_fields = ["sku", "brand", "src_url", "local_path", "new_url", "status"]
             with open(manifest_path, "w", encoding="utf-8", newline="") as mf:
                 writer = csv.DictWriter(mf, fieldnames=manifest_fields, quoting=csv.QUOTE_ALL)
