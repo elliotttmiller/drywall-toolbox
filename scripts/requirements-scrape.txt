@@ -5,3 +5,6 @@ lxml==5.2.1
 
 # Image download + conversion for process_catalog_images.py
 Pillow==12.1.1
+
+# PDF manipulation for filter_tapetech_pdfs.py and filter_level5_schematics.py
+pymupdf==1.27.2.2
