@@ -159,20 +159,12 @@ jobs:
           echo "Installing lftp for FTP probe..."
           sudo apt-get update -y >/dev/null
           sudo apt-get install -y lftp >/dev/null
-          echo "Probing FTP server: ${{ secrets.HOSTGATOR_FTP_HOST }} (will print remote pwd and top-level listing)"
-          # Capture the FTP user's working directory to help compute a safe
-          # server-dir that is relative to the FTP home. Run `pwd` separately
-          # so we reliably capture only the working directory line.
+          echo "Probing FTP server: ${{ secrets.HOSTGATOR_FTP_HOST }} (top-level listing, diagnostic only)"
           lftp -u "${{ secrets.HOSTGATOR_FTP_USER }},${{ secrets.HOSTGATOR_FTP_PASS }}" \
-            -e "set ssl:verify-certificate no; pwd; bye" "${{ secrets.HOSTGATOR_FTP_HOST }}" 2>/dev/null > /tmp/ftp_pwd_raw.txt || true
-
-          # Also capture a top-level listing for diagnostics.
-          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }},${{ secrets.HOSTGATOR_FTP_PASS }}" \
-            -e "set ssl:verify-certificate no; ls -la; bye" "${{ secrets.HOSTGATOR_FTP_HOST }}" 2>/dev/null > /tmp/ftp_probe.txt || true
-
-          # Extract the first non-empty line from the pwd output (the pwd)
-          awk 'NF{print; exit}' /tmp/ftp_pwd_raw.txt > /tmp/ftp_pwd.txt || true
-          echo "FTP probe saved to /tmp/ftp_probe.txt; PWD -> $(cat /tmp/ftp_pwd.txt 2>/dev/null || echo '<empty>')"
+            -e "set ftp:ssl-allow yes; set ssl:verify-certificate no; ls -la; bye" \
+            "${{ secrets.HOSTGATOR_FTP_HOST }}" 2>/dev/null > /tmp/ftp_probe.txt || true
+          echo "── FTP root listing ──"
+          cat /tmp/ftp_probe.txt || true
 
       - name: "Dry-run: display what would be deployed"
         if: ${{ github.event.inputs.dry_run == 'true' }}
@@ -190,40 +182,42 @@ jobs:
           echo "── root-deploy contents ──"
           ls -la root-deploy/
 
-      - name: Normalize REMOTE_ROOT and compute SERVER_DIR
+      - name: Compute SERVER_DIR from REMOTE_ROOT
         run: |
-          # Read FTP pwd captured by the probe (may be empty if probe failed)
-          FTP_PWD_RAW=$(cat /tmp/ftp_pwd.txt 2>/dev/null || true)
-          # Normalize variables (strip leading slashes)
-          REMOTE_RAW="${{ env.REMOTE_ROOT }}"
-          REMOTE="${REMOTE_RAW#/}"
-          FTP_PWD="${FTP_PWD_RAW#/}"
-
-          echo "DEBUG: raw REMOTE_ROOT='${REMOTE_RAW}' -> normalized='${REMOTE}'"
-          echo "DEBUG: ftp pwd='${FTP_PWD_RAW}' -> normalized='${FTP_PWD}'"
-
-          # Default SERVER_DIR is REMOTE (relative path)
-          SERVER_DIR="$REMOTE"
-
-          # If REMOTE starts with the FTP_PWD prefix, strip that prefix so we get
-          # a path relative to the FTP home. Example:
-          #   FTP_PWD = home1/benconklin
-          #   REMOTE  = home1/benconklin/public_html/drywalltoolbox
-          # => SERVER_DIR = public_html/drywalltoolbox
-          if [ -n "$FTP_PWD" ] && [ "${REMOTE#${FTP_PWD}}" != "$REMOTE" ]; then
-            # strip leading FTP_PWD and any leading '/'
-            SERVER_DIR="${REMOTE#${FTP_PWD}}"
+          set -euo pipefail
+          # HOSTGATOR_SERVER_DIR (optional secret) lets you provide the exact
+          # FTP-relative path directly (e.g. "public_html/drywalltoolbox").
+          # If not set, we derive it from REMOTE_ROOT by stripping the
+          # absolute-path home prefix that HostGator uses.
+          #
+          # HostGator FTP users land at their home directory (e.g. /home4/benconklin/).
+          # REMOTE_ROOT may be set to the full absolute path
+          #   /home4/benconklin/public_html/drywalltoolbox
+          # or the relative path
+          #   public_html/drywalltoolbox
+          # server-dir in FTP-Deploy-Action must be the path RELATIVE to the
+          # FTP home, so we must strip any home[N]/username/ prefix.
+          if [ -n "${{ secrets.HOSTGATOR_SERVER_DIR }}" ]; then
+            SERVER_DIR="${{ secrets.HOSTGATOR_SERVER_DIR }}"
             SERVER_DIR="${SERVER_DIR#/}"
+            echo "Using HOSTGATOR_SERVER_DIR secret: '${SERVER_DIR}'"
+          else
+            RAW="${{ env.REMOTE_ROOT }}"
+            RAW="${RAW#/}"
+            # Strip HostGator home prefixes:
+            #   home[0-9]+/username/  e.g. home4/benconklin/
+            #   home/username/        alternative format
+            SERVER_DIR=$(printf '%s' "$RAW" | sed -E 's|^home[0-9]*/[^/]+/||; s|^home/[^/]+/||')
+            if [ -z "$SERVER_DIR" ]; then
+              echo "ERROR: Could not derive SERVER_DIR from '${RAW}'. Set the HOSTGATOR_SERVER_DIR secret to the path relative to the FTP home (e.g. 'public_html/drywalltoolbox')."
+              exit 1
+            fi
+            echo "Derived SERVER_DIR from REMOTE_ROOT='${RAW}': '${SERVER_DIR}'"
           fi
 
-          # If SERVER_DIR is empty or equals '.' treat it as current directory
-          if [ -z "$SERVER_DIR" ] || [ "$SERVER_DIR" = "." ]; then
-            SERVER_DIR='.'
-          fi
-
-          echo "DEPLOY_ROOT=$REMOTE" >> "$GITHUB_ENV"
-          echo "SERVER_DIR=$SERVER_DIR" >> "$GITHUB_ENV"
-          echo "Computed SERVER_DIR -> $SERVER_DIR"
+          echo "DEPLOY_ROOT=${{ env.REMOTE_ROOT }}" >> "$GITHUB_ENV"
+          echo "SERVER_DIR=${SERVER_DIR}" >> "$GITHUB_ENV"
+          echo "✓ SERVER_DIR='${SERVER_DIR}'"
 
       - name: Deploy root files (.htaccess, index.php) via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -242,25 +236,6 @@ jobs:
           log-level: verbose
           dry-run: ${{ github.event.inputs.dry_run == 'true' }}
           timeout: 60000
-
-      - name: FTPS pre-deploy write test (verify STOR works in target dir)
-        run: |
-          set -euo pipefail
-          echo "Installing lftp for pre-deploy test..."
-          if ! command -v lftp >/dev/null 2>&1; then
-            sudo apt-get update -y && sudo apt-get install -y lftp
-          fi
-
-          echo "Creating small test file..."
-          TESTFILE="/tmp/ftp_write_test_$(date +%s).txt"
-          echo "ftp write test $(date -u)" > "$TESTFILE"
-
-          echo "Attempting to upload test file to target assets/js directory and to a test chunk filename"
-          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" -e "set ftp:ssl-allow yes; set ssl:verify-certificate no; cd ${{ env.SERVER_DIR }}/dist/assets/js || exit 2; pwd; ls -la; put $TESTFILE -o .ftp-test-upload.txt; put $TESTFILE -o 983.4fdf2754.chunk.js; bye" "${{ secrets.HOSTGATOR_FTP_HOST }}"
-        env:
-          HOST: ${{ secrets.HOSTGATOR_FTP_HOST }}
-          USER: ${{ secrets.HOSTGATOR_FTP_USER }}
-          PASS: ${{ secrets.HOSTGATOR_FTP_PASS }}
 
       - name: Deploy React assets (dist/ → root, NOT to /dist/ subdirectory) via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -385,6 +360,50 @@ jobs:
           log-level: verbose
           dry-run: ${{ github.event.inputs.dry_run == 'true' }}
           timeout: 300000
+
+      - name: Post-upload — move dist/* to site root and remove stale directories
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          if ! command -v lftp >/dev/null 2>&1; then
+            echo "Installing lftp..."
+            sudo apt-get update -y -qq && sudo apt-get install -y -qq lftp
+          fi
+
+          TARGET="${{ env.SERVER_DIR }}"
+          HOST="${{ secrets.HOSTGATOR_FTP_HOST }}"
+
+          echo "Post-upload cleanup: connecting to ${HOST}, target dir '${TARGET}' ..."
+          echo "  • Moving any dist/* contents up to site root"
+          echo "  • Removing empty dist/ directory"
+          echo "  • Removing any spurious home[N]/ directories"
+
+          # Run lftp cleanup commands:
+          #  1. Move all VISIBLE files/dirs from dist/ to site root (handles files that were
+          #     accidentally placed in a dist/ subdirectory by a previous deployment).
+          #     The glob -a flag silently does nothing if dist/ is absent or empty.
+          #     Hidden files (dotfiles) in dist/ are NOT moved here; they are cleaned up
+          #     by the `rm -rf dist` command below, which removes the entire directory
+          #     and all its contents (visible and hidden) recursively.
+          #  2. Delete the (now-empty or stale) dist/ directory and all remaining contents.
+          #  3. Remove any home[N]/ directories that were created when server-dir was
+          #     incorrectly set to an absolute path (e.g. home4/benconklin/...).
+          #     A safety check verifies the dir contains public_html/ — a reliable
+          #     fingerprint of a misrouted home directory — before deleting.
+          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" \
+               -e "set ftp:ssl-allow yes; \
+                   set ssl:verify-certificate no; \
+                   set net:max-retries 3; \
+                   set net:reconnect-interval-base 5; \
+                   cd ${TARGET}; \
+                   glob -a mv dist/* .; \
+                   rm -rf dist; \
+                   glob -a ls home[0-9]*/public_html && glob -a rm -rf home[0-9]*; \
+                   echo Cleanup done.; \
+                   bye" \
+               "$HOST" \
+          && echo "✓ Post-upload cleanup complete." \
+          || echo "⚠ Cleanup step exited non-zero (expected when target dirs are absent — no action required)."
 
       - name: Deployment summary
         if: always()
