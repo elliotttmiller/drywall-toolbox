@@ -6,6 +6,7 @@ import SearchBar from '../components/SearchBar';
 import Toast from '../components/Toast';
 import SortDropdown from '../components/SortDropdown';
 import FilterPanel from '../components/FilterPanel';
+import Pagination from '../components/Pagination';
 import { X } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
@@ -30,11 +31,13 @@ const ALLOWED_BRANDS = [
   'TapeTech',
   'Columbia Taping Tools',
   'Asgard',
+  'Level5',
   'SurPro',
   'Graco'
 ];
 
 const MAX_PRICE = 3000;
+const ITEMS_PER_PAGE = 24;
 
 export default function AllProducts() {
   const location = useLocation();
@@ -44,6 +47,7 @@ export default function AllProducts() {
   // Initialize search query from URL param for deep-linking (e.g. from MobileSearch)
   const urlParams = new URLSearchParams(location.search);
   const searchParam = urlParams.get('search');
+  const pageParam = parseInt(urlParams.get('page') || '1', 10);
 
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -52,6 +56,7 @@ export default function AllProducts() {
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
+  const [currentPage, setCurrentPage] = useState(pageParam);
   const [showFilters, setShowFilters] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,15 +118,21 @@ export default function AllProducts() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currentSearchParam = params.get('search') || '';
+    const currentPageParam   = params.get('page')   || '';
     const expectedSearchParam = searchQuery ? encodeURIComponent(searchQuery) : '';
+    const expectedPageParam   = currentPage > 1 ? String(currentPage) : '';
 
-    if (currentSearchParam !== expectedSearchParam) {
+    if (currentSearchParam !== expectedSearchParam || currentPageParam !== expectedPageParam) {
       const newParams = new URLSearchParams();
-      if (searchQuery) newParams.set('search', searchQuery);
+      if (searchQuery)    newParams.set('search', searchQuery);
+      if (currentPage > 1) newParams.set('page', String(currentPage));
       const newSearch = newParams.toString();
       navigate(newSearch ? `/all-products?${newSearch}` : '/all-products', { replace: true });
     }
-  }, [searchQuery, navigate, location.search]);
+  }, [searchQuery, currentPage, navigate, location.search]);
+
+  // Reset to page 1 when filters or search change
+  useEffect(() => { setCurrentPage(1); }, [selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
 
   const filteredProducts = (products || []).filter(product => {
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
@@ -152,6 +163,16 @@ export default function AllProducts() {
         return 0;
     }
   });
+
+  const totalPages  = Math.max(1, Math.ceil(sortedProducts.length / ITEMS_PER_PAGE));
+  const safePage    = Math.min(currentPage, totalPages);
+  const pageStart   = (safePage - 1) * ITEMS_PER_PAGE;
+  const pageProducts = sortedProducts.slice(pageStart, pageStart + ITEMS_PER_PAGE);
+
+  const goToPage = (n) => {
+    setCurrentPage(n);
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
@@ -212,7 +233,7 @@ export default function AllProducts() {
 
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
-              {sortedProducts.map(product => (
+              {pageProducts.map(product => (
                 <div
                   key={product.id}
                   className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full"
@@ -296,6 +317,22 @@ export default function AllProducts() {
                 </div>
               ))}
             </div>
+
+            {/* Pagination + results summary */}
+            {sortedProducts.length > 0 && (
+              <>
+                <Pagination
+                  currentPage={safePage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                  className="mt-8"
+                />
+                <p className="text-center text-sm text-gray-400 mt-2">
+                  Showing {pageStart + 1}–{Math.min(pageStart + ITEMS_PER_PAGE, sortedProducts.length)} of{' '}
+                  {sortedProducts.length.toLocaleString()} results
+                </p>
+              </>
+            )}
 
             {/* Empty State */}
             {sortedProducts.length === 0 && (

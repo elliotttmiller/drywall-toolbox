@@ -2,11 +2,11 @@
 /**
  * Plugin Name: DTB WooCommerce Configuration
  * Description: WooCommerce configuration for loopback requests, REST URL rewriting, and onboarding suppression.
- * Version: 7.0.0
+ * Version: 7.1.0
  * Author: Drywall Toolbox
  *
  * Must-use plugin: Place in wp/wp-content/mu-plugins/
- * Last Updated: 2026-03-31 14:15:00 UTC
+ * Last Updated: 2026-04-01 05:12:00 UTC
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -43,7 +43,7 @@ add_action( 'rest_api_init', function () {
 		'callback'            => function () {
 			$csv_filename = defined( 'DTB_WC_CSV_FILENAME' )
 				? DTB_WC_CSV_FILENAME
-				: 'product-woocommerce_products_import-pjzmqbe2sf.csv';
+				: 'product-wp-catalog-c7p3my05pn.csv';
 
 			// Return the proxy URL, not the direct file URL.
 			// The /dtb/v1/products-csv endpoint below streams the file through
@@ -73,7 +73,7 @@ add_action( 'rest_api_init', function () {
 		'callback'            => function () {
 			$csv_filename = defined( 'DTB_WC_CSV_FILENAME' )
 				? DTB_WC_CSV_FILENAME
-				: 'product-woocommerce_products_import-pjzmqbe2sf.csv';
+				: 'product-wp-catalog-c7p3my05pn.csv';
 
 			$upload_dir = wp_upload_dir();
 			$file_path  = trailingslashit( $upload_dir['basedir'] ) . 'wc-imports/' . $csv_filename;

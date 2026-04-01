@@ -6,6 +6,7 @@ import SearchBar from '../components/SearchBar';
 import SortDropdown from '../components/SortDropdown';
 import FilterPanel from '../components/FilterPanel';
 import Toast from '../components/Toast';
+import Pagination from '../components/Pagination';
 import { X } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
@@ -35,18 +36,21 @@ const ALLOWED_BRANDS = [
   'TapeTech',
   'Columbia Taping Tools',
   'Asgard',
+  'Level5',
   'SurPro',
   'Graco'
 ];
 
 const MAX_PRICE = 3000;
+const ITEMS_PER_PAGE = 24;
 
 const brandLogos = {
   'TapeTech': tapeTechLogo,
   'Columbia Taping Tools': columbiaLogo,
   'SurPro': surproLogo,
   'Asgard': asgardLogo,
-  'Graco': gracoLogo
+  'Graco': gracoLogo,
+  'Level5': null,  // no SVG logo — renders as a styled text card
 };
 
 export default function Products() {
@@ -58,6 +62,7 @@ export default function Products() {
   const params = new URLSearchParams(location.search);
   const brandParam = params.get('brand');
   const searchParam = params.get('search');
+  const pageParam = parseInt(params.get('page') || '1', 10);
   const initialSelectedBrands = brandParam 
     ? brandParam.split(',').map(b => b.trim()).filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
     : [];
@@ -69,6 +74,7 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
+  const [currentPage, setCurrentPage] = useState(pageParam);
   const [showFilters, setShowFilters] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -149,26 +155,36 @@ export default function Products() {
     }
   }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync state (brands + search) to URL
+  // Sync state (brands + search + page) to URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const currentBrandParam = params.get('brand') || '';
+    const currentBrandParam  = params.get('brand')  || '';
     const currentSearchParam = params.get('search') || '';
+    const currentPageParam   = params.get('page')   || '';
 
-    const expectedBrandParam = selectedBrands.length > 0 
+    const expectedBrandParam  = selectedBrands.length > 0 
       ? selectedBrands.map(b => encodeURIComponent(b)).join(',')
       : '';
     const expectedSearchParam = searchQuery ? encodeURIComponent(searchQuery) : '';
+    const expectedPageParam   = currentPage > 1 ? String(currentPage) : '';
 
     // Only navigate if URL needs to change
-    if (currentBrandParam !== expectedBrandParam || currentSearchParam !== expectedSearchParam) {
+    if (
+      currentBrandParam  !== expectedBrandParam  ||
+      currentSearchParam !== expectedSearchParam ||
+      currentPageParam   !== expectedPageParam
+    ) {
       const newParams = new URLSearchParams();
       if (selectedBrands.length > 0) newParams.set('brand', expectedBrandParam);
-      if (searchQuery) newParams.set('search', expectedSearchParam);
+      if (searchQuery)                newParams.set('search', expectedSearchParam);
+      if (currentPage > 1)            newParams.set('page', expectedPageParam);
       const newSearch = newParams.toString();
       navigate(newSearch ? `/products?${newSearch}` : '/products', { replace: true });
     }
-  }, [selectedBrands, searchQuery, navigate, location.search]);
+  }, [selectedBrands, searchQuery, currentPage, navigate, location.search]);
+
+  // Reset to page 1 when filters / search change
+  useEffect(() => { setCurrentPage(1); }, [selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
@@ -205,6 +221,16 @@ export default function Products() {
         return 0;
     }
   });
+
+  const totalPages   = Math.max(1, Math.ceil(sortedProducts.length / ITEMS_PER_PAGE));
+  const safePage     = Math.min(currentPage, totalPages);
+  const pageStart    = (safePage - 1) * ITEMS_PER_PAGE;
+  const pageProducts = sortedProducts.slice(pageStart, pageStart + ITEMS_PER_PAGE);
+
+  const goToPage = (n) => {
+    setCurrentPage(n);
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
@@ -268,15 +294,28 @@ export default function Products() {
                   }
                 }}
               >
-                <img 
-                  src={brandLogos[brand]} 
-                  alt={`${brand} logo`}
-                  style={{
-                    height: 'clamp(4rem, 12vw, 6rem)',
-                    width: 'auto',
-                    objectFit: 'contain'
-                  }}
-                />
+                {brandLogos[brand] ? (
+                  <img
+                    src={brandLogos[brand]}
+                    alt={`${brand} logo`}
+                    style={{
+                      height: 'clamp(4rem, 12vw, 6rem)',
+                      width: 'auto',
+                      objectFit: 'contain'
+                    }}
+                  />
+                ) : (
+                  <span style={{
+                    fontWeight: 700,
+                    fontSize: 'clamp(1.1rem, 3.5vw, 1.5rem)',
+                    letterSpacing: '-0.02em',
+                    color: '#1f2937',
+                    textAlign: 'center',
+                    lineHeight: 1.2
+                  }}>
+                    {brand}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -325,7 +364,7 @@ export default function Products() {
 
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
-              {sortedProducts.map(product => (
+              {pageProducts.map(product => (
                 <div
                   key={product.id}
                   className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full"
@@ -409,6 +448,22 @@ export default function Products() {
                 </div>
               ))}
             </div>
+
+            {/* Pagination + results summary */}
+            {sortedProducts.length > 0 && (
+              <>
+                <Pagination
+                  currentPage={safePage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                  className="mt-8"
+                />
+                <p className="text-center text-sm text-gray-400 mt-2">
+                  Showing {pageStart + 1}–{Math.min(pageStart + ITEMS_PER_PAGE, sortedProducts.length)} of{' '}
+                  {sortedProducts.length.toLocaleString()} results
+                </p>
+              </>
+            )}
 
             {/* Empty State */}
             {sortedProducts.length === 0 && (

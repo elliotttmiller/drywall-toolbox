@@ -3,21 +3,28 @@
  *
  * Single source-of-truth for all product data.
  *
- * Strategy (in order):
+ * Loading strategy (attempted in order, first success wins):
+ *
  *   1. WooCommerce REST API  — /wp-json/wc/v3/products
  *      Credentials come from VITE_WC_AUTH_USER / VITE_WC_AUTH_PASS (build-time)
  *      or from the runtime bootstrap in src/api/client.js (/dtb/v1/config).
  *
- *   2. WooCommerce CSV fallback — fetched through the PHP proxy at:
- *        VITE_WC_CSV_URL  (explicit env var override)
- *        OR  GET /wp-json/dtb/v1/catalog  (resolves to proxy URL from PHP)
- *        OR  <origin>/wp-json/dtb/v1/products-csv  (hard fallback proxy)
+ *   2. PHP proxy CSV endpoint — fetched through the WP REST proxy at:
+ *        VITE_WC_CSV_URL  (explicit env var override, checked first)
+ *        OR  GET /wp-json/dtb/v1/catalog  (PHP returns the proxy URL)
+ *        OR  <origin>/wp-json/dtb/v1/products-csv  (hard proxy fallback)
+ *      Server file: public_html/drywalltoolbox/wp/wp-content/uploads/wc-imports/
+ *                   product-wp-catalog-c7p3my05pn.csv
  *
- *   3. In-memory cache — both paths are cached for the lifetime of the page so
- *      navigating between /products, /all-products, and /product/:id never
- *      triggers a second network request.
+ *   3. Web-root CSV — direct fetch of <origin>/wp-catalog.csv
+ *      (public_html/drywalltoolbox/wp-catalog.csv on HostGator).
+ *      Used when the WP REST stack is unavailable (maintenance, cold boot, etc.).
  *
- * All three paths return objects in the normalizeProduct() shape defined in
+ * Results are cached in memory for the page lifetime so navigating between
+ * /products, /all-products, /parts-shop, and /product/:id never triggers a
+ * second network request.
+ *
+ * All paths return objects in the normalizeProduct() shape defined in
  * src/services/api.js, so every existing component works without changes.
  */
 
@@ -27,14 +34,14 @@ import { credentialsReady } from '../api/client.js';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const CSV_FILENAME = 'product-woocommerce_products_import-pjzmqbe2sf.csv';
+const CSV_FILENAME = 'product-wp-catalog-c7p3my05pn.csv';
 
 /**
  * Resolve the CSV URL.
  * Priority:
  *   1. VITE_WC_CSV_URL build-time env var
- *   2. GET /wp-json/dtb/v1/catalog  (PHP endpoint, avoids hardcoding filename)
- *   3. /wp-content/uploads/wc-imports/<CSV_FILENAME>  (hard fallback)
+ *   2. GET /wp-json/dtb/v1/catalog  (PHP endpoint returns the proxy URL)
+ *   3. /wp-json/dtb/v1/products-csv  (hard fallback proxy — never a direct file path)
  */
 let _csvUrlPromise = null;
 
@@ -99,11 +106,13 @@ async function fetchFromApi() {
 }
 
 /**
- * Fetch all products from the WooCommerce CSV import file on the server.
+ * Fetch products from an arbitrary CSV URL.
  * Throws on network error or non-200 response.
+ *
+ * @param {string} [urlOverride]  When supplied, skip getCsvUrl() resolution.
  */
-async function fetchFromCsv() {
-  const url = await getCsvUrl();
+async function fetchFromCsv(urlOverride) {
+  const url = urlOverride || (await getCsvUrl());
   const res = await fetch(url);
   if (!res.ok) throw new Error(`CSV fetch failed: ${res.status} ${url}`);
   const text = await res.text();
@@ -114,7 +123,8 @@ async function fetchFromCsv() {
 
 /**
  * Populate (or return already-populated) the product cache.
- * Tries REST API first; falls back to CSV.
+ * Tries REST API first; falls back to PHP proxy CSV; finally tries the
+ * web-root wp-catalog.csv file directly.
  *
  * @returns {Promise<Object[]>}
  */
@@ -136,15 +146,27 @@ function loadCatalog() {
       console.warn('[catalog] WooCommerce API unavailable, falling back to CSV:', apiErr.message);
     }
 
-    // --- Attempt 2: CSV on the live server ----------------------------------
+    // --- Attempt 2: CSV via PHP proxy endpoint ------------------------------
     try {
       const products = await fetchFromCsv();
       _source = 'csv';
-      console.info(`[catalog] Loaded ${products.length} products from CSV fallback`);
+      console.info(`[catalog] Loaded ${products.length} products from PHP proxy CSV`);
       return products;
     } catch (csvErr) {
-      console.error('[catalog] CSV fallback also failed:', csvErr.message);
-      _cache = null; // allow retry next call
+      console.warn('[catalog] PHP proxy CSV failed, trying web-root wp-catalog.csv:', csvErr.message);
+    }
+
+    // --- Attempt 3: Web-root wp-catalog.csv ---------------------------------
+    // public_html/drywalltoolbox/wp-catalog.csv → served at <origin>/wp-catalog.csv
+    try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const products = await fetchFromCsv(`${origin}/wp-catalog.csv`);
+      _source = 'csv';
+      console.info(`[catalog] Loaded ${products.length} products from web-root wp-catalog.csv`);
+      return products;
+    } catch (rootErr) {
+      console.error('[catalog] All catalog sources failed:', rootErr.message);
+      _cache = null; // allow retry on next call
       return [];
     }
   })();

@@ -16,6 +16,7 @@ import CartSidebar from './components/CartSidebar';
 const Home               = lazy(() => import('./pages/Home'));
 const Products           = lazy(() => import('./pages/Products'));
 const AllProducts        = lazy(() => import('./pages/AllProducts'));
+const PartsShop          = lazy(() => import('./pages/PartsShop'));
 const Product            = lazy(() => import('./pages/Product'));
 const CategoryPage       = lazy(() => import('./pages/CategoryPage'));
 const Parts              = lazy(() => import('./pages/Parts'));
@@ -119,6 +120,7 @@ function App() {
                     <Route path="/products"              element={<Products />} />
                     <Route path="/products/:id"          element={<Product />} />
                     <Route path="/all-products"          element={<AllProducts />} />
+                    <Route path="/parts-shop"            element={<PartsShop />} />
                     <Route path="/product/:partNumber"   element={<Product />} />
                     <Route path="/category/:slug"        element={<CategoryPage />} />
                     <Route path="/parts"                 element={<Parts />} />

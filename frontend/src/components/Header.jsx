@@ -140,6 +140,22 @@ export default function Header({ onCartToggle }) {
                     >
                       Brands
                     </Link>
+                    <Link 
+                      to="/parts-shop" 
+                      onClick={() => setShopDropdownOpen(false)}
+                      style={{
+                        display: 'block',
+                        padding: '12px 16px',
+                        color: 'black',
+                        textDecoration: 'none',
+                        transition: 'background-color 150ms ease-out',
+                        borderRadius: '0 0 6px 6px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--alloy-base)'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                    >
+                      Replacement Parts
+                    </Link>
                   </div>
                 )}
               </div>
@@ -218,6 +234,13 @@ export default function Header({ onCartToggle }) {
                     className="nav-link-mobile block py-2 text-sm"
                   >
                     Brands
+                  </Link>
+                  <Link 
+                    to="/parts-shop" 
+                    onClick={() => { setShopDropdownOpen(false); closeMobileMenu(); }}
+                    className="nav-link-mobile block py-2 text-sm"
+                  >
+                    Replacement Parts
                   </Link>
                 </div>
               )}

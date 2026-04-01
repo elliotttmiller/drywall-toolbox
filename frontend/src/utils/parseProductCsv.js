@@ -3,7 +3,7 @@
  *
  * Parses a WooCommerce product-import CSV (the same file that lives on the
  * live server at:
- *   /wp-content/uploads/wc-imports/product-woocommerce_products_import-pjzmqbe2sf.csv
+ *   /wp-content/uploads/wc-imports/product-wp-catalog-c7p3my05pn.csv
  *
  * The CSV uses:
  *   • RFC-4180 quoting — fields containing commas/newlines are wrapped in ""
@@ -103,17 +103,37 @@ export function parseCsvText(csvText) {
 // Maps WooCommerce category leaf names → our internal filter key strings
 
 const CATEGORY_MAP = {
+  // Taping
   'automatic tapers':      'taping',
   'tool sets & bundles':   'taping',
+  // Finishing
   'finishing boxes':       'finishing',
   'flat boxes':            'finishing',
+  'handles & extensions':  'finishing',
+  'blades & knives':       'finishing',
+  // Corner
   'corner & angle tools':  'corner',
   'angle tools':           'corner',
+  // Mud boxes / pumps
   'mud boxes & pumps':     'mudboxes',
+  'mud pans & compound tubes': 'mudboxes',
   'loading pumps':         'mudboxes',
+  'pumps & accessories':   'mudboxes',
+  // Sanding
   'sanding tools':         'sanding',
-  'handles & extensions':  'finishing',
-  'parts & accessories':   'finishing',
+  // Stilts
+  'stilts':                'stilts',
+  'stilt accessories':     'stilts',
+  // Texture / spray
+  'texture sprayers':      'texture',
+  'applicators & rollers': 'texture',
+  'spray tips & nozzles':  'texture',
+  'hoses & fittings':      'texture',
+  'cleaning accessories':  'texture',
+  // Parts — all "repair / replacement" leaf categories
+  'parts & accessories':   'parts',
+  'repair kits & parts':   'parts',
+  'pumps & parts':         'parts',
 };
 
 /**
@@ -129,6 +149,38 @@ function mapCategory(categoriesCell) {
   const parts = first.split('>');
   const leaf  = parts[parts.length - 1].trim().toLowerCase();
   return CATEGORY_MAP[leaf] || leaf;
+}
+
+/**
+ * Extract the brand name from a WooCommerce category path string such as
+ *   "Drywall Finishing Tools > TapeTech > Parts & Accessories"
+ * The brand is the second segment (index 1) between the ">" separators.
+ * Returns an empty string when the path has fewer than two segments.
+ *
+ * @param {string} categoriesCell  Raw "Categories" CSV cell value
+ * @returns {string}
+ */
+function extractBrandFromCategory(categoriesCell) {
+  if (!categoriesCell) return '';
+  const first   = categoriesCell.split('|')[0].trim();
+  const segments = first.split('>');
+  return segments.length >= 2 ? segments[1].trim() : '';
+}
+
+/**
+ * Return true when the category leaf marks this product as a replacement
+ * part / repair kit rather than a complete tool.
+ *
+ * @param {string} categoriesCell
+ * @returns {boolean}
+ */
+function isPartsRow(categoriesCell) {
+  if (!categoriesCell) return false;
+  const first = categoriesCell.split('|')[0].trim();
+  const leaf  = first.split('>').pop().trim().toLowerCase();
+  return leaf === 'parts & accessories' ||
+         leaf === 'repair kits & parts' ||
+         leaf === 'pumps & parts';
 }
 
 // ─── HTML → Markdown converter ───────────────────────────────────────────────
@@ -236,10 +288,15 @@ function normalizeRow(row, idx) {
     .filter(Boolean);
   if (images.length === 0) images.push('/product-placeholder.jpg');
 
-  // Brand from "Attribute 1 name" == "Brand" → "Attribute 1 value(s)"
+  // Brand: prefer explicit "Attribute 1 name == Brand" value; fall back to
+  // the second segment of the category path (e.g. "TapeTech" from
+  // "Drywall Finishing Tools > TapeTech > Parts & Accessories").
+  // This ensures every product carries its brand even when the CSV rows for
+  // parts / repair kits omit the Brand attribute column entirely.
   const attrName  = (row['Attribute 1 name']     || '').trim();
   const attrValue = (row['Attribute 1 value(s)'] || '').trim();
-  const brand = attrName.toLowerCase() === 'brand' ? attrValue : '';
+  const attrBrand = attrName.toLowerCase() === 'brand' ? attrValue : '';
+  const brand     = attrBrand || extractBrandFromCategory(row['Categories'] || '');
 
   // Price — prefer Sale price, then Regular price
   const salePrice    = parseFloat(row['Sale price'])    || 0;
@@ -252,8 +309,10 @@ function normalizeRow(row, idx) {
   // SKU is our canonical ID
   const sku = (row['SKU'] || '').trim();
 
-  // Category
-  const category = mapCategory(row['Categories'] || '');
+  // Category + parts flag
+  const categoriesCell = row['Categories'] || '';
+  const category = mapCategory(categoriesCell);
+  const is_parts = isPartsRow(categoriesCell);
 
   // Tags as array
   const tags = (row['Tags'] || '').split(',').map(t => t.trim()).filter(Boolean);
@@ -270,7 +329,8 @@ function normalizeRow(row, idx) {
     name:   (row['Name']  || sku || `Product ${idx}`).replace(/^"(.*)"$/, '$1'),
     brand,
     category,
-    categories: [{ name: (row['Categories'] || '').split('>').pop().trim() }],
+    is_parts,
+    categories: [{ name: categoriesCell.split('>').pop().trim() }],
     tags,
 
     // Media
