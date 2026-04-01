@@ -1,0 +1,4 @@
+# Scraping dependencies for scrape_tapetech_parts_enriched.py
+requests==2.31.0
+beautifulsoup4==4.12.3
+lxml==5.2.1
