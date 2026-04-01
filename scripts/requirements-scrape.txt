@@ -2,3 +2,6 @@
 requests==2.31.0
 beautifulsoup4==4.12.3
 lxml==5.2.1
+
+# Image download + conversion for process_catalog_images.py
+Pillow==12.1.1

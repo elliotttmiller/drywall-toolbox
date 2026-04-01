@@ -16,6 +16,34 @@ Merge rules:
   3. Duplicate SKUs within combined_parts_catalog.csv are collapsed to one row
      (first occurrence wins for the primary fields; schematic references are
      consolidated).
+
+ID column design rationale
+--------------------------
+The WooCommerce store is a fresh installation with no existing products.
+Because of this:
+
+  - The stale post IDs previously held in wc-product-catalog.csv (17, 19, 21 …
+    — sparse WordPress auto-increment values from an old database) are
+    meaningless and should NOT be reused.
+
+  - Every row — products and parts alike — is assigned a clean sequential ID
+    starting at 1 (1, 2, 3 …) in the merged output.
+
+  - Starting at 1 is optimal here: there are no built-in WordPress posts to
+    collide with, no existing WooCommerce products to accidentally overwrite,
+    and a gap-free sequence is easier to audit and reference.
+
+  - On import, WooCommerce will attempt to map each ID to a WordPress post.
+    When no post with that ID exists (fresh store), it creates a new product.
+    The stable sequential IDs in the CSV become the authoritative catalog
+    reference numbers going forward.
+
+Parts rows from combined_parts_catalog.csv previously had empty IDs, which
+left them without any stable identifier.  They now receive sequential IDs
+continuing from the last product ID, giving every part a unique catalog number.
+
+process_catalog_images.py can be run before import to replace any external
+(BigCommerce CDN) image URLs with self-hosted WebP URLs under drywalltoolbox.com.
 """
 
 import csv
@@ -163,6 +191,10 @@ def empty_wc_row():
 # ---------------------------------------------------------------------------
 # 1. Load wc-product-catalog.csv rows (already WC-formatted).
 #    Returns (list_of_row_dicts, set_of_normalised_skus).
+#
+#    The ID column from the source file is intentionally discarded here.
+#    Sequential IDs starting at 1 are assigned to all rows (products and
+#    parts) in main() after both source files have been merged.
 # ---------------------------------------------------------------------------
 def load_wc_catalog():
     rows = []
@@ -201,6 +233,8 @@ def parts_row_to_wc(src):
     images   = first_image_url(src.get("image_urls", ""))
 
     # --- Core identification ---
+    # ID is left blank here; main() assigns a sequential catalog ID to every
+    # row (products and parts) after the two source files are merged.
     row["Type"]    = "simple"
     row["SKU"]     = sku
     row["Name"]    = name or sku
@@ -286,6 +320,13 @@ def main():
 
     combined = wc_rows + parts_rows
     print(f"\nTotal rows to write: {len(combined)}")
+
+    # Assign sequential IDs starting at 1 to every row.
+    # The store has no existing products, so all rows are new imports.
+    # A clean 1-based sequence is easier to audit than the sparse WordPress
+    # post IDs that were previously stored in wc-product-catalog.csv.
+    for catalog_id, row in enumerate(combined, start=1):
+        row["ID"] = str(catalog_id)
 
     print(f"Writing output to {OUTPUT_CSV} …")
     with open(OUTPUT_CSV, "w", encoding="utf-8", newline="") as f:
