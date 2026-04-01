@@ -30,6 +30,22 @@ PARTS_CATALOG_CSV = os.path.join(REPO_ROOT, "parts_catalog.csv")
 OUTPUT_CSV = os.path.join(REPO_ROOT, "combined_parts_catalog.csv")
 
 # ---------------------------------------------------------------------------
+# Brand allow-list.  Only parts whose brand normalises to one of these values
+# will appear in the output.  Matching is case-insensitive; canonical spellings
+# are the keys used in the output rows.
+# ---------------------------------------------------------------------------
+# Mapping: lowercased input variant -> canonical output brand name
+BRAND_CANONICAL = {
+    "tapetech": "TapeTech",
+    "columbia": "Columbia",
+    "columbia taping tools": "Columbia",
+    "level5": "Level5",
+    "level 5": "Level5",
+    "graco": "Graco",
+    "asgard": "Asgard",
+}
+
+# ---------------------------------------------------------------------------
 # Output column headers (exact order and names required)
 # ---------------------------------------------------------------------------
 OUTPUT_HEADERS = [
@@ -74,6 +90,13 @@ def pc_val(row, key):
     if row is None:
         return ""
     return row.get(key, "").strip()
+
+
+def normalize_brand(brand_str):
+    """
+    Return the canonical brand name if the input is in the allow-list, else None.
+    """
+    return BRAND_CANONICAL.get(brand_str.strip().lower())
 
 
 def make_row(brand="", part_name="", sku="", description="", price="",
@@ -284,6 +307,11 @@ def process_remaining_pc(pc_all_rows, already_seen_norms):
         seen_in_this_pass.add(norm)
 
         brand = src.get("Brand", "").strip()
+        canonical = normalize_brand(brand)
+        if canonical is None:
+            # Brand not in the allow-list – skip this row
+            continue
+        brand = canonical
         part_name = src.get("Part Name", "").strip()
         sku = src.get("SKU", "").strip()
         description = src.get("Description", "").strip()
@@ -330,6 +358,7 @@ def main():
 
     combined = tt_rows + l5_rows + rem_rows
     print(f"\nTotal combined rows: {len(combined)}")
+    print(f"Brands retained: {', '.join(sorted(set(BRAND_CANONICAL.values())))}")
 
     print(f"Writing output to {OUTPUT_CSV} …")
     with open(OUTPUT_CSV, "w", encoding="utf-8", newline="") as f:
