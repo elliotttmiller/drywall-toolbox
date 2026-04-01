@@ -49,14 +49,14 @@ BRAND_CANONICAL = {
 # Output column headers (exact order and names required)
 # ---------------------------------------------------------------------------
 OUTPUT_HEADERS = [
-    "Brand",
-    "Part Name",
-    "SKU",
-    "Description",
-    "Price",
-    "Correlated/Linked Tool Schematic Diagram",
-    "Schematic Diagram Label ID (Hotspots call out label on corresponding schematic diagram image)",
-    "Image/s urls",
+    "brand",
+    "part_name",
+    "sku",
+    "description",
+    "price",
+    "schematic_diagram",
+    "hotspot_id",
+    "image_urls",
 ]
 
 
@@ -103,14 +103,14 @@ def make_row(brand="", part_name="", sku="", description="", price="",
              schematic_diagram="", schematic_label_id="", image_urls=""):
     """Return a dict keyed by OUTPUT_HEADERS."""
     return {
-        "Brand": brand or "N/A",
-        "Part Name": part_name or "N/A",
-        "SKU": sku or "N/A",
-        "Description": description or "",
-        "Price": price or "N/A",
-        "Correlated/Linked Tool Schematic Diagram": schematic_diagram or "",
-        "Schematic Diagram Label ID (Hotspots call out label on corresponding schematic diagram image)": schematic_label_id or "",
-        "Image/s urls": image_urls or "",
+        "brand": brand or "N/A",
+        "part_name": part_name or "N/A",
+        "sku": sku or "N/A",
+        "description": description or "",
+        "price": price or "N/A",
+        "schematic_diagram": schematic_diagram or "",
+        "hotspot_id": schematic_label_id or "",
+        "image_urls": image_urls or "",
     }
 
 
