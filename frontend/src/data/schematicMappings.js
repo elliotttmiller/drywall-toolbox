@@ -40,6 +40,33 @@ export const SCHEMATIC_DEFINITIONS = {
   ],
   'TapeTech': [
     { id: 'tapetech-extendable-support-handle', title: 'Extendable Support Handle', category: 'Handles' }
+  ],
+  'Asgard': [
+    { id: 'asgard-at01-ad',  title: 'HAMMER Automatic Taper',              category: 'Tapers' },
+    { id: 'asgard-ah25-ad',  title: '2.5″ Angle Head Corner Finisher',     category: 'Angle Heads' },
+    { id: 'asgard-ah30-ad',  title: '3″ Angle Head Corner Finisher',       category: 'Angle Heads' },
+    { id: 'asgard-ah35-ad',  title: '3.5″ Angle Head Corner Finisher',     category: 'Angle Heads' },
+    { id: 'asgard-ca08-ad',  title: '8″ Angle Box Corner Applicator',      category: 'Angle Heads' },
+    { id: 'asgard-cfa-ad',   title: 'Angle Head Adapter',                  category: 'Angle Heads' },
+    { id: 'asgard-fa01-ad',  title: 'Filler Adapter',                      category: 'Adapters' },
+    { id: 'asgard-ehc07-ad', title: '7″ MaxxBox Finishing Box',            category: 'Finishing Boxes' },
+    { id: 'asgard-ehc10-ad', title: '10″ MaxxBox Finishing Box',           category: 'Finishing Boxes' },
+    { id: 'asgard-ehc12-ad', title: '12″ MaxxBox Finishing Box',           category: 'Finishing Boxes' },
+    { id: 'asgard-ez07-ad',  title: '7″ Flat Finishing Box',               category: 'Finishing Boxes' },
+    { id: 'asgard-ez10-ad',  title: '10″ Flat Finishing Box',              category: 'Finishing Boxes' },
+    { id: 'asgard-ez12-ad',  title: '12″ Flat Finishing Box',              category: 'Finishing Boxes' },
+    { id: 'asgard-pa07-ad',  title: '7″ Power Assist Finishing Box',       category: 'Finishing Boxes' },
+    { id: 'asgard-pa10-ad',  title: '10″ Power Assist Finishing Box',      category: 'Finishing Boxes' },
+    { id: 'asgard-pa12-ad',  title: '12″ Power Assist Finishing Box',      category: 'Finishing Boxes' },
+    { id: 'asgard-bbh-ad',   title: 'Brakeless Box Handle',                category: 'Handles' },
+    { id: 'asgard-bbhe-ad',  title: 'Brakeless Box Handle – Extendable',   category: 'Handles' },
+    { id: 'asgard-fbhe-ad',  title: 'Extendable Flat Box Handle with Brake', category: 'Handles' },
+    { id: 'asgard-fh-ad',    title: 'Fiberglass Handle',                   category: 'Handles' },
+    { id: 'asgard-xh-ad',    title: 'Extendable Support Handle',           category: 'Handles' },
+    { id: 'asgard-gn01-ad',  title: 'Gooseneck',                           category: 'Other' },
+    { id: 'asgard-lp01-ad',  title: 'Compound Loading Pump',               category: 'Pumps' },
+    { id: 'asgard-cr01-ad',  title: 'Inside Corner Roller',                category: 'Rollers' },
+    { id: 'asgard-ns03-ad',  title: '3″ Nail Spotter',                     category: 'Spotters' },
   ]
 };
 
