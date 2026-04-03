@@ -1,101 +1,153 @@
 /**
  * frontend/src/api/products.js
  *
- * WooCommerce product helpers via the wcClient (REST API v3).
- * Base URL: VITE_WC_API_BASE (e.g. https://drywalltoolbox.com/wp-json/wc/v3)
+ * Product API helpers via the drywall/v1 server-side proxy.
+ * Proxy namespace: /wp-json/drywall/v1/
  *
- * Docs: https://woocommerce.github.io/woocommerce-rest-api-docs/#products
+ * Also exports backward-compatible helpers used by existing services
+ * (getProductBySku, getProductCategories, etc.).
  */
 
-import { wcClient, credentialsReady } from './client.js';
+import { apiClient, wcClient, credentialsReady } from './client.js';
 
-// ─── Product helpers ──────────────────────────────────────────────────────────
+// ─── drywall/v1 proxy helpers ─────────────────────────────────────────────────
 
 /**
  * Fetch a paginated list of products.
  *
- * @param {Object} params  WooCommerce query parameters (per_page, page, category, etc.)
- * @returns {Promise<Array>}
+ * @param {Object} params  Supported: page, per_page, category, search,
+ *                         orderby, order, min_price, max_price, stock_status
+ * @returns {Promise<any>}
  */
-export async function getProducts(params = {}) {
-  const response = await wcClient.get('/products', { params: { per_page: 20, ...params } });
-  return response.data;
+export async function fetchProducts( params = {} ) {
+  const qs = new URLSearchParams( params ).toString();
+  return apiClient( `/wp-json/drywall/v1/products${ qs ? `?${ qs }` : '' }` );
 }
 
 /**
  * Fetch a single product by its WooCommerce ID.
  *
- * @param {number|string} id  WooCommerce product ID
- * @returns {Promise<Object>}
+ * @param {number|string} id
+ * @returns {Promise<any>}
  */
-export async function getProductById(id) {
-  const response = await wcClient.get(`/products/${id}`);
-  return response.data;
+export async function fetchProduct( id ) {
+  return apiClient( `/wp-json/drywall/v1/products/${ encodeURIComponent( id ) }` );
 }
 
 /**
- * Fetch products belonging to a specific WooCommerce category.
+ * Fetch a single product by its slug.
  *
- * @param {number|string} categoryId  WooCommerce category ID
- * @param {Object}        params      Additional WooCommerce query parameters
- * @returns {Promise<Array>}
+ * @param {string} slug
+ * @returns {Promise<any>}
  */
-export async function getProductsByCategory(categoryId, params = {}) {
-  const response = await wcClient.get('/products', {
-    params: { category: categoryId, per_page: 20, ...params },
-  });
-  return response.data;
+export async function fetchProductBySlug( slug ) {
+  return apiClient( `/wp-json/drywall/v1/products/slug/${ encodeURIComponent( slug ) }` );
+}
+
+/**
+ * Fetch product categories.
+ *
+ * @param {Object} params  Supported: page, per_page, parent
+ * @returns {Promise<any>}
+ */
+export async function fetchCategories( params = {} ) {
+  const qs = new URLSearchParams( params ).toString();
+  return apiClient( `/wp-json/drywall/v1/categories${ qs ? `?${ qs }` : '' }` );
+}
+
+/**
+ * Fetch all product attributes.
+ *
+ * @returns {Promise<any>}
+ */
+export async function fetchAttributes() {
+  return apiClient( '/wp-json/drywall/v1/attributes' );
 }
 
 /**
  * Search products by keyword.
  *
- * @param {string} query   Search keyword
- * @param {Object} params  Additional WooCommerce query parameters
+ * @param {string} query
+ * @param {Object} params  Additional params (page, per_page)
+ * @returns {Promise<any>}
+ */
+export async function searchProducts( query, params = {} ) {
+  const merged = { q: query, ...params };
+  const qs = new URLSearchParams( merged ).toString();
+  return apiClient( `/wp-json/drywall/v1/search?${ qs }` );
+}
+
+// ─── Backward-compatible helpers (used by Schematics.jsx / services/) ─────────
+
+/**
+ * Fetch a paginated list of products (legacy alias via wcClient).
+ *
+ * @param {Object} params
  * @returns {Promise<Array>}
  */
-export async function searchProducts(query, params = {}) {
-  const response = await wcClient.get('/products', {
-    params: { search: query, per_page: 20, ...params },
-  });
+export async function getProducts( params = {} ) {
+  const response = await wcClient.get( '/products', { params: { per_page: 20, ...params } } );
   return response.data;
 }
 
 /**
- * Fetch all product categories.
+ * Fetch a single product by WooCommerce ID (legacy alias via wcClient).
  *
- * @param {Object} params  WooCommerce query parameters (per_page, parent, etc.)
+ * @param {number|string} id
+ * @returns {Promise<Object>}
+ */
+export async function getProduct( id ) {
+  const response = await wcClient.get( `/products/${ id }` );
+  return response.data;
+}
+
+/**
+ * Fetch a single product by WooCommerce ID (alias for getProduct).
+ */
+export const getProductById = getProduct;
+
+/**
+ * Fetch products belonging to a specific category (legacy, via wcClient).
+ *
+ * @param {number|string} categoryId
+ * @param {Object}        params
  * @returns {Promise<Array>}
  */
-export async function getProductCategories(params = {}) {
-  const response = await wcClient.get('/products/categories', {
+export async function getProductsByCategory( categoryId, params = {} ) {
+  const response = await wcClient.get( '/products', {
+    params: { category: categoryId, per_page: 20, ...params },
+  } );
+  return response.data;
+}
+
+/**
+ * Fetch all product categories (legacy alias via wcClient).
+ *
+ * @param {Object} params
+ * @returns {Promise<Array>}
+ */
+export async function getProductCategories( params = {} ) {
+  const response = await wcClient.get( '/products/categories', {
     params: { per_page: 100, ...params },
-  });
+  } );
   return response.data;
 }
 
 /**
- * Fetch a single WooCommerce product by its SKU.
+ * Fetch a single product by SKU (used by Schematics.jsx hotspot lookup).
  *
- * WooCommerce GET /products?sku=<sku> returns an array; we return the first
- * match or null if nothing is found.
- *
- * @param {string} sku  The product SKU (e.g. "CT119", "FA362")
- * @returns {Promise<Object|null>}  WooCommerce product object or null
+ * @param {string} sku
+ * @returns {Promise<Object|null>}
  */
-export async function getProductBySku(sku) {
-  if (!sku) return null;
+export async function getProductBySku( sku ) {
+  if ( ! sku ) return null;
   try {
-    // Ensure credentials are bootstrapped before making the authenticated call.
-    // Without this, a hotspot click immediately after page load may race against
-    // the /dtb/v1/config fetch and send an unauthenticated request that returns
-    // 401 → null, causing the modal to show stale JSON data instead of live
-    // WooCommerce prices and images.
     await credentialsReady();
-    const response = await wcClient.get('/products', { params: { sku, per_page: 1 } });
+    const response = await wcClient.get( '/products', { params: { sku, per_page: 1 } } );
     const products = response.data;
-    return Array.isArray(products) && products.length > 0 ? products[0] : null;
+    return Array.isArray( products ) && products.length > 0 ? products[ 0 ] : null;
   } catch {
     return null;
   }
 }
+

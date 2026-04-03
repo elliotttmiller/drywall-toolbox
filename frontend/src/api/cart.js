@@ -3,106 +3,166 @@
  *
  * WooCommerce Store API cart helpers (/wc/store/v1/cart).
  *
- * The Store API uses cookie-based sessions — no JWT or Application Password
- * required.  All fetch calls include `credentials: 'include'` so session
- * cookies are sent cross-origin.
+ * All calls include:
+ *   credentials: 'include'        — sends session cookies cross-origin
+ *   X-WC-Store-API-Nonce header   — refreshed via initCart()
+ *
+ * On 401: initCart() is called to refresh the nonce and the request is
+ * retried once.  A second consecutive 401 throws to the caller.
  *
  * Docs: https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce/src/StoreApi
  */
 
-function getSiteUrl() {
-  return import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-}
+const STORE_BASE =
+  ( process.env.REACT_APP_API_BASE_URL || '' ).replace( /\/+$/, '' ) +
+  ( process.env.REACT_APP_STORE_API_BASE || '/wp-json/wc/store/v1' );
 
-const STORE_API_BASE = `${getSiteUrl()}/wp-json/wc/store/v1`;
+// Nonce stored at module scope — refreshed by initCart().
+let _storeNonce = '';
 
 // ─── Fetch helper ─────────────────────────────────────────────────────────────
 
-async function storeFetch(path, options = {}) {
-  const url = `${STORE_API_BASE}${path}`;
-  const res = await fetch(url, {
-    credentials: 'include',           // Send session cookies
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
+async function storeFetch( path, options = {}, isRetry = false ) {
+  const url = `${ STORE_BASE }${ path }`;
+  const headers = {
+    'Content-Type': 'application/json',
+    ...( _storeNonce ? { 'X-WC-Store-API-Nonce': _storeNonce } : {} ),
+    ...( options.headers || {} ),
+  };
 
-  if (!res.ok) {
-    let message = `Store API error ${res.status}: ${url}`;
-    try {
-      const body = await res.json();
-      if (body && body.message) message = body.message;
-    } catch {
-      // response was not JSON — keep status-line message
+  const res = await fetch( url, {
+    credentials: 'include',
+    ...options,
+    headers,
+  } );
+
+  // 401 — refresh nonce via initCart() and retry once.
+  if ( res.status === 401 ) {
+    if ( isRetry ) {
+      let message = `Store API 401: ${ url }`;
+      try {
+        const body = await res.json();
+        if ( body && body.message ) message = body.message;
+      } catch { /**/ }
+      throw new Error( message );
     }
-    throw new Error(message);
+    await initCart();
+    return storeFetch( path, options, true );
   }
 
-  // 204 No Content — return null
-  if (res.status === 204) return null;
+  if ( ! res.ok ) {
+    let message = `Store API error ${ res.status }: ${ url }`;
+    try {
+      const body = await res.json();
+      if ( body && body.message ) message = body.message;
+    } catch { /**/ }
+    throw new Error( message );
+  }
+
+  if ( res.status === 204 ) return null;
   return res.json();
 }
 
 // ─── Cart API ─────────────────────────────────────────────────────────────────
 
 /**
- * Retrieve the current cart.
+ * Initialise the cart session and capture the Store API nonce.
+ * Must be called on mount before any cart operation.
  *
  * @returns {Promise<Object>}  WooCommerce cart object
  */
+export async function initCart() {
+  const url = `${ STORE_BASE }/cart`;
+  const res = await fetch( url, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  } );
+
+  const nonce = res.headers.get( 'X-WC-Store-API-Nonce' );
+  if ( nonce ) {
+    _storeNonce = nonce;
+  }
+
+  if ( ! res.ok ) {
+    throw new Error( `Store API error ${ res.status }: ${ url }` );
+  }
+
+  if ( res.status === 204 ) return null;
+  return res.json();
+}
+
+/**
+ * Retrieve the current cart.
+ *
+ * @returns {Promise<Object>}
+ */
 export async function getCart() {
-  return storeFetch('/cart');
+  return storeFetch( '/cart' );
 }
 
 /**
  * Add an item to the cart.
  *
  * @param {number|string} productId   WooCommerce product ID
- * @param {number}        quantity    Quantity to add (default: 1)
- * @param {Object}        variation   Variation attributes map (optional)
- * @returns {Promise<Object>}         Updated cart object
+ * @param {number}        qty         Quantity (default: 1)
+ * @param {Object}        variation   Variation attribute map (optional)
+ * @returns {Promise<Object>}
  */
-export async function addToCart(productId, quantity = 1, variation = {}) {
-  return storeFetch('/cart/add-item', {
+export async function addToCart( productId, qty = 1, variation = {} ) {
+  return storeFetch( '/cart/add-item', {
     method: 'POST',
-    body: JSON.stringify({ id: productId, quantity, variation }),
-  });
+    body: JSON.stringify( { id: productId, quantity: qty, variation } ),
+  } );
 }
 
 /**
  * Update the quantity of a cart item.
  *
- * @param {string} itemKey   Cart item key (from cart item object)
- * @param {number} quantity  New quantity
+ * @param {string} key  Cart item key
+ * @param {number} qty  New quantity
  * @returns {Promise<Object>}
  */
-export async function updateCartItem(itemKey, quantity) {
-  return storeFetch('/cart/update-item', {
-    method: 'POST',
-    body: JSON.stringify({ key: itemKey, quantity }),
-  });
+export async function updateCartItem( key, qty ) {
+  return storeFetch( `/cart/items/${ encodeURIComponent( key ) }`, {
+    method: 'PUT',
+    body: JSON.stringify( { quantity: qty } ),
+  } );
 }
 
 /**
  * Remove an item from the cart.
  *
- * @param {string} itemKey  Cart item key
+ * @param {string} key  Cart item key
  * @returns {Promise<Object>}
  */
-export async function removeCartItem(itemKey) {
-  return storeFetch('/cart/remove-item', {
-    method: 'POST',
-    body: JSON.stringify({ key: itemKey }),
-  });
+export async function removeCartItem( key ) {
+  return storeFetch( `/cart/items/${ encodeURIComponent( key ) }`, {
+    method: 'DELETE',
+  } );
 }
 
 /**
- * Clear all items from the cart.
+ * Apply a coupon to the cart.
  *
- * @returns {Promise<null>}
+ * @param {string} code  Coupon code
+ * @returns {Promise<Object>}
  */
-export async function clearCart() {
-  return storeFetch('/cart/items', { method: 'DELETE' });
+export async function applyCoupon( code ) {
+  return storeFetch( '/cart/coupons', {
+    method: 'POST',
+    body: JSON.stringify( { code } ),
+  } );
 }
+
+/**
+ * Remove a coupon from the cart.
+ *
+ * @param {string} code  Coupon code
+ * @returns {Promise<Object>}
+ */
+export async function removeCoupon( code ) {
+  return storeFetch( `/cart/coupons/${ encodeURIComponent( code ) }`, {
+    method: 'DELETE',
+  } );
+}
+

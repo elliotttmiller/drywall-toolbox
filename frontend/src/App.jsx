@@ -3,6 +3,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { CartProvider } from './context/CartContext';
 import { VeeqoProvider } from './context/VeeqoContext';
 import { WooCommerceProvider } from './context/WooCommerceContext';
+import { AuthProvider } from './auth/AuthContext.js';
 
 // Layout components load eagerly — they're on every page so there's no benefit
 // to lazy loading them. Keeping them in the main bundle is correct.
@@ -94,9 +95,10 @@ function App() {
   const basename = '/';
 
   return (
-    <VeeqoProvider>
-      <WooCommerceProvider>
-        <CartProvider>
+    <AuthProvider>
+      <VeeqoProvider>
+        <WooCommerceProvider>
+          <CartProvider>
           <Router basename={basename}>
             <ScrollToTop />
 
@@ -143,9 +145,10 @@ function App() {
 
             <CartSidebar isOpen={cartOpen} onClose={closeCart} />
           </Router>
-        </CartProvider>
-      </WooCommerceProvider>
-    </VeeqoProvider>
+          </CartProvider>
+        </WooCommerceProvider>
+      </VeeqoProvider>
+    </AuthProvider>
   );
 }
 

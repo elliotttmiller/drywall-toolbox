@@ -124,6 +124,16 @@ module.exports = (envFlags, argv) => {
     // Only used in 'npm run dev' with .env.local; never affects production builds.
     'process.env.REACT_APP_USE_LOCAL_CSV':              JSON.stringify(env('REACT_APP_USE_LOCAL_CSV')),
     'import.meta.env.VITE_USE_LOCAL_CSV':               JSON.stringify(env('VITE_USE_LOCAL_CSV')),
+
+    // ─── Headless WooCommerce proxy (drywall/v1) ──────────────────────────────
+    // Read from the environment-specific .env file loaded above.
+    'process.env.REACT_APP_API_BASE_URL':               JSON.stringify(env('REACT_APP_API_BASE_URL')),
+    'process.env.REACT_APP_STORE_API_BASE':             JSON.stringify(env('REACT_APP_STORE_API_BASE')),
+    'process.env.REACT_APP_JWT_AUTH_ENDPOINT':          JSON.stringify(env('REACT_APP_JWT_AUTH_ENDPOINT')),
+    'process.env.REACT_APP_ENV':                        JSON.stringify(env('REACT_APP_ENV')),
+
+    // Build timestamp — set once at config evaluation time (not per-module).
+    'process.env.BUILD_TIMESTAMP':                      JSON.stringify(new Date().toISOString()),
   };
 
   // ─── Inline asset manifest plugin ───────────────────────────────────────

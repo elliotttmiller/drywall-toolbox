@@ -1,0 +1,55 @@
+/**
+ * frontend/src/hooks/useProduct.js
+ *
+ * Fetches a single product by id or slug.
+ *   - Numeric id  → fetchProduct(id)
+ *   - String slug → fetchProductBySlug(slug)
+ *
+ * Returns { product, isLoading, error }.
+ */
+
+import { useState, useEffect } from 'react';
+import { fetchProduct, fetchProductBySlug } from '../api/products.js';
+
+export function useProduct( idOrSlug ) {
+  const [ product,   setProduct   ] = useState( null );
+  const [ isLoading, setIsLoading ] = useState( true );
+  const [ error,     setError     ] = useState( null );
+
+  useEffect( () => {
+    if ( ! idOrSlug ) {
+      setIsLoading( false );
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoading( true );
+    setError( null );
+
+    const isNumeric = /^\d+$/.test( String( idOrSlug ) );
+    const fetcher   = isNumeric
+      ? () => fetchProduct( idOrSlug )
+      : () => fetchProductBySlug( idOrSlug );
+
+    fetcher()
+      .then( ( data ) => {
+        if ( cancelled ) return;
+        // fetchProductBySlug returns an array (WC ?slug= query); unwrap it.
+        const resolved = Array.isArray( data ) ? ( data[ 0 ] ?? null ) : data;
+        setProduct( resolved );
+      } )
+      .catch( ( err ) => {
+        if ( cancelled ) return;
+        setError( err.message || 'Failed to load product.' );
+      } )
+      .finally( () => {
+        if ( ! cancelled ) setIsLoading( false );
+      } );
+
+    return () => { cancelled = true; };
+  }, [ idOrSlug ] );
+
+  return { product, isLoading, error };
+}
+
+export default useProduct;
