@@ -628,17 +628,40 @@ export default function Parts() {
   // Official formula:
   //   x_pct = round((center_x_px / image_natural_width)  * 100, 4)  → CSS left
   //   y_pct = round((center_y_px / image_natural_height) * 100, 4)  → CSS top
+  //
+  // Each returned part carries imageNaturalWidth / imageNaturalHeight so the
+  // render layer can set aspect-ratio on the image wrapper before the image
+  // loads (preventing a layout jump that would momentarily misplace hotspots).
   const buildPartsFromData = (data) => {
     if (!data || !data.parts) return [];
     const coords = data.coordinates || {};
+    const imgW = data.image_natural_width  ?? null;
+    const imgH = data.image_natural_height ?? null;
     return data.parts.map((p) => {
       const c = coords[p.id] || null;
-      // x_pct = horizontal = CSS left; y_pct = vertical = CSS top
+      // Resolve horizontal position (CSS left):
+      //   1. x_pct (official schema, percentage of image width)
+      //   2. x_px  → converted to % using image_natural_width
+      //   3. left  (legacy field, already a percentage)
+      //   4. 50 (centre fallback)
       const leftVal = c
-        ? (c.x_pct !== undefined ? c.x_pct : (c.left !== undefined ? c.left : 50))
+        ? (c.x_pct !== undefined
+            ? c.x_pct
+            : (c.x_px !== null && c.x_px !== undefined && imgW
+                ? (c.x_px / imgW) * 100
+                : (c.left !== undefined ? c.left : 50)))
         : 50;
-      const topVal  = c
-        ? (c.y_pct !== undefined ? c.y_pct : (c.top  !== undefined ? c.top  : 50))
+      // Resolve vertical position (CSS top):
+      //   1. y_pct (official schema, percentage of image height)
+      //   2. y_px  → converted to % using image_natural_height
+      //   3. top   (legacy field, already a percentage)
+      //   4. 50 (centre fallback)
+      const topVal = c
+        ? (c.y_pct !== undefined
+            ? c.y_pct
+            : (c.y_px !== null && c.y_px !== undefined && imgH
+                ? (c.y_px / imgH) * 100
+                : (c.top !== undefined ? c.top : 50)))
         : 50;
       const top  = `${topVal}%`;
       const left = `${leftVal}%`;
@@ -663,6 +686,12 @@ export default function Parts() {
         xPx:  c && c.x_px  !== null && c.x_px  !== undefined ? c.x_px  : null,
         yPx:  c && c.y_px  !== null && c.y_px  !== undefined ? c.y_px  : null,
         bbox: c && c.bbox ? c.bbox : null,
+        // Natural image dimensions from the source data.  These are identical
+        // for every part on the same page and are used by the viewer to set
+        // aspect-ratio on the image wrapper and to convert pixel-based hotspot
+        // sizes (widthPx / heightPx) to scale-independent percentages.
+        imageNaturalWidth:  imgW,
+        imageNaturalHeight: imgH,
       };
     });
   };
@@ -1699,6 +1728,20 @@ export default function Parts() {
     ? (currentSchematic.imagePages && currentSchematic.imagePages[currentPage]) || currentSchematic.image || null
     : null;
 
+  // Derive the intrinsic aspect-ratio for the current page from the first
+  // matching part's imageNaturalWidth/Height (all parts on the same page share
+  // the same source-image dimensions).  Applied to the image-wrapper div so
+  // the layout reserves the correct proportional height *before* the image
+  // finishes loading, preventing a jump that would transiently misalign
+  // hotspot percentage positions on slow mobile connections.
+  const _currentPageFirstPart = currentSchematic
+    ? currentSchematic.parts.find(p => !p.pageNumber || p.pageNumber === currentPage)
+    : null;
+  const currentPageAspectRatio =
+    _currentPageFirstPart?.imageNaturalWidth && _currentPageFirstPart?.imageNaturalHeight
+      ? `${_currentPageFirstPart.imageNaturalWidth} / ${_currentPageFirstPart.imageNaturalHeight}`
+      : undefined;
+
   const [addingToCart, setAddingToCart] = useState(null); // part.id being added
 
   const handleAddToCart = async (part) => {
@@ -2354,9 +2397,14 @@ export default function Parts() {
                   and pan with the image on every zoom level and screen size. */}
               <div 
                 ref={schematicImageRef}
+                className="schematic-image-wrapper"
                 style={{ 
                   position: 'relative',
                   width: '100%',
+                  // Pre-allocate the correct proportional height before the image
+                  // loads so hotspot percentage coordinates land accurately on every
+                  // device and screen size, even on slow mobile connections.
+                  aspectRatio: currentPageAspectRatio,
                   transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
                   transformOrigin: 'center center',
                   transition: gestureActiveRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -2399,13 +2447,21 @@ export default function Parts() {
                       transform: part.rotation ? `translate(-50%, -50%) rotate(${part.rotation}deg)` : 'translate(-50%, -50%)',
                       zIndex: activeHotspot === part.id ? 1001 : 100,
                       pointerEvents: 'auto',
-                      ...(part.widthPx && part.heightPx ? {
-                        width: `${part.widthPx}px`,
-                        height: `${part.heightPx}px`
-                      } : (part.width && part.height ? {
-                        width: `${part.width}%`,
-                        height: `${part.height}%`
-                      } : {}))
+                      // Convert pixel-based hotspot dimensions to scale-independent
+                      // percentages using the source image's natural dimensions so
+                      // the hotspot always covers the same portion of the image
+                      // regardless of the screen size or device pixel ratio.
+                      ...(part.widthPx && part.heightPx && part.imageNaturalWidth && part.imageNaturalHeight ? {
+                        width:  `${(part.widthPx  / part.imageNaturalWidth)  * 100}%`,
+                        height: `${(part.heightPx / part.imageNaturalHeight) * 100}%`,
+                      } : part.widthPx && part.heightPx ? {
+                        // Fallback: no natural dimensions available — use pixels as-is
+                        width:  `${part.widthPx}px`,
+                        height: `${part.heightPx}px`,
+                      } : part.width && part.height ? {
+                        width:  `${part.width}%`,
+                        height: `${part.height}%`,
+                      } : {})
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
