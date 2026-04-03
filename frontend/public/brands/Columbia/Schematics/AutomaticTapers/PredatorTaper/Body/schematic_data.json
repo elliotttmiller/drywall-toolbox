@@ -8,9 +8,9 @@
   "parts": [
     {
       "id": "CT119",
-      "name": "CT119",
+      "name": "Spool Retaining Spring - CT119",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-119"
     },
     {
       "id": "CT119A",
@@ -20,9 +20,9 @@
     },
     {
       "id": "CT121B",
-      "name": "CT121B",
+      "name": "Tape Spool Shaft (Quick Release) - CT121B",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-121B"
     },
     {
       "id": "FA362",
@@ -32,15 +32,15 @@
     },
     {
       "id": "CT120",
-      "name": "CT120",
+      "name": "Taper Tape Spool - CT120",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-120"
     },
     {
       "id": "CT118A",
-      "name": "CT118A",
+      "name": "Retaining Spring Clip(Quick Realease) - CT118A",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT118A"
     },
     {
       "id": "FA292",
@@ -50,15 +50,15 @@
     },
     {
       "id": "CT106A",
-      "name": "CT106A",
+      "name": "Taper Bearing Shaft - CT106",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-106A"
     },
     {
       "id": "FA298",
-      "name": "FA298",
+      "name": "1/4-20 X 7/8in Flat Socket - FA298",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA-298"
     },
     {
       "id": "CT115",
@@ -86,33 +86,33 @@
     },
     {
       "id": "CT122A",
-      "name": "CT122A",
+      "name": "Taper Strap - CT122",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-122A"
     },
     {
       "id": "CT116A",
-      "name": "CT116A",
+      "name": "Taper Strap - CT116A",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-116A"
     },
     {
       "id": "CT116A",
-      "name": "CT116A",
+      "name": "Taper Strap - CT116A",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-116A"
     },
     {
       "id": "CT116A",
-      "name": "CT116A",
+      "name": "Taper Strap - CT116A",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-116A"
     },
     {
       "id": "CT115A",
-      "name": "CT115A",
+      "name": "Taper Gasket New Style End Ring - CT115A",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT115A"
     },
     {
       "id": "FA237",
@@ -128,21 +128,21 @@
     },
     {
       "id": "CT104",
-      "name": "CT104",
+      "name": "Taper Connection Strap - CT104",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-104"
     },
     {
       "id": "CT105",
-      "name": "CT105",
+      "name": "Taper Crimper Lever - CT105",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-105"
     },
     {
       "id": "CT130",
-      "name": "CT130",
+      "name": "CT130 - Taper Extension Shaft",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-130"
     },
     {
       "id": "FA249",
@@ -152,9 +152,9 @@
     },
     {
       "id": "CT127",
-      "name": "CT127",
+      "name": "CT127 - Taper Extension Shaft Bracket",
       "quantity": 1,
-      "sku": ""
+      "sku": "ct127"
     },
     {
       "id": "FA207",
@@ -182,9 +182,9 @@
     },
     {
       "id": "CT103",
-      "name": "CT103",
+      "name": "Taper Barrel Main Body - CT103",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-103"
     },
     {
       "id": "FA295",
@@ -242,9 +242,9 @@
     },
     {
       "id": "CT111",
-      "name": "CT111",
+      "name": "Taper Piston Cup - CT111",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-111"
     },
     {
       "id": "CT109",

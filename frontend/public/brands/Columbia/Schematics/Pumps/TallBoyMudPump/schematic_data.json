@@ -14,15 +14,15 @@
     },
     {
       "id": "MP5",
-      "name": "MP5",
+      "name": "Mud Pump Head Bushing - MP5",
       "quantity": 1,
-      "sku": ""
+      "sku": "mp5"
     },
     {
       "id": "MP23",
-      "name": "MP23",
+      "name": "Columbia Mud Pump Mud Pump Seal - MP23",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-23"
     },
     {
       "id": "HP48",
@@ -80,9 +80,9 @@
     },
     {
       "id": "MP36",
-      "name": "MP36",
+      "name": "Columbia Mud Pump Nylatron Bushing - MP36",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-36"
     },
     {
       "id": "HP4",
@@ -146,9 +146,9 @@
     },
     {
       "id": "HP47",
-      "name": "HP47",
+      "name": "Draw Latch Assembly - HP47",
       "quantity": 1,
-      "sku": ""
+      "sku": "HP-47"
     },
     {
       "id": "TBMP1",
@@ -158,15 +158,15 @@
     },
     {
       "id": "TBMP8C",
-      "name": "TBMP8C",
+      "name": "Tall Boy Lef Stabilizer -TBMP8C",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP8C"
     },
     {
       "id": "FA304",
-      "name": "FA304",
+      "name": "5/16 Flat Washer - FA304",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA-304"
     },
     {
       "id": "MP7D",
@@ -212,39 +212,39 @@
     },
     {
       "id": "FA308",
-      "name": "FA308",
+      "name": "33/64 X 7/8in Flat Washer - FA308",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA-308"
     },
     {
       "id": "MP13A",
-      "name": "MP13A",
+      "name": "Mud Pump Piston Backing Washer (Small) - MP13A",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-13A"
     },
     {
       "id": "MP39",
-      "name": "MP39",
+      "name": "Mud Pump Sleeve - MP39",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP39"
     },
     {
       "id": "MP14",
-      "name": "MP14",
+      "name": "Piston Cup - MP14",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-14"
     },
     {
       "id": "MP13",
-      "name": "MP13",
+      "name": "Mud Pump Piston Backing Washer (Large) - MP13",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-13"
     },
     {
       "id": "MP13",
-      "name": "MP13",
+      "name": "Mud Pump Piston Backing Washer (Large) - MP13",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-13"
     },
     {
       "id": "HB48B",
@@ -266,9 +266,9 @@
     },
     {
       "id": "FA306",
-      "name": "FA306",
+      "name": "5/16-18 x 1 1/4\" Hex Bolt - FA306",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA-306"
     },
     {
       "id": "FA270",

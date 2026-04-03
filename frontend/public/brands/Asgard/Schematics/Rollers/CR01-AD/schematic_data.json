@@ -10,87 +10,87 @@
   "parts": [
     {
       "id": "150009",
-      "name": "150009",
+      "name": "150009 - Swivel Axle",
       "quantity": 1,
-      "sku": ""
+      "sku": "150009"
     },
     {
       "id": "154007",
-      "name": "154007",
+      "name": "154007 - Swivel Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "154007"
     },
     {
       "id": "150003F",
-      "name": "150003F",
+      "name": "150003 - Coupling",
       "quantity": 1,
-      "sku": ""
+      "sku": "150003F"
     },
     {
       "id": "159026",
-      "name": "159026",
+      "name": "159026 - Special Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "159026"
     },
     {
       "id": "159027",
-      "name": "159027",
+      "name": "159027 - Special Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "159027"
     },
     {
       "id": "059143",
-      "name": "059143",
+      "name": "059143 - Cotter Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "059143"
     },
     {
       "id": "150004F",
-      "name": "150004F",
+      "name": "150004 - Swivel Coupling Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "150004F"
     },
     {
       "id": "156001F",
-      "name": "156001F",
+      "name": "156001 - TapeTech Corner Roller Head Casting",
       "quantity": 1,
-      "sku": ""
+      "sku": "156001F"
     },
     {
       "id": "159010",
-      "name": "159010",
+      "name": "159010 - 8-32 x 3/8 Fil Hd SS",
       "quantity": 1,
-      "sku": ""
+      "sku": "159010"
     },
     {
       "id": "152025",
-      "name": "152025",
+      "name": "152025 - Spacer Bushing",
       "quantity": 1,
-      "sku": ""
+      "sku": "152025"
     },
     {
       "id": "159023",
-      "name": "159023",
+      "name": "159023 - Nylon Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "159023"
     },
     {
       "id": "151005",
-      "name": "151005",
+      "name": "151005 - Roller (New Style)",
       "quantity": 1,
-      "sku": ""
+      "sku": "151005"
     },
     {
       "id": "151011",
-      "name": "151011",
+      "name": "151011 - Inner Roller",
       "quantity": 1,
-      "sku": ""
+      "sku": "151011"
     },
     {
       "id": "152006",
-      "name": "152006",
+      "name": "152006 - Stud For Corner Roller",
       "quantity": 1,
-      "sku": ""
+      "sku": "152006"
     }
   ],
   "coordinates": {

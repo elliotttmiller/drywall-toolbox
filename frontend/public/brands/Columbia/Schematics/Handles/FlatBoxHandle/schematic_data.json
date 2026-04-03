@@ -8,9 +8,9 @@
   "parts": [
     {
       "id": "FA 302",
-      "name": "FA 302",
+      "name": "1/4-28 X 1/4in Set Screw - FA302",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA302"
     },
     {
       "id": "BH 7",
@@ -26,9 +26,9 @@
     },
     {
       "id": "BH 26",
-      "name": "BH 26",
+      "name": "Box Handle Cam for 180 Handle - BH26",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH26"
     },
     {
       "id": "FA 312",
@@ -38,15 +38,15 @@
     },
     {
       "id": "BH2",
-      "name": "BH2",
+      "name": "Box Handle 180 Grip Plate - BH2",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH2"
     },
     {
       "id": "BH 6",
-      "name": "BH 6",
+      "name": "Box Handle Hinge Pin - BH6",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH6"
     },
     {
       "id": "BH 1",
@@ -74,9 +74,9 @@
     },
     {
       "id": "BH 5",
-      "name": "BH 5",
+      "name": "Box Handle Upper Mounting Bracket - BH5",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH-5"
     },
     {
       "id": "FA 311",
@@ -110,9 +110,9 @@
     },
     {
       "id": "BH 4",
-      "name": "BH 4",
+      "name": "Flat Box Handle Lower Brake Lever - BH4",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH4"
     },
     {
       "id": "BH 3",
@@ -122,9 +122,9 @@
     },
     {
       "id": "BH 11",
-      "name": "BH 11",
+      "name": "Flat Box Handle Strap Connecting Pin - BH11",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH-11"
     },
     {
       "id": "FA 276",

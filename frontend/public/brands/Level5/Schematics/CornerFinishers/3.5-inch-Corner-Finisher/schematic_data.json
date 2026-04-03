@@ -12,151 +12,176 @@
       "id": "1",
       "name": "CF Screw 6-32x15",
       "quantity": 1,
-      "sku": "9510"
+      "sku": "9510",
+      "price": 4.49
     },
     {
       "id": "2",
       "name": "CF SS Flat Washer",
       "quantity": 1,
-      "sku": "9511"
+      "sku": "9511",
+      "price": 4.49
     },
     {
       "id": "3",
       "name": "CF Rubber Tire",
       "quantity": 1,
-      "sku": "9512"
+      "sku": "9512",
+      "price": 1.79
     },
     {
       "id": "4",
       "name": "CF Wheel Bushing",
       "quantity": 1,
-      "sku": "9513"
+      "sku": "9513",
+      "price": 5.84
     },
     {
       "id": "5",
       "name": "Finisher Wheels",
       "quantity": 1,
-      "sku": "9514"
+      "sku": "9514",
+      "price": 12.59
     },
     {
       "id": "6",
       "name": "CF Lock Clip Spring",
       "quantity": 1,
-      "sku": "7740"
+      "sku": "7740",
+      "price": 1.79
     },
     {
       "id": "7",
       "name": "CF Frame Tabs",
       "quantity": 1,
-      "sku": "9509"
+      "sku": "9509",
+      "price": 3.14
     },
     {
       "id": "8",
       "name": "CF Slotted Screw 8-32 x 6.35",
       "quantity": 1,
-      "sku": "7190"
+      "sku": "7190",
+      "price": 1.79
     },
     {
       "id": "9",
       "name": "CF Buttom Clip 3.5in & 4in",
       "quantity": 1,
-      "sku": "9196"
+      "sku": "9196",
+      "price": 15.29
     },
     {
       "id": "10",
       "name": "CF 3.5in Body",
       "quantity": 1,
-      "sku": "9807"
+      "sku": "9807",
+      "price": 129.99
     },
     {
       "id": "11",
       "name": "CF 3.5in Left Frame",
       "quantity": 1,
-      "sku": "9803"
+      "sku": "9803",
+      "price": 27.44
     },
     {
       "id": "12",
       "name": "CF 3.5in & 4in Skids",
       "quantity": 1,
-      "sku": "9525"
+      "sku": "9525",
+      "price": 22.04
     },
     {
       "id": "13",
       "name": "CF 6-32 x 1/8 SS Hex",
       "quantity": 1,
-      "sku": "9191"
+      "sku": "9191",
+      "price": 1.79
     },
     {
       "id": "14",
       "name": "CF 3.5in Blade",
       "quantity": 1,
-      "sku": "9815"
+      "sku": "9815",
+      "price": 40.94
     },
     {
       "id": "15",
       "name": "CF Frame Tabs",
       "quantity": 1,
-      "sku": "9509"
+      "sku": "9509",
+      "price": 3.14
     },
     {
       "id": "16",
       "name": "Spring Tension Pin -CF",
       "quantity": 1,
-      "sku": "9501"
+      "sku": "9501",
+      "price": 7.19
     },
     {
       "id": "17",
       "name": "CF Top Clip 3.5in & 4in",
       "quantity": 1,
-      "sku": "9197"
+      "sku": "9197",
+      "price": 8.54
     },
     {
       "id": "18",
       "name": "CF Spring (Small)",
       "quantity": 1,
-      "sku": "9522"
+      "sku": "9522",
+      "price": 11.24
     },
     {
       "id": "19",
       "name": "CF 3.5in Spring (Big)",
       "quantity": 1,
-      "sku": "9523"
+      "sku": "9523",
+      "price": 12.59
     },
     {
       "id": "20",
       "name": "CF Ball Locking Clip",
       "quantity": 1,
-      "sku": "7741"
+      "sku": "7741",
+      "price": 23.39
     },
     {
       "id": "21",
       "name": "CF Locking Clip Tab",
       "quantity": 1,
-      "sku": "7742"
+      "sku": "7742",
+      "price": 15.29
     },
     {
       "id": "22",
       "name": "6-32 x 1/2 FillisterHeadScrew",
       "quantity": 1,
-      "sku": "7075"
+      "sku": "7075",
+      "price": 1.0
     },
     {
       "id": "23",
       "name": "Insert Socket",
       "quantity": 1,
-      "sku": "7183"
+      "sku": "7183",
+      "price": 27.44
     },
     {
       "id": "24",
       "name": "CF 6-32 X 1/4 Bind Head Screw SST",
       "quantity": 1,
-      "sku": "7312"
+      "sku": "7312",
+      "price": 1.79
     },
     {
       "id": "25",
       "name": "CF 3.5in Right Frame",
       "quantity": 1,
-      "sku": "9817"
+      "sku": "9817",
+      "price": 27.44
     }
   ],
   "coordinates": {

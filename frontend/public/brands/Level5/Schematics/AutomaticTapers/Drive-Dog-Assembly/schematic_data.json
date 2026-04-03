@@ -12,7 +12,8 @@
       "id": "1",
       "name": "Spring Drive Dog",
       "quantity": 1,
-      "sku": "7094"
+      "sku": "7094",
+      "price": 3.14
     },
     {
       "id": "2",
@@ -24,19 +25,22 @@
       "id": "3",
       "name": "Drive Dog Screw 8-32",
       "quantity": 1,
-      "sku": "7060"
+      "sku": "7060",
+      "price": 1.79
     },
     {
       "id": "4",
       "name": "1/16 x 1/2in Cotter Pin Fastenal  74268",
       "quantity": 1,
-      "sku": "7116"
+      "sku": "7116",
+      "price": 1.79
     },
     {
       "id": "5",
       "name": "Cable Drum Shaft",
       "quantity": 1,
-      "sku": "7100"
+      "sku": "7100",
+      "price": 36.89
     },
     {
       "id": "6",

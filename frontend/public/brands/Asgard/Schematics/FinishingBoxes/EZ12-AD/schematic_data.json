@@ -22,21 +22,21 @@
     },
     {
       "id": "300001",
-      "name": "300001",
+      "name": "300001 - 12\" Flat Box Blade",
       "quantity": 1,
-      "sku": ""
+      "sku": "300001"
     },
     {
       "id": "304002",
-      "name": "304002",
+      "name": "304002 - 12\" Blade Holder Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "304002"
     },
     {
       "id": "300040F",
-      "name": "300040F",
+      "name": "300040 - 4-40 Tie Rod for 12\"",
       "quantity": 1,
-      "sku": ""
+      "sku": "300040F"
     },
     {
       "id": "2",
@@ -70,9 +70,9 @@
     },
     {
       "id": "209039",
-      "name": "209039",
+      "name": "209039 - Left Skid Cover",
       "quantity": 1,
-      "sku": ""
+      "sku": "209039"
     },
     {
       "id": "4",
@@ -142,9 +142,9 @@
     },
     {
       "id": "310051F",
-      "name": "310051F",
+      "name": "310051 - Flat Box Wheel",
       "quantity": 1,
-      "sku": ""
+      "sku": "310051F"
     },
     {
       "id": "2",
@@ -172,33 +172,33 @@
     },
     {
       "id": "059018",
-      "name": "059018",
+      "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": ""
+      "sku": "059018"
     },
     {
       "id": "202021",
-      "name": "202021",
+      "name": "202021 - Special Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "202021"
     },
     {
       "id": "206003",
-      "name": "206003",
+      "name": "206003 - Dial Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "206003"
     },
     {
       "id": "303010",
-      "name": "303010",
+      "name": "303010 - Crown Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "303010"
     },
     {
       "id": "304005",
-      "name": "304005",
+      "name": "304005 - 12\" Blade Holder Clamp",
       "quantity": 1,
-      "sku": ""
+      "sku": "304005"
     },
     {
       "id": "2",
@@ -238,15 +238,15 @@
     },
     {
       "id": "300026F",
-      "name": "300026F",
+      "name": "300026 - 12\" Flat Box Wiper",
       "quantity": 1,
-      "sku": ""
+      "sku": "300026F"
     },
     {
       "id": "209006",
-      "name": "209006",
+      "name": "209006  - Right Skid Cover",
       "quantity": 1,
-      "sku": ""
+      "sku": "209006"
     },
     {
       "id": "2510238",
@@ -268,15 +268,15 @@
     },
     {
       "id": "209048",
-      "name": "209048",
+      "name": "209048 - 4-40 X 1/8 Bind Hd Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "209048"
     },
     {
       "id": "300009",
-      "name": "300009",
+      "name": "2 - Shim 12\"",
       "quantity": 1,
-      "sku": ""
+      "sku": "300009"
     },
     {
       "id": "2",
@@ -286,9 +286,9 @@
     },
     {
       "id": "202044F",
-      "name": "202044F",
+      "name": "202044 - Pressure Plate Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "202044F"
     },
     {
       "id": "2",
@@ -316,33 +316,33 @@
     },
     {
       "id": "059225",
-      "name": "059225",
+      "name": "059225 - 10-32 Thin Pattern Stop Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "059225"
     },
     {
       "id": "209047",
-      "name": "209047",
+      "name": "209047 - Nyliner Bearing",
       "quantity": 1,
-      "sku": ""
+      "sku": "209047"
     },
     {
       "id": "209047",
-      "name": "209047",
+      "name": "209047 - Nyliner Bearing",
       "quantity": 1,
-      "sku": ""
+      "sku": "209047"
     },
     {
       "id": "202036",
-      "name": "202036",
+      "name": "202036 - Shoulder Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "202036"
     },
     {
       "id": "809006",
-      "name": "809006",
+      "name": "809006 - #14 S Brass Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "809006"
     }
   ],
   "coordinates": {

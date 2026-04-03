@@ -10,9 +10,9 @@
   "parts": [
     {
       "id": "059091",
-      "name": "059091",
+      "name": "059091 - 6-32 X 1/2 Fill. Hd Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "059091"
     },
     {
       "id": "4020028",
@@ -22,27 +22,27 @@
     },
     {
       "id": "409010",
-      "name": "409010",
+      "name": "409010 - Retainer Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "409010"
     },
     {
       "id": "402012",
-      "name": "402012",
+      "name": "402012 - Ball Retainer",
       "quantity": 1,
-      "sku": ""
+      "sku": "402012"
     },
     {
       "id": "480021",
-      "name": "480021",
+      "name": "480021 - Blade Tension Spring (Small)",
       "quantity": 1,
-      "sku": ""
+      "sku": "480021"
     },
     {
       "id": "480017F",
-      "name": "480017F",
+      "name": "480017 - Center Clip (Short)",
       "quantity": 1,
-      "sku": ""
+      "sku": "480017F"
     },
     {
       "id": "486001",
@@ -52,9 +52,9 @@
     },
     {
       "id": "059084",
-      "name": "059084",
+      "name": "059084 - 8-32 X 1/4 1/2 Dog Setscrew",
       "quantity": 1,
-      "sku": ""
+      "sku": "059084"
     },
     {
       "id": "460005",
@@ -64,9 +64,9 @@
     },
     {
       "id": "480008F",
-      "name": "480008F",
+      "name": "480008 - Spring Adjusting Cam (Left)",
       "quantity": 1,
-      "sku": ""
+      "sku": "480008F"
     },
     {
       "id": "46Y013",
@@ -76,9 +76,9 @@
     },
     {
       "id": "450009F",
-      "name": "450009F",
+      "name": "450009 - 3\" Carbide Blade",
       "quantity": 1,
-      "sku": ""
+      "sku": "450009F"
     },
     {
       "id": "40Y011",
@@ -94,15 +94,15 @@
     },
     {
       "id": "402006",
-      "name": "402006",
+      "name": "402006 - Insert Socket",
       "quantity": 1,
-      "sku": ""
+      "sku": "402006"
     },
     {
       "id": "359005",
-      "name": "359005",
+      "name": "359005 - 6-32 X 1/4 Bind Hd Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "359005"
     },
     {
       "id": "409020",
@@ -112,9 +112,9 @@
     },
     {
       "id": "480007F",
-      "name": "480007F",
+      "name": "480007 - Spring Adjusting Cam (Right)",
       "quantity": 1,
-      "sku": ""
+      "sku": "480007F"
     },
     {
       "id": "05P037",
@@ -148,9 +148,9 @@
     },
     {
       "id": "480026",
-      "name": "480026",
+      "name": "480026 - TapeTech Replacement Angle Head Wheel",
       "quantity": 1,
-      "sku": ""
+      "sku": "480026"
     },
     {
       "id": "489026",
@@ -166,15 +166,15 @@
     },
     {
       "id": "489023",
-      "name": "489023",
+      "name": "489023 - #6 SS Flat Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "489023"
     },
     {
       "id": "489029",
-      "name": "489029",
+      "name": "489029 - 6-32 X 5/8 Socket Hd Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "489029"
     }
   ],
   "coordinates": {
