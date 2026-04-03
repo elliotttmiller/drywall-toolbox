@@ -44,5 +44,70 @@
       "quantity": 1,
       "sku": "7089"
     }
-  ]
+  ],
+  "coordinates": {
+    "1": {
+      "id": "1",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 11.100000000000001,
+      "y_pct": 41.15,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "2": {
+      "id": "2",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 19.5,
+      "y_pct": 46.95,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "3": {
+      "id": "3",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 26.25,
+      "y_pct": 51.683330617269085,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "4": {
+      "id": "4",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 33.2,
+      "y_pct": 56.1500016479491,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "5": {
+      "id": "5",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 40.5,
+      "y_pct": 60.74999880981454,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    },
+    "6": {
+      "id": "6",
+      "x_px": null,
+      "y_px": null,
+      "x_pct": 71.49286261675273,
+      "y_pct": 56.41666556803394,
+      "shape": "rectangle",
+      "pageNumber": 1,
+      "rotation": 0
+    }
+  },
+  "schema_version": "1.0",
+  "image_natural_width": 896,
+  "image_natural_height": 1200
 }

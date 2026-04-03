@@ -69,7 +69,21 @@ export const SCHEMATIC_DEFINITIONS = {
     { id: 'asgard-ns03-ad',  title: '3″ Nail Spotter',                     category: 'Spotters' },
   ],
   'Level5': [
-    { id: 'level5-corner-roller-4-707', title: 'Corner Roller', category: 'Corner Rollers' },
+    { id: 'level5-corner-roller-4-707',                  title: 'Corner Roller',               category: 'Corner Rollers'    },
+    { id: 'level5-9333-cutter-chain-assembly',            title: 'Cutter Chain Assembly',        category: 'Automatic Tapers'  },
+    { id: 'level5-7097-drive-dog-assembly',               title: 'Drive Dog Assembly',            category: 'Automatic Tapers'  },
+    { id: 'level5-7293-gooser-assembly',                  title: 'Gooser Assembly',               category: 'Automatic Tapers'  },
+    { id: 'level5-7218-taper-wheel-assembly',             title: 'Taper Wheel Assembly',          category: 'Automatic Tapers'  },
+    { id: 'level5-7377-cover-plate-assembly-old-style',   title: 'Cover Plate Assembly',          category: 'Automatic Tapers'  },
+    { id: 'level5-4-734-3-5-corner-finisher',             title: '3.5" Corner Finisher',          category: 'Corner Finishers'  },
+    { id: 'level5-7-inch-flat-box-4-764',                 title: '7" Flat Box',                   category: 'Finishing Boxes'   },
+    { id: 'level5-7-inch-mega-flat-box-4-767',            title: '7" Mega Flat Box',              category: 'Finishing Boxes'   },
+    { id: 'level5-10-inch-flat-box-4-765',                title: '10" Flat Box',                  category: 'Finishing Boxes'   },
+    { id: 'level5-10-inch-mega-flat-box-4-768',           title: '10" Mega Flat Box',             category: 'Finishing Boxes'   },
+    { id: 'level5-12-inch-flat-box-4-766',                title: '12" Flat Box',                  category: 'Finishing Boxes'   },
+    { id: 'level5-12-inch-mega-box-4-769',                title: '12" Mega Box',                  category: 'Finishing Boxes'   },
+    { id: 'level5-14-inch-flat-box-4-770',                title: '14" Flat Box',                  category: 'Finishing Boxes'   },
+    { id: 'level5-compound-pump-4-771',                   title: 'Compound Pump',                 category: 'Pumps'             },
   ]
 };
 
