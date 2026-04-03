@@ -1,156 +1,156 @@
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ProductImageGallery({ product }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const touchStartX = useRef(null);
 
-  // Get all images or fallback to single image
-  const images = product?.images || (product?.image ? [product.image] : []);
-  const hasMultipleImages = images.length > 1;
+  // Normalise images array: prefer product.images[], fall back to product.image
+  const images = (() => {
+    const arr = Array.isArray(product?.images) && product.images.length
+      ? product.images
+      : product?.image
+        ? [product.image]
+        : [];
+    return arr.length ? arr : ['/no-image-placeholder.webp'];
+  })();
 
-  // Minimum swipe distance (in px)
-  const minSwipeDistance = 50;
+  const hasMultiple = images.length > 1;
 
-  const goToNextImage = () => {
-    if (hasMultipleImages) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const goToPreviousImage = () => {
-    if (hasMultipleImages) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
-
-  const goToImage = (index) => {
-    setCurrentImageIndex(index);
-  };
-
-  // Touch handlers for mobile swipe
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      goToNextImage();
-    } else if (isRightSwipe) {
-      goToPreviousImage();
-    }
-  };
-
-  // Keyboard arrow navigation for desktop users — only fires when no form element is focused
+  // Reset when product changes
   useEffect(() => {
-    if (!hasMultipleImages) return;
-    const handleKeyDown = (e) => {
+    setCurrentIndex(0);
+    setLoaded(false);
+  }, [product?.id, product?.sku]);
+
+  const prev = () => {
+    setLoaded(false);
+    setCurrentIndex(i => (i - 1 + images.length) % images.length);
+  };
+  const next = () => {
+    setLoaded(false);
+    setCurrentIndex(i => (i + 1) % images.length);
+  };
+  const goTo = (i) => {
+    if (i === currentIndex) return;
+    setLoaded(false);
+    setCurrentIndex(i);
+  };
+
+  // Touch swipe
+  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) diff > 0 ? next() : prev();
+    touchStartX.current = null;
+  };
+
+  // Keyboard navigation (desktop)
+  useEffect(() => {
+    if (!hasMultiple) return;
+    const handler = (e) => {
       const tag = document.activeElement?.tagName.toLowerCase();
       if (['input', 'textarea', 'select'].includes(tag)) return;
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+        setLoaded(false);
+        setCurrentIndex(i => (i - 1 + images.length) % images.length);
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        setCurrentImageIndex(prev => (prev + 1) % images.length);
+        setLoaded(false);
+        setCurrentIndex(i => (i + 1) % images.length);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasMultipleImages, images.length]);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [hasMultiple, images.length]);
 
-  const currentImage = images[currentImageIndex] || '/no-image-placeholder.webp';
+  const src = images[currentIndex] || '/no-image-placeholder.webp';
 
   return (
-    <div className="flex flex-col gap-3 sm:gap-4">
-      {/* Main Image Display */}
-      <div className="relative bg-gray-50 rounded-lg p-4 sm:p-6 flex items-center justify-center">
-        <div 
-          className="w-full h-75 sm:h-100 lg:h-125 flex items-center justify-center relative"
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-        >
-          {currentImage ? (
-            <img
-              src={currentImage}
-              alt={`${product?.name || 'Product'} - Image ${currentImageIndex + 1}`}
-              className="max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300"
-              onError={(e) => { 
-                e.currentTarget.onerror = null; 
-                e.currentTarget.src = '/no-image-placeholder.webp'; 
-              }}
-            />
-          ) : (
-            <div className="text-gray-300 flex justify-center">
-              <ShoppingCart size={80} className="sm:w-28 sm:h-28 lg:w-32 lg:h-32" strokeWidth={1} />
-            </div>
-          )}
-        </div>
+    <div className="flex flex-col gap-3">
+      {/* ── Main image ───────────────────────────────────────────── */}
+      <div
+        className="relative w-full rounded-2xl overflow-hidden bg-gray-50 border border-gray-100"
+        style={{ aspectRatio: '4 / 3' }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {/* Loading skeleton */}
+        {!loaded && (
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse" />
+        )}
 
-        {/* Navigation Arrows - Only show if multiple images */}
-        {hasMultipleImages && (
+        {/* Image */}
+        <img
+          key={src}
+          src={src}
+          alt={`${product?.name || 'Product'} — Image ${currentIndex + 1}`}
+          className={`absolute inset-0 w-full h-full object-contain p-4 sm:p-6 transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setLoaded(true)}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = '/no-image-placeholder.webp';
+            setLoaded(true);
+          }}
+        />
+
+        {/* Prev / Next arrows */}
+        {hasMultiple && (
           <>
-            {/* Previous Arrow */}
             <button
-              onClick={goToPreviousImage}
-              className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 sm:p-2.5 rounded-full shadow-lg transition-all hover:scale-110 z-10"
+              onClick={prev}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white hover:scale-105 active:scale-95 transition-all"
               aria-label="Previous image"
             >
-              <ChevronLeft size={20} className="sm:w-6 sm:h-6 text-gray-800" />
+              <ChevronLeft size={17} className="text-gray-700" />
             </button>
-
-            {/* Next Arrow */}
             <button
-              onClick={goToNextImage}
-              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 sm:p-2.5 rounded-full shadow-lg transition-all hover:scale-110 z-10"
+              onClick={next}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white hover:scale-105 active:scale-95 transition-all"
               aria-label="Next image"
             >
-              <ChevronRight size={20} className="sm:w-6 sm:h-6 text-gray-800" />
+              <ChevronRight size={17} className="text-gray-700" />
             </button>
 
-            {/* Image Counter - Mobile */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-              {currentImageIndex + 1} / {images.length}
+            {/* Dot / pill indicators */}
+            <div className="absolute bottom-3 left-0 right-0 flex justify-center items-center gap-1.5 z-10 pointer-events-none">
+              {images.map((_, i) => (
+                <span
+                  key={i}
+                  className={`rounded-full transition-all duration-200 ${
+                    i === currentIndex
+                      ? 'w-4 h-1.5 bg-blue-600'
+                      : 'w-1.5 h-1.5 bg-white/60'
+                  }`}
+                />
+              ))}
             </div>
           </>
         )}
       </div>
 
-      {/* Thumbnail Strip - Only show if multiple images */}
-      {hasMultipleImages && (
-        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {images.map((img, index) => (
+      {/* ── Thumbnail strip (only when 2+ images) ────────────────── */}
+      {hasMultiple && (
+        <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          {images.map((img, i) => (
             <button
-              key={index}
-              onClick={() => goToImage(index)}
-              className={`shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                index === currentImageIndex
-                  ? 'border-blue-600 ring-2 ring-blue-200 scale-105'
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`View image ${i + 1}`}
+              className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                i === currentIndex
+                  ? 'border-blue-600 ring-2 ring-blue-100 scale-[1.04]'
                   : 'border-gray-200 hover:border-gray-400'
               }`}
-              aria-label={`View image ${index + 1}`}
             >
               <img
                 src={img}
-                alt={`Thumbnail ${index + 1}`}
+                alt={`Thumbnail ${i + 1}`}
                 className="w-full h-full object-cover"
-                onError={(e) => { 
-                  e.currentTarget.onerror = null; 
-                  e.currentTarget.src = '/no-image-placeholder.webp'; 
-                }}
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/no-image-placeholder.webp'; }}
               />
             </button>
           ))}
@@ -159,3 +159,4 @@ export default function ProductImageGallery({ product }) {
     </div>
   );
 }
+

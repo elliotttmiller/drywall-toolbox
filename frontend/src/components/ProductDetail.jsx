@@ -141,39 +141,43 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
               </div>
 
               {/* Quantity + Wishlist row */}
-              <div className="flex items-center gap-3 mb-3">
-                {/* Quantity Selector */}
-                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden" role="group" aria-label="Quantity">
+              <div className="flex items-center gap-3 mb-4">
+                {/* Quantity Selector — pill style */}
+                <div
+                  role="group"
+                  aria-label="Quantity"
+                  className="inline-flex items-center h-11 rounded-xl border border-gray-200 bg-white overflow-hidden select-none"
+                >
                   <button
                     onClick={decrementQuantity}
-                    className="flex items-center justify-center min-w-[44px] min-h-[44px] px-3 hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-11 h-11 text-gray-500 hover:bg-gray-50 active:bg-gray-100 transition-colors"
                     aria-label="Decrease quantity"
                   >
-                    <Minus size={16} />
+                    <Minus size={14} strokeWidth={2.5} />
                   </button>
-                  <span className="px-4 font-medium text-gray-900 border-x border-gray-300 min-w-[3rem] text-center select-none">
+                  <span className="px-3 min-w-[2.5rem] text-center text-sm font-bold text-gray-900 tabular-nums border-x border-gray-200">
                     {quantity}
                   </span>
                   <button
                     onClick={incrementQuantity}
-                    className="flex items-center justify-center min-w-[44px] min-h-[44px] px-3 hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-11 h-11 text-gray-500 hover:bg-gray-50 active:bg-gray-100 transition-colors"
                     aria-label="Increase quantity"
                   >
-                    <Plus size={16} />
+                    <Plus size={14} strokeWidth={2.5} />
                   </button>
                 </div>
 
                 {/* Wishlist — visible on all screen sizes */}
                 <button
                   onClick={() => setIsWishlisted(!isWishlisted)}
-                  className={`flex items-center justify-center min-w-[44px] min-h-[44px] p-2.5 rounded-md border transition-colors ${
+                  className={`flex items-center justify-center w-11 h-11 rounded-xl border transition-colors ${
                     isWishlisted
-                      ? 'bg-red-50 border-red-300 text-red-500'
-                      : 'border-gray-300 text-gray-400 hover:border-red-300 hover:text-red-500'
+                      ? 'bg-red-50 border-red-200 text-red-500'
+                      : 'border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-400'
                   }`}
                   aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
-                  <Heart size={20} className={isWishlisted ? 'fill-current' : ''} />
+                  <Heart size={18} className={isWishlisted ? 'fill-current' : ''} />
                 </button>
               </div>
 
@@ -181,9 +185,9 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock_status === 'outofstock'}
-                className="w-full flex items-center justify-center gap-2 min-h-[48px] px-6 bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white font-semibold text-sm rounded-md transition-colors mb-4 sm:mb-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                className="w-full flex items-center justify-center gap-2.5 h-12 px-6 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm tracking-wide rounded-xl transition-all mb-4 sm:mb-6 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
-                <ShoppingCart size={18} aria-hidden="true" />
+                <ShoppingCart size={17} aria-hidden="true" />
                 {product.stock_status === 'outofstock' ? 'OUT OF STOCK' : 'ADD TO CART'}
               </button>
             </div>
