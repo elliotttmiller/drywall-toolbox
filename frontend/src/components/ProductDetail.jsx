@@ -93,8 +93,10 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
             <div className="flex flex-col">
               {/* Stock Badge & Brand */}
               <div className="flex items-center flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <span className="inline-block px-2.5 py-1 sm:px-3 bg-black text-white text-xs font-semibold rounded">
-                  In Stock
+                <span className={`inline-block px-2.5 py-1 sm:px-3 text-white text-xs font-semibold rounded ${
+                  product.stock_status === 'outofstock' ? 'bg-red-500' : 'bg-black'
+                }`}>
+                  {product.stock_status === 'outofstock' ? 'Out of Stock' : 'In Stock'}
                 </span>
                 <span className="text-xs sm:text-sm text-gray-600">{product.brand}</span>
               </div>
@@ -178,10 +180,11 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
               {/* Add to Cart — full width */}
               <button
                 onClick={handleAddToCart}
-                className="w-full flex items-center justify-center gap-2 min-h-[48px] px-6 bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white font-semibold text-sm rounded-md transition-colors mb-4 sm:mb-6"
+                disabled={product.stock_status === 'outofstock'}
+                className="w-full flex items-center justify-center gap-2 min-h-[48px] px-6 bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white font-semibold text-sm rounded-md transition-colors mb-4 sm:mb-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 <ShoppingCart size={18} aria-hidden="true" />
-                ADD TO CART
+                {product.stock_status === 'outofstock' ? 'OUT OF STOCK' : 'ADD TO CART'}
               </button>
             </div>
           </div>

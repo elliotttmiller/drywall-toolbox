@@ -7,6 +7,7 @@ import Toast from '../components/Toast';
 import SortDropdown from '../components/SortDropdown';
 import FilterPanel from '../components/FilterPanel';
 import Pagination from '../components/Pagination';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { X } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
@@ -52,6 +53,7 @@ export default function AllProducts() {
 
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
@@ -114,7 +116,8 @@ export default function AllProducts() {
       const inCatalog = fromCatalog.filter(b => ALLOWED_BRANDS.includes(b));
       const notInCatalog = ALLOWED_BRANDS.filter(b => !inCatalog.includes(b));
       setBrands([...inCatalog, ...notInCatalog]);
-    }).catch(() => {});
+      setLoading(false);
+    }).catch(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, []);
 
@@ -273,6 +276,13 @@ export default function AllProducts() {
               </button>
             </div>
 
+            {/* Loading State */}
+            {loading ? (
+              <div className="flex justify-center py-20">
+                <LoadingSpinner />
+              </div>
+            ) : (
+            <>
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {pageProducts.map(product => (
@@ -393,6 +403,8 @@ export default function AllProducts() {
                   Clear Filters
                 </button>
               </div>
+            )}
+            </>
             )}
           </div>
         </div>

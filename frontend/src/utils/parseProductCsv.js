@@ -101,8 +101,9 @@ export function parseCsvText(csvText) {
 
 // ─── Category mapping ─────────────────────────────────────────────────────────
 // Maps WooCommerce category leaf names → our internal filter key strings
+// Exported so api.js can reuse the same mapping for REST API products.
 
-const CATEGORY_MAP = {
+export const CATEGORY_MAP = {
   // Taping
   'automatic tapers':      'taping',
   'tool sets & bundles':   'taping',
@@ -140,8 +141,9 @@ const CATEGORY_MAP = {
  * Convert a WooCommerce category path string like
  *   "Drywall Finishing Tools > Asgard > Finishing Boxes"
  * into our internal category key (e.g. "finishing").
+ * Exported so api.js can reuse this for REST API categories.
  */
-function mapCategory(categoriesCell) {
+export function mapCategory(categoriesCell) {
   if (!categoriesCell) return '';
   // Take the first category entry (before any pipe)
   const first = categoriesCell.split('|')[0].trim();
@@ -170,11 +172,12 @@ function extractBrandFromCategory(categoriesCell) {
 /**
  * Return true when the category leaf marks this product as a replacement
  * part / repair kit rather than a complete tool.
+ * Exported so api.js can reuse this for REST API categories.
  *
  * @param {string} categoriesCell
  * @returns {boolean}
  */
-function isPartsRow(categoriesCell) {
+export function isPartsRow(categoriesCell) {
   if (!categoriesCell) return false;
   const first = categoriesCell.split('|')[0].trim();
   const leaf  = first.split('>').pop().trim().toLowerCase();
