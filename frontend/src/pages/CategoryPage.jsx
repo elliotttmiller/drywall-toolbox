@@ -123,19 +123,34 @@ export default function CategoryPage() {
 
       {/* Product detail modal */}
       {modalProduct && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
-          onClick={() => setModalProduct(null)}
-        >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-5xl max-h-[90vh] overflow-auto">
-            <ProductDetail
-              product={modalProduct}
-              onAddToCart={handleAddToCart}
-              onClose={() => setModalProduct(null)}
-            />
+        <>
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            style={{ zIndex: 10001 }}
+            onClick={() => setModalProduct(null)}
+            aria-hidden="true"
+          />
+          <div
+            className="fixed left-0 right-0 bottom-0 overflow-y-auto"
+            style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={modalProduct.name || 'Product detail'}
+          >
+            <div
+              className="flex items-start justify-center min-h-full px-3 py-4 sm:p-4 sm:py-6"
+              onClick={() => setModalProduct(null)}
+            >
+              <div className="w-full max-w-6xl" onClick={(e) => e.stopPropagation()}>
+                <ProductDetail
+                  product={modalProduct}
+                  onAddToCart={handleAddToCart}
+                  onClose={() => setModalProduct(null)}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {toast && (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 
 export default function ProductImageGallery({ product }) {
@@ -52,6 +52,20 @@ export default function ProductImageGallery({ product }) {
       goToPreviousImage();
     }
   };
+
+  // Keyboard navigation for desktop users
+  useEffect(() => {
+    if (!hasMultipleImages) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
+      } else if (e.key === 'ArrowRight') {
+        setCurrentImageIndex(prev => (prev + 1) % images.length);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [hasMultipleImages, images.length]);
 
   const currentImage = images[currentImageIndex] || '/no-image-placeholder.webp';
 

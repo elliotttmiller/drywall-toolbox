@@ -411,29 +411,6 @@ export default function TrendingProducts() {
         </button>
       </div>
 
-      <style>{`
-        .trending-scroll-container::-webkit-scrollbar {
-          height: 6px;
-        }
-        .trending-scroll-container::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .trending-scroll-container::-webkit-scrollbar-thumb {
-          background: rgba(37, 99, 235, 0.3);
-          border-radius: 3px;
-        }
-        .trending-scroll-container::-webkit-scrollbar-thumb:hover {
-          background: rgba(37, 99, 235, 0.5);
-        }
-
-        @media (max-width: 640px) {
-          .scroll-button-left,
-          .scroll-button-right {
-            display: none !important;
-          }
-        }
-      `}</style>
-
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Product detail modal */}
@@ -444,11 +421,15 @@ export default function TrendingProducts() {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             style={{ zIndex: 10001 }}
             onClick={closeModal}
+            aria-hidden="true"
           />
           {/* Scroll container starts below the fixed header */}
           <div
             className="fixed left-0 right-0 bottom-0 overflow-y-auto"
             style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={modalProduct.name || 'Product detail'}
           >
             <div
               className="flex items-start justify-center min-h-full p-4 py-6"

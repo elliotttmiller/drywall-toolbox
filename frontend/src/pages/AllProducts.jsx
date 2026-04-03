@@ -379,11 +379,15 @@ export default function AllProducts() {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             style={{ zIndex: 10001 }}
             onClick={closeModal}
+            aria-hidden="true"
           />
           {/* Scroll container starts below the fixed header */}
           <div
             className="fixed left-0 right-0 bottom-0 overflow-y-auto"
             style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={modalProduct.name || 'Product detail'}
           >
             <div
               className="flex items-start justify-center min-h-full px-3 py-4 sm:p-4 sm:py-6"
