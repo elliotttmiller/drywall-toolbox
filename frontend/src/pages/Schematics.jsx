@@ -1734,12 +1734,12 @@ export default function Parts() {
   // the layout reserves the correct proportional height *before* the image
   // finishes loading, preventing a jump that would transiently misalign
   // hotspot percentage positions on slow mobile connections.
-  const _currentPageFirstPart = currentSchematic
+  const currentPageFirstPart = currentSchematic
     ? currentSchematic.parts.find(p => !p.pageNumber || p.pageNumber === currentPage)
     : null;
   const currentPageAspectRatio =
-    _currentPageFirstPart?.imageNaturalWidth && _currentPageFirstPart?.imageNaturalHeight
-      ? `${_currentPageFirstPart.imageNaturalWidth} / ${_currentPageFirstPart.imageNaturalHeight}`
+    currentPageFirstPart?.imageNaturalWidth && currentPageFirstPart?.imageNaturalHeight
+      ? `${currentPageFirstPart.imageNaturalWidth} / ${currentPageFirstPart.imageNaturalHeight}`
       : undefined;
 
   const [addingToCart, setAddingToCart] = useState(null); // part.id being added
