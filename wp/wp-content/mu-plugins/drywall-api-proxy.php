@@ -239,7 +239,7 @@ function drywall_error_envelope( string $code, string $message, int $status ): a
 
 function drywall_cache_key( string $route, array $params ): string {
 	ksort( $params );
-	return 'drywall_cache_' . md5( $route . serialize( $params ) );
+	return 'drywall_cache_' . md5( $route . wp_json_encode( $params ) );
 }
 
 /**
