@@ -10,8 +10,11 @@
  * Docs: https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce/src/StoreApi
  */
 
-const SITE_URL      = import.meta.env.VITE_SITE_URL  || '';
-const STORE_API_BASE = `${SITE_URL}/wp-json/wc/store/v1`;
+function getSiteUrl() {
+  return import.meta.env.VITE_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+}
+
+const STORE_API_BASE = `${getSiteUrl()}/wp-json/wc/store/v1`;
 
 // ─── Fetch helper ─────────────────────────────────────────────────────────────
 

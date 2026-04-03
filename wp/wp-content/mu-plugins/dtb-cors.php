@@ -77,6 +77,7 @@ function dtb_filter_cors_headers( $value ) {
 function dtb_mu_emit_cors_headers() {
 	$allowed_origins = [
 		'https://drywalltoolbox.com',
+		'https://www.drywalltoolbox.com',
 		'http://localhost:5173',
 		'http://127.0.0.1:5173',
 	];

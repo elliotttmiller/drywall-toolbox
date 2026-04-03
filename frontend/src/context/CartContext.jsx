@@ -52,6 +52,7 @@ export function CartProvider({ children }) {
           price: product.price || 0,
           image: product.image,
           part_number: product.part_number,
+          sku: product.sku || product.part_number || '',
           quantity
         }];
       }

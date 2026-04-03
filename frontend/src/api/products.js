@@ -7,7 +7,7 @@
  * Docs: https://woocommerce.github.io/woocommerce-rest-api-docs/#products
  */
 
-import { wcClient } from './client.js';
+import { wcClient, credentialsReady } from './client.js';
 
 // ─── Product helpers ──────────────────────────────────────────────────────────
 
@@ -86,6 +86,12 @@ export async function getProductCategories(params = {}) {
 export async function getProductBySku(sku) {
   if (!sku) return null;
   try {
+    // Ensure credentials are bootstrapped before making the authenticated call.
+    // Without this, a hotspot click immediately after page load may race against
+    // the /dtb/v1/config fetch and send an unauthenticated request that returns
+    // 401 → null, causing the modal to show stale JSON data instead of live
+    // WooCommerce prices and images.
+    await credentialsReady();
     const response = await wcClient.get('/products', { params: { sku, per_page: 1 } });
     const products = response.data;
     return Array.isArray(products) && products.length > 0 ? products[0] : null;
