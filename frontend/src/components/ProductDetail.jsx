@@ -67,9 +67,6 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={product.name || product.sku || 'Product detail'}
       className="bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn w-full max-w-6xl mx-auto flex flex-col relative"
     >
       {/* Close Button */}
