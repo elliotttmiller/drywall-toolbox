@@ -424,6 +424,77 @@ jobs:
           && echo "✓ Post-upload cleanup complete." \
           || echo "⚠ Cleanup step exited non-zero (expected when target dirs are absent — no action required)."
 
+      # ── Catalog sync ───────────────────────────────────────────────────────
+      # After the React assets and wp-content are on the server, push the
+      # WooCommerce import CSV to the uploads/wc-imports/ directory and trigger
+      # a background product re-import.  Both steps are non-fatal: a failure
+      # here does not block the deployment — the site still serves products
+      # from the wp-catalog.csv fallback deployed above.
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Upload catalog CSV to WooCommerce imports directory
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          if ! command -v lftp >/dev/null 2>&1; then
+            echo "Installing lftp..."
+            sudo apt-get update -y -qq && sudo apt-get install -y -qq lftp
+          fi
+
+          CSV_SRC="dist/wp-catalog.csv"
+          if [ ! -f "$CSV_SRC" ]; then
+            echo "⚠ $CSV_SRC not found in build artifact — skipping WC imports upload."
+            exit 0
+          fi
+
+          WC_IMPORTS_PATH="${{ env.SERVER_DIR }}/wp/wp-content/uploads/wc-imports"
+          CSV_DEST="product-wp-catalog-c7p3my05pn.csv"
+          HOST="${{ secrets.HOSTGATOR_FTP_HOST }}"
+
+          echo "Uploading $CSV_SRC → ${WC_IMPORTS_PATH}/${CSV_DEST} ..."
+
+          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" \
+               -e "set ftp:ssl-allow yes; \
+                   set ssl:verify-certificate no; \
+                   set xfer:clobber yes; \
+                   set net:max-retries 3; \
+                   set net:reconnect-interval-base 5; \
+                   mkdir ${WC_IMPORTS_PATH}; \
+                   cd ${WC_IMPORTS_PATH}; \
+                   put ${CSV_SRC} -o ${CSV_DEST}; \
+                   echo Uploaded.; \
+                   bye" \
+               "$HOST" \
+          && echo "✓ Catalog CSV uploaded to wc-imports/${CSV_DEST}." \
+          || echo "⚠ Catalog CSV upload step failed (non-fatal — frontend CSV fallback still active)."
+
+      - name: Trigger WooCommerce catalog import
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          DTB_IMPORT_SECRET: ${{ secrets.DTB_IMPORT_SECRET }}
+        run: |
+          if [ -z "${DTB_IMPORT_SECRET:-}" ]; then
+            echo "⚠ DTB_IMPORT_SECRET secret not configured — skipping WooCommerce import trigger."
+            echo "  Add the secret to the repository and define DTB_IMPORT_SECRET in wp-config.php."
+            exit 0
+          fi
+
+          echo "Triggering WooCommerce catalog import via /wp-json/dtb/v1/import-catalog ..."
+          HTTP_CODE=$(curl -s -o /tmp/wc_import_response.json -w "%{http_code}" \
+            --max-time 30 \
+            -X POST "https://drywalltoolbox.com/wp-json/dtb/v1/import-catalog" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${DTB_IMPORT_SECRET}\"}" \
+            || echo "000")
+          echo "HTTP status: ${HTTP_CODE}"
+          cat /tmp/wc_import_response.json 2>/dev/null || true
+          echo ""
+          if [ "${HTTP_CODE}" = "200" ]; then
+            echo "✓ WooCommerce catalog import triggered (runs as background job on server)."
+          else
+            echo "⚠ Import trigger returned HTTP ${HTTP_CODE} (non-fatal — check Action Scheduler in WP Admin)."
+          fi
+
       - name: Deployment summary
         if: always()
         run: |
@@ -449,12 +520,16 @@ jobs:
           echo "  • dist/pwa_icon.png → root/"
           echo "  • dist/vite.svg → root/"
           echo "  • dist/wp-catalog.csv → root/"
+          echo "  • dist/wp-catalog.csv → wp/wp-content/uploads/wc-imports/product-wp-catalog-c7p3my05pn.csv"
           echo "  • .htaccess → root/"
           echo "  • index.php → root/"
           echo "  • wp/wp-content/* → wp/wp-content/"
           echo ""
           echo "  Notes:"
           echo "  • Only whitelisted dist/ files are deployed"
+          echo "  • wp-catalog.csv is also pushed to wc-imports/ to keep WooCommerce products in sync"
+          echo "  • WooCommerce import is triggered via POST /wp-json/dtb/v1/import-catalog"
+          echo "    (requires DTB_IMPORT_SECRET repo secret + define in wp-config.php)"
           echo "  • WordPress core files (/wp/wp-admin, /wp/wp-includes, etc.)"
           echo "    must be manually uploaded once via cPanel or SFTP"
           echo "  • wp-config.php must be manually created with real DB credentials"

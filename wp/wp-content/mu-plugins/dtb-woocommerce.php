@@ -315,3 +315,153 @@ add_filter( 'woocommerce_admin_features', function ( $features ) {
 	}
 	return $features;
 } );
+
+// ---------------------------------------------------------------------------
+// 7. CATALOG IMPORT TRIGGER
+//    POST /wp-json/dtb/v1/import-catalog
+//
+//    Accepts a JSON body { "secret": "<DTB_IMPORT_SECRET>" } and schedules
+//    (or runs synchronously as a fallback) a WooCommerce product CSV import
+//    from the file uploaded to wp-content/uploads/wc-imports/ during the
+//    deploy workflow.
+//
+//    Configure the secret in wp-config.php:
+//      define( 'DTB_IMPORT_SECRET', 'your-random-secret-here' );
+//    or store it in the dtb_import_secret WordPress option.
+//
+//    When Action Scheduler is available (bundled with WooCommerce 3.5+) the
+//    import is queued as a background job and the endpoint returns immediately.
+//    For small catalogs or environments without Action Scheduler the import
+//    runs synchronously and returns results inline.
+// ---------------------------------------------------------------------------
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'dtb/v1', '/import-catalog', array(
+		'methods'             => 'POST',
+		'callback'            => function ( WP_REST_Request $request ) {
+
+			// ---- Authenticate -------------------------------------------
+			$provided = (string) ( $request->get_param( 'secret' ) ?? '' );
+			$expected = defined( 'DTB_IMPORT_SECRET' )
+				? DTB_IMPORT_SECRET
+				: (string) get_option( 'dtb_import_secret', '' );
+
+			if ( empty( $expected ) || ! hash_equals( $expected, $provided ) ) {
+				return new WP_Error(
+					'forbidden',
+					'Invalid or missing import secret.',
+					array( 'status' => 403 )
+				);
+			}
+
+			// ---- Locate the CSV -----------------------------------------
+			$csv_filename = defined( 'DTB_WC_CSV_FILENAME' )
+				? DTB_WC_CSV_FILENAME
+				: 'product-wp-catalog-c7p3my05pn.csv';
+
+			$upload_dir = wp_upload_dir();
+			$file_path  = trailingslashit( $upload_dir['basedir'] ) . 'wc-imports/' . $csv_filename;
+
+			if ( ! file_exists( $file_path ) ) {
+				return new WP_Error(
+					'csv_not_found',
+					'Product CSV not found. Ensure the deploy step has uploaded it to wc-imports/.',
+					array( 'status' => 404 )
+				);
+			}
+
+			// ---- Schedule via Action Scheduler (preferred) --------------
+			if ( function_exists( 'as_unschedule_all_actions' ) && function_exists( 'as_schedule_single_action' ) ) {
+				as_unschedule_all_actions( 'dtb_run_catalog_import', array(), 'dtb-catalog-sync' );
+				$action_id = as_schedule_single_action(
+					time(),
+					'dtb_run_catalog_import',
+					array( $file_path ),
+					'dtb-catalog-sync'
+				);
+				return rest_ensure_response( array(
+					'status'    => 'scheduled',
+					'action_id' => $action_id,
+					'file'      => basename( $file_path ),
+					'message'   => 'WooCommerce product import scheduled as background job.',
+				) );
+			}
+
+			// ---- Fallback: synchronous import ---------------------------
+			return dtb_run_catalog_import_sync( $file_path );
+		},
+		// permission_callback is intentionally __return_true — access control is
+		// enforced inside the callback via hash_equals( $expected, $provided ).
+		// This matches the pattern used by all other dtb/v1 endpoints in this
+		// file, which also authenticate at the application layer.
+		'permission_callback' => '__return_true',
+	) );
+} );
+
+/**
+ * Action Scheduler hook: run the WooCommerce product CSV import.
+ *
+ * @param string $file_path Absolute server path to the import CSV.
+ */
+add_action( 'dtb_run_catalog_import', function ( $file_path ) {
+	dtb_run_catalog_import_sync( $file_path );
+} );
+
+/**
+ * Runs a WooCommerce CSV product import synchronously and returns a
+ * WP_REST_Response with counts, or a WP_Error on failure.
+ *
+ * @param string $file_path Absolute server path to the import CSV.
+ * @return WP_REST_Response|WP_Error
+ */
+function dtb_run_catalog_import_sync( $file_path ) {
+	if ( ! file_exists( $file_path ) ) {
+		return new WP_Error(
+			'csv_not_found',
+			'CSV file not found: ' . basename( $file_path ),
+			array( 'status' => 404 )
+		);
+	}
+
+	if ( ! defined( 'WC_ABSPATH' ) ) {
+		return new WP_Error(
+			'wc_not_loaded',
+			'WooCommerce is not loaded.',
+			array( 'status' => 500 )
+		);
+	}
+
+	if ( ! class_exists( 'WC_Product_CSV_Importer' ) ) {
+		$importer_file = WC_ABSPATH . 'includes/import/class-wc-product-csv-importer.php';
+		if ( ! file_exists( $importer_file ) ) {
+			return new WP_Error(
+				'importer_not_found',
+				'WooCommerce CSV importer class not available.',
+				array( 'status' => 500 )
+			);
+		}
+		require_once $importer_file;
+	}
+
+	$params = array(
+		'update_existing'    => true,
+		'character_encoding' => '',
+		'lines'              => -1, // -1 = no per-batch limit; import the full file.
+		'mapping'            => array(),
+		'parse'              => true,
+	);
+
+	$importer = new WC_Product_CSV_Importer( $file_path, $params );
+	$results  = $importer->import();
+
+	do_action( 'woocommerce_product_import_end' );
+	wc_delete_product_transients();
+
+	return rest_ensure_response( array(
+		'status'   => 'completed',
+		'file'     => basename( $file_path ),
+		'imported' => isset( $results['imported'] ) ? (int) $results['imported'] : 0,
+		'updated'  => isset( $results['updated'] )  ? (int) $results['updated']  : 0,
+		'skipped'  => isset( $results['skipped'] )  ? (int) $results['skipped']  : 0,
+		'failed'   => isset( $results['failed'] )   ? (int) $results['failed']   : 0,
+	) );
+}
