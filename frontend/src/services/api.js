@@ -98,8 +98,12 @@ const PARTS_LEAF_NAMES = ['parts & accessories', 'repair kits & parts', 'pumps &
 
 /**
  * Map a WooCommerce REST API categories array to our internal category key.
- * Checks each category's name against CATEGORY_MAP (same map used by the CSV
- * parser) and returns the first match, or falls back to the lowercased name.
+ *
+ * This is intentionally separate from the exported `mapCategory` in
+ * parseProductCsv.js: that function parses a CSV cell string such as
+ * "Drywall Finishing Tools > TapeTech > Parts & Accessories", whereas the
+ * WooCommerce REST API delivers categories as an array of objects
+ * ({id, name, slug}).  Both functions use the same CATEGORY_MAP.
  *
  * @param {Array<{id:number, name:string, slug:string}>} wcCategories
  * @returns {string}
