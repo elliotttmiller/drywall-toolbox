@@ -13,19 +13,35 @@ defined( 'ABSPATH' ) || exit;
 
 // ---------------------------------------------------------------------------
 // 0. RUNTIME CONFIG ENDPOINT
-//    Exposes WooCommerce API credentials to the frontend at runtime so the
-//    React app can authenticate without needing a rebuild.
+//    Exposes WooCommerce Application Password credentials to the frontend at
+//    runtime so the React app can authenticate without needing a rebuild.
 //    GET /wp-json/dtb/v1/config  → { wc_auth_user, wc_auth_pass }
-//    CORS-safe: only returns credentials to requests from our own origin.
+//
+//    Credentials are only returned when the request carries a browser Origin
+//    header matching the DTB allowlist.  Server-to-server requests (no Origin)
+//    receive empty strings so that automated scrapers cannot harvest credentials.
+//    Define DTB_WC_AUTH_USER and DTB_WC_AUTH_PASS in wp-config.php.
 // ---------------------------------------------------------------------------
 add_action( 'rest_api_init', function () {
 	register_rest_route( 'dtb/v1', '/config', array(
 		'methods'             => 'GET',
 		'callback'            => function () {
-			return rest_ensure_response( array(
-				'wc_auth_user' => defined( 'DTB_WC_AUTH_USER' ) ? DTB_WC_AUTH_USER : '',
-				'wc_auth_pass' => defined( 'DTB_WC_AUTH_PASS' ) ? DTB_WC_AUTH_PASS : '',
+			// Only expose credentials to requests from our own browser origin.
+			// Absent-origin (curl / server-to-server) requests get empty strings.
+			$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
+				? rtrim( (string) wp_unslash( $_SERVER['HTTP_ORIGIN'] ), '/' ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				: '';
+			$origin_ok  = $raw_origin && in_array( $raw_origin, dtb_allowed_origins(), true );
+
+			$response = rest_ensure_response( array(
+				'wc_auth_user' => $origin_ok && defined( 'DTB_WC_AUTH_USER' ) ? DTB_WC_AUTH_USER : '',
+				'wc_auth_pass' => $origin_ok && defined( 'DTB_WC_AUTH_PASS' ) ? DTB_WC_AUTH_PASS : '',
 			) );
+
+			// Never allow this response to be stored in a shared/CDN cache.
+			$response->header( 'Cache-Control', 'private, no-store' );
+
+			return $response;
 		},
 		'permission_callback' => '__return_true',
 	) );
@@ -86,34 +102,20 @@ add_action( 'rest_api_init', function () {
 				);
 			}
 
-			$csv_content = file_get_contents( $file_path );
-			if ( $csv_content === false ) {
-				return new WP_Error(
-					'csv_read_error',
-					'Could not read product CSV file.',
-					array( 'status' => 500 )
-				);
-			}
-
 			// Output raw CSV and exit — bypasses WP REST JSON wrapping.
-			$allowed_origins = array(
-				'https://drywalltoolbox.com',
-				'https://www.drywalltoolbox.com',
-				'http://localhost:5173',
-				'http://127.0.0.1:5173',
-			);
 			$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
-				? wp_unslash( $_SERVER['HTTP_ORIGIN'] )  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				? (string) wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				: '';
 
 			header( 'Content-Type: text/csv; charset=UTF-8' );
 			header( 'Content-Disposition: inline; filename="' . $csv_filename . '"' );
 			header( 'Cache-Control: public, max-age=3600' );
-			if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), $allowed_origins, true ) ) {
+			if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), dtb_allowed_origins(), true ) ) {
 				header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
 				header( 'Vary: Origin' );
 			}
-			echo $csv_content;
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+			readfile( $file_path );
 			exit;
 		},
 		'permission_callback' => '__return_true',

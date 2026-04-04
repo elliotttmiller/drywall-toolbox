@@ -98,7 +98,6 @@ function dtb_get_schematic_media_manifest() {
 	$manifest = [];
 
 	/** @var WP_Post[] $attachments */
-	/** @var WP_Post[] $attachments */
 	foreach ( $attachments as $attachment ) {
 		/** @var WP_Post $attachment */
 		$id   = get_post_meta( $attachment->ID, '_dtb_schematic_id', true );
@@ -117,8 +116,8 @@ function dtb_get_schematic_media_manifest() {
 		}
 
 		$url  = wp_get_attachment_url( $attachment->ID );
-	/** @var array|false $meta */
-	$meta = wp_get_attachment_metadata( $attachment->ID );
+		/** @var array|false $meta */
+		$meta = wp_get_attachment_metadata( $attachment->ID );
 
 		$entry = [
 			'url'    => $url,

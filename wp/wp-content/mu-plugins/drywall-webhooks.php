@@ -31,7 +31,9 @@ function drywall_ensure_webhooks() {
 		return;
 	}
 
-	$delivery_url = 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products';
+	$delivery_url = defined( 'DTB_WEBHOOK_DELIVERY_URL' )
+		? (string) DTB_WEBHOOK_DELIVERY_URL
+		: 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products';
 
 	$required_topics = [
 		'product.created',

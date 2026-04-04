@@ -23,13 +23,22 @@ defined( 'ABSPATH' ) || exit;
 add_action( 'plugins_loaded', 'dtb_cors_init', 1 );
 
 function dtb_cors_init() {
-	// Handle OPTIONS preflight immediately - return 200 with headers, then exit.
+	// Handle OPTIONS preflight immediately — exit before WordPress runs.
 	if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'OPTIONS' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
+			? (string) wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			: '';
+
+		// Reject preflight from unknown origins with 403 so the browser
+		// knows the cross-origin request is not allowed.
+		if ( $raw_origin && ! in_array( rtrim( $raw_origin, '/' ), dtb_allowed_origins(), true ) ) {
+			http_response_code( 403 );
+			exit;
+		}
+
 		dtb_mu_emit_cors_headers();
 		header( 'Content-Length: 0' );
 		header( 'Content-Type: text/plain' );
-		// Bypass WordPress entirely for preflight.
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		http_response_code( 200 );
 		exit;
 	}
@@ -67,31 +76,25 @@ function dtb_filter_cors_headers( $value ) {
  * Function name is prefixed `dtb_mu_` to avoid conflicts with any theme or
  * plugin that may define its own `dtb_send_cors_headers()` function.
  *
- * Allowed origins:
- *  - Production: https://drywalltoolbox.com
- *  - Local dev:  http://localhost:5173 and http://127.0.0.1:5173
+ * Allowed origins are defined centrally in 00-dtb-loader.php via
+ * dtb_allowed_origins(). Unknown origins receive the production domain as the
+ * fallback Allow-Origin value, which browsers will reject (safe by default).
  *
  * The Origin header is validated against the allowlist before being echoed
- * back - this prevents open CORS reflection vulnerabilities.
+ * back — this prevents open CORS reflection vulnerabilities.
  */
 function dtb_mu_emit_cors_headers() {
-	$allowed_origins = [
-		'https://drywalltoolbox.com',
-		'https://www.drywalltoolbox.com',
-		'http://localhost:5173',
-		'http://127.0.0.1:5173',
-	];
-
 	// Read the raw Origin header before any sanitisation.
 	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
-		? wp_unslash( $_SERVER['HTTP_ORIGIN'] )  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		? (string) wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		: '';
 
-	if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), $allowed_origins, true ) ) {
+	if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), dtb_allowed_origins(), true ) ) {
 		// Validate then reflect the allowlisted origin.
 		header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
 	} else {
-		// Unknown or absent origin - fall back to production origin.
+		// Unknown or absent origin — fall back to production domain.
+		// Browsers will reject responses where ACAO doesn't match their Origin.
 		header( 'Access-Control-Allow-Origin: https://drywalltoolbox.com' );
 	}
 

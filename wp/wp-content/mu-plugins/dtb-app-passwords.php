@@ -9,6 +9,8 @@
  * Must-use plugin: Place in wp/wp-content/mu-plugins/
  */
 
+defined( 'ABSPATH' ) || exit;
+
 // Ensure WP_Application_Passwords class is available
 if ( ! class_exists( 'WP_Application_Passwords' ) ) {
 	require_once ABSPATH . 'wp-includes/class-wp-application-passwords.php';
@@ -131,8 +133,7 @@ function dtb_create_app_password( $request ) {
 		// Create the application password
 		$result = WP_Application_Passwords::create_new_application_password(
 			$user->ID,
-			$app_name,
-			array()
+			array( 'name' => $app_name )
 		);
 
 		if ( is_wp_error( $result ) ) {

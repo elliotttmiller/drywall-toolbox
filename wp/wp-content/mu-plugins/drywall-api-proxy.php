@@ -7,7 +7,6 @@
  * exclusively in wp-config.php; they are never returned to the client.
  *
  * Sections implemented:
- *   1.1  CORS whitelist (https://drywalltoolbox.com, http://localhost:3000)
  *   1.2  Credentials from WC_PROXY_CONSUMER_KEY / WC_PROXY_CONSUMER_SECRET
  *   1.3  Route registration (drywall/v1 namespace)
  *   1.4  WP Transient cache (products 600 s, categories/attributes 900 s)
@@ -15,64 +14,13 @@
  *   1.6  Uniform error envelope
  *   1.7  Rate limiting on mutating routes (10 req / 60 s per IP)
  *
+ * CORS is handled globally by dtb-cors.php (loaded first via 00-dtb-loader.php).
+ * Per-route origin enforcement uses dtb_check_origin() from 00-dtb-loader.php.
+ *
  * @package drywall-toolbox
  */
 
 defined( 'ABSPATH' ) || exit;
-
-// ─── 1.1 CORS ─────────────────────────────────────────────────────────────────
-
-add_action( 'plugins_loaded', 'drywall_proxy_cors_boot', 1 );
-
-function drywall_proxy_cors_boot() {
-	$allowed = [
-		'https://drywalltoolbox.com',
-		'https://www.drywalltoolbox.com',
-		'http://localhost:5173',
-		'http://127.0.0.1:5173',
-	];
-
-	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
-		? wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		: '';
-
-	$origin_ok = $raw_origin && in_array( rtrim( $raw_origin, '/' ), $allowed, true );
-
-	// OPTIONS preflight — respond immediately before any WooCommerce code runs.
-	if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'OPTIONS' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
-		if ( $origin_ok ) {
-			header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
-		} else {
-			http_response_code( 403 );
-			exit;
-		}
-		header( 'Access-Control-Allow-Credentials: true' );
-		header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
-		header( 'Access-Control-Allow-Headers: Content-Type, X-WP-Nonce, Authorization, X-Requested-With' );
-		header( 'Content-Length: 0' );
-		header( 'Content-Type: text/plain' );
-		http_response_code( 200 );
-		exit;
-	}
-
-	// Non-preflight: attach CORS headers for REST API responses.
-	add_action( 'rest_api_init', function () use ( $allowed, $raw_origin, $origin_ok ) {
-		remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
-		add_filter( 'rest_pre_serve_request', function ( $value ) use ( $allowed, $raw_origin, $origin_ok ) {
-			if ( $origin_ok ) {
-				header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
-			} else {
-				// Unknown origin — 403 will be returned by the route handler.
-				header( 'Access-Control-Allow-Origin: https://drywalltoolbox.com' );
-			}
-			header( 'Access-Control-Allow-Credentials: true' );
-			header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
-			header( 'Access-Control-Allow-Headers: Content-Type, X-WP-Nonce, Authorization, X-Requested-With' );
-			header( 'Vary: Origin' );
-			return $value;
-		}, 1 );
-	}, 1 );
-}
 
 // ─── Route registration ───────────────────────────────────────────────────────
 
@@ -172,23 +120,7 @@ function drywall_wc_auth_header() {
 	return 'Basic ' . base64_encode( $key . ':' . $secret ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 }
 
-// ─── 1.1 Origin guard ─────────────────────────────────────────────────────────
-
-function drywall_check_origin() {
-	$allowed    = [
-		'https://drywalltoolbox.com',
-		'https://www.drywalltoolbox.com',
-		'http://localhost:5173',
-		'http://127.0.0.1:5173',
-	];
-	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
-		? wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		: '';
-	if ( $raw_origin && ! in_array( rtrim( $raw_origin, '/' ), $allowed, true ) ) {
-		return false;
-	}
-	return true;
-}
+// ─── Origin guard — delegates to dtb_check_origin() in 00-dtb-loader.php ─────
 
 // ─── 1.3 JWT permission callback ─────────────────────────────────────────────
 
@@ -288,7 +220,7 @@ function drywall_cache_key( string $route, array $params ): string {
  * @return WP_REST_Response
  */
 function drywall_cached_wc_get( string $wc_path, array $params, int $ttl ): WP_REST_Response {
-	if ( ! drywall_check_origin() ) {
+	if ( ! dtb_check_origin() ) {
 		return new WP_REST_Response( drywall_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
 	}
 
@@ -349,7 +281,7 @@ function drywall_wc_url( string $path ): string {
 // ─── WC POST/authenticated helper ────────────────────────────────────────────
 
 function drywall_wc_post( string $wc_path, array $body ): WP_REST_Response {
-	if ( ! drywall_check_origin() ) {
+	if ( ! dtb_check_origin() ) {
 		return new WP_REST_Response( drywall_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
 	}
 
@@ -385,7 +317,7 @@ function drywall_wc_post( string $wc_path, array $body ): WP_REST_Response {
 // ─── WC GET (no cache) helper ─────────────────────────────────────────────────
 
 function drywall_wc_get( string $wc_path, array $params = [] ): WP_REST_Response {
-	if ( ! drywall_check_origin() ) {
+	if ( ! dtb_check_origin() ) {
 		return new WP_REST_Response( drywall_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
 	}
 
