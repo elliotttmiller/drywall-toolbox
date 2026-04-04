@@ -44,13 +44,13 @@ Options +FollowSymLinks
 
     # ── Cache-Control for REST API routes ────────────────────────────────────
     # Cart, order, and auth endpoints must never be cached anywhere.
-    <LocationMatch "^/(wp-json|dtb)/">
+    <LocationMatch "^/(wp-json|dtb)(/|$)">
         Header always set Cache-Control "no-store, no-cache, must-revalidate, private"
         Header always set Pragma "no-cache"
     </LocationMatch>
 
     # ── Prevent search engines from indexing WP Admin ─────────────────────────
-    <LocationMatch "^/(wp-admin|wp-login\.php)">
+    <LocationMatch "^/(wp-admin(/|$)|wp-login\.php)">
         Header always set X-Robots-Tag "noindex, nofollow"
     </LocationMatch>
 </IfModule>
@@ -64,7 +64,7 @@ Options +FollowSymLinks
 # Alternatively, restrict by IP — replace the AuthType block with:
 #   Require ip 1.2.3.4 5.6.7.8
 #
-<LocationMatch "^/(wp-admin|wp-login\.php)">
+<LocationMatch "^/(wp-admin(/|$)|wp-login\.php)">
     # Uncomment and configure to enable HTTP Basic Auth gate on WP Admin.
     # This adds a second authentication layer on top of WordPress login.
     #

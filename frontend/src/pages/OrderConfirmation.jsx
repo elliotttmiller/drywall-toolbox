@@ -213,7 +213,9 @@ export default function OrderConfirmation() {
             { billing.address_1 && (
               <p className="text-sm text-gray-700">
                 <span className="font-semibold">Address:</span>{' '}
-                { billing.address_1 }, { billing.city } { billing.state } { billing.postcode }
+                { [billing.address_1, billing.city, billing.state, billing.postcode]
+                    .filter( Boolean )
+                    .join( ', ' ) }
               </p>
             ) }
 
