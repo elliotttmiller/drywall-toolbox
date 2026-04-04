@@ -31,7 +31,7 @@ add_action( 'rest_api_init', function () {
 			$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
 				? rtrim( (string) wp_unslash( $_SERVER['HTTP_ORIGIN'] ), '/' ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				: '';
-			$origin_ok  = $raw_origin && in_array( $raw_origin, dtb_allowed_origins(), true );
+			$origin_ok  = '' !== $raw_origin && in_array( $raw_origin, dtb_allowed_origins(), true );
 
 			$response = rest_ensure_response( array(
 				'wc_auth_user' => $origin_ok && defined( 'DTB_WC_AUTH_USER' ) ? DTB_WC_AUTH_USER : '',
@@ -91,10 +91,28 @@ add_action( 'rest_api_init', function () {
 				? DTB_WC_CSV_FILENAME
 				: 'product-wp-catalog-c7p3my05pn.csv';
 
-			$upload_dir = wp_upload_dir();
-			$file_path  = trailingslashit( $upload_dir['basedir'] ) . 'wc-imports/' . $csv_filename;
+			$upload_dir  = wp_upload_dir();
+			$uploads_dir = trailingslashit( $upload_dir['basedir'] );
+			$file_path   = $uploads_dir . 'wc-imports/' . $csv_filename;
 
-			if ( ! file_exists( $file_path ) ) {
+			// Resolve the real path and confirm it is within the uploads directory.
+			// This defends against path traversal if the filename ever comes from
+			// an untrusted source (e.g., a wp-config constant set incorrectly).
+			$real_path      = realpath( $file_path );
+			$real_uploads   = realpath( $uploads_dir );
+			if (
+				false === $real_path ||
+				false === $real_uploads ||
+				0 !== strpos( $real_path, trailingslashit( $real_uploads ) )
+			) {
+				return new WP_Error(
+					'csv_not_found',
+					'Product CSV file not found on server.',
+					array( 'status' => 404 )
+				);
+			}
+
+			if ( ! file_exists( $real_path ) ) {
 				return new WP_Error(
 					'csv_not_found',
 					'Product CSV file not found on server.',
@@ -115,7 +133,7 @@ add_action( 'rest_api_init', function () {
 				header( 'Vary: Origin' );
 			}
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
-			readfile( $file_path );
+			readfile( $real_path );
 			exit;
 		},
 		'permission_callback' => '__return_true',
