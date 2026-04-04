@@ -48,6 +48,7 @@ defined( 'ABSPATH' ) || exit;
  * @return mixed            Cached or freshly fetched value.
  */
 function dtb_cached_proxy( string $route, array $params, callable $fetcher ) {
+	ksort( $params );
 	$cache_key = 'drywall_cache_' . md5( $route . wp_json_encode( $params ) );
 
 	$cached = get_transient( $cache_key );

@@ -301,15 +301,12 @@ function dtb_wc_url( string $path ): string {
  * GET a WC endpoint with transient caching via dtb_cached_proxy().
  *
  * Cache key and TTL are managed by dtb_cached_proxy() in dtb-cache.php.
- * The $ttl parameter is retained for call-site compatibility but the actual
- * TTL is derived from the route name inside dtb_cached_proxy().
  *
  * @param string $wc_path  WC REST path, e.g. 'wc/v3/products'
  * @param array  $params   Query parameters forwarded verbatim.
- * @param int    $ttl      Unused — TTL is resolved by dtb_cached_proxy().
  * @return WP_REST_Response
  */
-function dtb_cached_wc_get( string $wc_path, array $params, int $ttl ): WP_REST_Response {
+function dtb_cached_wc_get( string $wc_path, array $params ): WP_REST_Response {
 	if ( ! dtb_check_origin() ) {
 		return new WP_REST_Response( dtb_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
 	}
@@ -534,17 +531,17 @@ function dtb_proxy_products( WP_REST_Request $request ): WP_REST_Response {
 			$params[ $k ] = sanitize_text_field( $v );
 		}
 	}
-	return dtb_cached_wc_get( 'wc/v3/products', $params, 600 );
+	return dtb_cached_wc_get( 'wc/v3/products', $params );
 }
 
 /** GET /drywall/v1/products/{id} */
 function dtb_proxy_product_by_id( WP_REST_Request $request ): WP_REST_Response {
-	return dtb_cached_wc_get( 'wc/v3/products/' . absint( $request->get_param( 'id' ) ), [], 600 );
+	return dtb_cached_wc_get( 'wc/v3/products/' . absint( $request->get_param( 'id' ) ), [] );
 }
 
 /** GET /drywall/v1/products/slug/{slug} */
 function dtb_proxy_product_by_slug( WP_REST_Request $request ): WP_REST_Response {
-	return dtb_cached_wc_get( 'wc/v3/products', [ 'slug' => sanitize_title( $request->get_param( 'slug' ) ) ], 600 );
+	return dtb_cached_wc_get( 'wc/v3/products', [ 'slug' => sanitize_title( $request->get_param( 'slug' ) ) ] );
 }
 
 /** GET /drywall/v1/categories */
@@ -556,12 +553,12 @@ function dtb_proxy_categories( WP_REST_Request $request ): WP_REST_Response {
 			$params[ $k ] = sanitize_text_field( $v );
 		}
 	}
-	return dtb_cached_wc_get( 'wc/v3/products/categories', $params, 900 );
+	return dtb_cached_wc_get( 'wc/v3/products/categories', $params );
 }
 
 /** GET /drywall/v1/attributes */
 function dtb_proxy_attributes( WP_REST_Request $request ): WP_REST_Response {
-	return dtb_cached_wc_get( 'wc/v3/products/attributes', [], 900 );
+	return dtb_cached_wc_get( 'wc/v3/products/attributes', [] );
 }
 
 /** GET /drywall/v1/search?q={query} */
@@ -577,7 +574,7 @@ function dtb_proxy_search( WP_REST_Request $request ): WP_REST_Response {
 			$params[ $k ] = sanitize_text_field( $v );
 		}
 	}
-	return dtb_cached_wc_get( 'wc/v3/products', $params, 600 );
+	return dtb_cached_wc_get( 'wc/v3/products', $params );
 }
 
 /** POST /drywall/v1/orders  (JWT-gated, rate-limited) */
