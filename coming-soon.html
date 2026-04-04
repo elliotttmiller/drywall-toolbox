@@ -275,6 +275,45 @@
             50% { opacity: 1; }
         }
 
+        /* Form status messages */
+        .form-message {
+            margin-top: 1rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: none;
+            position: relative;
+            z-index: 1;
+            animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .form-message.success {
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(37, 99, 235, 0.4);
+            color: #93c5fd;
+            display: block;
+        }
+
+        .form-message.error {
+            background: rgba(220, 38, 38, 0.12);
+            border: 1px solid rgba(220, 38, 38, 0.35);
+            color: #fca5a5;
+            display: block;
+        }
+
+        /* Honeypot field — visually hidden from humans, present in DOM for bots */
+        .dtb-hp-field {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             main {
@@ -346,13 +385,61 @@
                 Sign up and be the first to know when we launch.
             </p>
 
-            <form class="email-form" id="signupForm">
-                <input type="email" class="email-input" placeholder="Enter professional email" required>
-                <button type="submit" class="submit-btn">
+            <!--
+                Form integration with WordPress
+                ─────────────────────────────────────────────────────────────────
+                Primary path  : JavaScript intercepts submit → AJAX POST to
+                                /wp-json/dtb/v1/subscribe (REST API).
+                Fallback path : If JS is unavailable or the fetch fails, the
+                                form falls back to a traditional POST to
+                                /wp-admin/admin-post.php, handled by the
+                                admin_post_nopriv_dtb_subscribe hook in
+                                wp/wp-content/mu-plugins/dtb-coming-soon.php.
+            -->
+            <form
+                class="email-form"
+                id="signupForm"
+                action="/wp-admin/admin-post.php"
+                method="POST"
+                novalidate
+            >
+                <!-- WordPress admin-post.php dispatcher — triggers dtb_subscribe hook -->
+                <input type="hidden" name="action" value="dtb_subscribe">
+
+                <!-- CSRF nonce — populated by JS on page-load via /wp-json/dtb/v1/subscribe-nonce.
+                     Required only for the no-JS admin-post.php fallback path. -->
+                <input type="hidden" name="_dtb_nonce" id="dtb_nonce_field" value="">
+
+                <!-- Honeypot — must stay empty; bots that auto-fill all fields will be blocked -->
+                <span class="dtb-hp-field" aria-hidden="true">
+                    <label for="dtb_hp">Leave this field blank</label>
+                    <input
+                        type="text"
+                        id="dtb_hp"
+                        name="_dtb_hp"
+                        value=""
+                        autocomplete="off"
+                        tabindex="-1"
+                    >
+                </span>
+
+                <input
+                    type="email"
+                    name="dtb_email"
+                    id="dtb_email_input"
+                    class="email-input"
+                    placeholder="Enter professional email"
+                    autocomplete="email"
+                    required
+                >
+                <button type="submit" class="submit-btn" id="dtb_submit_btn">
                     Notify Me
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </button>
             </form>
+
+            <!-- Status message shown after submission (JS path) or via ?status= param (fallback) -->
+            <p class="form-message" id="dtb_form_message" role="alert" aria-live="polite"></p>
 
             <div class="status-info">
                 <span class="status-dot"></span>Status: Launching Soon
@@ -361,23 +448,149 @@
     </main>
 
     <script>
-        document.getElementById('signupForm').addEventListener('submit', (e) => {
+        // ─── WordPress REST API base URL ───────────────────────────────────────
+        // Matches the rewrite rule in .htaccess:
+        //   RewriteRule ^wp-json/(.*)$ wp/index.php?rest_route=/$1 [QSA,L]
+        const DTB_API_BASE = '/wp-json/dtb/v1';
+
+        // Arrow SVG reused when re-enabling the submit button after an error.
+        const ARROW_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+        // ─── DOM references ────────────────────────────────────────────────────
+        const form       = document.getElementById('signupForm');
+        const emailInput = document.getElementById('dtb_email_input');
+        const submitBtn  = document.getElementById('dtb_submit_btn');
+        const msgEl      = document.getElementById('dtb_form_message');
+        const nonceField = document.getElementById('dtb_nonce_field');
+        const honeypot   = document.querySelector('[name="_dtb_hp"]');
+
+        // ─── Helper: show feedback message ────────────────────────────────────
+        function showMessage(text, type /* 'success' | 'error' */) {
+            msgEl.textContent  = text;
+            msgEl.className    = 'form-message ' + type;
+        }
+
+        // ─── Helper: transition to success state ──────────────────────────────
+        function showSuccess(message) {
+            submitBtn.innerHTML = 'Secured ✓';
+            submitBtn.style.background = '#1d4ed8';
+            submitBtn.disabled = true;
+            emailInput.value   = '';
+            emailInput.placeholder = 'You\'re on the list.';
+            emailInput.disabled    = true;
+            showMessage(message || 'You\'re on the list. We\'ll be in touch!', 'success');
+        }
+
+        // ─── Helper: reset button to allow retry ──────────────────────────────
+        function resetButton() {
+            submitBtn.disabled  = false;
+            submitBtn.innerHTML = 'Notify Me ' + ARROW_SVG;
+        }
+
+        // ─── On page load: check for ?status= from admin-post.php redirect ───
+        // This handles the no-JS fallback path where the browser is redirected
+        // back to coming-soon.html?status=success after a server-side POST.
+        (function handleUrlStatus() {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            if (!status) return;
+
+            // Clean the URL without reloading the page.
+            history.replaceState({}, '', window.location.pathname);
+
+            if (status === 'success') {
+                showSuccess();
+            } else if (status === 'error') {
+                const errorMessages = {
+                    invalid_token : 'Session expired. Please refresh and try again.',
+                    invalid_email : 'Please enter a valid e-mail address.',
+                    rate_limited  : 'Too many attempts. Please try again later.',
+                };
+                const code = params.get('msg') || 'unknown';
+                showMessage(errorMessages[code] || 'Something went wrong. Please try again.', 'error');
+            }
+        })();
+
+        // ─── Pre-fetch a WP nonce for the admin-post.php fallback ─────────────
+        // If JavaScript and the REST API are both available the form uses AJAX.
+        // If AJAX fails (network error), the form falls back to a traditional
+        // POST to /wp-admin/admin-post.php which requires this nonce.
+        (function prefetchNonce() {
+            fetch(DTB_API_BASE + '/subscribe-nonce', { credentials: 'same-origin' })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data && data.nonce) {
+                        nonceField.value = data.nonce;
+                    }
+                })
+                .catch(function() {
+                    // Nonce unavailable — the AJAX path does not need it.
+                    // The form fallback will fail CSRF validation in this case
+                    // but the AJAX path will still work normally.
+                });
+        })();
+
+        // ─── Form submit handler ───────────────────────────────────────────────
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('.submit-btn');
-            const input = e.target.querySelector('.email-input');
-            
-            btn.innerHTML = 'Secured ✓';
-            btn.style.background = '#1d4ed8';
-            input.value = '';
-            input.placeholder = 'You are on the list.';
-            input.disabled = true;
+
+            const email = emailInput.value.trim();
+
+            // Client-side validation before hitting the server.
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showMessage('Please enter a valid e-mail address.', 'error');
+                return;
+            }
+
+            // Disable button to prevent double-submissions.
+            submitBtn.disabled  = true;
+            submitBtn.innerHTML = 'Sending&hellip;';
+            msgEl.className     = 'form-message'; // hide any previous message
+
+            try {
+                // ── Primary path: AJAX POST to WordPress REST API ─────────────
+                const response = await fetch(DTB_API_BASE + '/subscribe', {
+                    method      : 'POST',
+                    credentials : 'same-origin',
+                    headers     : { 'Content-Type': 'application/json' },
+                    body        : JSON.stringify({
+                        email   : email,
+                        _dtb_hp : honeypot ? honeypot.value : '', // honeypot field
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(data.message);
+                } else {
+                    // Server returned a structured error (400, 429, etc.).
+                    const msg = (data && (data.message || (data.data && data.data.message)))
+                        || 'Something went wrong. Please try again.';
+                    showMessage(msg, 'error');
+                    resetButton();
+                }
+
+            } catch (networkError) {
+                // ── Fallback path: traditional form POST to admin-post.php ────
+                // The AJAX fetch failed (e.g. no network, server unreachable).
+                // Submit the HTML form the old-fashioned way so the user's
+                // entry is not lost. The PHP handler will redirect back here
+                // with ?status=success or ?status=error.
+                if (nonceField.value) {
+                    form.submit();
+                } else {
+                    showMessage('Network error. Please check your connection and try again.', 'error');
+                    resetButton();
+                }
+            }
         });
 
-        // Subtle parallax effect on scroll
-        window.addEventListener('scroll', () => {
-            const card = document.querySelector('.content-card');
+        // ─── Subtle parallax on scroll ─────────────────────────────────────────
+        window.addEventListener('scroll', function() {
+            const card    = document.querySelector('.content-card');
             const scrollY = window.scrollY;
-            card.style.transform = `translateY(${scrollY * 0.3}px)`;
+            card.style.transform = 'translateY(' + (scrollY * 0.3) + 'px)';
         });
     </script>
 </body>

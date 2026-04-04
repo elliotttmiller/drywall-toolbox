@@ -21,6 +21,12 @@
 #   4. /assets/*                → Static files (served directly, no rewrite)
 #   5. Everything else          → dist/index.html (React SPA catch-all)
 
+# ─── Directory Index ──────────────────────────────────────────────────────────
+# During the pre-launch (coming-soon) phase, serve coming-soon.html as the
+# default document for any directory request — most importantly the root "/".
+# REMOVE or comment out this line when deploying the full React SPA (index.html).
+DirectoryIndex coming-soon.html index.html index.php
+
 # ─── Disable Directory Listing & Defaults ─────────────────────────────────────
 # Disable directory indexing globally for security
 Options -Indexes
@@ -128,6 +134,11 @@ Options +FollowSymLinks
     RewriteCond %{HTTP_HOST} !^localhost [NC]
     RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [NC]
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+    # ── Coming-Soon homepage ──────────────────────────────────────────
+    # Serve coming-soon.html for root "/" requests during pre-launch.
+    # REMOVE this rule when the React SPA (index.html) replaces coming-soon.html.
+    RewriteRule ^$ /coming-soon.html [L]
 
     # ── WordPress admin & login ──────────────────────────────────────
     # Map /wp-admin/ → /wp/wp-admin/ (transparent to client)
