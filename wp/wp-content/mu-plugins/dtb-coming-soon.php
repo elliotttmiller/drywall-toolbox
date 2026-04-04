@@ -3,14 +3,15 @@
  * Plugin Name: DTB Coming Soon – Email Subscriber Handler
  * Description: Handles email sign-ups from the static coming-soon.html page.
  *              Saves subscriber records to the WordPress database, enforces
- *              IP-based rate limiting, and sends the site admin an instant
- *              notification e-mail on each new sign-up.
+ *              IP-based rate limiting, sends the site admin an instant
+ *              notification e-mail, and sends the subscriber a confirmation
+ *              e-mail on each new sign-up.
  *
  *              Two integration paths are provided:
  *              1. REST API  — POST /wp-json/dtb/v1/subscribe  (AJAX, primary)
  *              2. admin-post.php — traditional <form> POST fallback (no-JS)
  *
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author:  Drywall Toolbox
  *
  * Must-use plugin: place in wp/wp-content/mu-plugins/
@@ -171,8 +172,9 @@ function dtb_rest_subscribe( WP_REST_Request $request ) {
 		);
 	}
 
-	// ── Admin notification ───────────────────────────────────────────────────
+	// ── Admin notification & subscriber confirmation ─────────────────────────
 	dtb_notify_admin( $email );
+	dtb_send_confirmation_email( $email );
 
 	return rest_ensure_response(
 		array(
@@ -257,8 +259,9 @@ function dtb_handle_subscribe_post(): void {
 		exit;
 	}
 
-	// ── Admin notification ───────────────────────────────────────────────────
+	// ── Admin notification & subscriber confirmation ─────────────────────────
 	dtb_notify_admin( $email );
+	dtb_send_confirmation_email( $email );
 
 	wp_safe_redirect( home_url( '/coming-soon.html?status=success' ) );
 	exit;
@@ -480,5 +483,63 @@ function dtb_notify_admin( string $email ): void {
 		$message,
 		array( 'Content-Type: text/plain; charset=UTF-8' )
 	);
+}
+
+/**
+ * Send a confirmation e-mail to the new subscriber.
+ *
+ * Routed through WordPress's wp_mail() so it uses whatever SMTP configuration
+ * is active — including WP Mail SMTP Pro when installed and configured.
+ *
+ * The message is intentionally plain-text so it renders cleanly in every mail
+ * client without requiring an HTML template.
+ *
+ * @param string $email The new subscriber's validated e-mail address.
+ */
+function dtb_send_confirmation_email( string $email ): void {
+	$site_name = get_option( 'blogname' );
+	$site_url  = home_url();
+
+	$subject = sprintf(
+		/* translators: %s: site name */
+		__( "You're on the list — %s", 'dtb' ),
+		$site_name
+	);
+
+	$message = sprintf(
+		/* translators: 1: subscriber email, 2: site name, 3: site URL */
+		__(
+			"Hi there,\n\n" .
+			"Thank you for signing up! We've reserved your spot at %2\$s.\n\n" .
+			"You'll receive an email at %1\$s the moment we go live.\n\n" .
+			"In the meantime, feel free to visit us at:\n%3\$s\n\n" .
+			"We're working hard behind the scenes and can't wait to share\n" .
+			"what we've been building.\n\n" .
+			"— The %2\$s Team",
+			'dtb'
+		),
+		$email,
+		$site_name,
+		$site_url
+	);
+
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		// Set a Reply-To so replies go to the admin inbox, not a no-reply address.
+		'Reply-To: ' . get_option( 'admin_email' ),
+	);
+
+	$sent = wp_mail( $email, $subject, $message, $headers );
+
+	if ( ! $sent ) {
+		// Log a PHP error so server logs capture delivery failures without
+		// exposing details to the end-user (the subscriber already sees success).
+		error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			sprintf(
+				'[DTB] dtb_send_confirmation_email: wp_mail() failed for subscriber %s',
+				$email
+			)
+		);
+	}
 }
 // dtb_get_client_ip() and dtb_anonymise_ip() are provided by dtb-utils.php.
