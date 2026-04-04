@@ -65,6 +65,10 @@ wp-config-local.php
 wp-config-*.php
 !wp/wp-config-sample.php
 
+# WordPress server-side .env (real secrets — only .env.example is committed)
+wp/.env
+wp/.env.local
+
 # WordPress uploads (binary assets; use Media Library, not Git)
 wp-content/uploads/
 
