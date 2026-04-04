@@ -105,15 +105,14 @@ add_action( 'rest_api_init', function () {
 			$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
 				? wp_unslash( $_SERVER['HTTP_ORIGIN'] )  // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				: '';
-			$cors_origin = ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), $allowed_origins, true ) )
-				? esc_url_raw( $raw_origin )
-				: 'https://drywalltoolbox.com';
 
 			header( 'Content-Type: text/csv; charset=UTF-8' );
 			header( 'Content-Disposition: inline; filename="' . $csv_filename . '"' );
 			header( 'Cache-Control: public, max-age=3600' );
-			header( 'Access-Control-Allow-Origin: ' . $cors_origin );
-			header( 'Vary: Origin' );
+			if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), $allowed_origins, true ) ) {
+				header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
+				header( 'Vary: Origin' );
+			}
 			echo $csv_content;
 			exit;
 		},

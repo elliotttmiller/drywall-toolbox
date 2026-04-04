@@ -23,7 +23,15 @@ if ( ! class_exists( 'WP_Application_Passwords' ) ) {
  * Returns a WP_REST_Response with 429 on violation, or null to proceed.
  */
 function dtb_app_password_rate_limit(): ?WP_REST_Response {
-	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
+		// Reject requests with no REMOTE_ADDR — cannot apply per-IP rate limit.
+		$resp = new WP_REST_Response(
+			array( 'success' => false, 'message' => 'Unable to identify request origin.' ),
+			400
+		);
+		return $resp;
+	}
+	$ip  = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 	$key = 'dtb_app_pw_rl_' . md5( $ip );
 
 	$count = (int) get_transient( $key );

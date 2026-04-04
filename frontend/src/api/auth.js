@@ -18,11 +18,9 @@ import {
   clearToken as storeClearToken,
 } from '../auth/tokenStore.js';
 
-const JWT_ENDPOINT =
-  process.env.REACT_APP_API_BASE_URL
-    ? process.env.REACT_APP_API_BASE_URL.replace( /\/+$/, '' ) +
-      ( process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth' )
-    : process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth';
+const _base = ( process.env.REACT_APP_API_BASE_URL || '' ).replace( /\/+$/, '' );
+const _path = process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth';
+const JWT_ENDPOINT = _base ? _base + _path : _path;
 
 // ─── In-memory user profile ───────────────────────────────────────────────────
 // Stored as a module-level variable; cleared on logout or page close.
@@ -50,9 +48,9 @@ export async function login( username, password ) {
   storeSetToken( jwt );
   _user = userData
     ? {
-        email:       userData.user_email       || '',
-        nicename:    userData.user_login        || '',
-        displayName: userData.display_name      || '',
+        email:       userData.user_email    || '',
+        nicename:    userData.user_nicename || userData.user_login || '',
+        displayName: userData.display_name  || '',
       }
     : null;
 

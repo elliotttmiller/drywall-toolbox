@@ -219,7 +219,10 @@ function drywall_jwt_permission( WP_REST_Request $request ) {
  * Rate-limit mutating (POST/PUT/DELETE) routes: 10 requests per 60 s per IP.
  */
 function drywall_rate_limit( WP_REST_Request $request, string $route_key ): ?WP_REST_Response {
-	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
+		return new WP_REST_Response( drywall_error_envelope( 'bad_request', 'Unable to identify request origin.', 400 ), 400 );
+	}
+	$ip  = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 	$key = 'drywall_rl_' . md5( $ip ) . '_' . md5( $route_key );
 	$count = (int) get_transient( $key );
 	if ( $count >= 10 ) {
@@ -240,7 +243,10 @@ function drywall_rate_limit( WP_REST_Request $request, string $route_key ): ?WP_
  * public GET routes without modifying each callback individually.
  */
 function drywall_rate_limit_get(): ?WP_REST_Response {
-	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	if ( empty( $_SERVER['REMOTE_ADDR'] ) ) {
+		return new WP_REST_Response( drywall_error_envelope( 'bad_request', 'Unable to identify request origin.', 400 ), 400 );
+	}
+	$ip  = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 	$key = 'drywall_rl_get_' . md5( $ip );
 	$count = (int) get_transient( $key );
 	if ( $count >= 100 ) {
