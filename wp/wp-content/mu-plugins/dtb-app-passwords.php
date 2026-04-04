@@ -17,6 +17,31 @@ if ( ! class_exists( 'WP_Application_Passwords' ) ) {
 // Plugin loaded — debug logging removed to keep debug.log clean.
 // CACHE_BUSTER: 2026-03-31-14-18-UTC
 
+/**
+ * Rate-limit the create-app-password endpoint.
+ * Allows a maximum of 5 attempts per IP address per 5 minutes.
+ * Returns a WP_REST_Response with 429 on violation, or null to proceed.
+ */
+function dtb_app_password_rate_limit(): ?WP_REST_Response {
+	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	$key = 'dtb_app_pw_rl_' . md5( $ip );
+
+	$count = (int) get_transient( $key );
+	if ( $count >= 5 ) {
+		$resp = new WP_REST_Response(
+			array(
+				'success' => false,
+				'message' => 'Too many requests. Please try again later.',
+			),
+			429
+		);
+		$resp->header( 'Retry-After', '300' );
+		return $resp;
+	}
+	set_transient( $key, $count + 1, 300 ); // 5-minute window
+	return null;
+}
+
 // Add REST API endpoint to create application passwords
 add_action( 'rest_api_init', function() {
 	register_rest_route( 'dtb/v1', '/create-app-password', array(
@@ -55,6 +80,12 @@ add_action( 'rest_api_init', function() {
  * }
  */
 function dtb_create_app_password( $request ) {
+	// Enforce rate limit before any credential verification.
+	$rate_limit_response = dtb_app_password_rate_limit();
+	if ( $rate_limit_response ) {
+		return $rate_limit_response;
+	}
+
 	try {
 		$username = sanitize_user( $request->get_param( 'username' ) );
 		$password = $request->get_param( 'password' );

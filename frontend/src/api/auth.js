@@ -2,114 +2,117 @@
  * frontend/src/api/auth.js
  *
  * JWT authentication helpers for the WordPress REST API.
- * Token endpoint: VITE_JWT_ENDPOINT (e.g. /wp-json/jwt-auth/v1/token)
+ * Token endpoint: REACT_APP_JWT_AUTH_ENDPOINT (e.g. /wp-json/simple-jwt-login/v1/auth)
  *
- * Requires: jwt-authentication-for-wp-rest-api WordPress plugin.
+ * Tokens are stored ONLY in memory via tokenStore — never in localStorage or
+ * sessionStorage — to prevent persistent XSS token theft.
+ *
+ * For React component auth state use src/auth/useAuth.js + AuthContext instead.
+ * This module provides low-level helpers for programmatic / non-React usage.
  */
 
 import axios from 'axios';
+import {
+  setToken  as storeSetToken,
+  getToken  as storeGetToken,
+  clearToken as storeClearToken,
+} from '../auth/tokenStore.js';
 
-const JWT_ENDPOINT = import.meta.env.VITE_JWT_ENDPOINT || '';
+const JWT_ENDPOINT =
+  process.env.REACT_APP_API_BASE_URL
+    ? process.env.REACT_APP_API_BASE_URL.replace( /\/+$/, '' ) +
+      ( process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth' )
+    : process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth';
 
-/** localStorage keys */
-const TOKEN_KEY = 'dtb_jwt_token';
-const USER_KEY  = 'dtb_jwt_user';
+// ─── In-memory user profile ───────────────────────────────────────────────────
+// Stored as a module-level variable; cleared on logout or page close.
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function saveToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
-function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
-}
-
-function getStoredToken() {
-  return localStorage.getItem(TOKEN_KEY) || null;
-}
+let _user = null;
 
 // ─── Auth API ─────────────────────────────────────────────────────────────────
 
 /**
- * Log in with WordPress username and password.
- * Stores the returned JWT in localStorage.
+ * Log in with WordPress username / email and password.
+ * Stores the returned JWT in the in-memory token store.
  *
- * @param {string} username
+ * @param {string} username  WordPress username or email address.
  * @param {string} password
- * @returns {Promise<{ token: string, user_email: string, user_nicename: string, user_display_name: string }>}
+ * @returns {Promise<object>}  Raw JWT plugin response.
  */
-export async function login(username, password) {
-  const response = await axios.post(JWT_ENDPOINT, { username, password });
+export async function login( username, password ) {
+  const response = await axios.post( JWT_ENDPOINT, { email: username, password } );
   const data = response.data;
-  saveToken(data.token);
-  localStorage.setItem(USER_KEY, JSON.stringify({
-    email:       data.user_email,
-    nicename:    data.user_nicename,
-    displayName: data.user_display_name,
-  }));
+
+  // simple-jwt-login wraps the payload under data.data
+  const jwt      = data?.data?.jwt  || data?.token  || null;
+  const userData = data?.data?.user || null;
+
+  storeSetToken( jwt );
+  _user = userData
+    ? {
+        email:       userData.user_email       || '',
+        nicename:    userData.user_login        || '',
+        displayName: userData.display_name      || '',
+      }
+    : null;
+
   return data;
 }
 
 /**
- * Log out the current user — clears stored token and user data.
+ * Log out the current user — clears the in-memory token and user profile.
  */
 export function logout() {
-  clearToken();
+  storeClearToken();
+  _user = null;
 }
 
 /**
- * Validate the stored token against the /token/validate endpoint.
- * Returns the validated token string on success, or null on failure.
+ * Validate the current in-memory token against the /validate endpoint.
+ * Returns the token string on success, or null on failure/expiry.
  *
  * @returns {Promise<string|null>}
  */
 export async function refreshToken() {
-  const token = getStoredToken();
-  if (!token) return null;
+  const token = storeGetToken();
+  if ( ! token ) return null;
   try {
     await axios.post(
-      `${JWT_ENDPOINT}/validate`,
+      `${ JWT_ENDPOINT }/validate`,
       {},
-      { headers: { Authorization: `Bearer ${token}` } },
+      { headers: { Authorization: `Bearer ${ token }` } },
     );
     return token;
   } catch {
-    clearToken();
+    storeClearToken();
+    _user = null;
     return null;
   }
 }
 
 /**
- * Return the current user's stored profile (from localStorage) or null.
+ * Return the current in-memory user profile, or null if not logged in.
  *
  * @returns {{ email: string, nicename: string, displayName: string } | null}
  */
 export function getCurrentUser() {
-  const raw = localStorage.getItem(USER_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  return _user;
 }
 
 /**
- * Return the stored JWT token, or null if not logged in.
+ * Return the current in-memory JWT token, or null if not logged in.
  *
  * @returns {string|null}
  */
 export function getToken() {
-  return getStoredToken();
+  return storeGetToken();
 }
 
 /**
- * Return true if a JWT token is present in localStorage.
+ * Return true if a JWT token is present in memory.
  *
  * @returns {boolean}
  */
 export function isAuthenticated() {
-  return Boolean(getStoredToken());
+  return Boolean( storeGetToken() );
 }

@@ -27,7 +27,9 @@ add_action( 'plugins_loaded', 'drywall_proxy_cors_boot', 1 );
 function drywall_proxy_cors_boot() {
 	$allowed = [
 		'https://drywalltoolbox.com',
-		'http://localhost:3000',
+		'https://www.drywalltoolbox.com',
+		'http://localhost:5173',
+		'http://127.0.0.1:5173',
 	];
 
 	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
@@ -173,7 +175,12 @@ function drywall_wc_auth_header() {
 // ─── 1.1 Origin guard ─────────────────────────────────────────────────────────
 
 function drywall_check_origin() {
-	$allowed    = [ 'https://drywalltoolbox.com', 'http://localhost:3000' ];
+	$allowed    = [
+		'https://drywalltoolbox.com',
+		'https://www.drywalltoolbox.com',
+		'http://localhost:5173',
+		'http://127.0.0.1:5173',
+	];
 	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
 		? wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		: '';
@@ -208,11 +215,35 @@ function drywall_jwt_permission( WP_REST_Request $request ) {
 
 // ─── 1.7 Rate limiter ─────────────────────────────────────────────────────────
 
+/**
+ * Rate-limit mutating (POST/PUT/DELETE) routes: 10 requests per 60 s per IP.
+ */
 function drywall_rate_limit( WP_REST_Request $request, string $route_key ): ?WP_REST_Response {
 	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
 	$key = 'drywall_rl_' . md5( $ip ) . '_' . md5( $route_key );
 	$count = (int) get_transient( $key );
 	if ( $count >= 10 ) {
+		$resp = new WP_REST_Response(
+			drywall_error_envelope( 'rate_limited', 'Too many requests. Please try again later.', 429 ),
+			429
+		);
+		$resp->header( 'Retry-After', '60' );
+		return $resp;
+	}
+	set_transient( $key, $count + 1, 60 );
+	return null;
+}
+
+/**
+ * Rate-limit public read (GET) routes: 100 requests per 60 s per IP.
+ * Applied inside drywall_cached_wc_get() and drywall_wc_get() to catch all
+ * public GET routes without modifying each callback individually.
+ */
+function drywall_rate_limit_get(): ?WP_REST_Response {
+	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	$key = 'drywall_rl_get_' . md5( $ip );
+	$count = (int) get_transient( $key );
+	if ( $count >= 100 ) {
 		$resp = new WP_REST_Response(
 			drywall_error_envelope( 'rate_limited', 'Too many requests. Please try again later.', 429 ),
 			429
@@ -253,6 +284,11 @@ function drywall_cache_key( string $route, array $params ): string {
 function drywall_cached_wc_get( string $wc_path, array $params, int $ttl ): WP_REST_Response {
 	if ( ! drywall_check_origin() ) {
 		return new WP_REST_Response( drywall_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
+	}
+
+	$rl = drywall_rate_limit_get();
+	if ( $rl ) {
+		return $rl;
 	}
 
 	$cache_key = drywall_cache_key( $wc_path, $params );
@@ -345,6 +381,11 @@ function drywall_wc_post( string $wc_path, array $body ): WP_REST_Response {
 function drywall_wc_get( string $wc_path, array $params = [] ): WP_REST_Response {
 	if ( ! drywall_check_origin() ) {
 		return new WP_REST_Response( drywall_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
+	}
+
+	$rl = drywall_rate_limit_get();
+	if ( $rl ) {
+		return $rl;
 	}
 
 	$wc_url = drywall_wc_url( $wc_path );
