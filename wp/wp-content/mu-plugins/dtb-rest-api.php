@@ -31,13 +31,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// ─── Early exit for non-REST requests ────────────────────────────────────────
-// Skip all function definitions and hook registrations on ordinary page loads,
-// WP-Admin screens, and WP-CLI commands.
-if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
-	return;
-}
-
 // =============================================================================
 // ROUTE REGISTRATION
 // =============================================================================

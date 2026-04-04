@@ -17,9 +17,9 @@
  * Load order:
  *   dtb-utils.php          — shared helper functions
  *   dtb-auth.php           — JWT generation / verification / REST auth routes
+ *   dtb-cache.php          — transient cache helpers and diagnostic route
  *   dtb-rest-api.php       — WC proxy + site-management REST routes + CORS
  *   dtb-woocommerce.php    — WC configuration and webhook auto-creation
- *   dtb-cache.php          — transient cache helpers and diagnostic route
  *   dtb-schematics-api.php — schematics media REST route
  *   dtb-coming-soon.php    — e-mail subscriber handler
  *   dtb-config-reference.php — comment-only constant reference (no exec code)
@@ -86,9 +86,9 @@ $_dtb_dir = __DIR__;
 
 require_once $_dtb_dir . '/dtb-utils.php';
 require_once $_dtb_dir . '/dtb-auth.php';
+require_once $_dtb_dir . '/dtb-cache.php';
 require_once $_dtb_dir . '/dtb-rest-api.php';
 require_once $_dtb_dir . '/dtb-woocommerce.php';
-require_once $_dtb_dir . '/dtb-cache.php';
 require_once $_dtb_dir . '/dtb-schematics-api.php';
 require_once $_dtb_dir . '/dtb-coming-soon.php';
 require_once $_dtb_dir . '/dtb-config-reference.php';
