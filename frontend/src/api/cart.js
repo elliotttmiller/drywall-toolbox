@@ -166,3 +166,104 @@ export async function removeCoupon( code ) {
   } );
 }
 
+// ─── Checkout helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Remove all items currently in the WooCommerce server-side cart.
+ * Call this before syncing the React CartContext into the Store API cart to
+ * avoid accumulating stale items from a previous session.
+ *
+ * @returns {Promise<Object>}  Empty cart object.
+ */
+export async function clearStoreCart() {
+  const cart = await storeFetch( '/cart' );
+  if ( ! cart?.items?.length ) return cart;
+
+  for ( const item of cart.items ) {
+    await removeCartItem( item.key );
+  }
+
+  return storeFetch( '/cart' );
+}
+
+/**
+ * Submit the WooCommerce Store API checkout.
+ *
+ * The WC server-side cart must be populated (via addToCart) before calling
+ * this function. On success the server creates the WooCommerce order and
+ * returns the order ID + order key used for the confirmation page.
+ *
+ * Payment method must match a gateway enabled in WP Admin
+ * (WooCommerce → Settings → Payments).  Default: 'cod' (Cash on Delivery /
+ * Check / Invoice).  For Stripe/PayPal use their respective gateway IDs and
+ * pass payment_data from the gateway JS SDK.
+ *
+ * @param {Object} billingAddress   WC billing address object
+ * @param {Object} shippingAddress  WC shipping address object (optional, defaults to billing)
+ * @param {string} paymentMethod    WC payment gateway ID (default: 'cod')
+ * @param {Array}  paymentData      Gateway-specific payment tokens (default: [])
+ * @param {string} customerNote     Optional note for the order
+ * @returns {Promise<Object>}       { order_id, order_key, status, payment_result, … }
+ */
+export async function placeOrder(
+  billingAddress,
+  shippingAddress = null,
+  paymentMethod = 'cod',
+  paymentData = [],
+  customerNote = '',
+) {
+  return storeFetch( '/checkout', {
+    method: 'POST',
+    body: JSON.stringify( {
+      billing_address:  billingAddress,
+      shipping_address: shippingAddress || billingAddress,
+      payment_method:   paymentMethod,
+      payment_data:     paymentData,
+      customer_note:    customerNote,
+      create_account:   false,
+    } ),
+  } );
+}
+
+/**
+ * Synchronise the React CartContext items into the WC server-side cart and
+ * submit the Store API checkout in one atomic operation.
+ *
+ * Steps:
+ *   1. initCart()        — obtain a fresh Store API nonce
+ *   2. clearStoreCart()  — remove any stale server-side items from previous sessions
+ *   3. addToCart()       — add each item from cartItems sequentially
+ *   4. placeOrder()      — POST /wc/store/v1/checkout
+ *
+ * @param {Array}  cartItems       Items from CartContext (id, quantity required)
+ * @param {Object} billingAddress
+ * @param {Object} shippingAddress
+ * @param {string} paymentMethod
+ * @param {Array}  paymentData
+ * @param {string} customerNote
+ * @returns {Promise<Object>}  WC checkout response (order_id, order_key, …)
+ */
+export async function syncAndPlace(
+  cartItems,
+  billingAddress,
+  shippingAddress = null,
+  paymentMethod = 'cod',
+  paymentData = [],
+  customerNote = '',
+) {
+  // Initialise session + capture nonce.
+  await initCart();
+
+  // Clear any lingering server-side items.
+  await clearStoreCart();
+
+  // Sync the local cart to the server.  Sequential to avoid race conditions on
+  // the nonce — each response carries the updated nonce in the header.
+  for ( const item of cartItems ) {
+    await addToCart( item.id, item.quantity );
+  }
+
+  // Submit the checkout.
+  return placeOrder( billingAddress, shippingAddress, paymentMethod, paymentData, customerNote );
+}
+

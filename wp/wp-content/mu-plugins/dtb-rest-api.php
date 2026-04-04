@@ -215,6 +215,40 @@ function dtb_register_auth_routes(): void {
 		'callback'            => 'dtb_route_wc_admin_profile',
 		'permission_callback' => '__return_true',
 	] );
+
+	// ── JWT cookie-based auth endpoints ───────────────────────────────────────
+	// These endpoints issue / validate / revoke JWTs as HttpOnly SameSite=Strict
+	// cookies so the React SPA never stores the raw token string.
+
+	register_rest_route( $ns, '/auth/login', [
+		'methods'             => 'POST',
+		'callback'            => 'dtb_route_auth_login',
+		'permission_callback' => '__return_true',
+		'args'                => [
+			'email'    => [
+				'required'          => true,
+				'sanitize_callback' => 'sanitize_email',
+				'description'       => 'WordPress user email or username.',
+			],
+			'password' => [
+				'required'          => true,
+				'sanitize_callback' => 'sanitize_text_field',
+				'description'       => 'WordPress user password.',
+			],
+		],
+	] );
+
+	register_rest_route( $ns, '/auth/logout', [
+		'methods'             => 'DELETE',
+		'callback'            => 'dtb_route_auth_logout',
+		'permission_callback' => '__return_true',
+	] );
+
+	register_rest_route( $ns, '/auth/validate', [
+		'methods'             => 'POST',
+		'callback'            => 'dtb_route_auth_validate',
+		'permission_callback' => '__return_true',
+	] );
 }
 
 // =============================================================================
@@ -444,17 +478,32 @@ function dtb_rate_limit_get(): ?WP_REST_Response {
 // =============================================================================
 
 /**
- * REST permission_callback that validates a Bearer JWT token.
+ * REST permission_callback that validates a JWT token.
+ *
+ * Token is read in priority order:
+ *   1. Authorization: Bearer {token}  header  (API / mobile clients)
+ *   2. dtb_auth HttpOnly cookie               (browser SPA after cookie-login)
  *
  * @param WP_REST_Request $request Incoming request.
  * @return true|WP_Error True on success; WP_Error on auth failure.
  */
 function dtb_jwt_permission( WP_REST_Request $request ) {
+	$token = null;
+
+	// 1. Try Authorization header.
 	$auth = $request->get_header( 'authorization' );
-	if ( ! $auth || ! preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
+	if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
+		$token = $m[1];
+	}
+
+	// 2. Fall back to HttpOnly cookie (set by POST /dtb/v1/auth/login).
+	if ( ! $token && ! empty( $_COOKIE['dtb_auth'] ) ) {
+		$token = sanitize_text_field( wp_unslash( $_COOKIE['dtb_auth'] ) );
+	}
+
+	if ( ! $token ) {
 		return new WP_Error( 'missing_token', 'Authorization token required.', [ 'status' => 401 ] );
 	}
-	$token = $m[1];
 
 	$validate_url = rest_url( 'simple-jwt-login/v1/auth/validate' );
 	$resp = wp_remote_post( $validate_url, [
@@ -736,6 +785,180 @@ function dtb_route_import_catalog( WP_REST_Request $request ) {
 	}
 
 	return dtb_run_catalog_import_sync( $file_path );
+}
+
+// =============================================================================
+// ROUTE CALLBACKS — dtb/v1 JWT cookie auth
+// =============================================================================
+
+/**
+ * Name of the HttpOnly JWT cookie.
+ */
+const DTB_AUTH_COOKIE = 'dtb_auth';
+
+/**
+ * Emit the dtb_auth JWT as an HttpOnly, SameSite=Strict cookie.
+ *
+ * @param string $jwt     JWT string from simple-jwt-login.
+ * @param int    $ttl_sec Cookie lifetime in seconds (default: 86400 = 24 h).
+ */
+function dtb_set_auth_cookie( string $jwt, int $ttl_sec = 86400 ): void {
+	setcookie( DTB_AUTH_COOKIE, $jwt, [
+		'expires'  => time() + $ttl_sec,
+		'path'     => '/',
+		'domain'   => '',           // current domain only
+		'secure'   => is_ssl(),     // HTTPS-only in production
+		'httponly' => true,         // not accessible from JS
+		'samesite' => 'Strict',     // protects against CSRF
+	] );
+}
+
+/**
+ * Clear the dtb_auth cookie (logout).
+ */
+function dtb_clear_auth_cookie(): void {
+	setcookie( DTB_AUTH_COOKIE, '', [
+		'expires'  => time() - 3600,
+		'path'     => '/',
+		'domain'   => '',
+		'secure'   => is_ssl(),
+		'httponly' => true,
+		'samesite' => 'Strict',
+	] );
+}
+
+/** POST /dtb/v1/auth/login — authenticate and issue HttpOnly JWT cookie. */
+function dtb_route_auth_login( WP_REST_Request $request ): WP_REST_Response {
+	$rl = dtb_rate_limit( $request, 'auth_login' );
+	if ( $rl ) {
+		return $rl;
+	}
+
+	$email    = sanitize_email( (string) $request->get_param( 'email' ) );
+	$password = (string) $request->get_param( 'password' );
+
+	if ( empty( $email ) || empty( $password ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'missing_credentials', 'Email and password are required.', 400 ),
+			400
+		);
+	}
+
+	// Forward credentials to the active JWT plugin (simple-jwt-login).
+	$jwt_url = rest_url( 'simple-jwt-login/v1/auth' );
+	$resp    = wp_remote_post( $jwt_url, [
+		'body'    => wp_json_encode( [ 'email' => $email, 'password' => $password ] ),
+		'headers' => [ 'Content-Type' => 'application/json' ],
+		'timeout' => 10,
+	] );
+
+	if ( is_wp_error( $resp ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'auth_unavailable', 'Authentication service unavailable.', 502 ),
+			502
+		);
+	}
+
+	$code = wp_remote_retrieve_response_code( $resp );
+	$body = json_decode( wp_remote_retrieve_body( $resp ), true );
+
+	if ( 200 !== $code ) {
+		$msg = $body['message'] ?? 'Invalid credentials.';
+		return new WP_REST_Response(
+			dtb_error_envelope( 'auth_failed', sanitize_text_field( $msg ), 401 ),
+			401
+		);
+	}
+
+	$jwt = $body['data']['jwt'] ?? '';
+	if ( empty( $jwt ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'auth_failed', 'Token not returned by authentication service.', 401 ),
+			401
+		);
+	}
+
+	// Issue the JWT as an HttpOnly, SameSite=Strict cookie.
+	dtb_set_auth_cookie( $jwt );
+
+	// Return user info only — never expose the raw JWT in the response body.
+	$user_data = $body['data']['user'] ?? [];
+	$response  = new WP_REST_Response( [
+		'success' => true,
+		'user'    => [
+			'email'       => sanitize_email( $user_data['user_email']    ?? '' ),
+			'nicename'    => sanitize_text_field( $user_data['user_nicename'] ?? ( $user_data['user_login'] ?? '' ) ),
+			'displayName' => sanitize_text_field( $user_data['display_name']  ?? '' ),
+		],
+	], 200 );
+
+	// Prevent this response from being cached.
+	$response->header( 'Cache-Control', 'private, no-store' );
+	return $response;
+}
+
+/** DELETE /dtb/v1/auth/logout — clear the HttpOnly JWT cookie. */
+function dtb_route_auth_logout(): WP_REST_Response {
+	dtb_clear_auth_cookie();
+
+	$response = new WP_REST_Response( [ 'success' => true ], 200 );
+	$response->header( 'Cache-Control', 'private, no-store' );
+	return $response;
+}
+
+/**
+ * POST /dtb/v1/auth/validate — validate the current JWT (cookie or Bearer)
+ * and return the authenticated user's profile.
+ */
+function dtb_route_auth_validate( WP_REST_Request $request ): WP_REST_Response {
+	$token = null;
+
+	// 1. Check Authorization header.
+	$auth = $request->get_header( 'authorization' );
+	if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
+		$token = $m[1];
+	}
+
+	// 2. Fall back to HttpOnly cookie.
+	if ( ! $token && ! empty( $_COOKIE[ DTB_AUTH_COOKIE ] ) ) {
+		$token = sanitize_text_field( wp_unslash( $_COOKIE[ DTB_AUTH_COOKIE ] ) );
+	}
+
+	if ( ! $token ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'missing_token', 'No active session.', 401 ),
+			401
+		);
+	}
+
+	$validate_url = rest_url( 'simple-jwt-login/v1/auth/validate' );
+	$resp = wp_remote_post( $validate_url, [
+		'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+		'timeout' => 5,
+	] );
+
+	if ( is_wp_error( $resp ) || 200 !== wp_remote_retrieve_response_code( $resp ) ) {
+		// Invalid / expired — also clear the cookie.
+		dtb_clear_auth_cookie();
+		return new WP_REST_Response(
+			dtb_error_envelope( 'invalid_token', 'Session expired. Please log in again.', 401 ),
+			401
+		);
+	}
+
+	$body      = json_decode( wp_remote_retrieve_body( $resp ), true );
+	$user_data = $body['data']['user'] ?? [];
+
+	$response = new WP_REST_Response( [
+		'success' => true,
+		'user'    => [
+			'email'       => sanitize_email( $user_data['user_email']    ?? '' ),
+			'nicename'    => sanitize_text_field( $user_data['user_nicename'] ?? ( $user_data['user_login'] ?? '' ) ),
+			'displayName' => sanitize_text_field( $user_data['display_name']  ?? '' ),
+		],
+	], 200 );
+	$response->header( 'Cache-Control', 'private, no-store' );
+	return $response;
 }
 
 /** POST /dtb/v1/create-app-password */

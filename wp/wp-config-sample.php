@@ -89,6 +89,45 @@ define( 'WP_DEBUG', false );
 
 /* Add any custom values between this line and the "stop editing" line. */
 
+// =============================================================================
+// DTB — Drywall Toolbox custom constants
+// =============================================================================
+// All secrets below must be set before the site will function correctly.
+// Generate secure random values with: openssl rand -hex 32
+
+// ── WooCommerce REST API v3 (server-side proxy only — never exposed to client)
+// Generate in WP Admin: WooCommerce → Settings → Advanced → REST API
+define( 'WC_PROXY_CONSUMER_KEY',    'ck_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' );
+define( 'WC_PROXY_CONSUMER_SECRET', 'cs_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' );
+
+// ── WooCommerce Application Password (for browser-client credential endpoint)
+// Generate in WP Admin: Users → Your Profile → Application Passwords
+define( 'DTB_WC_AUTH_USER', 'wordpress-username' );
+define( 'DTB_WC_AUTH_PASS', 'xxxx xxxx xxxx xxxx xxxx xxxx' );
+
+// ── JWT signing secret (used by simple-jwt-login plugin)
+// Must match the "JWT Decryption Key" in the plugin's settings page.
+define( 'DRYWALL_JWT_SECRET', 'change_me_to_a_long_random_string_min_32_chars' );
+
+// ── WooCommerce webhook HMAC secret (validates incoming product webhooks)
+// Must match the "Secret" field set when webhooks are auto-created in WC Admin.
+define( 'WC_WEBHOOK_SECRET', 'change_me_to_a_long_random_webhook_secret' );
+
+// ── Catalog import secret (authenticates the CI/CD /dtb/v1/import-catalog endpoint)
+define( 'DTB_IMPORT_SECRET', 'change_me_to_a_secure_import_secret' );
+
+// ── Optional overrides (uncomment to activate)
+// Additional allowed CORS origin (e.g. staging domain):
+// define( 'DRYWALL_ALLOWED_ORIGIN', 'https://staging.drywalltoolbox.com' );
+// Custom webhook delivery URL (default: https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products):
+// define( 'DTB_WEBHOOK_DELIVERY_URL', 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products' );
+// Custom product CSV filename (default: product-wp-catalog-c7p3my05pn.csv):
+// define( 'DTB_WC_CSV_FILENAME', 'product-wp-catalog-c7p3my05pn.csv' );
+
+// ── Security hardening
+define( 'DISALLOW_FILE_EDIT', true );   // disable theme/plugin editor in WP Admin
+define( 'DISALLOW_FILE_MODS', false );  // set true to block plugin/theme installs too
+
 
 
 /* That's all, stop editing! Happy publishing. */

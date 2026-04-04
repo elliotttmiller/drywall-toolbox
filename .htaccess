@@ -39,19 +39,80 @@ Options +FollowSymLinks
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-    # ✅ OPTIMIZED: Extended HSTS max-age from 1 year to 2 years for better caching/security
+    # Extended HSTS max-age: 2 years with preload
     Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+    # ── Cache-Control for REST API routes ────────────────────────────────────
+    # Cart, order, and auth endpoints must never be cached anywhere.
+    <LocationMatch "^/(wp-json|dtb)/">
+        Header always set Cache-Control "no-store, no-cache, must-revalidate, private"
+        Header always set Pragma "no-cache"
+    </LocationMatch>
+
+    # ── Prevent search engines from indexing WP Admin ─────────────────────────
+    <LocationMatch "^/(wp-admin|wp-login\.php)">
+        Header always set X-Robots-Tag "noindex, nofollow"
+    </LocationMatch>
 </IfModule>
 
-# ─── CORS Headers (Allow React to call WordPress API) ─────────────────────────
+# ─── WP Admin & Login Protection ──────────────────────────────────────────────
+# Restrict access to /wp-admin/ and /wp-login.php using HTTP Basic
+# Authentication.  Create /wp/.htpasswd on the server with:
+#   htpasswd -c /home/<user>/public_html/drywalltoolbox/.htpasswd admin
+# Then uncomment the AuthType block below.
+#
+# Alternatively, restrict by IP — replace the AuthType block with:
+#   Require ip 1.2.3.4 5.6.7.8
+#
+<LocationMatch "^/(wp-admin|wp-login\.php)">
+    # Uncomment and configure to enable HTTP Basic Auth gate on WP Admin.
+    # This adds a second authentication layer on top of WordPress login.
+    #
+    # AuthType Basic
+    # AuthName "Restricted Area"
+    # AuthUserFile /home/<cpanel_user>/public_html/drywalltoolbox/.htpasswd
+    # Require valid-user
+
+    # ── IP allowlist (alternative to Basic Auth) ──────────────────────────
+    # Uncomment and add your admin IP addresses to lock down WP Admin.
+    # Require ip 1.2.3.4
+    # Require ip 5.6.7.0/24
+</LocationMatch>
+
+# ─── REST API Origin Guard ─────────────────────────────────────────────────────
+# Block cross-origin REST API requests from domains NOT in the DTB allowlist.
+# This protects against unauthorized third-party sites calling the API from a
+# browser.  Server-to-server calls (no Origin header) are always allowed.
+#
+# Allowlist:
+#   https://drywalltoolbox.com
+#   https://www.drywalltoolbox.com
+#   http://localhost:*   (development only — Apache env check)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the Origin header is present and is NOT our production domain…
+    RewriteCond %{HTTP:Origin} .+ [NC]
+    RewriteCond %{HTTP:Origin} !^https?://(www\.)?drywalltoolbox\.com$ [NC]
+    # …and NOT a localhost/loopback origin (dev builds)…
+    RewriteCond %{HTTP:Origin} !^http://(localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
+    # …then deny the REST API and DTB namespace routes with 403 Forbidden.
+    RewriteRule ^(wp-json|dtb)/ - [F,L]
+</IfModule>
+
+# ─── CORS Headers ─────────────────────────────────────────────────────────────
+# CORS for the REST API is handled dynamically by dtb-cors.php (mu-plugin) so
+# that the reflected origin header is allowlisted correctly for both production
+# and local-dev origins.  Static Apache headers here would conflict with the
+# PHP-emitted headers and break cross-origin preflight for localhost.
+#
+# Only static-asset cross-origin requests (fonts, images) benefit from a fixed
+# header, which is set here scoped to the uploads and asset paths.
 <IfModule mod_headers.c>
-    # ✅ OPTIMIZED: Restrict CORS to your domain instead of "*" for better security
-    # This allows your React frontend to call the REST API while blocking unauthorized requests
-    Header set Access-Control-Allow-Origin "https://drywalltoolbox.com"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-    Header set Access-Control-Max-Age "86400"
-    Header set Access-Control-Allow-Credentials "true"
+    <LocationMatch "\.(woff2?|ttf|otf|eot|svg|webp|png|jpe?g|gif)$">
+        Header set Access-Control-Allow-Origin "https://drywalltoolbox.com"
+        Header set Vary "Origin"
+    </LocationMatch>
 </IfModule>
 
 # ─── Gzip / Brotli Compression ────────────────────────────────────────────────

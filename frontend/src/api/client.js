@@ -135,7 +135,7 @@ export async function apiClient( endpoint, options = {} ) {
 
   let response;
   try {
-    response = await fetch( url, { ...options, method, headers } );
+    response = await fetch( url, { ...options, method, headers, credentials: 'include' } );
   } catch ( networkError ) {
     throw { code: 'network_error', message: 'Network request failed.', status: 0 };
   }

@@ -3,68 +3,58 @@
  *
  * Custom hook encapsulating JWT authentication state.
  *
- * JWT endpoint paths below (REACT_APP_JWT_AUTH_ENDPOINT) MUST match the
- * active JWT plugin installed on the WordPress site.  Two common options:
- *   simple-jwt-login:                 /wp-json/simple-jwt-login/v1/auth
- *   jwt-authentication-for-wp-rest-api: /wp-json/jwt-auth/v1/token
- * Update REACT_APP_JWT_AUTH_ENDPOINT in .env.* to switch plugins.
+ * Authentication flow (cookie-based):
+ *   Login  → POST /dtb/v1/auth/login   — sets HttpOnly SameSite=Strict cookie,
+ *                                         returns user profile (no raw JWT in body)
+ *   Logout → DELETE /dtb/v1/auth/logout — clears the auth cookie server-side
+ *   Restore → POST /dtb/v1/auth/validate — reads the cookie, validates JWT,
+ *                                           returns user profile on success
  *
- * Exposes: { user, token, isAuthenticated, isLoading, login, logout, error }
+ * The raw JWT is never stored in JS memory, localStorage, or sessionStorage.
+ * The browser sends it automatically via the HttpOnly cookie on every request
+ * to the same origin when `credentials: 'include'` is set (see api/client.js).
+ *
+ * Exposes: { user, isAuthenticated, isLoading, login, logout, error }
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { setToken, getToken, clearToken } from './tokenStore.js';
 
-// ─── JWT endpoint (injected at build time via DefinePlugin) ───────────────────
+// ─── DTB auth endpoint base ───────────────────────────────────────────────────
 
-// IMPORTANT: This path must match the active JWT plugin on the WP installation.
-// See REACT_APP_JWT_AUTH_ENDPOINT in .env.* files.
-const JWT_AUTH_ENDPOINT =
-  process.env.REACT_APP_API_BASE_URL
-    ? process.env.REACT_APP_API_BASE_URL.replace( /\/+$/, '' ) +
-      ( process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth' )
-    : process.env.REACT_APP_JWT_AUTH_ENDPOINT || '/wp-json/simple-jwt-login/v1/auth';
+const _base = ( process.env.REACT_APP_API_BASE_URL || '' ).replace( /\/+$/, '' );
+const DTB_AUTH_BASE = _base + '/wp-json/dtb/v1/auth';
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useAuth() {
-  const [ user,    setUser    ] = useState( null );
-  const [ token,   setTokenState ] = useState( null );
+  const [ user,      setUser      ] = useState( null );
   const [ isLoading, setIsLoading ] = useState( true );
-  const [ error,   setError   ] = useState( null );
+  const [ error,     setError     ] = useState( null );
 
-  // ── Validate existing session on mount ──────────────────────────────────────
+  // ── Restore session on mount ─────────────────────────────────────────────────
+  // If the browser has a valid dtb_auth HttpOnly cookie, the validate endpoint
+  // will confirm it and return the user profile without requiring a re-login.
   useEffect( () => {
     let cancelled = false;
 
     async function validateSession() {
       setIsLoading( true );
       try {
-        // IMPORTANT: validate endpoint path must match the active JWT plugin.
-        // simple-jwt-login validate: POST /wp-json/simple-jwt-login/v1/auth/validate
-        const validateUrl = JWT_AUTH_ENDPOINT + '/validate';
-        const res = await fetch( validateUrl, {
-          method: 'POST',
+        const res = await fetch( `${ DTB_AUTH_BASE }/validate`, {
+          method:      'POST',
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
+          headers:     { 'Content-Type': 'application/json' },
         } );
 
         if ( res.ok ) {
           const data = await res.json();
-          // simple-jwt-login returns { data: { user: {...} } } on success.
-          const userData = data?.data?.user || data?.user || null;
-          const existingToken = data?.data?.jwt || data?.jwt || getToken() || null;
-          if ( ! cancelled ) {
-            if ( existingToken ) setToken( existingToken );
-            setTokenState( existingToken );
-            setUser( userData );
+          if ( ! cancelled && data?.user ) {
+            setUser( data.user );
           }
         }
-        // Non-OK response on validate is expected when not logged in.
-        // Do NOT dispatch auth:expired here — this is an initial check, not a
-        // protected resource request that the user expected to succeed.
+        // Non-OK means no active session — remain logged out silently.
       } catch {
-        // Network error or JSON parse failure — remain logged out.
+        // Network error — remain logged out.
       } finally {
         if ( ! cancelled ) setIsLoading( false );
       }
@@ -74,7 +64,7 @@ export function useAuth() {
     return () => { cancelled = true; };
   }, [] );
 
-  // ── Auth:expired listener ────────────────────────────────────────────────────
+  // ── auth:expired listener ────────────────────────────────────────────────────
   useEffect( () => {
     const handler = () => logout();
     window.addEventListener( 'auth:expired', handler );
@@ -87,11 +77,11 @@ export function useAuth() {
     setError( null );
     setIsLoading( true );
     try {
-      // IMPORTANT: auth endpoint path must match the active JWT plugin.
-      const res = await fetch( JWT_AUTH_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { email, password } ),
+      const res = await fetch( `${ DTB_AUTH_BASE }/login`, {
+        method:      'POST',
+        credentials: 'include',
+        headers:     { 'Content-Type': 'application/json' },
+        body:        JSON.stringify( { email, password } ),
       } );
 
       const data = await res.json();
@@ -102,15 +92,8 @@ export function useAuth() {
         throw new Error( msg );
       }
 
-      // simple-jwt-login returns { data: { jwt, user: {...} } }.
-      const jwt      = data?.data?.jwt || data?.token || null;
-      const userData = data?.data?.user || data?.user_display_name
-        ? { displayName: data.user_display_name, email: data.user_email }
-        : null;
-
-      if ( jwt ) setToken( jwt );
-      setTokenState( jwt );
-      setUser( userData );
+      // The JWT is now in the HttpOnly cookie — only store the user profile.
+      setUser( data.user || null );
       return data;
     } catch ( err ) {
       setError( err.message || 'Login failed.' );
@@ -122,26 +105,21 @@ export function useAuth() {
 
   // ── logout ───────────────────────────────────────────────────────────────────
   const logout = useCallback( async () => {
-    clearToken();
-    setTokenState( null );
     setUser( null );
     setError( null );
 
-    // IMPORTANT: logout endpoint path must match the active JWT plugin.
-    // Attempt graceful server-side token revocation; ignore errors.
+    // Clear the HttpOnly cookie server-side.
     try {
-      await fetch( JWT_AUTH_ENDPOINT + '/revoke', {
-        method: 'DELETE',
+      await fetch( `${ DTB_AUTH_BASE }/logout`, {
+        method:      'DELETE',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
       } );
     } catch { /**/ }
   }, [] );
 
   return {
     user,
-    token,
-    isAuthenticated: Boolean( token ),
+    isAuthenticated: Boolean( user ),
     isLoading,
     login,
     logout,
