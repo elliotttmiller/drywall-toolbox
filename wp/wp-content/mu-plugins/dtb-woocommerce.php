@@ -263,3 +263,115 @@ function drywall_ensure_webhooks(): void {
 		error_log( '[DryWall Toolbox] Webhook created: ' . $topic );
 	}
 }
+
+// ---------------------------------------------------------------------------
+// 6. CHECKOUT FIELD CUSTOMISATION
+//    Strip fields that are not needed by this storefront (Company name and
+//    Address Line 2) from both the billing and shipping sections to keep the
+//    checkout form lean and match the headless React UI.
+// ---------------------------------------------------------------------------
+add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
+	unset( $fields['billing']['billing_company'] );
+	unset( $fields['billing']['billing_address_2'] );
+	unset( $fields['shipping']['shipping_company'] );
+	unset( $fields['shipping']['shipping_address_2'] );
+	return $fields;
+} );
+
+// ---------------------------------------------------------------------------
+// 7. STRIPE UPE APPEARANCE
+//    Pass a custom `appearance` object to the Stripe Elements API so the card
+//    UI matches the storefront: Inter font, 12 px border radius, and the site's
+//    primary blue (#2563eb / --color-primary-600).
+//    Requires the WooCommerce Stripe Gateway plugin ≥ 7.x (UPE mode).
+// ---------------------------------------------------------------------------
+add_filter( 'wc_stripe_upe_params', function ( $params ) {
+	$params['appearance'] = [
+		'theme'     => 'flat',
+		'variables' => [
+			'fontFamily'      => "'Inter', system-ui, sans-serif",
+			'fontSizeBase'    => '16px',
+			'borderRadius'    => '12px',
+			'colorPrimary'    => '#2563eb',  // --color-primary-600
+			'colorBackground' => '#ffffff',
+			'colorText'       => '#111827',  // gray-900
+			'colorDanger'     => '#dc2626',  // red-600
+			'spacingUnit'     => '4px',
+		],
+		'rules'     => [
+			'.Input'        => [
+				'border'    => '1px solid #e5e7eb',  // gray-200
+				'boxShadow' => 'none',
+				'padding'   => '12px 16px',
+				'fontSize'  => '16px',               // prevent iOS Safari zoom
+			],
+			'.Input:focus'  => [
+				'border'    => '2px solid #2563eb',
+				'boxShadow' => '0 0 0 3px rgba(37,99,235,0.12)',
+			],
+			'.Label'        => [
+				'color'         => '#6b7280',  // gray-500
+				'fontSize'      => '12px',
+				'fontWeight'    => '600',
+				'letterSpacing' => '0.05em',
+				'textTransform' => 'uppercase',
+			],
+		],
+	];
+
+	return $params;
+} );
+
+// ---------------------------------------------------------------------------
+// 8. PAYPAL EXPRESS BUTTON PLACEMENT
+//    Move the PayPal Payments Express Checkout buttons (Apple Pay / Google
+//    Pay / PayPal) above the standard checkout form fields so they are
+//    presented first — matching the headless React layout.
+//    Requires the WooCommerce PayPal Payments plugin.
+// ---------------------------------------------------------------------------
+add_action( 'woocommerce_before_checkout_form', function () {
+	/**
+	 * The PayPal Payments plugin fires its own action to render the Express
+	 * Checkout container.  Calling do_action() here re-fires it at priority 5
+	 * (before the default checkout form at priority 10), placing the buttons
+	 * at the very top of the checkout page.
+	 */
+	do_action( 'woocommerce_paypal_payments_checkout_button_renderer_hook' );
+}, 5 );
+
+// Customise Express button style to match the storefront brand.
+add_filter( 'woocommerce_paypal_payments_button_style', function ( $style ) {
+	return array_merge( $style, [
+		'layout' => 'vertical',
+		'shape'  => 'rect',
+		'color'  => 'black',
+		'label'  => 'pay',
+	] );
+} );
+
+// ---------------------------------------------------------------------------
+// 9. SERVER-SIDE CHECKOUT VALIDATION
+//    Additional server-side checks run after WooCommerce's own validation.
+//    These complement the client-side checks in the React frontend.
+// ---------------------------------------------------------------------------
+add_action( 'woocommerce_after_checkout_validation', function ( $data, $errors ) {
+	// Require a valid US phone number (10+ digits after stripping non-numeric).
+	$phone = preg_replace( '/\D/', '', $data['billing_phone'] ?? '' );
+	if ( ! empty( $data['billing_phone'] ) && strlen( $phone ) < 10 ) {
+		$errors->add(
+			'billing_phone_invalid',
+			__( 'Please enter a valid phone number (10 or more digits).', 'woocommerce' )
+		);
+	}
+
+	// Block orders from known disposable-email domains.
+	$blocked_domains = [ 'mailinator.com', 'guerrillamail.com', 'tempmail.com', 'throwam.com' ];
+	$email_parts     = explode( '@', strtolower( $data['billing_email'] ?? '' ) );
+	$email_domain    = end( $email_parts );
+	if ( in_array( $email_domain, $blocked_domains, true ) ) {
+		$errors->add(
+			'billing_email_disposable',
+			__( 'Please use a permanent email address to place your order.', 'woocommerce' )
+		);
+	}
+}, 10, 2 );
