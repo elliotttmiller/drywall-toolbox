@@ -8,6 +8,22 @@
  * Defines shared utility functions used across the mu-plugin suite so that
  * the allowed-origins list and origin-check logic live in exactly one place.
  *
+ * Also controls the explicit load order of all DTB mu-plugins via require_once.
+ * WordPress would otherwise load each file alphabetically; the require_once
+ * calls here ensure dependency order is respected.  PHP's require_once
+ * semantics prevent double-inclusion when WordPress later tries to load the
+ * same files.
+ *
+ * Load order:
+ *   dtb-utils.php          — shared helper functions
+ *   dtb-auth.php           — JWT generation / verification / REST auth routes
+ *   dtb-rest-api.php       — WC proxy + site-management REST routes + CORS
+ *   dtb-woocommerce.php    — WC configuration and webhook auto-creation
+ *   dtb-cache.php          — transient cache helpers and diagnostic route
+ *   dtb-schematics-api.php — schematics media REST route
+ *   dtb-coming-soon.php    — e-mail subscriber handler
+ *   dtb-config-reference.php — comment-only constant reference (no exec code)
+ *
  * @package drywall-toolbox
  */
 
@@ -63,3 +79,18 @@ function dtb_check_origin(): bool {
 
 	return in_array( rtrim( $raw_origin, '/' ), dtb_allowed_origins(), true );
 }
+
+// ─── Explicit load order ──────────────────────────────────────────────────────
+
+$_dtb_dir = __DIR__;
+
+require_once $_dtb_dir . '/dtb-utils.php';
+require_once $_dtb_dir . '/dtb-auth.php';
+require_once $_dtb_dir . '/dtb-rest-api.php';
+require_once $_dtb_dir . '/dtb-woocommerce.php';
+require_once $_dtb_dir . '/dtb-cache.php';
+require_once $_dtb_dir . '/dtb-schematics-api.php';
+require_once $_dtb_dir . '/dtb-coming-soon.php';
+require_once $_dtb_dir . '/dtb-config-reference.php';
+
+unset( $_dtb_dir );

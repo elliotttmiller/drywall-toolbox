@@ -14,14 +14,17 @@
  *   drywall/v1   Server-side WC REST proxy (products, categories, orders, …)
  *   dtb/v1       Site-management endpoints  (config, catalog, import, auth, …)
  *
- * Depends on (loaded before this file alphabetically)
+ * Depends on (loaded before this file via 00-dtb-loader.php)
  * ────────────────────────────────────────────────────
  *   00-dtb-loader.php  → dtb_allowed_origins(), dtb_check_origin()
  *   dtb-utils.php      → dtb_get_config(), dtb_get_wc_credentials(),
  *                         dtb_error_envelope(), dtb_get_client_ip()
+ *   dtb-auth.php       → dtb_jwt_permission()
+ *   dtb-cache.php      → dtb_cached_proxy(), dtb_invalidate_product_cache(),
+ *                         dtb_log_cache_event()
  *
- * Non-REST concerns (WC config, CORS, webhooks, schematics, coming-soon) remain
- * in their dedicated files.
+ * Non-REST concerns (WC config, webhooks, schematics, coming-soon) remain
+ * in their dedicated files.  CORS is handled here at rest_api_init priority 15.
  *
  * @package drywall-toolbox
  */
@@ -40,11 +43,11 @@ if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
 // =============================================================================
 
 add_action( 'rest_api_init', 'dtb_register_all_routes', 10 );
+add_action( 'rest_api_init', 'dtb_cors_init', 15 );
 
 function dtb_register_all_routes(): void {
 	dtb_register_proxy_routes();
 	dtb_register_config_routes();
-	dtb_register_auth_routes();
 }
 
 // =============================================================================
@@ -179,10 +182,6 @@ function dtb_register_config_routes(): void {
 		// Access control enforced inside the callback via hash_equals().
 		'permission_callback' => '__return_true',
 	] );
-}
-
-function dtb_register_auth_routes(): void {
-	$ns = 'dtb/v1';
 
 	// ── POST /dtb/v1/create-app-password ─────────────────────────────────────
 	register_rest_route( $ns, '/create-app-password', [
@@ -215,40 +214,75 @@ function dtb_register_auth_routes(): void {
 		'callback'            => 'dtb_route_wc_admin_profile',
 		'permission_callback' => '__return_true',
 	] );
+}
 
-	// ── JWT cookie-based auth endpoints ───────────────────────────────────────
-	// These endpoints issue / validate / revoke JWTs as HttpOnly SameSite=Strict
-	// cookies so the React SPA never stores the raw token string.
+// =============================================================================
+// CORS
+// =============================================================================
 
-	register_rest_route( $ns, '/auth/login', [
-		'methods'             => 'POST',
-		'callback'            => 'dtb_route_auth_login',
-		'permission_callback' => '__return_true',
-		'args'                => [
-			'email'    => [
-				'required'          => true,
-				'sanitize_callback' => 'sanitize_email',
-				'description'       => 'WordPress user email or username.',
-			],
-			'password' => [
-				'required'          => true,
-				'sanitize_callback' => 'sanitize_text_field',
-				'description'       => 'WordPress user password.',
-			],
-		],
-	] );
+/**
+ * Emit Access-Control-* headers for the DTB REST API.
+ *
+ * Hooked at rest_api_init priority 15 — fires after route registration
+ * (priority 10) so WooCommerce hooks are already in place, and before any
+ * route handler dispatches a response.
+ *
+ * Behaviour by request type:
+ *   OPTIONS preflight  — validate origin, emit headers, return 200 and exit.
+ *   Unknown origin     — return 403 and exit for any browser origin not on the
+ *                        DTB allowlist.
+ *   Known origin / no origin — replace WordPress default CORS filter with ours.
+ */
+function dtb_cors_init(): void {
+	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
+		? (string) wp_unslash( $_SERVER['HTTP_ORIGIN'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		: '';
 
-	register_rest_route( $ns, '/auth/logout', [
-		'methods'             => 'DELETE',
-		'callback'            => 'dtb_route_auth_logout',
-		'permission_callback' => '__return_true',
-	] );
+	$is_options = isset( $_SERVER['REQUEST_METHOD'] )
+		&& 'OPTIONS' === strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) );
 
-	register_rest_route( $ns, '/auth/validate', [
-		'methods'             => 'POST',
-		'callback'            => 'dtb_route_auth_validate',
-		'permission_callback' => '__return_true',
-	] );
+	// Reject unknown browser origins before any further processing.
+	if ( $raw_origin && ! in_array( rtrim( $raw_origin, '/' ), dtb_allowed_origins(), true ) ) {
+		http_response_code( 403 );
+		exit;
+	}
+
+	if ( $is_options ) {
+		dtb_emit_cors_headers( $raw_origin );
+		header( 'Content-Length: 0' );
+		header( 'Content-Type: text/plain' );
+		http_response_code( 200 );
+		exit;
+	}
+
+	remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+	add_filter( 'rest_pre_serve_request', function ( $value ) use ( $raw_origin ) {
+		dtb_emit_cors_headers( $raw_origin );
+		return $value;
+	} );
+}
+
+/**
+ * Emit the CORS response headers.
+ *
+ * Validates the origin against the DTB allowlist before reflecting it.
+ * Unknown or absent origins receive the production domain as a fallback
+ * (browsers will reject the response — safe by default).
+ *
+ * @param string $raw_origin Raw value from the HTTP_ORIGIN server variable.
+ */
+function dtb_emit_cors_headers( string $raw_origin ): void {
+	if ( $raw_origin && in_array( rtrim( $raw_origin, '/' ), dtb_allowed_origins(), true ) ) {
+		header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $raw_origin ) );
+	} else {
+		header( 'Access-Control-Allow-Origin: https://drywalltoolbox.com' );
+	}
+
+	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
+	header( 'Access-Control-Allow-Credentials: true' );
+	header( 'Access-Control-Allow-Headers: Content-Type, X-WP-Nonce, Authorization, X-Requested-With' );
+	header( 'Access-Control-Max-Age: 86400' );
+	header( 'Vary: Origin' );
 }
 
 // =============================================================================
@@ -271,19 +305,15 @@ function dtb_wc_url( string $path ): string {
 }
 
 /**
- * Build a deterministic transient cache key for a WC API call.
- */
-function dtb_cache_key( string $route, array $params ): string {
-	ksort( $params );
-	return 'drywall_cache_' . md5( $route . wp_json_encode( $params ) );
-}
-
-/**
- * GET a WC endpoint with transient caching.
+ * GET a WC endpoint with transient caching via dtb_cached_proxy().
+ *
+ * Cache key and TTL are managed by dtb_cached_proxy() in dtb-cache.php.
+ * The $ttl parameter is retained for call-site compatibility but the actual
+ * TTL is derived from the route name inside dtb_cached_proxy().
  *
  * @param string $wc_path  WC REST path, e.g. 'wc/v3/products'
  * @param array  $params   Query parameters forwarded verbatim.
- * @param int    $ttl      Cache lifetime in seconds.
+ * @param int    $ttl      Unused — TTL is resolved by dtb_cached_proxy().
  * @return WP_REST_Response
  */
 function dtb_cached_wc_get( string $wc_path, array $params, int $ttl ): WP_REST_Response {
@@ -296,47 +326,40 @@ function dtb_cached_wc_get( string $wc_path, array $params, int $ttl ): WP_REST_
 		return $rl;
 	}
 
-	$cache_key = dtb_cache_key( $wc_path, $params );
-	$cached    = get_transient( $cache_key );
+	$result = dtb_cached_proxy( $wc_path, $params, function () use ( $wc_path, $params ) {
+		$wc_url = dtb_wc_url( $wc_path );
+		if ( ! empty( $params ) ) {
+			$wc_url = add_query_arg( $params, $wc_url );
+		}
 
-	if ( false !== $cached ) {
-		$resp = new WP_REST_Response( $cached, 200 );
-		$resp->header( 'X-Cache', 'HIT' );
-		return $resp;
-	}
+		$raw = wp_remote_get( $wc_url, [
+			'headers' => [ 'Authorization' => dtb_wc_auth_header() ],
+			'timeout' => 15,
+		] );
 
-	$wc_url = dtb_wc_url( $wc_path );
-	if ( ! empty( $params ) ) {
-		$wc_url = add_query_arg( $params, $wc_url );
-	}
+		if ( is_wp_error( $raw ) ) {
+			return new WP_Error( 'upstream_error', 'Could not reach the product catalog.', [ 'status' => 502 ] );
+		}
 
-	$raw = wp_remote_get( $wc_url, [
-		'headers' => [ 'Authorization' => dtb_wc_auth_header() ],
-		'timeout' => 15,
-	] );
+		$code = wp_remote_retrieve_response_code( $raw );
+		$body = json_decode( wp_remote_retrieve_body( $raw ), true );
 
-	if ( is_wp_error( $raw ) ) {
+		if ( $code < 200 || $code >= 300 ) {
+			return new WP_Error( 'upstream_error', 'Product catalog returned an error.', [ 'status' => (int) $code ] );
+		}
+
+		return $body;
+	} );
+
+	if ( is_wp_error( $result ) ) {
+		$status = (int) ( $result->get_error_data()['status'] ?? 502 );
 		return new WP_REST_Response(
-			dtb_error_envelope( 'upstream_error', 'Could not reach the product catalog.', 502 ),
-			502
+			dtb_error_envelope( $result->get_error_code(), $result->get_error_message(), $status ),
+			$status
 		);
 	}
 
-	$code = wp_remote_retrieve_response_code( $raw );
-	$body = json_decode( wp_remote_retrieve_body( $raw ), true );
-
-	if ( $code < 200 || $code >= 300 ) {
-		return new WP_REST_Response(
-			dtb_error_envelope( 'upstream_error', 'Product catalog returned an error.', (int) $code ),
-			(int) $code
-		);
-	}
-
-	set_transient( $cache_key, $body, $ttl );
-
-	$resp = new WP_REST_Response( $body, 200 );
-	$resp->header( 'X-Cache', 'MISS' );
-	return $resp;
+	return new WP_REST_Response( $result, 200 );
 }
 
 /**
@@ -471,50 +494,6 @@ function dtb_rate_limit_get(): ?WP_REST_Response {
 	}
 	set_transient( $key, $count + 1, 60 );
 	return null;
-}
-
-// =============================================================================
-// HELPERS — JWT auth
-// =============================================================================
-
-/**
- * REST permission_callback that validates a JWT token.
- *
- * Token is read in priority order:
- *   1. Authorization: Bearer {token}  header  (API / mobile clients)
- *   2. dtb_auth HttpOnly cookie               (browser SPA after cookie-login)
- *
- * @param WP_REST_Request $request Incoming request.
- * @return true|WP_Error True on success; WP_Error on auth failure.
- */
-function dtb_jwt_permission( WP_REST_Request $request ) {
-	$token = null;
-
-	// 1. Try Authorization header.
-	$auth = $request->get_header( 'authorization' );
-	if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
-		$token = $m[1];
-	}
-
-	// 2. Fall back to HttpOnly cookie (set by POST /dtb/v1/auth/login).
-	if ( ! $token && ! empty( $_COOKIE['dtb_auth'] ) ) {
-		$token = sanitize_text_field( wp_unslash( $_COOKIE['dtb_auth'] ) );
-	}
-
-	if ( ! $token ) {
-		return new WP_Error( 'missing_token', 'Authorization token required.', [ 'status' => 401 ] );
-	}
-
-	$validate_url = rest_url( 'simple-jwt-login/v1/auth/validate' );
-	$resp = wp_remote_post( $validate_url, [
-		'headers' => [ 'Authorization' => 'Bearer ' . $token ],
-		'timeout' => 5,
-	] );
-
-	if ( is_wp_error( $resp ) || wp_remote_retrieve_response_code( $resp ) !== 200 ) {
-		return new WP_Error( 'invalid_token', 'Authorization token is invalid or expired.', [ 'status' => 401 ] );
-	}
-	return true;
 }
 
 // =============================================================================
@@ -670,26 +649,15 @@ function dtb_proxy_webhook_products( WP_REST_Request $request ): WP_REST_Respons
 		return new WP_REST_Response( dtb_error_envelope( 'invalid_signature', 'Webhook signature mismatch.', 401 ), 401 );
 	}
 
-	// Invalidate all drywall cache transients.
-	global $wpdb;
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$wpdb->esc_like( '_transient_drywall_cache_' ) . '%',
-			$wpdb->esc_like( '_transient_timeout_drywall_cache_' ) . '%'
-		)
-	);
-
+	// Invalidate all drywall cache transients and log the event.
 	$payload    = json_decode( $raw_body, true );
 	$product_id = isset( $payload['id'] ) ? absint( $payload['id'] ) : 0;
 
-	$log   = get_option( 'drywall_cache_log', [] );
-	$log[] = [
-		'timestamp'  => gmdate( 'c' ),
+	dtb_invalidate_product_cache();
+	dtb_log_cache_event( 'webhook_received', [
 		'product_id' => $product_id,
-		'event'      => $request->get_header( 'x_wc_webhook_topic' ) ?? 'product.unknown',
-	];
-	update_option( 'drywall_cache_log', array_slice( $log, -50 ), false );
+		'topic'      => $request->get_header( 'x_wc_webhook_topic' ) ?? 'product.unknown',
+	] );
 
 	return new WP_REST_Response( [ 'success' => true ], 200 );
 }
@@ -785,180 +753,6 @@ function dtb_route_import_catalog( WP_REST_Request $request ) {
 	}
 
 	return dtb_run_catalog_import_sync( $file_path );
-}
-
-// =============================================================================
-// ROUTE CALLBACKS — dtb/v1 JWT cookie auth
-// =============================================================================
-
-/**
- * Name of the HttpOnly JWT cookie.
- */
-const DTB_AUTH_COOKIE = 'dtb_auth';
-
-/**
- * Emit the dtb_auth JWT as an HttpOnly, SameSite=Strict cookie.
- *
- * @param string $jwt     JWT string from simple-jwt-login.
- * @param int    $ttl_sec Cookie lifetime in seconds (default: 86400 = 24 h).
- */
-function dtb_set_auth_cookie( string $jwt, int $ttl_sec = 86400 ): void {
-	setcookie( DTB_AUTH_COOKIE, $jwt, [
-		'expires'  => time() + $ttl_sec,
-		'path'     => '/',
-		'domain'   => '',           // current domain only
-		'secure'   => is_ssl(),     // HTTPS-only in production
-		'httponly' => true,         // not accessible from JS
-		'samesite' => 'Strict',     // protects against CSRF
-	] );
-}
-
-/**
- * Clear the dtb_auth cookie (logout).
- */
-function dtb_clear_auth_cookie(): void {
-	setcookie( DTB_AUTH_COOKIE, '', [
-		'expires'  => time() - 3600,
-		'path'     => '/',
-		'domain'   => '',
-		'secure'   => is_ssl(),
-		'httponly' => true,
-		'samesite' => 'Strict',
-	] );
-}
-
-/** POST /dtb/v1/auth/login — authenticate and issue HttpOnly JWT cookie. */
-function dtb_route_auth_login( WP_REST_Request $request ): WP_REST_Response {
-	$rl = dtb_rate_limit( $request, 'auth_login' );
-	if ( $rl ) {
-		return $rl;
-	}
-
-	$email    = sanitize_email( (string) $request->get_param( 'email' ) );
-	$password = (string) $request->get_param( 'password' );
-
-	if ( empty( $email ) || empty( $password ) ) {
-		return new WP_REST_Response(
-			dtb_error_envelope( 'missing_credentials', 'Email and password are required.', 400 ),
-			400
-		);
-	}
-
-	// Forward credentials to the active JWT plugin (simple-jwt-login).
-	$jwt_url = rest_url( 'simple-jwt-login/v1/auth' );
-	$resp    = wp_remote_post( $jwt_url, [
-		'body'    => wp_json_encode( [ 'email' => $email, 'password' => $password ] ),
-		'headers' => [ 'Content-Type' => 'application/json' ],
-		'timeout' => 10,
-	] );
-
-	if ( is_wp_error( $resp ) ) {
-		return new WP_REST_Response(
-			dtb_error_envelope( 'auth_unavailable', 'Authentication service unavailable.', 502 ),
-			502
-		);
-	}
-
-	$code = wp_remote_retrieve_response_code( $resp );
-	$body = json_decode( wp_remote_retrieve_body( $resp ), true );
-
-	if ( 200 !== $code ) {
-		$msg = $body['message'] ?? 'Invalid credentials.';
-		return new WP_REST_Response(
-			dtb_error_envelope( 'auth_failed', sanitize_text_field( $msg ), 401 ),
-			401
-		);
-	}
-
-	$jwt = $body['data']['jwt'] ?? '';
-	if ( empty( $jwt ) ) {
-		return new WP_REST_Response(
-			dtb_error_envelope( 'auth_failed', 'Token not returned by authentication service.', 401 ),
-			401
-		);
-	}
-
-	// Issue the JWT as an HttpOnly, SameSite=Strict cookie.
-	dtb_set_auth_cookie( $jwt );
-
-	// Return user info only — never expose the raw JWT in the response body.
-	$user_data = $body['data']['user'] ?? [];
-	$response  = new WP_REST_Response( [
-		'success' => true,
-		'user'    => [
-			'email'       => sanitize_email( $user_data['user_email']    ?? '' ),
-			'nicename'    => sanitize_text_field( $user_data['user_nicename'] ?? ( $user_data['user_login'] ?? '' ) ),
-			'displayName' => sanitize_text_field( $user_data['display_name']  ?? '' ),
-		],
-	], 200 );
-
-	// Prevent this response from being cached.
-	$response->header( 'Cache-Control', 'private, no-store' );
-	return $response;
-}
-
-/** DELETE /dtb/v1/auth/logout — clear the HttpOnly JWT cookie. */
-function dtb_route_auth_logout(): WP_REST_Response {
-	dtb_clear_auth_cookie();
-
-	$response = new WP_REST_Response( [ 'success' => true ], 200 );
-	$response->header( 'Cache-Control', 'private, no-store' );
-	return $response;
-}
-
-/**
- * POST /dtb/v1/auth/validate — validate the current JWT (cookie or Bearer)
- * and return the authenticated user's profile.
- */
-function dtb_route_auth_validate( WP_REST_Request $request ): WP_REST_Response {
-	$token = null;
-
-	// 1. Check Authorization header.
-	$auth = $request->get_header( 'authorization' );
-	if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
-		$token = $m[1];
-	}
-
-	// 2. Fall back to HttpOnly cookie.
-	if ( ! $token && ! empty( $_COOKIE[ DTB_AUTH_COOKIE ] ) ) {
-		$token = sanitize_text_field( wp_unslash( $_COOKIE[ DTB_AUTH_COOKIE ] ) );
-	}
-
-	if ( ! $token ) {
-		return new WP_REST_Response(
-			dtb_error_envelope( 'missing_token', 'No active session.', 401 ),
-			401
-		);
-	}
-
-	$validate_url = rest_url( 'simple-jwt-login/v1/auth/validate' );
-	$resp = wp_remote_post( $validate_url, [
-		'headers' => [ 'Authorization' => 'Bearer ' . $token ],
-		'timeout' => 5,
-	] );
-
-	if ( is_wp_error( $resp ) || 200 !== wp_remote_retrieve_response_code( $resp ) ) {
-		// Invalid / expired — also clear the cookie.
-		dtb_clear_auth_cookie();
-		return new WP_REST_Response(
-			dtb_error_envelope( 'invalid_token', 'Session expired. Please log in again.', 401 ),
-			401
-		);
-	}
-
-	$body      = json_decode( wp_remote_retrieve_body( $resp ), true );
-	$user_data = $body['data']['user'] ?? [];
-
-	$response = new WP_REST_Response( [
-		'success' => true,
-		'user'    => [
-			'email'       => sanitize_email( $user_data['user_email']    ?? '' ),
-			'nicename'    => sanitize_text_field( $user_data['user_nicename'] ?? ( $user_data['user_login'] ?? '' ) ),
-			'displayName' => sanitize_text_field( $user_data['display_name']  ?? '' ),
-		],
-	], 200 );
-	$response->header( 'Cache-Control', 'private, no-store' );
-	return $response;
 }
 
 /** POST /dtb/v1/create-app-password */
