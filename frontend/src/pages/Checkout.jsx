@@ -21,6 +21,7 @@ import {
   Truck,
   CheckCircle,
   AlertCircle,
+  AlertTriangle,
   ShoppingCart,
   User,
   FileText,
@@ -171,7 +172,7 @@ function OrderSummaryPanel( { cartItems, subtotal, shipping, tax, total, loading
         </div>
         { shipping === 0 && (
           <p className="text-xs text-emerald-600 mt-1.5 text-right">
-            🎉 You qualify for free shipping
+            <span aria-hidden="true">🎉</span> You qualify for free shipping
           </p>
         ) }
       </div>
@@ -186,8 +187,9 @@ function OrderSummaryPanel( { cartItems, subtotal, shipping, tax, total, loading
 function PayPalExpressButtons() {
   return (
     <div className="space-y-2.5">
-      <p className="text-[11px] text-amber-600">
-        ⚠ PayPal gateway must be enabled in WP Admin → WooCommerce → Payments to activate.
+      <p className="text-[11px] text-amber-600 flex items-center gap-1.5">
+        <AlertTriangle size={ 12 } aria-hidden="true" />
+        PayPal gateway must be enabled in WP Admin → WooCommerce → Payments to activate.
       </p>
       <button
         type="button"
@@ -203,14 +205,16 @@ function PayPalExpressButtons() {
         <button
           type="button"
           disabled
+          aria-label="Apple Pay (requires PayPal gateway)"
           className="h-12 bg-black text-white rounded-xl text-sm font-semibold
                      opacity-50 cursor-not-allowed"
         >
-           Pay
+          Apple Pay
         </button>
         <button
           type="button"
           disabled
+          aria-label="Google Pay (requires PayPal gateway)"
           className="h-12 bg-white border border-gray-300 text-gray-800 rounded-xl
                      text-sm font-semibold opacity-50 cursor-not-allowed"
         >
@@ -299,8 +303,9 @@ function PaymentMethodSelector( { selectedMethod, onChange, inputClass } ) {
                 >
                   { id === 'stripe' && (
                     <div className="pt-4 space-y-3">
-                      <p className="text-[11px] text-amber-600">
-                        ⚠ Stripe gateway must be enabled in WP Admin → WooCommerce → Payments.
+                      <p className="text-[11px] text-amber-600 flex items-center gap-1.5">
+                        <AlertTriangle size={ 12 } aria-hidden="true" />
+                        Stripe gateway must be enabled in WP Admin → WooCommerce → Payments.
                         The card form below will be replaced by Stripe Elements once active.
                       </p>
                       <div>
@@ -761,7 +766,8 @@ export default function Checkout() {
 
                   { subtotal > 0 && subtotal < 500 && (
                     <p className="text-xs text-primary-600 bg-primary-50 rounded-xl px-4 py-2.5">
-                      💡 Spend <strong>${ ( 500 - subtotal ).toFixed( 2 ) }</strong> more to unlock free shipping!
+                      <span aria-hidden="true">💡</span> Spend{ ' ' }
+                      <strong>${ ( 500 - subtotal ).toFixed( 2 ) }</strong> more to unlock free shipping!
                     </p>
                   ) }
                 </div>
