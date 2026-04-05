@@ -31,6 +31,10 @@ const Contact            = lazy(() => import('./pages/Contact'));
 const VeeqoSettings      = lazy(() => import('./pages/VeeqoSettings'));
 const VeeqoCallback      = lazy(() => import('./pages/VeeqoCallback'));
 const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
+// Auth + account pages — lazy-loaded, isolated from WP admin
+const Login              = lazy(() => import('./pages/Login'));
+const Register           = lazy(() => import('./pages/Register'));
+const Dashboard          = lazy(() => import('./pages/Dashboard'));
 
 // ─── 404 Not Found page ───────────────────────────────────────────────────────
 // Rendered for any URL that doesn't match a defined route.
@@ -136,6 +140,10 @@ function App() {
                     <Route path="/settings/veeqo"        element={<VeeqoSettings />} />
                     <Route path="/veeqo/callback"        element={<VeeqoCallback />} />
                     <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
+                    {/* Auth + account pages — dev-only, standalone, no WP admin changes */}
+                    <Route path="/login"                 element={<Login />} />
+                    <Route path="/register"              element={<Register />} />
+                    <Route path="/dashboard"             element={<Dashboard />} />
                     {/* Catch-all: any unmatched route renders a 404 page */}
                     <Route path="*"                      element={<NotFound />} />
                   </Routes>

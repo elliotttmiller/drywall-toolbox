@@ -13,8 +13,12 @@
  * The raw JWT is never stored in JS memory, localStorage, or sessionStorage.
  * The browser sends it automatically via the HttpOnly cookie on every request
  * to the same origin when `credentials: 'include'` is set (see api/client.js).
+ *   Register → POST /dtb/v1/auth/register — creates a new account and sets
+ *                                             the auth cookie on success.
+ *                                             (endpoint to be implemented when
+ *                                              backend registration is wired up)
  *
- * Exposes: { user, isAuthenticated, isLoading, login, logout, error }
+ * Exposes: { user, isAuthenticated, isLoading, login, logout, register, error }
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -103,6 +107,39 @@ export function useAuth() {
     }
   }, [] );
 
+  // ── register ─────────────────────────────────────────────────────────────────
+  // NOTE: The /dtb/v1/auth/register backend endpoint is planned but not yet
+  // implemented. This function is wired up so the UI is ready — it will return
+  // a descriptive error until the PHP handler is added.
+  const register = useCallback( async ( { firstName, lastName, email, password } ) => {
+    setError( null );
+    setIsLoading( true );
+    try {
+      const res = await fetch( `${ DTB_AUTH_BASE }/register`, {
+        method:      'POST',
+        credentials: 'include',
+        headers:     { 'Content-Type': 'application/json' },
+        body:        JSON.stringify( { first_name: firstName, last_name: lastName, email, password } ),
+      } );
+
+      const data = await res.json();
+
+      if ( ! res.ok ) {
+        const msg = data?.message || 'Registration failed.';
+        setError( msg );
+        throw new Error( msg );
+      }
+
+      setUser( data.user || null );
+      return data;
+    } catch ( err ) {
+      setError( err.message || 'Registration failed.' );
+      throw err;
+    } finally {
+      setIsLoading( false );
+    }
+  }, [] );
+
   // ── logout ───────────────────────────────────────────────────────────────────
   const logout = useCallback( async () => {
     setUser( null );
@@ -123,6 +160,7 @@ export function useAuth() {
     isLoading,
     login,
     logout,
+    register,
     error,
   };
 }
