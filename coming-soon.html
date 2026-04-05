@@ -391,6 +391,148 @@
             }
         }
 
+        /* ── Confirmation pop-up overlay ───────────────────────────────────── */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-overlay.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .popup-card {
+            background: var(--black-lighter);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 8px;
+            padding: 2rem 1.5rem;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(37, 99, 235, 0.08);
+            transform: translateY(24px) scale(0.97);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            opacity: 0;
+            text-align: center;
+        }
+
+        /* Top glow accent — matches .content-card::after */
+        .popup-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.1) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .popup-overlay.is-open .popup-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* Close (×) button */
+        .popup-close {
+            position: absolute;
+            top: 0.875rem;
+            right: 0.875rem;
+            background: none;
+            border: none;
+            color: var(--gray-dark);
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s ease;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-close:hover {
+            color: var(--white);
+        }
+
+        /* Success icon ring */
+        .popup-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.12);
+            border: 2px solid rgba(37, 99, 235, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .popup-icon svg {
+            color: var(--blue);
+        }
+
+        /* Popup text */
+        .popup-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .popup-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--gray-light);
+            margin-bottom: 1.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* "Got it" dismiss button */
+        .popup-dismiss {
+            background: var(--blue);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            font-family: 'Geist', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+            touch-action: manipulation;
+        }
+
+        .popup-dismiss:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .popup-dismiss:active {
+            transform: translateY(0);
+        }
+
         /* ── Respect the user's reduced-motion preference ─────────────────── */
         @media (prefers-reduced-motion: reduce) {
             *,
@@ -402,6 +544,15 @@
             }
 
             .submit-btn:hover {
+                transform: none;
+            }
+
+            .popup-card,
+            .popup-overlay {
+                transition: none !important;
+            }
+
+            .popup-dismiss:hover {
                 transform: none;
             }
         }
@@ -499,6 +650,37 @@
         </div>
     </main>
 
+    <!-- ── Confirmation pop-up ───────────────────────────────────────────── -->
+    <div
+        class="popup-overlay"
+        id="dtb_popup"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dtb_popup_title"
+        aria-describedby="dtb_popup_body"
+        aria-hidden="true"
+    >
+        <div class="popup-card" id="dtb_popup_card">
+            <button
+                class="popup-close"
+                id="dtb_popup_close"
+                aria-label="Close"
+                type="button"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+
+            <div class="popup-icon" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+
+            <h2 class="popup-title" id="dtb_popup_title">You're on the list!</h2>
+            <p class="popup-body" id="dtb_popup_body">We'll let you know the moment we launch. Keep an eye on your inbox.</p>
+
+            <button class="popup-dismiss" id="dtb_popup_dismiss" type="button">Got it</button>
+        </div>
+    </div>
+
     <script>
         // ─── WordPress REST API base URL ───────────────────────────────────────
         // Matches the rewrite rule in .htaccess:
@@ -509,12 +691,73 @@
         const ARROW_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
 
         // ─── DOM references ────────────────────────────────────────────────────
-        const form       = document.getElementById('signupForm');
-        const emailInput = document.getElementById('dtb_email_input');
-        const submitBtn  = document.getElementById('dtb_submit_btn');
-        const msgEl      = document.getElementById('dtb_form_message');
-        const nonceField = document.getElementById('dtb_nonce_field');
-        const honeypot   = document.querySelector('[name="_dtb_hp"]');
+        const form        = document.getElementById('signupForm');
+        const emailInput  = document.getElementById('dtb_email_input');
+        const submitBtn   = document.getElementById('dtb_submit_btn');
+        const msgEl       = document.getElementById('dtb_form_message');
+        const nonceField  = document.getElementById('dtb_nonce_field');
+        const honeypot    = document.querySelector('[name="_dtb_hp"]');
+        const popup       = document.getElementById('dtb_popup');
+        const popupClose  = document.getElementById('dtb_popup_close');
+        const popupDismiss = document.getElementById('dtb_popup_dismiss');
+
+        // ─── Popup helpers ─────────────────────────────────────────────────────
+        let popupPreviousFocus = null;
+
+        function openPopup() {
+            popupPreviousFocus = document.activeElement;
+            popup.removeAttribute('aria-hidden');
+            popup.classList.add('is-open');
+            document.body.style.overflow = 'hidden'; // prevent background scroll
+            // Defer focus until after the transition starts so screen-readers
+            // announce the dialog heading smoothly.
+            setTimeout(function() { popupClose.focus(); }, 50);
+        }
+
+        function closePopup() {
+            popup.classList.remove('is-open');
+            popup.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            if (popupPreviousFocus) { popupPreviousFocus.focus(); }
+        }
+
+        // Close on button clicks
+        popupClose.addEventListener('click', closePopup);
+        popupDismiss.addEventListener('click', closePopup);
+
+        // Close on backdrop click (click lands on overlay, not the card)
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) { closePopup(); }
+        });
+
+        // Close on Escape key; trap Tab focus within the dialog while open
+        document.addEventListener('keydown', function(e) {
+            if (!popup.classList.contains('is-open')) return;
+
+            if (e.key === 'Escape') {
+                closePopup();
+                return;
+            }
+
+            // Focus trap — keep Tab cycling between close and dismiss buttons
+            if (e.key === 'Tab') {
+                const focusable = popup.querySelectorAll('button');
+                const first = focusable[0];
+                const last  = focusable[focusable.length - 1];
+
+                if (e.shiftKey) {
+                    if (document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    }
+                } else {
+                    if (document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
+            }
+        });
 
         // ─── Helper: show feedback message ────────────────────────────────────
         function showMessage(text, type /* 'success' | 'error' */) {
@@ -523,14 +766,14 @@
         }
 
         // ─── Helper: transition to success state ──────────────────────────────
-        function showSuccess(message) {
+        function showSuccess() {
             submitBtn.innerHTML = 'Secured ✓';
             submitBtn.style.background = '#1d4ed8';
             submitBtn.disabled = true;
             emailInput.value   = '';
             emailInput.placeholder = 'You\'re on the list.';
             emailInput.disabled    = true;
-            showMessage(message || 'You\'re on the list. We\'ll be in touch!', 'success');
+            openPopup();
         }
 
         // ─── Helper: reset button to allow retry ──────────────────────────────
@@ -614,7 +857,7 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    showSuccess(data.message);
+                    showSuccess();
                 } else {
                     // Server returned a structured error (400, 429, etc.).
                     const msg = (data && (data.message || (data.data && data.data.message)))
