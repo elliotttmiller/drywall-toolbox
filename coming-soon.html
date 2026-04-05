@@ -703,21 +703,32 @@
 
         // ─── Popup helpers ─────────────────────────────────────────────────────
         let popupPreviousFocus = null;
+        let _savedBodyOverflow = '';
+
+        // Selector covering all standard focusable elements
+        const FOCUSABLE_SELECTOR =
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]),' +
+            ' textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
         function openPopup() {
             popupPreviousFocus = document.activeElement;
             popup.removeAttribute('aria-hidden');
             popup.classList.add('is-open');
-            document.body.style.overflow = 'hidden'; // prevent background scroll
-            // Defer focus until after the transition starts so screen-readers
-            // announce the dialog heading smoothly.
-            setTimeout(function() { popupClose.focus(); }, 50);
+            _savedBodyOverflow = document.body.style.overflow;
+            // Prevent background scroll; avoid layout shift from vanishing scrollbar
+            // by compensating with padding equal to the scrollbar width.
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.paddingRight = scrollbarWidth ? scrollbarWidth + 'px' : '';
+            document.body.style.overflow = 'hidden';
+            // Focus after the next paint so the card is visible to screen readers.
+            requestAnimationFrame(function() { popupClose.focus(); });
         }
 
         function closePopup() {
             popup.classList.remove('is-open');
             popup.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
+            document.body.style.overflow = _savedBodyOverflow;
+            document.body.style.paddingRight = '';
             if (popupPreviousFocus) { popupPreviousFocus.focus(); }
         }
 
@@ -739,9 +750,10 @@
                 return;
             }
 
-            // Focus trap — keep Tab cycling between close and dismiss buttons
+            // Focus trap — keep Tab cycling within all focusable popup elements
             if (e.key === 'Tab') {
-                const focusable = popup.querySelectorAll('button');
+                const focusable = Array.from(popup.querySelectorAll(FOCUSABLE_SELECTOR));
+                if (!focusable.length) return;
                 const first = focusable[0];
                 const last  = focusable[focusable.length - 1];
 
