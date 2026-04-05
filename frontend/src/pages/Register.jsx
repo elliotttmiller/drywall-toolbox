@@ -47,7 +47,7 @@ const STRENGTH_META = [
   { label: 'Weak',      color: '#ea580c', bg: '#fff7ed' },
   { label: 'Fair',      color: '#ca8a04', bg: '#fefce8' },
   { label: 'Strong',    color: '#16a34a', bg: '#f0fdf4' },
-  { label: 'Very strong', color: '#15803d', bg: '#dcfce7' },
+  { label: 'Very Strong', color: '#15803d', bg: '#dcfce7' },
 ];
 
 // ─── Animation variants ───────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ export default function Register() {
       return;
     }
     if ( pwScore < 2 ) {
-      setSubmitError( 'Please choose a stronger password (at least 8 characters, mixed case or numbers).' );
+      setSubmitError( 'Please choose a stronger password (at least 8 characters with uppercase letters, numbers, or special characters — Fair strength or better required).' );
       return;
     }
 
@@ -523,7 +523,7 @@ export default function Register() {
               lineHeight: 1.65,
               maxWidth:   '380px',
             } }>
-              Track your orders, save your favourites, and get exclusive access to restock alerts and bulk pricing.
+              Track your orders, save your favorites, and get exclusive access to restock alerts and bulk pricing.
             </p>
 
             {/* Feature list */}
