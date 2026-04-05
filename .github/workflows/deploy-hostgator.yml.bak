@@ -1,0 +1,587 @@
+name: Deploy Drywall Toolbox to HostGator
+
+on:
+  # DISABLED - Deploy workflow is currently disabled
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'frontend/**'
+  #     - 'wp/**'
+  #     - '.htaccess'
+  #     - 'index.php'
+  #     - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no files uploaded)'
+        required: false
+        default: false
+        type: boolean
+      remote_root:
+        description: 'Remote site root path'
+        required: false
+        default: '/home4/benconklin/public_html/drywalltoolbox'
+        type: string
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build React Frontend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    outputs:
+      build-cache-key: ${{ steps.cache-key.outputs.key }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build frontend (webpack → ../dist/)
+        run: cd frontend && npm run build
+        env:
+          NODE_ENV: production
+          # Frontend build configuration
+          REACT_APP_WP_BASE_URL:            ${{ secrets.REACT_APP_WP_BASE_URL }}
+          REACT_APP_WC_BASE_URL:            ${{ secrets.REACT_APP_WC_BASE_URL }}
+          REACT_APP_WC_AUTH_USER:           ${{ secrets.REACT_APP_WC_AUTH_USER }}
+          REACT_APP_WC_AUTH_PASS:           ${{ secrets.REACT_APP_WC_AUTH_PASS }}
+          # Note: Webpack DefinePlugin automatically handles import.meta.env.* references
+          # No Vite config needed — these VITE_* names are just env var conventions
+          VITE_WP_API_BASE:                 ${{ secrets.VITE_WP_API_BASE || 'https://drywalltoolbox.com/wp-json' }}
+          VITE_WC_API_BASE:                 ${{ secrets.VITE_WC_API_BASE || 'https://drywalltoolbox.com/wp-json/wc/v3' }}
+          VITE_JWT_ENDPOINT:                ${{ secrets.VITE_JWT_ENDPOINT }}
+          VITE_SITE_URL:                    ${{ secrets.VITE_SITE_URL }}
+          VITE_APP_ENV:                     production
+          VITE_WC_AUTH_USER:                ${{ secrets.VITE_WC_AUTH_USER || secrets.REACT_APP_WC_AUTH_USER }}
+          VITE_WC_AUTH_PASS:                ${{ secrets.VITE_WC_AUTH_PASS || secrets.REACT_APP_WC_AUTH_PASS }}
+          VITE_WOOCOMMERCE_STORE_URL:       ${{ secrets.VITE_WOOCOMMERCE_STORE_URL }}
+          VITE_WOOCOMMERCE_CONSUMER_KEY:    ${{ secrets.VITE_WOOCOMMERCE_CONSUMER_KEY }}
+          VITE_WOOCOMMERCE_CONSUMER_SECRET: ${{ secrets.VITE_WOOCOMMERCE_CONSUMER_SECRET }}
+          VITE_VEEQO_CLIENT_ID:             ${{ secrets.VITE_VEEQO_CLIENT_ID }}
+          VITE_VEEQO_CLIENT_SECRET:         ${{ secrets.VITE_VEEQO_CLIENT_SECRET }}
+          VITE_VEEQO_REDIRECT_URI:          ${{ secrets.VITE_VEEQO_REDIRECT_URI }}
+
+      - name: Validate build output
+        run: |
+          DIST="dist"
+          echo "── dist contents ──"
+          find "$DIST" -type f | sort
+          if [ ! -f "$DIST/index.html" ]; then
+            echo "ERROR: dist/index.html not found — build may have failed."
+            exit 1
+          fi
+          if [ ! -f "$DIST/asset-manifest.json" ]; then
+            echo "WARNING: asset-manifest.json not found."
+          fi
+          echo "✓ Build output validated."
+
+      - name: Prune source maps before upload
+        run: |
+          echo "Pruning .map files from dist/..."
+          find dist/ -type f -name "*.map" -print -delete || true
+          echo "✓ Pruning complete."
+
+      - name: Generate build artifact key
+        id: cache-key
+        run: echo "key=build-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload dist as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.sha }}
+          path: dist/
+          retention-days: 1
+          if-no-files-found: error
+
+  deploy:
+    name: FTPS Deploy to HostGator
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+
+    env:
+      REMOTE_ROOT: "${{ secrets.HOSTGATOR_REMOTE_ROOT || github.event.inputs.remote_root || 'public_html/drywalltoolbox' }}"
+    
+    # ────────────────────────────────────────────────────────────────────────────
+    # DEPLOYMENT STRATEGY:
+    # • Only upload files necessary for production (no dev/test files)
+    # • Exclude build artifacts, cache, logs, source maps
+    # • Minimize upload time and bandwidth
+    # • Keep deployment fast and safe
+    # ────────────────────────────────────────────────────────────────────────────
+
+    steps:
+      - name: Checkout repository (wp/ + root files)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            wp
+            .htaccess
+            index.php
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-${{ github.sha }}
+          path: dist/
+
+      - name: Validate deploy structure
+        run: |
+          echo "── dist ──"
+          ls -la dist/ || true
+          echo "── wp/wp-content ──"
+          ls -la wp/wp-content/ || true
+          echo "── root files ──"
+          ls -la .htaccess index.php 2>/dev/null || true
+
+      - name: Probe FTP root (diagnostic)
+        run: |
+          echo "Installing lftp for FTP probe..."
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y lftp >/dev/null
+          echo "Probing FTP server: ${{ secrets.HOSTGATOR_FTP_HOST }} (top-level listing, diagnostic only)"
+          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }},${{ secrets.HOSTGATOR_FTP_PASS }}" \
+            -e "set ftp:ssl-allow yes; set ssl:verify-certificate no; ls -la; bye" \
+            "${{ secrets.HOSTGATOR_FTP_HOST }}" 2>/dev/null > /tmp/ftp_probe.txt || true
+          echo "── FTP root listing ──"
+          cat /tmp/ftp_probe.txt || true
+
+      - name: "Dry-run: display what would be deployed"
+        if: ${{ github.event.inputs.dry_run == 'true' }}
+        run: |
+          echo "Dry-run mode: displaying deploy plan."
+          echo
+          echo "Will deploy .htaccess + index.php → ${{ env.REMOTE_ROOT }}/"
+          echo "Will deploy dist/ → ${{ env.REMOTE_ROOT }}/ (directly to root)"
+          echo "Will deploy wp/wp-content/ → ${{ env.REMOTE_ROOT }}/wp/wp-content/"
+
+      - name: Stage root files for deployment
+        run: |
+          mkdir -p root-deploy
+          cp .htaccess index.php root-deploy/
+          echo "── root-deploy contents ──"
+          ls -la root-deploy/
+
+      - name: Compute SERVER_DIR from REMOTE_ROOT
+        run: |
+          set -euo pipefail
+          # HOSTGATOR_SERVER_DIR (optional secret) lets you provide the exact
+          # FTP-relative path directly (e.g. "public_html/drywalltoolbox").
+          # If not set, we derive it from REMOTE_ROOT by stripping the
+          # absolute-path home prefix that HostGator uses.
+          #
+          # HostGator FTP users land at their home directory (e.g. /home4/benconklin/).
+          # REMOTE_ROOT may be set to the full absolute path
+          #   /home4/benconklin/public_html/drywalltoolbox
+          # or the relative path
+          #   public_html/drywalltoolbox
+          # server-dir in FTP-Deploy-Action must be the path RELATIVE to the
+          # FTP home, so we must strip any home[N]/username/ prefix.
+          if [ -n "${{ secrets.HOSTGATOR_SERVER_DIR }}" ]; then
+            SERVER_DIR="${{ secrets.HOSTGATOR_SERVER_DIR }}"
+            SERVER_DIR="${SERVER_DIR#/}"
+            echo "Using HOSTGATOR_SERVER_DIR secret: '${SERVER_DIR}'"
+          else
+            RAW="${{ env.REMOTE_ROOT }}"
+            RAW="${RAW#/}"
+            # Strip HostGator home prefixes:
+            #   home[0-9]+/username/  e.g. home4/benconklin/
+            #   home/username/        alternative format
+            SERVER_DIR=$(printf '%s' "$RAW" | sed -E 's|^home[0-9]*/[^/]+/||; s|^home/[^/]+/||')
+            if [ -z "$SERVER_DIR" ]; then
+              echo "ERROR: Could not derive SERVER_DIR from '${RAW}'. Set the HOSTGATOR_SERVER_DIR secret to the path relative to the FTP home (e.g. 'public_html/drywalltoolbox')."
+              exit 1
+            fi
+            echo "Derived SERVER_DIR from REMOTE_ROOT='${RAW}': '${SERVER_DIR}'"
+          fi
+
+          echo "DEPLOY_ROOT=${{ env.REMOTE_ROOT }}" >> "$GITHUB_ENV"
+          echo "SERVER_DIR=${SERVER_DIR}" >> "$GITHUB_ENV"
+          echo "✓ SERVER_DIR='${SERVER_DIR}'"
+
+      - name: Deploy root files (.htaccess, index.php) via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.HOSTGATOR_FTP_HOST }}
+          username: ${{ secrets.HOSTGATOR_FTP_USER }}
+          password: ${{ secrets.HOSTGATOR_FTP_PASS }}
+          protocol: ftps
+          port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
+          server-dir: ${{ env.SERVER_DIR }}/
+          local-dir:  ./root-deploy/
+          exclude: |
+            **/.git*
+            **/.github/**
+          dangerous-clean-slate: false
+          log-level: verbose
+          dry-run: ${{ github.event.inputs.dry_run == 'true' }}
+          timeout: 60000
+
+      - name: Prepare dist files for deployment (whitelist only)
+        run: |
+          # Create a deployment staging directory with ONLY the files we want to deploy
+          mkdir -p dist-deploy/assets
+          mkdir -p dist-deploy/brands
+          
+          # Copy only the whitelisted files and directories
+          if [ -d "dist/assets" ]; then cp -r dist/assets/* dist-deploy/assets/ 2>/dev/null || true; fi
+          if [ -d "dist/brands" ]; then cp -r dist/brands/* dist-deploy/brands/ 2>/dev/null || true; fi
+          
+          # Copy individual files
+          for file in \
+            404.html \
+            asset-manifest.json \
+            index.html \
+            logo-white.svg \
+            logo.svg \
+            logo2.svg \
+            pwa_icon.png \
+            vite.svg \
+            wp-catalog.csv; do
+            if [ -f "dist/$file" ]; then
+              cp "dist/$file" "dist-deploy/$file"
+              echo "✓ Copied $file"
+            else
+              echo "⚠ Warning: $file not found in dist/"
+            fi
+          done
+          
+          echo "── dist-deploy contents ──"
+          find dist-deploy -type f | sort
+          echo "✓ Whitelist staging complete."
+
+      - name: Deploy React assets (dist-deploy/ → root) via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.HOSTGATOR_FTP_HOST }}
+          username: ${{ secrets.HOSTGATOR_FTP_USER }}
+          password: ${{ secrets.HOSTGATOR_FTP_PASS }}
+          protocol: ftps
+          port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
+          # Deploy directly to root, NOT to /dist/ subdirectory
+          server-dir: ${{ env.SERVER_DIR }}/
+          local-dir:  ./dist-deploy/
+          # Exclude unnecessary files (minimal — we've already filtered at source)
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/*.log
+            **/.env*
+            **/*.map
+            **/.DS_Store
+            **/Thumbs.db
+            **/.vscode/**
+            **/.idea/**
+            **/*.swp
+            **/*~
+          # Set to false to preserve existing files (safer)
+          dangerous-clean-slate: false
+          log-level: verbose
+          dry-run: ${{ github.event.inputs.dry_run == 'true' }}
+          timeout: 300000
+
+      - name: Deploy wp/wp-content/ via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.HOSTGATOR_FTP_HOST }}
+          username: ${{ secrets.HOSTGATOR_FTP_USER }}
+          password: ${{ secrets.HOSTGATOR_FTP_PASS }}
+          protocol: ftps
+          port:     ${{ secrets.HOSTGATOR_FTP_PORT }}
+          server-dir: ${{ env.SERVER_DIR }}/wp/wp-content/
+          local-dir:  ./wp/wp-content/
+          # Exclude unnecessary files and cache — only upload essential content
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/*.log
+            **/.env*
+            **/.gitignore
+            **/.DS_Store
+            **/Thumbs.db
+            **/.vscode/**
+            **/.idea/**
+            **/README.md
+            **/*.md
+            **/*.txt
+            **/*.bak
+            **/*.swp
+            **/*~
+            **/._*
+            **/.turbo/**
+            # Exclude cache and temporary files
+            **/cache/**
+            **/temp/**
+            **/tmp/**
+            **/.cache/**
+            # Exclude build/transpiled files not needed at runtime
+            **/*.map
+            **/dist/**
+            **/build/**
+            **/out/**
+            # Exclude package management files (not needed on server)
+            **/package.json
+            **/package-lock.json
+            **/composer.json
+            **/composer.lock
+            **/tsconfig.json
+            **/.eslintrc*
+            **/.babelrc*
+            # Exclude default/demo plugins/themes
+            **/twentytwenty*/**
+            **/twentytwentyone*/**
+            **/twentytwentytwo*/**
+            **/twentytwentythree*/**
+            **/akismet/**
+            **/hello.php
+            # Exclude database backups and dumps
+            **/*.sql
+            **/*.sql.gz
+            **/*.sql.bz2
+            # Exclude media library index files (regenerated on server)
+            **/uploads/index.html
+            # Exclude backup plugins commonly created
+            **/yith-wonder/**
+            **/duplicate-post/**
+            **/wp-db-backup/**
+            **/wordpress-backup/**
+            # Exclude maintenance files
+            **/wp-maintenance-mode/**
+            **/under-construction/**
+            # Exclude security scanner databases
+            **/wordfence-scan-**
+            # Exclude analytics data
+            **/*analytics*
+            **/*statistic*
+          dangerous-clean-slate: false
+          log-level: verbose
+          dry-run: ${{ github.event.inputs.dry_run == 'true' }}
+          timeout: 300000
+
+      - name: Post-upload — move dist/* to site root and remove stale directories
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          if ! command -v lftp >/dev/null 2>&1; then
+            echo "Installing lftp..."
+            sudo apt-get update -y -qq && sudo apt-get install -y -qq lftp
+          fi
+
+          TARGET="${{ env.SERVER_DIR }}"
+          HOST="${{ secrets.HOSTGATOR_FTP_HOST }}"
+
+          echo "Post-upload cleanup: connecting to ${HOST}, target dir '${TARGET}' ..."
+          echo "  • Moving any dist/* contents up to site root"
+          echo "  • Removing empty dist/ directory"
+          echo "  • Removing any spurious home[N]/ directories"
+
+          # Run lftp cleanup commands:
+          #  1. Move all VISIBLE files/dirs from dist/ to site root (handles files that were
+          #     accidentally placed in a dist/ subdirectory by a previous deployment).
+          #     The glob -a flag silently does nothing if dist/ is absent or empty.
+          #     Hidden files (dotfiles) in dist/ are NOT moved here; they are cleaned up
+          #     by the `rm -rf dist` command below, which removes the entire directory
+          #     and all its contents (visible and hidden) recursively.
+          #  2. Delete the (now-empty or stale) dist/ directory and all remaining contents.
+          #  3. Remove any home[N]/ directories that were created when server-dir was
+          #     incorrectly set to an absolute path (e.g. home4/benconklin/...).
+          #     A safety check verifies the dir contains public_html/ — a reliable
+          #     fingerprint of a misrouted home directory — before deleting.
+          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" \
+               -e "set ftp:ssl-allow yes; \
+                   set ssl:verify-certificate no; \
+                   set net:max-retries 3; \
+                   set net:reconnect-interval-base 5; \
+                   cd ${TARGET}; \
+                   glob -a mv dist/* .; \
+                   rm -rf dist; \
+                   glob -a ls home[0-9]*/public_html && glob -a rm -rf home[0-9]*; \
+                   echo Cleanup done.; \
+                   bye" \
+               "$HOST" \
+          && echo "✓ Post-upload cleanup complete." \
+          || echo "⚠ Cleanup step exited non-zero (expected when target dirs are absent — no action required)."
+
+      # ── Catalog sync ───────────────────────────────────────────────────────
+      # After the React assets and wp-content are on the server, push the
+      # WooCommerce import CSV to the uploads/wc-imports/ directory and trigger
+      # a background product re-import.  Both steps are non-fatal: a failure
+      # here does not block the deployment — the site still serves products
+      # from the wp-catalog.csv fallback deployed above.
+      # ───────────────────────────────────────────────────────────────────────
+
+      - name: Upload catalog CSV to WooCommerce imports directory
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          set -euo pipefail
+          if ! command -v lftp >/dev/null 2>&1; then
+            echo "Installing lftp..."
+            sudo apt-get update -y -qq && sudo apt-get install -y -qq lftp
+          fi
+
+          CSV_SRC="dist/wp-catalog.csv"
+          if [ ! -f "$CSV_SRC" ]; then
+            echo "⚠ $CSV_SRC not found in build artifact — skipping WC imports upload."
+            exit 0
+          fi
+
+          WC_IMPORTS_PATH="${{ env.SERVER_DIR }}/wp/wp-content/uploads/wc-imports"
+          CSV_DEST="product-wp-catalog-c7p3my05pn.csv"
+          HOST="${{ secrets.HOSTGATOR_FTP_HOST }}"
+
+          echo "Uploading $CSV_SRC → ${WC_IMPORTS_PATH}/${CSV_DEST} ..."
+
+          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" \
+               -e "set ftp:ssl-allow yes; \
+                   set ssl:verify-certificate no; \
+                   set xfer:clobber yes; \
+                   set net:max-retries 3; \
+                   set net:reconnect-interval-base 5; \
+                   mkdir ${WC_IMPORTS_PATH}; \
+                   cd ${WC_IMPORTS_PATH}; \
+                   put ${CSV_SRC} -o ${CSV_DEST}; \
+                   echo Uploaded.; \
+                   bye" \
+               "$HOST" \
+          && echo "✓ Catalog CSV uploaded to wc-imports/${CSV_DEST}." \
+          || echo "⚠ Catalog CSV upload step failed (non-fatal — frontend CSV fallback still active)."
+
+      - name: Trigger WooCommerce catalog import
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        env:
+          DTB_IMPORT_SECRET: ${{ secrets.DTB_IMPORT_SECRET }}
+        run: |
+          if [ -z "${DTB_IMPORT_SECRET:-}" ]; then
+            echo "⚠ DTB_IMPORT_SECRET secret not configured — skipping WooCommerce import trigger."
+            echo "  Add the secret to the repository and define DTB_IMPORT_SECRET in wp-config.php."
+            exit 0
+          fi
+
+          echo "Triggering WooCommerce catalog import via /wp-json/dtb/v1/import-catalog ..."
+          HTTP_CODE=$(curl -s -o /tmp/wc_import_response.json -w "%{http_code}" \
+            --max-time 30 \
+            -X POST "https://drywalltoolbox.com/wp-json/dtb/v1/import-catalog" \
+            -H "Content-Type: application/json" \
+            -d "{\"secret\":\"${DTB_IMPORT_SECRET}\"}" \
+            || echo "000")
+          echo "HTTP status: ${HTTP_CODE}"
+          cat /tmp/wc_import_response.json 2>/dev/null || true
+          echo ""
+          if [ "${HTTP_CODE}" = "200" ]; then
+            echo "✓ WooCommerce catalog import triggered (runs as background job on server)."
+          else
+            echo "⚠ Import trigger returned HTTP ${HTTP_CODE} (non-fatal — check Action Scheduler in WP Admin)."
+          fi
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "────────────────────────────────────────────────────────"
+          echo "  Deployment Summary"
+          echo "────────────────────────────────────────────────────────"
+          echo "  Status              : ${{ job.status }}"
+          echo "  Commit SHA          : ${{ github.sha }}"
+          echo "  Triggered by        : ${{ github.actor }}"
+          echo "  Timestamp           : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "  Dry run             : ${{ github.event.inputs.dry_run == 'true' }}"
+          echo "  Remote root         : ${{ env.REMOTE_ROOT }}"
+          echo ""
+          echo "  Files deployed (whitelisted):"
+          echo "  • dist/assets/ → root/assets/"
+          echo "  • dist/brands/ → root/brands/"
+          echo "  • dist/404.html → root/"
+          echo "  • dist/asset-manifest.json → root/"
+          echo "  • dist/index.html → root/"
+          echo "  • dist/logo-white.svg → root/"
+          echo "  • dist/logo.svg → root/"
+          echo "  • dist/logo2.svg → root/"
+          echo "  • dist/pwa_icon.png → root/"
+          echo "  • dist/vite.svg → root/"
+          echo "  • dist/wp-catalog.csv → root/"
+          echo "  • dist/wp-catalog.csv → wp/wp-content/uploads/wc-imports/product-wp-catalog-c7p3my05pn.csv"
+          echo "  • .htaccess → root/"
+          echo "  • index.php → root/"
+          echo "  • wp/wp-content/* → wp/wp-content/"
+          echo ""
+          echo "  Notes:"
+          echo "  • Only whitelisted dist/ files are deployed"
+          echo "  • wp-catalog.csv is also pushed to wc-imports/ to keep WooCommerce products in sync"
+          echo "  • WooCommerce import is triggered via POST /wp-json/dtb/v1/import-catalog"
+          echo "    (requires DTB_IMPORT_SECRET repo secret + define in wp-config.php)"
+          echo "  • WordPress core files (/wp/wp-admin, /wp/wp-includes, etc.)"
+          echo "    must be manually uploaded once via cPanel or SFTP"
+          echo "  • wp-config.php must be manually created with real DB credentials"
+          echo "  • See DEPLOYMENT_AUDIT.md for detailed setup instructions"
+          echo "  • Verify deployment at: https://drywalltoolbox.com/"
+          echo "────────────────────────────────────────────────────────"
+
+  verify:
+    name: Post-Deploy Verification
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success() && github.event.inputs.dry_run != 'true'
+
+    steps:
+      - name: Check React SPA on live site
+        run: |
+          # The SPA is served via the .htaccess catch-all — verify the homepage
+          # returns 200 and that a deep-link also resolves (React Router handles it).
+          URL="https://drywalltoolbox.com/"
+          echo "Probing homepage: $URL"
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || echo "000")
+            echo "Attempt $attempt — HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "✓ Homepage is reachable."
+              break
+            fi
+            [ "$attempt" -lt 3 ] && sleep 15
+          done
+          if [ "$code" != "200" ]; then
+            echo "⚠ Homepage not reachable after 3 attempts (status $code)."
+            exit 1
+          fi
+
+      - name: Check site homepage reachability
+        run: |
+          # Verify a deep SPA route resolves — the .htaccess catch-all and React Router
+          # must both work for this to return 200.
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://drywalltoolbox.com/products" || echo "000")
+          echo "Deep-link /products HTTP status: $code"
+          if [ "$code" != "200" ] && [ "$code" != "301" ] && [ "$code" != "302" ]; then
+            echo "⚠ /products route returned unexpected status $code."
+          else
+            echo "✓ /products deep-link is reachable."
+          fi
+
+      - name: Check WordPress REST API
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://drywalltoolbox.com/wp-json/" || echo "000")
+          echo "WP REST API HTTP status: $code"
+          if [ "$code" = "200" ]; then
+            echo "✓ WordPress REST API is reachable."
+          else
+            echo "⚠ WordPress REST API returned status $code."
+          fi
