@@ -18,17 +18,25 @@
             --gray-dark: #374151;
         }
 
+        /* ── Reset ─────────────────────────────────────────────────────────── */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            font-size: 100%; /* Respect the user's browser font-size preference */
+        }
+
+        /* ── Base styles — mobile-first (≥ 320 px) ───────────────────────── */
+
         body {
             background-color: var(--black);
             color: var(--white);
             font-family: 'Geist', sans-serif;
             min-height: 100vh;
+            min-height: 100dvh; /* Accounts for collapsible mobile browser chrome */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -45,7 +53,7 @@
             z-index: 10;
             width: 100%;
             max-width: 900px;
-            padding: 2rem;
+            padding: 1.25rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -57,7 +65,7 @@
             background: var(--black-lighter);
             border: 1px solid rgba(37, 99, 235, 0.2);
             border-radius: 8px;
-            padding: 4rem 3rem;
+            padding: 2rem 1.25rem; /* Compact on small screens */
             max-width: 600px;
             width: 100%;
             position: relative;
@@ -86,8 +94,10 @@
             animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
+        /* Fluid logo: scales down to fit any viewport width */
         .logo-wrapper svg {
-            width: 400px;
+            width: 100%;
+            max-width: 240px; /* Start small on mobile, scales up via media queries */
             height: auto;
             filter: drop-shadow(0 0 30px var(--blue-glow));
             transition: filter 0.3s ease;
@@ -99,8 +109,8 @@
 
         /* Typography */
         .tagline {
-            font-size: 0.85rem;
-            letter-spacing: 0.15em;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
             color: var(--blue);
             margin-bottom: 1rem;
@@ -112,19 +122,19 @@
         }
 
         .tagline--trust {
-            white-space: nowrap;
+            /* Allow wrapping so long text never overflows narrow screens */
             text-align: center;
             margin-top: 0;
             margin-bottom: 1.5rem;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
         }
 
         p.description {
-            font-size: 1.2rem;
+            font-size: 1rem; /* Readable default; scaled up on wider screens */
             line-height: 1.7;
             color: var(--gray-light);
             max-width: 500px;
-            margin: 0 auto 2.5rem;
+            margin: 0 auto 1.75rem;
             font-weight: 500;
             letter-spacing: -0.01em;
             position: relative;
@@ -136,19 +146,21 @@
             background-clip: text;
         }
 
-        /* Form Styling */
+        /* Form Styling — stacked on mobile, side-by-side on wider screens */
         .email-form {
             display: flex;
-            gap: 8px;
+            flex-direction: column; /* Stacked by default on mobile */
+            gap: 0.5rem;
             background: rgba(255, 255, 255, 0.05);
-            padding: 8px;
+            padding: 0.5rem;
             border-radius: 6px;
             border: 1px solid rgba(37, 99, 235, 0.3);
             max-width: 480px;
+            width: 100%;
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            transition: all 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
         }
 
@@ -160,12 +172,14 @@
         .email-input {
             background: transparent;
             border: none;
-            padding: 0.875rem 1.25rem;
+            padding: 0.875rem 1rem;
             color: var(--white);
             font-family: 'Geist', sans-serif;
             flex-grow: 1;
-            font-size: 0.95rem;
+            min-width: 0; /* Prevents flex overflow */
+            font-size: 1rem; /* ≥ 16 px — prevents iOS Safari from auto-zooming */
             outline: none;
+            width: 100%;
         }
 
         .email-input::placeholder {
@@ -176,18 +190,21 @@
             background: var(--blue);
             color: var(--white);
             border: none;
-            padding: 0.875rem 1.75rem;
+            padding: 0.875rem 1.25rem;
             border-radius: 4px;
             font-weight: 600;
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 0.375rem;
             white-space: nowrap;
+            width: 100%; /* Full-width on mobile */
+            touch-action: manipulation; /* Eliminates 300 ms tap delay on mobile */
         }
 
         .submit-btn:hover {
@@ -204,11 +221,11 @@
         .status-info {
             position: relative;
             z-index: 1;
-            margin-top: 3rem;
-            padding-top: 2rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
             border-top: 1px solid rgba(37, 99, 235, 0.2);
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             color: var(--gray-dark);
             animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
@@ -256,7 +273,7 @@
         /* Form status messages */
         .form-message {
             margin-top: 1rem;
-            padding: 0.75rem 1.25rem;
+            padding: 0.75rem 1rem;
             border-radius: 4px;
             font-size: 0.875rem;
             font-weight: 500;
@@ -292,10 +309,25 @@
             pointer-events: none;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* ── Responsive scale-up — medium phones / small tablets (≥ 480 px) ─ */
+        @media (min-width: 480px) {
+            .content-card {
+                padding: 2.5rem 1.75rem;
+            }
+
+            .logo-wrapper svg {
+                max-width: 300px;
+            }
+
+            p.description {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ── Tablets and up (≥ 640 px) ────────────────────────────────────── */
+        @media (min-width: 640px) {
             main {
-                padding: 1.5rem;
+                padding: 2rem;
             }
 
             .content-card {
@@ -303,34 +335,74 @@
             }
 
             .logo-wrapper svg {
-                width: 320px;
+                max-width: 360px;
             }
 
-            .email-form {
-                flex-direction: column;
+            .tagline {
+                font-size: 0.85rem;
+                letter-spacing: 0.15em;
             }
 
-            .submit-btn {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .content-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .logo-wrapper svg {
-                width: 280px;
+            .tagline--trust {
+                letter-spacing: 0.12em;
             }
 
             p.description {
-                font-size: 0.95rem;
-                margin-bottom: 2rem;
+                font-size: 1.2rem;
+                margin-bottom: 2.5rem;
+            }
+
+            /* Side-by-side form layout on wider screens */
+            .email-form {
+                flex-direction: row;
+                gap: 8px;
+                padding: 8px;
+            }
+
+            .email-input {
+                padding: 0.875rem 1.25rem;
+            }
+
+            .submit-btn {
+                width: auto;
+                padding: 0.875rem 1.75rem;
             }
 
             .status-info {
-                font-size: 0.7rem;
+                margin-top: 3rem;
+                padding-top: 2rem;
+                font-size: 0.75rem;
+                letter-spacing: 0.1em;
+            }
+
+            .form-message {
+                padding: 0.75rem 1.25rem;
+            }
+        }
+
+        /* ── Desktop (≥ 900 px) ────────────────────────────────────────────── */
+        @media (min-width: 900px) {
+            .content-card {
+                padding: 4rem 3rem;
+            }
+
+            .logo-wrapper svg {
+                max-width: 400px;
+            }
+        }
+
+        /* ── Respect the user's reduced-motion preference ─────────────────── */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .submit-btn:hover {
+                transform: none;
             }
         }
     </style>
@@ -567,11 +639,18 @@
         });
 
         // ─── Subtle parallax on scroll ─────────────────────────────────────────
-        window.addEventListener('scroll', function() {
-            const card    = document.querySelector('.content-card');
-            const scrollY = window.scrollY;
-            card.style.transform = 'translateY(' + (scrollY * 0.3) + 'px)';
-        });
+        // Only applied on pointer-capable (non-touch) devices and when the user
+        // has not requested reduced motion — avoids jank on mobile.
+        if (
+            window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+            !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ) {
+            window.addEventListener('scroll', function() {
+                const card    = document.querySelector('.content-card');
+                const scrollY = window.scrollY;
+                card.style.transform = 'translateY(' + (scrollY * 0.3) + 'px)';
+            }, { passive: true });
+        }
     </script>
 </body>
 </html>

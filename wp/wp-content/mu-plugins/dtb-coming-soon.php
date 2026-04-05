@@ -298,14 +298,21 @@ function dtb_unsubscribe_page( string $title, string $message, bool $success ): 
   <title>' . esc_html( $title ) . ' &mdash; ' . esc_html( $site_name ) . '</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:100%}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-         background:#f4f4f5;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
-    .card{background:#fff;border-radius:10px;border:1px solid #e4e4e7;max-width:480px;width:100%;padding:48px 40px;text-align:center;}
-    .icon{font-size:48px;color:' . $icon_color . ';margin-bottom:20px;}
-    h1{font-size:22px;font-weight:700;color:#09090b;margin-bottom:12px;}
-    p{font-size:15px;color:#52525b;line-height:1.65;}
-    a{display:inline-block;margin-top:28px;font-size:14px;color:#2563eb;text-decoration:none;}
+         background:#f4f4f5;display:flex;align-items:center;justify-content:center;
+         min-height:100vh;min-height:100dvh;padding:1rem;}
+    .card{background:#fff;border-radius:10px;border:1px solid #e4e4e7;max-width:480px;width:100%;
+          padding:2rem 1.25rem;text-align:center;}
+    .icon{font-size:3rem;color:' . $icon_color . ';margin-bottom:1.25rem;}
+    h1{font-size:1.25rem;font-weight:700;color:#09090b;margin-bottom:0.75rem;}
+    p{font-size:0.9375rem;color:#52525b;line-height:1.65;}
+    a{display:inline-block;margin-top:1.75rem;font-size:0.875rem;color:#2563eb;text-decoration:none;}
     a:hover{text-decoration:underline;}
+    @media(min-width:480px){
+      .card{padding:3rem 2.5rem;}
+      h1{font-size:1.375rem;}
+    }
   </style>
 </head>
 <body>
