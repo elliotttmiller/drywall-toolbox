@@ -8,8 +8,10 @@ brand, writing the results to ``scripts/brand-catalogs/``.
 Brand extraction priority
 --------------------------
 1. ``Attribute 1 name`` == ``brand`` (case-insensitive) → ``Attribute 1 value(s)``
-2. Second ``>``-separated segment of the first ``|``-separated ``Categories`` entry
-3. ``'Unknown'`` as a fallback
+2. Second ``>``-separated segment (skipping the first/root segment) of the first
+   ``|``-separated ``Categories`` entry
+3. Direct ``Brands`` column value (present in some CSV exports)
+4. ``'Unknown'`` as a fallback
 
 Output filename convention
 ---------------------------
@@ -54,7 +56,7 @@ def extract_brand(row: dict) -> str:
 
     Priority:
     1. Explicit ``Brand`` attribute (``Attribute 1 name`` == ``brand``)
-    2. Second segment of the ``Categories`` path
+    2. Second segment of the ``Categories`` path (skips the root segment)
     3. Direct ``Brands`` column (present in some CSV exports)
     4. ``'Unknown'``
     """
