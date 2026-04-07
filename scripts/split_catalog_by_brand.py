@@ -16,7 +16,7 @@ Usage:
     python scripts/split_catalog_by_brand.py
 
 Optional flags:
-    --csv   PATH  Path to source wp-catalog.csv      (default: frontend/public/wp-catalog.csv)
+    --csv   PATH  Path to source wp-catalog.csv      (default: frontend/public/wp-catalog-updated.csv)
     --out   DIR   Output directory for brand CSVs    (default: scripts/brand-catalogs/)
     --dry-run     Print what would be written without creating any files
 """
@@ -31,7 +31,7 @@ import sys
 # Defaults
 # ---------------------------------------------------------------------------
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_CSV = os.path.join(REPO_ROOT, "frontend", "public", "wp-catalog.csv")
+DEFAULT_CSV = os.path.join(REPO_ROOT, "frontend", "public", "wp-catalog-updated.csv")
 DEFAULT_OUT = os.path.join(REPO_ROOT, "scripts", "brand-catalogs")
 
 
