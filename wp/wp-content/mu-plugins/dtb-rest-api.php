@@ -843,6 +843,18 @@ add_action( 'dtb_run_catalog_import', function ( string $file_path ): void {
  * @return WP_REST_Response|WP_Error
  */
 function dtb_run_catalog_import_sync( string $file_path ) {
+	// Raise execution-time and memory limits for large CSV imports.
+	// This function is invoked either by Action Scheduler (dtb_run_catalog_import)
+	// or directly from dtb_route_import_catalog when Action Scheduler is unavailable.
+	// The admin_init hook in dtb-woocommerce.php only covers WC admin AJAX actions
+	// and does NOT cover this code path.
+	if ( function_exists( 'set_time_limit' ) ) {
+		set_time_limit( 300 );
+	}
+	if ( function_exists( 'ini_set' ) ) {
+		ini_set( 'memory_limit', '512M' ); // phpcs:ignore WordPress.PHP.IniSet.memory_limit_Blacklisted
+	}
+
 	if ( ! file_exists( $file_path ) ) {
 		return new WP_Error( 'csv_not_found', 'CSV file not found: ' . basename( $file_path ), [ 'status' => 404 ] );
 	}
