@@ -1813,9 +1813,11 @@ export default function Parts() {
     if (!container || !hotspotRect) return;
 
     const containerRect = container.getBoundingClientRect();
-    const MODAL_WIDTH = 280;
-    // Use actual rendered modal height when available; fall back to a conservative estimate.
-    const MODAL_HEIGHT = detachedModalRef.current ? detachedModalRef.current.offsetHeight : 160;
+    const MODAL_ESTIMATED_HEIGHT = 160; // conservative fallback before first render
+    // Derive dimensions from the rendered modal element when available so the
+    // calculation stays in sync with any future CSS width/height changes.
+    const MODAL_WIDTH  = detachedModalRef.current ? detachedModalRef.current.offsetWidth  : 280;
+    const MODAL_HEIGHT = detachedModalRef.current ? detachedModalRef.current.offsetHeight : MODAL_ESTIMATED_HEIGHT;
     const OFFSET = 12;  // gap between hotspot and modal
     const PADDING = 8;  // minimum clearance from container edges
 
