@@ -563,6 +563,8 @@ export default function Parts() {
   const [activeHotspot, setActiveHotspot] = useState(null);
   const [activeHotspotPart, setActiveHotspotPart] = useState(null);
   const [hotspotStockStatus, setHotspotStockStatus] = useState(null); // 'instock' | 'outofstock' | null (loading)
+  // Position of the detached desktop modal within schematic-container (px from top-left)
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [toast, setToast] = useState(null);
   const [brands, setBrands] = useState([]);
   const { addToCart } = useCart();
@@ -597,6 +599,10 @@ export default function Parts() {
   
   const schematicContainerRef = useRef(null);
   const schematicImageRef = useRef(null);
+  // Ref to the detached desktop part-modal rendered outside the transform context
+  const detachedModalRef = useRef(null);
+  // Snapshot of the last clicked hotspot's bounding rect for position recalculation
+  const lastHotspotRectRef = useRef(null);
 
   // Desktop mouse-drag panning
   const [isDragging, setIsDragging] = useState(false);
@@ -1799,6 +1805,43 @@ export default function Parts() {
     setActiveHotspotPart(null);
   };
 
+  // Calculate and apply an optimal position for the detached desktop modal so it
+  // remains fully visible within the schematic-container regardless of where the
+  // clicked hotspot is located (edges, corners, etc.).
+  const calculateAndSetModalPosition = useCallback((hotspotRect) => {
+    const container = schematicContainerRef.current;
+    if (!container || !hotspotRect) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const MODAL_WIDTH = 280;
+    // Use actual rendered modal height when available; fall back to a conservative estimate.
+    const MODAL_HEIGHT = detachedModalRef.current ? detachedModalRef.current.offsetHeight : 160;
+    const OFFSET = 12;  // gap between hotspot and modal
+    const PADDING = 8;  // minimum clearance from container edges
+
+    // Hotspot geometry relative to the container
+    const hotspotCenterX = (hotspotRect.left + hotspotRect.width / 2) - containerRect.left;
+    const hotspotBottom  = hotspotRect.bottom - containerRect.top;
+    const hotspotTop     = hotspotRect.top    - containerRect.top;
+
+    // Prefer placing the modal below the hotspot
+    let top  = hotspotBottom + OFFSET;
+    let left = hotspotCenterX - MODAL_WIDTH / 2;
+
+    // Clamp horizontally so the modal never overflows left or right
+    left = Math.max(PADDING, Math.min(left, containerRect.width - MODAL_WIDTH - PADDING));
+
+    // If the modal would overflow the bottom edge, flip it above the hotspot
+    if (top + MODAL_HEIGHT > containerRect.height - PADDING) {
+      top = hotspotTop - MODAL_HEIGHT - OFFSET;
+    }
+
+    // Final vertical clamp — guards against very tall viewports or tiny hotspots near the top
+    top = Math.max(PADDING, Math.min(top, containerRect.height - MODAL_HEIGHT - PADDING));
+
+    setModalPosition({ top, left });
+  }, []);
+
   // Fetch live WooCommerce stock status whenever a hotspot is opened.
   // Runs in the background — UI shows a loading state until resolved.
   useEffect(() => {
@@ -1817,6 +1860,13 @@ export default function Parts() {
     });
     return () => { cancelled = true; };
   }, [activeHotspotPart]);
+
+  // After the detached modal renders, recalculate its position using its actual
+  // rendered height so the initial estimate is corrected if needed.
+  useEffect(() => {
+    if (!activeHotspotPart || isMobile || !lastHotspotRectRef.current) return;
+    calculateAndSetModalPosition(lastHotspotRectRef.current);
+  }, [activeHotspotPart, isMobile, calculateAndSetModalPosition]);
     useEffect(() => {
       const t = setTimeout(() => {
         setScale(1);
@@ -2485,6 +2535,15 @@ export default function Parts() {
                       } else if (activeHotspot === part.id) {
                         closeModal();
                       } else {
+                        // Snapshot the hotspot's bounding rect before React re-renders
+                        // so calculateAndSetModalPosition can use it both immediately
+                        // and in the post-render useEffect.
+                        const r = e.currentTarget.getBoundingClientRect();
+                        lastHotspotRectRef.current = {
+                          top: r.top, left: r.left, bottom: r.bottom,
+                          right: r.right, width: r.width, height: r.height,
+                        };
+                        calculateAndSetModalPosition(lastHotspotRectRef.current);
                         setActiveHotspot(part.id);
                         setActiveHotspotPart(part);
                       }
@@ -2592,6 +2651,74 @@ export default function Parts() {
                   ))
                 }
             </div>
+            {/* Desktop detached modal — lives inside schematic-container but OUTSIDE
+                the transform wrapper so it is never scaled or clipped by the viewer.
+                Position is calculated in calculateAndSetModalPosition to ensure it
+                stays fully within the container boundaries. Hidden on mobile (the
+                overlay handles the mobile presentation). */}
+            {!isMobile && activeHotspotPart && (
+              <div
+                ref={detachedModalRef}
+                className="part-modal part-modal-detached"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: 'absolute',
+                  top: `${modalPosition.top}px`,
+                  left: `${modalPosition.left}px`,
+                }}
+              >
+                <h4 style={{
+                  textTransform: 'uppercase',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.1em',
+                  marginBottom: '8px'
+                }}>
+                  {activeHotspotPart.name}
+                </h4>
+                <div className="part-meta">
+                  SKU: {activeHotspotPart.sku}
+                  {activeHotspotPart.quantity > 1 && ` | Qty: ${activeHotspotPart.quantity}`}
+                  <span style={{
+                    marginLeft: '6px',
+                    fontWeight: 700,
+                    color: hotspotStockStatus === 'instock' ? '#16a34a'
+                         : hotspotStockStatus === 'outofstock' ? '#dc2626'
+                         : '#6b7280',
+                  }}>
+                    {hotspotStockStatus === 'instock' ? '● In Stock'
+                   : hotspotStockStatus === 'outofstock' ? '● Out of Stock'
+                   : hotspotStockStatus === 'unknown' ? '● Unavailable'
+                   : '…'}
+                  </span>
+                </div>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 800
+                  }}>
+                    ${activeHotspotPart.price.toFixed(2)}
+                  </span>
+                  <button
+                    className="alloy-button"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.6rem'
+                    }}
+                    disabled={addingToCart === activeHotspotPart.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(activeHotspotPart);
+                    }}
+                  >
+                    {addingToCart === activeHotspotPart.id ? '…' : 'Add'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         </div>

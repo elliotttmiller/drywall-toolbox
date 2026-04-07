@@ -787,13 +787,25 @@ aside input[type="range"],
     border-radius: 12px;
 }
 
-/* On desktop, position relative to hotspot */
+/* On desktop, the inline in-hotspot modals are replaced by the boundary-aware
+   detached modal rendered outside the transform context. Hide them so both
+   the hidden default state and the .active state don't show inline modals. */
 @media (min-width: 769px) {
-    .hotspot.active .part-modal {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(12px);
+    .hotspot .part-modal {
+        display: none !important;
     }
+}
+
+/* Detached desktop modal — positioned absolutely inside schematic-container,
+   outside the transform wrapper, so it scales independently and is never
+   clipped by the container's overflow:hidden. The top/left are set inline by
+   the boundary calculation in calculateAndSetModalPosition(). */
+.part-modal-detached {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    z-index: 1002 !important;
+    pointer-events: auto;
 }
 
 /* On mobile, the in-hotspot modal is hidden; the overlay modal (rendered
