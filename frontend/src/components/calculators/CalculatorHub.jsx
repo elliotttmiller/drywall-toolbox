@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import SheetCalculator from './SheetCalculator'
+import MudCalculator from './MudCalculator'
 import TapeCalculator from './TapeCalculator'
 import CornerBeadCalculator from './CornerBeadCalculator'
 import ScrewCalculator from './ScrewCalculator'
@@ -7,8 +8,9 @@ import SummaryView from './SummaryView'
 
 const TABS = [
   { id: 'sheets', label: 'Sheets', icon: '📋' },
+  { id: 'mud', label: 'Mud', icon: '🪣' },
   { id: 'tape', label: 'Tape', icon: '📏' },
-  { id: 'bead', label: 'Corner bead', icon: '📐' },
+  { id: 'bead', label: 'Corner Bead', icon: '📐' },
   { id: 'screws', label: 'Screws', icon: '🔩' },
   { id: 'summary', label: 'Summary', icon: '📊' },
 ]
@@ -19,6 +21,7 @@ export default function CalculatorHub() {
   const [lastSaved, setLastSaved] = useState(null)
   const [summaryData, setSummaryData] = useState({
     sheets: {},
+    mud: {},
     tape: {},
     bead: {},
     screws: {}
@@ -57,6 +60,10 @@ export default function CalculatorHub() {
   // Update handlers for each calculator
   const handleSheetUpdate = useCallback((data) => {
     setSummaryData(prev => ({ ...prev, sheets: data }))
+  }, [])
+
+  const handleMudUpdate = useCallback((data) => {
+    setSummaryData(prev => ({ ...prev, mud: data }))
   }, [])
 
   const handleTapeUpdate = useCallback((data) => {
@@ -213,16 +220,19 @@ export default function CalculatorHub() {
         <div className={activeTab !== 0 ? 'hidden' : ''} role="tabpanel" aria-label="Drywall sheets calculator">
           <SheetCalculator onUpdate={handleSheetUpdate} />
         </div>
-        <div className={activeTab !== 1 ? 'hidden' : ''} role="tabpanel" aria-label="Tape calculator">
+        <div className={activeTab !== 1 ? 'hidden' : ''} role="tabpanel" aria-label="Joint compound calculator">
+          <MudCalculator onUpdate={handleMudUpdate} />
+        </div>
+        <div className={activeTab !== 2 ? 'hidden' : ''} role="tabpanel" aria-label="Tape calculator">
           <TapeCalculator onUpdate={handleTapeUpdate} />
         </div>
-        <div className={activeTab !== 2 ? 'hidden' : ''} role="tabpanel" aria-label="Corner bead calculator">
+        <div className={activeTab !== 3 ? 'hidden' : ''} role="tabpanel" aria-label="Corner bead calculator">
           <CornerBeadCalculator onUpdate={handleBeadUpdate} />
         </div>
-        <div className={activeTab !== 3 ? 'hidden' : ''} role="tabpanel" aria-label="Screw and fastener calculator">
+        <div className={activeTab !== 4 ? 'hidden' : ''} role="tabpanel" aria-label="Screw and fastener calculator">
           <ScrewCalculator onUpdate={handleScrewUpdate} />
         </div>
-        {activeTab === 4 && (
+        {activeTab === 5 && (
           <div role="tabpanel" aria-label="Material summary">
             <SummaryView data={{ ...summaryData, projectName }} />
           </div>

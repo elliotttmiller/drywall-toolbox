@@ -15,27 +15,44 @@ export default function ScrewCalculator({ onUpdate }) {
   const [application, setApplication] = useState(saved.application ?? 'wall')
   const [sheetSize, setSheetSize] = useState(saved.sheetSize ?? 48)
   const [screwLength, setScrewLength] = useState(saved.screwLength ?? '1-5/8"')
-  const [boxSize, setBoxSize] = useState(saved.boxSize ?? 725)
+  const [boxSize, setBoxSize] = useState(saved.boxSize ?? 875)
 
   const results = useMemo(() => {
     const size = +sheetSize
+    // Per-sheet screw counts per ASTM C840-23:
+    // Walls:    edges 8" OC,  field 16" OC
+    // Ceilings: edges 7" OC,  field 12" OC (tighter per ASTM C840-23 to prevent sag)
     let perSheet
-
-    if (size === 32) {
+    if (size === 32) {          // 4×8 ft
       perSheet = spacing === '16'
-        ? (application === 'ceiling' ? 36 : 28)
-        : (application === 'ceiling' ? 26 : 20)
-    } else {
+        ? (application === 'ceiling' ? 40 : 32)
+        : (application === 'ceiling' ? 32 : 28)
+    } else if (size === 40) {   // 4×10 ft
       perSheet = spacing === '16'
-        ? (application === 'ceiling' ? 52 : 40)
-        : (application === 'ceiling' ? 38 : 30)
+        ? (application === 'ceiling' ? 50 : 40)
+        : (application === 'ceiling' ? 40 : 34)
+    } else {                    // 4×12 ft
+      perSheet = spacing === '16'
+        ? (application === 'ceiling' ? 60 : 48)
+        : (application === 'ceiling' ? 48 : 40)
     }
 
     if (application === 'both') {
-      perSheet = Math.round(perSheet * 1.35)
+      // Average of wall and ceiling density weighted 50/50
+      const wallCount = size === 32
+        ? (spacing === '16' ? 32 : 28)
+        : size === 40
+          ? (spacing === '16' ? 40 : 34)
+          : (spacing === '16' ? 48 : 40)
+      const ceilCount = size === 32
+        ? (spacing === '16' ? 40 : 32)
+        : size === 40
+          ? (spacing === '16' ? 50 : 40)
+          : (spacing === '16' ? 60 : 48)
+      perSheet = Math.round((wallCount + ceilCount) / 2)
     }
 
-    const total = Math.ceil(sheets * perSheet * 1.10)
+    const total = Math.ceil(sheets * perSheet * 1.10)  // 10% overage for stripping/breakage
     const boxes = Math.ceil(total / boxSize)
 
     return { perSheet, total, boxes }
@@ -67,9 +84,10 @@ export default function ScrewCalculator({ onUpdate }) {
   ]
 
   const boxSizes = [
-    { value: 145, label: '1 lb (~145 screws)' },
-    { value: 725, label: '5 lb (~725 screws)' },
-    { value: 1450, label: '10 lb (~1,450 screws)' },
+    // 1-5/8" #6 coarse thread: ~175 screws/lb (industry standard)
+    { value: 175, label: '1 lb (~175 screws)' },
+    { value: 875, label: '5 lb (~875 screws)' },
+    { value: 1750, label: '10 lb (~1,750 screws)' },
   ]
 
   const appLabel = {
@@ -141,6 +159,7 @@ export default function ScrewCalculator({ onUpdate }) {
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value={32}>4×8 ft (32 sq ft)</option>
+            <option value={40}>4×10 ft (40 sq ft)</option>
             <option value={48}>4×12 ft (48 sq ft)</option>
           </select>
         </div>
@@ -211,7 +230,7 @@ export default function ScrewCalculator({ onUpdate }) {
         </div>
 
         <InfoBox>
-          For {appLabel[application]} at {spacing}" OC with {sheetSize === 32 ? '4×8' : '4×12'} sheets — {results.perSheet} screws per sheet including edges. IRC code compliant. 10% overage already included.
+          For {appLabel[application]} at {spacing}" OC with {sheetSize === 32 ? '4×8' : sheetSize === 40 ? '4×10' : '4×12'} sheets — {results.perSheet} screws per sheet including edges. ASTM C840-23 compliant. 10% overage already included.
         </InfoBox>
       </div>
     </div>

@@ -11,28 +11,31 @@ function loadSaved() {
 export default function TapeCalculator({ onUpdate }) {
   const saved = loadSaved()
   const [area, setArea] = useState(saved.area ?? 800)
-  const [corners, setCorners] = useState(saved.corners ?? 4)
+  const [insideCorners, setInsideCorners] = useState(saved.insideCorners ?? saved.corners ?? 4)
   const [sheetSize, setSheetSize] = useState(saved.sheetSize ?? 48)
   const [tapeType, setTapeType] = useState(saved.tapeType ?? 'paper')
   const [rollSize, setRollSize] = useState(saved.rollSize ?? 500)
   const [ceilHeight, setCeilHeight] = useState(saved.ceilHeight ?? 9)
 
   const results = useMemo(() => {
-    // Seam tape: area divided by sheet width (always 4 ft — sheets are 4 ft wide regardless
-    // of length), multiplied by 1.1 for butt-joint overlap
-    const seamFt = Math.round((area / 4) * 1.1)
-    const cornerFt = Math.round(corners * ceilHeight)
-    // mesh tape stretches ~15% more, requiring proportionally more roll length
+    // Industry standard: ~1 linear ft of tape per sq ft of drywall (all seams + inside corners)
+    // Source: engineerfix.com, spikevm.com, basicfreetools.com — geometrically validated
+    // (a 4×8 sheet = 32 sq ft ≈ 32 linear ft of joint perimeter)
+    const baseSeamFt = Math.round(area * 1.0)
+    // Inside corners (wall-to-wall and wall-to-ceiling transitions): each adds height ft of tape
+    const insideCornerFt = Math.round(insideCorners * ceilHeight)
+    // Mesh tape physically stretches ~15% more per roll consumed
     const meshMultiplier = tapeType === 'mesh' ? 1.15 : 1
-    const total = Math.round((seamFt + cornerFt) * meshMultiplier)
+    // 10% waste factor on all tape (cuts, overlaps, mistakes)
+    const total = Math.round((baseSeamFt + insideCornerFt) * meshMultiplier * 1.10)
     const rolls = Math.ceil(total / rollSize)
-    return { seamFt, cornerFt, total, rolls }
-  }, [area, corners, ceilHeight, rollSize, tapeType])
+    return { seamFt: baseSeamFt, cornerFt: insideCornerFt, total, rolls }
+  }, [area, insideCorners, ceilHeight, rollSize, tapeType])
 
   // Persist inputs across page refreshes
   useEffect(() => {
-    localStorage.setItem(LS_KEY, JSON.stringify({ area, corners, sheetSize, tapeType, rollSize, ceilHeight }))
-  }, [area, corners, sheetSize, tapeType, rollSize, ceilHeight])
+    localStorage.setItem(LS_KEY, JSON.stringify({ area, insideCorners, sheetSize, tapeType, rollSize, ceilHeight }))
+  }, [area, insideCorners, sheetSize, tapeType, rollSize, ceilHeight])
 
   useEffect(() => {
     if (onUpdate) {
@@ -49,7 +52,7 @@ export default function TapeCalculator({ onUpdate }) {
 
   const rollSizes = [
     { value: 75, label: '75 ft' },
-    { value: 150, label: '150 ft' },
+    { value: 250, label: '250 ft' },
     { value: 500, label: '500 ft' },
   ]
 
@@ -90,18 +93,18 @@ export default function TapeCalculator({ onUpdate }) {
           </div>
           <div>
             <label htmlFor="tp-corners" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
-              Outside corners
+              Inside corners
             </label>
             <input
               id="tp-corners"
               type="number"
-              value={corners}
+              value={insideCorners}
               min={0}
-              onChange={e => setCorners(+e.target.value)}
+              onChange={e => setInsideCorners(+e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
             <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">
-              Adds corner tape length
+              Wall-to-wall &amp; wall-to-ceiling joints (use Corner Bead tab for outside corners)
             </span>
           </div>
         </div>
