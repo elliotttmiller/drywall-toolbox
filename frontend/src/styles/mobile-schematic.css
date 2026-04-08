@@ -41,6 +41,25 @@
   display: none;
 }
 
+/* Product image inside hotspot detail modals (desktop detached + mobile overlay) */
+.hotspot-modal-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 110px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: #f8fafc;
+}
+
+/* Larger image in the mobile overlay where there is more vertical space */
+.hotspot-modal-image--mobile {
+  max-height: 160px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
 /* Show overlay elements only on mobile */
 @media (max-width: 768px) {
   .mobile-modal-backdrop {

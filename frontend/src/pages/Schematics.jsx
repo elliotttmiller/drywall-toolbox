@@ -565,6 +565,7 @@ export default function Parts() {
   const [activeHotspot, setActiveHotspot] = useState(null);
   const [activeHotspotPart, setActiveHotspotPart] = useState(null);
   const [hotspotStockStatus, setHotspotStockStatus] = useState(null); // 'instock' | 'outofstock' | null (loading)
+  const [hotspotProduct, setHotspotProduct] = useState(null); // full WC product for the active hotspot (image, etc.)
   // Position of the detached desktop modal within schematic-container (px from top-left)
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [toast, setToast] = useState(null);
@@ -1799,12 +1800,14 @@ export default function Parts() {
       setAddingToCart(null);
       setActiveHotspot(null);
       setActiveHotspotPart(null);
+      setHotspotProduct(null);
     }
   };
 
   const closeModal = () => {
     setActiveHotspot(null);
     setActiveHotspotPart(null);
+    setHotspotProduct(null);
   };
 
   // Calculate and apply an optimal position for the detached desktop modal so it
@@ -1815,7 +1818,7 @@ export default function Parts() {
     if (!container || !hotspotRect) return;
 
     const containerRect = container.getBoundingClientRect();
-    const MODAL_ESTIMATED_HEIGHT = 160; // conservative fallback before first render
+    const MODAL_ESTIMATED_HEIGHT = 260; // conservative fallback before first render (includes product image)
     // Derive dimensions from the rendered modal element when available so the
     // calculation stays in sync with any future CSS width/height changes.
     const MODAL_WIDTH  = detachedModalRef.current ? detachedModalRef.current.offsetWidth  : 280;
@@ -1846,21 +1849,27 @@ export default function Parts() {
     setModalPosition({ top, left });
   }, []);
 
-  // Fetch live WooCommerce stock status whenever a hotspot is opened.
+  // Fetch live WooCommerce stock status and product image whenever a hotspot is opened.
   // Runs in the background — UI shows a loading state until resolved.
   useEffect(() => {
     if (!activeHotspotPart?.sku) {
       setHotspotStockStatus(null);
+      setHotspotProduct(null);
       return;
     }
     let cancelled = false;
     setHotspotStockStatus(null); // reset to loading while fetching
+    setHotspotProduct(null);
     getProductBySku(activeHotspotPart.sku).then((wc) => {
       if (!cancelled) {
         setHotspotStockStatus(wc ? (wc.stock_status || 'instock') : 'unknown');
+        setHotspotProduct(wc || null);
       }
     }).catch(() => {
-      if (!cancelled) setHotspotStockStatus('unknown');
+      if (!cancelled) {
+        setHotspotStockStatus('unknown');
+        setHotspotProduct(null);
+      }
     });
     return () => { cancelled = true; };
   }, [activeHotspotPart]);
@@ -2531,6 +2540,13 @@ export default function Parts() {
                   >
                     {/* Desktop inline modal (hidden on mobile via CSS) */}
                     <div className="part-modal" onClick={(e) => e.stopPropagation()}>
+                    {activeHotspot === part.id && hotspotProduct?.images?.[0]?.src && (
+                      <img
+                        src={hotspotProduct.images[0].src}
+                        alt={hotspotProduct.images[0].alt || part.name}
+                        className="hotspot-modal-image"
+                      />
+                    )}
                     <h4 style={{
                       textTransform: 'uppercase',
                       fontSize: '0.75rem',
@@ -2646,6 +2662,13 @@ export default function Parts() {
                   left: `${modalPosition.left}px`,
                 }}
               >
+                {hotspotProduct?.images?.[0]?.src && (
+                  <img
+                    src={hotspotProduct.images[0].src}
+                    alt={hotspotProduct.images[0].alt || activeHotspotPart.name}
+                    className="hotspot-modal-image"
+                  />
+                )}
                 <h4 style={{
                   textTransform: 'uppercase',
                   fontSize: '0.75rem',
@@ -2742,6 +2765,13 @@ export default function Parts() {
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>
             </button>
+            {hotspotProduct?.images?.[0]?.src && (
+              <img
+                src={hotspotProduct.images[0].src}
+                alt={hotspotProduct.images[0].alt || activeHotspotPart.name}
+                className="hotspot-modal-image hotspot-modal-image--mobile"
+              />
+            )}
             <h4 style={{
               textTransform: 'uppercase',
               fontSize: '0.8rem',
