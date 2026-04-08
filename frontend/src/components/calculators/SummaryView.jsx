@@ -12,7 +12,11 @@ export default function SummaryView({ data }) {
     text += `  Size: ${sheetSizeLabels[sheets.sheetSize] || '—'}\n`
     text += `  Direction: ${sheets.hangDir === 'horizontal' ? 'Horizontal' : 'Vertical'}\n`
     text += `  Wall Area: ${sheets.wallArea || sheets.gross} sq ft\n`
-    text += `  Ceiling Area: ${sheets.ceilArea || 0} sq ft\n\n`
+    text += `  Ceiling Area: ${sheets.ceilArea || 0} sq ft\n`
+    text += `  Base Sheets (no waste): ${sheets.baseSheets ?? '—'}\n`
+    text += `  Dynamic Waste: ${sheets.dynamicWaste != null ? Math.round(sheets.dynamicWaste * 100) + '%' : '—'} (${sheets.totalVerticalSeams ?? 0} vertical seams)\n`
+    text += `  Applied Waste: ${sheets.wastePct != null ? Math.round(sheets.wastePct * 100) + '%' : '—'}\n`
+    text += `  Total Joint Footage: ${sheets.totalJointLinearFeet ?? '—'} lf\n\n`
     text += `JOINT COMPOUND (MUD)\n`
     text += `  Total: ${mud.totalGallons} gallons\n`
     text += `  Finish Level: ${mud.finishLevel !== undefined ? `Level ${mud.finishLevel}` : '—'}\n`
@@ -71,11 +75,23 @@ export default function SummaryView({ data }) {
         title="Drywall Sheets"
         result={`${sheets.sheets || '—'} sheets`}
       >
-        <SummaryItem label="Sheet size"              value={sheetSizeLabels[sheets.sheetSize] || '—'} />
-        <SummaryItem label="Hang direction"          value={hangDirLabels[sheets.hangDir] || '—'} />
-        <SummaryItem label="Total wall area"         value={`${sheets.gross || '—'} sq ft`} />
+        <SummaryItem label="Sheet size"                value={sheetSizeLabels[sheets.sheetSize] || '—'} />
+        <SummaryItem label="Hang direction"            value={hangDirLabels[sheets.hangDir] || '—'} />
+        <SummaryItem label="Total wall area"           value={`${sheets.gross || '—'} sq ft`} />
         <SummaryItem label="Net area (after openings)" value={`${sheets.net || '—'} sq ft`} />
-        <SummaryItem label="Waste factor"            value={sheets.wastePct != null ? `${(sheets.wastePct * 100).toFixed(0)}%` : '—'} />
+        <SummaryItem label="Base sheets (no waste)"    value={sheets.baseSheets != null ? sheets.baseSheets : '—'} />
+        <SummaryItem
+          label="Dynamic waste"
+          value={sheets.dynamicWaste != null ? `${Math.round(sheets.dynamicWaste * 100)}% (${sheets.totalVerticalSeams ?? 0} v-seams)` : '—'}
+        />
+        <SummaryItem
+          label="Applied waste factor"
+          value={sheets.wastePct != null ? `${(sheets.wastePct * 100).toFixed(0)}%` : '—'}
+        />
+        <SummaryItem
+          label="Total joint footage"
+          value={sheets.totalJointLinearFeet != null ? `${sheets.totalJointLinearFeet} lf` : '—'}
+        />
       </SummaryCard>
 
       {/* Tape */}
@@ -86,7 +102,7 @@ export default function SummaryView({ data }) {
         <SummaryItem label="Tape type"        value={tapeTypeLabels[tape.tapeType] || '—'} />
         <SummaryItem label="Roll size"        value={`${tape.rollSize || '—'} ft`} />
         <SummaryItem label="Total linear feet" value={`${tape.totalFeet || '—'} ft`} />
-        <SummaryItem label="Seam footage"     value={`${tape.seamFeet || '—'} ft`} />
+        <SummaryItem label="Joint footage"    value={tape.syncedFromSheets ? `${tape.seamFeet || '—'} ft (layout)` : `${tape.seamFeet || '—'} ft (est.)`} />
         <SummaryItem label="Corner footage"   value={`${tape.cornerFeet || '—'} ft`} />
       </SummaryCard>
 

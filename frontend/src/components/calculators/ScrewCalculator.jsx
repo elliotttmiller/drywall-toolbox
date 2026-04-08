@@ -39,7 +39,7 @@ const boxSizeOptions = [
   { value: 1750, label: '10 lb box', description: '~1,750 screws' },
 ]
 
-export default function ScrewCalculator({ onUpdate }) {
+export default function ScrewCalculator({ onUpdate, sheetData }) {
   const saved = loadSaved()
   const [sheets, setSheets] = useState(saved.sheets ?? 20)
   const [spacing, setSpacing] = useState(saved.spacing ?? '16')
@@ -48,7 +48,13 @@ export default function ScrewCalculator({ onUpdate }) {
   const [screwLength, setScrewLength] = useState(saved.screwLength ?? '1-5/8"')
   const [boxSize, setBoxSize] = useState(saved.boxSize ?? 875)
 
+  // Use sheet count and sheet size from the Sheets tab when available
+  const syncedFromSheets = !!(sheetData?.sheets)
+  const effectiveSheets = syncedFromSheets ? sheetData.sheets : sheets
+  const effectiveSheetSize = syncedFromSheets ? (sheetData.sheetSize ?? sheetSize) : sheetSize
+
   const results = useMemo(() => {
+    const size = +effectiveSheetSize
     const size = +sheetSize
     // Per-sheet screw counts per ASTM C840-23:
     // Walls:    edges 8" OC,  field 16" OC
@@ -83,11 +89,11 @@ export default function ScrewCalculator({ onUpdate }) {
       perSheet = Math.round((wallCount + ceilCount) / 2)
     }
 
-    const total = Math.ceil(sheets * perSheet * 1.10)  // 10% overage for stripping/breakage
+    const total = Math.ceil(effectiveSheets * perSheet * 1.10)  // 10% overage for stripping/breakage
     const boxes = Math.ceil(total / boxSize)
 
     return { perSheet, total, boxes }
-  }, [sheets, spacing, application, sheetSize, boxSize])
+  }, [effectiveSheets, effectiveSheetSize, spacing, application, boxSize])
 
   // Persist inputs across page refreshes
   useEffect(() => {
@@ -102,10 +108,12 @@ export default function ScrewCalculator({ onUpdate }) {
         boxSize,
         totalScrews: results.total,
         perSheet: results.perSheet,
-        application
+        application,
+        syncedFromSheets,
+        sheetsUsed: effectiveSheets,
       })
     }
-  }, [results, screwLength, boxSize, application, onUpdate])
+  }, [results, screwLength, boxSize, application, syncedFromSheets, effectiveSheets, onUpdate])
 
   const appLabel = {
     wall:    'walls (16" field spacing)',
@@ -115,6 +123,18 @@ export default function ScrewCalculator({ onUpdate }) {
 
   return (
     <div className="space-y-6">
+
+      {/* Sync indicator */}
+      {syncedFromSheets && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-50 border border-primary-200 text-xs text-primary-700">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0" />
+          <span>
+            <strong>Synced from Sheets tab</strong> — using {effectiveSheets} sheets
+            ({sheetData.sheetSize === 32 ? '4×8' : sheetData.sheetSize === 40 ? '4×10' : '4×12'} ft).
+          </span>
+        </div>
+      )}
+
       <div>
         <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
           Job Details
@@ -126,11 +146,21 @@ export default function ScrewCalculator({ onUpdate }) {
             </label>
             <input
               type="number"
-              value={sheets}
+              value={effectiveSheets}
               min={1}
-              onChange={e => setSheets(+e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+              readOnly={syncedFromSheets}
+              onChange={e => !syncedFromSheets && setSheets(+e.target.value)}
+              className={`w-full px-3 py-2.5 border rounded-xl text-gray-900 text-sm focus:outline-none transition ${
+                syncedFromSheets
+                  ? 'border-primary-200 bg-primary-50 text-primary-700'
+                  : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+              }`}
             />
+            {syncedFromSheets && (
+              <span className="text-xs text-gray-500 mt-1.5 block leading-snug">
+                Auto-populated from Sheets tab
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1.5">
@@ -164,8 +194,8 @@ export default function ScrewCalculator({ onUpdate }) {
             Sheet size
           </label>
           <CalcDropdown
-            value={sheetSize}
-            onChange={v => setSheetSize(+v)}
+            value={effectiveSheetSize}
+            onChange={v => !syncedFromSheets && setSheetSize(+v)}
             options={sheetSizeOptions}
           />
         </div>
@@ -224,7 +254,7 @@ export default function ScrewCalculator({ onUpdate }) {
         </div>
 
         <InfoBox>
-          For {appLabel[application]} at {spacing}" OC with {sheetSize === 32 ? '4×8' : sheetSize === 40 ? '4×10' : '4×12'} sheets — {results.perSheet} screws per sheet including edges. ASTM C840-23 compliant. 10% overage already included.
+          For {appLabel[application]} at {spacing}" OC with {effectiveSheetSize === 32 ? '4×8' : effectiveSheetSize === 40 ? '4×10' : '4×12'} sheets — {results.perSheet} screws per sheet including edges. ASTM C840-23 compliant. 10% overage already included.
         </InfoBox>
       </div>
     </div>
