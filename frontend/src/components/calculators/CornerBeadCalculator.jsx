@@ -3,9 +3,16 @@ import ResultCard from './shared/ResultCard'
 import InfoBox from './shared/InfoBox'
 
 const LS_KEY = 'dwCalc_bead'
+// 5% added to straight-run lengths to cover splice waste (industry standard)
+const SPLICE_WASTE_FACTOR = 1.05
 
 function loadSaved() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {} } catch { return {} }
+  try {
+    const data = JSON.parse(localStorage.getItem(LS_KEY)) || {}
+    // Migrate legacy 'standard' beadType value to current 'metal' key
+    if (data.beadType === 'standard') data.beadType = 'metal'
+    return data
+  } catch { return {} }
 }
 
 export default function CornerBeadCalculator({ onUpdate }) {
@@ -22,7 +29,7 @@ export default function CornerBeadCalculator({ onUpdate }) {
     const archFt = Math.round(arches * archHeight * 2)
     const totalFt = stdFt + archFt
     // 5% splice waste on straight runs per industry standard
-    const adjustedFt = Math.round(stdFt * 1.05) + archFt
+    const adjustedFt = Math.round(stdFt * SPLICE_WASTE_FACTOR) + archFt
     const sections = Math.ceil(adjustedFt / stockLength)
     return { stdFt, archFt, totalFt, sections }
   }, [corners, height, arches, archHeight, stockLength])

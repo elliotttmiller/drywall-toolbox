@@ -18,7 +18,8 @@ export default function TapeCalculator({ onUpdate }) {
   const [ceilHeight, setCeilHeight] = useState(saved.ceilHeight ?? 9)
 
   const results = useMemo(() => {
-    // seam ft: area / sheet-width (4 ft) with 10% butt-joint overlap factor
+    // Seam tape: area divided by sheet width (always 4 ft — sheets are 4 ft wide regardless
+    // of length), multiplied by 1.1 for butt-joint overlap
     const seamFt = Math.round((area / 4) * 1.1)
     const cornerFt = Math.round(corners * ceilHeight)
     // mesh tape stretches ~15% more, requiring proportionally more roll length
