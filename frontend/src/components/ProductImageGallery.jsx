@@ -95,7 +95,7 @@ export default function ProductImageGallery({ product }) {
           width={product?.images?.[currentIndex]?.width  || 800}
           height={product?.images?.[currentIndex]?.height || 800}
           loading={currentIndex === 0 ? 'eager' : 'lazy'}
-          fetchpriority={currentIndex === 0 ? 'high' : 'auto'}
+          fetchpriority={currentIndex === 0 ? 'high' : undefined}
           decoding="async"
           className={`absolute inset-0 w-full h-full object-contain p-2 sm:p-3 transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setLoaded(true)}

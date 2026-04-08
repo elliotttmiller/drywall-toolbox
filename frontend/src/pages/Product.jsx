@@ -71,7 +71,7 @@ export default function Product() {
   // Read _dtb_seo_* overrides from WooCommerce product meta_data
   const metaMap = {};
   if (Array.isArray(product.meta_data)) {
-    product.meta_data.forEach(({ key: k, value: v }) => { metaMap[k] = v; });
+    product.meta_data.forEach(({ key: metaKey, value: metaValue }) => { metaMap[metaKey] = metaValue; });
   }
 
   const seoTitle    = metaMap['_dtb_seo_title']       || product.name || '';

@@ -19,16 +19,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// ─── Meta key definitions ──────────────────────────────────────────────────────
-
-const DTB_SEO_KEYS = [
-	'_dtb_seo_title',
-	'_dtb_seo_description',
-	'_dtb_seo_focus_kw',
-	'_dtb_seo_canonical',
-	'_dtb_seo_noindex',
-];
-
 // ─── Register meta for REST API exposure ──────────────────────────────────────
 
 add_action( 'init', 'dtb_seo_register_meta' );

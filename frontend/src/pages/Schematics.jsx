@@ -2225,7 +2225,7 @@ export default function Parts() {
       onClick={closeModal}
     >
       <SEOHead
-        title="Tool Schematics &amp; Diagrams"
+        title="Tool Schematics & Diagrams"
         description="Interactive exploded-view schematics and part diagrams for professional drywall finishing tools. Find replacement parts for TapeTech, Columbia, Asgard, Level5, and more."
         canonical="https://drywalltoolbox.com/schematics"
         schema={buildBreadcrumbSchema([
