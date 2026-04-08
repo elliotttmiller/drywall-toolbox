@@ -35,6 +35,7 @@ const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
 const Login              = lazy(() => import('./pages/Login'));
 const Register           = lazy(() => import('./pages/Register'));
 const Dashboard          = lazy(() => import('./pages/Dashboard'));
+const Calculators        = lazy(() => import('./pages/Calculators'));
 
 // ─── 404 Not Found page ───────────────────────────────────────────────────────
 // Rendered for any URL that doesn't match a defined route.
@@ -133,6 +134,7 @@ function App() {
                     <Route path="/category/:slug"        element={<CategoryPage />} />
                     <Route path="/schematics"            element={<Schematics />} />
                     <Route path="/repairs"               element={<Repairs />} />
+                    <Route path="/calculators"           element={<Calculators />} />
                     <Route path="/cart"                  element={<Cart />} />
                     <Route path="/checkout"              element={<Checkout />} />
                     <Route path="/order/:id"             element={<OrderConfirmation />} />

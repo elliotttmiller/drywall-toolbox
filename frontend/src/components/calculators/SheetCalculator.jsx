@@ -11,14 +11,21 @@ const DEFAULT_WALLS = [
   { id: 4, length: 14 },
 ]
 
+const LS_KEY = 'dwCalc_sheet'
+
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {} } catch { return {} }
+}
+
 export default function SheetCalculator({ onUpdate }) {
-  const [walls, setWalls] = useState(DEFAULT_WALLS)
-  const [ceilHeight, setCeilHeight] = useState(9)
-  const [sheetSize, setSheetSize] = useState(48)
-  const [hangDir, setHangDir] = useState('horizontal')
-  const [doors, setDoors] = useState(1)
-  const [windows, setWindows] = useState(2)
-  const [wastePct, setWastePct] = useState(0.05)
+  const saved = loadSaved()
+  const [walls, setWalls] = useState(saved.walls || DEFAULT_WALLS)
+  const [ceilHeight, setCeilHeight] = useState(saved.ceilHeight ?? 9)
+  const [sheetSize, setSheetSize] = useState(saved.sheetSize ?? 48)
+  const [hangDir, setHangDir] = useState(saved.hangDir ?? 'horizontal')
+  const [doors, setDoors] = useState(saved.doors ?? 1)
+  const [windows, setWindows] = useState(saved.windows ?? 2)
+  const [wastePct, setWastePct] = useState(saved.wastePct ?? 0.05)
 
   // All calculation logic lives in useMemo — recalculates only when inputs change
   const results = useMemo(() => {
@@ -29,6 +36,11 @@ export default function SheetCalculator({ onUpdate }) {
     const sheets = Math.ceil(withWaste / sheetSize)
     return { gross, net, withWaste, sheets }
   }, [walls, ceilHeight, sheetSize, doors, windows, wastePct])
+
+  // Persist inputs across page refreshes
+  useEffect(() => {
+    localStorage.setItem(LS_KEY, JSON.stringify({ walls, ceilHeight, sheetSize, hangDir, doors, windows, wastePct }))
+  }, [walls, ceilHeight, sheetSize, hangDir, doors, windows, wastePct])
 
   // Notify parent of updates for summary tab
   useEffect(() => {
@@ -254,7 +266,11 @@ export default function SheetCalculator({ onUpdate }) {
 
       {/* Results */}
       <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"
+          aria-live="polite"
+          aria-label="Sheet calculator results"
+        >
           <ResultCard
             label="Sheets to order"
             value={results.sheets}

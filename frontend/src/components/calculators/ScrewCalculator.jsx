@@ -2,13 +2,20 @@ import { useState, useMemo, useEffect } from 'react'
 import ResultCard from './shared/ResultCard'
 import InfoBox from './shared/InfoBox'
 
+const LS_KEY = 'dwCalc_screws'
+
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {} } catch { return {} }
+}
+
 export default function ScrewCalculator({ onUpdate }) {
-  const [sheets, setSheets] = useState(20)
-  const [spacing, setSpacing] = useState('16')
-  const [application, setApplication] = useState('wall')
-  const [sheetSize, setSheetSize] = useState(48)
-  const [screwLength, setScrewLength] = useState('1-5/8"')
-  const [boxSize, setBoxSize] = useState(725)
+  const saved = loadSaved()
+  const [sheets, setSheets] = useState(saved.sheets ?? 20)
+  const [spacing, setSpacing] = useState(saved.spacing ?? '16')
+  const [application, setApplication] = useState(saved.application ?? 'wall')
+  const [sheetSize, setSheetSize] = useState(saved.sheetSize ?? 48)
+  const [screwLength, setScrewLength] = useState(saved.screwLength ?? '1-5/8"')
+  const [boxSize, setBoxSize] = useState(saved.boxSize ?? 725)
 
   const results = useMemo(() => {
     const size = +sheetSize
@@ -33,6 +40,11 @@ export default function ScrewCalculator({ onUpdate }) {
 
     return { perSheet, total, boxes }
   }, [sheets, spacing, application, sheetSize, boxSize])
+
+  // Persist inputs across page refreshes
+  useEffect(() => {
+    localStorage.setItem(LS_KEY, JSON.stringify({ sheets, spacing, application, sheetSize, screwLength, boxSize }))
+  }, [sheets, spacing, application, sheetSize, screwLength, boxSize])
 
   useEffect(() => {
     if (onUpdate) {
@@ -170,7 +182,11 @@ export default function ScrewCalculator({ onUpdate }) {
       </div>
 
       <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"
+          aria-live="polite"
+          aria-label="Screw calculator results"
+        >
           <ResultCard
             label="Boxes to buy"
             value={results.boxes}

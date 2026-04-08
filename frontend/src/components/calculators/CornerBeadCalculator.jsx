@@ -2,21 +2,35 @@ import { useState, useMemo, useEffect } from 'react'
 import ResultCard from './shared/ResultCard'
 import InfoBox from './shared/InfoBox'
 
+const LS_KEY = 'dwCalc_bead'
+
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {} } catch { return {} }
+}
+
 export default function CornerBeadCalculator({ onUpdate }) {
-  const [corners, setCorners] = useState(4)
-  const [height, setHeight] = useState(9)
-  const [arches, setArches] = useState(0)
-  const [archHeight, setArchHeight] = useState(7)
-  const [beadType, setBeadType] = useState('standard')
-  const [stockLength, setStockLength] = useState(8)
+  const saved = loadSaved()
+  const [corners, setCorners] = useState(saved.corners ?? 4)
+  const [height, setHeight] = useState(saved.height ?? 9)
+  const [arches, setArches] = useState(saved.arches ?? 0)
+  const [archHeight, setArchHeight] = useState(saved.archHeight ?? 7)
+  const [beadType, setBeadType] = useState(saved.beadType ?? 'metal')
+  const [stockLength, setStockLength] = useState(saved.stockLength ?? 8)
 
   const results = useMemo(() => {
     const stdFt = Math.round(corners * height)
     const archFt = Math.round(arches * archHeight * 2)
     const totalFt = stdFt + archFt
-    const sections = Math.ceil(totalFt / stockLength)
+    // 5% splice waste on straight runs per industry standard
+    const adjustedFt = Math.round(stdFt * 1.05) + archFt
+    const sections = Math.ceil(adjustedFt / stockLength)
     return { stdFt, archFt, totalFt, sections }
   }, [corners, height, arches, archHeight, stockLength])
+
+  // Persist inputs across page refreshes
+  useEffect(() => {
+    localStorage.setItem(LS_KEY, JSON.stringify({ corners, height, arches, archHeight, beadType, stockLength }))
+  }, [corners, height, arches, archHeight, beadType, stockLength])
 
   useEffect(() => {
     if (onUpdate) {
@@ -32,7 +46,7 @@ export default function CornerBeadCalculator({ onUpdate }) {
   }, [results, beadType, stockLength, onUpdate])
 
   const beadTypes = [
-    { value: 'standard', label: 'Standard metal corner bead' },
+    { value: 'metal', label: 'Metal corner bead (standard)' },
     { value: 'bullnose', label: 'Bullnose corner bead' },
     { value: 'vinyl', label: 'Vinyl corner bead' },
     { value: 'flex', label: 'Flexible / arch bead' },
@@ -45,10 +59,10 @@ export default function CornerBeadCalculator({ onUpdate }) {
   ]
 
   const tips = {
-    standard: 'Standard metal bead is the most durable option. Fasten every 6–9" alternating sides.',
-    bullnose: 'Bullnose gives a rounded profile — popular in modern and contemporary builds.',
-    vinyl: 'Vinyl bead resists rust in wet areas. Use vinyl-specific compound for best adhesion.',
-    flex: 'Flexible bead bends to any radius. Score lightly before bending to prevent kinking.'
+    metal: 'Metal bead is industry standard — the most durable option. Fasten every 6–9" alternating sides. 5% splice waste included.',
+    bullnose: 'Bullnose gives a rounded profile — popular in modern and contemporary builds. 5% splice waste included.',
+    vinyl: 'Use vinyl in bathrooms and high-humidity areas to prevent rust bleed. Use vinyl-specific compound for best adhesion.',
+    flex: 'Flexible bead bends to any radius — required for archways. Score lightly before bending to prevent kinking.'
   }
 
   return (
@@ -59,10 +73,11 @@ export default function CornerBeadCalculator({ onUpdate }) {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
-              Number of outside corners
+            <label htmlFor="cb-corners" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Straight outside corners
             </label>
             <input
+              id="cb-corners"
               type="number"
               value={corners}
               min={0}
@@ -74,10 +89,11 @@ export default function CornerBeadCalculator({ onUpdate }) {
             </span>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
-              Wall/ceiling height (ft)
+            <label htmlFor="cb-height" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+              Wall / ceiling height (ft)
             </label>
             <input
+              id="cb-height"
               type="number"
               value={height}
               min={1}
@@ -91,10 +107,11 @@ export default function CornerBeadCalculator({ onUpdate }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+          <label htmlFor="cb-arches" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
             Archways / curved corners
           </label>
           <input
+            id="cb-arches"
             type="number"
             value={arches}
             min={0}
@@ -106,10 +123,11 @@ export default function CornerBeadCalculator({ onUpdate }) {
           </span>
         </div>
         <div>
-          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+          <label htmlFor="cb-arch-h" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
             Arch height (ft)
           </label>
           <input
+            id="cb-arch-h"
             type="number"
             value={archHeight}
             min={1}
@@ -122,14 +140,15 @@ export default function CornerBeadCalculator({ onUpdate }) {
 
       <div>
         <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-          Bead Type & Stock Length
+          Bead Type &amp; Stock Length
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+            <label htmlFor="cb-type" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
               Corner bead type
             </label>
             <select
+              id="cb-type"
               value={beadType}
               onChange={e => setBeadType(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -142,17 +161,18 @@ export default function CornerBeadCalculator({ onUpdate }) {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+            <label htmlFor="cb-stock" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
               Stock bead length (ft)
             </label>
             <select
+              id="cb-stock"
               value={stockLength}
               onChange={e => setStockLength(+e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
-              {stockLengths.map(length => (
-                <option key={length.value} value={length.value}>
-                  {length.label}
+              {stockLengths.map(len => (
+                <option key={len.value} value={len.value}>
+                  {len.label}
                 </option>
               ))}
             </select>
@@ -161,7 +181,11 @@ export default function CornerBeadCalculator({ onUpdate }) {
       </div>
 
       <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"
+          aria-live="polite"
+          aria-label="Corner bead calculator results"
+        >
           <ResultCard
             label="Bead sections to buy"
             value={results.sections}
@@ -174,7 +198,7 @@ export default function CornerBeadCalculator({ onUpdate }) {
             sub="corner bead needed"
           />
           <ResultCard
-            label="Standard corners"
+            label="Straight corners"
             value={results.stdFt}
             sub="ft of straight bead"
           />

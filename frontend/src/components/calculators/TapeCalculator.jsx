@@ -2,21 +2,36 @@ import { useState, useMemo, useEffect } from 'react'
 import ResultCard from './shared/ResultCard'
 import InfoBox from './shared/InfoBox'
 
+const LS_KEY = 'dwCalc_tape'
+
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || {} } catch { return {} }
+}
+
 export default function TapeCalculator({ onUpdate }) {
-  const [area, setArea] = useState(800)
-  const [corners, setCorners] = useState(4)
-  const [sheetSize, setSheetSize] = useState(48)
-  const [tapeType, setTapeType] = useState('paper')
-  const [rollSize, setRollSize] = useState(500)
-  const [ceilHeight, setCeilHeight] = useState(9)
+  const saved = loadSaved()
+  const [area, setArea] = useState(saved.area ?? 800)
+  const [corners, setCorners] = useState(saved.corners ?? 4)
+  const [sheetSize, setSheetSize] = useState(saved.sheetSize ?? 48)
+  const [tapeType, setTapeType] = useState(saved.tapeType ?? 'paper')
+  const [rollSize, setRollSize] = useState(saved.rollSize ?? 500)
+  const [ceilHeight, setCeilHeight] = useState(saved.ceilHeight ?? 9)
 
   const results = useMemo(() => {
-    const seamFt = Math.round(area / 3.8)
+    // seam ft: area / sheet-width (4 ft) with 10% butt-joint overlap factor
+    const seamFt = Math.round((area / 4) * 1.1)
     const cornerFt = Math.round(corners * ceilHeight)
-    const total = seamFt + cornerFt
+    // mesh tape stretches ~15% more, requiring proportionally more roll length
+    const meshMultiplier = tapeType === 'mesh' ? 1.15 : 1
+    const total = Math.round((seamFt + cornerFt) * meshMultiplier)
     const rolls = Math.ceil(total / rollSize)
     return { seamFt, cornerFt, total, rolls }
-  }, [area, corners, ceilHeight, rollSize])
+  }, [area, corners, ceilHeight, rollSize, tapeType])
+
+  // Persist inputs across page refreshes
+  useEffect(() => {
+    localStorage.setItem(LS_KEY, JSON.stringify({ area, corners, sheetSize, tapeType, rollSize, ceilHeight }))
+  }, [area, corners, sheetSize, tapeType, rollSize, ceilHeight])
 
   useEffect(() => {
     if (onUpdate) {
@@ -45,7 +60,7 @@ export default function TapeCalculator({ onUpdate }) {
 
   const tips = {
     paper: 'Paper tape requires embedding in mud. Run it tight to the seam with no wrinkles — bubbles cause cracking.',
-    mesh: 'Mesh tape self-adheres and is faster to apply, but requires setting-type compound for strength.',
+    mesh: 'Mesh tape self-adheres and is faster to apply, but requires setting-type compound for strength. We\'ve added 15% for stretch.',
     flex: 'Flexible corner tape works on both inside and outside corners — great for rounded transitions.'
   }
 
@@ -53,14 +68,15 @@ export default function TapeCalculator({ onUpdate }) {
     <div className="space-y-6">
       <div>
         <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-          Wall & Ceiling Area
+          Wall &amp; Ceiling Area
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+            <label htmlFor="tp-area" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
               Total drywall area (sq ft)
             </label>
             <input
+              id="tp-area"
               type="number"
               value={area}
               min={1}
@@ -72,10 +88,11 @@ export default function TapeCalculator({ onUpdate }) {
             </span>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+            <label htmlFor="tp-corners" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
               Outside corners
             </label>
             <input
+              id="tp-corners"
               type="number"
               value={corners}
               min={0}
@@ -89,12 +106,28 @@ export default function TapeCalculator({ onUpdate }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
-          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+          <label htmlFor="tp-ceil" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+            Ceiling height (ft)
+          </label>
+          <input
+            id="tp-ceil"
+            type="number"
+            value={ceilHeight}
+            min={6}
+            max={20}
+            step={0.5}
+            onChange={e => setCeilHeight(+e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          />
+        </div>
+        <div>
+          <label htmlFor="tp-sheet" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
             Sheet size used
           </label>
           <select
+            id="tp-sheet"
             value={sheetSize}
             onChange={e => setSheetSize(+e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -105,10 +138,11 @@ export default function TapeCalculator({ onUpdate }) {
           </select>
         </div>
         <div>
-          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+          <label htmlFor="tp-type" className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
             Tape type
           </label>
           <select
+            id="tp-type"
             value={tapeType}
             onChange={e => setTapeType(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -126,7 +160,7 @@ export default function TapeCalculator({ onUpdate }) {
         <label className="block text-xs text-gray-600 dark:text-gray-400 mb-2">
           Roll size
         </label>
-        <div className="flex gap-2">
+        <div className="flex gap-2" role="group" aria-label="Roll size">
           {rollSizes.map(size => (
             <button
               key={size.value}
@@ -136,6 +170,7 @@ export default function TapeCalculator({ onUpdate }) {
                   : 'bg-transparent border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
               onClick={() => setRollSize(size.value)}
+              aria-pressed={rollSize === size.value}
             >
               {size.label}
             </button>
@@ -144,7 +179,11 @@ export default function TapeCalculator({ onUpdate }) {
       </div>
 
       <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"
+          aria-live="polite"
+          aria-label="Tape calculator results"
+        >
           <ResultCard
             label="Tape rolls needed"
             value={results.rolls}
@@ -157,12 +196,12 @@ export default function TapeCalculator({ onUpdate }) {
             sub="ft of tape total"
           />
           <ResultCard
-            label="Seam tape"
+            label="Field seam tape"
             value={results.seamFt.toLocaleString()}
             sub="ft for field seams"
           />
           <ResultCard
-            label="Corner tape"
+            label="Outside corner tape"
             value={results.cornerFt.toLocaleString()}
             sub="ft for outside corners"
           />

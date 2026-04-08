@@ -203,18 +203,30 @@ export default function CalculatorHub() {
         </div>
       </div>
 
-      {/* Calculator panels with touch gestures */}
+      {/* Calculator panels — always mounted, hidden via CSS to preserve state on tab switch */}
       <div
         className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4 md:p-6"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {activeTab === 0 && <SheetCalculator onUpdate={handleSheetUpdate} />}
-        {activeTab === 1 && <TapeCalculator onUpdate={handleTapeUpdate} />}
-        {activeTab === 2 && <CornerBeadCalculator onUpdate={handleBeadUpdate} />}
-        {activeTab === 3 && <ScrewCalculator onUpdate={handleScrewUpdate} />}
-        {activeTab === 4 && <SummaryView data={{ ...summaryData, projectName }} />}
+        <div className={activeTab !== 0 ? 'hidden' : ''} role="tabpanel" aria-label="Drywall sheets calculator">
+          <SheetCalculator onUpdate={handleSheetUpdate} />
+        </div>
+        <div className={activeTab !== 1 ? 'hidden' : ''} role="tabpanel" aria-label="Tape calculator">
+          <TapeCalculator onUpdate={handleTapeUpdate} />
+        </div>
+        <div className={activeTab !== 2 ? 'hidden' : ''} role="tabpanel" aria-label="Corner bead calculator">
+          <CornerBeadCalculator onUpdate={handleBeadUpdate} />
+        </div>
+        <div className={activeTab !== 3 ? 'hidden' : ''} role="tabpanel" aria-label="Screw and fastener calculator">
+          <ScrewCalculator onUpdate={handleScrewUpdate} />
+        </div>
+        {activeTab === 4 && (
+          <div role="tabpanel" aria-label="Material summary">
+            <SummaryView data={{ ...summaryData, projectName }} />
+          </div>
+        )}
       </div>
 
       {/* Mobile swipe hint */}

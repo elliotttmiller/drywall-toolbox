@@ -74,7 +74,7 @@ export default function SummaryView({ data }) {
             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               📋 Drywall Sheets
             </span>
-            <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-500">
+            <span className="text-lg font-semibold text-primary-600">
               {sheets.sheets || '—'} sheets
             </span>
           </div>
@@ -93,7 +93,7 @@ export default function SummaryView({ data }) {
             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               📏 Joint Tape
             </span>
-            <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-500">
+            <span className="text-lg font-semibold text-primary-600">
               {tape.rolls || '—'} rolls
             </span>
           </div>
@@ -112,7 +112,7 @@ export default function SummaryView({ data }) {
             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               📐 Corner Bead
             </span>
-            <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-500">
+            <span className="text-lg font-semibold text-primary-600">
               {bead.sections || '—'} sections
             </span>
           </div>
@@ -131,7 +131,7 @@ export default function SummaryView({ data }) {
             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               🔩 Drywall Screws
             </span>
-            <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-500">
+            <span className="text-lg font-semibold text-primary-600">
               {screws.boxes || '—'} boxes
             </span>
           </div>
@@ -149,7 +149,7 @@ export default function SummaryView({ data }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <button
           onClick={exportEstimate}
-          className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md transition-colors"
+          className="px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-md transition-colors"
         >
           📄 Export Estimate
         </button>
