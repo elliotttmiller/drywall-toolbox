@@ -934,6 +934,29 @@
   }
 }
 
+/* Multi-page pager on mobile: break onto its own centered row beneath the title.
+   The back button and absolutely-centered title stay in row 1; the pager gets
+   full width in row 2 so it never truncates the tool name. */
+@media (max-width: 768px) {
+  .viewer-top-bar {
+    flex-wrap: wrap;
+  }
+
+  /* Pager wraps to a full-width strip and centers itself */
+  .viewer-pager {
+    flex: 0 0 100%;
+    justify-content: center;
+    margin-left: 0;
+    padding: 2px 0 8px;
+  }
+
+  /* Title group no longer has to share row 1 with the pager — allow it
+     to stretch closer to the back button without being clipped */
+  .viewer-title-group {
+    max-width: calc(100% - 110px);
+  }
+}
+
 /* Desktop: slightly more breathing room */
 @media (min-width: 769px) {
   .viewer-top-bar {
