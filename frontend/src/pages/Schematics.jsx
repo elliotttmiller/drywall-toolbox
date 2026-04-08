@@ -2394,13 +2394,14 @@ export default function Parts() {
 
           {/* ── Mobile page-tab strip — one tappable pill per page, shown only on mobile ── */}
           {currentSchematic.diagramPages && currentSchematic.diagramPages.length > 1 && (
-            <div className="viewer-page-tabs" role="tablist" aria-label="Schematic pages">
+            <div className="viewer-page-tabs" role="tablist" aria-label="Schematic pages" aria-orientation="horizontal">
               {currentSchematic.diagramPages.map((pageNum) => (
                 <button
                   key={pageNum}
                   role="tab"
                   className={`page-tab${currentPage === pageNum ? ' active' : ''}`}
                   aria-selected={currentPage === pageNum}
+                  aria-controls="schematic-diagram-panel"
                   onClick={() => setCurrentPage(pageNum)}
                 >
                   {currentSchematic.pageLabels?.[pageNum] || `Page ${pageNum}`}
@@ -2411,6 +2412,8 @@ export default function Parts() {
 
           {/* ── Schematic body — fills remaining viewport height ── */}
           <div
+            id="schematic-diagram-panel"
+            role="tabpanel"
             style={{
               flex: 1,
               minHeight: 0,
