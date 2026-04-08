@@ -1851,11 +1851,12 @@ export default function Parts() {
 
   // Fetch live WooCommerce stock status and product image whenever a hotspot is opened.
   // Runs in the background — UI shows a loading state until resolved.
+  // Parts with no SKU skip the fetch entirely and resolve immediately to 'unknown'.
   // A 10-second timeout guards against a slow/failing credentialsReady bootstrap
   // that would otherwise leave the spinner stuck indefinitely.
   useEffect(() => {
     if (!activeHotspotPart?.sku) {
-      // No SKU — mark immediately as unavailable so the spinner never hangs.
+      // No SKU — skip the async fetch and show Unavailable immediately.
       setHotspotStockStatus('unknown');
       setHotspotProduct(null);
       return;
