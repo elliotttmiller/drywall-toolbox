@@ -1137,12 +1137,12 @@ aside input[type="range"],
 /* Mobile Layout - Flexbox with centered branding */
 @media (max-width: 767px) {
     :root {
-        --header-height: calc(70px + env(safe-area-inset-top, 0px));
+        --header-height: calc(90px + env(safe-area-inset-top, 0px));
     }
 
     .site-header {
         /* On mobile the header height is determined entirely by site-header-inner
-           (height: 70px below) + safe-area-inset-top.  Override the desktop
+           (height: 90px below) + safe-area-inset-top.  Override the desktop
            0.75rem top/bottom padding so actual rendered height == --header-height
            and content is not accidentally hidden behind the fixed bar. */
         min-height: var(--header-height);
@@ -1150,7 +1150,7 @@ aside input[type="range"],
     }
 
     .site-header-inner {
-        height: 70px;
+        height: 90px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -1159,11 +1159,30 @@ aside input[type="range"],
     }
 
     body {
-        padding-top: var(--header-height, 70px);
+        padding-top: var(--header-height, 90px);
+    }
+
+    /* Center logo link between the two icon buttons */
+    .site-header .header-mobile-layout a {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Left icon (Menu) - positioned on far left */
+    .site-header .header-mobile-layout button:first-of-type {
+        flex: 0 0 auto;
+    }
+
+    /* Right icon (Cart) - positioned on far right */
+    .site-header .header-mobile-layout button:last-of-type {
+        flex: 0 0 auto;
     }
 
     .logo-image-mobile {
-        width: 220px;
+        width: 260px;
+        max-width: 260px;
         height: auto;
     }
 

@@ -482,13 +482,6 @@ export default function Header({ onCartToggle }) {
               )}
             </div>
             <Link 
-              to="/schematics" 
-              className={`nav-link-mobile ${isActive('/schematics') ? 'active' : ''}`}
-              onClick={closeMobileMenu}
-            >
-              Schematics
-            </Link>
-            <Link 
               to="/repairs" 
               className={`nav-link-mobile ${isActive('/repairs') ? 'active' : ''}`}
               onClick={closeMobileMenu}
@@ -503,11 +496,11 @@ export default function Header({ onCartToggle }) {
               Calculators
             </Link>
             <Link 
-              to="/about" 
-              className={`nav-link-mobile ${isActive('/about') ? 'active' : ''}`}
+              to="/schematics" 
+              className={`nav-link-mobile ${isActive('/schematics') ? 'active' : ''}`}
               onClick={closeMobileMenu}
             >
-              About
+              Schematics
             </Link>
             <Link 
               to="/contact" 
@@ -515,6 +508,13 @@ export default function Header({ onCartToggle }) {
               onClick={closeMobileMenu}
             >
               Contact
+            </Link>
+            <Link 
+              to="/about" 
+              className={`nav-link-mobile ${isActive('/about') ? 'active' : ''}`}
+              onClick={closeMobileMenu}
+            >
+              About
             </Link>
 
             {/* ── Account / Auth — bottom of mobile menu ─────────────────── */}
