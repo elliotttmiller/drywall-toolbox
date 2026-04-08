@@ -55,33 +55,26 @@ const TABS = [
 
 // Animation variants
 const pageTransition = {
-  initial: (direction) => ({
-    x: direction > 0 ? 300 : -300,
+  initial: {
     opacity: 0,
-    scale: 0.95
-  }),
+    scale: 0.98
+  },
   animate: {
-    x: 0,
     opacity: 1,
     scale: 1,
     transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-      opacity: { duration: 0.2 }
+      duration: 0.25,
+      ease: [0.4, 0, 0.2, 1]
     }
   },
-  exit: (direction) => ({
-    x: direction > 0 ? -300 : 300,
+  exit: {
     opacity: 0,
-    scale: 0.95,
+    scale: 0.98,
     transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-      opacity: { duration: 0.2 }
+      duration: 0.18,
+      ease: [0.4, 0, 1, 1]
     }
-  })
+  }
 }
 
 const toastVariants = {
@@ -275,10 +268,9 @@ export default function CalculatorHub() {
           onTouchEnd={handleTouchEnd}
           className="relative"
         >
-          <AnimatePresence mode="wait" custom={direction}>
+          <AnimatePresence mode="wait">
             <Motion.div
               key={activeTab}
-              custom={direction}
               variants={pageTransition}
               initial="initial"
               animate="animate"

@@ -8,11 +8,10 @@ The Calculator Hub has been completely rebuilt with a modern, sleek design featu
 ## ✨ New Features
 
 ### 🎭 **Framer Motion Animations**
-- **Page Transitions**: Smooth slide animations when switching between calculators
+- **Page Transitions**: Smooth fade-in/fade-out animations when switching between calculators
 - **Tab Indicators**: Animated sliding indicator that follows the active tab
 - **Toast Notifications**: Spring-based entrance/exit animations for save/load confirmations
 - **Micro-interactions**: Scale animations on button hover and tap
-- **Direction-aware**: Animations adapt based on navigation direction (left/right)
 
 ### 🎨 **Modern Visual Design**
 - **Glassmorphism**: Backdrop blur effects with semi-transparent backgrounds
@@ -105,10 +104,9 @@ Replaced emoji with professional Lucide React icons:
 ### **Animation Variants**
 ```javascript
 pageTransition: {
-  - Spring-based physics
-  - Direction-aware slides
-  - Opacity fades
-  - Scale effects (0.95 ↔ 1.0)
+  - Opacity fade-in/fade-out
+  - Subtle scale effect (0.98 ↔ 1.0)
+  - Smooth cubic-bezier easing (enter 0.25s, exit 0.18s)
 }
 
 toastVariants: {
