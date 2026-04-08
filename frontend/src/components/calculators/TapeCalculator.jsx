@@ -33,7 +33,7 @@ const tips = {
   flex:  'Flexible corner tape works on both inside and outside corners — great for rounded transitions.',
 }
 
-export default function TapeCalculator({ onUpdate }) {
+export default function TapeCalculator({ onUpdate, sheetData }) {
   const saved = loadSaved()
   const [area, setArea]               = useState(saved.area          ?? 800)
   const [insideCorners, setInsideCorners] = useState(saved.insideCorners ?? saved.corners ?? 4)
@@ -42,20 +42,33 @@ export default function TapeCalculator({ onUpdate }) {
   const [rollSize, setRollSize]       = useState(saved.rollSize      ?? 500)
   const [ceilHeight, setCeilHeight]   = useState(saved.ceilHeight    ?? 9)
 
+  // When sheet data arrives from the Sheets tab, keep area in sync (manual override still possible)
+  const syncedFromSheets = !!(sheetData?.totalJointLinearFeet)
+  const syncedArea = sheetData?.net ?? null
+
   const results = useMemo(() => {
-    // Industry standard: ~1 linear ft of tape per sq ft of drywall (all seams + inside corners)
-    // Source: engineerfix.com, spikevm.com, basicfreetools.com — geometrically validated
-    // (a 4×8 sheet = 32 sq ft ≈ 32 linear ft of joint perimeter)
-    const baseSeamFt    = Math.round(area * 1.0)
+    // Production-grade formula (ASTM C840 / GA-216):
+    // Total joint linear footage is computed from the sheet layout in SheetCalculator:
+    //   horizontal joints = (sheetsVertical - 1) × wallLength  per wall
+    //   vertical joints   = (sheetsAcross - 1)   × wallHeight  per wall
+    // When synced, use the exact value from the sheet layout engine.
+    // When manual, fall back to the industry approximation: 1 linear ft of tape per sq ft of drywall.
+    const baseSeamFt = syncedFromSheets
+      ? sheetData.totalJointLinearFeet
+      : Math.round(area * 1.0)
+
     // Inside corners (wall-to-wall and wall-to-ceiling transitions): each adds height ft of tape
-    const insideCornerFt = Math.round(insideCorners * ceilHeight)
+    const insideCornerFt = Math.round(insideCorners * (sheetData?.ceilHeight ?? ceilHeight))
+
     // Mesh tape physically stretches ~15% more per roll consumed
     const meshMultiplier = tapeType === 'mesh' ? 1.15 : 1
-    // 10% waste factor on all tape (cuts, overlaps, mistakes)
-    const total = Math.round((baseSeamFt + insideCornerFt) * meshMultiplier * 1.10)
+
+    // 5% waste for overlap at corners, trimming, minor errors (ASTM C840 §Tape)
+    const total = Math.round((baseSeamFt + insideCornerFt) * meshMultiplier * 1.05)
     const rolls = Math.ceil(total / rollSize)
+
     return { seamFt: baseSeamFt, cornerFt: insideCornerFt, total, rolls }
-  }, [area, insideCorners, ceilHeight, rollSize, tapeType])
+  }, [area, insideCorners, ceilHeight, rollSize, tapeType, syncedFromSheets, sheetData])
 
   // Persist inputs across page refreshes
   useEffect(() => {
@@ -71,12 +84,24 @@ export default function TapeCalculator({ onUpdate }) {
         totalFeet:   results.total,
         seamFeet:    results.seamFt,
         cornerFeet:  results.cornerFt,
+        syncedFromSheets,
       })
     }
-  }, [results, tapeType, rollSize, onUpdate])
+  }, [results, tapeType, rollSize, syncedFromSheets, onUpdate])
 
   return (
     <div className="space-y-6">
+
+      {/* Sync indicator */}
+      {syncedFromSheets && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-50 border border-primary-200 text-xs text-primary-700">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0" />
+          <span>
+            <strong>Synced from Sheets tab</strong> — using layout-derived joint footage ({sheetData.totalJointLinearFeet} ft).
+            Tape &amp; mud manual area overrides below are ignored while synced.
+          </span>
+        </div>
+      )}
 
       {/* ── Section 1: Area & corners ─────────────────────────── */}
       <div>
@@ -91,13 +116,18 @@ export default function TapeCalculator({ onUpdate }) {
             <input
               id="tp-area"
               type="number"
-              value={area}
+              value={syncedArea !== null ? syncedArea : area}
               min={1}
-              onChange={e => setArea(+e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white text-gray-900 text-sm leading-snug focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+              readOnly={syncedFromSheets}
+              onChange={e => !syncedFromSheets && setArea(+e.target.value)}
+              className={`w-full px-3 py-2.5 border rounded-xl text-gray-900 text-sm leading-snug focus:outline-none transition ${
+                syncedFromSheets
+                  ? 'border-primary-200 bg-primary-50 text-primary-700'
+                  : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+              }`}
             />
             <span className="text-xs text-gray-500 mt-1.5 block leading-snug">
-              Walls + ceiling combined
+              {syncedFromSheets ? 'Auto-populated from Sheets tab' : 'Walls + ceiling combined'}
             </span>
           </div>
           <div>
@@ -128,12 +158,17 @@ export default function TapeCalculator({ onUpdate }) {
           <input
             id="tp-ceil"
             type="number"
-            value={ceilHeight}
+            value={sheetData?.ceilHeight ?? ceilHeight}
             min={6}
             max={20}
             step={0.5}
-            onChange={e => setCeilHeight(+e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white text-gray-900 text-sm leading-snug focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+            readOnly={!!sheetData?.ceilHeight}
+            onChange={e => !sheetData?.ceilHeight && setCeilHeight(+e.target.value)}
+            className={`w-full px-3 py-2.5 border rounded-xl text-gray-900 text-sm leading-snug focus:outline-none transition ${
+              sheetData?.ceilHeight
+                ? 'border-primary-200 bg-primary-50 text-primary-700'
+                : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+            }`}
           />
         </div>
         <div>
@@ -142,7 +177,7 @@ export default function TapeCalculator({ onUpdate }) {
           </label>
           <CalcDropdown
             id="tp-sheet"
-            value={sheetSize}
+            value={sheetData?.sheetSize ?? sheetSize}
             onChange={v => setSheetSize(+v)}
             options={sheetSizes}
           />
@@ -204,12 +239,12 @@ export default function TapeCalculator({ onUpdate }) {
           <ResultCard
             label="Total linear feet"
             value={results.total.toLocaleString()}
-            sub="ft of tape total"
+            sub="ft of tape (5% waste)"
           />
           <ResultCard
-            label="Field seam tape"
+            label={syncedFromSheets ? 'Joint footage (layout)' : 'Field seam tape'}
             value={results.seamFt.toLocaleString()}
-            sub="ft for field seams"
+            sub={syncedFromSheets ? 'from sheet layout engine' : 'ft for field seams'}
           />
           <ResultCard
             label="Corner tape"
@@ -221,6 +256,12 @@ export default function TapeCalculator({ onUpdate }) {
         <InfoBox>
           {tips[tapeType]}
         </InfoBox>
+
+        <p className="text-xs text-gray-400 mt-3">
+          {syncedFromSheets
+            ? 'Joint footage = Σ[(sheetsVertical−1)×wallLength + (sheetsAcross−1)×wallHeight] per wall (ASTM C840). +5% waste for overlaps and trimming.'
+            : 'Manual mode: approximation 1 ft tape per sq ft drywall. For exact joint footage, complete the Sheets tab first.'}
+        </p>
       </div>
 
     </div>

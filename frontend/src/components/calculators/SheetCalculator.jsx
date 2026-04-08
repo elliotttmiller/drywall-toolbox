@@ -17,21 +17,84 @@ const DEFAULT_WALLS = [
 const DOOR_SQ_FT = 21   // ~6.8 ft wide × 3.1 ft tall
 const WINDOW_SQ_FT = 15 // ~3 ft × 5 ft
 
+// All standard drywall sheets are 4 ft wide (48 in)
+const SHEET_SHORT_DIM = 4  // ft — the narrow dimension, always 4 ft
+
 const LS_KEY = 'dwCalc_sheet'
 
+// sheetSize = area in sq ft; long dimension = sheetSize / SHEET_SHORT_DIM
 const sheetSizeOptions = [
-  { value: 32, label: '4×8 ft',  description: '32 sq ft' },
+  { value: 32, label: '4×8 ft',  description: '32 sq ft — standard' },
   { value: 40, label: '4×10 ft', description: '40 sq ft' },
-  { value: 48, label: '4×12 ft', description: '48 sq ft' },
+  { value: 48, label: '4×12 ft', description: '48 sq ft — fewer seams' },
 ]
 
 const hangDirOptions = [
-  { value: 'horizontal', label: 'Horizontal', description: 'Recommended — fewer seams' },
-  { value: 'vertical',   label: 'Vertical',   description: 'Use on very tall walls' },
+  { value: 'horizontal', label: 'Horizontal', description: 'Recommended — fewest seams on 8–10 ft walls' },
+  { value: 'vertical',   label: 'Vertical',   description: 'Standard — use on tall walls > 12 ft' },
 ]
 
 function loadSaved() {
   try { return JSON.parse(localStorage.getItem(LS_KEY)) || {} } catch { return {} }
+}
+
+/**
+ * Layout-based sheet calculation per wall (GA-216 / ASTM C840 compliant).
+ *
+ * Horizontal hang: sheet's LONG dimension (8/10/12 ft) runs along wall length;
+ *   SHORT dimension (4 ft) stacks vertically.
+ * Vertical hang: sheet's SHORT dimension (4 ft) runs along wall length;
+ *   LONG dimension (8/10/12 ft) stacks vertically.
+ *
+ * Returns per-wall layout data plus total joint linear footage.
+ */
+function computeLayout(walls, ceilHeight, sheetSize, hangDir, inclCeiling, roomLength, roomWidth) {
+  const LONG = sheetSize / SHEET_SHORT_DIM  // 8, 10, or 12 ft
+
+  // Dimension in the "across the wall" direction
+  const acrossDim  = hangDir === 'horizontal' ? LONG           : SHEET_SHORT_DIM
+  // Dimension in the "up the wall" direction
+  const verticalDim = hangDir === 'horizontal' ? SHEET_SHORT_DIM : LONG
+
+  const wallLayouts = walls.map(w => {
+    const length = w.length || 0
+    const sheetsAcross   = Math.ceil(length    / acrossDim)
+    const sheetsVertical = Math.ceil(ceilHeight / verticalDim)
+    const sheetsForWall  = sheetsAcross * sheetsVertical
+    // Joints: (rows - 1) horizontal seams spanning wall length; (cols - 1) vertical seams spanning wall height
+    const hJointLength = (sheetsVertical - 1) * length
+    const vJointLength = (sheetsAcross   - 1) * ceilHeight
+    return { id: w.id, length, sheetsAcross, sheetsVertical, sheetsForWall, hJointLength, vJointLength }
+  })
+
+  const totalWallSheets       = wallLayouts.reduce((s, w) => s + w.sheetsForWall,  0)
+  const totalVerticalSeams    = wallLayouts.reduce((s, w) => s + Math.max(0, w.sheetsAcross   - 1), 0)
+  const totalJointLinearFeet  = wallLayouts.reduce((s, w) => s + w.hJointLength + w.vJointLength, 0)
+  const wallGross             = walls.reduce((s, w) => s + (w.length || 0) * ceilHeight, 0)
+
+  // Ceiling layout (always apply short dim across room length, long dim across width)
+  let ceilSheets = 0, ceilJointFt = 0, ceilArea = 0
+  if (inclCeiling) {
+    ceilArea  = roomLength * roomWidth
+    const cSheetsAcross   = Math.ceil(roomLength / SHEET_SHORT_DIM)
+    const cSheetsVertical = Math.ceil(roomWidth  / LONG)
+    ceilSheets  = cSheetsAcross * cSheetsVertical
+    ceilJointFt = (cSheetsAcross - 1) * roomWidth + (cSheetsVertical - 1) * roomLength
+  }
+
+  return {
+    wallLayouts,
+    wallGross,
+    ceilArea,
+    ceilSheets,
+    ceilJointFt,
+    totalWallSheets,
+    totalVerticalSeams,
+    totalJointLinearFeet: totalJointLinearFeet + ceilJointFt,
+    acrossDim,
+    verticalDim,
+    LONG,
+  }
 }
 
 export default function SheetCalculator({ onUpdate }) {
@@ -49,22 +112,43 @@ export default function SheetCalculator({ onUpdate }) {
 
   // All calculation logic lives in useMemo — recalculates only when inputs change
   const results = useMemo(() => {
-    const wallGross = walls.reduce((sum, w) => sum + (w.length || 0) * ceilHeight, 0)
-    const ceilArea = inclCeiling ? roomLength * roomWidth : 0
-    const gross = wallGross + ceilArea
-    const deductions = doors * DOOR_SQ_FT + windows * WINDOW_SQ_FT
-    const net = Math.max(0, gross - deductions)
-    const withWaste = net * (1 + wastePct)
-    const sheets = Math.ceil(withWaste / sheetSize)
-    return { wallGross, ceilArea, gross, net, withWaste, sheets }
-  }, [walls, ceilHeight, sheetSize, doors, windows, wastePct, inclCeiling, roomLength, roomWidth])
+    const layout = computeLayout(walls, ceilHeight, sheetSize, hangDir, inclCeiling, roomLength, roomWidth)
+    const { wallLayouts, wallGross, ceilArea, ceilSheets, totalWallSheets, totalVerticalSeams, totalJointLinearFeet } = layout
+
+    const gross       = wallGross + ceilArea
+    const deductions  = doors * DOOR_SQ_FT + windows * WINDOW_SQ_FT
+    const net         = Math.max(0, gross - deductions)
+
+    // Dynamic waste factor per production-grade spec:
+    // Base 10% + 2% per additional vertical seam beyond 1 (capped at 25%)
+    // Reference: "From Heuristic Guesswork to Codified Precision" §Sheet Quantities
+    const dynamicWaste = Math.min(0.25, 0.10 + Math.max(0, totalVerticalSeams - 1) * 0.02)
+
+    const baseSheets  = totalWallSheets + ceilSheets
+    const finalSheets = Math.ceil(baseSheets * (1 + wastePct))  // user-selected waste applied to layout total
+
+    return {
+      ...layout,
+      gross, net, deductions,
+      baseSheets,
+      sheets: finalSheets,
+      dynamicWaste,
+      // kept for backward compat
+      wallGross,
+      ceilArea,
+      withWaste: net * (1 + wastePct),
+      wallLayouts,
+      totalJointLinearFeet,
+      totalVerticalSeams,
+    }
+  }, [walls, ceilHeight, sheetSize, hangDir, doors, windows, wastePct, inclCeiling, roomLength, roomWidth])
 
   // Persist inputs across page refreshes
   useEffect(() => {
     localStorage.setItem(LS_KEY, JSON.stringify({ walls, ceilHeight, sheetSize, hangDir, doors, windows, wastePct, inclCeiling, roomLength, roomWidth }))
   }, [walls, ceilHeight, sheetSize, hangDir, doors, windows, wastePct, inclCeiling, roomLength, roomWidth])
 
-  // Notify parent of updates for summary tab
+  // Notify parent of updates for summary tab and cross-calculator data sharing
   useEffect(() => {
     if (onUpdate) {
       onUpdate({
@@ -76,13 +160,22 @@ export default function SheetCalculator({ onUpdate }) {
         wallArea: Math.round(results.wallGross),
         ceilArea: Math.round(results.ceilArea),
         wastePct,
+        dynamicWaste: results.dynamicWaste,
         numWalls: walls.length,
         doors,
         windows,
         inclCeiling,
+        // Layout data consumed by Tape, Mud, and Screw calculators
+        totalJointLinearFeet: Math.round(results.totalJointLinearFeet),
+        totalVerticalSeams: results.totalVerticalSeams,
+        baseSheets: results.baseSheets,
+        ceilHeight,
+        sheetLongDim: results.LONG,
+        sheetShortDim: SHEET_SHORT_DIM,
+        wallLayouts: results.wallLayouts,
       })
     }
-  }, [results, sheetSize, hangDir, wastePct, walls.length, doors, windows, inclCeiling, onUpdate])
+  }, [results, sheetSize, hangDir, wastePct, walls.length, doors, windows, inclCeiling, ceilHeight, onUpdate])
 
   const addWall = () =>
     setWalls(prev => [...prev, { id: Date.now(), length: 10 }])
@@ -103,6 +196,8 @@ export default function SheetCalculator({ onUpdate }) {
   }
 
   const wasteLabel = ['5%', '10%', '15%', '20%'][[0.05, 0.10, 0.15, 0.20].indexOf(wastePct)] || `${Math.round(wastePct * 100)}%`
+  const dynamicWasteLabel = `${Math.round(results.dynamicWaste * 100)}%`
+  const usingDynamicWaste = wastePct === results.dynamicWaste
 
   return (
     <div className="space-y-6">
@@ -149,70 +244,76 @@ export default function SheetCalculator({ onUpdate }) {
           Walls — enter each wall length
         </h3>
         <div className="space-y-2">
-          {walls.map((wall, index) => (
-            <div
-              key={wall.id}
-              className="bg-gray-50 rounded-xl p-3 border border-gray-200/60"
-            >
-              <div className="flex justify-between items-center mb-2.5">
-                <span className="text-sm font-semibold text-gray-900">
-                  Wall {index + 1}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 tabular-nums">
-                    {Math.round((wall.length || 0) * ceilHeight)} sq ft
+          {walls.map((wall, index) => {
+            // Find this wall's computed layout for the per-wall sheet hint
+            const layout = results.wallLayouts?.find(w => w.id === wall.id)
+            return (
+              <div
+                key={wall.id}
+                className="bg-gray-50 rounded-xl p-3 border border-gray-200/60"
+              >
+                <div className="flex justify-between items-center mb-2.5">
+                  <span className="text-sm font-semibold text-gray-900">
+                    Wall {index + 1}
                   </span>
-                  {walls.length > 1 && (
-                    <button
-                      onClick={() => removeWall(wall.id)}
-                      className="w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all text-base leading-none"
-                    >
-                      ×
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {layout && (
+                      <span className="text-xs text-primary-600 font-medium tabular-nums">
+                        {layout.sheetsAcross}×{layout.sheetsVertical} = {layout.sheetsForWall} sheets
+                      </span>
+                    )}
+                    {walls.length > 1 && (
+                      <button
+                        onClick={() => removeWall(wall.id)}
+                        className="w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all text-base leading-none"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <div>
-                  <label className="block text-[11px] font-medium text-gray-500 mb-1">
-                    Length (ft)
-                  </label>
-                  <input
-                    type="number"
-                    value={wall.length}
-                    min={1}
-                    step={0.5}
-                    onChange={e => updateWallLength(wall.id, e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
                   <div>
                     <label className="block text-[11px] font-medium text-gray-500 mb-1">
-                      Height (ft)
+                      Length (ft)
                     </label>
                     <input
                       type="number"
-                      value={ceilHeight}
-                      readOnly
-                      className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                      value={wall.length}
+                      min={1}
+                      step={0.5}
+                      onChange={e => updateWallLength(wall.id, e.target.value)}
+                      className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-medium text-gray-500 mb-1">
-                      Area (sq ft)
-                    </label>
-                    <input
-                      type="number"
-                      value={Math.round((wall.length || 0) * ceilHeight)}
-                      readOnly
-                      className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
-                    />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-500 mb-1">
+                        Height (ft)
+                      </label>
+                      <input
+                        type="number"
+                        value={ceilHeight}
+                        readOnly
+                        className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-500 mb-1">
+                        Area (sq ft)
+                      </label>
+                      <input
+                        type="number"
+                        value={Math.round((wall.length || 0) * ceilHeight)}
+                        readOnly
+                        className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
         <button
           onClick={addWall}
@@ -321,11 +422,18 @@ export default function SheetCalculator({ onUpdate }) {
         )}
       </div>
 
-      {/* Waste selector */}
+      {/* Waste selector — with dynamic waste hint */}
       <div>
-        <label className="block text-xs font-medium text-gray-600 mb-1.5">
-          Waste factor
-        </label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-medium text-gray-600">
+            Waste factor
+          </label>
+          <span className="text-xs text-gray-400">
+            Calculated: <span className="font-medium text-primary-600">{dynamicWasteLabel}</span>
+            {' '}({results.totalVerticalSeams} vertical seam{results.totalVerticalSeams !== 1 ? 's' : ''})
+            {!usingDynamicWaste && <span className="ml-1 text-amber-500">(manual override)</span>}
+          </span>
+        </div>
         <WasteSelector value={wastePct} onChange={setWastePct} />
       </div>
 
@@ -339,13 +447,23 @@ export default function SheetCalculator({ onUpdate }) {
           <ResultCard
             label="Sheets to order"
             value={results.sheets}
-            sub={`${sheetSize} sq ft per sheet`}
+            sub={`layout-based · ${wasteLabel} waste`}
             hero
+          />
+          <ResultCard
+            label="Base sheets (no waste)"
+            value={results.baseSheets}
+            sub="from layout simulation"
           />
           <ResultCard
             label="Net area"
             value={Math.round(results.net)}
             sub="sq ft after openings"
+          />
+          <ResultCard
+            label="Total joint footage"
+            value={Math.round(results.totalJointLinearFeet)}
+            sub="linear ft (feeds tape + mud)"
           />
           <ResultCard
             label="Wall area"
@@ -359,18 +477,17 @@ export default function SheetCalculator({ onUpdate }) {
               sub="sq ft"
             />
           )}
-          <ResultCard
-            label="With waste"
-            value={Math.round(results.withWaste)}
-            sub={`sq ft (${wasteLabel} added)`}
-          />
         </div>
 
         <InfoBox>
           {results.sheets > 0
-            ? `${results.sheets} sheets covers ${Math.round(results.net)} sq ft net across ${walls.length} wall(s)${inclCeiling ? ' + ceiling' : ''} — ${doors} door(s) and ${windows} window(s) deducted, with ${wasteLabel} waste added.`
-            : 'Add your wall lengths above to see the sheet count.'}
+            ? `Layout-based: ${results.baseSheets} base sheets across ${walls.length} wall(s)${inclCeiling ? ' + ceiling' : ''} — ${doors} door(s) and ${windows} window(s) deducted. Dynamic waste: ${dynamicWasteLabel} (${results.totalVerticalSeams} vertical seams). Applied waste: ${wasteLabel}. Total joint footage: ${Math.round(results.totalJointLinearFeet)} ft — auto-populates Tape and Mud tabs.`
+            : 'Add your wall lengths above to see the layout-based sheet count.'}
         </InfoBox>
+
+        <p className="text-xs text-gray-400 mt-3">
+          Layout method per ASTM C840 / GA-216: ⌈wall÷sheet⌉ × ⌈height÷sheet⌉ per wall. Dynamic waste = 10% base + 2% per additional vertical seam. Joint footage auto-populates Tape &amp; Mud calculators.
+        </p>
       </div>
     </div>
   )

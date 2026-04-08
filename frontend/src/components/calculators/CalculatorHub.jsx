@@ -289,10 +289,10 @@ export default function CalculatorHub() {
               <div className={`h-px w-10 bg-linear-to-r ${currentTab.gradient} rounded-full mb-5`} />
 
               {activeTab === 0 && <SheetCalculator onUpdate={handleSheetUpdate} />}
-              {activeTab === 1 && <MudCalculator onUpdate={handleMudUpdate} />}
-              {activeTab === 2 && <TapeCalculator onUpdate={handleTapeUpdate} />}
+              {activeTab === 1 && <MudCalculator onUpdate={handleMudUpdate} sheetData={summaryData.sheets} />}
+              {activeTab === 2 && <TapeCalculator onUpdate={handleTapeUpdate} sheetData={summaryData.sheets} />}
               {activeTab === 3 && <CornerBeadCalculator onUpdate={handleBeadUpdate} />}
-              {activeTab === 4 && <ScrewCalculator onUpdate={handleScrewUpdate} />}
+              {activeTab === 4 && <ScrewCalculator onUpdate={handleScrewUpdate} sheetData={summaryData.sheets} />}
               {activeTab === 5 && <SummaryView data={summaryData} />}
             </Motion.div>
           </AnimatePresence>

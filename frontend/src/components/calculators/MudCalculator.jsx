@@ -94,17 +94,21 @@ const COMPOUND_TYPES = [
   },
 ]
 
-export default function MudCalculator({ onUpdate }) {
+export default function MudCalculator({ onUpdate, sheetData }) {
   const saved = loadSaved()
   const [area, setArea] = useState(saved.area ?? 800)
   const [finishLevel, setFinishLevel] = useState(saved.finishLevel ?? 4)
   const [compoundType, setCompoundType] = useState(saved.compoundType ?? 'all-purpose')
 
+  const syncedArea = sheetData?.net ?? null
+  const syncedFromSheets = syncedArea !== null
+  const effectiveArea = syncedFromSheets ? syncedArea : area
+
   const selectedLevel = FINISH_LEVELS.find(l => l.value === finishLevel)
   const coats = COAT_COUNT[finishLevel]
   const totalGallons = useMemo(() => {
-    return (area / 100) * MUD_GAL_PER_100[finishLevel]
-  }, [area, finishLevel])
+    return (effectiveArea / 100) * MUD_GAL_PER_100[finishLevel]
+  }, [effectiveArea, finishLevel])
 
   const coatBreakdown = useMemo(() => {
     if (coats === 0) return []
@@ -149,15 +153,25 @@ export default function MudCalculator({ onUpdate }) {
         finishLevel,
         compoundType,
         coats,
-        area,
+        area: effectiveArea,
+        syncedFromSheets,
       })
     }
-  }, [totalGallons, buckets5gal, buckets1gal, finishLevel, compoundType, coats, area, onUpdate])
+  }, [totalGallons, buckets5gal, buckets1gal, finishLevel, compoundType, coats, effectiveArea, syncedFromSheets, onUpdate])
 
   const compoundInfo = COMPOUND_TYPES.find(c => c.value === compoundType)
 
   return (
     <div className="space-y-6">
+      {/* Sync indicator */}
+      {syncedFromSheets && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-50 border border-primary-200 text-xs text-primary-700">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shrink-0" />
+          <span>
+            <strong>Synced from Sheets tab</strong> — using net area of {syncedArea} sq ft.
+          </span>
+        </div>
+      )}
       {/* Area Input */}
       <div>
         <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
@@ -170,13 +184,18 @@ export default function MudCalculator({ onUpdate }) {
           <input
             id="mud-area"
             type="number"
-            value={area}
+            value={effectiveArea}
             min={1}
-            onChange={e => setArea(+e.target.value)}
-            className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+            readOnly={syncedFromSheets}
+            onChange={e => !syncedFromSheets && setArea(+e.target.value)}
+            className={`w-full px-3 py-2.5 text-sm border rounded-xl text-gray-900 focus:outline-none transition ${
+              syncedFromSheets
+                ? 'border-primary-200 bg-primary-50 text-primary-700'
+                : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+            }`}
           />
           <span className="text-xs text-gray-500 mt-1.5 block leading-snug">
-            Use the net area from the Sheets tab (walls + ceiling after deductions)
+            {syncedFromSheets ? 'Auto-populated from Sheets tab (net area after deductions)' : 'Use the net area from the Sheets tab (walls + ceiling after deductions)'}
           </span>
         </div>
       </div>
