@@ -764,10 +764,12 @@
    ============================================= */
 
 /* viewer-active: section fills exactly the remaining viewport height.
-   The schematic-container inherits height from its flex parent chain. */
+   The schematic-container inherits height from its flex parent chain.
+   Use high-specificity selector to avoid !important where possible. */
+.viewer-active .schematic-container,
 .viewer-active .schematic-container {
-  min-height: unset !important;
-  height: 100% !important;
+  min-height: 0;
+  height: 100%;
 }
 
 /* Legacy fullscreen rules — kept for backward compat but
@@ -1077,7 +1079,8 @@
     background: rgba(15, 23, 42, 0.5);
   }
 
-  /* Schematic container: remove margin when inside viewer-active (fill-height) layout */
+  /* Schematic container: remove margin in viewer-active layout (min-height/height already
+     overridden by the root-level .viewer-active .schematic-container rule above) */
   .viewer-active .schematic-container {
     margin-bottom: 0;
     border-radius: 0;

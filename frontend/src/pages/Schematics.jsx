@@ -2315,7 +2315,7 @@ export default function Parts() {
               <span>Back</span>
             </button>
 
-            <div className="viewer-title-group" aria-label={`${currentSchematic?.brand} — ${currentSchematic?.title}`}>
+            <div className="viewer-title-group" aria-labelledby="viewer-tool-title-id">
               {brandLogos[currentSchematic?.brand] && (
                 <img
                   src={brandLogos[currentSchematic.brand]}
@@ -2327,7 +2327,7 @@ export default function Parts() {
                   ].filter(Boolean).join(' ')}
                 />
               )}
-              <h1 className="viewer-tool-title">{currentSchematic?.title}</h1>
+              <h1 id="viewer-tool-title-id" className="viewer-tool-title">{currentSchematic?.title}</h1>
             </div>
 
             {/* Inline pager for multi-page schematics */}
@@ -2347,7 +2347,7 @@ export default function Parts() {
                     <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
-                <div className="pager-counter" aria-live="polite">
+                <div className="pager-counter" role="status" aria-live="polite">
                   {currentSchematic.pageLabels?.[currentPage]
                     ? `${currentSchematic.pageLabels[currentPage]} (${currentSchematic.diagramPages.indexOf(currentPage) + 1}/${currentSchematic.diagramPages.length})`
                     : `${currentSchematic.diagramPages.indexOf(currentPage) + 1} / ${currentSchematic.diagramPages.length}`
