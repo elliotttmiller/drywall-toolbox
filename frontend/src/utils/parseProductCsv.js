@@ -112,8 +112,12 @@ export const CATEGORY_MAP = {
   'flat boxes':            'finishing',
   'handles & extensions':  'finishing',
   'blades & knives':       'finishing',
+  'finishing trowels':     'finishing',
+  'rollers & stands':      'finishing',
+  'spotters':              'finishing',
   // Corner
   'corner & angle tools':  'corner',
+  'corner tools':          'corner',
   'angle tools':           'corner',
   // Mud boxes / pumps
   'mud boxes & pumps':     'mudboxes',
@@ -122,6 +126,7 @@ export const CATEGORY_MAP = {
   'pumps & accessories':   'mudboxes',
   // Sanding
   'sanding tools':         'sanding',
+  'sanders & poles':       'sanding',
   // Stilts
   'stilts':                'stilts',
   'stilt accessories':     'stilts',
