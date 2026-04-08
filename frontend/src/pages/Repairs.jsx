@@ -245,7 +245,7 @@ export default function Repairs() {
      Render
      ────────────────────────────────────────────────────────────────────── */
   return (
-    <div style={{ minHeight: '100vh' }} className="section-enter page-wrapper">
+    <div style={{ minHeight: '100vh' }} className="page-wrapper">
       <SEOHead
         title="Tool Repair Services"
         description="Professional drywall tool repair services and guides. Find repair solutions for TapeTech, Columbia, Asgard, Level5, and Graco drywall finishing tools."

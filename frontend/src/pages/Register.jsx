@@ -178,7 +178,7 @@ export default function Register() {
   const busy = submitting || isLoading;
 
   return (
-    <div className="section-enter page-wrapper" style={ { minHeight: '100vh' } }>
+    <div className="page-wrapper" style={ { minHeight: '100vh' } }>
       {/* ── Two-column wrapper — card left, hero right ── */}
       <div style={ {
         display:             'grid',

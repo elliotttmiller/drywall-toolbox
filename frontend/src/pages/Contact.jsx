@@ -54,7 +54,7 @@ export default function Contact() {
   };
 
   return (
-    <div style={{ minHeight: '100vh' }} className="section-enter page-wrapper">
+    <div style={{ minHeight: '100vh' }} className="page-wrapper">
       <SEOHead
         title="Contact Us"
         description="Get in touch with the Drywall Toolbox team. Expert support from real people who know drywall tools. Email us or check our business hours."

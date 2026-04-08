@@ -1,22 +1,48 @@
 /**
  * PageTransition
  *
- * Wraps page content and plays a smooth fade + upward-drift animation
- * every time the component mounts (i.e. on every route change).
+ * Wraps page content with a smooth fade + upward-drift entrance and a quick
+ * fade-out exit on every route change, powered by Framer Motion.
  *
  * Usage:
- *   <PageTransition locationKey={location.pathname}>
- *     <Routes>…</Routes>
+ *   <PageTransition locationKey={location.key}>
+ *     <Suspense>…<Routes>…</Routes></Suspense>
  *   </PageTransition>
  *
- * The `locationKey` prop is forwarded as the React `key` so React unmounts
- * and remounts this wrapper on every navigation, reliably re-triggering the
- * CSS animation without any JavaScript timers.
+ * `AnimatePresence mode="wait"` ensures the outgoing page fully exits before
+ * the incoming page starts entering, preventing overlapping content flashes.
+ * The `locationKey` prop is used as the React key on the animated wrapper so
+ * a new animation plays on every navigation.
  */
-export default function PageTransition({ children, locationKey }) {
+import { motion as Motion, AnimatePresence } from 'framer-motion';
+
+const VARIANTS = {
+  initial: { opacity: 0, y: 10 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: [ 0.16, 1, 0.3, 1 ] },
+  },
+  exit: {
+    opacity: 0,
+    y: -6,
+    transition: { duration: 0.18, ease: [ 0.4, 0, 1, 1 ] },
+  },
+};
+
+export default function PageTransition( { children, locationKey } ) {
   return (
-    <div key={locationKey} className="dtb-page-in" style={{ width: '100%' }}>
-      {children}
-    </div>
+    <AnimatePresence mode="wait" initial={ false }>
+      <Motion.div
+        key={ locationKey }
+        variants={ VARIANTS }
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        style={ { width: '100%' } }
+      >
+        { children }
+      </Motion.div>
+    </AnimatePresence>
   );
 }

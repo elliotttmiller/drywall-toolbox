@@ -11,7 +11,7 @@
  *   Full-width stacked cards: header → stats → orders → account → logout
  *
  * Animations:
- *   - Page-level entry via section-enter CSS class (0.28 s ease).
+ *   - Page-level entry via PageTransition (framer-motion, 0.25 s ease).
  *   - Sidebar and each main card staggered via Framer Motion cardVariants.
  *   - Stat counters animate in with opacity+y on mount.
  *
@@ -200,7 +200,7 @@ export default function Dashboard() {
   const initials    = ( user.first_name?.[0] || '' ) + ( user.last_name?.[0] || user.email?.[0] || '' );
 
   return (
-    <div className="section-enter page-wrapper" style={ { minHeight: '100vh', background: '#f8fafc' } }>
+    <div className="page-wrapper" style={ { minHeight: '100vh', background: '#f8fafc' } }>
 
       {/* ── Page hero strip ── */}
       <div style={ {

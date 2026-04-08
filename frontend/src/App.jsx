@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
+import PageTransition from './components/PageTransition';
+import LoadingSpinner from './components/LoadingSpinner';
 import { CartProvider } from './context/CartContext';
 import { VeeqoProvider } from './context/VeeqoContext';
 import { WooCommerceProvider } from './context/WooCommerceContext';
@@ -63,20 +65,10 @@ function NotFound() {
 }
 
 // ─── Loading fallback ─────────────────────────────────────────────────────────
-// Shown while a route chunk is being fetched. Keep it lightweight — no imports.
+// Shown while a route chunk is being fetched inside the PageTransition wrapper.
 function PageLoader() {
   return (
-    <div style={{
-      display:        'flex',
-      alignItems:     'center',
-      justifyContent: 'center',
-      minHeight:      '40vh',
-      fontSize:       '0.9rem',
-      color:          '#888',
-      letterSpacing:  '0.05em',
-    }}>
-      Loading…
-    </div>
+    <LoadingSpinner size="md" label="Loading page…" fullPage />
   );
 }
 
@@ -85,6 +77,44 @@ function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
+}
+
+// ─── All page routes, wrapped with per-route transition ───────────────────────
+// Must be rendered inside <Router> so useLocation() is available.
+function AppRoutes() {
+  const location = useLocation();
+  return (
+    <PageTransition locationKey={ location.key }>
+      <Suspense fallback={ <PageLoader /> }>
+        <Routes>
+          <Route path="/"                      element={<Home />} />
+          <Route path="/products"              element={<Products />} />
+          <Route path="/products/:slug"        element={<Product />} />
+          <Route path="/all-products"          element={<AllProducts />} />
+          <Route path="/parts"                 element={<Parts />} />
+          <Route path="/product/:partNumber"   element={<Product />} />
+          <Route path="/category/:slug"        element={<CategoryPage />} />
+          <Route path="/schematics"            element={<Schematics />} />
+          <Route path="/repairs"               element={<Repairs />} />
+          <Route path="/calculators"           element={<Calculators />} />
+          <Route path="/cart"                  element={<Cart />} />
+          <Route path="/checkout"              element={<Checkout />} />
+          <Route path="/order/:id"             element={<OrderConfirmation />} />
+          <Route path="/about"                 element={<About />} />
+          <Route path="/contact"               element={<Contact />} />
+          <Route path="/settings/veeqo"        element={<VeeqoSettings />} />
+          <Route path="/veeqo/callback"        element={<VeeqoCallback />} />
+          <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
+          {/* Auth + account pages — dev-only, standalone, no WP admin changes */}
+          <Route path="/login"                 element={<Login />} />
+          <Route path="/register"              element={<Register />} />
+          <Route path="/dashboard"             element={<Dashboard />} />
+          {/* Catch-all: any unmatched route renders a 404 page */}
+          <Route path="*"                      element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </PageTransition>
+  );
 }
 
 // ─── App ─────────────────────────────────────────────────────────────────────
@@ -117,40 +147,12 @@ function App() {
 
               <main style={{ flexGrow: 1 }} className="main-content">
                 {/*
-                  Suspense boundary wraps all routes. When React navigates to a
-                  new route whose chunk hasn't loaded yet, PageLoader renders
-                  until the import() resolves. The boundary is placed here
-                  (inside <main>) so Header and Footer remain visible during
-                  chunk loading — the UX stays stable.
+                  AppRoutes renders all page routes wrapped in PageTransition,
+                  giving every route a consistent smooth fade+lift enter/exit.
+                  Suspense (inside AppRoutes) shows PageLoader for lazy chunks.
+                  Header and Footer remain visible during all transitions.
                 */}
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/"                      element={<Home />} />
-                    <Route path="/products"              element={<Products />} />
-                    <Route path="/products/:slug"        element={<Product />} />
-                    <Route path="/all-products"          element={<AllProducts />} />
-                    <Route path="/parts"                 element={<Parts />} />
-                    <Route path="/product/:partNumber"   element={<Product />} />
-                    <Route path="/category/:slug"        element={<CategoryPage />} />
-                    <Route path="/schematics"            element={<Schematics />} />
-                    <Route path="/repairs"               element={<Repairs />} />
-                    <Route path="/calculators"           element={<Calculators />} />
-                    <Route path="/cart"                  element={<Cart />} />
-                    <Route path="/checkout"              element={<Checkout />} />
-                    <Route path="/order/:id"             element={<OrderConfirmation />} />
-                    <Route path="/about"                 element={<About />} />
-                    <Route path="/contact"               element={<Contact />} />
-                    <Route path="/settings/veeqo"        element={<VeeqoSettings />} />
-                    <Route path="/veeqo/callback"        element={<VeeqoCallback />} />
-                    <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
-                    {/* Auth + account pages — dev-only, standalone, no WP admin changes */}
-                    <Route path="/login"                 element={<Login />} />
-                    <Route path="/register"              element={<Register />} />
-                    <Route path="/dashboard"             element={<Dashboard />} />
-                    {/* Catch-all: any unmatched route renders a 404 page */}
-                    <Route path="*"                      element={<NotFound />} />
-                  </Routes>
-                </Suspense>
+                <AppRoutes />
               </main>
 
               <Footer />

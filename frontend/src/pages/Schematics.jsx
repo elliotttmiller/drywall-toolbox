@@ -2249,7 +2249,7 @@ export default function Parts() {
         }),
         backgroundColor: '#f9fafb'
       }} 
-      className={`section-enter page-wrapper ${selectedSchematic ? 'viewer-active' : ''} ${isFullscreen ? 'fullscreen-mode' : ''}`}
+      className={`page-wrapper ${selectedSchematic ? 'viewer-active' : ''} ${isFullscreen ? 'fullscreen-mode' : ''}`}
       onClick={closeModal}
     >
       <SEOHead
