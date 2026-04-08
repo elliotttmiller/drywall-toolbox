@@ -69,7 +69,7 @@
 .brand-header-logo {
   display: block;
   margin: 0 auto clamp(4px, 1vw, 8px);
-  height: clamp(2rem, 5vw, 3rem);
+  height: clamp(2.5rem, 6vw, 3.5rem);
   width: auto;
   object-fit: contain;
 }
@@ -447,15 +447,15 @@
   }
 
   .brand-header-logo {
-    height: clamp(1.5rem, 8vw, 2.5rem);
+    height: clamp(2.5rem, 12vw, 3.5rem);
   }
 
   .brand-header-logo--columbia {
-    height: clamp(4.5rem, 24vw, 7.5rem);
+    height: clamp(5.5rem, 28vw, 8rem);
   }
 
   .brand-header-logo--level5 {
-    height: clamp(3.5rem, 20vw, 6rem);
+    height: clamp(4.5rem, 24vw, 6.5rem);
   }
   .tools-grid {
     grid-template-columns: 1fr;
