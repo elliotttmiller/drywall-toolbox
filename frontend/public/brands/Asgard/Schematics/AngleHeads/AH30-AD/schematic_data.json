@@ -1,7 +1,7 @@
 {
   "id": "1775158856169",
   "title": "AH30-AD_SCH",
-  "product_name": "3″ Angle Head Corner Finisher",
+  "product_name": "3\u2033 Angle Head Corner Finisher",
   "sku": "AH30-AD",
   "diagramPages": [
     1
@@ -24,25 +24,25 @@
       "id": "409010",
       "name": "409010 - Retainer Spring",
       "quantity": 1,
-      "sku": "409010"
+      "sku": "4820"
     },
     {
       "id": "402012",
       "name": "402012 - Ball Retainer",
       "quantity": 1,
-      "sku": "402012"
+      "sku": "12501"
     },
     {
       "id": "480021",
       "name": "480021 - Blade Tension Spring (Small)",
       "quantity": 1,
-      "sku": "480021"
+      "sku": "4841"
     },
     {
       "id": "480017F",
       "name": "480017 - Center Clip (Short)",
       "quantity": 1,
-      "sku": "480017F"
+      "sku": "4839"
     },
     {
       "id": "486001",
@@ -66,7 +66,7 @@
       "id": "480008F",
       "name": "480008 - Spring Adjusting Cam (Left)",
       "quantity": 1,
-      "sku": "480008F"
+      "sku": "4836"
     },
     {
       "id": "46Y013",
@@ -78,7 +78,7 @@
       "id": "450009F",
       "name": "450009 - 3\" Carbide Blade",
       "quantity": 1,
-      "sku": "450009F"
+      "sku": "4826"
     },
     {
       "id": "40Y011",
@@ -96,13 +96,13 @@
       "id": "402006",
       "name": "402006 - Insert Socket",
       "quantity": 1,
-      "sku": "402006"
+      "sku": "4811"
     },
     {
       "id": "359005",
       "name": "359005 - 6-32 X 1/4 Bind Hd Screw",
       "quantity": 1,
-      "sku": "359005"
+      "sku": "4771"
     },
     {
       "id": "409020",
@@ -114,7 +114,7 @@
       "id": "480007F",
       "name": "480007 - Spring Adjusting Cam (Right)",
       "quantity": 1,
-      "sku": "480007F"
+      "sku": "4835"
     },
     {
       "id": "05P037",
@@ -150,7 +150,7 @@
       "id": "480026",
       "name": "480026 - TapeTech Replacement Angle Head Wheel",
       "quantity": 1,
-      "sku": "480026"
+      "sku": "4842"
     },
     {
       "id": "489026",
@@ -174,7 +174,7 @@
       "id": "489029",
       "name": "489029 - 6-32 X 5/8 Socket Hd Screw",
       "quantity": 1,
-      "sku": "489029"
+      "sku": "4851"
     }
   ],
   "coordinates": {

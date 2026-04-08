@@ -1851,27 +1851,38 @@ export default function Parts() {
 
   // Fetch live WooCommerce stock status and product image whenever a hotspot is opened.
   // Runs in the background — UI shows a loading state until resolved.
+  // A 10-second timeout guards against a slow/failing credentialsReady bootstrap
+  // that would otherwise leave the spinner stuck indefinitely.
   useEffect(() => {
     if (!activeHotspotPart?.sku) {
-      setHotspotStockStatus(null);
+      // No SKU — mark immediately as unavailable so the spinner never hangs.
+      setHotspotStockStatus('unknown');
       setHotspotProduct(null);
       return;
     }
     let cancelled = false;
     setHotspotStockStatus(null); // reset to loading while fetching
     setHotspotProduct(null);
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) {
+        setHotspotStockStatus('unknown');
+        setHotspotProduct(null);
+      }
+    }, 10000);
     getProductBySku(activeHotspotPart.sku).then((wc) => {
       if (!cancelled) {
+        clearTimeout(timeoutId);
         setHotspotStockStatus(wc ? (wc.stock_status || 'instock') : 'unknown');
         setHotspotProduct(wc || null);
       }
     }).catch(() => {
       if (!cancelled) {
+        clearTimeout(timeoutId);
         setHotspotStockStatus('unknown');
         setHotspotProduct(null);
       }
     });
-    return () => { cancelled = true; };
+    return () => { cancelled = true; clearTimeout(timeoutId); };
   }, [activeHotspotPart]);
 
   // After the detached modal renders, recalculate its position using its actual
@@ -2478,16 +2489,21 @@ export default function Parts() {
                 )}
                 
                 {/* Hotspots rendered INSIDE the transformed container so they scale and pan with the image */}
-                {currentSchematic.parts.filter(part => !part.pageNumber || part.pageNumber === currentPage).map((part, index) => (
+                {currentSchematic.parts.filter(part => !part.pageNumber || part.pageNumber === currentPage).map((part, index) => {
+                  // Use a composite key so duplicate part IDs (e.g. shared fasteners
+                  // that appear twice on a schematic) each get an independent active
+                  // state — only the clicked instance highlights, not all copies.
+                  const hotspotKey = `${part.id}::${index}`;
+                  return (
                   <div
                     key={`${part.id}-${part.position.top}-${part.position.left}-${index}`}
-                    className={`hotspot hotspot-${part.shape || 'circle'} ${activeHotspot === part.id ? 'active' : ''}`}
+                    className={`hotspot hotspot-${part.shape || 'circle'} ${activeHotspot === hotspotKey ? 'active' : ''}`}
                     style={{
                       position: 'absolute',
                       top: part.position.top,
                       left: part.position.left,
                       transform: part.rotation ? `translate(-50%, -50%) rotate(${part.rotation}deg)` : 'translate(-50%, -50%)',
-                      zIndex: activeHotspot === part.id ? 1001 : 100,
+                      zIndex: activeHotspot === hotspotKey ? 1001 : 100,
                       pointerEvents: 'auto',
                       // Convert pixel-based hotspot dimensions to scale-independent
                       // percentages using the source image's natural dimensions so
@@ -2520,7 +2536,7 @@ export default function Parts() {
                       } else if (part.name === 'SEE EXTENSION HOUSING DETAIL') {
                         setCurrentPage(5);
                         closeModal();
-                      } else if (activeHotspot === part.id) {
+                      } else if (activeHotspot === hotspotKey) {
                         closeModal();
                       } else {
                         // Snapshot the hotspot's bounding rect before React re-renders
@@ -2532,7 +2548,7 @@ export default function Parts() {
                           right: r.right, width: r.width, height: r.height,
                         };
                         calculateAndSetModalPosition(lastHotspotRectRef.current);
-                        setActiveHotspot(part.id);
+                        setActiveHotspot(hotspotKey);
                         setActiveHotspotPart(part);
                       }
                     }}
@@ -2540,7 +2556,7 @@ export default function Parts() {
                   >
                     {/* Desktop inline modal (hidden on mobile via CSS) */}
                     <div className="part-modal" onClick={(e) => e.stopPropagation()}>
-                    {activeHotspot === part.id && hotspotProduct?.images?.[0]?.src && (
+                    {activeHotspot === hotspotKey && hotspotProduct?.images?.[0]?.src && (
                       <img
                         src={hotspotProduct.images[0].src}
                         alt={hotspotProduct.images[0].alt || part.name}
@@ -2558,7 +2574,7 @@ export default function Parts() {
                     <div className="part-meta">
                       SKU: {part.sku}
                       {part.quantity > 1 && ` | Qty: ${part.quantity}`}
-                      {activeHotspot === part.id && (
+                      {activeHotspot === hotspotKey && (
                         <span style={{
                           marginLeft: '6px',
                           fontWeight: 700,
@@ -2582,7 +2598,8 @@ export default function Parts() {
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 800
                       }}>
-                        ${part.price.toFixed(2)}
+                        {/* Show live WC price when available; fall back to JSON-static price */}
+                        ${(parseFloat(hotspotProduct?.price) > 0 ? parseFloat(hotspotProduct.price) : part.price).toFixed(2)}
                       </span>
                       <button
                         className="alloy-button"
@@ -2590,18 +2607,19 @@ export default function Parts() {
                           padding: '8px 16px',
                           fontSize: '0.6rem'
                         }}
-                        disabled={addingToCart === part.id}
+                        disabled={!part.sku || addingToCart === part.id}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleAddToCart(part);
                         }}
                       >
-                        {addingToCart === part.id ? '…' : 'Add'}
+                        {addingToCart === part.id ? '…' : part.sku ? 'Add' : 'Unavailable'}
                       </button>
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
 
                 {/* Navigation hotspots — click a tool region to jump to its detail page */}
                 {(currentSchematic.navHotspots || [])
@@ -2702,7 +2720,8 @@ export default function Parts() {
                     fontFamily: 'var(--font-mono)',
                     fontWeight: 800
                   }}>
-                    ${activeHotspotPart.price.toFixed(2)}
+                    {/* Show live WC price when available; fall back to JSON-static price */}
+                    ${(parseFloat(hotspotProduct?.price) > 0 ? parseFloat(hotspotProduct.price) : activeHotspotPart.price).toFixed(2)}
                   </span>
                   <button
                     className="alloy-button"
@@ -2710,13 +2729,13 @@ export default function Parts() {
                       padding: '8px 16px',
                       fontSize: '0.6rem'
                     }}
-                    disabled={addingToCart === activeHotspotPart.id}
+                    disabled={!activeHotspotPart.sku || addingToCart === activeHotspotPart.id}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleAddToCart(activeHotspotPart);
                     }}
                   >
-                    {addingToCart === activeHotspotPart.id ? '…' : 'Add'}
+                    {addingToCart === activeHotspotPart.id ? '…' : activeHotspotPart.sku ? 'Add' : 'Unavailable'}
                   </button>
                 </div>
               </div>
@@ -2815,7 +2834,8 @@ export default function Parts() {
                 fontSize: '1.3rem',
                 color: 'var(--tension-accent)'
               }}>
-                ${activeHotspotPart.price.toFixed(2)}
+                {/* Show live WC price when available; fall back to JSON-static price */}
+                ${(parseFloat(hotspotProduct?.price) > 0 ? parseFloat(hotspotProduct.price) : activeHotspotPart.price).toFixed(2)}
               </span>
               <button
                 className="alloy-button"
@@ -2826,13 +2846,13 @@ export default function Parts() {
                   clipPath: 'none',
                   fontWeight: '700'
                 }}
-                disabled={addingToCart === activeHotspotPart?.id}
+                disabled={!activeHotspotPart?.sku || addingToCart === activeHotspotPart?.id}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAddToCart(activeHotspotPart);
                 }}
               >
-                {addingToCart === activeHotspotPart?.id ? 'Adding…' : 'Add to Cart'}
+                {addingToCart === activeHotspotPart?.id ? 'Adding…' : activeHotspotPart?.sku ? 'Add to Cart' : 'Unavailable'}
               </button>
             </div>
           </div>

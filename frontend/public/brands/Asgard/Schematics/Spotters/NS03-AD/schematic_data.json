@@ -1,7 +1,7 @@
 {
   "id": "1775158856369",
   "title": "NS03-AD_SCH",
-  "product_name": "3″ Nail Spotter",
+  "product_name": "3\u2033 Nail Spotter",
   "sku": "NS03-AD",
   "diagramPages": [
     1
@@ -18,19 +18,19 @@
       "id": "209042",
       "name": "209042 - #10 Brass Washer",
       "quantity": 1,
-      "sku": "209042"
+      "sku": "4711"
     },
     {
       "id": "609020",
       "name": "609020 - Friction Washer Disc",
       "quantity": 1,
-      "sku": "609020"
+      "sku": "4892"
     },
     {
       "id": "600022",
       "name": "600022 - Connector",
       "quantity": 1,
-      "sku": "600022"
+      "sku": "4876"
     },
     {
       "id": "883022",
@@ -54,7 +54,7 @@
       "id": "209755",
       "name": "209755 - Screw, 6-32 x 1/2 Flat Head",
       "quantity": 1,
-      "sku": "209755"
+      "sku": "13213"
     },
     {
       "id": "600011",
@@ -66,19 +66,19 @@
       "id": "650040",
       "name": "Special Washer",
       "quantity": 1,
-      "sku": "650040"
+      "sku": "4916"
     },
     {
       "id": "602045F",
       "name": "602045 - Special Washer",
       "quantity": 1,
-      "sku": "602045F"
+      "sku": "4882"
     },
     {
       "id": "609018",
       "name": "609018 - 3/16 Plastic Washer",
       "quantity": 1,
-      "sku": "609018"
+      "sku": "4891"
     },
     {
       "id": "059057",
@@ -90,79 +90,79 @@
       "id": "709050",
       "name": "709050 - #10 Lockwasher",
       "quantity": 1,
-      "sku": "709050"
+      "sku": "4657"
     },
     {
       "id": "680010",
       "name": "680010 - Hinge Block",
       "quantity": 1,
-      "sku": "680010"
+      "sku": "4620"
     },
     {
       "id": "680030",
       "name": "680030 - Insert",
       "quantity": 1,
-      "sku": "680030"
+      "sku": "4915"
     },
     {
       "id": "659021",
       "name": "659021 - 10-32 X 3/4 Rd Hd Sst Screw",
       "quantity": 1,
-      "sku": "659021"
+      "sku": "4920"
     },
     {
       "id": "684028",
       "name": "684028 - Pressure Plate Assembly",
       "quantity": 1,
-      "sku": "684028"
+      "sku": "4623"
     },
     {
       "id": "630017",
       "name": "630017 - Pressure Plate Tab",
       "quantity": 1,
-      "sku": "630017"
+      "sku": "4904"
     },
     {
       "id": "809017",
       "name": "809017 - #8 Medium Spring Lockwasher",
       "quantity": 1,
-      "sku": "809017"
+      "sku": "4688"
     },
     {
       "id": "729064",
       "name": "729064 - 8-32 X 3/8 Bind Hd Sst Screw",
       "quantity": 1,
-      "sku": "729064"
+      "sku": "4670"
     },
     {
       "id": "681015",
       "name": "680015 - 3\" Wiper For Nailspotter",
       "quantity": 1,
-      "sku": "681015"
+      "sku": "4621"
     },
     {
       "id": "609050",
       "name": "609050 - 6-32 X 3/32 Screw Slotted Rd",
       "quantity": 1,
-      "sku": "609050"
+      "sku": "4899"
     },
     {
       "id": "602035",
       "name": "602035 - Adjustable Stop",
       "quantity": 1,
-      "sku": "602035"
+      "sku": "4881"
     },
     {
       "id": "639020",
       "name": "639020 - Plastic Washer",
       "quantity": 1,
-      "sku": "639020"
+      "sku": "4908"
     },
     {
       "id": "680002",
       "name": "680002 - Latch",
       "quantity": 1,
-      "sku": "680002"
+      "sku": "4921"
     },
     {
       "id": "059225",
@@ -174,7 +174,7 @@
       "id": "509008",
       "name": "509008 - 10-32 X 1/2 Bd Hd Screw",
       "quantity": 1,
-      "sku": "509008"
+      "sku": "4863"
     },
     {
       "id": "509012",
@@ -186,79 +186,79 @@
       "id": "609015",
       "name": "609015 - Nut Block",
       "quantity": 1,
-      "sku": "609015"
+      "sku": "4890"
     },
     {
       "id": "632026",
       "name": "Spring, Nail Spotters",
       "quantity": 1,
-      "sku": "632026"
+      "sku": "4879"
     },
     {
       "id": "688001",
       "name": "688001 - Housing Assembly",
       "quantity": 1,
-      "sku": "688001"
+      "sku": "4624"
     },
     {
       "id": "359005",
       "name": "359005 - 6-32 X 1/4 Bind Hd Screw",
       "quantity": 1,
-      "sku": "359005"
+      "sku": "4771"
     },
     {
       "id": "602029F",
       "name": "602029 - Special Rivet",
       "quantity": 1,
-      "sku": "602029F"
+      "sku": "4880"
     },
     {
       "id": "359005",
       "name": "359005 - 6-32 X 1/4 Bind Hd Screw",
       "quantity": 1,
-      "sku": "359005"
+      "sku": "4771"
     },
     {
       "id": "650007",
       "name": "650007 - Skid-3\" Nail Spotter",
       "quantity": 1,
-      "sku": "650007"
+      "sku": "4910"
     },
     {
       "id": "609008",
       "name": "609008 - 4-40 X 1/2 Flat Hd Screw",
       "quantity": 1,
-      "sku": "609008"
+      "sku": "4887"
     },
     {
       "id": "609048",
       "name": "609048 - 4-40 X 3/8 Flat Hd Screw",
       "quantity": 1,
-      "sku": "609048"
+      "sku": "4897"
     },
     {
       "id": "680009",
       "name": "680009 - Facing",
       "quantity": 1,
-      "sku": "680009"
+      "sku": "4922"
     },
     {
       "id": "654036",
       "name": "654036 - Blade Clamp Assembly",
       "quantity": 1,
-      "sku": "654036"
+      "sku": "4918"
     },
     {
       "id": "650005F",
       "name": "650005 - 3\" Nailspotter Blade",
       "quantity": 1,
-      "sku": "650005F"
+      "sku": "4909"
     },
     {
       "id": "609049",
       "name": "609049 - Serrated Hex Flange Nut",
       "quantity": 1,
-      "sku": "609049"
+      "sku": "4898"
     }
   ],
   "coordinates": {

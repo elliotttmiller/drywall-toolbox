@@ -1,7 +1,7 @@
 {
   "id": "1775158856326",
   "title": "BBHE-AD_SCH",
-  "product_name": "Brakeless Box Handle – Extendable",
+  "product_name": "Brakeless Box Handle \u2013 Extendable",
   "sku": "BBHE-AD",
   "diagramPages": [
     1,
@@ -13,7 +13,7 @@
       "id": "882039",
       "name": "882039 - Spring Housing",
       "quantity": 1,
-      "sku": "882039"
+      "sku": "4999"
     },
     {
       "id": "880061",
@@ -31,7 +31,7 @@
       "id": "882002",
       "name": "882002 - Profile Extrusion",
       "quantity": 1,
-      "sku": "882002"
+      "sku": "5002"
     },
     {
       "id": "880060",
@@ -55,7 +55,7 @@
       "id": "880053",
       "name": "880053 - Lock Block",
       "quantity": 1,
-      "sku": "880053"
+      "sku": "5001"
     },
     {
       "id": "2",

@@ -1,7 +1,7 @@
 {
   "id": "1775158856266",
   "title": "EZ10-AD_SCH",
-  "product_name": "10″ Flat Finishing Box",
+  "product_name": "10\u2033 Flat Finishing Box",
   "sku": "EZ10-AD",
   "diagramPages": [
     1
@@ -24,13 +24,13 @@
       "id": "250001",
       "name": "250001 - 10\" Box Blade",
       "quantity": 1,
-      "sku": "250001"
+      "sku": "4736"
     },
     {
       "id": "254002",
       "name": "254002 - 10\" Blade Holder Assembly",
       "quantity": 1,
-      "sku": "254002"
+      "sku": "4741"
     },
     {
       "id": "250040F",
@@ -42,7 +42,7 @@
       "id": "251032G",
       "name": "251032G - 10\" Radius Plate (Gold)",
       "quantity": 1,
-      "sku": "251032G"
+      "sku": "4745"
     },
     {
       "id": "2",
@@ -66,7 +66,7 @@
       "id": "209039",
       "name": "209039 - Left Skid Cover",
       "quantity": 1,
-      "sku": "209039"
+      "sku": "4709"
     },
     {
       "id": "4",
@@ -78,7 +78,7 @@
       "id": "251025G",
       "name": "251025G - Right Side Plate",
       "quantity": 1,
-      "sku": "251025G"
+      "sku": "4610"
     },
     {
       "id": "209050 ASSEMBLE WITH LOCTITE 243 TORQUE 10-12 IN-LB",
@@ -108,7 +108,7 @@
       "id": "256027G",
       "name": "256027 - 10\" Pressure Plate (Gold)",
       "quantity": 1,
-      "sku": "256027G"
+      "sku": "4744"
     },
     {
       "id": "2",
@@ -120,7 +120,7 @@
       "id": "200052F",
       "name": "200052 - Shoulder Screw",
       "quantity": 1,
-      "sku": "200052F"
+      "sku": "4595"
     },
     {
       "id": "2",
@@ -168,25 +168,25 @@
       "id": "202021",
       "name": "202021 - Special Nut",
       "quantity": 1,
-      "sku": "202021"
+      "sku": "4599"
     },
     {
       "id": "206003",
       "name": "206003 - Dial Assembly",
       "quantity": 1,
-      "sku": "206003"
+      "sku": "4609"
     },
     {
       "id": "203010",
       "name": "203010 - Flat Box Crown Spring",
       "quantity": 1,
-      "sku": "203010"
+      "sku": "4597"
     },
     {
       "id": "254005",
       "name": "254005 - 10\" Clamp Assembly",
       "quantity": 1,
-      "sku": "254005"
+      "sku": "4742"
     },
     {
       "id": "2",
@@ -228,7 +228,7 @@
       "id": "250026F",
       "name": "250026 10\" Flat Box Wiper",
       "quantity": 1,
-      "sku": "250026F"
+      "sku": "4738"
     },
     {
       "id": "2",
@@ -246,25 +246,25 @@
       "id": "209006",
       "name": "209006  - Right Skid Cover",
       "quantity": 1,
-      "sku": "209006"
+      "sku": "4613"
     },
     {
       "id": "251023G",
       "name": "251023G - Flat Box Left Side Plate",
       "quantity": 1,
-      "sku": "251023G"
+      "sku": "4601"
     },
     {
       "id": "209048",
       "name": "209048 - 4-40 X 1/8 Bind Hd Screw",
       "quantity": 1,
-      "sku": "209048"
+      "sku": "4714"
     },
     {
       "id": "250009",
       "name": "250009 - TapeTech Replacement Shim 10\"",
       "quantity": 1,
-      "sku": "250009"
+      "sku": "4737"
     },
     {
       "id": "2",
@@ -318,13 +318,13 @@
       "id": "209042",
       "name": "209042 - #10 Brass Washer",
       "quantity": 1,
-      "sku": "209042"
+      "sku": "4711"
     },
     {
       "id": "209047",
       "name": "209047 - Nyliner Bearing",
       "quantity": 1,
-      "sku": "209047"
+      "sku": "4713"
     },
     {
       "id": "809046",
@@ -336,7 +336,7 @@
       "id": "202036",
       "name": "202036 - Shoulder Screw",
       "quantity": 1,
-      "sku": "202036"
+      "sku": "4603"
     }
   ],
   "coordinates": {

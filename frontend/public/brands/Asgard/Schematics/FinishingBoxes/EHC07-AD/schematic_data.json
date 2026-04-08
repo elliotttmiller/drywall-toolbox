@@ -1,7 +1,7 @@
 {
   "id": "1775158856219",
   "title": "EHC07-AD_SCH",
-  "product_name": "7″ MaxxBox Finishing Box",
+  "product_name": "7\u2033 MaxxBox Finishing Box",
   "sku": "EHC07-AD",
   "diagramPages": [
     1
@@ -12,13 +12,13 @@
       "id": "202021",
       "name": "202021 - Special Nut",
       "quantity": 1,
-      "sku": "202021"
+      "sku": "4599"
     },
     {
       "id": "206003",
       "name": "206003 - Dial Assembly",
       "quantity": 1,
-      "sku": "206003"
+      "sku": "4609"
     },
     {
       "id": "20905B",
@@ -36,37 +36,37 @@
       "id": "209016",
       "name": "209016 - Screw 4-40 X 7/32 Bind Hd",
       "quantity": 1,
-      "sku": "209016"
+      "sku": "4615"
     },
     {
       "id": "204005",
       "name": "204005 - 7\" Clamp Assembly",
       "quantity": 1,
-      "sku": "204005"
+      "sku": "4607"
     },
     {
       "id": "204002",
       "name": "204002 - 7\" Blade Holder Assembly",
       "quantity": 1,
-      "sku": "204002"
+      "sku": "4606"
     },
     {
       "id": "209012",
       "name": "209012 - 4-40 X 1/4 Head Screw",
       "quantity": 1,
-      "sku": "209012"
+      "sku": "4614"
     },
     {
       "id": "200001",
       "name": "200001 - 7\" Blade",
       "quantity": 1,
-      "sku": "200001"
+      "sku": "4590"
     },
     {
       "id": "202007",
       "name": "202007 - Push Rod Crown Adjustment",
       "quantity": 1,
-      "sku": "202007"
+      "sku": "4596"
     },
     {
       "id": "059018",
@@ -102,19 +102,19 @@
       "id": "219064",
       "name": "219064 - Spring Washer",
       "quantity": 1,
-      "sku": "219064"
+      "sku": "4729"
     },
     {
       "id": "210059",
       "name": "210059 - Shoulder Screw",
       "quantity": 1,
-      "sku": "210059"
+      "sku": "4720"
     },
     {
       "id": "210024F",
       "name": "7\" Wiper",
       "quantity": 1,
-      "sku": "210024F"
+      "sku": "11917"
     },
     {
       "id": "202038",
@@ -126,13 +126,13 @@
       "id": "209030",
       "name": "209030 - 10-24 Stainless Steel Wingnut",
       "quantity": 1,
-      "sku": "209030"
+      "sku": "4619"
     },
     {
       "id": "339073",
       "name": "339073 - 10-24 x 1-1/4 Fillister Head Screw",
       "quantity": 1,
-      "sku": "339073"
+      "sku": "4604"
     },
     {
       "id": "2100278",
@@ -144,25 +144,25 @@
       "id": "209046",
       "name": "209046 - Flat Box Washer",
       "quantity": 1,
-      "sku": "209046"
+      "sku": "4712"
     },
     {
       "id": "209017",
       "name": "209017 - 10-24 Nylock Nut",
       "quantity": 1,
-      "sku": "209017"
+      "sku": "4616"
     },
     {
       "id": "219081",
       "name": "219081 - 6-32 Flat Head Screw",
       "quantity": 1,
-      "sku": "219081"
+      "sku": "4732"
     },
     {
       "id": "202044F",
       "name": "202044 - Pressure Plate Spring",
       "quantity": 1,
-      "sku": "202044F"
+      "sku": "4605"
     },
     {
       "id": "2401238",
@@ -192,19 +192,19 @@
       "id": "210071",
       "name": "210071 - 7\" Spacer Rod",
       "quantity": 1,
-      "sku": "210071"
+      "sku": "11916"
     },
     {
       "id": "209006",
       "name": "209006  - Right Skid Cover",
       "quantity": 1,
-      "sku": "209006"
+      "sku": "4613"
     },
     {
       "id": "202022",
       "name": "202022 - Repair Clip",
       "quantity": 1,
-      "sku": "202022"
+      "sku": "4600"
     },
     {
       "id": "059102",
@@ -234,7 +234,7 @@
       "id": "210060",
       "name": "210060 - Flat Box Pivot Bearing",
       "quantity": 1,
-      "sku": "210060"
+      "sku": "4721"
     },
     {
       "id": "209148",
@@ -246,7 +246,7 @@
       "id": "209039",
       "name": "209039 - Left Skid Cover",
       "quantity": 1,
-      "sku": "209039"
+      "sku": "4709"
     },
     {
       "id": "2401258",
@@ -270,19 +270,19 @@
       "id": "889030",
       "name": "889030 - 4-40 X 3/16 Fill. Head Screw",
       "quantity": 1,
-      "sku": "889030"
+      "sku": "5009"
     },
     {
       "id": "210097",
       "name": "Seal Plate, 7\"",
       "quantity": 1,
-      "sku": "210097"
+      "sku": "12399"
     },
     {
       "id": "210096",
       "name": "Seal, 7\"",
       "quantity": 1,
-      "sku": "210096"
+      "sku": "12392"
     },
     {
       "id": "2400508",
@@ -306,7 +306,7 @@
       "id": "209042",
       "name": "209042 - #10 Brass Washer",
       "quantity": 1,
-      "sku": "209042"
+      "sku": "4711"
     },
     {
       "id": "209148",
@@ -324,7 +324,7 @@
       "id": "219067",
       "name": "Flat Box Box Wheel O-Ring - FFB6A",
       "quantity": 1,
-      "sku": "219067"
+      "sku": "4730"
     },
     {
       "id": "310051F",
@@ -342,13 +342,13 @@
       "id": "809006",
       "name": "809006 - #14 S Brass Washer",
       "quantity": 1,
-      "sku": "809006"
+      "sku": "4684"
     },
     {
       "id": "202036",
       "name": "202036 - Shoulder Screw",
       "quantity": 1,
-      "sku": "202036"
+      "sku": "4603"
     },
     {
       "id": "059225",
@@ -360,13 +360,13 @@
       "id": "209042",
       "name": "209042 - #10 Brass Washer",
       "quantity": 1,
-      "sku": "209042"
+      "sku": "4711"
     },
     {
       "id": "209047",
       "name": "209047 - Nyliner Bearing",
       "quantity": 1,
-      "sku": "209047"
+      "sku": "4713"
     },
     {
       "id": "210031B",

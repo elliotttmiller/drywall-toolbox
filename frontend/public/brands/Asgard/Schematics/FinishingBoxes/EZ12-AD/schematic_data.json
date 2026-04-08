@@ -1,7 +1,7 @@
 {
   "id": "1775158856269",
   "title": "EZ12-AD_SCH",
-  "product_name": "12″ Flat Finishing Box",
+  "product_name": "12\u2033 Flat Finishing Box",
   "sku": "EZ12-AD",
   "diagramPages": [
     1
@@ -24,13 +24,13 @@
       "id": "300001",
       "name": "300001 - 12\" Flat Box Blade",
       "quantity": 1,
-      "sku": "300001"
+      "sku": "4750"
     },
     {
       "id": "304002",
       "name": "304002 - 12\" Blade Holder Assembly",
       "quantity": 1,
-      "sku": "304002"
+      "sku": "4756"
     },
     {
       "id": "300040F",
@@ -72,7 +72,7 @@
       "id": "209039",
       "name": "209039 - Left Skid Cover",
       "quantity": 1,
-      "sku": "209039"
+      "sku": "4709"
     },
     {
       "id": "4",
@@ -180,25 +180,25 @@
       "id": "202021",
       "name": "202021 - Special Nut",
       "quantity": 1,
-      "sku": "202021"
+      "sku": "4599"
     },
     {
       "id": "206003",
       "name": "206003 - Dial Assembly",
       "quantity": 1,
-      "sku": "206003"
+      "sku": "4609"
     },
     {
       "id": "303010",
       "name": "303010 - Crown Spring",
       "quantity": 1,
-      "sku": "303010"
+      "sku": "4752"
     },
     {
       "id": "304005",
       "name": "304005 - 12\" Blade Holder Clamp",
       "quantity": 1,
-      "sku": "304005"
+      "sku": "4757"
     },
     {
       "id": "2",
@@ -240,13 +240,13 @@
       "id": "300026F",
       "name": "300026 - 12\" Flat Box Wiper",
       "quantity": 1,
-      "sku": "300026F"
+      "sku": "4753"
     },
     {
       "id": "209006",
       "name": "209006  - Right Skid Cover",
       "quantity": 1,
-      "sku": "209006"
+      "sku": "4613"
     },
     {
       "id": "2510238",
@@ -270,13 +270,13 @@
       "id": "209048",
       "name": "209048 - 4-40 X 1/8 Bind Hd Screw",
       "quantity": 1,
-      "sku": "209048"
+      "sku": "4714"
     },
     {
       "id": "300009",
       "name": "2 - Shim 12\"",
       "quantity": 1,
-      "sku": "300009"
+      "sku": "4751"
     },
     {
       "id": "2",
@@ -288,7 +288,7 @@
       "id": "202044F",
       "name": "202044 - Pressure Plate Spring",
       "quantity": 1,
-      "sku": "202044F"
+      "sku": "4605"
     },
     {
       "id": "2",
@@ -324,25 +324,25 @@
       "id": "209047",
       "name": "209047 - Nyliner Bearing",
       "quantity": 1,
-      "sku": "209047"
+      "sku": "4713"
     },
     {
       "id": "209047",
       "name": "209047 - Nyliner Bearing",
       "quantity": 1,
-      "sku": "209047"
+      "sku": "4713"
     },
     {
       "id": "202036",
       "name": "202036 - Shoulder Screw",
       "quantity": 1,
-      "sku": "202036"
+      "sku": "4603"
     },
     {
       "id": "809006",
       "name": "809006 - #14 S Brass Washer",
       "quantity": 1,
-      "sku": "809006"
+      "sku": "4684"
     }
   ],
   "coordinates": {

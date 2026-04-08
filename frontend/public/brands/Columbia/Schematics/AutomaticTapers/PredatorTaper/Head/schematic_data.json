@@ -496,13 +496,13 @@
       "id": "CT47",
       "name": "CT47",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT47"
     },
     {
       "id": "FA234",
       "name": "FA234",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA234"
     },
     {
       "id": "FAS46",
@@ -604,7 +604,7 @@
       "id": "CT93",
       "name": "CT93",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT93"
     },
     {
       "id": "FA32S",
@@ -616,7 +616,7 @@
       "id": "FA290",
       "name": "FA290",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA290"
     },
     {
       "id": "CTS9",
@@ -892,7 +892,7 @@
       "id": "FA224",
       "name": "FA224",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA224"
     },
     {
       "id": "CT2",
@@ -1120,7 +1120,7 @@
       "id": "CT49",
       "name": "CT49",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT49"
     },
     {
       "id": "CT31",

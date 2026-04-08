@@ -1,7 +1,7 @@
 {
   "id": "1775158856309",
   "title": "PA10-AD_SCH",
-  "product_name": "10″ Power Assist Finishing Box",
+  "product_name": "10\u2033 Power Assist Finishing Box",
   "sku": "PA10-AD",
   "diagramPages": [
     1
@@ -11,67 +11,67 @@
     {
       "id": "206003",
       "name": "206003 - Dial Assembly",
-      "sku": "206003",
+      "sku": "4609",
       "quantity": 1
     },
     {
       "id": "202021",
       "name": "202021 - Special Nut",
-      "sku": "202021",
+      "sku": "4599",
       "quantity": 1
     },
     {
       "id": "209058",
       "name": "209058 - 6-32 Brass Nut",
-      "sku": "209058",
+      "sku": "10006",
       "quantity": 2
     },
     {
       "id": "203010",
       "name": "203010 - Flat Box Crown Spring",
-      "sku": "203010",
+      "sku": "4597",
       "quantity": 1
     },
     {
       "id": "209016",
       "name": "209016 - Screw 4-40 X 7/32 Bind Hd",
-      "sku": "209016",
+      "sku": "4615",
       "quantity": 8
     },
     {
       "id": "254005",
       "name": "254005 - 10\" Clamp Assembly",
-      "sku": "254005",
+      "sku": "4742",
       "quantity": 1
     },
     {
       "id": "209012",
       "name": "209012 - 4-40 X 1/4 Head Screw",
-      "sku": "209012",
+      "sku": "4614",
       "quantity": 2
     },
     {
       "id": "254002",
       "name": "254002 - 10\" Blade Holder Assembly",
-      "sku": "254002",
+      "sku": "4741",
       "quantity": 1
     },
     {
       "id": "250001",
       "name": "250001 - 10\" Box Blade",
-      "sku": "250001",
+      "sku": "4736",
       "quantity": 1
     },
     {
       "id": "202020",
       "name": "202020 - Spring Anchor",
-      "sku": "202020",
+      "sku": "4598",
       "quantity": 2
     },
     {
       "id": "202007",
       "name": "202007 - Push Rod Crown Adjustment",
-      "sku": "202007",
+      "sku": "4596",
       "quantity": 2
     },
     {
@@ -89,7 +89,7 @@
     {
       "id": "260024F",
       "name": "10\" Wiper",
-      "sku": "260024F",
+      "sku": "4747",
       "quantity": 1
     },
     {
@@ -107,13 +107,13 @@
     {
       "id": "219093",
       "name": "219093 - 6-32 X 3/4\" Flat Head Screw",
-      "sku": "219093",
+      "sku": "4734",
       "quantity": 1
     },
     {
       "id": "202028",
       "name": "202028 - Threaded Washer",
-      "sku": "202028",
+      "sku": "4602",
       "quantity": 2
     },
     {
@@ -125,25 +125,25 @@
     {
       "id": "209017",
       "name": "209017 - 10-24 Nylock Nut",
-      "sku": "209017",
+      "sku": "4616",
       "quantity": 2
     },
     {
       "id": "209030",
       "name": "209030 - 10-24 Stainless Steel Wingnut",
-      "sku": "209030",
+      "sku": "4619",
       "quantity": 2
     },
     {
       "id": "212087",
       "name": "212087 - Flat Box Lock",
-      "sku": "212087",
+      "sku": "4724",
       "quantity": 1
     },
     {
       "id": "209046",
       "name": "209046 - Flat Box Washer",
-      "sku": "209046",
+      "sku": "4712",
       "quantity": 2
     },
     {
@@ -155,25 +155,25 @@
     {
       "id": "260071",
       "name": "260071 - 10 Inch Spacer Rod",
-      "sku": "260071",
+      "sku": "11838",
       "quantity": 4
     },
     {
       "id": "212089",
       "name": "212089 - Flat Box Spacer",
-      "sku": "212089",
+      "sku": "4725",
       "quantity": 1
     },
     {
       "id": "339073",
       "name": "339073 - 10-24 x 1-1/4 Fillister Head Screw",
-      "sku": "339073",
+      "sku": "4604",
       "quantity": 2
     },
     {
       "id": "212086",
       "name": "212086 - TapeTech Replacement Hook",
-      "sku": "212086",
+      "sku": "4723",
       "quantity": 2
     },
     {
@@ -185,7 +185,7 @@
     {
       "id": "219091",
       "name": "219091 - Spring for Power Assist Boxes",
-      "sku": "219091",
+      "sku": "4733",
       "quantity": 2
     },
     {
@@ -203,13 +203,13 @@
     {
       "id": "219081",
       "name": "219081 - 6-32 Flat Head Screw",
-      "sku": "219081",
+      "sku": "4732",
       "quantity": 1
     },
     {
       "id": "212081",
       "name": "212081 - Arm",
-      "sku": "212081",
+      "sku": "11839",
       "quantity": 2
     },
     {
@@ -221,19 +221,19 @@
     {
       "id": "209006",
       "name": "209006  - Right Skid Cover",
-      "sku": "209006",
+      "sku": "4613",
       "quantity": 1
     },
     {
       "id": "209039",
       "name": "209039 - Left Skid Cover",
-      "sku": "209039",
+      "sku": "4709",
       "quantity": 1
     },
     {
       "id": "202022",
       "name": "202022 - Repair Clip",
-      "sku": "202022",
+      "sku": "4600",
       "quantity": 2
     },
     {
@@ -251,7 +251,7 @@
     {
       "id": "213083",
       "name": "213083 - Cog (Power Assist)",
-      "sku": "213083",
+      "sku": "10281",
       "quantity": 1
     },
     {
@@ -287,19 +287,19 @@
     {
       "id": "889030",
       "name": "889030 - 4-40 X 3/16 Fill. Head Screw",
-      "sku": "889030",
+      "sku": "5009",
       "quantity": 4
     },
     {
       "id": "260097",
       "name": "260097 - Seal Plate (10\" EC/PA Boxes)",
-      "sku": "260097",
+      "sku": "12457",
       "quantity": 1
     },
     {
       "id": "210060",
       "name": "210060 - Flat Box Pivot Bearing",
-      "sku": "210060",
+      "sku": "4721",
       "quantity": 2
     },
     {
@@ -311,7 +311,7 @@
     {
       "id": "260096",
       "name": "260096 - 10\" Seal for PowerAssist /Easy Clean Flat Boxes",
-      "sku": "260096",
+      "sku": "12393",
       "quantity": 1
     },
     {
@@ -335,19 +335,19 @@
     {
       "id": "209042",
       "name": "209042 - #10 Brass Washer",
-      "sku": "209042",
+      "sku": "4711",
       "quantity": 2
     },
     {
       "id": "212085",
       "name": "212085 - TapeTech Power Assist Right Flange",
-      "sku": "212085",
+      "sku": "11573",
       "quantity": 1
     },
     {
       "id": "212084",
       "name": "212084 - Tape Tech Power Assist Left Flange",
-      "sku": "212084",
+      "sku": "11572",
       "quantity": 1
     },
     {
@@ -359,7 +359,7 @@
     {
       "id": "609012",
       "name": "609012 - 4-40 Elastic Stopnut",
-      "sku": "609012",
+      "sku": "4889",
       "quantity": 1
     },
     {
@@ -371,31 +371,31 @@
     {
       "id": "212082",
       "name": "212082 - Bushing for PowerAssist",
-      "sku": "212082",
+      "sku": "12396",
       "quantity": 1
     },
     {
       "id": "200052F",
       "name": "200052 - Shoulder Screw",
-      "sku": "200052F",
+      "sku": "4595",
       "quantity": 2
     },
     {
       "id": "219067",
       "name": "Flat Box Box Wheel O-Ring - FFB6A",
-      "sku": "219067",
+      "sku": "4730",
       "quantity": 2
     },
     {
       "id": "202036",
       "name": "202036 - Shoulder Screw",
-      "sku": "202036",
+      "sku": "4603",
       "quantity": 1
     },
     {
       "id": "219095",
       "name": "219095 - Plastic Washer",
-      "sku": "219095",
+      "sku": "12398",
       "quantity": 2
     },
     {
@@ -407,25 +407,25 @@
     {
       "id": "809006",
       "name": "809006 - #14 S Brass Washer",
-      "sku": "809006",
+      "sku": "4684",
       "quantity": 1
     },
     {
       "id": "219092",
       "name": "219092",
-      "sku": "219092",
+      "sku": "12397",
       "quantity": 1
     },
     {
       "id": "219081",
       "name": "219081 - 6-32 Flat Head Screw",
-      "sku": "219081",
+      "sku": "4732",
       "quantity": 4
     },
     {
       "id": "209047",
       "name": "209047",
-      "sku": "209047",
+      "sku": "4713",
       "quantity": 1
     },
     {
@@ -437,7 +437,7 @@
     {
       "id": "209042",
       "name": "209042 - #10 Brass Washer",
-      "sku": "209042",
+      "sku": "4711",
       "quantity": 1
     },
     {
@@ -449,7 +449,7 @@
     {
       "id": "212090",
       "name": "212090 - Power Assist Flat Box Spring",
-      "sku": "212090",
+      "sku": "4726",
       "quantity": 1
     }
   ],
