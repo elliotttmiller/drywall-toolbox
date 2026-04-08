@@ -2218,10 +2218,17 @@ export default function Parts() {
   return (
     <section 
       style={{ 
-        minHeight: '100vh',
+        ...(selectedSchematic ? {
+          height: 'calc(100vh - var(--header-height, 70px))',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        } : {
+          minHeight: '100vh',
+        }),
         backgroundColor: '#f9fafb'
       }} 
-      className={`section-enter page-wrapper ${isFullscreen ? 'fullscreen-mode' : ''}`}
+      className={`section-enter page-wrapper ${selectedSchematic ? 'viewer-active' : ''} ${isFullscreen ? 'fullscreen-mode' : ''}`}
       onClick={closeModal}
     >
       <SEOHead
@@ -2233,11 +2240,12 @@ export default function Parts() {
           { label: 'Schematics', path: '/schematics'  },
         ])}
       />
-      {/* Container wrapper with consistent padding like Products page */}
+      {/* Container wrapper — full-height flex column when viewer is active */}
       <div style={{
-        maxWidth: '1280px',
+        maxWidth: selectedSchematic ? '100%' : '1280px',
         margin: '0 auto',
-        padding: isFullscreen ? '16px' : '2px 16px 24px'
+        padding: selectedSchematic ? '0' : (isFullscreen ? '16px' : '2px 16px 24px'),
+        ...(selectedSchematic ? { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 } : {})
       }}>
       {/* Show BrandSelector if no brand selected */}
       {!selectedBrand ? (
@@ -2284,18 +2292,13 @@ export default function Parts() {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh',
+          flex: 1,
+          minHeight: 0,
           width: '100%',
           overflow: 'hidden',
-          height: '100%'
         }}>
-          {/* Top Back Button - Positioned in top left */}
-          <div style={{
-            padding: 'clamp(12px, 2vw, 20px) clamp(12px, 2vw, 20px) 0 clamp(12px, 2vw, 20px)',
-            flexShrink: 0,
-            position: 'relative',
-            zIndex: 2000
-          }}>
+          {/* ── Compact viewer top bar: back | logo + title | pager ── */}
+          <div className="viewer-top-bar">
             <button
               className="back-button"
               onClick={() => {
@@ -2311,112 +2314,74 @@ export default function Parts() {
               </svg>
               <span>Back</span>
             </button>
-          </div>
 
-          {/* Schematic Container Wrapper - Allows flex growth with responsive sizing */}
-          <div style={{
-            maxWidth: isFullscreen ? '100%' : 'clamp(500px, 75vw, 960px)',
-            margin: '0 auto',
-            padding: isFullscreen ? '0' : 'clamp(12px, 2vw, 20px)',
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            minHeight: 0
-          }}
-          onClick={(e) => e.stopPropagation()}
-          >
-          {/* Brand & Title Header */}
-          <div style={{ 
-            marginBottom: 'clamp(24px, 4vw, 40px)', 
-            textAlign: 'center',
-            flexShrink: 0,
-            padding: 'clamp(12px, 2vw, 20px)'
-          }}>
-            {brandLogos[currentSchematic?.brand] ? (
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+            <div className="viewer-title-group" aria-label={`${currentSchematic?.brand} — ${currentSchematic?.title}`}>
+              {brandLogos[currentSchematic?.brand] && (
                 <img
                   src={brandLogos[currentSchematic.brand]}
                   alt={`${currentSchematic.brand} logo`}
-                  style={{
-                    height: currentSchematic.brand === 'Level5'
-                      ? 'clamp(4rem, 10vw, 7rem)'
-                      : 'clamp(2.5rem, 6vw, 4rem)',
-                    width: 'auto',
-                    objectFit: 'contain'
-                  }}
+                  className={[
+                    'viewer-brand-logo',
+                    currentSchematic.brand === 'Level5' ? 'viewer-brand-logo--level5' : '',
+                    currentSchematic.brand === 'Columbia Taping Tools' ? 'viewer-brand-logo--columbia' : '',
+                  ].filter(Boolean).join(' ')}
                 />
+              )}
+              <h1 className="viewer-tool-title">{currentSchematic?.title}</h1>
+            </div>
+
+            {/* Inline pager for multi-page schematics */}
+            {currentSchematic.diagramPages && currentSchematic.diagramPages.length > 1 && (
+              <div className="viewer-pager schematic-pager" role="group" aria-label="Schematic pages">
+                <button
+                  className={`pager-pill${currentSchematic.diagramPages.indexOf(currentPage) <= 0 ? ' disabled' : ''}`}
+                  onClick={() => {
+                    const pages = currentSchematic.diagramPages;
+                    const idx = pages.indexOf(currentPage);
+                    if (idx > 0) setCurrentPage(pages[idx - 1]);
+                  }}
+                  aria-label="Previous page"
+                  disabled={currentSchematic.diagramPages.indexOf(currentPage) <= 0}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                <div className="pager-counter" aria-live="polite">
+                  {currentSchematic.pageLabels?.[currentPage]
+                    ? `${currentSchematic.pageLabels[currentPage]} (${currentSchematic.diagramPages.indexOf(currentPage) + 1}/${currentSchematic.diagramPages.length})`
+                    : `${currentSchematic.diagramPages.indexOf(currentPage) + 1} / ${currentSchematic.diagramPages.length}`
+                  }
+                </div>
+                <button
+                  className={`pager-pill${currentSchematic.diagramPages.indexOf(currentPage) >= currentSchematic.diagramPages.length - 1 ? ' disabled' : ''}`}
+                  onClick={() => {
+                    const pages = currentSchematic.diagramPages;
+                    const idx = pages.indexOf(currentPage);
+                    if (idx < pages.length - 1) setCurrentPage(pages[idx + 1]);
+                  }}
+                  aria-label="Next page"
+                  disabled={currentSchematic.diagramPages.indexOf(currentPage) >= currentSchematic.diagramPages.length - 1}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
               </div>
-            ) : (
-              <h3 style={{ 
-                fontSize: 'clamp(1rem, 3vw, 1.5rem)', 
-                margin: '0 0 8px 0',
-                letterSpacing: '-0.02em',
-                color: 'var(--text-secondary)',
-                fontWeight: 600
-              }}>
-                {currentSchematic?.brand}
-              </h3>
             )}
-            <h2 style={{ 
-              fontSize: 'clamp(1.5rem, 5vw, 3rem)', 
-              margin: '0',
-              letterSpacing: '-0.02em',
-              textAlign: 'center'
-            }}>
-              {currentSchematic?.title}
-            </h2>
           </div>
 
-          {/* Page selector for multi-page parts diagrams - positioned at top center */}
-          {currentSchematic.diagramPages && currentSchematic.diagramPages.length > 1 && (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            marginBottom: '8px',
-            flexShrink: 0
-          }}>
-                <div className="schematic-pager schematic-pager-top" role="group" aria-label="Schematic pages">
-                  <button
-                    className={`pager-pill ${currentSchematic.diagramPages.indexOf(currentPage) <= 0 ? 'disabled' : ''}`}
-                    onClick={() => {
-                      const pages = currentSchematic.diagramPages;
-                      const idx = pages.indexOf(currentPage);
-                      if (idx > 0) setCurrentPage(pages[idx - 1]);
-                    }}
-                    aria-label="Previous page"
-                    disabled={currentSchematic.diagramPages.indexOf(currentPage) <= 0}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                      <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-
-                  <div className="pager-counter" aria-hidden>
-                    {currentSchematic.pageLabels?.[currentPage]
-                      ? `${currentSchematic.pageLabels[currentPage]} (${currentSchematic.diagramPages.indexOf(currentPage) + 1}/${currentSchematic.diagramPages.length})`
-                      : `${currentSchematic.diagramPages.indexOf(currentPage) + 1} / ${currentSchematic.diagramPages.length}`
-                    }
-                  </div>
-
-                  <button
-                    className={`pager-pill ${currentSchematic.diagramPages.indexOf(currentPage) >= currentSchematic.diagramPages.length - 1 ? 'disabled' : ''}`}
-                    onClick={() => {
-                      const pages = currentSchematic.diagramPages;
-                      const idx = pages.indexOf(currentPage);
-                      if (idx < pages.length - 1) setCurrentPage(pages[idx + 1]);
-                    }}
-                    aria-label="Next page"
-                    disabled={currentSchematic.diagramPages.indexOf(currentPage) >= currentSchematic.diagramPages.length - 1}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                      <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              )}
-
+          {/* ── Schematic body — fills remaining viewport height ── */}
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              overflow: 'hidden',
+              padding: isFullscreen ? '0 6px 6px' : '8px 12px 12px',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div 
               className="schematic-container"
               ref={schematicContainerRef}
@@ -2431,6 +2396,7 @@ export default function Parts() {
                 willChange: scale > 1 ? 'transform' : 'auto',
                 flex: 1,
                 minHeight: 0,
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column'
               }}
