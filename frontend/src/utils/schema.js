@@ -56,7 +56,7 @@ export function buildProductSchema(product, reviews = []) {
     ...(brand     && { brand: { '@type': 'Brand', name: brand } }),
     offers: {
       '@type':            'Offer',
-      url:                product.permalink || `${SITE_URL}/products/${product.id}`,
+      url:                product.permalink || (product.slug ? `${SITE_URL}/products/${product.slug}` : `${SITE_URL}/products/${product.id}`),
       priceCurrency:      'USD',
       price:              salePrice || price,
       ...(price && salePrice && { priceValidUntil: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) }),

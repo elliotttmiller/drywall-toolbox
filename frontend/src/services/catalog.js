@@ -228,10 +228,11 @@ export async function getProductById(idOrSku) {
     }
   }
 
-  // Search cached catalog by ID, SKU, or part_number
+  // Search cached catalog by ID, SKU, slug, or part_number
   const all = await loadCatalog();
   return (
     all.find(p => String(p.id) === key) ||
+    all.find(p => p.slug         === key) ||
     all.find(p => p.sku          === key) ||
     all.find(p => p.part_number  === key) ||
     null

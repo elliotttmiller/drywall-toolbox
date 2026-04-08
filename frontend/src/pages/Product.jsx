@@ -9,7 +9,7 @@ import SEOHead from '../components/SEOHead';
 import { buildProductSchema, buildBreadcrumbSchema, stripHtml } from '../utils/schema';
 
 export default function Product() {
-  const { partNumber, id } = useParams();
+  const { slug, partNumber } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
@@ -27,11 +27,12 @@ export default function Product() {
 
   useEffect(() => {
     let mounted = true;
-    // Support both /product/:partNumber (legacy) and /products/:id (WooCommerce)
-    const key = id || partNumber;
+    // Support both /products/:slug (current) and /product/:partNumber (legacy)
+    const key = slug || partNumber;
 
     const load = async () => {
-      // catalog service handles API-first → CSV-fallback transparently
+      // catalog service handles API-first → CSV-fallback transparently,
+      // and resolves by numeric ID, slug, SKU, or part_number.
       return getProductById(key);
     };
 
@@ -41,7 +42,7 @@ export default function Product() {
       .finally(() => { if (mounted) setLoading(false); });
 
     return () => { mounted = false; };
-  }, [partNumber, id]);
+  }, [slug, partNumber]);
 
   if (loading) {
     return (
@@ -84,10 +85,14 @@ export default function Product() {
     : product.image || '';
 
   const productSchema   = buildProductSchema(product);
+  // Canonical slug for the breadcrumb: prefer WooCommerce slug, then SKU, then
+  // the URL param we resolved with — keeps breadcrumb links consistent with
+  // the canonical URLs emitted by the schema builder and the route definition.
+  const productSlug     = product.slug || product.sku || slug || partNumber || String(product.id);
   const breadcrumbSchema = buildBreadcrumbSchema([
-    { label: 'Home',     path: '/'         },
-    { label: 'Products', path: '/products' },
-    { label: product.name, path: `/products/${product.id || partNumber}` },
+    { label: 'Home',       path: '/'         },
+    { label: 'Products',   path: '/products' },
+    { label: product.name, path: `/products/${productSlug}` },
   ]);
 
   return (
