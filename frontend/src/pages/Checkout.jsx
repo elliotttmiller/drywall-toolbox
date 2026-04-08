@@ -31,6 +31,7 @@ import DOMPurify from 'dompurify';
 import { useCart } from '../context/CartContext';
 import { useVeeqo } from '../context/VeeqoContext';
 import { syncAndPlace } from '../api/cart.js';
+import SEOHead from '../components/SEOHead';
 
 // ─── Payment gateway definitions ──────────────────────────────────────────────
 // IDs must match WC payment gateway slugs enabled in WP Admin →
@@ -43,19 +44,23 @@ const PAYMENT_METHODS = [
 ];
 
 // ─── Framer Motion shared variants ────────────────────────────────────────────
+// will-change is set on the hidden/initial state (before animation starts) and
+// reset to 'auto' on the final visible state so the compositor layer is released
+// once animation completes — avoids permanent memory/paint cost.
 const cardVariants = {
-  hidden:  { opacity: 0, y: 18 },
+  hidden:  { opacity: 0, y: 18, willChange: 'transform, opacity' },
   visible: (delay) => ({
     opacity: 1,
     y: 0,
+    willChange: 'auto',
     transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: delay ?? 0 },
   }),
 };
 
 const panelVariants = {
-  initial: { opacity: 0, height: 0 },
-  animate: { opacity: 1, height: 'auto', transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
-  exit:    { opacity: 0, height: 0,      transition: { duration: 0.2,  ease: 'easeIn' } },
+  initial: { opacity: 0, height: 0, willChange: 'transform, opacity' },
+  animate: { opacity: 1, height: 'auto', willChange: 'auto', transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
+  exit:    { opacity: 0, height: 0,      willChange: 'auto', transition: { duration: 0.2,  ease: 'easeIn' } },
 };
 
 // ─── BreathingLoader ──────────────────────────────────────────────────────────
@@ -628,6 +633,7 @@ export default function Checkout() {
   // ── Checkout form ─────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50/60 pb-28 md:pb-12 page-wrapper">
+      <SEOHead noindex title="Checkout" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
 
         {/* Page heading */}

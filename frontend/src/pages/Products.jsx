@@ -25,6 +25,8 @@ import gracoLogo from '/brands/Graco/graco_logo.svg';
 import level5Logo from '/brands/Level5/Level5.svg';
 import platinumLogo from '/brands/Platinum/platinum_logo.svg';
 import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
+import SEOHead from '../components/SEOHead';
+import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
 
 // products will be loaded from CSV at runtime
 // brands list will be derived from loaded products
@@ -309,6 +311,12 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
+      <SEOHead
+        title="Products"
+        description="Shop professional drywall tools from TapeTech, Level5, Columbia, Asgard, Graco, SurPro and more. Automatic taping tools, finishing tools, mud boxes, and replacement parts."
+        canonical="https://drywalltoolbox.com/products"
+        schema={buildSiteLinksSearchBoxSchema()}
+      />
       <div className="container mx-auto px-4 py-4 pt-6">
         {/* Back to Brands button - shows when brand is selected (moved above header) */}
         {selectedBrands.length > 0 && (

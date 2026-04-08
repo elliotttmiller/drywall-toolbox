@@ -24,6 +24,7 @@
  *   dtb-woocommerce.php    — WC configuration and webhook auto-creation
  *   dtb-schematics-api.php — schematics media REST route
  *   dtb-coming-soon.php    — e-mail subscriber handler
+ *   dtb-seo.php            — WooCommerce product SEO meta fields + REST exposure
  *   dtb-config-reference.php — comment-only constant reference (no exec code)
  *
  * @package drywall-toolbox
@@ -95,6 +96,7 @@ require_once $_dtb_dir . '/dtb-image-sync.php';    // media-library sync for upl
 require_once $_dtb_dir . '/dtb-woocommerce.php';
 require_once $_dtb_dir . '/dtb-schematics-api.php';
 require_once $_dtb_dir . '/dtb-coming-soon.php';
+require_once $_dtb_dir . '/dtb-seo.php';           // WooCommerce product SEO meta fields
 require_once $_dtb_dir . '/dtb-config-reference.php';
 
 unset( $_dtb_dir );

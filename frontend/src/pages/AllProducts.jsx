@@ -18,6 +18,8 @@ import {
   SlidersHorizontal,
   Heart
 } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
+import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
 
 // products will be loaded from CSV at runtime
 const categories = [
@@ -223,6 +225,12 @@ export default function AllProducts() {
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
+      <SEOHead
+        title="All Products"
+        description="Browse our complete collection of professional drywall tools and equipment from top brands including TapeTech, Level5, Columbia, Asgard, and more."
+        canonical="https://drywalltoolbox.com/all-products"
+        schema={buildSiteLinksSearchBoxSchema()}
+      />
       <div className="container mx-auto px-4 py-8 pt-12">
         {/* Header */}
         <div className="mb-8">

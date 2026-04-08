@@ -27,6 +27,9 @@
  *   alt       {string}   — alt text
  *   padding   {string}   — inner padding on the img (default "8px")
  *   className {string}   — extra classes forwarded to the <img>
+ *   width     {number}   — intrinsic width for CLS prevention (default 400)
+ *   height    {number}   — intrinsic height for CLS prevention (default 400)
+ *   eager     {boolean}  — loading="eager" + fetchpriority="high" for hero/LCP images
  */
 import { useState } from 'react';
 
@@ -40,6 +43,9 @@ export default function ProductCardImage({
   alt = '',
   padding = '8px',
   className = '',
+  width = 400,
+  height = 400,
+  eager = false,
 }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
@@ -77,7 +83,10 @@ export default function ProductCardImage({
       <img
         src={effectiveSrc}
         alt={alt}
-        loading="lazy"
+        width={width}
+        height={height}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
         decoding="async"
         className={className}
         style={{

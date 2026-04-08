@@ -8,6 +8,8 @@ import { getProductBySku } from '../api/products';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import { useSchematicMedia } from '../hooks/useSchematicMedia';
 import '../styles/mobile-schematic.css';
+import SEOHead from '../components/SEOHead';
+import { buildBreadcrumbSchema } from '../utils/schema';
 
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
@@ -2222,6 +2224,15 @@ export default function Parts() {
       className={`section-enter page-wrapper ${isFullscreen ? 'fullscreen-mode' : ''}`}
       onClick={closeModal}
     >
+      <SEOHead
+        title="Tool Schematics &amp; Diagrams"
+        description="Interactive exploded-view schematics and part diagrams for professional drywall finishing tools. Find replacement parts for TapeTech, Columbia, Asgard, Level5, and more."
+        canonical="https://drywalltoolbox.com/schematics"
+        schema={buildBreadcrumbSchema([
+          { label: 'Home',       path: '/'            },
+          { label: 'Schematics', path: '/schematics'  },
+        ])}
+      />
       {/* Container wrapper with consistent padding like Products page */}
       <div style={{
         maxWidth: '1280px',

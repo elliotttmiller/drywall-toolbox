@@ -11,6 +11,7 @@ import {
   Database,
   AlertCircle
 } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 
 export default function VeeqoSettings() {
   const { 
@@ -76,6 +77,7 @@ export default function VeeqoSettings() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 page-wrapper">
+      <SEOHead noindex title="Veeqo Integration Settings" />
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="mb-8">

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Columbia product catalog – every tool in the schematics directory
@@ -245,6 +246,11 @@ export default function Repairs() {
      ────────────────────────────────────────────────────────────────────── */
   return (
     <div style={{ minHeight: '100vh' }} className="section-enter page-wrapper">
+      <SEOHead
+        title="Tool Repair Services"
+        description="Professional drywall tool repair services and guides. Find repair solutions for TapeTech, Columbia, Asgard, Level5, and Graco drywall finishing tools."
+        canonical="https://drywalltoolbox.com/repairs"
+      />
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section style={{

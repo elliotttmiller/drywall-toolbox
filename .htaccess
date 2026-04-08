@@ -238,8 +238,28 @@ Options +FollowSymLinks
 
     # ── WordPress XML feeds & sitemap ────────────────────────────────
     RewriteRule ^feed(/.*)?$       wp/index.php  [L,QSA]
-    RewriteRule ^sitemap\.xml$     wp/sitemap.xml  [L,QSA]
     RewriteRule ^xmlrpc\.php$      wp/xmlrpc.php  [L]
+
+    # ── Sitemap & robots.txt — delegate to WordPress ─────────────────
+    # Redirect /sitemap.xml and /sitemap_index.xml to WP's native sitemap (301).
+    # WordPress generates the sitemap at /wp/wp-sitemap.xml by default.
+    RewriteRule ^sitemap\.xml$          /wp/wp-sitemap.xml  [R=301,L]
+    RewriteRule ^sitemap_index\.xml$    /wp/wp-sitemap.xml  [R=301,L]
+    # Redirect /robots.txt to WordPress's dynamically generated robots.txt.
+    RewriteRule ^robots\.txt$           /wp/robots.txt      [R=301,L]
+
+    # ──────────────────────────────────────────────────────────────────
+    # ── Prerender.io bot-detection (COMMENTED — enable once token set) ─
+    #
+    # Prerequisites:
+    #   1. Sign up at https://prerender.io and obtain your token.
+    #   2. Set PRERENDER_TOKEN to your token in the rule below.
+    #   3. Uncomment the entire block.
+    #   4. Deploy. Prerender will cache and serve pre-rendered HTML to bots.
+    #
+    # RewriteCond %{HTTP_USER_AGENT} (googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora\ link\ preview|showyoubot|outbrain|pinterest\/0\.|developers\.google\.com\/\+\/web\/snippet|slackbot|vkShare|W3C_Validator|redditbot|Applebot|WhatsApp|flipboard|tumblr|bitlybot|SkypeUriPreview|nuzzel|Discordbot|Google\ Page\ Speed|Qwantify|pinterestbot|Telegrambot) [NC]
+    # RewriteCond %{REQUEST_URI} !\.(js|css|xml|less|png|jpg|jpeg|gif|pdf|doc|txt|ico|rss|zip|mp3|rar|exe|wmv|avi|flv|ppt|ttf|ico|dwg|woff|woff2|svg|webp)$ [NC]
+    # RewriteRule .* https://service.prerender.io/https://drywalltoolbox.com%{REQUEST_URI} [P,L]
 
     # ── Static files — served directly, NO rewrite ───────────────────
     # If file exists in filesystem, serve it as-is (don't rewrite)
@@ -262,6 +282,19 @@ Options +FollowSymLinks
     RewriteCond %{REQUEST_URI} !^/dtb/
     RewriteCond %{QUERY_STRING} !rest_route=
     RewriteRule ^ /index.html  [QSA,L]
+</IfModule>
+
+# ─── Cache-Control Headers ────────────────────────────────────────────────────
+# HTML (SPA shell): short TTL — must revalidate on every load so stale shells
+# never reference missing content-hashed chunks.
+# Hashed JS/CSS assets: immutable long TTL — safe because filename = content hash.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+    <FilesMatch "\.[0-9a-f]{8,}\.(js|css)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
 </IfModule>
 
 # ─── Error Documents ──────────────────────────────────────────────────────────

@@ -92,6 +92,11 @@ export default function ProductImageGallery({ product }) {
           key={src}
           src={src}
           alt={`${product?.name || 'Product'} — Image ${currentIndex + 1}`}
+          width={product?.images?.[currentIndex]?.width  || 800}
+          height={product?.images?.[currentIndex]?.height || 800}
+          loading={currentIndex === 0 ? 'eager' : 'lazy'}
+          fetchpriority={currentIndex === 0 ? 'high' : 'auto'}
+          decoding="async"
           className={`absolute inset-0 w-full h-full object-contain p-2 sm:p-3 transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setLoaded(true)}
           onError={(e) => {
@@ -153,6 +158,10 @@ export default function ProductImageGallery({ product }) {
               <img
                 src={img}
                 alt={`Thumbnail ${i + 1}`}
+                width={64}
+                height={64}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-contain bg-white p-1"
                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/no-image-placeholder.webp'; }}
               />

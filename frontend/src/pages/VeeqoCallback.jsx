@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useVeeqo } from '../context/VeeqoContext';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 
 export default function VeeqoCallback() {
   const [searchParams] = useSearchParams();
@@ -46,6 +47,7 @@ export default function VeeqoCallback() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 page-wrapper">
+      <SEOHead noindex title="Veeqo Authorization" />
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
         {status === 'processing' && (
           <>

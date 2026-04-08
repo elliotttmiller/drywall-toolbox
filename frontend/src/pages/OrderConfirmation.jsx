@@ -23,6 +23,7 @@ import {
   Loader,
   ArrowLeft,
 } from 'lucide-react';
+import SEOHead from '../components/SEOHead';
 
 // ─── Status badge helpers ──────────────────────────────────────────────────────
 
@@ -140,6 +141,7 @@ export default function OrderConfirmation() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 page-wrapper">
+      <SEOHead noindex title={`Order #${id}`} />
       <div className="container mx-auto px-4 max-w-3xl">
         {/* Header */}
         <div className="mb-8 text-center">

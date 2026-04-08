@@ -4,6 +4,8 @@ import { getProductsByCategory } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
 import Toast from '../components/Toast';
+import SEOHead from '../components/SEOHead';
+import { buildBreadcrumbSchema } from '../utils/schema';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -46,6 +48,7 @@ export default function CategoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
+        <SEOHead noindex title="Loading category…" />
         <div className="text-center text-gray-400">Loading category…</div>
       </div>
     );
@@ -54,14 +57,28 @@ export default function CategoryPage() {
   if (error) {
     return (
       <div className="min-h-screen container mx-auto px-4 py-16 text-center">
+        <SEOHead noindex title="Category not found" />
         <p className="text-red-500 mb-4">{error}</p>
         <Link to="/products" className="text-primary-600 underline">Browse all products</Link>
       </div>
     );
   }
 
+  const categoryName = category?.name || slug;
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { label: 'Home',      path: '/'                    },
+    { label: 'Products',  path: '/products'             },
+    { label: categoryName, path: `/category/${slug}`   },
+  ]);
+
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
+      <SEOHead
+        title={categoryName}
+        description={`Shop ${categoryName} drywall tools and equipment. Professional-grade products from top brands at unbeatable prices.`}
+        canonical={`https://drywalltoolbox.com/category/${slug}`}
+        schema={breadcrumbSchema}
+      />
       <div className="container mx-auto px-4 py-12">
         {category && (
           <h1 className="text-3xl font-bold mb-8 text-gray-900">{category.name}</h1>

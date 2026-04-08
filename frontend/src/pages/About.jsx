@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import SEOHead from '../components/SEOHead';
 
 export default function About() {
   const navigate = useNavigate();
@@ -71,6 +72,11 @@ export default function About() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc' }} className="page-wrapper">
+      <SEOHead
+        title="About Us"
+        description="Learn about Drywall Toolbox — the top trusted one-stop shop for professional drywall tools. Quality-first sourcing, expert team, and lightning-fast shipping."
+        canonical="https://drywalltoolbox.com/about"
+      />
 
       {/* Hero */}
       <section style={{

@@ -27,6 +27,8 @@ import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProductCardImage from '../components/ProductCardImage';
+import SEOHead from '../components/SEOHead';
+import { buildBreadcrumbSchema } from '../utils/schema';
 
 // Brands that carry repair-kit / parts items in the catalog
 const PARTS_BRANDS = [
@@ -184,6 +186,15 @@ export default function Parts() {
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
+      <SEOHead
+        title="Replacement Parts"
+        description="Genuine repair kits, replacement parts, and accessories for professional drywall finishing tools. Shop TapeTech, Columbia, Asgard, Level5, and Graco parts."
+        canonical="https://drywalltoolbox.com/parts"
+        schema={buildBreadcrumbSchema([
+          { label: 'Home',  path: '/'      },
+          { label: 'Parts', path: '/parts' },
+        ])}
+      />
       <div className="container mx-auto px-4 py-8 pt-12">
 
         {/* ── Page header ──────────────────────────────────────────────────── */}

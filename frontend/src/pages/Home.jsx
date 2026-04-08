@@ -7,6 +7,8 @@ import asgardLogo from '/brands/Asgard/asgard_logo.svg';
 import gracoLogo from '/brands/Graco/graco_logo.svg';
 import platinumLogo from '/brands/Platinum/platinum_logo.svg';
 import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
+import SEOHead from '../components/SEOHead';
+import { buildOrganizationSchema, buildSiteLinksSearchBoxSchema } from '../utils/schema';
 
 const trustBadges = [
   {
@@ -51,6 +53,12 @@ const brandLogos = [
 export default function Home() {
   return (
     <>
+      <SEOHead
+        title="Professional Drywall Tools &amp; Equipment"
+        description="Top trusted one-stop shop for professional drywall tools. Get production-grade tools and parts at unbeatable prices with lightning-fast shipping."
+        canonical="https://drywalltoolbox.com/"
+        schema={[buildOrganizationSchema(), buildSiteLinksSearchBoxSchema()]}
+      />
       <div style={{ background: 'white' }} className="page-wrapper">
       {/* ─── HERO ─── */}
       <section
