@@ -606,6 +606,7 @@
 
 @media (max-width: 480px) {
   .schematic-zoom-controls {
+    top: auto;
     bottom: max(16px, env(safe-area-inset-bottom, 16px));
     gap: 8px;
     padding: 10px 12px;
@@ -791,53 +792,63 @@
 /* =============================================
    VIEWER TOP BAR
    Compact single-row bar: back button | brand logo + tool title | pager
-   Replaces the large centered brand/title header for both mobile and desktop.
+   Title group is absolutely centered so it stays visually centered even
+   when the back button and pager are different widths.
    ============================================= */
 .viewer-top-bar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
-  background: rgba(249, 250, 251, 0.98);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
   z-index: 100;
-  min-height: 52px;
-  overflow: hidden;
+  min-height: 56px;
+  overflow: visible;
 }
 
+/* Title group: absolutely centered in the bar so it is always viewport-centered
+   regardless of how wide the back button or pager are.
+   pointer-events: none so this layer never intercepts clicks destined for the
+   back button or pager behind it — children are display-only. */
 .viewer-title-group {
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: clamp(6px, 1.5vw, 10px);
-  overflow: hidden;
-  min-width: 0;
+  /* Constrain width so it never overlaps the edges */
+  max-width: calc(100% - 200px);
+  pointer-events: none;
 }
 
 .viewer-brand-logo {
-  height: clamp(20px, 3vw, 32px);
+  height: clamp(22px, 3.2vw, 34px);
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
-  max-width: clamp(80px, 12vw, 130px);
+  max-width: clamp(90px, 14vw, 140px);
 }
 
 /* Level5 logo is wider — allow more horizontal room */
 .viewer-brand-logo--level5 {
-  height: clamp(24px, 3.5vw, 36px);
-  max-width: clamp(100px, 15vw, 160px);
+  height: clamp(26px, 3.8vw, 38px);
+  max-width: clamp(110px, 16vw, 170px);
 }
 
 /* Columbia logo needs more room too */
 .viewer-brand-logo--columbia {
-  height: clamp(22px, 3.2vw, 34px);
-  max-width: clamp(90px, 14vw, 150px);
+  height: clamp(24px, 3.5vw, 36px);
+  max-width: clamp(100px, 15vw, 160px);
 }
 
 .viewer-tool-title {
-  font-size: clamp(0.82rem, 1.6vw, 1.05rem);
+  font-size: clamp(0.88rem, 1.8vw, 1.1rem);
   font-weight: 700;
   color: var(--text-primary, #0f172a);
   margin: 0;
@@ -846,6 +857,7 @@
   text-overflow: ellipsis;
   letter-spacing: -0.01em;
   line-height: 1.3;
+  /* Allow flex item to shrink below content size so text-overflow ellipsis works */
   min-width: 0;
 }
 
@@ -857,6 +869,7 @@
   flex-shrink: 0;
   background: transparent;
   padding: 0;
+  margin-left: auto;
 }
 
 /* On very small phones, hide the brand logo to save space */
@@ -864,18 +877,41 @@
   .viewer-brand-logo {
     display: none;
   }
+  .viewer-title-group {
+    max-width: calc(100% - 140px);
+  }
 }
 
-/* Mobile: tighter padding */
+/* Mobile: tighter padding, larger title for legibility */
 @media (max-width: 480px) {
   .viewer-top-bar {
-    padding: 6px 8px;
-    min-height: 46px;
+    padding: 6px 10px;
+    min-height: 52px;
+    gap: 6px;
+  }
+
+  .viewer-title-group {
+    max-width: calc(100% - 160px);
     gap: 6px;
   }
 
   .viewer-tool-title {
-    font-size: 0.8rem;
+    font-size: 0.88rem;
+  }
+}
+
+/* Tablet portrait */
+@media (min-width: 481px) and (max-width: 768px) {
+  .viewer-top-bar {
+    min-height: 54px;
+  }
+
+  .viewer-title-group {
+    max-width: calc(100% - 200px);
+  }
+
+  .viewer-tool-title {
+    font-size: 0.95rem;
   }
 }
 
@@ -883,42 +919,49 @@
 @media (min-width: 769px) {
   .viewer-top-bar {
     padding: 10px 16px;
-    min-height: 56px;
+    min-height: 58px;
     gap: 12px;
   }
 
+  .viewer-title-group {
+    max-width: calc(100% - 240px);
+  }
+
   .viewer-tool-title {
-    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    font-size: clamp(0.95rem, 1.25vw, 1.15rem);
   }
 }
 
-/* Back button inside the viewer-top-bar: compact, no heavy shadow */
+/* Back button inside the viewer-top-bar: compact, clearly tappable */
 .viewer-top-bar .back-button {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 10px;
+  gap: 5px;
+  padding: 7px 12px 7px 8px;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.06);
-  border: none;
+  background: rgba(15, 23, 42, 0.07);
+  border: 1px solid rgba(15, 23, 42, 0.10);
   cursor: pointer;
   color: var(--text-primary, #0f172a);
-  font-size: clamp(0.78rem, 1.4vw, 0.9rem);
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
   font-weight: 600;
-  min-height: 36px;
-  transition: background 150ms ease;
+  min-height: 38px;
+  min-width: 0;
+  transition: background 150ms ease, border-color 150ms ease;
   white-space: nowrap;
+  z-index: 1;
 }
 
 .viewer-top-bar .back-button:hover {
-  background: rgba(15, 23, 42, 0.10);
+  background: rgba(15, 23, 42, 0.11);
+  border-color: rgba(15, 23, 42, 0.16);
   transform: none;
   box-shadow: none;
 }
 
 .viewer-top-bar .back-button:active {
-  background: rgba(15, 23, 42, 0.14);
+  background: rgba(15, 23, 42, 0.16);
 }
 
 .viewer-top-bar .back-button svg {
@@ -929,15 +972,15 @@
 
 @media (max-width: 480px) {
   .viewer-top-bar .back-button {
-    padding: 6px 8px;
-    min-height: 34px;
-    font-size: 0.78rem;
+    padding: 6px 10px 6px 7px;
+    min-height: 38px;
+    font-size: 0.82rem;
     gap: 4px;
   }
 
   .viewer-top-bar .back-button svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
   }
 }
 
