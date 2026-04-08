@@ -12,7 +12,9 @@
  * `AnimatePresence mode="wait"` ensures the outgoing page fully exits before
  * the incoming page starts entering, preventing overlapping content flashes.
  * The `locationKey` prop is used as the React key on the animated wrapper so
- * a new animation plays on every navigation.
+ * a new animation plays on every pathname change. Using `location.pathname`
+ * (not `location.key`) prevents in-page `navigate({replace:true})` calls
+ * (e.g. syncing query params) from re-triggering the transition.
  */
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 

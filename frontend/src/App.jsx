@@ -84,7 +84,7 @@ function ScrollToTop() {
 function AppRoutes() {
   const location = useLocation();
   return (
-    <PageTransition locationKey={ location.key }>
+    <PageTransition locationKey={ location.pathname }>
       <Suspense fallback={ <PageLoader /> }>
         <Routes>
           <Route path="/"                      element={<Home />} />
