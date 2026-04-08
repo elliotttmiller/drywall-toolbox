@@ -523,7 +523,7 @@ function dtb_app_password_rate_limit(): ?WP_REST_Response {
 
 /** GET /drywall/v1/products */
 function dtb_proxy_products( WP_REST_Request $request ): WP_REST_Response {
-	$allowed = [ 'page', 'per_page', 'category', 'search', 'orderby', 'order', 'min_price', 'max_price', 'stock_status' ];
+	$allowed = [ 'page', 'per_page', 'category', 'search', 'orderby', 'order', 'min_price', 'max_price', 'stock_status', 'sku' ];
 	$params  = [];
 	foreach ( $allowed as $k ) {
 		$v = $request->get_param( $k );

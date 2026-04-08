@@ -8,7 +8,7 @@
  * (getProductBySku, getProductCategories, etc.).
  */
 
-import { apiClient, wcClient, credentialsReady } from './client.js';
+import { apiClient, wcClient } from './client.js';
 
 // ─── drywall/v1 proxy helpers ─────────────────────────────────────────────────
 
@@ -136,16 +136,18 @@ export async function getProductCategories( params = {} ) {
 /**
  * Fetch a single product by SKU (used by Schematics.jsx hotspot lookup).
  *
+ * Routes through the drywall/v1 server-side proxy so no client-side WC
+ * credentials are required and CORS is handled server-side.
+ *
  * @param {string} sku
  * @returns {Promise<Object|null>}
  */
 export async function getProductBySku( sku ) {
   if ( ! sku ) return null;
   try {
-    await credentialsReady();
-    const response = await wcClient.get( '/products', { params: { sku, per_page: 1 } } );
-    const products = response.data;
-    return Array.isArray( products ) && products.length > 0 ? products[ 0 ] : null;
+    const result = await fetchProducts( { sku, per_page: 1 } );
+    const products = Array.isArray( result ) ? result : result?.products ?? [];
+    return products.length > 0 ? products[ 0 ] : null;
   } catch {
     return null;
   }
