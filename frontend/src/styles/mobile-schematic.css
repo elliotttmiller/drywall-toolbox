@@ -897,7 +897,7 @@
     display: none;
   }
   .viewer-title-group {
-    max-width: calc(100% - 140px);
+    max-width: calc(100% - 80px);
   }
 }
 
@@ -910,7 +910,7 @@
   }
 
   .viewer-title-group {
-    max-width: calc(100% - 160px);
+    max-width: calc(100% - 90px);
     gap: 6px;
   }
 
@@ -934,26 +934,17 @@
   }
 }
 
-/* Multi-page pager on mobile: break onto its own centered row beneath the title.
-   The back button and absolutely-centered title stay in row 1; the pager gets
-   full width in row 2 so it never truncates the tool name. */
+/* Mobile: pager is replaced by the page-tab strip below the bar,
+   so the top bar stays a single row and the title can use most of the width. */
 @media (max-width: 768px) {
-  .viewer-top-bar {
-    flex-wrap: wrap;
-  }
-
-  /* Pager wraps to a full-width strip and centers itself */
+  /* Inline pager hidden on mobile — page-tab strip takes its place */
   .viewer-pager {
-    flex: 0 0 100%;
-    justify-content: center;
-    margin-left: 0;
-    padding: 2px 0 8px;
+    display: none;
   }
 
-  /* Title group no longer has to share row 1 with the pager — allow it
-     to stretch closer to the back button without being clipped */
+  /* Title can now span almost the full width minus the back button */
   .viewer-title-group {
-    max-width: calc(100% - 110px);
+    max-width: calc(100% - 100px);
   }
 }
 
@@ -1376,4 +1367,68 @@
 .nav-hotspot-label svg {
   flex-shrink: 0;
   stroke: #fff;
+}
+
+/* =============================================
+   MOBILE PAGE-TAB STRIP
+   Horizontal scrollable row of labelled page
+   tabs shown below the viewer top bar on mobile.
+   Replaces the inline prev/next pager on small
+   screens for a clearer, more tappable UX.
+   ============================================= */
+
+/* Hidden by default (desktop uses the inline pager) */
+.viewer-page-tabs {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .viewer-page-tabs {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 7px 12px 9px;
+    background: #ffffff;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    flex-shrink: 0;
+    /* Hide scrollbar while keeping scroll functionality */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .viewer-page-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page-tab {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 16px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(15, 23, 42, 0.14);
+    background: transparent;
+    color: rgba(15, 23, 42, 0.65);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 34px;
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .page-tab.active {
+    background: var(--primary-600, #2563eb);
+    color: #ffffff;
+    border-color: var(--primary-600, #2563eb);
+  }
+
+  .page-tab:active:not(.active) {
+    background: rgba(37, 99, 235, 0.10);
+    border-color: rgba(37, 99, 235, 0.30);
+    color: rgba(15, 23, 42, 0.85);
+  }
 }
