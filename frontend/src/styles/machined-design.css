@@ -1789,15 +1789,18 @@ aside input[type="range"],
 .prose table {
     width: 100%;
     table-layout: auto;
+    border-collapse: collapse;
     margin-top: 2em;
     margin-bottom: 2em;
     font-size: 0.875em;
     line-height: 1.7142857;
+    border: 1px solid var(--tw-prose-td-borders);
+    border-radius: 0.5rem;
+    overflow: hidden;
 }
 
 .prose thead {
-    border-bottom-width: 1px;
-    border-bottom-color: var(--tw-prose-th-borders);
+    border-bottom: 1px solid var(--tw-prose-th-borders);
     background-color: #f9fafb;
 }
 
@@ -1810,8 +1813,7 @@ aside input[type="range"],
 
 .prose td {
     padding: 0.75em;
-    border-bottom-width: 1px;
-    border-bottom-color: var(--tw-prose-td-borders);
+    border-bottom: 1px solid var(--tw-prose-td-borders);
     color: #6b7280;
 }
 
