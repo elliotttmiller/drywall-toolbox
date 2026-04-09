@@ -76,7 +76,9 @@ function dtb_veeqo_request( string $method, string $path, array $params = [], ar
 
 	$url = DTB_VEEQO_API_BASE . $path;
 	if ( ! empty( $params ) ) {
-		$url = add_query_arg( array_map( 'rawurlencode', $params ), $url );
+		// add_query_arg already URL-encodes values — pre-encoding would cause
+		// double-encoding (e.g. a space becomes %2520 instead of %20).
+		$url = add_query_arg( $params, $url );
 	}
 
 	$args = [
@@ -399,9 +401,10 @@ function dtb_veeqo_route_inventory( WP_REST_Request $request ): WP_REST_Response
 	$page     = max( 1, (int) ( $request->get_param( 'page' )     ?? 1 ) );
 	$per_page = min( 100, max( 1, (int) ( $request->get_param( 'per_page' ) ?? 100 ) ) );
 
+	// Veeqo pagination parameters are page_number (1-indexed) and page_size (max 100).
 	$result = dtb_veeqo_request( 'GET', '/products', [
-		'page'     => (string) $page,
-		'per_page' => (string) $per_page,
+		'page_number' => (string) $page,
+		'page_size'   => (string) $per_page,
 	] );
 
 	if ( ! $result['ok'] ) {
@@ -586,6 +589,15 @@ function dtb_veeqo_route_webhook_order( WP_REST_Request $request ): WP_REST_Resp
  */
 add_action( 'woocommerce_checkout_order_processed', 'dtb_veeqo_sync_new_order', 20, 3 );
 
+/**
+ * WooCommerce Store API checkout (used by the React headless frontend via
+ * /wc/store/v1/checkout).  The classic 'woocommerce_checkout_order_processed'
+ * hook does NOT fire for Store API orders, so we bind a separate listener.
+ */
+add_action( 'woocommerce_store_api_checkout_order_processed', function ( WC_Order $order ): void {
+	dtb_veeqo_sync_new_order( $order->get_id(), [], $order );
+}, 20 );
+
 function dtb_veeqo_sync_new_order( int $order_id, array $posted_data, WC_Order $order ): void {
 	if ( ! dtb_veeqo_enabled() ) {
 		return;
@@ -707,6 +719,7 @@ function dtb_veeqo_build_order_payload( WC_Order $order ): ?array {
 	return [
 		'channel_id'           => $cfg['channel_id'] ?: null,
 		'channel_order_number' => ltrim( $order->get_order_number(), '#' ),
+		'warehouse_id'         => $cfg['warehouse_id'] ?: null,
 		'customer' => [
 			'email'      => $order->get_billing_email(),
 			'first_name' => $billing['first_name'],

@@ -286,50 +286,53 @@ class VeeqoService {
   }
 
   /**
-   * Check inventory availability for cart items
+   * Check inventory availability for cart items via the server-side proxy.
+   *
+   * Routes through GET /wp-json/dtb/v1/veeqo/inventory (JWT-authenticated).
+   * Falls back to available=true on any error so checkout is never blocked by
+   * a Veeqo API outage — WooCommerce enforces stock limits server-side anyway.
+   *
+   * @param {Array<{ id: number, name: string, quantity: number }>} cartItems
+   * @returns {Promise<{ available: boolean, items: Array, outOfStock: Array }>}
    */
-  async checkInventoryAvailability(cartItems) {
-    if (!this.isEnabled()) {
-      return { available: true, items: [] };
-    }
-
+  async checkInventoryAvailability( cartItems ) {
     try {
-      const inventoryChecks = await Promise.all(
-        cartItems.map(async (item) => {
-          try {
-            const inventory = await this.getInventory(item.id);
-            const totalAvailable = inventory.reduce((sum, loc) => sum + (loc.available || 0), 0);
-            
-            return {
-              productId: item.id,
-              productName: item.name,
-              requested: item.quantity,
-              available: totalAvailable,
-              inStock: totalAvailable >= item.quantity
-            };
-          } catch (error) {
-            console.warn(`Could not check inventory for ${item.name}:`, error);
-            return {
-              productId: item.id,
-              productName: item.name,
-              requested: item.quantity,
-              available: null,
-              inStock: true // Assume in stock if check fails
-            };
-          }
-        })
-      );
+      const url = `${ DTB_PROXY_BASE }/veeqo/inventory`;
+      const res = await fetch( url, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      } );
 
-      const outOfStock = inventoryChecks.filter(check => !check.inStock);
-      
-      return {
-        available: outOfStock.length === 0,
-        items: inventoryChecks,
-        outOfStock
-      };
-    } catch (error) {
-      console.error('Failed to check inventory availability:', error);
-      // Return available=true to not block checkout if Veeqo is down
+      if ( !res.ok ) {
+        // Non-fatal: WooCommerce enforces stock on the server.
+        return { available: true, items: [], error: `HTTP ${ res.status }` };
+      }
+
+      const data = await res.json();
+      const inventory = data.inventory || [];
+
+      // Build a sku→available map from the server response.
+      const stockBySku = {};
+      for ( const entry of inventory ) {
+        if ( entry.sku ) stockBySku[ entry.sku ] = entry.available ?? 0;
+      }
+
+      const checks = cartItems.map( ( item ) => {
+        const available = stockBySku[ item.sku ] ?? null;
+        return {
+          productId:   item.id,
+          productName: item.name,
+          sku:         item.sku || '',
+          requested:   item.quantity,
+          available,
+          inStock:     available === null || available >= item.quantity,
+        };
+      } );
+
+      const outOfStock = checks.filter( ( c ) => !c.inStock );
+      return { available: outOfStock.length === 0, items: checks, outOfStock };
+    } catch ( error ) {
+      console.warn( 'Inventory check failed (non-fatal):', error.message );
       return { available: true, items: [], error: error.message };
     }
   }

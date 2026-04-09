@@ -166,7 +166,39 @@ export async function removeCoupon( code ) {
   } );
 }
 
-// ─── Checkout helpers ─────────────────────────────────────────────────────────
+/**
+ * Update the WooCommerce cart customer (billing/shipping address).
+ * Call this after syncing items to the WC cart and before selecting a
+ * shipping rate so the cart knows which shipping zone applies.
+ *
+ * @param {Object} customerData  Partial customer object accepted by the Store API.
+ * @returns {Promise<Object>}    Updated WooCommerce cart object.
+ */
+export async function updateCartCustomer( customerData ) {
+  return storeFetch( '/cart/update-customer', {
+    method: 'POST',
+    body: JSON.stringify( customerData ),
+  } );
+}
+
+/**
+ * Select a WooCommerce shipping rate for a specific package.
+ *
+ * The rate_id must match a rate registered by a WC shipping method, e.g.
+ * 'dtb_veeqo_rates:standard' for the standard tier of DTB_Veeqo_Shipping_Method.
+ *
+ * @param {string} rateId    WC shipping rate ID (method:key format).
+ * @param {number} packageId Package index (default: 0 — the default cart package).
+ * @returns {Promise<Object>}
+ */
+export async function selectShippingRate( rateId, packageId = 0 ) {
+  return storeFetch( '/cart/select-shipping-rate', {
+    method: 'POST',
+    body: JSON.stringify( { rate_id: rateId, package_id: packageId } ),
+  } );
+}
+
+
 
 /**
  * Remove all items currently in the WooCommerce server-side cart.
@@ -230,10 +262,12 @@ export async function placeOrder(
  * submit the Store API checkout in one atomic operation.
  *
  * Steps:
- *   1. initCart()        — obtain a fresh Store API nonce
- *   2. clearStoreCart()  — remove any stale server-side items from previous sessions
- *   3. addToCart()       — add each item from cartItems sequentially
- *   4. placeOrder()      — POST /wc/store/v1/checkout
+ *   1. initCart()              — obtain a fresh Store API nonce
+ *   2. clearStoreCart()        — remove any stale server-side items from previous sessions
+ *   3. addToCart()             — add each item from cartItems sequentially
+ *   4. updateCartCustomer()    — set the shipping address so WC knows the correct zone
+ *   5. selectShippingRate()    — select the rate the user chose (when shippingRateId provided)
+ *   6. placeOrder()            — POST /wc/store/v1/checkout
  *
  * @param {Array}  cartItems       Items from CartContext (id, quantity required)
  * @param {Object} billingAddress
@@ -241,6 +275,8 @@ export async function placeOrder(
  * @param {string} paymentMethod
  * @param {Array}  paymentData
  * @param {string} customerNote
+ * @param {string} [shippingRateId]  WC rate ID to select (e.g. 'dtb_veeqo_rates:standard').
+ *                                   When omitted, WC uses the first available rate.
  * @returns {Promise<Object>}  WC checkout response (order_id, order_key, …)
  */
 export async function syncAndPlace(
@@ -250,6 +286,7 @@ export async function syncAndPlace(
   paymentMethod = 'cod',
   paymentData = [],
   customerNote = '',
+  shippingRateId = '',
 ) {
   // Initialise session + capture nonce.
   await initCart();
@@ -261,6 +298,20 @@ export async function syncAndPlace(
   // the nonce — each response carries the updated nonce in the header.
   for ( const item of cartItems ) {
     await addToCart( item.id, item.quantity );
+  }
+
+  // Set the shipping address on the WC cart so the correct shipping zone is
+  // resolved, then select the rate the customer chose in the React UI.
+  // Failure is non-fatal: WC will fall back to the first available rate.
+  if ( shippingRateId ) {
+    try {
+      await updateCartCustomer( {
+        shipping_address: shippingAddress || billingAddress,
+      } );
+      await selectShippingRate( shippingRateId );
+    } catch ( err ) {
+      console.warn( 'Shipping rate selection failed (non-fatal):', err.message );
+    }
   }
 
   // Submit the checkout.

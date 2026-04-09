@@ -12,7 +12,7 @@
  *   - All existing business logic preserved: syncAndPlace(), DOMPurify, Veeqo
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import {
@@ -29,8 +29,8 @@ import {
 import DOMPurify from 'dompurify';
 
 import { useCart } from '../context/CartContext';
-import { useVeeqo } from '../context/VeeqoContext';
 import { syncAndPlace } from '../api/cart.js';
+import veeqoService from '../services/veeqo';
 import SEOHead from '../components/SEOHead';
 
 // ─── Payment gateway definitions ──────────────────────────────────────────────
@@ -385,7 +385,6 @@ function PaymentMethodSelector( { selectedMethod, onChange, inputClass } ) {
 export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems, getCartTotal, clearCart } = useCart();
-  const veeqo = useVeeqo();
 
   const [formData, setFormData] = useState( {
     firstName:     '',
@@ -408,10 +407,20 @@ export default function Checkout() {
   const [orderDetails,  setOrderDetails ] = useState( null );
   const [step,          setStep         ] = useState( 'form' ); // 'form' | 'syncing' | 'placing'
 
+  // ── Shipping rates ────────────────────────────────────────────────────────
+  const [shippingRates,    setShippingRates   ] = useState( [] );
+  const [selectedRate,     setSelectedRate    ] = useState( null );   // full rate object
+  const [ratesLoading,     setRatesLoading    ] = useState( false );
+  const [ratesError,       setRatesError      ] = useState( null );
+
   const subtotal = getCartTotal();
-  const shipping = subtotal >= 500 ? 0 : 25;
-  const tax      = subtotal * 0.08;
-  const total    = subtotal + shipping + tax;
+  // Show shipping from the selected rate when available, otherwise fall back
+  // to a provisional estimate matching the server-side tiered logic.
+  const shipping = selectedRate
+    ? selectedRate.price
+    : ( subtotal >= 500 ? 0 : 25 );
+  const tax   = subtotal * 0.08;
+  const total = subtotal + shipping + tax;
 
   // True when all required fields have a non-empty value (used to activate
   // the mobile sticky CTA before full form validation runs on submit).
@@ -425,6 +434,65 @@ export default function Checkout() {
     formData.state.trim()     !== '' &&
     formData.zip.trim()       !== ''
   ), [formData] );
+
+  // True when the address fields needed for rate calculation are all filled.
+  const isAddressComplete = useMemo( () => (
+    formData.address.trim() !== '' &&
+    formData.city.trim()    !== '' &&
+    formData.state.trim()   !== '' &&
+    formData.zip.trim()     !== ''
+  ), [formData] );
+
+  /**
+   * Fetch shipping rates from the server whenever the shipping address is complete.
+   * Uses the DTB Veeqo server-side proxy so no API key is exposed.
+   */
+  const fetchShippingRates = useCallback( async ( data, items ) => {
+    if ( ! data.address || ! data.city || ! data.state || ! data.zip ) return;
+
+    setRatesLoading( true );
+    setRatesError( null );
+
+    try {
+      const destination = {
+        address: data.address,
+        city:    data.city,
+        state:   data.state,
+        zip:     data.zip,
+        country: data.country || 'US',
+      };
+      const lineItems = items.map( ( item ) => ( {
+        id:       item.id,
+        sku:      item.sku  || '',
+        name:     item.name || '',
+        quantity: item.quantity,
+        price:    item.price || 0,
+        weight:   item.weight || 0.5,
+        category: 'product',
+      } ) );
+
+      const rates = await veeqoService.getShippingRates( destination, lineItems );
+      setShippingRates( rates );
+
+      // Auto-select the first (cheapest) rate when none is selected yet.
+      if ( rates.length > 0 && ! selectedRate ) {
+        setSelectedRate( rates[0] );
+      }
+    } catch ( err ) {
+      setRatesError( 'Could not load shipping options. Rates will be calculated at checkout.' );
+      console.warn( 'Shipping rate fetch failed:', err.message );
+    } finally {
+      setRatesLoading( false );
+    }
+  }, [ selectedRate ] );
+
+  // Re-fetch rates whenever the shipping address is complete.
+  useEffect( () => {
+    if ( isAddressComplete ) {
+      fetchShippingRates( formData, cartItems );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ formData.address, formData.city, formData.state, formData.zip, formData.country ] );
 
   const sanitize = ( v ) => DOMPurify.sanitize( v, { ALLOWED_TAGS: [] } );
 
@@ -473,30 +541,30 @@ export default function Checkout() {
     };
 
     try {
-      // ── Step 1: Sync CartContext → WC Store API cart, then submit checkout ──
+      // ── Step 1: Sync CartContext → WC Store API cart, apply shipping rate,
+      //            then submit checkout. Veeqo order sync happens server-side
+      //            via the woocommerce_store_api_checkout_order_processed hook
+      //            in dtb-veeqo.php — no separate client-side call needed.
       setStep( 'syncing' );
+
+      // Map the selected rate ID to the WC shipping method rate ID.
+      // DTB_Veeqo_Shipping_Method registers rates as 'dtb_veeqo_rates:{key}'.
+      const wcRateId = selectedRate
+        ? `dtb_veeqo_rates:${ selectedRate.id }`
+        : '';
+
       const wcOrder = await syncAndPlace(
         cartItems,
         billingAddress,
-        billingAddress,     // use billing as shipping (user can update in WP later)
+        billingAddress,          // use billing as shipping (user can update in WP later)
         formData.paymentMethod,
-        [],                 // payment_data — extend here for Stripe/PayPal tokens
+        [],                      // payment_data — extend here for Stripe/PayPal tokens
         formData.customerNote,
+        wcRateId,                // selected shipping rate ID
       );
 
       setStep( 'placing' );
-
-      // ── Step 2 (optional): Also create a Veeqo order for fulfilment ──────
-      let veeqoOrder = null;
-      if ( veeqo.isEnabled ) {
-        try {
-          veeqoOrder = await veeqo.createOrder( cartItems, formData );
-        } catch ( err ) {
-          console.error( 'Veeqo order creation failed (non-fatal):', err );
-        }
-      }
-
-      setOrderDetails( { wooCommerce: wcOrder, veeqo: veeqoOrder } );
+      setOrderDetails( { wooCommerce: wcOrder } );
       setOrderComplete( true );
       clearCart();
 
@@ -590,8 +658,7 @@ export default function Checkout() {
                   <span className="text-gray-500">Fulfilment #</span>
                   <span className="font-semibold text-gray-900">#{ orderDetails.veeqo.id }</span>
                 </div>
-              ) }
-            </div>
+              ) }            </div>
           ) }
 
           <div className="flex gap-3 justify-center flex-wrap">
@@ -771,6 +838,66 @@ export default function Checkout() {
                     </p>
                   ) }
                 </div>
+              </StepCard>
+
+              {/* Shipping Method */}
+              <StepCard delay={ 0.12 } className="p-6">
+                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
+                  <Truck size={ 17 } className="text-primary-500" />
+                  Shipping Method
+                </h2>
+
+                { ratesLoading && (
+                  <p className="text-sm text-gray-400 animate-pulse py-2">Loading shipping options…</p>
+                ) }
+
+                { ratesError && ! ratesLoading && (
+                  <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+                    <AlertTriangle size={ 13 } className="inline mr-1" />
+                    { ratesError }
+                  </p>
+                ) }
+
+                { ! ratesLoading && shippingRates.length === 0 && ! ratesError && (
+                  <p className="text-xs text-gray-400">
+                    Enter your shipping address above to see available rates.
+                  </p>
+                ) }
+
+                { ! ratesLoading && shippingRates.length > 0 && (
+                  <div className="space-y-2" role="radiogroup" aria-label="Shipping method">
+                    { shippingRates.map( ( rate ) => (
+                      <label
+                        key={ rate.id }
+                        className={ `flex items-center justify-between gap-3 px-4 py-3 rounded-xl border
+                                     cursor-pointer transition-all
+                                     ${ selectedRate?.id === rate.id
+                                         ? 'border-primary-500 bg-primary-50/60 ring-1 ring-primary-500/30'
+                                         : 'border-gray-200 hover:border-gray-300' }` }
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="shippingRate"
+                            value={ rate.id }
+                            checked={ selectedRate?.id === rate.id }
+                            onChange={ () => setSelectedRate( rate ) }
+                            className="accent-primary-600"
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{ rate.name }</p>
+                            { rate.eta && (
+                              <p className="text-xs text-gray-500">{ rate.eta }</p>
+                            ) }
+                          </div>
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900 shrink-0">
+                          { rate.price === 0 ? 'Free' : `$${ rate.price.toFixed( 2 ) }` }
+                        </span>
+                      </label>
+                    ) ) }
+                  </div>
+                ) }
               </StepCard>
 
               {/* Payment Method */}

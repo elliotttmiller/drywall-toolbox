@@ -80,29 +80,16 @@ export function VeeqoProvider({ children }) {
     }
   };
 
+  /**
+   * Check inventory for an array of cart items via the server-side proxy.
+   * Always resolves (never throws) — WooCommerce enforces stock server-side.
+   */
   const checkInventory = async (cartItems) => {
-    if (!isEnabled) {
-      return { available: true, items: [] };
-    }
-
     try {
       return await veeqoService.checkInventoryAvailability(cartItems);
     } catch (error) {
-      console.error('Inventory check failed:', error);
+      console.warn('Inventory check failed (non-fatal):', error);
       return { available: true, items: [], error: error.message };
-    }
-  };
-
-  const createOrder = async (cartItems, customerInfo) => {
-    if (!isEnabled) {
-      return null;
-    }
-
-    try {
-      return await veeqoService.syncCartToOrder(cartItems, customerInfo);
-    } catch (error) {
-      console.error('Order creation failed:', error);
-      throw error;
     }
   };
 
@@ -117,7 +104,6 @@ export function VeeqoProvider({ children }) {
     handleOAuthCallback,
     syncProducts,
     checkInventory,
-    createOrder
   };
 
   return <VeeqoContext.Provider value={value}>{children}</VeeqoContext.Provider>;
