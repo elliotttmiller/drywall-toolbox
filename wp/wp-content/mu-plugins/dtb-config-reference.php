@@ -21,6 +21,10 @@
  * define('WC_WEBHOOK_SECRET',        '');  // 32+ char random string
  * define('DTB_ADMIN_EMAIL',          'you@drywalltoolbox.com');
  * define('DISALLOW_FILE_EDIT',       true);
+ * define('DTB_VEEQO_API_KEY',        '');  // Veeqo API key (Settings → API Keys)
+ * define('DTB_VEEQO_WEBHOOK_SECRET', '');  // 32+ char random string for Veeqo webhook HMAC
+ * define('DTB_VEEQO_WAREHOUSE_ID',   0);   // Primary Veeqo warehouse ID
+ * define('DTB_VEEQO_CHANNEL_ID',     0);   // Veeqo channel ID for this WooCommerce store
  *
  * -----------------------------------------------------------------------------
  * CONSTANT DOCUMENTATION
@@ -113,6 +117,53 @@
  *   Application Password username/password pair exposed to trusted browser
  *   origins via GET /dtb/v1/config. Used by the React SPA to authenticate
  *   WooCommerce Store API calls directly from the browser.
+ *
+ * define('DTB_VEEQO_DEBUG', true);
+ *   Enable Veeqo integration debug logging (disabled by default in production).
+ *   When true, all dtb_veeqo_log('debug', ...) calls are written to the PHP
+ *   error log. Set only when actively debugging the Veeqo integration.
+ *
+ * =============================================================================
+ * VEEQO INTEGRATION CONSTANTS
+ * =============================================================================
+ *
+ * DTB_VEEQO_API_KEY
+ *   What it does : The Veeqo API key used by dtb-veeqo.php for all server-side
+ *                  calls to the Veeqo REST API. The key is never exposed to
+ *                  browser clients — all Veeqo API calls originate from the
+ *                  WordPress server.
+ *   Where to get : Veeqo → Settings → API Keys → Add API Key.
+ *   What breaks  : Without it the Veeqo integration is silently disabled.
+ *                  All order sync, inventory checks, and webhook registration
+ *                  are skipped.
+ *
+ * DTB_VEEQO_WEBHOOK_SECRET
+ *   What it does : HMAC-SHA256 secret used to validate incoming webhook events
+ *                  from Veeqo at POST /dtb/v1/veeqo/webhooks/order. Any
+ *                  request whose X-Veeqo-Signature does not match is rejected
+ *                  with 401.
+ *   Where to get : Generate with: php -r "echo bin2hex(random_bytes(32));"
+ *                  Set the same value when configuring the webhook in Veeqo.
+ *   What breaks  : If left empty the signature check is skipped (less secure).
+ *                  If set incorrectly all Veeqo webhooks are rejected.
+ *
+ * DTB_VEEQO_WAREHOUSE_ID
+ *   What it does : The numeric ID of the primary Veeqo warehouse used for
+ *                  order fulfilment and inventory routing.
+ *   Where to get : Veeqo → Warehouses → select warehouse → check URL for ID.
+ *                  Or call GET /dtb/v1/veeqo/status (admin JWT required) to
+ *                  see the warehouses count.
+ *   What breaks  : Without it order payloads omit warehouse routing; Veeqo
+ *                  will use the account default warehouse instead.
+ *
+ * DTB_VEEQO_CHANNEL_ID
+ *   What it does : The Veeqo channel ID that corresponds to this WooCommerce
+ *                  store. Used when creating orders so Veeqo can attribute
+ *                  sales to the correct sales channel.
+ *   Where to get : Veeqo → Settings → Channels → WooCommerce channel → ID.
+ *   What breaks  : Without it orders are created without a channel assignment.
+ *                  Veeqo will still create the order but channel reporting
+ *                  will be incomplete.
  *
  * =============================================================================
  * PRODUCT IMAGE SYNC — WORKFLOW
