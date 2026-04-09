@@ -252,8 +252,18 @@ export function htmlToMarkdown(html) {
     // WooCommerce CSV sometimes stores all table rows on a single line with
     // consecutive pipes as the only row separator, e.g.:
     //   | Specification | Detail | | :--- | :--- | | SKU | TACSET |
-    // Split these at the row-boundary ("| |") before the pipe-table check.
-    if (text.startsWith('|') && text.endsWith('|') && /\|\s*\|/.test(text)) {
+    // Only apply when the content is a single line (no existing newlines) AND
+    // contains a GFM alignment cell (| :--- |), so we don't accidentally split
+    // multi-line tables or paragraphs that happen to contain pipe characters.
+    if (
+      text.startsWith('|') &&
+      text.endsWith('|') &&
+      !text.includes('\n') &&
+      /\|\s*:?-+:?\s*\|/.test(text)
+    ) {
+      // At a row boundary the last cell ends with `|` and the next row starts
+      // with `|`, giving `| |` (two pipes separated only by whitespace).
+      // Within a row, adjacent pipes always have cell content between them.
       text = text.replace(/\|\s*\|/g, '|\n|');
     }
 
