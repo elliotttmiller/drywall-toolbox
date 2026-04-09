@@ -7,7 +7,7 @@ import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
    Brands & tools sourced from schematicMappings — the single source of truth
    for every tool we carry schematics / repair support for.
    ───────────────────────────────────────────────────────────────────────── */
-const REPAIR_BRANDS = Object.keys(SCHEMATIC_DEFINITIONS); // e.g. Columbia, TapeTech, Asgard, Level5, Platinum
+const SUPPORTED_BRANDS = Object.keys(SCHEMATIC_DEFINITIONS); // e.g. Columbia, TapeTech, Asgard, Level5, Platinum
 
 /**
  * Returns the sorted list of unique categories for a given brand.
@@ -29,6 +29,13 @@ function getModelsForBrandCategory(brand, category) {
     .filter((t) => t.category === category)
     .map((t) => t.title)
     .sort();
+}
+
+/**
+ * Builds a human-readable tool description for the success screen.
+ */
+function getToolDisplayName({ toolBrand, toolModel, toolCategory }) {
+  return [toolBrand, toolModel || toolCategory].filter(Boolean).join(' — ');
 }
 
 const BLANK_FORM = {
@@ -445,7 +452,7 @@ export default function Repairs() {
                 </h3>
                 <p style={{ fontSize: '0.95rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 8px 0', lineHeight: 1.6 }}>
                   Thank you, <strong>{formData.fullName}</strong>. We received your repair inquiry for{' '}
-                  <strong>{[formData.toolBrand, formData.toolModel || formData.toolCategory].filter(Boolean).join(' — ')}</strong>.
+                  <strong>{getToolDisplayName(formData)}</strong>.
                 </p>
                 <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 32px 0', lineHeight: 1.6 }}>
                   Our service team will contact you at <strong>{formData.email}</strong> within one business day
@@ -572,7 +579,7 @@ export default function Repairs() {
                         }}
                       >
                         <option value="" disabled>Select a brand…</option>
-                        {REPAIR_BRANDS.map((b) => (
+                        {SUPPORTED_BRANDS.map((b) => (
                           <option key={b} value={b}>{b}</option>
                         ))}
                         <option value="Other">Other / Not Listed</option>
