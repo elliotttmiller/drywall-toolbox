@@ -12,7 +12,7 @@
  *   - All existing business logic preserved: syncAndPlace(), DOMPurify, Veeqo
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import {
@@ -413,6 +413,12 @@ export default function Checkout() {
   const [ratesLoading,     setRatesLoading    ] = useState( false );
   const [ratesError,       setRatesError      ] = useState( null );
 
+  // Ref lets fetchShippingRates read the latest selectedRate without being
+  // listed as a dependency (adding it would re-create the callback on every
+  // user rate selection and cause the effect to re-run, resetting the choice).
+  const selectedRateRef = useRef( selectedRate );
+  selectedRateRef.current = selectedRate;
+
   const subtotal = getCartTotal();
   // Show shipping from the selected rate when available, otherwise fall back
   // to a provisional estimate matching the server-side tiered logic.
@@ -444,8 +450,10 @@ export default function Checkout() {
   ), [formData] );
 
   /**
-   * Fetch shipping rates from the server whenever the shipping address is complete.
-   * Uses the DTB Veeqo server-side proxy so no API key is exposed.
+   * Fetch shipping rates from the server whenever the shipping address changes.
+   * Uses the DTB Veeqo server-side proxy so no API key is exposed in the browser.
+   * Stable callback (no deps) — reads selectedRate through a ref to avoid
+   * re-creating this function every time the user picks a different rate.
    */
   const fetchShippingRates = useCallback( async ( data, items ) => {
     if ( ! data.address || ! data.city || ! data.state || ! data.zip ) return;
@@ -474,8 +482,8 @@ export default function Checkout() {
       const rates = await veeqoService.getShippingRates( destination, lineItems );
       setShippingRates( rates );
 
-      // Auto-select the first (cheapest) rate when none is selected yet.
-      if ( rates.length > 0 && ! selectedRate ) {
+      // Auto-select the first (cheapest) rate when none has been chosen yet.
+      if ( rates.length > 0 && ! selectedRateRef.current ) {
         setSelectedRate( rates[0] );
       }
     } catch ( err ) {
@@ -484,15 +492,17 @@ export default function Checkout() {
     } finally {
       setRatesLoading( false );
     }
-  }, [ selectedRate ] );
+  }, [] ); // Stable — reads selectedRate via ref; all setters are stable too.
 
-  // Re-fetch rates whenever the shipping address is complete.
+  // Re-fetch rates whenever the shipping address or cart contents change.
   useEffect( () => {
     if ( isAddressComplete ) {
       fetchShippingRates( formData, cartItems );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ formData.address, formData.city, formData.state, formData.zip, formData.country ] );
+  }, [ formData.address, formData.city, formData.state, formData.zip, formData.country, fetchShippingRates, cartItems ] ); // eslint-disable-line react-hooks/exhaustive-deps
+  // ↑ formData is destructured so only address fields trigger (not every keystroke).
+  //   cartItems identity changes on quantity updates which is intentional — different
+  //   weights need fresh rates.
 
   const sanitize = ( v ) => DOMPurify.sanitize( v, { ALLOWED_TAGS: [] } );
 
