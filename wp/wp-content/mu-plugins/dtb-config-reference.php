@@ -150,20 +150,30 @@
  * DTB_VEEQO_WAREHOUSE_ID
  *   What it does : The numeric ID of the primary Veeqo warehouse used for
  *                  order fulfilment and inventory routing.
- *   Where to get : Veeqo → Warehouses → select warehouse → check URL for ID.
- *                  Or call GET /dtb/v1/veeqo/status (admin JWT required) to
- *                  see the warehouses count.
+ *   Where to get : Auto-discovered automatically from GET /warehouses when
+ *                  you save the API key under WooCommerce → Settings →
+ *                  Integrations → Drywall Toolbox Veeqo.  Alternatively,
+ *                  you can find the ID in Veeqo → Warehouses → select
+ *                  warehouse → check the URL.
+ *   Override     : Define this constant in wp-config.php to force a specific
+ *                  warehouse; it takes precedence over the auto-discovered
+ *                  value stored in wp_options.
  *   What breaks  : Without it order payloads omit warehouse routing; Veeqo
  *                  will use the account default warehouse instead.
  *
  * DTB_VEEQO_CHANNEL_ID
- *   What it does : The Veeqo channel ID that corresponds to this WooCommerce
- *                  store. Used when creating orders so Veeqo can attribute
- *                  sales to the correct sales channel.
- *   Where to get : Veeqo → Settings → Channels → WooCommerce channel → ID.
+ *   What it does : The Veeqo channel ID (= Store ID) that corresponds to this
+ *                  WooCommerce store.  Used when creating orders so Veeqo can
+ *                  attribute sales to the correct sales channel.
+ *   Where to get : Auto-discovered automatically from GET /stores when you
+ *                  save the API key under WooCommerce → Settings →
+ *                  Integrations → Drywall Toolbox Veeqo.  Alternatively,
+ *                  you can find the ID in Veeqo → Settings → Channels →
+ *                  WooCommerce channel → ID.
+ *   Override     : Define this constant in wp-config.php to force a specific
+ *                  channel; it takes precedence over the auto-discovered
+ *                  value stored in wp_options.
  *   What breaks  : Without it orders are created without a channel assignment.
- *                  Veeqo will still create the order but channel reporting
- *                  will be incomplete.
  *
  * =============================================================================
  * PRODUCT IMAGE SYNC — WORKFLOW

@@ -29,8 +29,17 @@ defined( 'ABSPATH' ) || exit;
 define( 'DTB_VEEQO_API_BASE', 'https://api.veeqo.com' );
 
 /**
- * Return the Veeqo configuration array (reads wp-config.php constants once
- * per request and caches the result in $GLOBALS).
+ * Return the Veeqo configuration array.
+ *
+ * Resolution order (highest → lowest priority):
+ *   1. wp-config.php constants  (DTB_VEEQO_API_KEY, DTB_VEEQO_WEBHOOK_SECRET,
+ *                                DTB_VEEQO_WAREHOUSE_ID, DTB_VEEQO_CHANNEL_ID)
+ *   2. WordPress option         (woocommerce_dtb_veeqo_settings — written by the
+ *                                WC admin settings page and auto-discovery)
+ *
+ * Result is cached in $GLOBALS for the lifetime of the current request.
+ * Call `unset( $GLOBALS['_dtb_veeqo_config'] )` to force a fresh read
+ * (e.g. after updating settings in the same request).
  *
  * @return array{api_key: string, webhook_secret: string, warehouse_id: int, channel_id: int}
  */
@@ -39,11 +48,27 @@ function dtb_veeqo_config(): array {
 		return $GLOBALS['_dtb_veeqo_config'];
 	}
 
+	// Stored settings (WC admin settings page writes to this option).
+	$stored = (array) get_option( 'woocommerce_dtb_veeqo_settings', [] );
+
 	$GLOBALS['_dtb_veeqo_config'] = [
-		'api_key'        => defined( 'DTB_VEEQO_API_KEY' )        ? (string) DTB_VEEQO_API_KEY        : '',
-		'webhook_secret' => defined( 'DTB_VEEQO_WEBHOOK_SECRET' ) ? (string) DTB_VEEQO_WEBHOOK_SECRET : '',
-		'warehouse_id'   => defined( 'DTB_VEEQO_WAREHOUSE_ID' )   ? (int)    DTB_VEEQO_WAREHOUSE_ID   : 0,
-		'channel_id'     => defined( 'DTB_VEEQO_CHANNEL_ID' )     ? (int)    DTB_VEEQO_CHANNEL_ID     : 0,
+		'api_key' => ( defined( 'DTB_VEEQO_API_KEY' ) && '' !== (string) DTB_VEEQO_API_KEY )
+			? (string) DTB_VEEQO_API_KEY
+			: (string) ( $stored['api_key'] ?? '' ),
+
+		'webhook_secret' => ( defined( 'DTB_VEEQO_WEBHOOK_SECRET' ) && '' !== (string) DTB_VEEQO_WEBHOOK_SECRET )
+			? (string) DTB_VEEQO_WEBHOOK_SECRET
+			: (string) ( $stored['webhook_secret'] ?? '' ),
+
+		// warehouse_id: constant takes precedence only when it is a positive integer.
+		'warehouse_id' => ( defined( 'DTB_VEEQO_WAREHOUSE_ID' ) && (int) DTB_VEEQO_WAREHOUSE_ID > 0 )
+			? (int) DTB_VEEQO_WAREHOUSE_ID
+			: (int) ( $stored['warehouse_id'] ?? 0 ),
+
+		// channel_id: constant takes precedence only when it is a positive integer.
+		'channel_id' => ( defined( 'DTB_VEEQO_CHANNEL_ID' ) && (int) DTB_VEEQO_CHANNEL_ID > 0 )
+			? (int) DTB_VEEQO_CHANNEL_ID
+			: (int) ( $stored['channel_id'] ?? 0 ),
 	];
 
 	return $GLOBALS['_dtb_veeqo_config'];
@@ -70,7 +95,7 @@ function dtb_veeqo_request( string $method, string $path, array $params = [], ar
 	$cfg = dtb_veeqo_config();
 
 	if ( '' === $cfg['api_key'] ) {
-		dtb_veeqo_log( 'error', 'api_key_missing', 'DTB_VEEQO_API_KEY constant not set in wp-config.php.' );
+		dtb_veeqo_log( 'error', 'api_key_missing', 'Veeqo API key not configured (set DTB_VEEQO_API_KEY in wp-config.php or enter it under WooCommerce → Settings → Integrations → Drywall Toolbox Veeqo).' );
 		return [ 'ok' => false, 'status' => 503, 'data' => null, 'error' => 'Veeqo not configured.' ];
 	}
 
@@ -550,15 +575,51 @@ function dtb_veeqo_route_webhook_order( WP_REST_Request $request ): WP_REST_Resp
 	/** @var WC_Order $wc_order */
 	$wc_order = $orders[0];
 
+	// ── Extract tracking information when Veeqo marks the order as shipped ────
+	// Veeqo delivers tracking at the root of the payload or inside shipments[].
+	$tracking_number  = '';
+	$tracking_carrier = '';
+
+	if ( 'shipped' === $veeqo_status ) {
+		$tracking_number = sanitize_text_field(
+			$payload['tracking_number']
+			?? ( $payload['shipments'][0]['tracking_number'] ?? '' )
+		);
+		$tracking_carrier = sanitize_text_field(
+			$payload['carrier']
+			?? $payload['tracking_carrier']
+			?? ( $payload['shipments'][0]['tracking_carrier'] ?? '' )
+		);
+
+		if ( '' !== $tracking_number ) {
+			$wc_order->update_meta_data( '_tracking_number', $tracking_number );
+			if ( '' !== $tracking_carrier ) {
+				$wc_order->update_meta_data( '_tracking_carrier', $tracking_carrier );
+			}
+		}
+	}
+
+	// ── Build the order note (append tracking when present) ───────────────────
+	$status_note = sprintf( '[Veeqo] Status synced from Veeqo order #%d (%s).', $veeqo_order_id, $veeqo_status );
+	if ( '' !== $tracking_number ) {
+		$status_note .= sprintf(
+			' Tracking: %s%s.',
+			$tracking_number,
+			'' !== $tracking_carrier ? ' (' . $tracking_carrier . ')' : ''
+		);
+	}
+
 	$prev_status = $wc_order->get_status();
-	$wc_order->update_status( $wc_status, sprintf( '[Veeqo] Status synced from Veeqo order #%d (%s).', $veeqo_order_id, $veeqo_status ) );
+	$wc_order->update_status( $wc_status, $status_note );
 
 	dtb_veeqo_log( 'info', 'webhook_status_synced', 'WC order status updated from Veeqo webhook.', [
-		'wc_order_id'    => $wc_order->get_id(),
-		'prev_status'    => $prev_status,
-		'new_status'     => $wc_status,
-		'veeqo_order_id' => $veeqo_order_id,
-		'veeqo_status'   => $veeqo_status,
+		'wc_order_id'      => $wc_order->get_id(),
+		'prev_status'      => $prev_status,
+		'new_status'       => $wc_status,
+		'veeqo_order_id'   => $veeqo_order_id,
+		'veeqo_status'     => $veeqo_status,
+		'tracking_number'  => $tracking_number  ?: null,
+		'tracking_carrier' => $tracking_carrier ?: null,
 	] );
 
 	// Optionally store the Veeqo order ID on the WC order for cross-reference.
@@ -578,26 +639,18 @@ function dtb_veeqo_route_webhook_order( WP_REST_Request $request ): WP_REST_Resp
 // =============================================================================
 // SECTION 4 — WOOCOMMERCE → VEEQO ORDER SYNC
 //
-// When a WooCommerce order is created or its status changes, sync the
-// information to Veeqo for fulfilment.
+// When a WooCommerce order's status transitions to "processing" (i.e. payment
+// confirmed), the order is pushed to Veeqo for fulfilment.
+//
+// The woocommerce_order_status_changed hook below handles both cases:
+//   • New order reaching "processing" for the first time (creates it in Veeqo).
+//   • Already-synced order changing status (updates Veeqo status to match).
+//
+// We intentionally do NOT hook woocommerce_checkout_order_processed or
+// woocommerce_store_api_checkout_order_processed because those fire before
+// payment is confirmed (status = "pending").  Veeqo should only receive orders
+// that are confirmed and ready for fulfilment.
 // =============================================================================
-
-/**
- * Hook: after WooCommerce checkout creates the order, push it to Veeqo.
- *
- * Fires immediately after the order is persisted (before payment), giving
- * Veeqo an early notification for pre-fulfilment processing.
- */
-add_action( 'woocommerce_checkout_order_processed', 'dtb_veeqo_sync_new_order', 20, 3 );
-
-/**
- * WooCommerce Store API checkout (used by the React headless frontend via
- * /wc/store/v1/checkout).  The classic 'woocommerce_checkout_order_processed'
- * hook does NOT fire for Store API orders, so we bind a separate listener.
- */
-add_action( 'woocommerce_store_api_checkout_order_processed', function ( WC_Order $order ): void {
-	dtb_veeqo_sync_new_order( $order->get_id(), [], $order );
-}, 20 );
 
 function dtb_veeqo_sync_new_order( int $order_id, array $posted_data, WC_Order $order ): void {
 	if ( ! dtb_veeqo_enabled() ) {
@@ -1083,20 +1136,25 @@ function dtb_veeqo_ensure_webhooks(): void {
 /**
  * Write a structured log entry for a Veeqo integration event.
  *
+ * Log entries are written to the WooCommerce logger (source: veeqo-wc-integration)
+ * so they are visible at WooCommerce → Status → Logs → veeqo-wc-integration.
+ * Falls back to error_log() when WooCommerce is not yet available.
+ *
+ * Enable debug-level logging by adding to wp-config.php:
+ *   define( 'DTB_VEEQO_DEBUG', true );
+ *
  * @param string $level   Severity: debug | info | warn | error.
  * @param string $event   Machine-readable event name (snake_case).
  * @param string $message Human-readable description.
  * @param array  $context Optional additional context key-value pairs.
  */
 function dtb_veeqo_log( string $level, string $event, string $message, array $context = [] ): void {
-	// Suppress debug logs in production by default.
-	// To enable debug logging, add: define('DTB_VEEQO_DEBUG', true); to wp-config.php.
+	// Suppress debug logs in production unless opt-in constant is set.
 	if ( 'debug' === $level && ( ! defined( 'DTB_VEEQO_DEBUG' ) || ! DTB_VEEQO_DEBUG ) ) {
 		return;
 	}
 
 	$entry = [
-		'level'   => $level,
 		'event'   => $event,
 		'message' => $message,
 		'ts'      => gmdate( 'c' ),
@@ -1106,8 +1164,23 @@ function dtb_veeqo_log( string $level, string $event, string $message, array $co
 		$entry['context'] = $context;
 	}
 
-	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-	error_log( '[DTB Veeqo] ' . wp_json_encode( $entry ) );
+	// Map DTB severity levels to WooCommerce log levels.
+	$wc_level_map = [
+		'debug' => 'debug',
+		'info'  => 'info',
+		'warn'  => 'warning',
+		'error' => 'error',
+	];
+	$wc_level = $wc_level_map[ $level ] ?? 'info';
+
+	if ( function_exists( 'wc_get_logger' ) ) {
+		// Viewable at WooCommerce → Status → Logs → veeqo-wc-integration.
+		wc_get_logger()->log( $wc_level, wp_json_encode( $entry ), [ 'source' => 'veeqo-wc-integration' ] );
+	} else {
+		// Fallback: WooCommerce not yet loaded (e.g. very early hooks or CLI).
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( '[DTB Veeqo] ' . wp_json_encode( array_merge( [ 'level' => $level ], $entry ) ) );
+	}
 }
 
 
@@ -1506,3 +1579,270 @@ function dtb_veeqo_send_repair_confirmation( WC_Order $order, string $tool_desc,
 		)
 	);
 }
+
+
+// =============================================================================
+// SECTION 12 — WOOCOMMERCE ADMIN SETTINGS INTEGRATION
+//
+// Registers a "Drywall Toolbox Veeqo" settings page under:
+//   WooCommerce → Settings → Integrations → Drywall Toolbox Veeqo
+//
+// Admin-editable fields:
+//   • API Key        — stored in woocommerce_dtb_veeqo_settings[api_key]
+//   • Webhook Secret — stored in woocommerce_dtb_veeqo_settings[webhook_secret]
+//
+// Read-only display (auto-discovered on save):
+//   • Channel ID   — populated from GET /stores  (Channel ID = Store ID per Veeqo docs)
+//   • Warehouse ID — populated from GET /warehouses (first warehouse)
+//
+// wp-config.php constants (DTB_VEEQO_*) still take precedence over stored
+// values when defined.  See dtb_veeqo_config() for the full resolution order.
+// =============================================================================
+
+/**
+ * Discover the Veeqo channel_id (from GET /stores) and warehouse_id
+ * (from GET /warehouses) using the currently-active API key, then persist
+ * both values to the woocommerce_dtb_veeqo_settings wp_option.
+ *
+ * Should be called after the API key is saved so that the fresh key is used.
+ * Invalidates the in-request config cache before and after the API calls.
+ *
+ * @return array{channel_id: int, warehouse_id: int, error: string}
+ */
+function dtb_veeqo_discover_ids(): array {
+// Clear any cached config so the latest API key (just saved) is used.
+unset( $GLOBALS['_dtb_veeqo_config'] );
+
+$channel_id   = 0;
+$warehouse_id = 0;
+$errors       = [];
+
+// ── Channel ID from GET /stores ───────────────────────────────────────────
+// Per Veeqo developer docs: the Channel ID corresponds to the Store ID.
+$stores_result = dtb_veeqo_request( 'GET', '/stores' );
+if ( $stores_result['ok'] && is_array( $stores_result['data'] ) ) {
+foreach ( $stores_result['data'] as $store ) {
+if ( isset( $store['id'] ) && (int) $store['id'] > 0 ) {
+$channel_id = (int) $store['id'];
+break;
+}
+}
+if ( 0 === $channel_id ) {
+$errors[] = 'GET /stores returned no stores.';
+}
+} else {
+$errors[] = 'GET /stores failed: ' . $stores_result['error'];
+}
+
+// ── Warehouse ID from GET /warehouses ─────────────────────────────────────
+$warehouses_result = dtb_veeqo_request( 'GET', '/warehouses' );
+if ( $warehouses_result['ok'] && is_array( $warehouses_result['data'] ) ) {
+foreach ( $warehouses_result['data'] as $warehouse ) {
+if ( isset( $warehouse['id'] ) && (int) $warehouse['id'] > 0 ) {
+$warehouse_id = (int) $warehouse['id'];
+break;
+}
+}
+if ( 0 === $warehouse_id ) {
+$errors[] = 'GET /warehouses returned no warehouses.';
+}
+} else {
+$errors[] = 'GET /warehouses failed: ' . $warehouses_result['error'];
+}
+
+// ── Persist discovered IDs to wp_options ──────────────────────────────────
+$opt                 = (array) get_option( 'woocommerce_dtb_veeqo_settings', [] );
+$opt['channel_id']   = $channel_id;
+$opt['warehouse_id'] = $warehouse_id;
+update_option( 'woocommerce_dtb_veeqo_settings', $opt );
+
+// Invalidate the cached config so callers within this request use new IDs.
+unset( $GLOBALS['_dtb_veeqo_config'] );
+
+$error_string = implode( ' ', $errors );
+
+dtb_veeqo_log(
+'' === $error_string ? 'info' : 'warn',
+'ids_discovered',
+'Veeqo channel_id and warehouse_id auto-discovery completed.',
+[
+'channel_id'   => $channel_id,
+'warehouse_id' => $warehouse_id,
+'errors'       => $errors,
+]
+);
+
+return [
+'channel_id'   => $channel_id,
+'warehouse_id' => $warehouse_id,
+'error'        => $error_string,
+];
+}
+
+/**
+ * Register DTB_Veeqo_WC_Integration with WooCommerce.
+ *
+ * The class is defined inside the filter callback so that WC_Integration
+ * is guaranteed to be available when PHP parses the class declaration.
+ */
+add_filter( 'woocommerce_integrations', function ( array $integrations ): array {
+if ( ! class_exists( 'WC_Integration' ) ) {
+return $integrations;
+}
+
+if ( ! class_exists( 'DTB_Veeqo_WC_Integration' ) ) {
+/**
+ * WooCommerce Integration: Drywall Toolbox Veeqo
+ *
+ * Provides the admin settings page at
+ * WooCommerce → Settings → Integrations → Drywall Toolbox Veeqo.
+ *
+ * On save, auto-discovers channel_id and warehouse_id via the Veeqo API
+ * and stores them alongside the API credentials in wp_options.
+ */
+class DTB_Veeqo_WC_Integration extends WC_Integration {
+
+public function __construct() {
+$this->id                 = 'dtb_veeqo';
+$this->method_title       = __( 'Drywall Toolbox Veeqo', 'woocommerce' );
+$this->method_description = __(
+'Connect this WooCommerce store to Veeqo for bi-directional order sync, '
+. 'real-time inventory, and automated fulfilment. '
+. 'Channel ID and Warehouse ID are auto-discovered from the Veeqo API when you save the API Key.',
+'woocommerce'
+);
+
+$this->init_form_fields();
+$this->init_settings();
+
+add_action(
+'woocommerce_update_options_integration_' . $this->id,
+[ $this, 'process_admin_options' ]
+);
+}
+
+/**
+ * Build the settings form fields.
+ *
+ * channel_id and warehouse_id are not editable here; they are
+ * displayed as informational headings populated by auto-discovery.
+ */
+public function init_form_fields(): void {
+$opt          = (array) get_option( 'woocommerce_dtb_veeqo_settings', [] );
+$api_override = defined( 'DTB_VEEQO_API_KEY' ) && '' !== (string) DTB_VEEQO_API_KEY;
+
+// ── Channel ID display note ───────────────────────────────────
+if ( defined( 'DTB_VEEQO_CHANNEL_ID' ) && (int) DTB_VEEQO_CHANNEL_ID > 0 ) {
+$channel_note = sprintf(
+/* translators: %d: channel ID */
+__( 'Overridden by <code>DTB_VEEQO_CHANNEL_ID</code> constant: <strong>%d</strong>.', 'woocommerce' ),
+(int) DTB_VEEQO_CHANNEL_ID
+);
+} elseif ( ! empty( $opt['channel_id'] ) ) {
+$channel_note = sprintf(
+/* translators: %d: channel ID */
+__( 'Auto-discovered Store ID: <strong>%d</strong>. Re-save the API Key to refresh.', 'woocommerce' ),
+(int) $opt['channel_id']
+);
+} else {
+$channel_note = __( 'Will be auto-discovered via <code>GET /stores</code> when you save the API Key.', 'woocommerce' );
+}
+
+// ── Warehouse ID display note ─────────────────────────────────
+if ( defined( 'DTB_VEEQO_WAREHOUSE_ID' ) && (int) DTB_VEEQO_WAREHOUSE_ID > 0 ) {
+$warehouse_note = sprintf(
+/* translators: %d: warehouse ID */
+__( 'Overridden by <code>DTB_VEEQO_WAREHOUSE_ID</code> constant: <strong>%d</strong>.', 'woocommerce' ),
+(int) DTB_VEEQO_WAREHOUSE_ID
+);
+} elseif ( ! empty( $opt['warehouse_id'] ) ) {
+$warehouse_note = sprintf(
+/* translators: %d: warehouse ID */
+__( 'Auto-discovered: <strong>%d</strong>. Re-save the API Key to refresh.', 'woocommerce' ),
+(int) $opt['warehouse_id']
+);
+} else {
+$warehouse_note = __( 'Will be auto-discovered via <code>GET /warehouses</code> when you save the API Key.', 'woocommerce' );
+}
+
+$this->form_fields = [
+'api_key' => [
+'title'       => __( 'API Key', 'woocommerce' ),
+'type'        => 'password',
+'description' => $api_override
+? __( 'Value overridden by <code>DTB_VEEQO_API_KEY</code> constant in wp-config.php; this field is ignored.', 'woocommerce' )
+: __( 'Your Veeqo API key. Found in Veeqo → Settings → API Keys. Saving triggers auto-discovery of Channel ID and Warehouse ID.', 'woocommerce' ),
+'default'     => '',
+'desc_tip'    => false,
+],
+'webhook_secret' => [
+'title'       => __( 'Webhook Secret', 'woocommerce' ),
+'type'        => 'password',
+'description' => ( defined( 'DTB_VEEQO_WEBHOOK_SECRET' ) && '' !== (string) DTB_VEEQO_WEBHOOK_SECRET )
+? __( 'Value overridden by <code>DTB_VEEQO_WEBHOOK_SECRET</code> constant in wp-config.php; this field is ignored.', 'woocommerce' )
+: __( 'HMAC-SHA256 secret for validating incoming Veeqo webhooks. Must match the value configured in Veeqo → Webhooks.', 'woocommerce' ),
+'default'     => '',
+'desc_tip'    => false,
+],
+'channel_id_info' => [
+'title'       => __( 'Channel ID (Store ID)', 'woocommerce' ),
+'type'        => 'title',
+'description' => $channel_note,
+],
+'warehouse_id_info' => [
+'title'       => __( 'Warehouse ID', 'woocommerce' ),
+'type'        => 'title',
+'description' => $warehouse_note,
+],
+'webhook_url_info' => [
+'title'       => __( 'Webhook Endpoint', 'woocommerce' ),
+'type'        => 'title',
+'description' => sprintf(
+/* translators: %s: webhook URL */
+__( 'Register this URL in Veeqo → Webhooks to receive order-status updates: <code>%s</code>', 'woocommerce' ),
+esc_url( rest_url( 'dtb/v1/veeqo/webhooks/order' ) )
+),
+],
+];
+}
+
+/**
+ * Save admin options, then auto-discover channel_id and warehouse_id
+ * from the Veeqo API using the newly-saved API key.
+ *
+ * @return bool True on success.
+ */
+public function process_admin_options(): bool {
+$saved = parent::process_admin_options();
+
+if ( $saved && dtb_veeqo_enabled() ) {
+$result = dtb_veeqo_discover_ids();
+
+if ( '' !== $result['error'] ) {
+WC_Admin_Settings::add_error(
+sprintf(
+/* translators: %s: error details */
+__( 'Veeqo ID auto-discovery issue: %s Please verify your API key.', 'woocommerce' ),
+esc_html( $result['error'] )
+)
+);
+} else {
+WC_Admin_Settings::add_message(
+sprintf(
+/* translators: 1: channel_id  2: warehouse_id */
+__( 'Veeqo connected. Channel ID: <strong>%1$d</strong> — Warehouse ID: <strong>%2$d</strong>.', 'woocommerce' ),
+$result['channel_id'],
+$result['warehouse_id']
+)
+);
+}
+}
+
+return $saved;
+}
+} // end class DTB_Veeqo_WC_Integration
+}
+
+$integrations[] = 'DTB_Veeqo_WC_Integration';
+return $integrations;
+} );
