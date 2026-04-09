@@ -1,30 +1,39 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
+import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Columbia product catalog – every tool in the schematics directory
+   Brands & tools sourced from schematicMappings — the single source of truth
+   for every tool we carry schematics / repair support for.
    ───────────────────────────────────────────────────────────────────────── */
-const COLUMBIA_PRODUCTS = {
-  'Angleheads':            ['AngleHead'],
-  'Applicators':           ['External Corner Applicator', 'Inside Corner Applicator', 'Two-Way Internal Corner Applicator'],
-  'Automatic Tapers':      ['Predator Automatic Taper'],
-  'Compound Tubes':        ['CamLock Tube', 'Compound Tube'],
-  'Corner Boxes':          ['Throttle Box'],
-  'Corner Flushers':       ['Combo Flusher', 'Direct Corner Flusher', 'Standard Corner Flusher'],
-  'Corner Rollers':        ['Corner Cobra', 'Inside Corner Roller', 'Standard Outside Corner Roller'],
-  'Finishing Boxes':       ['Automatic Flat Box', 'Fat Boy Box', 'Flat Box'],
-  'Handles':               ['Closet Monster Handle', 'Columbia One Handle', 'Flat Box Handle', 'Long Extendable Handle', 'Matrix Box Handle'],
-  'Nailspotters':          ['Nailspotter'],
-  'Pumps':                 ['Box Filler Pump', 'Gooseneck Adapter', 'Mud Pump', 'Tall Boy Mud Pump'],
-  'Sanders':               ['Sander Head'],
-  'Semi-Automatic Tapers': ['Semi-Automatic Taper'],
-  'Smoothing Blades':      ['Tomahawk Smoothing Blades'],
-};
+const REPAIR_BRANDS = Object.keys(SCHEMATIC_DEFINITIONS); // e.g. Columbia, TapeTech, Asgard, Level5, Platinum
+
+/**
+ * Returns the sorted list of unique categories for a given brand.
+ * Falls back to [] for unknown brands or "Other".
+ */
+function getCategoriesForBrand(brand) {
+  const entries = SCHEMATIC_DEFINITIONS[brand];
+  if (!entries) return [];
+  return [...new Set(entries.map((t) => t.category))].sort();
+}
+
+/**
+ * Returns the tool titles for a specific brand + category combination.
+ */
+function getModelsForBrandCategory(brand, category) {
+  const entries = SCHEMATIC_DEFINITIONS[brand];
+  if (!entries || !category) return [];
+  return entries
+    .filter((t) => t.category === category)
+    .map((t) => t.title)
+    .sort();
+}
 
 const BLANK_FORM = {
   fullName: '', email: '', phone: '', company: '',
-  toolCategory: '', toolModel: '', serialNumber: '', toolAge: '',
+  toolBrand: '', toolCategory: '', toolModel: '', serialNumber: '', toolAge: '',
   serviceType: '', priority: '', issueStart: '', issueDescription: '',
   contactPreference: 'email', additionalNotes: '',
 };
@@ -198,9 +207,12 @@ export default function Repairs() {
       if (!formData.phone.trim())                errs.phone       = 'Phone number is required.';
     }
     if (s === 2) {
-      if (!formData.toolCategory)                errs.toolCategory = 'Please select a tool category.';
-      if (formData.toolCategory && !formData.toolModel)
+      if (!formData.toolBrand)                   errs.toolBrand    = 'Please select a brand.';
+      if (formData.toolBrand && formData.toolBrand !== 'Other') {
+        if (!formData.toolCategory)              errs.toolCategory = 'Please select a tool category.';
+        if (formData.toolCategory && !formData.toolModel)
                                                  errs.toolModel    = 'Please select the tool model.';
+      }
     }
     if (s === 3) {
       if (!formData.serviceType)                 errs.serviceType  = 'Please select a service type.';
@@ -433,7 +445,7 @@ export default function Repairs() {
                 </h3>
                 <p style={{ fontSize: '0.95rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 8px 0', lineHeight: 1.6 }}>
                   Thank you, <strong>{formData.fullName}</strong>. We received your repair inquiry for{' '}
-                  <strong>{formData.toolModel || formData.toolCategory}</strong>.
+                  <strong>{[formData.toolBrand, formData.toolModel || formData.toolCategory].filter(Boolean).join(' — ')}</strong>.
                 </p>
                 <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 32px 0', lineHeight: 1.6 }}>
                   Our service team will contact you at <strong>{formData.email}</strong> within one business day
@@ -538,44 +550,107 @@ export default function Repairs() {
                       Tool Details
                     </h3>
                     <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 28px 0' }}>
-                      Identify the Columbia tool that needs service so we can prepare the right technician and parts.
+                      Identify the tool that needs service so we can prepare the right technician and parts.
                     </p>
 
-                    <Field label="Tool Category" required>
+                    {/* Brand */}
+                    <Field label="Brand" required>
                       <select
                         className={inputCls}
                         style={{ cursor: 'pointer' }}
-                        value={formData.toolCategory}
+                        value={formData.toolBrand}
                         onChange={(e) => {
-                          setFormData((prev) => ({ ...prev, toolCategory: e.target.value, toolModel: '' }));
+                          setFormData((prev) => ({
+                            ...prev,
+                            toolBrand: e.target.value,
+                            toolCategory: '',
+                            toolModel: '',
+                          }));
+                          clearErr('toolBrand');
                           clearErr('toolCategory');
+                          clearErr('toolModel');
                         }}
                       >
-                        <option value="" disabled>Select a tool category…</option>
-                        {Object.keys(COLUMBIA_PRODUCTS).map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
+                        <option value="" disabled>Select a brand…</option>
+                        {REPAIR_BRANDS.map((b) => (
+                          <option key={b} value={b}>{b}</option>
                         ))}
+                        <option value="Other">Other / Not Listed</option>
                       </select>
-                      {errors.toolCategory && <p style={errStyle}>{errors.toolCategory}</p>}
+                      {errors.toolBrand && <p style={errStyle}>{errors.toolBrand}</p>}
                     </Field>
 
-                    <Field label="Tool Model" required>
-                      <select
-                        className={inputCls}
-                        style={{ cursor: 'pointer' }}
-                        value={formData.toolModel}
-                        disabled={!formData.toolCategory}
-                        onChange={(e) => { set('toolModel')(e); clearErr('toolModel'); }}
-                      >
-                        <option value="" disabled>
-                          {formData.toolCategory ? 'Select the specific model…' : 'Select a category first…'}
-                        </option>
-                        {(COLUMBIA_PRODUCTS[formData.toolCategory] || []).map((model) => (
-                          <option key={model} value={model}>{model}</option>
-                        ))}
-                      </select>
-                      {errors.toolModel && <p style={errStyle}>{errors.toolModel}</p>}
-                    </Field>
+                    {/* Structured category + model for known brands */}
+                    {formData.toolBrand && formData.toolBrand !== 'Other' && (
+                      <>
+                        <Field label="Tool Category" required>
+                          <select
+                            className={inputCls}
+                            style={{ cursor: 'pointer' }}
+                            value={formData.toolCategory}
+                            onChange={(e) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                toolCategory: e.target.value,
+                                toolModel: '',
+                              }));
+                              clearErr('toolCategory');
+                              clearErr('toolModel');
+                            }}
+                          >
+                            <option value="" disabled>Select a tool category…</option>
+                            {getCategoriesForBrand(formData.toolBrand).map((cat) => (
+                              <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                          </select>
+                          {errors.toolCategory && <p style={errStyle}>{errors.toolCategory}</p>}
+                        </Field>
+
+                        <Field label="Tool Model" required>
+                          <select
+                            className={inputCls}
+                            style={{ cursor: 'pointer' }}
+                            value={formData.toolModel}
+                            disabled={!formData.toolCategory}
+                            onChange={(e) => { set('toolModel')(e); clearErr('toolModel'); }}
+                          >
+                            <option value="" disabled>
+                              {formData.toolCategory ? 'Select the specific model…' : 'Select a category first…'}
+                            </option>
+                            {getModelsForBrandCategory(formData.toolBrand, formData.toolCategory).map((model) => (
+                              <option key={model} value={model}>{model}</option>
+                            ))}
+                          </select>
+                          {errors.toolModel && <p style={errStyle}>{errors.toolModel}</p>}
+                        </Field>
+                      </>
+                    )}
+
+                    {/* Freeform fields for "Other" brand */}
+                    {formData.toolBrand === 'Other' && (
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: '0 20px',
+                      }}>
+                        <Field label="Tool Type / Category" hint="e.g. Flat Box, Taper, Pump…">
+                          <input
+                            type="text" className={inputCls}
+                            placeholder="e.g. Finishing Box"
+                            value={formData.toolCategory}
+                            onChange={(e) => { set('toolCategory')(e); clearErr('toolCategory'); }}
+                          />
+                        </Field>
+                        <Field label="Tool Model / Name" hint="e.g. make, model number, or description">
+                          <input
+                            type="text" className={inputCls}
+                            placeholder="e.g. ProBox 10-inch"
+                            value={formData.toolModel}
+                            onChange={(e) => { set('toolModel')(e); clearErr('toolModel'); }}
+                          />
+                        </Field>
+                      </div>
+                    )}
 
                     <div style={{
                       display: 'grid',
@@ -769,6 +844,7 @@ export default function Repairs() {
                       }}>
                         Tool Details
                       </div>
+                      <ReviewRow label="Brand"       value={formData.toolBrand} />
                       <ReviewRow label="Category"    value={formData.toolCategory} />
                       <ReviewRow label="Model"       value={formData.toolModel} />
                       <ReviewRow label="Serial #"    value={formData.serialNumber} />
