@@ -27,7 +27,7 @@ const KNOWN_BRANDS = [
   'Level5',
   'SurPro',
   'Graco',
-  'Platinum',
+  'Platinum Drywall Tools',
 ];
 
 // ─── Auth header (lazy, runtime-safe) ────────────────────────────────────────

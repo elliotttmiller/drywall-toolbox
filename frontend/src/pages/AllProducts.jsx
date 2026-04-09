@@ -38,7 +38,7 @@ const ALLOWED_BRANDS = [
   'Level5',
   'SurPro',
   'Graco',
-  'Platinum',
+  'Platinum Drywall Tools',
   'Dura-Stilts'
 ];
 

@@ -27,7 +27,7 @@ const brandLogos = {
   'Asgard': asgardLogo,
   'Graco': gracoLogo,
   'Level5': level5Logo,
-  'Platinum': platinumLogo,
+  'Platinum Drywall Tools': platinumLogo,
   'Dura-Stilts': duraStiltsLogo,
 };
 
@@ -498,7 +498,7 @@ const BRAND_TO_SLUG = {
   'Level5':                'level5',
   'SurPro':                'surpro',
   'Graco':                 'graco',
-  'Platinum':              'platinum',
+  'Platinum Drywall Tools': 'platinum',
   'Dura-Stilts':           'dura-stilts',
 };
 const SLUG_TO_BRAND = Object.fromEntries(
@@ -522,7 +522,7 @@ export default function Parts() {
     'Level5',
     'SurPro',
     'Graco',
-    'Platinum',
+    'Platinum Drywall Tools',
     'Dura-Stilts',
   ];
 
@@ -1684,7 +1684,7 @@ export default function Parts() {
       id: 'platinum-compound-pump',
       title: 'Compound Pump',
       description: 'Platinum Drywall Tools Compound Pump schematic diagram',
-      brand: 'Platinum',
+      brand: 'Platinum Drywall Tools',
       category: 'Pumps',
       diagramPages: [1],
       imagePages: { 1: schImg('platinum-compound-pump', 1) },
@@ -1695,7 +1695,7 @@ export default function Parts() {
       id: 'platinum-flat-box',
       title: 'Flat Box',
       description: 'Platinum Drywall Tools Flat Box schematic diagram',
-      brand: 'Platinum',
+      brand: 'Platinum Drywall Tools',
       category: 'Finishing Boxes',
       diagramPages: [1],
       imagePages: { 1: schImg('platinum-flat-box', 1) },
@@ -1706,7 +1706,7 @@ export default function Parts() {
       id: 'platinum-outside-corner-roller',
       title: 'Outside Corner Roller',
       description: 'Platinum Drywall Tools Outside Corner Roller schematic diagram',
-      brand: 'Platinum',
+      brand: 'Platinum Drywall Tools',
       category: 'Corner Rollers',
       diagramPages: [1],
       imagePages: { 1: schImg('platinum-outside-corner-roller', 1) },

@@ -37,7 +37,7 @@ const PARTS_BRANDS = [
   'Asgard',
   'Level5',
   'Graco',
-  'Platinum',
+  'Platinum Drywall Tools',
   'Dura-Stilts',
 ];
 
@@ -49,7 +49,7 @@ const BRAND_TO_SLUG = {
   'Asgard':                'asgard',
   'Level5':                'level5',
   'Graco':                 'graco',
-  'Platinum':              'platinum',
+  'Platinum Drywall Tools': 'platinum',
   'Dura-Stilts':           'dura-stilts',
 };
 const SLUG_TO_BRAND = Object.fromEntries(

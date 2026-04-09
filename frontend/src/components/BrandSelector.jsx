@@ -15,7 +15,7 @@ const brandLogos = {
   'Asgard': asgardLogo,
   'Graco': gracoLogo,
   'Level5': level5Logo,
-  'Platinum': platinumLogo,
+  'Platinum Drywall Tools': platinumLogo,
   'Dura-Stilts': duraStiltsLogo,
 };
 

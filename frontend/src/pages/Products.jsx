@@ -46,7 +46,7 @@ const ALLOWED_BRANDS = [
   'Level5',
   'SurPro',
   'Graco',
-  'Platinum',
+  'Platinum Drywall Tools',
   'Dura-Stilts'
 ];
 
@@ -62,7 +62,7 @@ const BRAND_TO_SLUG = {
   'Level5':                'level5',
   'SurPro':                'surpro',
   'Graco':                 'graco',
-  'Platinum':              'platinum',
+  'Platinum Drywall Tools': 'platinum',
   'Dura-Stilts':           'dura-stilts',
 };
 const SLUG_TO_BRAND = Object.fromEntries(
@@ -76,7 +76,7 @@ const brandLogos = {
   'Asgard': asgardLogo,
   'Graco': gracoLogo,
   'Level5': level5Logo,
-  'Platinum': platinumLogo,
+  'Platinum Drywall Tools': platinumLogo,
   'Dura-Stilts': duraStiltsLogo,
 };
 
