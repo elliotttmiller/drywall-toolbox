@@ -2,11 +2,22 @@
  * Veeqo API Service
  * Handles authentication and API calls to Veeqo for inventory and order management
  * Documentation: https://developers.veeqo.com/
+ *
+ * PUBLIC METHODS (routed through server-side proxy — API key stays on the server):
+ *   getShippingRates(destination, items)  → POST /wp-json/dtb/v1/veeqo/shipping-rates
+ *   submitRepairRequest(formData)         → POST /wp-json/dtb/v1/repair-request
+ *
+ * ADMIN METHODS (direct Veeqo API — require OAuth access token, admin-only):
+ *   getProducts(), getOrder(), syncCartToOrder(), etc.
  */
 
 const VEEQO_API_BASE = 'https://api.veeqo.com';
 const VEEQO_AUTH_URL = 'https://app.veeqo.com/oauth/authorize';
 const VEEQO_TOKEN_URL = 'https://api.veeqo.com/oauth/token';
+
+// Server-side proxy base (API key kept on the WordPress server).
+const DTB_PROXY_BASE =
+  ( process.env.REACT_APP_API_BASE_URL || '' ).replace( /\/+$/, '' ) + '/wp-json/dtb/v1';
 
 class VeeqoService {
   constructor() {
@@ -347,6 +358,69 @@ class VeeqoService {
   disconnect() {
     this.saveAccessToken(null);
     this.saveConfig({ ...this.config, enabled: false });
+  }
+
+  // ─── Public server-side proxy methods ─────────────────────────────────────
+  // These route through the WordPress server so the Veeqo API key is never
+  // exposed in browser requests.  They work even when the admin OAuth flow
+  // has not been completed (DTB_VEEQO_API_KEY in wp-config.php is sufficient).
+
+  /**
+   * Fetch real-time shipping rates for a destination address and item list.
+   *
+   * The rate calculation runs on the WordPress server via dtb-veeqo.php and
+   * returns tiered domestic / international rates (or a prepaid-label option
+   * for repair service orders).
+   *
+   * @param {{ address: string, city: string, state: string, zip: string, country: string }} destination
+   * @param {Array<{ id: number, sku: string, name: string, quantity: number, price: number, weight: number, category: string }>} items
+   * @returns {Promise<Array<{ id: string, name: string, price: number, currency: string }>>}
+   */
+  async getShippingRates( destination, items ) {
+    const url = `${ DTB_PROXY_BASE }/veeqo/shipping-rates`;
+    const res = await fetch( url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify( { destination, items } ),
+    } );
+
+    if ( !res.ok ) {
+      let msg = `Shipping rates error ${ res.status }`;
+      try { const e = await res.json(); if ( e.message ) msg = e.message; } catch { /**/ }
+      throw new Error( msg );
+    }
+
+    const data = await res.json();
+    return data.rates || [];
+  }
+
+  /**
+   * Submit a repair service request.
+   *
+   * Creates a WooCommerce order (status: pending) for the repair, optionally
+   * syncs it to Veeqo, and sends a confirmation email — all server-side.
+   *
+   * @param {Object} formData  All fields from the 5-step repair form.
+   * @returns {Promise<{ success: boolean, wc_order_id: number, wc_order_number: string, message: string }>}
+   */
+  async submitRepairRequest( formData ) {
+    const url = `${ DTB_PROXY_BASE }/repair-request`;
+    const res = await fetch( url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify( formData ),
+    } );
+
+    let data;
+    try { data = await res.json(); } catch { data = {}; }
+
+    if ( !res.ok ) {
+      throw new Error( data.message || `Repair request failed (${ res.status }).` );
+    }
+
+    return data;
   }
 }
 

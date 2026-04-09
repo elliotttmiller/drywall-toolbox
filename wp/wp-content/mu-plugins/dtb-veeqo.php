@@ -149,6 +149,13 @@ function dtb_veeqo_register_routes(): void {
 		'callback'            => 'dtb_veeqo_route_webhook_order',
 		'permission_callback' => '__return_true',
 	] );
+
+	// ── POST /dtb/v1/repair-request — repair service form submission ──────────
+	register_rest_route( $ns, '/repair-request', [
+		'methods'             => 'POST',
+		'callback'            => 'dtb_veeqo_route_repair_request',
+		'permission_callback' => '__return_true',
+	] );
 }
 
 
@@ -1140,5 +1147,332 @@ function dtb_veeqo_send_alert( string $subject, string $body ): void {
 		'[Drywall Toolbox] ' . $subject,
 		$body,
 		[ 'Content-Type: text/plain; charset=UTF-8' ]
+	);
+}
+
+
+// =============================================================================
+// SECTION 11 — REPAIR SERVICE REQUEST ENDPOINT
+//
+// POST /dtb/v1/repair-request
+//
+// Accepts the 5-step repair form submission from the React SPA, creates a
+// WooCommerce order using the WC internal PHP API (no HTTP round-trip needed),
+// optionally syncs the service order to Veeqo for fulfilment tracking, and
+// emails a confirmation to the customer.
+//
+// Security:
+//   • Rate-limited: 5 repair submissions per IP per hour.
+//   • Input sanitised before any write operation.
+//   • No JWT required (unauthenticated guests submit repair requests).
+//
+// WooCommerce order:
+//   • Status: wc-pending (awaiting quote approval)
+//   • Line item: custom "Repair Service — {brand} {model}" item (no WC product needed)
+//   • Shipping address: customer's return address
+//   • Order meta: full service details stored as _dtb_repair_* meta keys
+//   • Order note: service type, priority, and issue description
+//
+// Veeqo sync:
+//   • Only runs when DTB_VEEQO_API_KEY is configured.
+//   • Uses the same dtb_veeqo_build_order_payload() builder as standard orders.
+// =============================================================================
+
+/**
+ * POST /dtb/v1/repair-request
+ *
+ * Expected JSON body:
+ * {
+ *   "fullName":        "Jane Smith",
+ *   "email":           "jane@example.com",
+ *   "phone":           "555-000-1234",
+ *   "company":         "Acme Drywall",            // optional
+ *   "toolBrand":       "Columbia",
+ *   "toolCategory":    "Finishing Boxes",
+ *   "toolModel":       "Columbia 10-inch Flat Box",
+ *   "serialNumber":    "COL-2024-XXXXX",           // optional
+ *   "toolAge":         "3–5 years",                // optional
+ *   "serviceType":     "General Repair",
+ *   "priority":        "Standard (5–7 business days)",
+ *   "issueStart":      "This week",                // optional
+ *   "issueDescription":"Pump losing pressure…",
+ *   "contactPreference":"email",
+ *   "address":         "123 Main St",
+ *   "city":            "Sacramento",
+ *   "state":           "CA",
+ *   "zip":             "95814",
+ *   "country":         "US",
+ *   "shippingRateId":  "standard",
+ *   "shippingRateName":"Standard Shipping (5–7 business days)",
+ *   "shippingRatePrice":0
+ * }
+ */
+function dtb_veeqo_route_repair_request( WP_REST_Request $request ): WP_REST_Response {
+	// ── Rate limit: 5 submissions per IP per hour ─────────────────────────────
+	$ip      = dtb_get_client_ip();
+	$rl_key  = 'dtb_repair_rl_' . md5( $ip );
+	$rl_cnt  = (int) get_transient( $rl_key );
+	if ( $rl_cnt >= 5 ) {
+		$resp = new WP_REST_Response(
+			dtb_error_envelope( 'rate_limited', 'Too many repair requests. Please try again in an hour.', 429 ),
+			429
+		);
+		$resp->header( 'Retry-After', '3600' );
+		return $resp;
+	}
+	set_transient( $rl_key, $rl_cnt + 1, HOUR_IN_SECONDS );
+
+	$body = $request->get_json_params();
+	if ( empty( $body ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'invalid_body', 'Request body must be valid JSON.', 400 ),
+			400
+		);
+	}
+
+	// ── Sanitise all inputs ───────────────────────────────────────────────────
+	$full_name    = sanitize_text_field( $body['fullName']        ?? '' );
+	$email        = sanitize_email(      $body['email']           ?? '' );
+	$phone        = sanitize_text_field( $body['phone']           ?? '' );
+	$company      = sanitize_text_field( $body['company']         ?? '' );
+	$tool_brand   = sanitize_text_field( $body['toolBrand']       ?? '' );
+	$tool_cat     = sanitize_text_field( $body['toolCategory']    ?? '' );
+	$tool_model   = sanitize_text_field( $body['toolModel']       ?? '' );
+	$serial       = sanitize_text_field( $body['serialNumber']    ?? '' );
+	$tool_age     = sanitize_text_field( $body['toolAge']         ?? '' );
+	$svc_type     = sanitize_text_field( $body['serviceType']     ?? '' );
+	$priority     = sanitize_text_field( $body['priority']        ?? '' );
+	$issue_start  = sanitize_text_field( $body['issueStart']      ?? '' );
+	$issue_desc   = sanitize_textarea_field( $body['issueDescription'] ?? '' );
+	$contact_pref = sanitize_text_field( $body['contactPreference'] ?? 'email' );
+	$address      = sanitize_text_field( $body['address']         ?? '' );
+	$city         = sanitize_text_field( $body['city']            ?? '' );
+	$state        = sanitize_text_field( $body['state']           ?? '' );
+	$zip          = sanitize_text_field( $body['zip']             ?? '' );
+	$country      = strtoupper( sanitize_text_field( $body['country'] ?? 'US' ) );
+	$rate_id      = sanitize_text_field( $body['shippingRateId']   ?? '' );
+	$rate_name    = sanitize_text_field( $body['shippingRateName'] ?? '' );
+	$rate_price   = (float) ( $body['shippingRatePrice'] ?? 0 );
+
+	// ── Validate required fields ──────────────────────────────────────────────
+	$required = compact( 'full_name', 'email', 'phone', 'tool_brand', 'svc_type', 'priority', 'issue_desc', 'address', 'city', 'state', 'zip' );
+	foreach ( $required as $field => $value ) {
+		if ( '' === trim( $value ) ) {
+			return new WP_REST_Response(
+				dtb_error_envelope( 'validation_error', sprintf( 'Field "%s" is required.', $field ), 422 ),
+				422
+			);
+		}
+	}
+
+	if ( ! is_email( $email ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'validation_error', 'A valid email address is required.', 422 ),
+			422
+		);
+	}
+
+	// ── Build tool description ────────────────────────────────────────────────
+	$tool_parts = array_filter( [ $tool_brand, $tool_model ?: $tool_cat ] );
+	$tool_desc  = implode( ' — ', $tool_parts );
+
+	// ── Require WooCommerce ───────────────────────────────────────────────────
+	if ( ! function_exists( 'wc_create_order' ) ) {
+		dtb_veeqo_log( 'error', 'repair_wc_missing', 'WooCommerce not available for repair order creation.' );
+		return new WP_REST_Response(
+			dtb_error_envelope( 'wc_unavailable', 'Store not available. Please try again or call us directly.', 503 ),
+			503
+		);
+	}
+
+	// ── Create WooCommerce order ──────────────────────────────────────────────
+	$wc_order = wc_create_order( [
+		'status'        => 'pending',
+		'customer_id'   => 0,
+		'customer_note' => $issue_desc,
+	] );
+
+	if ( is_wp_error( $wc_order ) ) {
+		dtb_veeqo_log( 'error', 'repair_order_failed', $wc_order->get_error_message() );
+		return new WP_REST_Response(
+			dtb_error_envelope( 'order_error', 'Could not create the service order. Please try again.', 500 ),
+			500
+		);
+	}
+
+	// Set billing address.
+	$name_parts = explode( ' ', $full_name, 2 );
+	$first_name = $name_parts[0] ?? '';
+	$last_name  = $name_parts[1] ?? '';
+
+	$wc_order->set_billing_first_name( $first_name );
+	$wc_order->set_billing_last_name( $last_name );
+	$wc_order->set_billing_company( $company );
+	$wc_order->set_billing_email( $email );
+	$wc_order->set_billing_phone( $phone );
+	$wc_order->set_billing_address_1( $address );
+	$wc_order->set_billing_city( $city );
+	$wc_order->set_billing_state( $state );
+	$wc_order->set_billing_postcode( $zip );
+	$wc_order->set_billing_country( $country );
+
+	// Set shipping address (same as billing — tool is shipped from and returned to this address).
+	$wc_order->set_shipping_first_name( $first_name );
+	$wc_order->set_shipping_last_name( $last_name );
+	$wc_order->set_shipping_company( $company );
+	$wc_order->set_shipping_address_1( $address );
+	$wc_order->set_shipping_city( $city );
+	$wc_order->set_shipping_state( $state );
+	$wc_order->set_shipping_postcode( $zip );
+	$wc_order->set_shipping_country( $country );
+
+	// Add custom repair-service line item (no WC product required).
+	$item = new WC_Order_Item_Fee();
+	$item->set_name( sprintf( 'Repair Service — %s', $tool_desc ) );
+	$item->set_amount( 0.00 );  // Quote pending; amount set after technician review.
+	$item->set_total( 0.00 );
+	$item->set_tax_status( 'none' );
+	$wc_order->add_item( $item );
+
+	// Add shipping line item when customer selected a rate.
+	if ( '' !== $rate_id && $rate_price > 0 ) {
+		$ship_item = new WC_Order_Item_Shipping();
+		$ship_item->set_method_title( $rate_name ?: 'Shipping' );
+		$ship_item->set_method_id( 'dtb_veeqo_rates' );
+		$ship_item->set_instance_id( '0' );
+		$ship_item->set_total( (string) $rate_price );
+		$wc_order->add_item( $ship_item );
+	}
+
+	// Store all repair service details as order meta.
+	$wc_order->update_meta_data( '_dtb_repair_tool_brand',     $tool_brand );
+	$wc_order->update_meta_data( '_dtb_repair_tool_category',  $tool_cat );
+	$wc_order->update_meta_data( '_dtb_repair_tool_model',     $tool_model );
+	$wc_order->update_meta_data( '_dtb_repair_serial',         $serial );
+	$wc_order->update_meta_data( '_dtb_repair_tool_age',       $tool_age );
+	$wc_order->update_meta_data( '_dtb_repair_service_type',   $svc_type );
+	$wc_order->update_meta_data( '_dtb_repair_priority',       $priority );
+	$wc_order->update_meta_data( '_dtb_repair_issue_start',    $issue_start );
+	$wc_order->update_meta_data( '_dtb_repair_contact_pref',   $contact_pref );
+	$wc_order->update_meta_data( '_dtb_repair_shipping_rate',  $rate_id );
+	$wc_order->update_meta_data( '_dtb_order_type',            'repair_service' );
+
+	// Add a readable internal note.
+	$wc_order->add_order_note( sprintf(
+		"[Repair Service Request]\nTool: %s\nSerial: %s | Age: %s\nService: %s | Priority: %s\nIssue started: %s\nContact preference: %s\n\nDescription:\n%s",
+		$tool_desc,
+		$serial ?: 'N/A',
+		$tool_age ?: 'Unknown',
+		$svc_type,
+		$priority,
+		$issue_start ?: 'Not specified',
+		$contact_pref,
+		$issue_desc
+	), false );
+
+	// Recalculate totals and save.
+	$wc_order->calculate_totals();
+	$wc_order->save();
+
+	$wc_order_id     = $wc_order->get_id();
+	$wc_order_number = $wc_order->get_order_number();
+
+	dtb_veeqo_log( 'info', 'repair_order_created', 'Repair service WC order created.', [
+		'wc_order_id'     => $wc_order_id,
+		'wc_order_number' => $wc_order_number,
+		'tool'            => $tool_desc,
+		'email_domain'    => substr( $email, strpos( $email, '@' ) ?: 0 ),
+		'service_type'    => $svc_type,
+		'priority'        => $priority,
+	] );
+
+	// ── Optional: sync to Veeqo ───────────────────────────────────────────────
+	$veeqo_order_id = null;
+	if ( dtb_veeqo_enabled() ) {
+		$veeqo_payload = dtb_veeqo_build_order_payload( $wc_order );
+		if ( $veeqo_payload ) {
+			$vresult = dtb_veeqo_request( 'POST', '/orders', [], $veeqo_payload );
+			if ( $vresult['ok'] && ! empty( $vresult['data']['id'] ) ) {
+				$veeqo_order_id = (int) $vresult['data']['id'];
+				$wc_order->update_meta_data( '_veeqo_order_id', $veeqo_order_id );
+				$wc_order->add_order_note( sprintf( '[Veeqo] Repair order created: #%d.', $veeqo_order_id ) );
+				$wc_order->save_meta_data();
+				dtb_veeqo_log( 'info', 'repair_veeqo_synced', 'Repair order synced to Veeqo.', [
+					'wc_order_id'    => $wc_order_id,
+					'veeqo_order_id' => $veeqo_order_id,
+				] );
+			} else {
+				// Non-fatal: WC order was already created; log but continue.
+				dtb_veeqo_log( 'warn', 'repair_veeqo_sync_failed', 'Could not sync repair order to Veeqo.', [
+					'wc_order_id' => $wc_order_id,
+					'error'       => $vresult['error'],
+				] );
+			}
+		}
+	}
+
+	// ── Send customer confirmation email ──────────────────────────────────────
+	dtb_veeqo_send_repair_confirmation( $wc_order, $tool_desc, $svc_type, $priority );
+
+	return new WP_REST_Response( [
+		'success'         => true,
+		'wc_order_id'     => $wc_order_id,
+		'wc_order_number' => $wc_order_number,
+		'veeqo_order_id'  => $veeqo_order_id,
+		'message'         => 'Your repair request has been received. We will contact you within one business day with a quote.',
+	], 201 );
+}
+
+/**
+ * Send the customer confirmation email for a repair request.
+ *
+ * @param WC_Order $order     The newly created WooCommerce order.
+ * @param string   $tool_desc Human-readable tool description.
+ * @param string   $svc_type  Service type string.
+ * @param string   $priority  Priority string.
+ */
+function dtb_veeqo_send_repair_confirmation( WC_Order $order, string $tool_desc, string $svc_type, string $priority ): void {
+	$to      = $order->get_billing_email();
+	$name    = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
+	$order_n = $order->get_order_number();
+
+	if ( empty( $to ) ) {
+		return;
+	}
+
+	$subject = sprintf( '[Drywall Toolbox] Repair Request #%s Received', $order_n );
+
+	$body = sprintf(
+		"Hi %s,\n\nThank you for contacting Drywall Toolbox. We've received your repair request and will follow up within one business day.\n\nRequest Details:\n  Order #:      %s\n  Tool:         %s\n  Service Type: %s\n  Priority:     %s\n\nOur service team will review your request and send you a quote and estimated turnaround time.\n\nIf you have any questions, reply to this email or call us directly.\n\nThank you,\nDrywall Toolbox Service Team\nhttps://drywalltoolbox.com",
+		$name,
+		$order_n,
+		$tool_desc,
+		$svc_type,
+		$priority
+	);
+
+	wp_mail(
+		$to,
+		$subject,
+		$body,
+		[
+			'Content-Type: text/plain; charset=UTF-8',
+			'From: Drywall Toolbox Service <' . ( get_option( 'admin_email' ) ?: 'noreply@drywalltoolbox.com' ) . '>',
+		]
+	);
+
+	// Also notify the admin.
+	dtb_veeqo_send_alert(
+		sprintf( 'New Repair Request #%s — %s', $order_n, $tool_desc ),
+		sprintf(
+			"New repair service request received.\n\nOrder #: %s\nCustomer: %s <%s>\nTool: %s\nService: %s\nPriority: %s\n\nView in WP Admin:\n%s",
+			$order_n,
+			$name,
+			$order->get_billing_email(),
+			$tool_desc,
+			$svc_type,
+			$priority,
+			admin_url( 'post.php?post=' . $order->get_id() . '&action=edit' )
+		)
 	);
 }

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
+import veeqoService from '../services/veeqo';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Brands & tools sourced from schematicMappings — the single source of truth
@@ -48,13 +49,17 @@ const BLANK_FORM = {
   toolBrand: '', toolCategory: '', toolModel: '', serialNumber: '', toolAge: '',
   serviceType: '', priority: '', issueStart: '', issueDescription: '',
   contactPreference: 'email',
+  // Shipping fields (Step 4)
+  address: '', city: '', state: '', zip: '', country: 'US',
+  shippingRateId: '', shippingRateName: '', shippingRatePrice: null,
 };
 
 const STEPS = [
-  { id: 1, label: 'Contact Info',     short: 'Contact'  },
-  { id: 2, label: 'Tool Details',     short: 'Tool'     },
-  { id: 3, label: 'Service Request',  short: 'Service'  },
-  { id: 4, label: 'Review & Submit',  short: 'Review'   },
+  { id: 1, label: 'Contact Info',    short: 'Contact'  },
+  { id: 2, label: 'Tool Details',    short: 'Tool'     },
+  { id: 3, label: 'Service Request', short: 'Service'  },
+  { id: 4, label: 'Shipping',        short: 'Shipping' },
+  { id: 5, label: 'Review & Submit', short: 'Review'   },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -338,12 +343,61 @@ export default function Repairs() {
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef(null);
 
+  // Submission state
+  const [submitting, setSubmitting]   = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [orderResult, setOrderResult] = useState(null);
+
+  // Shipping rate state
+  const [rates, setRates]           = useState([]);
+  const [ratesLoading, setRatesLoading] = useState(false);
+  const [ratesError, setRatesError] = useState('');
+
   /* ── field helpers ── */
   const set = (field) => (e) =>
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
 
   const clearErr = (field) =>
     setErrors((prev) => { const n = { ...prev }; delete n[field]; return n; });
+
+  /* ── fetch shipping rates for the destination in formData ── */
+  const fetchShippingRates = useCallback(async (data) => {
+    const { address, city, state: st, zip, country } = data;
+    if (!address || !city || !st || !zip) return;
+
+    setRatesLoading(true);
+    setRatesError('');
+    try {
+      const destination = { address, city, state: st, zip, country };
+      // Repair service items don't have WC product IDs; pass a placeholder.
+      const items = [{
+        id: 0,
+        sku: 'REPAIR-SVC',
+        name: `Repair Service — ${ data.toolBrand } ${ data.toolModel || data.toolCategory }`.trim(),
+        quantity: 1,
+        price: 0,
+        weight: 5, // estimated tool weight in lbs
+        category: 'repair service',
+      }];
+      const result = await veeqoService.getShippingRates(destination, items);
+      setRates(result);
+
+      // Pre-select the first rate.
+      if (result.length > 0 && !data.shippingRateId) {
+        setFormData((prev) => ({
+          ...prev,
+          shippingRateId:    result[0].id,
+          shippingRateName:  result[0].name,
+          shippingRatePrice: result[0].price,
+        }));
+      }
+    } catch (err) {
+      setRatesError('Could not load shipping options. Please try again.');
+      console.error('Shipping rate fetch failed:', err);
+    } finally {
+      setRatesLoading(false);
+    }
+  }, []);
 
   /* ── per-step validation ── */
   function validate(s) {
@@ -368,6 +422,13 @@ export default function Repairs() {
       if (!formData.priority)                    errs.priority     = 'Please select a priority level.';
       if (!formData.issueDescription.trim())     errs.issueDescription = 'Please describe the issue.';
     }
+    if (s === 4) {
+      if (!formData.address.trim())              errs.address      = 'Street address is required.';
+      if (!formData.city.trim())                 errs.city         = 'City is required.';
+      if (!formData.state.trim())                errs.state        = 'State / Province is required.';
+      if (!formData.zip.trim())                  errs.zip          = 'ZIP / Postal code is required.';
+      if (!formData.shippingRateId)              errs.shippingRateId = 'Please select a shipping option.';
+    }
     return errs;
   }
 
@@ -375,7 +436,14 @@ export default function Repairs() {
     const errs = validate(step);
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
-    setStep((s) => s + 1);
+    const nextStep = step + 1;
+    setStep(nextStep);
+
+    // When entering Step 4 (Shipping), auto-fetch rates if address already present.
+    if (nextStep === 4) {
+      fetchShippingRates(formData);
+    }
+
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -385,10 +453,45 @@ export default function Repairs() {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSubmitted(true);
-    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setSubmitError('');
+    setSubmitting(true);
+
+    try {
+      const result = await veeqoService.submitRepairRequest({
+        fullName:           formData.fullName,
+        email:              formData.email,
+        phone:              formData.phone,
+        company:            formData.company,
+        toolBrand:          formData.toolBrand,
+        toolCategory:       formData.toolCategory,
+        toolModel:          formData.toolModel,
+        serialNumber:       formData.serialNumber,
+        toolAge:            formData.toolAge,
+        serviceType:        formData.serviceType,
+        priority:           formData.priority,
+        issueStart:         formData.issueStart,
+        issueDescription:   formData.issueDescription,
+        contactPreference:  formData.contactPreference,
+        address:            formData.address,
+        city:               formData.city,
+        state:              formData.state,
+        zip:                formData.zip,
+        country:            formData.country,
+        shippingRateId:     formData.shippingRateId,
+        shippingRateName:   formData.shippingRateName,
+        shippingRatePrice:  formData.shippingRatePrice,
+      });
+
+      setOrderResult(result);
+      setSubmitted(true);
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      setSubmitError(err.message || 'Submission failed. Please try again or call us directly.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function resetForm() {
@@ -398,6 +501,9 @@ export default function Repairs() {
     setStep(1);
     setErrors({});
     setSubmitted(false);
+    setOrderResult(null);
+    setSubmitError('');
+    setRates([]);
   }
 
   /* ── shared input style ── */
@@ -594,6 +700,11 @@ export default function Repairs() {
                 <h3 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 800, color: 'black', margin: '0 0 12px 0' }}>
                   Request Submitted!
                 </h3>
+                {orderResult?.wc_order_number && (
+                  <p style={{ fontSize: '0.82rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 8px 0' }}>
+                    Order <strong style={{ color: 'black' }}>#{orderResult.wc_order_number}</strong>
+                  </p>
+                )}
                 <p style={{ fontSize: '0.95rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 8px 0', lineHeight: 1.6 }}>
                   Thank you, <strong>{formData.fullName}</strong>. We received your repair inquiry for{' '}
                   <strong>{getToolDisplayName(formData)}</strong>.
@@ -1020,8 +1131,194 @@ export default function Repairs() {
                   </div>
                 )}
 
-                {/* ── STEP 4: Review & Submit ── */}
+                {/* ── STEP 4: Shipping ── */}
                 {step === 4 && (
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'black', margin: '0 0 6px 0' }}>
+                      Return Shipping
+                    </h3>
+                    <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 28px 0' }}>
+                      Enter the address where we should return your repaired tool. We'll email you a prepaid inbound
+                      shipping label, and the selected option covers return delivery.
+                    </p>
+
+                    {/* Address fields */}
+                    <Field label="Street Address" required>
+                      <input
+                        type="text" className={inputCls}
+                        placeholder="123 Main St"
+                        value={formData.address}
+                        onChange={(e) => { set('address')(e); clearErr('address'); }}
+                        autoComplete="street-address"
+                      />
+                      {errors.address && <p style={errStyle}>{errors.address}</p>}
+                    </Field>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0 20px' }}>
+                      <Field label="City" required>
+                        <input
+                          type="text" className={inputCls}
+                          placeholder="Sacramento"
+                          value={formData.city}
+                          onChange={(e) => { set('city')(e); clearErr('city'); }}
+                          autoComplete="address-level2"
+                        />
+                        {errors.city && <p style={errStyle}>{errors.city}</p>}
+                      </Field>
+
+                      <Field label="State / Province" required>
+                        <input
+                          type="text" className={inputCls}
+                          placeholder="CA"
+                          value={formData.state}
+                          onChange={(e) => { set('state')(e); clearErr('state'); }}
+                          autoComplete="address-level1"
+                        />
+                        {errors.state && <p style={errStyle}>{errors.state}</p>}
+                      </Field>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0 20px' }}>
+                      <Field label="ZIP / Postal Code" required>
+                        <input
+                          type="text" className={inputCls}
+                          placeholder="95814"
+                          value={formData.zip}
+                          onChange={(e) => { set('zip')(e); clearErr('zip'); }}
+                          autoComplete="postal-code"
+                        />
+                        {errors.zip && <p style={errStyle}>{errors.zip}</p>}
+                      </Field>
+
+                      <Field label="Country">
+                        <select
+                          className={inputCls}
+                          style={{ cursor: 'pointer' }}
+                          value={formData.country}
+                          onChange={(e) => {
+                            set('country')(e);
+                            // Reset rate when country changes.
+                            setFormData((prev) => ({ ...prev, country: e.target.value, shippingRateId: '', shippingRateName: '', shippingRatePrice: null }));
+                            setRates([]);
+                          }}
+                        >
+                          <option value="US">United States</option>
+                          <option value="CA">Canada</option>
+                          <option value="MX">Mexico</option>
+                          <option value="GB">United Kingdom</option>
+                          <option value="AU">Australia</option>
+                          <option value="OTHER">Other</option>
+                        </select>
+                      </Field>
+                    </div>
+
+                    {/* Refresh rates button */}
+                    <div style={{ marginBottom: '24px' }}>
+                      <button
+                        type="button"
+                        onClick={() => fetchShippingRates(formData)}
+                        disabled={ratesLoading || !formData.address || !formData.city || !formData.state || !formData.zip}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '6px',
+                          padding: '8px 16px',
+                          borderRadius: '3px',
+                          border: '1px solid var(--primary-600)',
+                          background: 'transparent',
+                          color: 'var(--primary-600)',
+                          cursor: (!formData.address || !formData.city || !formData.state || !formData.zip) ? 'not-allowed' : 'pointer',
+                          fontSize: '0.8rem', fontWeight: 700,
+                          opacity: (!formData.address || !formData.city || !formData.state || !formData.zip) ? 0.45 : 1,
+                          transition: 'opacity 0.15s',
+                        }}
+                      >
+                        {ratesLoading ? (
+                          <>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                              <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                            </svg>
+                            Calculating…
+                          </>
+                        ) : (
+                          <>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.42"/>
+                            </svg>
+                            {rates.length > 0 ? 'Refresh Rates' : 'Get Shipping Rates'}
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Rate options */}
+                    {ratesError && (
+                      <p style={{ fontSize: '0.82rem', color: '#ef4444', marginBottom: '16px' }}>{ratesError}</p>
+                    )}
+                    {rates.length > 0 && (
+                      <div style={{ marginBottom: '8px' }}>
+                        <p style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(15,23,42,0.45)', marginBottom: '10px' }}>
+                          Select Shipping Option
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {rates.map((rate) => {
+                            const active = formData.shippingRateId === rate.id;
+                            return (
+                              <label
+                                key={rate.id}
+                                style={{
+                                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                  padding: '12px 16px',
+                                  borderRadius: '6px',
+                                  border: active ? '2px solid var(--primary-600)' : '1.5px solid rgba(15,23,42,0.14)',
+                                  background: active ? 'rgba(37,99,235,0.04)' : 'white',
+                                  cursor: 'pointer',
+                                  transition: 'border-color 0.15s, background 0.15s',
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <input
+                                    type="radio"
+                                    name="shippingRate"
+                                    value={rate.id}
+                                    checked={active}
+                                    onChange={() => {
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        shippingRateId:    rate.id,
+                                        shippingRateName:  rate.name,
+                                        shippingRatePrice: rate.price,
+                                      }));
+                                      clearErr('shippingRateId');
+                                    }}
+                                    style={{ accentColor: 'var(--primary-600)', width: '16px', height: '16px', flexShrink: 0 }}
+                                  />
+                                  <span style={{ fontSize: '0.875rem', fontWeight: active ? 700 : 500, color: 'black' }}>
+                                    {rate.name}
+                                  </span>
+                                </div>
+                                <span style={{
+                                  fontSize: '0.875rem', fontWeight: 700,
+                                  color: rate.price === 0 ? '#16a34a' : 'black',
+                                  whiteSpace: 'nowrap', marginLeft: '12px',
+                                }}>
+                                  {rate.price === 0 ? 'FREE' : `$${rate.price.toFixed(2)}`}
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                        {errors.shippingRateId && <p style={errStyle}>{errors.shippingRateId}</p>}
+                      </div>
+                    )}
+                    {rates.length === 0 && !ratesLoading && !ratesError && (
+                      <p style={{ fontSize: '0.82rem', color: 'rgba(15,23,42,0.45)', marginTop: '4px' }}>
+                        Enter your address above then click <strong>Get Shipping Rates</strong> to see available options.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* ── STEP 5: Review & Submit ── */}
+                {step === 5 && (
                   <div>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'black', margin: '0 0 6px 0' }}>
                       Review Your Request
@@ -1134,6 +1431,34 @@ export default function Repairs() {
                       )}
                     </div>
 
+                    {/* Shipping section */}
+                    <div style={{
+                      background: 'var(--alloy-base)',
+                      border: '1px solid var(--machined-border)',
+                      borderRadius: '6px',
+                      padding: '16px 20px',
+                      marginBottom: '24px',
+                    }}>
+                      <div style={{
+                        fontSize: '0.7rem', fontWeight: 800,
+                        textTransform: 'uppercase', letterSpacing: '0.1em',
+                        color: 'var(--primary-600)', marginBottom: '8px',
+                      }}>
+                        Return Shipping
+                      </div>
+                      <ReviewRow label="Address"    value={formData.address} />
+                      <ReviewRow label="City"       value={formData.city} />
+                      <ReviewRow label="State"      value={formData.state} />
+                      <ReviewRow label="ZIP"        value={formData.zip} />
+                      <ReviewRow label="Country"    value={formData.country} />
+                      <ReviewRow
+                        label="Shipping Option"
+                        value={formData.shippingRateName
+                          ? `${formData.shippingRateName} — ${formData.shippingRatePrice === 0 ? 'FREE' : `$${Number(formData.shippingRatePrice).toFixed(2)}`}`
+                          : ''}
+                      />
+                    </div>
+
                     {/* Disclaimer */}
                     <p style={{
                       fontSize: '0.78rem', color: 'rgba(15,23,42,0.45)',
@@ -1143,6 +1468,21 @@ export default function Repairs() {
                       preferred method to discuss repair options, pricing, and scheduling. No charges are
                       incurred until you approve a quote.
                     </p>
+
+                    {/* Submit error */}
+                    {submitError && (
+                      <div style={{
+                        background: '#fef2f2',
+                        border: '1px solid #fca5a5',
+                        borderRadius: '6px',
+                        padding: '12px 16px',
+                        marginTop: '12px',
+                        fontSize: '0.875rem',
+                        color: '#dc2626',
+                      }}>
+                        {submitError}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1187,7 +1527,7 @@ export default function Repairs() {
                     </button>
                   )}
 
-                  {step < 4 ? (
+                  {step < 5 ? (
                     <button
                       type="button"
                       className="alloy-button"
@@ -1203,20 +1543,30 @@ export default function Repairs() {
                     <button
                       type="submit"
                       className="alloy-button"
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                      disabled={submitting}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: submitting ? 'not-allowed' : 'pointer', opacity: submitting ? 0.7 : 1 }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                      </svg>
-                      Submit Repair Request
+                      {submitting ? (
+                        <>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                          </svg>
+                          Submitting…
+                        </>
+                      ) : (
+                        <>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                          </svg>
+                          Submit Repair Request
+                        </>
+                      )}
                     </button>
                   )}
                 </div>
               </form>
             )}
           </div>
-
-
         </div>
       </section>
 
