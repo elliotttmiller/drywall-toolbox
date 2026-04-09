@@ -203,11 +203,19 @@ function PhotoUploader({ photos, onChange }) {
   const [dragging, setDragging] = useState(false);
 
   const addFiles = useCallback((files) => {
-    const incoming = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    const MAX_BYTES = MAX_FILE_MB * 1024 * 1024;
+    const incoming = Array.from(files).filter((f) => {
+      if (!f.type.startsWith('image/')) return false;
+      if (f.size > MAX_BYTES) {
+        alert(`"${f.name}" exceeds the ${MAX_FILE_MB} MB limit and was not added.`);
+        return false;
+      }
+      return true;
+    });
     const remaining = MAX_PHOTOS - photos.length;
     if (remaining <= 0) return;
     const toAdd = incoming.slice(0, remaining).map((file) => ({
-      id: `${Date.now()}-${Math.random()}`,
+      id: crypto.randomUUID(),
       file,
       preview: URL.createObjectURL(file),
       name: file.name,
@@ -404,7 +412,9 @@ function PhotoUploader({ photos, onChange }) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}>
-                {(p.size / 1024 / 1024).toFixed(1)} MB
+                {p.size >= 1024 * 1024
+                  ? `${(p.size / 1024 / 1024).toFixed(1)} MB`
+                  : `${Math.round(p.size / 1024)} KB`}
               </div>
             </div>
           ))}
