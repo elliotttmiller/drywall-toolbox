@@ -20,15 +20,20 @@ function getCategoriesForBrand(brand) {
 }
 
 /**
- * Returns the tool titles for a specific brand + category combination.
+ * Returns the tool model objects for a specific brand + category combination.
+ * Each object has { value, label } where value is the full display string
+ * stored in form state and label is the same (title + MPN when available).
  */
 function getModelsForBrandCategory(brand, category) {
   const entries = SCHEMATIC_DEFINITIONS[brand];
   if (!entries || !category) return [];
   return entries
     .filter((t) => t.category === category)
-    .map((t) => t.title)
-    .sort();
+    .map((t) => {
+      const label = t.mpn ? `${t.title} — ${t.mpn}` : t.title;
+      return { value: label, label };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 /**
@@ -625,7 +630,7 @@ export default function Repairs() {
                               {formData.toolCategory ? 'Select the specific model…' : 'Select a category first…'}
                             </option>
                             {getModelsForBrandCategory(formData.toolBrand, formData.toolCategory).map((model) => (
-                              <option key={model} value={model}>{model}</option>
+                              <option key={model.value} value={model.value}>{model.label}</option>
                             ))}
                           </select>
                           {errors.toolModel && <p style={errStyle}>{errors.toolModel}</p>}
