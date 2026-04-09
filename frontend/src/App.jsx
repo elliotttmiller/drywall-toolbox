@@ -3,7 +3,6 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import PageTransition from './components/PageTransition';
 import LoadingSpinner from './components/LoadingSpinner';
 import { CartProvider } from './context/CartContext';
-import { VeeqoProvider } from './context/VeeqoContext';
 import { WooCommerceProvider } from './context/WooCommerceContext';
 import { AuthProvider } from './auth/AuthContext.js';
 
@@ -30,8 +29,6 @@ const OrderConfirmation  = lazy(() => import('./pages/OrderConfirmation'));
 const About              = lazy(() => import('./pages/About'));
 const Contact            = lazy(() => import('./pages/Contact'));
 // Admin/settings pages are rarely visited — ideal lazy candidates
-const VeeqoSettings      = lazy(() => import('./pages/VeeqoSettings'));
-const VeeqoCallback      = lazy(() => import('./pages/VeeqoCallback'));
 const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
 // Auth + account pages — lazy-loaded, isolated from WP admin
 const Login              = lazy(() => import('./pages/Login'));
@@ -102,8 +99,6 @@ function AppRoutes() {
           <Route path="/order/:id"             element={<OrderConfirmation />} />
           <Route path="/about"                 element={<About />} />
           <Route path="/contact"               element={<Contact />} />
-          <Route path="/settings/veeqo"        element={<VeeqoSettings />} />
-          <Route path="/veeqo/callback"        element={<VeeqoCallback />} />
           <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
           {/* Auth + account pages — dev-only, standalone, no WP admin changes */}
           <Route path="/login"                 element={<Login />} />
@@ -133,8 +128,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <VeeqoProvider>
-        <WooCommerceProvider>
+      <WooCommerceProvider>
           <CartProvider>
           <Router basename={basename}>
             <ScrollToTop />
@@ -162,7 +156,6 @@ function App() {
           </Router>
           </CartProvider>
         </WooCommerceProvider>
-      </VeeqoProvider>
     </AuthProvider>
   );
 }
