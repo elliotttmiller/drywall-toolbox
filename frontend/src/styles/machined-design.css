@@ -1795,8 +1795,6 @@ aside input[type="range"],
     font-size: 0.875em;
     line-height: 1.7142857;
     border: 1px solid var(--tw-prose-td-borders);
-    border-radius: 0.5rem;
-    overflow: hidden;
 }
 
 .prose thead {
