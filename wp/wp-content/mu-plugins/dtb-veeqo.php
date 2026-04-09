@@ -642,7 +642,9 @@ function dtb_veeqo_route_webhook_order( WP_REST_Request $request ): WP_REST_Resp
 // When a WooCommerce order's status transitions to "processing" (i.e. payment
 // confirmed), the order is pushed to Veeqo for fulfilment.
 //
-// The woocommerce_order_status_changed hook below handles both cases:
+// dtb_veeqo_sync_new_order() is the helper that creates the Veeqo order.
+// It is invoked by dtb_veeqo_sync_order_status() below, which is bound to
+// woocommerce_order_status_changed and handles both cases:
 //   • New order reaching "processing" for the first time (creates it in Veeqo).
 //   • Already-synced order changing status (updates Veeqo status to match).
 //
@@ -1707,7 +1709,7 @@ add_filter( 'woocommerce_integrations', function ( array $integrations ): array 
 			public function __construct() {
 				$this->id                 = 'dtb_veeqo';
 				$this->method_title       = __( 'Drywall Toolbox Veeqo', 'woocommerce' );
-				$this->method_description = __( 'Connect this WooCommerce store to Veeqo for bi-directional order sync, real-time inventory, and automated fulfillment. Channel ID and Warehouse ID are auto-discovered from the Veeqo API when you save the API Key.', 'woocommerce' );
+				$this->method_description = __( 'Connect this WooCommerce store to Veeqo for bi-directional order sync, real-time inventory, and automated fulfilment. Channel ID and Warehouse ID are auto-discovered from the Veeqo API when you save the API Key.', 'woocommerce' );
 
 				$this->init_form_fields();
 				$this->init_settings();
