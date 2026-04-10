@@ -2810,43 +2810,48 @@ export default function Parts() {
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>
             </button>
-            {hotspotProduct?.images?.[0] ? (
-              <img
-                src={hotspotProduct.images[0]}
-                alt={activeHotspotPart.name}
-                className="hotspot-modal-image hotspot-modal-image--mobile"
-              />
-            ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
-              <div className="hotspot-modal-image-skeleton" aria-hidden="true" />
-            ) : null}
-            <h4 style={{
-              textTransform: 'uppercase',
-              fontSize: '0.8rem',
-              fontWeight: '700',
-              letterSpacing: '0.08em',
-              marginBottom: '10px',
-              paddingRight: '38px',
-              lineHeight: '1.35',
-              wordBreak: 'break-word',
-              color: '#0f172a'
-            }}>
-              {activeHotspotPart.name}
-            </h4>
-            <div className="part-meta" style={{ marginBottom: '14px', fontSize: '0.78rem' }}>
-              SKU: {activeHotspotPart.sku}
-              {activeHotspotPart.quantity > 1 && ` | Qty: ${activeHotspotPart.quantity}`}
-              <span style={{
-                marginLeft: '6px',
-                fontWeight: 700,
-                color: hotspotStockStatus === 'instock' ? '#16a34a'
-                     : hotspotStockStatus === 'outofstock' ? '#dc2626'
-                     : '#6b7280',
-              }}>
-                {hotspotStockStatus === 'instock' ? '● In Stock'
-               : hotspotStockStatus === 'outofstock' ? '● Out of Stock'
-               : hotspotStockStatus === 'unknown' ? '● Unavailable'
-               : '…'}
-              </span>
+            <div className="mobile-modal-top-row">
+              <div className="mobile-modal-thumb">
+                {hotspotProduct?.images?.[0] ? (
+                  <img
+                    src={hotspotProduct.images[0]}
+                    alt={activeHotspotPart.name}
+                    className="hotspot-modal-image hotspot-modal-image--mobile"
+                  />
+                ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
+                  <div className="hotspot-modal-image-skeleton" aria-hidden="true" />
+                ) : null}
+              </div>
+              <div className="mobile-modal-info">
+                <h4 style={{
+                  textTransform: 'uppercase',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  letterSpacing: '0.08em',
+                  marginBottom: '6px',
+                  lineHeight: '1.35',
+                  wordBreak: 'break-word',
+                  color: '#0f172a'
+                }}>
+                  {activeHotspotPart.name}
+                </h4>
+                <div className="part-meta" style={{ fontSize: '0.75rem' }}>
+                  SKU: {activeHotspotPart.sku}
+                  {activeHotspotPart.quantity > 1 && ` | Qty: ${activeHotspotPart.quantity}`}
+                  <span style={{
+                    marginLeft: '6px',
+                    fontWeight: 700,
+                    color: hotspotStockStatus === 'instock' ? '#16a34a'
+                         : hotspotStockStatus === 'outofstock' ? '#dc2626'
+                         : '#6b7280',
+                  }}>
+                    {hotspotStockStatus === 'instock' ? '● In Stock'
+                   : hotspotStockStatus === 'outofstock' ? '● Out of Stock'
+                   : hotspotStockStatus === 'unknown' ? '● Unavailable'
+                   : '…'}
+                  </span>
+                </div>
+              </div>
             </div>
             <div style={{
               display: 'flex',

@@ -60,17 +60,51 @@
   to   { opacity: 1; }
 }
 
-/* Larger, padded image in the mobile overlay where there is more vertical space */
+/* Thumbnail image inside the mobile overlay horizontal row */
 .hotspot-modal-image--mobile {
-  /* Responsive height — fills nicely on tiny phones, cap on larger devices */
-  max-height: clamp(120px, 30vw, 180px);
-  /* Uniform inset padding so the product image never touches the edges */
-  padding: 8px;
-  border-radius: 12px;
-  margin-bottom: 14px;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  padding: 6px;
+  border-radius: 10px;
+  margin-bottom: 0;
   background: #f1f5f9;
-  /* Ensure contained aspect regardless of product photo shape */
   object-fit: contain;
+}
+
+/* Horizontal top row: square thumbnail on left, info on right */
+.mobile-modal-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-right: 38px; /* space for close button */
+}
+
+.mobile-modal-thumb {
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Skeleton inside thumb gets the full thumb dimensions */
+.mobile-modal-thumb .hotspot-modal-image-skeleton {
+  width: 88px;
+  height: 88px;
+  border-radius: 10px;
+  margin-bottom: 0;
+}
+
+.mobile-modal-info {
+  flex: 1;
+  min-width: 0;
 }
 
 /* Loading skeleton displayed while hotspotProduct is still fetching */
