@@ -1886,12 +1886,12 @@ export default function Parts() {
     return () => { cancelled = true; clearTimeout(timeoutId); };
   }, [activeHotspotPart]);
 
-  // After the detached modal renders, recalculate its position using its actual
-  // rendered height so the initial estimate is corrected if needed.
+  // After the detached modal renders (or after the async product image loads and
+  // changes the modal height), recalculate its position so it stays in-bounds.
   useEffect(() => {
     if (!activeHotspotPart || isMobile || !lastHotspotRectRef.current) return;
     calculateAndSetModalPosition(lastHotspotRectRef.current);
-  }, [activeHotspotPart, isMobile, calculateAndSetModalPosition]);
+  }, [activeHotspotPart, hotspotProduct, isMobile, calculateAndSetModalPosition]);
     useEffect(() => {
       const t = setTimeout(() => {
         setScale(1);
@@ -2704,13 +2704,15 @@ export default function Parts() {
                   left: `${modalPosition.left}px`,
                 }}
               >
-                {hotspotProduct?.images?.[0] && (
+                {hotspotProduct?.images?.[0] ? (
                   <img
                     src={hotspotProduct.images[0]}
                     alt={activeHotspotPart.name}
                     className="hotspot-modal-image"
                   />
-                )}
+                ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
+                  <div className="hotspot-modal-image-skeleton hotspot-modal-image-skeleton--desktop" aria-hidden="true" />
+                ) : null}
                 <h4 style={{
                   textTransform: 'uppercase',
                   fontSize: '0.75rem',
@@ -2808,13 +2810,15 @@ export default function Parts() {
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>
             </button>
-            {hotspotProduct?.images?.[0]?.src && (
+            {hotspotProduct?.images?.[0] ? (
               <img
-                src={hotspotProduct.images[0].src}
-                alt={hotspotProduct.images[0].alt || activeHotspotPart.name}
+                src={hotspotProduct.images[0]}
+                alt={activeHotspotPart.name}
                 className="hotspot-modal-image hotspot-modal-image--mobile"
               />
-            )}
+            ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
+              <div className="hotspot-modal-image-skeleton" aria-hidden="true" />
+            ) : null}
             <h4 style={{
               textTransform: 'uppercase',
               fontSize: '0.8rem',
