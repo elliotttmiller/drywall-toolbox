@@ -62,6 +62,8 @@
 
 /* Thumbnail image inside the mobile overlay horizontal row */
 .hotspot-modal-image--mobile {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   max-height: none;
@@ -84,14 +86,12 @@
 
 .mobile-modal-thumb {
   flex-shrink: 0;
+  position: relative;
   width: clamp(80px, 22vw, 110px);
   height: clamp(80px, 22vw, 110px);
   border-radius: 10px;
   overflow: hidden;
   background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Skeleton inside thumb gets the full thumb dimensions */
