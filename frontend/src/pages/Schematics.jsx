@@ -2825,7 +2825,7 @@ export default function Parts() {
               <div className="mobile-modal-info">
                 <h4 style={{
                   textTransform: 'uppercase',
-                  fontSize: '0.78rem',
+                  fontSize: '0.8rem',
                   fontWeight: '700',
                   letterSpacing: '0.08em',
                   marginBottom: '6px',

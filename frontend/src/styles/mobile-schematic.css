@@ -86,7 +86,7 @@
   flex-shrink: 0;
   width: 88px;
   height: 88px;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   background: #f1f5f9;
   display: flex;
@@ -96,8 +96,8 @@
 
 /* Skeleton inside thumb gets the full thumb dimensions */
 .mobile-modal-thumb .hotspot-modal-image-skeleton {
-  width: 88px;
-  height: 88px;
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
   margin-bottom: 0;
 }
