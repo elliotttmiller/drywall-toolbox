@@ -40,13 +40,13 @@
       "id": "FA236",
       "name": "Columbia 6-32 x 1/8 Binder Slot (FA236)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA236"
     },
     {
       "id": "CF3A",
-      "name": "CF3A",
+      "name": "Columbia Columbia Screw for Corner Flusher Wheel",
       "quantity": 1,
-      "sku": ""
+      "sku": "CF3A"
     },
     {
       "id": "CF3B",
@@ -68,9 +68,9 @@
     },
     {
       "id": "CF3",
-      "name": "CF3",
+      "name": "Columbia Columbia Skid - Flusher",
       "quantity": 1,
-      "sku": ""
+      "sku": "CF3"
     },
     {
       "id": "CF1A",

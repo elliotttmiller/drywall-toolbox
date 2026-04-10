@@ -64,7 +64,7 @@
       "id": "CT115",
       "name": "Columbia Guard Ring (CT115)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT115"
     },
     {
       "id": "CT123A",
@@ -82,7 +82,7 @@
       "id": "CT117A",
       "name": "Columbia Base-New (CT117A)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT117A"
     },
     {
       "id": "CT122A",
@@ -124,7 +124,7 @@
       "id": "MP9C",
       "name": "Columbia Connecting Link (MP9C)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP9C"
     },
     {
       "id": "CT104",
@@ -148,7 +148,7 @@
       "id": "FA249",
       "name": "Columbia 8-32 x 3/16 Socket Head Set Screw (FA249)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA249"
     },
     {
       "id": "CT127",
@@ -160,13 +160,13 @@
       "id": "FA207",
       "name": "Columbia 4-40 Nyloc Nut (FA207)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA207"
     },
     {
       "id": "FA218",
       "name": "Columbia 4-40 x 3/8 Flat Slot (FA218)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA218"
     },
     {
       "id": "CTA128",
@@ -208,37 +208,37 @@
       "id": "FA291",
       "name": "Columbia ¼ - 20 Hex Nut (FA291)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA291"
     },
     {
       "id": "FA286",
       "name": "Columbia ¼ x ½ Flat Washer (FA286)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA286"
     },
     {
       "id": "FA286",
       "name": "Columbia ¼ x ½ Flat Washer (FA286)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA286"
     },
     {
       "id": "CT107",
       "name": "Columbia Piston Body (CT107)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT107"
     },
     {
       "id": "CT112",
       "name": "Columbia Slotted Bolt (CT112)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT112"
     },
     {
       "id": "CT110",
       "name": "Columbia Piston Cup Relief Washer (CT110)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT110"
     },
     {
       "id": "CT111",
@@ -250,37 +250,37 @@
       "id": "CT109",
       "name": "Columbia ¼ -20 Hex Nut (Castle Nut) (CT109)",
       "quantity": 1,
-      "sku": ""
+      "sku": "Castle Nut"
     },
     {
       "id": "CT72",
       "name": "Columbia Cable (CT72)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT72"
     },
     {
       "id": "CT126PA",
       "name": "Columbia Hand Grip Body Pump Action (CT126PA)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT126PA"
     },
     {
       "id": "CPT125B",
       "name": "Columbia Teflon Threaded Insert (CPT125B)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CPT125B"
     },
     {
       "id": "CT124B",
       "name": "Columbia Grip Guard Ring Bottom (CT124B)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT124B"
     },
     {
       "id": "CT124A",
       "name": "Columbia Grip Guard Ring Top (CT124A)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT124A"
     },
     {
       "id": "FA374",
@@ -292,7 +292,7 @@
       "id": "FA207",
       "name": "Columbia 4-40 Nyloc Nut (FA207)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA207"
     }
   ],
   "coordinates": {

@@ -8,21 +8,21 @@
   "parts": [
     {
       "id": "FA323",
-      "name": "FA323",
+      "name": "Columbia 1/4-20 X 1\" Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA323"
     },
     {
       "id": "CMT8",
-      "name": "CMT8",
+      "name": "Columbia Mastic Tube Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT8"
     },
     {
       "id": "FA286",
       "name": "Columbia ¼ x ½ Flat Washer (FA286)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA286"
     },
     {
       "id": "CT111",
@@ -34,7 +34,7 @@
       "id": "CT110",
       "name": "Columbia Piston Cup Relief Washer (CT110)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT110"
     },
     {
       "id": "CT111",
@@ -44,27 +44,27 @@
     },
     {
       "id": "CMT8",
-      "name": "CMT8",
+      "name": "Columbia Mastic Tube Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT8"
     },
     {
       "id": "FA286",
       "name": "Columbia ¼ x ½ Flat Washer (FA286)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA286"
     },
     {
       "id": "FA284",
-      "name": "FA284",
+      "name": "Columbia 3/16 x 3/8 SS Pop Rivet",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA284"
     },
     {
       "id": "CMT4",
-      "name": "CMT4",
+      "name": "Columbia Plunger Housing",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT4"
     },
     {
       "id": "FA256",
@@ -86,9 +86,9 @@
     },
     {
       "id": "CFB5B",
-      "name": "CFB5B",
+      "name": "Columbia Cone Ball End (Small - Fits Angle Heads)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5B"
     },
     {
       "id": "CFB5A",
@@ -104,9 +104,9 @@
     },
     {
       "id": "CMT2",
-      "name": "CMT2",
+      "name": "Columbia Cone insert(Bottom)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT2"
     },
     {
       "id": "CT115A",
@@ -118,13 +118,13 @@
       "id": "FA219",
       "name": "Columbia 4-40 x ½ Fillister Slot (FA219)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA219"
     },
     {
       "id": "FA239",
       "name": "Columbia 6-32 x ¼ Binder Slot (FA239)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA239"
     },
     {
       "id": "CMT1-24\"",
@@ -134,27 +134,27 @@
     },
     {
       "id": "CMT5",
-      "name": "CMT5",
+      "name": "Columbia Plastic Handle Collar",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT5"
     },
     {
       "id": "FA239",
       "name": "Columbia 6-32 x ¼ Binder Slot (FA239)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA239"
     },
     {
       "id": "FA235",
       "name": "Columbia 6-32 x 1/8 Set Screw (FA235)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA235"
     },
     {
       "id": "CMT6",
-      "name": "CMT6",
+      "name": "Columbia Cone insert(Top)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT6"
     }
   ],
   "coordinates": {

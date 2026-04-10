@@ -44,21 +44,21 @@
     },
     {
       "id": "FFB4A",
-      "name": "FFB4A",
+      "name": "Columbia Stainless Steel Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB4A"
     },
     {
       "id": "FFB4B",
-      "name": "FFB4B",
+      "name": "Columbia Stainless Steel Backing Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB4B"
     },
     {
       "id": "HFBB14-10",
-      "name": "HFBB14-10",
+      "name": "Columbia Hinged Door Gasket 10 in Fat Boy",
       "quantity": 1,
-      "sku": ""
+      "sku": "HFBB14-10"
     },
     {
       "id": "FA271",
@@ -70,7 +70,7 @@
       "id": "FA241",
       "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA241"
     },
     {
       "id": "FFB4C",
@@ -94,7 +94,7 @@
       "id": "FA238",
       "name": "Columbia 6-32 x 3/16 Fillister Slot (FA238)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA238"
     },
     {
       "id": "FFB7A",
@@ -136,13 +136,13 @@
       "id": "FA207",
       "name": "Columbia 4-40 Nyloc Nut (FA207)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA207"
     },
     {
       "id": "FA243",
       "name": "Columbia 6-32 x 3/8 Flat Slot (FA243)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA243"
     },
     {
       "id": "AB45",
@@ -170,9 +170,9 @@
     },
     {
       "id": "FFB5A",
-      "name": "FFB5A",
+      "name": "Columbia Axle Bushing",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB5A"
     },
     {
       "id": "AB40",
@@ -208,7 +208,7 @@
       "id": "FA241",
       "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA241"
     },
     {
       "id": "AB51",
@@ -244,7 +244,7 @@
       "id": "FA244",
       "name": "Columbia 6-32 x ½ Pan Slot (FA244)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA244"
     },
     {
       "id": "FFB12",
@@ -262,7 +262,7 @@
       "id": "FA241",
       "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA241"
     },
     {
       "id": "FFB37",
@@ -290,21 +290,21 @@
     },
     {
       "id": "FFB11",
-      "name": "FFB11",
+      "name": "Columbia Adjuster Spring (7,8,10)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB11"
     },
     {
       "id": "FFB18",
-      "name": "FFB18",
+      "name": "Columbia Rear Plate 8\"",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB1-8"
     },
     {
       "id": "FA258",
       "name": "Columbia 8-32 x ¼ Half Dog Set (FA258)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA258"
     },
     {
       "id": "FFB25-10",
@@ -344,15 +344,15 @@
     },
     {
       "id": "FFB2-10",
-      "name": "FFB2-10",
+      "name": "Columbia Roll Face 10\"",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB2-10"
     },
     {
       "id": "FFB2A",
-      "name": "FFB2A",
+      "name": "Columbia Bushing",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB2A"
     },
     {
       "id": "AB1",
@@ -364,7 +364,7 @@
       "id": "FA230",
       "name": "Columbia #6 Star Washer (FA230)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA230"
     },
     {
       "id": "FFB24-10",
@@ -386,9 +386,9 @@
     },
     {
       "id": "FFB19",
-      "name": "FFB19",
+      "name": "Columbia Brass Adjuster Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB19"
     },
     {
       "id": "FFB9-10",
@@ -400,7 +400,7 @@
       "id": "FA238",
       "name": "Columbia 6-32 x 3/16 Fillister Slot (FA238)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA238"
     },
     {
       "id": "FFB7",
@@ -416,9 +416,9 @@
     },
     {
       "id": "FA221",
-      "name": "FA221",
+      "name": "Columbia #6 Belleville Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA221"
     }
   ],
   "coordinates": {

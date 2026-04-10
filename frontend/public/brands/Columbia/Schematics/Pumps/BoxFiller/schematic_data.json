@@ -8,21 +8,21 @@
   "parts": [
     {
       "id": "MP 9A",
-      "name": "MP 9A",
+      "name": "Columbia Connecting Chain",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP9A"
     },
     {
       "id": "MP 9C",
       "name": "Columbia Connecting Link (MP9C)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP9C"
     },
     {
       "id": "MP 34",
-      "name": "MP 34",
+      "name": "Columbia Adaptor",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP34"
     },
     {
       "id": "MP 23A",
@@ -32,9 +32,9 @@
     },
     {
       "id": "MP 9",
-      "name": "MP 9",
+      "name": "Columbia Standard Fitting",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP9"
     },
     {
       "id": "MP 33A",

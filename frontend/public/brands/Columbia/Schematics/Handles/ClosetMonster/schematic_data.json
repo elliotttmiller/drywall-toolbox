@@ -22,7 +22,7 @@
       "id": "FA 249",
       "name": "Columbia 8-32 x 3/16 Socket Head Set Screw (FA249)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA249"
     },
     {
       "id": "FA 268",
@@ -44,9 +44,9 @@
     },
     {
       "id": "AH 15",
-      "name": "AH 15",
+      "name": "Columbia Handle Ball",
       "quantity": 1,
-      "sku": ""
+      "sku": "AH15"
     },
     {
       "id": "AH Ball",

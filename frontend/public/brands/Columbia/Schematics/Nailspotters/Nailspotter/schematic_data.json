@@ -20,21 +20,21 @@
     },
     {
       "id": "HNS14A",
-      "name": "HNS14A",
+      "name": "Columbia HNS14A Handle Link (NEW STYLE)",
       "quantity": 1,
-      "sku": ""
+      "sku": "HNS14A"
     },
     {
       "id": "FA280",
-      "name": "FA280",
+      "name": "Columbia #10 Belleville Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA280"
     },
     {
       "id": "HNS12A",
-      "name": "HNS12A",
+      "name": "Columbia Handle Roll Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "HNS12A"
     },
     {
       "id": "HNS14-PR",
@@ -80,9 +80,9 @@
     },
     {
       "id": "HNS12",
-      "name": "HNS12",
+      "name": "Columbia Handle Clamp",
       "quantity": 1,
-      "sku": ""
+      "sku": "HNS12"
     },
     {
       "id": "FA268",
@@ -122,21 +122,21 @@
     },
     {
       "id": "FFB16",
-      "name": "FFB16",
+      "name": "Columbia Door Spring Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB16"
     },
     {
       "id": "FA241",
       "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA241"
     },
     {
       "id": "FA241",
       "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA241"
     },
     {
       "id": "FFB32A",
@@ -158,21 +158,21 @@
     },
     {
       "id": "FFB16",
-      "name": "FFB16",
+      "name": "Columbia Door Spring Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB16"
     },
     {
       "id": "FA218",
       "name": "Columbia 4-40 x 3/8 Flat Slot (FA218)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA218"
     },
     {
       "id": "FA214",
       "name": "Columbia 4/40 x ¼ Flat Slot (FA214)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA214"
     },
     {
       "id": "HNS15-3'",
@@ -182,21 +182,21 @@
     },
     {
       "id": "FA280",
-      "name": "FA280",
+      "name": "Columbia #10 Belleville Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA280"
     },
     {
       "id": "FFB32",
-      "name": "FFB32",
+      "name": "Columbia Thumb Release Clip",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB32"
     },
     {
       "id": "FA228",
       "name": "Columbia #6 Flat Washer (FA228)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA228"
     },
     {
       "id": "FA234",
@@ -220,7 +220,7 @@
       "id": "FA254",
       "name": "Columbia 8-32 Nyloc Nut (FA254)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA254"
     },
     {
       "id": "FA252",
@@ -274,13 +274,13 @@
       "id": "FA214",
       "name": "Columbia 4/40 x ¼ Flat Slot (FA214)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA214"
     },
     {
       "id": "HNS2A",
-      "name": "HNS2A",
+      "name": "Columbia Rollface Post",
       "quantity": 1,
-      "sku": ""
+      "sku": "HNS2A"
     }
   ],
   "coordinates": {
