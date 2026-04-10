@@ -14,7 +14,7 @@
 
 /*
  * Each spec row is a CSS grid with two named columns:
- *   [label]  — fixed 38% on mobile, 30% on sm+
+ *   [label]  — ~40% on mobile (2fr of 5fr), ~33% on sm+ (1fr of 3fr)
  *   [value]  — fills remaining space
  * Grid is defined here so Tailwind's arbitrary-value syntax isn't required
  * and so breakpoints stay in one place.
@@ -153,8 +153,8 @@
   color: #92400e;
 }
 
-.product-description .spec-warning { background-color: #fee2e2; border-left-color: #ef4444; color: #991b1b; }
-.product-description .spec-success { background-color: #dcfce7; border-left-color: #22c55e; color: #166534; }
+.product-description .spec-warning { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+.product-description .spec-success { background-color: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
 
 /* Print */
 @media print {
