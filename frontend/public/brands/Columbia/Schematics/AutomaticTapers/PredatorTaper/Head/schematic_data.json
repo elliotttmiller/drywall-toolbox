@@ -8,121 +8,121 @@
   "parts": [
     {
       "id": "FAJ144",
-      "name": "Columbia Predator Joint Fastener 14-4",
+      "name": "Predator Joint Fastener 14-4",
       "quantity": 1,
       "sku": "FAJ144"
     },
     {
       "id": "CT83",
-      "name": "Columbia Clutch Dog (CT83)",
+      "name": "Clutch Dog (CT83)",
       "quantity": 1,
       "sku": "CT83"
     },
     {
       "id": "CT94",
-      "name": "Columbia Mud Shut-Off Upper Plate (CT94)",
+      "name": "Mud Shut-Off Upper Plate (CT94)",
       "quantity": 1,
       "sku": "CT94"
     },
     {
       "id": "PA266",
-      "name": "Columbia Predator Taper Head Sub Assembly",
+      "name": "Predator Taper Head Sub Assembly",
       "quantity": 1,
       "sku": "PA266"
     },
     {
       "id": "CT794",
-      "name": "Columbia Predator Taper Mud Shut Off Upper Plate",
+      "name": "Predator Taper Mud Shut Off Upper Plate",
       "quantity": 1,
       "sku": "CT794"
     },
     {
       "id": "CT624",
-      "name": "Columbia Predator Taper Needle Shaft Assembly",
+      "name": "Predator Taper Needle Shaft Assembly",
       "quantity": 1,
       "sku": "CT624"
     },
     {
       "id": "CT87-CL",
-      "name": "Columbia Cam Lock Taper Cap (CT87-CL)",
+      "name": "Cam Lock Taper Cap (CT87-CL)",
       "quantity": 1,
       "sku": "CT87-CL"
     },
     {
       "id": "FA244",
-      "name": "Columbia 6-32 x ½ Pan Slot (FA244)",
+      "name": "6-32 x ½ Pan Slot (FA244)",
       "quantity": 1,
       "sku": "FA244"
     },
     {
       "id": "FAZ1S",
-      "name": "Columbia Predator Taper 4-40 x 1/8 Set Screw",
+      "name": "Predator Taper 4-40 x 1/8 Set Screw",
       "quantity": 1,
       "sku": "FAZ1S"
     },
     {
       "id": "FAZ21S",
-      "name": "Columbia Predator Taper 6-32 x 1/8 Set Screw",
+      "name": "Predator Taper 6-32 x 1/8 Set Screw",
       "quantity": 1,
       "sku": "FAZ21S"
     },
     {
       "id": "CT1R",
-      "name": "Columbia Head (No Holes for Cap) (CT1R)",
+      "name": "Head (No Holes for Cap) (CT1R)",
       "quantity": 1,
       "sku": "No Holes for Cap"
     },
     {
       "id": "CT054",
-      "name": "Columbia Predator Taper Toe Kicker Rail",
+      "name": "Predator Taper Toe Kicker Rail",
       "quantity": 1,
       "sku": "CT054"
     },
     {
       "id": "CT6R",
-      "name": "Columbia Taper Side Plate Right - CT6 (CT-6)",
+      "name": "Taper Side Plate Right - CT6 (CT-6)",
       "quantity": 1,
       "sku": "CT-6"
     },
     {
       "id": "CT34CL",
-      "name": "Columbia Cam Lock Cap Side Block (CT34-CL)",
+      "name": "Cam Lock Cap Side Block (CT34-CL)",
       "quantity": 1,
       "sku": "CT34-CL"
     },
     {
       "id": "FA238",
-      "name": "Columbia 6-32 x 3/16 Fillister Slot (FA238)",
+      "name": "6-32 x 3/16 Fillister Slot (FA238)",
       "quantity": 1,
       "sku": "FA238"
     },
     {
       "id": "PA2LS",
-      "name": "Columbia Predator Taper Left Side Assembly",
+      "name": "Predator Taper Left Side Assembly",
       "quantity": 1,
       "sku": "PA2LS"
     },
     {
       "id": "CT87-CS",
-      "name": "Columbia Cover Plate Cork Seal",
+      "name": "Cover Plate Cork Seal",
       "quantity": 1,
       "sku": "CT-87CS"
     },
     {
       "id": "CT240-DL",
-      "name": "Columbia Predator Taper Deep Lever Assembly",
+      "name": "Predator Taper Deep Lever Assembly",
       "quantity": 1,
       "sku": "CT240-DL"
     },
     {
       "id": "FAZ20",
-      "name": "Columbia Predator Taper 6-32 x 3/4 Hex Bolt",
+      "name": "Predator Taper 6-32 x 3/4 Hex Bolt",
       "quantity": 1,
       "sku": "FAZ20"
     },
     {
       "id": "FAZ07",
-      "name": "Columbia Predator Taper 4-40 x 3/16 Binder Slot",
+      "name": "Predator Taper 4-40 x 3/16 Binder Slot",
       "quantity": 1,
       "sku": "FAZ07"
     },
@@ -134,25 +134,25 @@
     },
     {
       "id": "CT10I",
-      "name": "Columbia Taper Crimping Arm Bushing Right (CT10)",
+      "name": "Taper Crimping Arm Bushing Right (CT10)",
       "quantity": 1,
       "sku": "CT10"
     },
     {
       "id": "FAZ2R",
-      "name": "Columbia Predator Taper 6-32 Nyloc Nut",
+      "name": "Predator Taper 6-32 Nyloc Nut",
       "quantity": 1,
       "sku": "FAZ2R"
     },
     {
       "id": "FA2J0",
-      "name": "Columbia #10 Belleville Washer",
+      "name": "#10 Belleville Washer",
       "quantity": 1,
       "sku": "FA280"
     },
     {
       "id": "CT17",
-      "name": "Columbia Separation Plate (CT17)",
+      "name": "Separation Plate (CT17)",
       "quantity": 1,
       "sku": "054048F-A"
     },
@@ -164,43 +164,43 @@
     },
     {
       "id": "FA243",
-      "name": "Columbia 6-32 x 3/8 Flat Slot (FA243)",
+      "name": "6-32 x 3/8 Flat Slot (FA243)",
       "quantity": 1,
       "sku": "FA243"
     },
     {
       "id": "CT23",
-      "name": "Columbia Reinforcing Rod (CT23)",
+      "name": "Reinforcing Rod (CT23)",
       "quantity": 1,
       "sku": "050152F-A"
     },
     {
       "id": "FAZ6S",
-      "name": "Columbia Predator Taper 8-32 x 3/16 Set Screw",
+      "name": "Predator Taper 8-32 x 3/16 Set Screw",
       "quantity": 1,
       "sku": "FAZ6S"
     },
     {
       "id": "CT726",
-      "name": "Columbia Predator Taper Drive Chain Predator",
+      "name": "Predator Taper Drive Chain Predator",
       "quantity": 1,
       "sku": "CT726"
     },
     {
       "id": "CT00",
-      "name": "Columbia Predator Taper Head Cover Plate",
+      "name": "Predator Taper Head Cover Plate",
       "quantity": 1,
       "sku": "CT00"
     },
     {
       "id": "VAZ10",
-      "name": "Columbia Predator Taper Valve Assembly Zinc",
+      "name": "Predator Taper Valve Assembly Zinc",
       "quantity": 1,
       "sku": "VAZ10"
     },
     {
       "id": "FAZ5S",
-      "name": "Columbia Predator Taper 8-32 x 1/4 Set Screw",
+      "name": "Predator Taper 8-32 x 1/4 Set Screw",
       "quantity": 1,
       "sku": "FAZ5S"
     },
@@ -212,31 +212,31 @@
     },
     {
       "id": "FAZ54",
-      "name": "Columbia Predator Taper 3/8-16 x 3/4 Socket Head",
+      "name": "Predator Taper 3/8-16 x 3/4 Socket Head",
       "quantity": 1,
       "sku": "FAZ54"
     },
     {
       "id": "PAZ49",
-      "name": "Columbia Predator Taper Zinc Pivot Pin",
+      "name": "Predator Taper Zinc Pivot Pin",
       "quantity": 1,
       "sku": "PAZ49"
     },
     {
       "id": "FAZ0A",
-      "name": "Columbia Predator Taper 4-40 Lock Washer",
+      "name": "Predator Taper 4-40 Lock Washer",
       "quantity": 1,
       "sku": "FAZ0A"
     },
     {
       "id": "CT8",
-      "name": "Columbia Side Plate Support  Left (CT8)",
+      "name": "Side Plate Support  Left (CT8)",
       "quantity": 1,
       "sku": "54104-A"
     },
     {
       "id": "FAZOR",
-      "name": "Columbia Predator Taper 4-40 O-Ring",
+      "name": "Predator Taper 4-40 O-Ring",
       "quantity": 1,
       "sku": "FAZOR"
     },
@@ -248,43 +248,43 @@
     },
     {
       "id": "CT364",
-      "name": "Columbia Predator Taper Knife Guide Bracket",
+      "name": "Predator Taper Knife Guide Bracket",
       "quantity": 1,
       "sku": "CT364"
     },
     {
       "id": "CT4",
-      "name": "Columbia Wafer Bushing (CT4)",
+      "name": "Wafer Bushing (CT4)",
       "quantity": 1,
       "sku": "CT4"
     },
     {
       "id": "CT72",
-      "name": "Columbia Cable (CT72)",
+      "name": "Cable (CT72)",
       "quantity": 1,
       "sku": "CT72"
     },
     {
       "id": "CT77S",
-      "name": "Columbia Taper Drive Sprocket Large (CT-77)",
+      "name": "Taper Drive Sprocket Large (CT-77)",
       "quantity": 1,
       "sku": "CT-77"
     },
     {
       "id": "CT840",
-      "name": "Columbia Predator Taper Control Valve Body",
+      "name": "Predator Taper Control Valve Body",
       "quantity": 1,
       "sku": "CT840"
     },
     {
       "id": "CTSAA",
-      "name": "Columbia Predator Taper Side Assembly Left",
+      "name": "Predator Taper Side Assembly Left",
       "quantity": 1,
       "sku": "CTSAA"
     },
     {
       "id": "CTSS",
-      "name": "Columbia Carriage Guide Rod",
+      "name": "Carriage Guide Rod",
       "quantity": 1,
       "sku": "CT55"
     },
@@ -296,37 +296,37 @@
     },
     {
       "id": "PACTS",
-      "name": "Columbia Predator Taper Cam Track Spring",
+      "name": "Predator Taper Cam Track Spring",
       "quantity": 1,
       "sku": "PACTS"
     },
     {
       "id": "CT790",
-      "name": "Columbia Predator Taper Rod Sleeve Housing",
+      "name": "Predator Taper Rod Sleeve Housing",
       "quantity": 1,
       "sku": "CT790"
     },
     {
       "id": "C78S",
-      "name": "Columbia Predator Carbon Fiber Drive Chain Short",
+      "name": "Predator Carbon Fiber Drive Chain Short",
       "quantity": 1,
       "sku": "C78S"
     },
     {
       "id": "FAZ14",
-      "name": "Columbia Predator Taper 4-40 x 3/8 Hex Bolt",
+      "name": "Predator Taper 4-40 x 3/8 Hex Bolt",
       "quantity": 1,
       "sku": "FAZ14"
     },
     {
       "id": "CT24",
-      "name": "Columbia Predator Taper Brass Bushing",
+      "name": "Predator Taper Brass Bushing",
       "quantity": 1,
       "sku": "CT24"
     },
     {
       "id": "CT36",
-      "name": "Columbia Return Spring Tube (CT36)",
+      "name": "Return Spring Tube (CT36)",
       "quantity": 1,
       "sku": "CT36"
     },
@@ -350,19 +350,19 @@
     },
     {
       "id": "CT78",
-      "name": "Columbia Drive Chain (CT78)",
+      "name": "Drive Chain (CT78)",
       "quantity": 1,
       "sku": "CT78"
     },
     {
       "id": "CT34",
-      "name": "Columbia Cover Plate Attachment Block (CT34)",
+      "name": "Cover Plate Attachment Block (CT34)",
       "quantity": 1,
       "sku": "CT34"
     },
     {
       "id": "FAZ10",
-      "name": "Columbia Predator Taper 4-40 x 1/4 Fillister Slot",
+      "name": "Predator Taper 4-40 x 1/4 Fillister Slot",
       "quantity": 1,
       "sku": "FAZ10"
     },
@@ -374,13 +374,13 @@
     },
     {
       "id": "CT18",
-      "name": "Columbia Predator Taper Guide Bracket",
+      "name": "Predator Taper Guide Bracket",
       "quantity": 1,
       "sku": "CT18"
     },
     {
       "id": "FA2L3",
-      "name": "Columbia 4-40 X 3/4\" Hex Bolt",
+      "name": "4-40 X 3/4\" Hex Bolt",
       "quantity": 1,
       "sku": "FA283"
     },
@@ -392,67 +392,67 @@
     },
     {
       "id": "CT15A",
-      "name": "Columbia Old Style Ratchet Rod (CT15A)",
+      "name": "Old Style Ratchet Rod (CT15A)",
       "quantity": 1,
       "sku": "CT15A"
     },
     {
       "id": "PAS80",
-      "name": "Columbia Predator Taper Pull Rod Assembly",
+      "name": "Predator Taper Pull Rod Assembly",
       "quantity": 1,
       "sku": "PAS80"
     },
     {
       "id": "FAZ1S",
-      "name": "Columbia Predator Taper 4-40 x 1/8 Set Screw",
+      "name": "Predator Taper 4-40 x 1/8 Set Screw",
       "quantity": 1,
       "sku": "FAZ1S"
     },
     {
       "id": "PAS07",
-      "name": "Columbia Predator Taper Pivot Assembly Small",
+      "name": "Predator Taper Pivot Assembly Small",
       "quantity": 1,
       "sku": "PAS07"
     },
     {
       "id": "CT114",
-      "name": "Columbia Predator Taper Locking Block",
+      "name": "Predator Taper Locking Block",
       "quantity": 1,
       "sku": "CT114"
     },
     {
       "id": "FA228",
-      "name": "Columbia #6 Flat Washer (FA228)",
+      "name": "#6 Flat Washer (FA228)",
       "quantity": 1,
       "sku": "FA228"
     },
     {
       "id": "CT71",
-      "name": "Columbia Drive Sprocket Small (CT71)",
+      "name": "Drive Sprocket Small (CT71)",
       "quantity": 1,
       "sku": "CT71"
     },
     {
       "id": "CT 140",
-      "name": "Columbia Predator Taper Tape Advance Plate",
+      "name": "Predator Taper Tape Advance Plate",
       "quantity": 1,
       "sku": "CT140"
     },
     {
       "id": "PA277",
-      "name": "Columbia Predator Taper Creaser Arm Assembly",
+      "name": "Predator Taper Creaser Arm Assembly",
       "quantity": 1,
       "sku": "PA277"
     },
     {
       "id": "CT12",
-      "name": "Columbia Tape Advance Release Bracket (CT12)",
+      "name": "Tape Advance Release Bracket (CT12)",
       "quantity": 1,
       "sku": "CT12"
     },
     {
       "id": "FA239",
-      "name": "Columbia 6-32 x ¼ Binder Slot (FA239)",
+      "name": "6-32 x ¼ Binder Slot (FA239)",
       "quantity": 1,
       "sku": "FA239"
     },
@@ -464,7 +464,7 @@
     },
     {
       "id": "CT741A",
-      "name": "Columbia Predator Taper Cutter Block Clamp",
+      "name": "Predator Taper Cutter Block Clamp",
       "quantity": 1,
       "sku": "CT741A"
     },
@@ -476,43 +476,43 @@
     },
     {
       "id": "CTA1A",
-      "name": "Columbia Predator Taper Cutter Block Assembly",
+      "name": "Predator Taper Cutter Block Assembly",
       "quantity": 1,
       "sku": "CTA1A"
     },
     {
       "id": "FA214",
-      "name": "Columbia 4/40 x ¼ Flat Slot (FA214)",
+      "name": "4/40 x ¼ Flat Slot (FA214)",
       "quantity": 1,
       "sku": "FA214"
     },
     {
       "id": "FA200",
-      "name": "Columbia 1/16 x ¼ Split Pin (FA200)",
+      "name": "1/16 x ¼ Split Pin (FA200)",
       "quantity": 1,
       "sku": "FA200"
     },
     {
       "id": "CT47",
-      "name": "Columbia Taper Crimping Wheel (CT47)",
+      "name": "Taper Crimping Wheel (CT47)",
       "quantity": 1,
       "sku": "CT47"
     },
     {
       "id": "FA234",
-      "name": "Columbia 6-32 Nyloc Jam Nut (FA234)",
+      "name": "6-32 Nyloc Jam Nut (FA234)",
       "quantity": 1,
       "sku": "FA234"
     },
     {
       "id": "FAS46",
-      "name": "Columbia Predator Taper 4-40 x 5/16 Set Screw",
+      "name": "Predator Taper 4-40 x 5/16 Set Screw",
       "quantity": 1,
       "sku": "FAS46"
     },
     {
       "id": "FA202",
-      "name": "Columbia FA202",
+      "name": "FA202",
       "quantity": 1,
       "sku": "FA202"
     },
@@ -536,127 +536,127 @@
     },
     {
       "id": "FX242",
-      "name": "Columbia Predator Taper Flex Connector",
+      "name": "Predator Taper Flex Connector",
       "quantity": 1,
       "sku": "FX242"
     },
     {
       "id": "CTS6",
-      "name": "Columbia Carriage Guide Rod Stop",
+      "name": "Carriage Guide Rod Stop",
       "quantity": 1,
       "sku": "CT56"
     },
     {
       "id": "CTYS",
-      "name": "Columbia Predator Taper Y-Cam Spring",
+      "name": "Predator Taper Y-Cam Spring",
       "quantity": 1,
       "sku": "CTYS"
     },
     {
       "id": "FA243",
-      "name": "Columbia 6-32 x 3/8 Flat Slot (FA243)",
+      "name": "6-32 x 3/8 Flat Slot (FA243)",
       "quantity": 1,
       "sku": "FA243"
     },
     {
       "id": "CT59",
-      "name": "Columbia Magnet (CT59)",
+      "name": "Magnet (CT59)",
       "quantity": 1,
       "sku": "CT59"
     },
     {
       "id": "FA2AS",
-      "name": "Columbia 1/4 in Plastic Washer",
+      "name": "1/4 in Plastic Washer",
       "quantity": 1,
       "sku": "FA285"
     },
     {
       "id": "PAZ20",
-      "name": "Columbia Predator Taper Zinc Cam Roller",
+      "name": "Predator Taper Zinc Cam Roller",
       "quantity": 1,
       "sku": "PAZ20"
     },
     {
       "id": "CTS6",
-      "name": "Columbia Carriage Guide Rod Stop",
+      "name": "Carriage Guide Rod Stop",
       "quantity": 1,
       "sku": "CT56"
     },
     {
       "id": "CT759",
-      "name": "Columbia Predator Taper Hollow Shaft Predator",
+      "name": "Predator Taper Hollow Shaft Predator",
       "quantity": 1,
       "sku": "CT759"
     },
     {
       "id": "CT40",
-      "name": "Columbia Return Spring Ring (CT40)",
+      "name": "Return Spring Ring (CT40)",
       "quantity": 1,
       "sku": "CT40"
     },
     {
       "id": "LT54",
-      "name": "Columbia Predator Taper Titanium Pull Rod 54",
+      "name": "Predator Taper Titanium Pull Rod 54",
       "quantity": 1,
       "sku": "LT54"
     },
     {
       "id": "CT93",
-      "name": "Columbia Taper Mud Shut Off Lever Arm (CT93)",
+      "name": "Taper Mud Shut Off Lever Arm (CT93)",
       "quantity": 1,
       "sku": "CT93"
     },
     {
       "id": "FA32S",
-      "name": "Columbia 1/4-20 X 1\" Hex Bolt",
+      "name": "1/4-20 X 1\" Hex Bolt",
       "quantity": 1,
       "sku": "FA323"
     },
     {
       "id": "FA290",
-      "name": "Columbia 1/4-20 Nyloc Nut (FA290)",
+      "name": "1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
       "sku": "FA290"
     },
     {
       "id": "CTS9",
-      "name": "Columbia Magnet",
+      "name": "Magnet",
       "quantity": 1,
       "sku": "CT59"
     },
     {
       "id": "FAZ48",
-      "name": "Columbia Predator Taper 5/16-18 x 3/4 Hex Bolt",
+      "name": "Predator Taper 5/16-18 x 3/4 Hex Bolt",
       "quantity": 1,
       "sku": "FAZ48"
     },
     {
       "id": "EA:CLS",
-      "name": "Columbia Predator Taper Cam Lock Sleeve",
+      "name": "Predator Taper Cam Lock Sleeve",
       "quantity": 1,
       "sku": "EA:CLS"
     },
     {
       "id": "ER2LT",
-      "name": "Columbia Predator Taper Tension Rod Left",
+      "name": "Predator Taper Tension Rod Left",
       "quantity": 1,
       "sku": "ER2LT"
     },
     {
       "id": "LT06",
-      "name": "Columbia Predator Taper Lightweight Frame Bracket",
+      "name": "Predator Taper Lightweight Frame Bracket",
       "quantity": 1,
       "sku": "LT06"
     },
     {
       "id": "FA21A",
-      "name": "Columbia 4-40 X 1/2 in Fill. Head Screw",
+      "name": "4-40 X 1/2 in Fill. Head Screw",
       "quantity": 1,
       "sku": "FA219"
     },
     {
       "id": "FA207",
-      "name": "Columbia 4-40 Nyloc Nut (FA207)",
+      "name": "4-40 Nyloc Nut (FA207)",
       "quantity": 1,
       "sku": "FA207"
     },
@@ -668,19 +668,19 @@
     },
     {
       "id": "PA214",
-      "name": "Columbia Predator Taper Head Assembly 14 in",
+      "name": "Predator Taper Head Assembly 14 in",
       "quantity": 1,
       "sku": "PA214"
     },
     {
       "id": "CT87",
-      "name": "Columbia Old Style Taper Cap (CT87)",
+      "name": "Old Style Taper Cap (CT87)",
       "quantity": 1,
       "sku": "CT87"
     },
     {
       "id": "FA228",
-      "name": "Columbia #6 Flat Washer (FA228)",
+      "name": "#6 Flat Washer (FA228)",
       "quantity": 1,
       "sku": "FA228"
     },
@@ -692,43 +692,43 @@
     },
     {
       "id": "FAZ21S",
-      "name": "Columbia Predator Taper 6-32 x 1/8 Set Screw",
+      "name": "Predator Taper 6-32 x 1/8 Set Screw",
       "quantity": 1,
       "sku": "FAZ21S"
     },
     {
       "id": "CT34CL",
-      "name": "Columbia Cam Lock Cap Side Block (CT34-CL)",
+      "name": "Cam Lock Cap Side Block (CT34-CL)",
       "quantity": 1,
       "sku": "CT34-CL"
     },
     {
       "id": "FAZ20",
-      "name": "Columbia Predator Taper 6-32 x 3/4 Hex Bolt",
+      "name": "Predator Taper 6-32 x 3/4 Hex Bolt",
       "quantity": 1,
       "sku": "FAZ20"
     },
     {
       "id": "CT711A",
-      "name": "Columbia Predator Taper Crimping Arm Bearing",
+      "name": "Predator Taper Crimping Arm Bearing",
       "quantity": 1,
       "sku": "CT711A"
     },
     {
       "id": "FRZ13",
-      "name": "Columbia Predator Taper Zinc Frame Rivet",
+      "name": "Predator Taper Zinc Frame Rivet",
       "quantity": 1,
       "sku": "FRZ13"
     },
     {
       "id": "FA199",
-      "name": "Columbia 2-56 x 3/16 Binder Slot (FA199)",
+      "name": "2-56 x 3/16 Binder Slot (FA199)",
       "quantity": 1,
       "sku": "FA199"
     },
     {
       "id": "CT95",
-      "name": "Columbia Control Valve (CT95)",
+      "name": "Control Valve (CT95)",
       "quantity": 1,
       "sku": "CT95"
     },
@@ -740,55 +740,55 @@
     },
     {
       "id": "CT95",
-      "name": "Columbia Control Valve (CT95)",
+      "name": "Control Valve (CT95)",
       "quantity": 1,
       "sku": "CT95"
     },
     {
       "id": "CT87-CL",
-      "name": "Columbia Cam Lock Taper Cap (CT87-CL)",
+      "name": "Cam Lock Taper Cap (CT87-CL)",
       "quantity": 1,
       "sku": "CT87-CL"
     },
     {
       "id": "CT94",
-      "name": "Columbia Mud Shut-Off Upper Plate (CT94)",
+      "name": "Mud Shut-Off Upper Plate (CT94)",
       "quantity": 1,
       "sku": "CT94"
     },
     {
       "id": "PA266",
-      "name": "Columbia Predator Taper Head Sub Assembly",
+      "name": "Predator Taper Head Sub Assembly",
       "quantity": 1,
       "sku": "PA266"
     },
     {
       "id": "CT3",
-      "name": "Columbia Stainless Steel Right Insert Bushing (CT3)",
+      "name": "Stainless Steel Right Insert Bushing (CT3)",
       "quantity": 1,
       "sku": "CT3"
     },
     {
       "id": "CT776",
-      "name": "Columbia Predator Taper Drive Sprocket Large",
+      "name": "Predator Taper Drive Sprocket Large",
       "quantity": 1,
       "sku": "CT776"
     },
     {
       "id": "CT7",
-      "name": "Columbia Side Plate Support  Right (CT7)",
+      "name": "Side Plate Support  Right (CT7)",
       "quantity": 1,
       "sku": "54075-A"
     },
     {
       "id": "FA214",
-      "name": "Columbia 4/40 x ¼ Flat Slot (FA214)",
+      "name": "4/40 x ¼ Flat Slot (FA214)",
       "quantity": 1,
       "sku": "FA214"
     },
     {
       "id": "FAZ14",
-      "name": "Columbia Predator Taper 4-40 x 3/8 Hex Bolt",
+      "name": "Predator Taper 4-40 x 3/8 Hex Bolt",
       "quantity": 1,
       "sku": "FAZ14"
     },
@@ -800,49 +800,49 @@
     },
     {
       "id": "C779-CS",
-      "name": "Columbia Predator Carbon Fiber Cover Plate Cork Seal",
+      "name": "Predator Carbon Fiber Cover Plate Cork Seal",
       "quantity": 1,
       "sku": "C779-CS"
     },
     {
       "id": "PA277",
-      "name": "Columbia Predator Taper Creaser Arm Assembly",
+      "name": "Predator Taper Creaser Arm Assembly",
       "quantity": 1,
       "sku": "PA277"
     },
     {
       "id": "FR258",
-      "name": "Columbia Predator Taper Frame Reinforcement",
+      "name": "Predator Taper Frame Reinforcement",
       "quantity": 1,
       "sku": "FR258"
     },
     {
       "id": "CT18",
-      "name": "Columbia Predator Taper Guide Bracket",
+      "name": "Predator Taper Guide Bracket",
       "quantity": 1,
       "sku": "CT18"
     },
     {
       "id": "FA22K",
-      "name": "Columbia 4-40 Nyloc Nut",
+      "name": "4-40 Nyloc Nut",
       "quantity": 1,
       "sku": "FA22K"
     },
     {
       "id": "PA2S4",
-      "name": "Columbia Predator Taper Side Plate Assembly",
+      "name": "Predator Taper Side Plate Assembly",
       "quantity": 1,
       "sku": "PA2S4"
     },
     {
       "id": "CT17",
-      "name": "Columbia Separation Plate (CT17)",
+      "name": "Separation Plate (CT17)",
       "quantity": 1,
       "sku": "054048F-A"
     },
     {
       "id": "FA227",
-      "name": "Columbia #6 Star Washer",
+      "name": "#6 Star Washer",
       "quantity": 1,
       "sku": "FA227"
     },
@@ -854,91 +854,91 @@
     },
     {
       "id": "EA200",
-      "name": "Columbia Predator Taper External Adapter 200",
+      "name": "Predator Taper External Adapter 200",
       "quantity": 1,
       "sku": "EA200"
     },
     {
       "id": "CA239",
-      "name": "Columbia Predator Taper Adjusting Screw",
+      "name": "Predator Taper Adjusting Screw",
       "quantity": 1,
       "sku": "CA239"
     },
     {
       "id": "CT132",
-      "name": "Columbia CT132 - Taper Connecting Link (709043-A)",
+      "name": "CT132 - Taper Connecting Link (709043-A)",
       "quantity": 1,
       "sku": "709043-A"
     },
     {
       "id": "CT154",
-      "name": "Columbia Predator Taper Cam Roller",
+      "name": "Predator Taper Cam Roller",
       "quantity": 1,
       "sku": "CT154"
     },
     {
       "id": "CT72",
-      "name": "Columbia Cable (CT72)",
+      "name": "Cable (CT72)",
       "quantity": 1,
       "sku": "CT72"
     },
     {
       "id": "CT52",
-      "name": "Columbia Predator Taper Spacer Bar",
+      "name": "Predator Taper Spacer Bar",
       "quantity": 1,
       "sku": "CT52"
     },
     {
       "id": "FA224",
-      "name": "Columbia 1/8\" X 3/8\" Split Pin (FA224)",
+      "name": "1/8\" X 3/8\" Split Pin (FA224)",
       "quantity": 1,
       "sku": "FA224"
     },
     {
       "id": "CT2",
-      "name": "Columbia Insert Bushings (CT2)",
+      "name": "Insert Bushings (CT2)",
       "quantity": 1,
       "sku": "59078-A"
     },
     {
       "id": "FA20A",
-      "name": "Columbia 4-40 x 3/16 Flat Head Screw",
+      "name": "4-40 x 3/16 Flat Head Screw",
       "quantity": 1,
       "sku": "FA20A"
     },
     {
       "id": "FA27A",
-      "name": "Columbia 6-32 x 1/4 Pan Head Screw",
+      "name": "6-32 x 1/4 Pan Head Screw",
       "quantity": 1,
       "sku": "FA27A"
     },
     {
       "id": "CT74",
-      "name": "Columbia Predator Taper Cable Guide Pulley",
+      "name": "Predator Taper Cable Guide Pulley",
       "quantity": 1,
       "sku": "CT74"
     },
     {
       "id": "CT03",
-      "name": "Columbia Predator Taper Left Insert Bushing",
+      "name": "Predator Taper Left Insert Bushing",
       "quantity": 1,
       "sku": "CT03"
     },
     {
       "id": "C154",
-      "name": "Columbia Predator Carbon Fiber Cam Roller",
+      "name": "Predator Carbon Fiber Cam Roller",
       "quantity": 1,
       "sku": "C154"
     },
     {
       "id": "FA526",
-      "name": "Columbia 3/8-16 x 1 Hex Bolt",
+      "name": "3/8-16 x 1 Hex Bolt",
       "quantity": 1,
       "sku": "FA526"
     },
     {
       "id": "FAJ706",
-      "name": "Columbia Predator Joint Fastener 70-6",
+      "name": "Predator Joint Fastener 70-6",
       "quantity": 1,
       "sku": "FAJ706"
     },
@@ -950,31 +950,31 @@
     },
     {
       "id": "CTS6A",
-      "name": "Columbia CT56A",
+      "name": "CT56A",
       "quantity": 1,
       "sku": "CT56A"
     },
     {
       "id": "CT67",
-      "name": "Columbia Taper Ratchet Gear - CT67",
+      "name": "Taper Ratchet Gear - CT67",
       "quantity": 1,
       "sku": "CT-67"
     },
     {
       "id": "CT771",
-      "name": "Columbia Predator Taper Drive Sprocket Small",
+      "name": "Predator Taper Drive Sprocket Small",
       "quantity": 1,
       "sku": "CT771"
     },
     {
       "id": "CT70",
-      "name": "Columbia Drive Shaft (CT70)",
+      "name": "Drive Shaft (CT70)",
       "quantity": 1,
       "sku": "CT70"
     },
     {
       "id": "FA258",
-      "name": "Columbia 8-32 x ¼ Half Dog Set (FA258)",
+      "name": "8-32 x ¼ Half Dog Set (FA258)",
       "quantity": 1,
       "sku": "FA258"
     },
@@ -986,37 +986,37 @@
     },
     {
       "id": "CT69",
-      "name": "Columbia Predator Taper Drive Cam",
+      "name": "Predator Taper Drive Cam",
       "quantity": 1,
       "sku": "CT69"
     },
     {
       "id": "CT67",
-      "name": "Columbia Taper Ratchet Gear - CT67",
+      "name": "Taper Ratchet Gear - CT67",
       "quantity": 1,
       "sku": "CT-67"
     },
     {
       "id": "FA283",
-      "name": "Columbia 4-40 X 3/4\" Hex Bolt",
+      "name": "4-40 X 3/4\" Hex Bolt",
       "quantity": 1,
       "sku": "FA283"
     },
     {
       "id": "CT67",
-      "name": "Columbia Taper Ratchet Gear - CT67",
+      "name": "Taper Ratchet Gear - CT67",
       "quantity": 1,
       "sku": "CT-67"
     },
     {
       "id": "CT58",
-      "name": "Columbia Guide Rod Bushing (CT58)",
+      "name": "Guide Rod Bushing (CT58)",
       "quantity": 1,
       "sku": "CT58"
     },
     {
       "id": "C159",
-      "name": "Columbia Predator Carbon Fiber Magnet",
+      "name": "Predator Carbon Fiber Magnet",
       "quantity": 1,
       "sku": "C159"
     },
@@ -1028,103 +1028,103 @@
     },
     {
       "id": "CT64",
-      "name": "Columbia Needle Return Shaft (CT64)",
+      "name": "Needle Return Shaft (CT64)",
       "quantity": 1,
       "sku": "CT64"
     },
     {
       "id": "FA238",
-      "name": "Columbia 6-32 x 3/16 Fillister Slot (FA238)",
+      "name": "6-32 x 3/16 Fillister Slot (FA238)",
       "quantity": 1,
       "sku": "FA238"
     },
     {
       "id": "CT02",
-      "name": "Columbia Predator Taper Insert Bushing",
+      "name": "Predator Taper Insert Bushing",
       "quantity": 1,
       "sku": "CT02"
     },
     {
       "id": "FA219",
-      "name": "Columbia 4-40 x ½ Fillister Slot (FA219)",
+      "name": "4-40 x ½ Fillister Slot (FA219)",
       "quantity": 1,
       "sku": "FA219"
     },
     {
       "id": "CT65",
-      "name": "Columbia Needle Return Spring (CT65)",
+      "name": "Needle Return Spring (CT65)",
       "quantity": 1,
       "sku": "CT65"
     },
     {
       "id": "CT59",
-      "name": "Columbia Magnet (CT59)",
+      "name": "Magnet (CT59)",
       "quantity": 1,
       "sku": "CT59"
     },
     {
       "id": "FA210",
-      "name": "Columbia 4/40 x 3/16\"  Binder Slot (FA210)",
+      "name": "4/40 x 3/16\"  Binder Slot (FA210)",
       "quantity": 1,
       "sku": "FA210"
     },
     {
       "id": "CT768",
-      "name": "Columbia Predator Taper Clutch Lever",
+      "name": "Predator Taper Clutch Lever",
       "quantity": 1,
       "sku": "CT768"
     },
     {
       "id": "CT765",
-      "name": "Columbia Predator Taper Manual Drive Grip",
+      "name": "Predator Taper Manual Drive Grip",
       "quantity": 1,
       "sku": "CT765"
     },
     {
       "id": "C148",
-      "name": "Columbia Predator Carbon Fiber Crimping Arm Left",
+      "name": "Predator Carbon Fiber Crimping Arm Left",
       "quantity": 1,
       "sku": "C148"
     },
     {
       "id": "FA241",
-      "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
+      "name": "6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
       "sku": "FA241"
     },
     {
       "id": "FA254",
-      "name": "Columbia 8-32 Nyloc Nut (FA254)",
+      "name": "8-32 Nyloc Nut (FA254)",
       "quantity": 1,
       "sku": "FA254"
     },
     {
       "id": "CT747",
-      "name": "Columbia Predator Taper Crimping Wheel Bushing",
+      "name": "Predator Taper Crimping Wheel Bushing",
       "quantity": 1,
       "sku": "CT747"
     },
     {
       "id": "CT00",
-      "name": "Columbia Predator Taper Head Cover Plate",
+      "name": "Predator Taper Head Cover Plate",
       "quantity": 1,
       "sku": "CT00"
     },
     {
       "id": "PASS9",
-      "name": "Columbia Predator Taper Spring Set",
+      "name": "Predator Taper Spring Set",
       "quantity": 1,
       "sku": "PASS9"
     },
     {
       "id": "CT49",
-      "name": "Columbia Taper Crimping Arm Right (CT49)",
+      "name": "Taper Crimping Arm Right (CT49)",
       "quantity": 1,
       "sku": "CT49"
     },
     {
       "id": "CT31",
-      "name": "Columbia Chain Tension & Guide Bracket (CT31)",
+      "name": "Chain Tension & Guide Bracket (CT31)",
       "quantity": 1,
       "sku": "CT31"
     }

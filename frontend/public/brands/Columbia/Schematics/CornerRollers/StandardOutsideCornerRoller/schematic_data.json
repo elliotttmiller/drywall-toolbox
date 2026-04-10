@@ -8,79 +8,79 @@
   "parts": [
     {
       "id": "FA 290",
-      "name": "Columbia 1/4-20 Nyloc Nut (FA290)",
+      "name": "1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
       "sku": "FA290"
     },
     {
       "id": "OCR 2B",
-      "name": "Columbia Columbia Roller Wheel CR2",
+      "name": "Roller Wheel CR2",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 3",
-      "name": "Columbia Columbia Corner Roller Bearing Sleeve CR3",
+      "name": "Corner Roller Bearing Sleeve CR3",
       "quantity": 1,
       "sku": "CR3"
     },
     {
       "id": "OCR 6",
-      "name": "Columbia Columbia Corner Roller Handle Mounting Swivel CR6",
+      "name": "Corner Roller Handle Mounting Swivel CR6",
       "quantity": 1,
       "sku": "CR6"
     },
     {
       "id": "OCR 1",
-      "name": "Columbia Columbia Corner Roller Head Casting CR1",
+      "name": "Corner Roller Head Casting CR1",
       "quantity": 1,
       "sku": "CR1"
     },
     {
       "id": "OCR 2A",
-      "name": "Columbia Columbia Roller Wheel CR2",
+      "name": "Roller Wheel CR2",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 2C",
-      "name": "Columbia Columbia Roller Wheel CR2",
+      "name": "Roller Wheel CR2",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 3A",
-      "name": "Columbia Columbia Corner Roller Bearing Sleeve CR3",
+      "name": "Corner Roller Bearing Sleeve CR3",
       "quantity": 1,
       "sku": "CR3"
     },
     {
       "id": "FA 299",
-      "name": "Columbia 1/4-20 x 1-1/2 Hex Bolt",
+      "name": "1/4-20 x 1-1/2 Hex Bolt",
       "quantity": 1,
       "sku": "FA299"
     },
     {
       "id": "OCR 2D",
-      "name": "Columbia Columbia Roller Wheel CR2",
+      "name": "Roller Wheel CR2",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 5",
-      "name": "Columbia CR5",
+      "name": "CR5",
       "quantity": 1,
       "sku": "CR5"
     },
     {
       "id": "FA 312",
-      "name": "Columbia 10-24 X 1/4\" Set Screw (FA312)",
+      "name": "10-24 X 1/4\" Set Screw (FA312)",
       "quantity": 1,
       "sku": "FA312"
     },
     {
       "id": "FA 274",
-      "name": "Columbia 10-24 X 3/8\" Socket Hd Screw (FA274)",
+      "name": "10-24 X 3/8\" Socket Hd Screw (FA274)",
       "quantity": 1,
       "sku": "FA274"
     },
@@ -104,7 +104,7 @@
     },
     {
       "id": "FA 301",
-      "name": "Columbia 1/4-20 x 2-1/2 Hex Bolt",
+      "name": "1/4-20 x 2-1/2 Hex Bolt",
       "quantity": 1,
       "sku": "FA301"
     }

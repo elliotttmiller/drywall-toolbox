@@ -8,25 +8,25 @@
   "parts": [
     {
       "id": "FA 272",
-      "name": "Columbia 6-32 x 3/8 Set Screw",
+      "name": "6-32 x 3/8 Set Screw",
       "quantity": 1,
       "sku": "FA272"
     },
     {
       "id": "FA 311",
-      "name": "Columbia 5/16-18 Hex Nut",
+      "name": "5/16-18 Hex Nut",
       "quantity": 1,
       "sku": "FA311"
     },
     {
       "id": "FA 249",
-      "name": "Columbia 8-32 x 3/16 Socket Head Set Screw (FA249)",
+      "name": "8-32 x 3/16 Socket Head Set Screw (FA249)",
       "quantity": 1,
       "sku": "FA249"
     },
     {
       "id": "FA 268",
-      "name": "Columbia #10 Flat Washer (FA268)",
+      "name": "#10 Flat Washer (FA268)",
       "quantity": 1,
       "sku": "FA268"
     },
@@ -38,19 +38,19 @@
     },
     {
       "id": "CMH 8",
-      "name": "Columbia Closet Monster 18\" Flat Box Handle (CMH)",
+      "name": "Closet Monster 18\" Flat Box Handle (CMH)",
       "quantity": 1,
       "sku": "CMH"
     },
     {
       "id": "AH 15",
-      "name": "Columbia Handle Ball",
+      "name": "Handle Ball",
       "quantity": 1,
       "sku": "AH15"
     },
     {
       "id": "AH Ball",
-      "name": "Columbia AHA",
+      "name": "AHA",
       "quantity": 1,
       "sku": "AHA"
     },
@@ -62,25 +62,25 @@
     },
     {
       "id": "CMH 2",
-      "name": "Columbia Closet Monster 18\" Flat Box Handle (CMH)",
+      "name": "Closet Monster 18\" Flat Box Handle (CMH)",
       "quantity": 1,
       "sku": "CMH"
     },
     {
       "id": "FA 325",
-      "name": "Columbia 3/8-16 x 1-1/2 Socket Head Screw",
+      "name": "3/8-16 x 1-1/2 Socket Head Screw",
       "quantity": 1,
       "sku": "FA325"
     },
     {
       "id": "FA 312",
-      "name": "Columbia 10-24 X 1/4\" Set Screw (FA312)",
+      "name": "10-24 X 1/4\" Set Screw (FA312)",
       "quantity": 1,
       "sku": "FA312"
     },
     {
       "id": "BH 1",
-      "name": "Columbia Box Handle Mounting Plate (BH01)",
+      "name": "Box Handle Mounting Plate (BH01)",
       "quantity": 1,
       "sku": "BH01"
     }

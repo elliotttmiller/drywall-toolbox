@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "FG 4-45",
-      "name": "Columbia FG4-45",
+      "name": "FG4-45",
       "quantity": 1,
       "sku": "FG4-45"
     },
@@ -20,13 +20,13 @@
     },
     {
       "id": "HH 32",
-      "name": "Columbia Release Clip Washer",
+      "name": "Release Clip Washer",
       "quantity": 1,
       "sku": "HH32"
     },
     {
       "id": "FA 317",
-      "name": "Columbia 5/16-18 x 5/8 Socket Head Screw",
+      "name": "5/16-18 x 5/8 Socket Head Screw",
       "quantity": 1,
       "sku": "FA317"
     },
@@ -44,55 +44,55 @@
     },
     {
       "id": "HH 5",
-      "name": "Columbia Extension Housing for COL88",
+      "name": "Extension Housing for COL88",
       "quantity": 1,
       "sku": "HH5"
     },
     {
       "id": "FA 237",
-      "name": "Columbia 6-32 x 3/16 Binder Slot Screw",
+      "name": "6-32 x 3/16 Binder Slot Screw",
       "quantity": 1,
       "sku": "FA237"
     },
     {
       "id": "FA 256",
-      "name": "Columbia 8-32 x 3/16\" Pan Slot SS Screw (FA256)",
+      "name": "8-32 x 3/16\" Pan Slot SS Screw (FA256)",
       "quantity": 1,
       "sku": "FA256"
     },
     {
       "id": "FA 321",
-      "name": "Columbia 3/8-16 x 3/4 Socket Head Screw",
+      "name": "3/8-16 x 3/4 Socket Head Screw",
       "quantity": 1,
       "sku": "FA321"
     },
     {
       "id": "FG 3A",
-      "name": "Columbia FG3A",
+      "name": "FG3A",
       "quantity": 1,
       "sku": "FG3A"
     },
     {
       "id": "EXT 35",
-      "name": "Columbia EXT35",
+      "name": "EXT35",
       "quantity": 1,
       "sku": "EXT35"
     },
     {
       "id": "HH 10A",
-      "name": "Columbia Hydra Handle 10 in Extension Housing with Cam",
+      "name": "Hydra Handle 10 in Extension Housing with Cam",
       "quantity": 1,
       "sku": "HH10A"
     },
     {
       "id": "FA 256",
-      "name": "Columbia 8-32 x 3/16\" Pan Slot SS Screw (FA256)",
+      "name": "8-32 x 3/16\" Pan Slot SS Screw (FA256)",
       "quantity": 1,
       "sku": "FA256"
     },
     {
       "id": "HH10 EXTLONG",
-      "name": "Columbia Octogon Tube for Hydro Handle for COL88",
+      "name": "Octogon Tube for Hydro Handle for COL88",
       "quantity": 1,
       "sku": "HH10"
     }

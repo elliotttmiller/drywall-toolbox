@@ -8,61 +8,61 @@
   "parts": [
     {
       "id": "ICA 1",
-      "name": "Columbia Inside Corner Applicator Body",
+      "name": "Inside Corner Applicator Body",
       "quantity": 1,
       "sku": "ICA1"
     },
     {
       "id": "ICA 4L",
-      "name": "Columbia Inside Corner Applicator Left Frame Sub-Assembly",
+      "name": "Inside Corner Applicator Left Frame Sub-Assembly",
       "quantity": 1,
       "sku": "ICA4L"
     },
     {
       "id": "ICA 3",
-      "name": "Columbia Inside Corner Applicator Wheel",
+      "name": "Inside Corner Applicator Wheel",
       "quantity": 1,
       "sku": "ICA3"
     },
     {
       "id": "ICA 2",
-      "name": "Columbia Inside Corner Applicator Axle",
+      "name": "Inside Corner Applicator Axle",
       "quantity": 1,
       "sku": "ICA2"
     },
     {
       "id": "FA 377",
-      "name": "Columbia 6-32 x 1/4 Flat Head Screw",
+      "name": "6-32 x 1/4 Flat Head Screw",
       "quantity": 1,
       "sku": "FA377"
     },
     {
       "id": "ICA 4R",
-      "name": "Columbia Inside Corner Applicator Right Frame Sub-Assembly",
+      "name": "Inside Corner Applicator Right Frame Sub-Assembly",
       "quantity": 1,
       "sku": "ICA4R"
     },
     {
       "id": "ICA 3",
-      "name": "Columbia Inside Corner Applicator Wheel",
+      "name": "Inside Corner Applicator Wheel",
       "quantity": 1,
       "sku": "ICA3"
     },
     {
       "id": "ICA 2",
-      "name": "Columbia Inside Corner Applicator Axle",
+      "name": "Inside Corner Applicator Axle",
       "quantity": 1,
       "sku": "ICA2"
     },
     {
       "id": "FA 377",
-      "name": "Columbia 6-32 x 1/4 Flat Head Screw",
+      "name": "6-32 x 1/4 Flat Head Screw",
       "quantity": 1,
       "sku": "FA377"
     },
     {
       "id": "CF 4S",
-      "name": "Columbia Corner Flusher Ball Spring Short",
+      "name": "Corner Flusher Ball Spring Short",
       "quantity": 1,
       "sku": "CF4S"
     }

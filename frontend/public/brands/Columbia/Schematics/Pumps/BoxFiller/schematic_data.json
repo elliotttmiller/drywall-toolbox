@@ -8,37 +8,37 @@
   "parts": [
     {
       "id": "MP 9A",
-      "name": "Columbia Connecting Chain",
+      "name": "Connecting Chain",
       "quantity": 1,
       "sku": "MP9A"
     },
     {
       "id": "MP 9C",
-      "name": "Columbia Connecting Link (MP9C)",
+      "name": "Connecting Link (MP9C)",
       "quantity": 1,
       "sku": "MP9C"
     },
     {
       "id": "MP 34",
-      "name": "Columbia Adaptor",
+      "name": "Adaptor",
       "quantity": 1,
       "sku": "MP34"
     },
     {
       "id": "MP 23A",
-      "name": "Columbia Mud Pump Mud Pump Seal (MP-23)",
+      "name": "Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
       "sku": "MP-23"
     },
     {
       "id": "MP 9",
-      "name": "Columbia Standard Fitting",
+      "name": "Standard Fitting",
       "quantity": 1,
       "sku": "MP9"
     },
     {
       "id": "MP 33A",
-      "name": "Columbia Mud Pump Spring Assembly",
+      "name": "Mud Pump Spring Assembly",
       "quantity": 1,
       "sku": "MP33A"
     }
