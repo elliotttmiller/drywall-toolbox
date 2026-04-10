@@ -10,6 +10,7 @@
 
 import { apiClient, wcClient } from './client.js';
 import { normalizeProduct } from '../services/api.js';
+import { getProductById as getCatalogProductById } from '../services/catalog.js';
 
 // ─── drywall/v1 proxy helpers ─────────────────────────────────────────────────
 
@@ -148,12 +149,27 @@ export async function getProductBySku( sku ) {
   try {
     const result = await fetchProducts( { sku, per_page: 1 } );
     const products = Array.isArray( result ) ? result : result?.products ?? [];
-    if ( products.length === 0 ) return null;
-    // Normalize the raw WC/proxy response to the internal product shape so
-    // callers (e.g. the schematic hotspot modal) can reliably access
-    // .stock_status, .images, .price, .name, .sku, etc.
-    return normalizeProduct( products[ 0 ] );
+    if ( products.length > 0 ) {
+      // Normalize the raw WC/proxy response to the internal product shape so
+      // callers (e.g. the schematic hotspot modal) can reliably access
+      // .stock_status, .images, .price, .name, .sku, etc.
+      return normalizeProduct( products[ 0 ] );
+    }
+    // WC proxy returned an empty list — fall through to catalog fallback below.
   } catch {
+    // Network error or proxy unavailable (e.g. GitHub Pages) — fall through to
+    // catalog fallback which loads from CSV when the WC backend is unreachable.
+  }
+
+  // WC proxy returned nothing (e.g. GitHub Pages, offline, product not yet in WC).
+  // catalog.js getProductById accepts both numeric IDs and SKU strings — it
+  // searches the in-memory catalog by id, slug, sku, and part_number in order.
+  // The catalog has a CSV fallback with product images, so this reliably returns
+  // a product (with image) even without a live WordPress backend.
+  try {
+    return await getCatalogProductById( sku ) ?? null;
+  } catch {
+    // Catalog load also failed — nothing more we can do.
     return null;
   }
 }
