@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 
+const LIGHTBOX_Z_INDEX = 999999;
+
 // Directional slide variants — enter from the side, exit to the opposite side
 const slideVariants = {
   enter: (dir) => ({ x: dir >= 0 ? '100%' : '-100%', opacity: 0 }),
@@ -166,7 +168,7 @@ export default function ProductImageGallery({ product }) {
           role="button"
           tabIndex={0}
           aria-label="Tap to view fullscreen"
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openLb(currentIndex); }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(currentIndex); } }}
         >
           {/* Per-image skeleton loader */}
           {!imgLoaded[currentIndex] && (
@@ -204,7 +206,7 @@ export default function ProductImageGallery({ product }) {
             className="absolute top-2.5 right-2.5 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/90 shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-150"
             onClick={(e) => { e.stopPropagation(); openLb(currentIndex); }}
             aria-label="Expand image to fullscreen"
-            tabIndex={-1}
+            tabIndex={0}
           >
             <ZoomIn size={14} className="text-gray-600" />
           </button>
@@ -228,8 +230,11 @@ export default function ProductImageGallery({ product }) {
               </button>
 
               {/* "1 / N" counter pill */}
-              <div className="absolute bottom-3 right-3 z-10 flex items-center px-2.5 py-1 rounded-full bg-black/40 text-white text-xs font-medium tabular-nums backdrop-blur-sm pointer-events-none">
-                {currentIndex + 1}&thinsp;/&thinsp;{images.length}
+              <div
+                className="absolute bottom-3 right-3 z-10 flex items-center px-2.5 py-1 rounded-full bg-black/40 text-white text-xs font-medium tabular-nums backdrop-blur-sm pointer-events-none"
+                aria-label={`Image ${currentIndex + 1} of ${images.length}`}
+              >
+                {currentIndex + 1} / {images.length}
               </div>
 
               {/* Dot indicators (up to 8 images) */}
@@ -288,7 +293,7 @@ export default function ProductImageGallery({ product }) {
           {lightbox.open && (
             <motion.div
               className="fixed inset-0 flex items-center justify-center"
-              style={{ zIndex: 999999 }}
+          style={{ zIndex: LIGHTBOX_Z_INDEX }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -361,8 +366,11 @@ export default function ProductImageGallery({ product }) {
                 {/* Bottom bar: counter + thumbnail strip */}
                 <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center gap-3 pb-6 pointer-events-none">
                   {/* "1 / N" counter */}
-                  <div className="px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium tabular-nums backdrop-blur-sm pointer-events-auto">
-                    {lightbox.index + 1}&thinsp;/&thinsp;{images.length}
+                  <div
+                    className="px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium tabular-nums backdrop-blur-sm pointer-events-auto"
+                    aria-label={`Image ${lightbox.index + 1} of ${images.length}`}
+                  >
+                    {lightbox.index + 1} / {images.length}
                   </div>
 
                   {/* Thumbnail strip inside lightbox */}
