@@ -8,57 +8,57 @@
   "parts": [
     {
       "id": "FA327",
-      "name": "FA327",
+      "name": "Columbia 8-32 x 1/4 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA327"
     },
     {
       "id": "FA272",
-      "name": "FA272",
+      "name": "Columbia 6-32 x 3/8 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA272"
     },
     {
       "id": "FA271",
-      "name": "FA271",
+      "name": "Columbia 6-32 x 5/16 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA271"
     },
     {
       "id": "SB5 & SB6",
-      "name": "SB5 & SB6",
+      "name": "Columbia Tomahawk Blade Holder Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "SB5"
     },
     {
       "id": "SB4 RIGHT",
-      "name": "SB4 RIGHT",
+      "name": "Columbia Tomahawk Right Arm Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "SB4-RIGHT"
     },
     {
       "id": "SB1-12IN",
-      "name": "SB1-12IN",
+      "name": "Columbia Tomahawk 12 in Smoothing Blade",
       "quantity": 1,
-      "sku": ""
+      "sku": "SB1-12"
     },
     {
       "id": "SB3 LEFT",
-      "name": "SB3 LEFT",
+      "name": "Columbia Tomahawk Left Arm Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "SB3-LEFT"
     },
     {
       "id": "SB7",
-      "name": "SB7",
+      "name": "Columbia Tomahawk Handle Fitting",
       "quantity": 1,
-      "sku": ""
+      "sku": "SB7"
     },
     {
       "id": "SB2-12IN",
-      "name": "SB2-12IN",
+      "name": "Columbia Columbia Replacement 12\" Blade for Tomahawk SB2-12",
       "quantity": 1,
-      "sku": ""
+      "sku": "SB2-12"
     }
   ],
   "coordinates": {

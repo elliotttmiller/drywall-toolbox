@@ -20,9 +20,9 @@
     },
     {
       "id": "FF8 32",
-      "name": "FF8 32",
+      "name": "Columbia Thumb Release Clip",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB32"
     },
     {
       "id": "FA 268",
@@ -44,15 +44,15 @@
     },
     {
       "id": "FF8 12",
-      "name": "FF8 12",
+      "name": "Columbia Adjuster Dial Assy (5.5,7,8,10)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFBA12"
     },
     {
       "id": "FFB 16A",
-      "name": "FFB 16A",
+      "name": "Columbia Flat Box Handle Bracket 16A",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB 16A"
     },
     {
       "id": "FFB 11",
@@ -62,9 +62,9 @@
     },
     {
       "id": "FF8 19",
-      "name": "FF8 19",
+      "name": "Columbia Brass Adjuster Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB19"
     },
     {
       "id": "FA 230",
@@ -110,9 +110,9 @@
     },
     {
       "id": "FFB 2S-10",
-      "name": "FFB 2S-10",
+      "name": "Columbia Flat Box Side Plate 10 in Short",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB 2S-10"
     },
     {
       "id": "FFB 9-10",
@@ -122,15 +122,15 @@
     },
     {
       "id": "FF8A 10-10",
-      "name": "FF8A 10-10",
+      "name": "Columbia Blade Bar Assembly 10 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFBA10-10"
     },
     {
       "id": "FFB 8",
-      "name": "FFB 8",
+      "name": "Columbia Flat Box Main Body 8 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB8"
     },
     {
       "id": "FA 238",
@@ -158,21 +158,21 @@
     },
     {
       "id": "FFB 12",
-      "name": "FFB 12",
+      "name": "Columbia Adjuster Dial Assembly 12 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB12"
     },
     {
       "id": "HFFB 1A",
-      "name": "HFFB 1A",
+      "name": "Columbia Heavy Flat Box Body 1A",
       "quantity": 1,
-      "sku": ""
+      "sku": "HFFB1A"
     },
     {
       "id": "FF8 4C",
-      "name": "FF8 4C",
+      "name": "Columbia FFB4C",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB4C"
     },
     {
       "id": "FA 231",
@@ -182,9 +182,9 @@
     },
     {
       "id": "FFB 44",
-      "name": "FFB 44",
+      "name": "Columbia Flat Box Door Pivot Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB44"
     },
     {
       "id": "FFB 43",
@@ -194,21 +194,21 @@
     },
     {
       "id": "FFB 41",
-      "name": "FFB 41",
+      "name": "Columbia Flat Box Axle Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB41"
     },
     {
       "id": "FFB 37",
-      "name": "FFB 37",
+      "name": "Columbia Flat Box Retaining Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB37"
     },
     {
       "id": "FFB 38",
-      "name": "FFB 38",
+      "name": "Columbia Flat Box Corner Plate",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB38"
     },
     {
       "id": "FA 268",
@@ -218,9 +218,9 @@
     },
     {
       "id": "FFB 42",
-      "name": "FFB 42",
+      "name": "Columbia Flat Box Door Pivot",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB 42"
     },
     {
       "id": "FA 275",
@@ -230,21 +230,21 @@
     },
     {
       "id": "FFB 40-10",
-      "name": "FFB 40-10",
+      "name": "Columbia Flat Box Door Gasket 10 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB40-10"
     },
     {
       "id": "FFB SA",
-      "name": "FFB SA",
+      "name": "Columbia Flat Box Side Arm Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB SA"
     },
     {
       "id": "FA 271",
-      "name": "FA 271",
+      "name": "Columbia 6-32 x 5/16 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA271"
     },
     {
       "id": "FA 279",
@@ -254,9 +254,9 @@
     },
     {
       "id": "FA 272",
-      "name": "FA 272",
+      "name": "Columbia 6-32 x 3/8 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA272"
     },
     {
       "id": "FFB 4A",
@@ -278,15 +278,15 @@
     },
     {
       "id": "FA 271",
-      "name": "FA 271",
+      "name": "Columbia 6-32 x 5/16 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA271"
     },
     {
       "id": "HFB 17",
-      "name": "HFB 17",
+      "name": "Columbia Heavy Flat Box Wheel Set",
       "quantity": 1,
-      "sku": ""
+      "sku": "HFFB17"
     },
     {
       "id": "FFB 4B",

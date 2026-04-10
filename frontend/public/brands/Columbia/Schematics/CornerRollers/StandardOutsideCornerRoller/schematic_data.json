@@ -14,63 +14,63 @@
     },
     {
       "id": "OCR 2B",
-      "name": "OCR 2B",
+      "name": "Columbia Columbia Roller Wheel CR2",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR2"
     },
     {
       "id": "OCR 3",
-      "name": "OCR 3",
+      "name": "Columbia Columbia Corner Roller Bearing Sleeve CR3",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR3"
     },
     {
       "id": "OCR 6",
-      "name": "OCR 6",
+      "name": "Columbia Columbia Corner Roller Handle Mounting Swivel CR6",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR6"
     },
     {
       "id": "OCR 1",
-      "name": "OCR 1",
+      "name": "Columbia Columbia Corner Roller Head Casting CR1",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR1"
     },
     {
       "id": "OCR 2A",
-      "name": "OCR 2A",
+      "name": "Columbia Columbia Roller Wheel CR2",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR2"
     },
     {
       "id": "OCR 2C",
-      "name": "OCR 2C",
+      "name": "Columbia Columbia Roller Wheel CR2",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR2"
     },
     {
       "id": "OCR 3A",
-      "name": "OCR 3A",
+      "name": "Columbia Columbia Corner Roller Bearing Sleeve CR3",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR3"
     },
     {
       "id": "FA 299",
-      "name": "FA 299",
+      "name": "Columbia 1/4-20 x 1-1/2 Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA299"
     },
     {
       "id": "OCR 2D",
-      "name": "OCR 2D",
+      "name": "Columbia Columbia Roller Wheel CR2",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR2"
     },
     {
       "id": "OCR 5",
-      "name": "OCR 5",
+      "name": "Columbia CR5",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR5"
     },
     {
       "id": "FA 312",
@@ -104,9 +104,9 @@
     },
     {
       "id": "FA 301",
-      "name": "FA 301",
+      "name": "Columbia 1/4-20 x 2-1/2 Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA301"
     }
   ],
   "coordinates": {

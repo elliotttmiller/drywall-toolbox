@@ -14,15 +14,15 @@
     },
     {
       "id": "CFB5A",
-      "name": "CFB5A",
+      "name": "Columbia Corner Box Cone Ball End (Large)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5A"
     },
     {
       "id": "CFB5C",
-      "name": "CFB5C",
+      "name": "Columbia Corner Box Cone Ball End (Standard)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5C"
     },
     {
       "id": "FA219",
@@ -32,9 +32,9 @@
     },
     {
       "id": "CFB1 8\"",
-      "name": "CFB1 8\"",
+      "name": "Columbia Rear Plate 8 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB1-8"
     },
     {
       "id": "FA247",
@@ -86,9 +86,9 @@
     },
     {
       "id": "CFB3 8\"",
-      "name": "CFB3 8\"",
+      "name": "Columbia Side Plate 8 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB3-8"
     },
     {
       "id": "FA241",
@@ -98,15 +98,15 @@
     },
     {
       "id": "AB45",
-      "name": "AB45",
+      "name": "Columbia Automatic Box Throttle Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB45"
     },
     {
       "id": "AB49",
-      "name": "AB49",
+      "name": "Columbia Automatic Box Handle Mount",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB49"
     },
     {
       "id": "CFB7 8\"",
@@ -158,9 +158,9 @@
     },
     {
       "id": "FA242",
-      "name": "FA242",
+      "name": "Columbia 6-32 x 3/8 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA242"
     },
     {
       "id": "FA253",
@@ -230,27 +230,27 @@
     },
     {
       "id": "AB44",
-      "name": "AB44",
+      "name": "Columbia Automatic Box Clutch Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB44"
     },
     {
       "id": "AB44A",
-      "name": "AB44A",
+      "name": "Columbia Automatic Box Clutch Spring Short",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB44A"
     },
     {
       "id": "AB44B",
-      "name": "AB44B",
+      "name": "Columbia Automatic Box Clutch Spring Long",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB44B"
     },
     {
       "id": "FA263",
-      "name": "FA263",
+      "name": "Columbia 8-32 x 5/8 Flat Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA263"
     },
     {
       "id": "CT39",
@@ -260,9 +260,9 @@
     },
     {
       "id": "FA309",
-      "name": "FA309",
+      "name": "Columbia 5/16-18 x 1/2 Socket Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA309"
     }
   ],
   "coordinates": {

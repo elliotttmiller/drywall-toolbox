@@ -32,9 +32,9 @@
     },
     {
       "id": "MP33A",
-      "name": "MP33A",
+      "name": "Columbia Mud Pump Spring Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP33A"
     },
     {
       "id": "FA294",
@@ -50,15 +50,15 @@
     },
     {
       "id": "HB48B",
-      "name": "HB48B",
+      "name": "Columbia Hot Mud Pump Handle B",
       "quantity": 1,
-      "sku": ""
+      "sku": "HB48B"
     },
     {
       "id": "HP48A",
-      "name": "HP48A",
+      "name": "Columbia Hot Mud Pump HP48 Body A",
       "quantity": 1,
-      "sku": ""
+      "sku": "HP48A"
     },
     {
       "id": "MP25",
@@ -74,9 +74,9 @@
     },
     {
       "id": "FA307",
-      "name": "FA307",
+      "name": "Columbia 5/16-18 x 1-1/2 Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA307"
     },
     {
       "id": "MP36",
@@ -86,15 +86,15 @@
     },
     {
       "id": "HP4",
-      "name": "HP4",
+      "name": "Columbia Hot Mud Pump Piston Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "HP4"
     },
     {
       "id": "FA301",
-      "name": "FA301",
+      "name": "Columbia 1/4-20 x 2-1/2 Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA301"
     },
     {
       "id": "FA290",
@@ -116,15 +116,15 @@
     },
     {
       "id": "FA303",
-      "name": "FA303",
+      "name": "Columbia 1/4-28 x 3/8 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA303"
     },
     {
       "id": "FA346",
-      "name": "FA346",
+      "name": "Columbia 1/4 Star Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA346"
     },
     {
       "id": "FA300",
@@ -176,21 +176,21 @@
     },
     {
       "id": "MP7C",
-      "name": "MP7C",
+      "name": "Columbia Mud Pump O-Ring Retainer C (replaces MP7D)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP7C"
     },
     {
       "id": "MP7A",
-      "name": "MP7A",
+      "name": "Columbia Mud Pump Foot Valve A",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP7A"
     },
     {
       "id": "FA287",
-      "name": "FA287",
+      "name": "Columbia 1/4 x 5/8 Split Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA287"
     },
     {
       "id": "FFH14",
@@ -248,21 +248,21 @@
     },
     {
       "id": "HB48B",
-      "name": "HB48B",
+      "name": "Columbia Hot Mud Pump Handle B",
       "quantity": 1,
-      "sku": ""
+      "sku": "HB48B"
     },
     {
       "id": "HP48A",
-      "name": "HP48A",
+      "name": "Columbia Hot Mud Pump HP48 Body A",
       "quantity": 1,
-      "sku": ""
+      "sku": "HP48A"
     },
     {
       "id": "FA303",
-      "name": "FA303",
+      "name": "Columbia 1/4-28 x 3/8 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA303"
     },
     {
       "id": "FA306",
@@ -296,15 +296,15 @@
     },
     {
       "id": "FA350",
-      "name": "FA350",
+      "name": "Columbia 5/16-18 x 7/8 Socket Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA350"
     },
     {
       "id": "HP48L",
-      "name": "HP48L",
+      "name": "Columbia Hot Mud Pump HP48 Long Body",
       "quantity": 1,
-      "sku": ""
+      "sku": "HP48L"
     },
     {
       "id": "TBMP24",
@@ -326,21 +326,21 @@
     },
     {
       "id": "FA313",
-      "name": "FA313",
+      "name": "Columbia 5/16-18 Nyloc Jam Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA313"
     },
     {
       "id": "MP7E",
-      "name": "MP7E",
+      "name": "Columbia Mud Pump Foot Valve E",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP7E"
     },
     {
       "id": "MP8A",
-      "name": "MP8A",
+      "name": "Columbia Mud Pump Valve Spring A",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP8A"
     }
   ],
   "coordinates": {

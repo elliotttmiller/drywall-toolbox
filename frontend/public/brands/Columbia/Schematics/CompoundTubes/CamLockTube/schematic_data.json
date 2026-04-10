@@ -62,45 +62,45 @@
     },
     {
       "id": "CMT 1A-22",
-      "name": "CMT 1A-22",
+      "name": "Columbia Draw Tube 22 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT1A-22"
     },
     {
       "id": "EXT 35",
-      "name": "EXT 35",
+      "name": "Columbia EXT35",
       "quantity": 1,
-      "sku": ""
+      "sku": "EXT35"
     },
     {
       "id": "CFB 5A",
-      "name": "CFB 5A",
+      "name": "Columbia Corner Box Cone Ball End (Large)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5A"
     },
     {
       "id": "CLT 16",
-      "name": "CLT 16",
+      "name": "Columbia Cam Lock Tube End Cap",
       "quantity": 1,
-      "sku": ""
+      "sku": "CLT16"
     },
     {
       "id": "CFB 5C",
-      "name": "CFB 5C",
+      "name": "Columbia Corner Box Cone Ball End (Standard)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5C"
     },
     {
       "id": "CLT 13",
-      "name": "CLT 13",
+      "name": "Columbia Cam Lock Tube Cam Body",
       "quantity": 1,
-      "sku": ""
+      "sku": "CLT13"
     },
     {
       "id": "CLT 15",
-      "name": "CLT 15",
+      "name": "Columbia Cam Lock Tube Return Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "CLT15"
     },
     {
       "id": "CMT 4",
@@ -110,15 +110,15 @@
     },
     {
       "id": "CLT 14",
-      "name": "CLT 14",
+      "name": "Columbia Cam Lock Tube Locking Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "CLT14"
     },
     {
       "id": "CLT 12",
-      "name": "CLT 12",
+      "name": "Columbia Cam Lock Tube Locking Sleeve",
       "quantity": 1,
-      "sku": ""
+      "sku": "CLT12"
     },
     {
       "id": "FA 239",
@@ -134,9 +134,9 @@
     },
     {
       "id": "CMT 1-24",
-      "name": "CMT 1-24",
+      "name": "Columbia Barrel Main Body 24 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT1-24"
     },
     {
       "id": "CMT 5",
@@ -146,9 +146,9 @@
     },
     {
       "id": "FA 347",
-      "name": "FA 347",
+      "name": "Columbia 1/4-20 Nyloc Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA347"
     },
     {
       "id": "FA 235",
@@ -158,9 +158,9 @@
     },
     {
       "id": "FA 348",
-      "name": "FA 348",
+      "name": "Columbia 1/4 Flat Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA348"
     },
     {
       "id": "CMT 6",

@@ -8,9 +8,9 @@
   "parts": [
     {
       "id": "FG4 45",
-      "name": "FG4 45",
+      "name": "Columbia FG4-45",
       "quantity": 1,
-      "sku": ""
+      "sku": "FG4-45"
     },
     {
       "id": "FA 284",
@@ -20,15 +20,15 @@
     },
     {
       "id": "H 1",
-      "name": "H 1",
+      "name": "Columbia Hot Mud Pump Cylinder",
       "quantity": 1,
-      "sku": ""
+      "sku": "HP1"
     },
     {
       "id": "EXT 35",
-      "name": "EXT 35",
+      "name": "Columbia EXT35",
       "quantity": 1,
-      "sku": ""
+      "sku": "EXT35"
     }
   ],
   "coordinates": {

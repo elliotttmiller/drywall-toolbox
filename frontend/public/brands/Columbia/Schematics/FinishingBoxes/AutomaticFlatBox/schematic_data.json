@@ -8,39 +8,39 @@
   "parts": [
     {
       "id": "FA327",
-      "name": "FA327",
+      "name": "Columbia 8-32 x 1/4 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA327"
     },
     {
       "id": "AB46",
-      "name": "AB46",
+      "name": "Columbia Automatic Box Throttle Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB46"
     },
     {
       "id": "AB44",
-      "name": "AB44",
+      "name": "Columbia Automatic Box Clutch Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB44"
     },
     {
       "id": "AB43",
-      "name": "AB43",
+      "name": "Columbia Automatic Box Throttle Housing",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB43"
     },
     {
       "id": "AB47",
-      "name": "AB47",
+      "name": "Columbia Automatic Box Thumb Valve",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB47"
     },
     {
       "id": "FA272",
-      "name": "FA272",
+      "name": "Columbia 6-32 x 3/8 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA272"
     },
     {
       "id": "FFB4A",
@@ -62,9 +62,9 @@
     },
     {
       "id": "FA271",
-      "name": "FA271",
+      "name": "Columbia 6-32 x 5/16 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA271"
     },
     {
       "id": "FA241",
@@ -74,21 +74,21 @@
     },
     {
       "id": "FFB4C",
-      "name": "FFB4C",
+      "name": "Columbia FFB4C",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB4C"
     },
     {
       "id": "FFB38",
-      "name": "FFB38",
+      "name": "Columbia Flat Box Corner Plate",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB38"
     },
     {
       "id": "AB3A LEFT",
-      "name": "AB3A LEFT",
+      "name": "Columbia Automatic Box End Plate Left",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB3A LEFT"
     },
     {
       "id": "FA238",
@@ -104,9 +104,9 @@
     },
     {
       "id": "FFB8",
-      "name": "FFB8",
+      "name": "Columbia Flat Box Main Body 8 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB8"
     },
     {
       "id": "FA231",
@@ -116,21 +116,21 @@
     },
     {
       "id": "AB42",
-      "name": "AB42",
+      "name": "Columbia Automatic Box Air Valve Body",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB42"
     },
     {
       "id": "FA318",
-      "name": "FA318",
+      "name": "Columbia 3/8-16 x 1-1/4 Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA318"
     },
     {
       "id": "AB52",
-      "name": "AB52",
+      "name": "Columbia Automatic Box Thumb Valve Seat",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB52"
     },
     {
       "id": "FA207",
@@ -146,21 +146,21 @@
     },
     {
       "id": "AB45",
-      "name": "AB45",
+      "name": "Columbia Automatic Box Throttle Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB45"
     },
     {
       "id": "AB49",
-      "name": "AB49",
+      "name": "Columbia Automatic Box Handle Mount",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB49"
     },
     {
       "id": "FA260",
-      "name": "FA260",
+      "name": "Columbia 8-32 x 3/4 Socket Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA260"
     },
     {
       "id": "FA270",
@@ -176,21 +176,21 @@
     },
     {
       "id": "AB40",
-      "name": "AB40",
+      "name": "Columbia Automatic Box Air Valve Seat",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB40"
     },
     {
       "id": "AB41",
-      "name": "AB41",
+      "name": "Columbia Automatic Box Air Valve Stem",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB41"
     },
     {
       "id": "AB50",
-      "name": "AB50",
+      "name": "Columbia Automatic Box Pressure Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB50"
     },
     {
       "id": "FA268",
@@ -200,9 +200,9 @@
     },
     {
       "id": "AB48",
-      "name": "AB48",
+      "name": "Columbia Automatic Box Air Valve O-Ring",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB48"
     },
     {
       "id": "FA241",
@@ -212,27 +212,27 @@
     },
     {
       "id": "AB51",
-      "name": "AB51",
+      "name": "Columbia Automatic Box Release Clip",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB51"
     },
     {
       "id": "FFB41",
-      "name": "FFB41",
+      "name": "Columbia Flat Box Axle Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB41"
     },
     {
       "id": "FFB40-10",
-      "name": "FFB40-10",
+      "name": "Columbia Flat Box Door Gasket 10 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB40-10"
     },
     {
       "id": "FA393",
-      "name": "FA393",
+      "name": "Columbia 6-32 x 1-1/2 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA393"
     },
     {
       "id": "FA268",
@@ -248,15 +248,15 @@
     },
     {
       "id": "FFB12",
-      "name": "FFB12",
+      "name": "Columbia Adjuster Dial Assembly 12 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB12"
     },
     {
       "id": "FFB35",
-      "name": "FFB35",
+      "name": "Columbia Flat Box Spring Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB35"
     },
     {
       "id": "FA241",
@@ -266,9 +266,9 @@
     },
     {
       "id": "FFB37",
-      "name": "FFB37",
+      "name": "Columbia Flat Box Retaining Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB37"
     },
     {
       "id": "FFB43",
@@ -278,15 +278,15 @@
     },
     {
       "id": "FFB44",
-      "name": "FFB44",
+      "name": "Columbia Flat Box Door Pivot Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB44"
     },
     {
       "id": "AB54",
-      "name": "AB54",
+      "name": "Columbia Automatic Box Air Valve Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB54"
     },
     {
       "id": "FFB11",
@@ -314,9 +314,9 @@
     },
     {
       "id": "FA328",
-      "name": "FA328",
+      "name": "Columbia 3/8 Flat Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA328"
     },
     {
       "id": "FA247",
@@ -326,15 +326,15 @@
     },
     {
       "id": "AB3A RIGHT",
-      "name": "AB3A RIGHT",
+      "name": "Columbia Automatic Box End Plate Right",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB3A RIGHT"
     },
     {
       "id": "FA328",
-      "name": "FA328",
+      "name": "Columbia 3/8 Flat Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA328"
     },
     {
       "id": "FA247",
@@ -356,9 +356,9 @@
     },
     {
       "id": "AB1",
-      "name": "AB1",
+      "name": "Columbia Automatic Box Handle Body",
       "quantity": 1,
-      "sku": ""
+      "sku": "AB1"
     },
     {
       "id": "FA230",
@@ -368,9 +368,9 @@
     },
     {
       "id": "FFB24-10",
-      "name": "FFB24-10",
+      "name": "Columbia Flat Box Wheel Axle 24 in 10 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB24-10"
     },
     {
       "id": "FA232",
@@ -380,9 +380,9 @@
     },
     {
       "id": "FFB10-10",
-      "name": "FFB10-10",
+      "name": "Columbia Flat Box Side Cover 10 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB10-10"
     },
     {
       "id": "FFB19",
@@ -410,9 +410,9 @@
     },
     {
       "id": "FFB8",
-      "name": "FFB8",
+      "name": "Columbia Flat Box Main Body 8 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB8"
     },
     {
       "id": "FA221",

@@ -26,15 +26,15 @@
     },
     {
       "id": "CEXT 2",
-      "name": "CEXT 2",
+      "name": "Columbia External Corner Applicator Wheel Small",
       "quantity": 1,
-      "sku": ""
+      "sku": "CEXT2"
     },
     {
       "id": "CEXT 2",
-      "name": "CEXT 2",
+      "name": "Columbia External Corner Applicator Wheel Small",
       "quantity": 1,
-      "sku": ""
+      "sku": "CEXT2"
     },
     {
       "id": "CEXT 3",
@@ -50,9 +50,9 @@
     },
     {
       "id": "CEXT 1",
-      "name": "CEXT 1",
+      "name": "Columbia External Corner Applicator Wheel Large",
       "quantity": 1,
-      "sku": ""
+      "sku": "CEXT1"
     }
   ],
   "coordinates": {

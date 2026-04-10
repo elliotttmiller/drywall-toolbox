@@ -26,15 +26,15 @@
     },
     {
       "id": "CF5-3.5\"",
-      "name": "CF5-3.5\"",
+      "name": "Columbia Columbia Tension Spring 3.5\" - Flusher",
       "quantity": 1,
-      "sku": ""
+      "sku": "CF5-3.5"
     },
     {
       "id": "FA324",
-      "name": "FA324",
+      "name": "Columbia 10-24 x 1/4 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA324"
     },
     {
       "id": "FA236",
@@ -56,15 +56,15 @@
     },
     {
       "id": "FA377",
-      "name": "FA377",
+      "name": "Columbia 6-32 x 1/4 Flat Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA377"
     },
     {
       "id": "FA237",
-      "name": "FA237",
+      "name": "Columbia 6-32 x 3/16 Binder Slot Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA237"
     },
     {
       "id": "CF3",
@@ -74,21 +74,21 @@
     },
     {
       "id": "CF1A",
-      "name": "CF1A",
+      "name": "Columbia Columbia Direct Plate - Flusher",
       "quantity": 1,
-      "sku": ""
+      "sku": "CF1B"
     },
     {
       "id": "FA271",
-      "name": "FA271",
+      "name": "Columbia 6-32 x 5/16 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA271"
     },
     {
       "id": "CF2",
-      "name": "CF2",
+      "name": "Columbia Corner Flusher Wheel Retainer",
       "quantity": 1,
-      "sku": ""
+      "sku": "CF2"
     }
   ],
   "coordinates": {

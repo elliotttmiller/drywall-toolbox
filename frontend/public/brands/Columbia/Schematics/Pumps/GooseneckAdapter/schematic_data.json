@@ -8,9 +8,9 @@
   "parts": [
     {
       "id": "MP 27B",
-      "name": "MP 27B",
+      "name": "Columbia Mud Pump O-Ring Retainer B",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP27B"
     },
     {
       "id": "MP 23A",
@@ -26,9 +26,9 @@
     },
     {
       "id": "MP 27",
-      "name": "MP 27",
+      "name": "Columbia Mud Pump O-Ring Retainer",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP27"
     }
   ],
   "coordinates": {

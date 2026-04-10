@@ -8,15 +8,15 @@
   "parts": [
     {
       "id": "FA 272",
-      "name": "FA 272",
+      "name": "Columbia 6-32 x 3/8 Set Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA272"
     },
     {
       "id": "FA 311",
-      "name": "FA 311",
+      "name": "Columbia 5/16-18 Hex Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA311"
     },
     {
       "id": "FA 249",
@@ -50,9 +50,9 @@
     },
     {
       "id": "AH Ball",
-      "name": "AH Ball",
+      "name": "Columbia AHA",
       "quantity": 1,
-      "sku": ""
+      "sku": "AHA"
     },
     {
       "id": "BH 5",
@@ -68,9 +68,9 @@
     },
     {
       "id": "FA 325",
-      "name": "FA 325",
+      "name": "Columbia 3/8-16 x 1-1/2 Socket Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA325"
     },
     {
       "id": "FA 312",

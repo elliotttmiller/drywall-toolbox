@@ -74,15 +74,15 @@
     },
     {
       "id": "CMT1A-24\"",
-      "name": "CMT1A-24\"",
+      "name": "Columbia Draw Tube - 24\"",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT1A-24"
     },
     {
       "id": "EXT35",
-      "name": "EXT35",
+      "name": "Columbia EXT35",
       "quantity": 1,
-      "sku": ""
+      "sku": "EXT35"
     },
     {
       "id": "CFB5B",
@@ -92,15 +92,15 @@
     },
     {
       "id": "CFB5A",
-      "name": "CFB5A",
+      "name": "Columbia Corner Box Cone Ball End (Large)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5A"
     },
     {
       "id": "CFB5C",
-      "name": "CFB5C",
+      "name": "Columbia Corner Box Cone Ball End (Standard)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CFB5C"
     },
     {
       "id": "CMT2",
@@ -128,9 +128,9 @@
     },
     {
       "id": "CMT1-24\"",
-      "name": "CMT1-24\"",
+      "name": "Columbia Barrel Main Body 24 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMT1-24"
     },
     {
       "id": "CMT5",

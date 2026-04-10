@@ -8,69 +8,69 @@
   "parts": [
     {
       "id": "FA366",
-      "name": "FA366",
+      "name": "Columbia 8-32 x 3/8 Pan Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA366"
     },
     {
       "id": "S5",
-      "name": "S5",
+      "name": "Columbia Sander Head Retainer Clip",
       "quantity": 1,
-      "sku": ""
+      "sku": "S5"
     },
     {
       "id": "FA364",
-      "name": "FA364",
+      "name": "Columbia 8-32 x 5/8 Hex Bolt",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA364"
     },
     {
       "id": "S4",
-      "name": "S4",
+      "name": "Columbia Sander Head Pivot Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "S4"
     },
     {
       "id": "S6",
-      "name": "S6",
+      "name": "Columbia Sander Head Swivel Bearing",
       "quantity": 1,
-      "sku": ""
+      "sku": "S6"
     },
     {
       "id": "FA365",
-      "name": "FA365",
+      "name": "Columbia 8-32 Nyloc Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA365"
     },
     {
       "id": "S1",
-      "name": "S1",
+      "name": "Columbia Sander Head Main Body",
       "quantity": 1,
-      "sku": ""
+      "sku": "S1"
     },
     {
       "id": "S2",
-      "name": "S2",
+      "name": "Columbia Sander Head Pivot Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "S2"
     },
     {
       "id": "S4",
-      "name": "S4",
+      "name": "Columbia Sander Head Pivot Washer",
       "quantity": 1,
-      "sku": ""
+      "sku": "S4"
     },
     {
       "id": "S2",
-      "name": "S2",
+      "name": "Columbia Sander Head Pivot Pin",
       "quantity": 1,
-      "sku": ""
+      "sku": "S2"
     },
     {
       "id": "S3",
-      "name": "S3",
+      "name": "Columbia Sander Head Return Spring",
       "quantity": 1,
-      "sku": ""
+      "sku": "S3"
     }
   ],
   "coordinates": {

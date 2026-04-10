@@ -68,9 +68,9 @@
     },
     {
       "id": "FA 260",
-      "name": "FA 260",
+      "name": "Columbia 8-32 x 3/4 Socket Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA260"
     },
     {
       "id": "BH 5",
@@ -80,33 +80,33 @@
     },
     {
       "id": "FA 311",
-      "name": "FA 311",
+      "name": "Columbia 5/16-18 Hex Nut",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA311"
     },
     {
       "id": "BH 8-3'",
-      "name": "BH 8-3'",
+      "name": "Columbia 3 ft Box Handle 8 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH8-3"
     },
     {
       "id": "BH 9-3'",
-      "name": "BH 9-3'",
+      "name": "Columbia 3 ft Box Handle 9 in",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH9-3"
     },
     {
       "id": "FA 260",
-      "name": "FA 260",
+      "name": "Columbia 8-32 x 3/4 Socket Head Screw",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA260"
     },
     {
       "id": "FA 202",
-      "name": "FA 202",
+      "name": "Columbia FA202",
       "quantity": 1,
-      "sku": ""
+      "sku": "FA202"
     },
     {
       "id": "BH 4",
@@ -134,9 +134,9 @@
     },
     {
       "id": "BH 24A",
-      "name": "BH 24A",
+      "name": "Columbia Box Handle Door Clip Assembly",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH24A"
     }
   ],
   "coordinates": {
