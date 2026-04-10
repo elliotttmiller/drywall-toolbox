@@ -321,15 +321,18 @@ function normalizeRow(row, idx) {
     .filter(Boolean);
   if (images.length === 0) images.push('/no-image-placeholder.webp');
 
-  // Brand: prefer explicit "Attribute 1 name == Brand" value; fall back to
-  // the second segment of the category path (e.g. "TapeTech" from
+  // Brand: prefer the WooCommerce "Brands" taxonomy column (most authoritative,
+  // e.g. "Platinum Drywall Tools"), then fall back to "Attribute 1 value(s)"
+  // when Attribute 1 name == "Brand", and finally extract from the category
+  // path (e.g. "TapeTech" from
   // "Drywall Finishing Tools > TapeTech > Parts & Accessories").
   // This ensures every product carries its brand even when the CSV rows for
   // parts / repair kits omit the Brand attribute column entirely.
+  const brandCol  = (row['Brands']               || '').trim();
   const attrName  = (row['Attribute 1 name']     || '').trim();
   const attrValue = (row['Attribute 1 value(s)'] || '').trim();
   const attrBrand = attrName.toLowerCase() === 'brand' ? attrValue : '';
-  const brand     = attrBrand || extractBrandFromCategory(row['Categories'] || '');
+  const brand     = brandCol || attrBrand || extractBrandFromCategory(row['Categories'] || '');
 
   // Price — prefer Sale price, then Regular price
   const salePrice    = parseFloat(row['Sale price'])    || 0;
