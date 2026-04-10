@@ -26,19 +26,19 @@
     },
     {
       "id": "FA 288",
-      "name": "1/4in X 1/2in Split Pin - FA288",
+      "name": "1/4in X 1/2in Split Pin - FA288 (FA-288)",
       "quantity": 1,
       "sku": "FA-288"
     },
     {
       "id": "CR 11",
-      "name": "Corner Roller Handle Connecting Link - CR11",
+      "name": "Corner Roller Handle Connecting Link - CR11 (CR-11)",
       "quantity": 1,
       "sku": "CR-11"
     },
     {
       "id": "CR 6",
-      "name": "Corner Roller Handle Mounting Swivel - CR6",
+      "name": "Corner Roller Handle Mounting Swivel (CR6)",
       "quantity": 1,
       "sku": "CR6"
     },
@@ -68,7 +68,7 @@
     },
     {
       "id": "FA 299",
-      "name": "1/4-20 x 1-1/2 Hex Bolt",
+      "name": "1/4-20 x 1-1/2 Hex Bolt (FA299)",
       "quantity": 1,
       "sku": "FA299"
     }

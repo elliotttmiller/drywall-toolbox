@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "FA 323",
-      "name": "1/4-20 X 1\" Hex Bolt",
+      "name": "1/4-20 X 1\" Hex Bolt (FA323)",
       "quantity": 1,
       "sku": "FA323"
     },
@@ -26,13 +26,13 @@
     },
     {
       "id": "CMT 8",
-      "name": "Mastic Tube Washer",
+      "name": "Mastic Tube Washer (CMT8)",
       "quantity": 1,
       "sku": "CMT8"
     },
     {
       "id": "CT 111",
-      "name": "Taper Piston Cup - CT111",
+      "name": "Taper Piston Cup - CT111 (CT-111)",
       "quantity": 1,
       "sku": "CT-111"
     },
@@ -44,13 +44,13 @@
     },
     {
       "id": "CMT 8",
-      "name": "Mastic Tube Washer",
+      "name": "Mastic Tube Washer (CMT8)",
       "quantity": 1,
       "sku": "CMT8"
     },
     {
       "id": "FA 284",
-      "name": "3/16 x 3/8 SS Pop Rivet",
+      "name": "3/16 x 3/8 SS Pop Rivet (FA284)",
       "quantity": 1,
       "sku": "FA284"
     },
@@ -62,13 +62,13 @@
     },
     {
       "id": "CMT 1A-22",
-      "name": "Draw Tube 22 in",
+      "name": "Draw Tube 22 in (CMT1A-22)",
       "quantity": 1,
       "sku": "CMT1A-22"
     },
     {
       "id": "EXT 35",
-      "name": "EXT35",
+      "name": "Extension Tube 35 in (EXT35)",
       "quantity": 1,
       "sku": "EXT35"
     },
@@ -80,7 +80,7 @@
     },
     {
       "id": "CLT 16",
-      "name": "Cam Lock Tube End Cap",
+      "name": "Cam Lock Tube End Cap (CLT16)",
       "quantity": 1,
       "sku": "CLT16"
     },
@@ -92,31 +92,31 @@
     },
     {
       "id": "CLT 13",
-      "name": "Cam Lock Tube Cam Body",
+      "name": "Cam Lock Tube Cam Body (CLT13)",
       "quantity": 1,
       "sku": "CLT13"
     },
     {
       "id": "CLT 15",
-      "name": "Cam Lock Tube Return Spring",
+      "name": "Cam Lock Tube Return Spring (CLT15)",
       "quantity": 1,
       "sku": "CLT15"
     },
     {
       "id": "CMT 4",
-      "name": "Plunger Housing",
+      "name": "Plunger Housing (CMT4)",
       "quantity": 1,
       "sku": "CMT4"
     },
     {
       "id": "CLT 14",
-      "name": "Cam Lock Tube Locking Pin",
+      "name": "Cam Lock Tube Locking Pin (CLT14)",
       "quantity": 1,
       "sku": "CLT14"
     },
     {
       "id": "CLT 12",
-      "name": "Cam Lock Tube Locking Sleeve",
+      "name": "Cam Lock Tube Locking Sleeve (CLT12)",
       "quantity": 1,
       "sku": "CLT12"
     },
@@ -134,19 +134,19 @@
     },
     {
       "id": "CMT 1-24",
-      "name": "Barrel Main Body 24 in",
+      "name": "Barrel Main Body 24 in (CMT1-24)",
       "quantity": 1,
       "sku": "CMT1-24"
     },
     {
       "id": "CMT 5",
-      "name": "Plastic Handle Collar",
+      "name": "Plastic Handle Collar (CMT5)",
       "quantity": 1,
       "sku": "CMT5"
     },
     {
       "id": "FA 347",
-      "name": "1/4-20 Nyloc Nut",
+      "name": "1/4-20 Nyloc Nut (FA347)",
       "quantity": 1,
       "sku": "FA347"
     },
@@ -158,7 +158,7 @@
     },
     {
       "id": "FA 348",
-      "name": "1/4 Flat Washer",
+      "name": "1/4 Flat Washer (FA348)",
       "quantity": 1,
       "sku": "FA348"
     },

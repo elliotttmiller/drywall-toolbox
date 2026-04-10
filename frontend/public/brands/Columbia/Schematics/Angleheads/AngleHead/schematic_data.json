@@ -14,13 +14,13 @@
     },
     {
       "id": "AH 6",
-      "name": "Funnel Retainer Spring",
+      "name": "Funnel Retainer Spring (AH6)",
       "quantity": 1,
       "sku": "AH6"
     },
     {
       "id": "AH 7-2.5\"",
-      "name": "Frame Tension Spring 2-1/2 in",
+      "name": "Frame Tension Spring 2-1/2 in (AH7-2.5)",
       "quantity": 1,
       "sku": "AH7-2.5"
     },
@@ -56,7 +56,7 @@
     },
     {
       "id": "AH 18",
-      "name": "Socket Wear Cup",
+      "name": "Socket Wear Cup (AH18)",
       "quantity": 1,
       "sku": "AH18"
     },
@@ -68,7 +68,7 @@
     },
     {
       "id": "AH 16",
-      "name": "Retaining Spring Backer",
+      "name": "Retaining Spring Backer (AH16)",
       "quantity": 1,
       "sku": "AH16"
     },
@@ -86,19 +86,19 @@
     },
     {
       "id": "AH 5",
-      "name": "Frame Retainer Clip",
+      "name": "Frame Retainer Clip (AH5)",
       "quantity": 1,
       "sku": "AH5"
     },
     {
       "id": "AH 4",
-      "name": "AH4 - Angle Head Side Blade",
+      "name": "Angle Head Side Blade (AH4)",
       "quantity": 1,
       "sku": "AH4"
     },
     {
       "id": "AH 2-3\" L",
-      "name": "Left Frame Sub-Assembly 3 in",
+      "name": "Left Frame Sub-Assembly 3 in (AHA2-3L)",
       "quantity": 1,
       "sku": "AHA2-3L"
     },
@@ -122,43 +122,43 @@
     },
     {
       "id": "AH 1",
-      "name": "Spring Housing Angle Head",
+      "name": "Spring Housing Angle Head (AH1A)",
       "quantity": 1,
       "sku": "AH1A"
     },
     {
       "id": "AH 2-3\" R",
-      "name": "Right Frame Sub-Assembly 3 in",
+      "name": "Right Frame Sub-Assembly 3 in (AHA2-3R)",
       "quantity": 1,
       "sku": "AHA2-3R"
     },
     {
       "id": "AH 4",
-      "name": "AH4 - Angle Head Side Blade",
+      "name": "Angle Head Side Blade (AH4)",
       "quantity": 1,
       "sku": "AH4"
     },
     {
       "id": "FA 221",
-      "name": "#6 Belleville Washer",
+      "name": "#6 Belleville Washer (FA221)",
       "quantity": 1,
       "sku": "FA221"
     },
     {
       "id": "AH 11",
-      "name": "Return Spring Post Angle Head",
+      "name": "Return Spring Post Angle Head (AH11)",
       "quantity": 1,
       "sku": "AH11"
     },
     {
       "id": "FA 221",
-      "name": "#6 Belleville Washer",
+      "name": "#6 Belleville Washer (FA221)",
       "quantity": 1,
       "sku": "FA221"
     },
     {
       "id": "AH 12",
-      "name": "Head Casting 2 in",
+      "name": "Head Casting 2 in (AH1-2)",
       "quantity": 1,
       "sku": "AH1-2"
     },
@@ -170,13 +170,13 @@
     },
     {
       "id": "AH 1-3.5\"",
-      "name": "Head Casting 3-1/2 in",
+      "name": "Head Casting 3-1/2 in (AH1-3.5)",
       "quantity": 1,
       "sku": "AH1-3.5"
     },
     {
       "id": "AH 23",
-      "name": "Angle Head Frame Retaining Pin",
+      "name": "Angle Head Frame Retaining Pin (AH23)",
       "quantity": 1,
       "sku": "AH23"
     },
@@ -188,25 +188,25 @@
     },
     {
       "id": "AH 21",
-      "name": "Angle Head Hinge Spacer",
+      "name": "Angle Head Hinge Spacer (AH21)",
       "quantity": 1,
       "sku": "AH21"
     },
     {
       "id": "AH 20",
-      "name": "Angle Head Pivot Pin",
+      "name": "Angle Head Pivot Pin (AH20)",
       "quantity": 1,
       "sku": "AH20"
     },
     {
       "id": "AH 22",
-      "name": "Angle Head Frame Clamp",
+      "name": "Angle Head Frame Clamp (AH22)",
       "quantity": 1,
       "sku": "AH22"
     },
     {
       "id": "AH 1",
-      "name": "Spring Housing Angle Head",
+      "name": "Spring Housing Angle Head (AH1A)",
       "quantity": 1,
       "sku": "AH1A"
     }

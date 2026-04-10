@@ -44,7 +44,7 @@
     },
     {
       "id": "HH 8",
-      "name": "Hydra Handle 8 in Extension Tube",
+      "name": "Hydra Handle 8 in Extension Tube (HH8)",
       "quantity": 1,
       "sku": "HH8"
     },
@@ -56,7 +56,7 @@
     },
     {
       "id": "HH 35",
-      "name": "Grip for COL88",
+      "name": "Grip for COL88 (HH35)",
       "quantity": 1,
       "sku": "HH35"
     },
@@ -68,7 +68,7 @@
     },
     {
       "id": "FA 237",
-      "name": "6-32 x 3/16 Binder Slot Screw",
+      "name": "6-32 x 3/16 Binder Slot Screw (FA237)",
       "quantity": 1,
       "sku": "FA237"
     },
@@ -80,13 +80,13 @@
     },
     {
       "id": "FA 383",
-      "name": "1/4-20 x 3/8 Flat Head Screw",
+      "name": "1/4-20 x 3/8 Flat Head Screw (FA383)",
       "quantity": 1,
       "sku": "FA383"
     },
     {
       "id": "FA 319",
-      "name": "3/8-16 Hex Nut",
+      "name": "3/8-16 Hex Nut (FA319)",
       "quantity": 1,
       "sku": "FA319"
     },

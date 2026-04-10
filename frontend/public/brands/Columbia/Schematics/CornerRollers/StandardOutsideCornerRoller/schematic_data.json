@@ -14,61 +14,61 @@
     },
     {
       "id": "OCR 2B",
-      "name": "Roller Wheel CR2",
+      "name": "Roller Wheel CR2 (CR2)",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 3",
-      "name": "Corner Roller Bearing Sleeve CR3",
+      "name": "Corner Roller Bearing Sleeve CR3 (CR3)",
       "quantity": 1,
       "sku": "CR3"
     },
     {
       "id": "OCR 6",
-      "name": "Corner Roller Handle Mounting Swivel CR6",
+      "name": "Corner Roller Handle Mounting Swivel CR6 (CR6)",
       "quantity": 1,
       "sku": "CR6"
     },
     {
       "id": "OCR 1",
-      "name": "Corner Roller Head Casting CR1",
+      "name": "Corner Roller Head Casting CR1 (CR1)",
       "quantity": 1,
       "sku": "CR1"
     },
     {
       "id": "OCR 2A",
-      "name": "Roller Wheel CR2",
+      "name": "Roller Wheel CR2 (CR2)",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 2C",
-      "name": "Roller Wheel CR2",
+      "name": "Roller Wheel CR2 (CR2)",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 3A",
-      "name": "Corner Roller Bearing Sleeve CR3",
+      "name": "Corner Roller Bearing Sleeve CR3 (CR3)",
       "quantity": 1,
       "sku": "CR3"
     },
     {
       "id": "FA 299",
-      "name": "1/4-20 x 1-1/2 Hex Bolt",
+      "name": "1/4-20 x 1-1/2 Hex Bolt (FA299)",
       "quantity": 1,
       "sku": "FA299"
     },
     {
       "id": "OCR 2D",
-      "name": "Roller Wheel CR2",
+      "name": "Roller Wheel CR2 (CR2)",
       "quantity": 1,
       "sku": "CR2"
     },
     {
       "id": "OCR 5",
-      "name": "CR5",
+      "name": "Corner Roller Wheel CR5 (CR5)",
       "quantity": 1,
       "sku": "CR5"
     },
@@ -86,25 +86,25 @@
     },
     {
       "id": "CR 6",
-      "name": "Corner Roller Handle Mounting Swivel - CR6",
+      "name": "Corner Roller Handle Mounting Swivel (CR6)",
       "quantity": 1,
       "sku": "CR6"
     },
     {
       "id": "CR 11",
-      "name": "Corner Roller Handle Connecting Link - CR11",
+      "name": "Corner Roller Handle Connecting Link - CR11 (CR-11)",
       "quantity": 1,
       "sku": "CR-11"
     },
     {
       "id": "FA 288",
-      "name": "1/4in X 1/2in Split Pin - FA288",
+      "name": "1/4in X 1/2in Split Pin - FA288 (FA-288)",
       "quantity": 1,
       "sku": "FA-288"
     },
     {
       "id": "FA 301",
-      "name": "1/4-20 x 2-1/2 Hex Bolt",
+      "name": "1/4-20 x 2-1/2 Hex Bolt (FA301)",
       "quantity": 1,
       "sku": "FA301"
     }

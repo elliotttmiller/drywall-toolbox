@@ -8,61 +8,61 @@
   "parts": [
     {
       "id": "FA327",
-      "name": "8-32 x 1/4 Pan Head Screw",
+      "name": "8-32 x 1/4 Pan Head Screw (FA327)",
       "quantity": 1,
       "sku": "FA327"
     },
     {
       "id": "AB46",
-      "name": "Automatic Box Throttle Pin",
+      "name": "Automatic Box Throttle Pin (AB46)",
       "quantity": 1,
       "sku": "AB46"
     },
     {
       "id": "AB44",
-      "name": "Automatic Box Clutch Spring",
+      "name": "Automatic Box Clutch Spring (AB44)",
       "quantity": 1,
       "sku": "AB44"
     },
     {
       "id": "AB43",
-      "name": "Automatic Box Throttle Housing",
+      "name": "Automatic Box Throttle Housing (AB43)",
       "quantity": 1,
       "sku": "AB43"
     },
     {
       "id": "AB47",
-      "name": "Automatic Box Thumb Valve",
+      "name": "Automatic Box Thumb Valve (AB47)",
       "quantity": 1,
       "sku": "AB47"
     },
     {
       "id": "FA272",
-      "name": "6-32 x 3/8 Set Screw",
+      "name": "6-32 x 3/8 Set Screw (FA272)",
       "quantity": 1,
       "sku": "FA272"
     },
     {
       "id": "FFB4A",
-      "name": "Stainless Steel Washer",
+      "name": "Stainless Steel Washer (FFB4A)",
       "quantity": 1,
       "sku": "FFB4A"
     },
     {
       "id": "FFB4B",
-      "name": "Stainless Steel Backing Washer",
+      "name": "Stainless Steel Backing Washer (FFB4B)",
       "quantity": 1,
       "sku": "FFB4B"
     },
     {
       "id": "HFBB14-10",
-      "name": "Hinged Door Gasket 10 in Fat Boy",
+      "name": "Hinged Door Gasket 10 in Fat Boy (HFBB14-10)",
       "quantity": 1,
       "sku": "HFBB14-10"
     },
     {
       "id": "FA271",
-      "name": "6-32 x 5/16 Pan Head Screw",
+      "name": "6-32 x 5/16 Pan Head Screw (FA271)",
       "quantity": 1,
       "sku": "FA271"
     },
@@ -74,19 +74,19 @@
     },
     {
       "id": "FFB4C",
-      "name": "FFB4C",
+      "name": "Flat Box Corner Blade Assembly 4 in (FFB4C)",
       "quantity": 1,
       "sku": "FFB4C"
     },
     {
       "id": "FFB38",
-      "name": "Flat Box Corner Plate",
+      "name": "Flat Box Corner Plate (FFB38)",
       "quantity": 1,
       "sku": "FFB38"
     },
     {
       "id": "AB3A LEFT",
-      "name": "Automatic Box End Plate Left",
+      "name": "Automatic Box End Plate Left (AB3A LEFT)",
       "quantity": 1,
       "sku": "AB3A LEFT"
     },
@@ -98,13 +98,13 @@
     },
     {
       "id": "FFB7A",
-      "name": "Flat Box Shoe (Left) - FFB7A",
+      "name": "Flat Box Shoe (Left)",
       "quantity": 1,
       "sku": "FFB-7A"
     },
     {
       "id": "FFB8",
-      "name": "Flat Box Main Body 8 in",
+      "name": "Flat Box Main Body 8 in (FFB8)",
       "quantity": 1,
       "sku": "FFB8"
     },
@@ -116,19 +116,19 @@
     },
     {
       "id": "AB42",
-      "name": "Automatic Box Air Valve Body",
+      "name": "Automatic Box Air Valve Body (AB42)",
       "quantity": 1,
       "sku": "AB42"
     },
     {
       "id": "FA318",
-      "name": "3/8-16 x 1-1/4 Hex Bolt",
+      "name": "3/8-16 x 1-1/4 Hex Bolt (FA318)",
       "quantity": 1,
       "sku": "FA318"
     },
     {
       "id": "AB52",
-      "name": "Automatic Box Thumb Valve Seat",
+      "name": "Automatic Box Thumb Valve Seat (AB52)",
       "quantity": 1,
       "sku": "AB52"
     },
@@ -146,19 +146,19 @@
     },
     {
       "id": "AB45",
-      "name": "Automatic Box Throttle Set Screw",
+      "name": "Automatic Box Throttle Set Screw (AB45)",
       "quantity": 1,
       "sku": "AB45"
     },
     {
       "id": "AB49",
-      "name": "Automatic Box Handle Mount",
+      "name": "Automatic Box Handle Mount (AB49)",
       "quantity": 1,
       "sku": "AB49"
     },
     {
       "id": "FA260",
-      "name": "8-32 x 3/4 Socket Head Screw",
+      "name": "8-32 x 3/4 Socket Head Screw (FA260)",
       "quantity": 1,
       "sku": "FA260"
     },
@@ -170,25 +170,25 @@
     },
     {
       "id": "FFB5A",
-      "name": "Axle Bushing",
+      "name": "Axle Bushing (FFB5A)",
       "quantity": 1,
       "sku": "FFB5A"
     },
     {
       "id": "AB40",
-      "name": "Automatic Box Air Valve Seat",
+      "name": "Automatic Box Air Valve Seat (AB40)",
       "quantity": 1,
       "sku": "AB40"
     },
     {
       "id": "AB41",
-      "name": "Automatic Box Air Valve Stem",
+      "name": "Automatic Box Air Valve Stem (AB41)",
       "quantity": 1,
       "sku": "AB41"
     },
     {
       "id": "AB50",
-      "name": "Automatic Box Pressure Spring",
+      "name": "Automatic Box Pressure Spring (AB50)",
       "quantity": 1,
       "sku": "AB50"
     },
@@ -200,7 +200,7 @@
     },
     {
       "id": "AB48",
-      "name": "Automatic Box Air Valve O-Ring",
+      "name": "Automatic Box Air Valve O-Ring (AB48)",
       "quantity": 1,
       "sku": "AB48"
     },
@@ -212,25 +212,25 @@
     },
     {
       "id": "AB51",
-      "name": "Automatic Box Release Clip",
+      "name": "Automatic Box Release Clip (AB51)",
       "quantity": 1,
       "sku": "AB51"
     },
     {
       "id": "FFB41",
-      "name": "Flat Box Axle Assembly",
+      "name": "Flat Box Axle Assembly (FFB41)",
       "quantity": 1,
       "sku": "FFB41"
     },
     {
       "id": "FFB40-10",
-      "name": "Flat Box Door Gasket 10 in",
+      "name": "Flat Box Door Gasket 10 in (FFB40-10)",
       "quantity": 1,
       "sku": "FFB40-10"
     },
     {
       "id": "FA393",
-      "name": "6-32 x 1-1/2 Pan Head Screw",
+      "name": "6-32 x 1-1/2 Pan Head Screw (FA393)",
       "quantity": 1,
       "sku": "FA393"
     },
@@ -248,13 +248,13 @@
     },
     {
       "id": "FFB12",
-      "name": "Adjuster Dial Assembly 12 in",
+      "name": "Adjuster Dial Assembly 12 in (FFB12)",
       "quantity": 1,
       "sku": "FFB12"
     },
     {
       "id": "FFB35",
-      "name": "Flat Box Spring Assembly",
+      "name": "Flat Box Spring Assembly (FFB35)",
       "quantity": 1,
       "sku": "FFB35"
     },
@@ -266,7 +266,7 @@
     },
     {
       "id": "FFB37",
-      "name": "Flat Box Retaining Pin",
+      "name": "Flat Box Retaining Pin (FFB37)",
       "quantity": 1,
       "sku": "FFB37"
     },
@@ -278,13 +278,13 @@
     },
     {
       "id": "FFB44",
-      "name": "Flat Box Door Pivot Pin",
+      "name": "Flat Box Door Pivot Pin (FFB44)",
       "quantity": 1,
       "sku": "FFB44"
     },
     {
       "id": "AB54",
-      "name": "Automatic Box Air Valve Assembly",
+      "name": "Automatic Box Air Valve Assembly (AB54)",
       "quantity": 1,
       "sku": "AB54"
     },
@@ -296,7 +296,7 @@
     },
     {
       "id": "FFB18",
-      "name": "Rear Plate 8\"",
+      "name": "Rear Plate 8\" (FFB1-8)",
       "quantity": 1,
       "sku": "FFB1-8"
     },
@@ -308,55 +308,55 @@
     },
     {
       "id": "FFB25-10",
-      "name": "Flat Box Rubber Gasket Retainer 10in - FFB25-10",
+      "name": "Flat Box Rubber Gasket Retainer 10in (FFB-25-10)",
       "quantity": 1,
       "sku": "FFB-25-10"
     },
     {
       "id": "FA328",
-      "name": "3/8 Flat Washer",
+      "name": "3/8 Flat Washer (FA328)",
       "quantity": 1,
       "sku": "FA328"
     },
     {
       "id": "FA247",
-      "name": "6-32 X 5/8in Hex Bolt - FA247",
+      "name": "6-32 X 5/8in Hex Bolt (FA247)",
       "quantity": 1,
       "sku": "FA247"
     },
     {
       "id": "AB3A RIGHT",
-      "name": "Automatic Box End Plate Right",
+      "name": "Automatic Box End Plate Right (AB3A RIGHT)",
       "quantity": 1,
       "sku": "AB3A RIGHT"
     },
     {
       "id": "FA328",
-      "name": "3/8 Flat Washer",
+      "name": "3/8 Flat Washer (FA328)",
       "quantity": 1,
       "sku": "FA328"
     },
     {
       "id": "FA247",
-      "name": "6-32 X 5/8in Hex Bolt - FA247",
+      "name": "6-32 X 5/8in Hex Bolt (FA247)",
       "quantity": 1,
       "sku": "FA247"
     },
     {
       "id": "FFB2-10",
-      "name": "Roll Face 10\"",
+      "name": "Roll Face 10\" (FFB2-10)",
       "quantity": 1,
       "sku": "FFB2-10"
     },
     {
       "id": "FFB2A",
-      "name": "Bushing",
+      "name": "Bushing (FFB2A)",
       "quantity": 1,
       "sku": "FFB2A"
     },
     {
       "id": "AB1",
-      "name": "Automatic Box Handle Body",
+      "name": "Automatic Box Handle Body (AB1)",
       "quantity": 1,
       "sku": "AB1"
     },
@@ -368,7 +368,7 @@
     },
     {
       "id": "FFB24-10",
-      "name": "Flat Box Wheel Axle 24 in 10 in",
+      "name": "Flat Box Wheel Axle 24 in 10 in (FFB24-10)",
       "quantity": 1,
       "sku": "FFB24-10"
     },
@@ -380,19 +380,19 @@
     },
     {
       "id": "FFB10-10",
-      "name": "Flat Box Side Cover 10 in",
+      "name": "Flat Box Side Cover 10 in (FFB10-10)",
       "quantity": 1,
       "sku": "FFB10-10"
     },
     {
       "id": "FFB19",
-      "name": "Brass Adjuster Pin",
+      "name": "Brass Adjuster Pin (FFB19)",
       "quantity": 1,
       "sku": "FFB19"
     },
     {
       "id": "FFB9-10",
-      "name": "Flat Box Blade 10\" - FFB9-10",
+      "name": "Flat Box Blade 10\" (FFB9-10)",
       "quantity": 1,
       "sku": "FFB9-10"
     },
@@ -404,19 +404,19 @@
     },
     {
       "id": "FFB7",
-      "name": "Flat Box Shoe (Right) - FFB7",
+      "name": "Flat Box Shoe (Right)",
       "quantity": 1,
       "sku": "FFB-7"
     },
     {
       "id": "FFB8",
-      "name": "Flat Box Main Body 8 in",
+      "name": "Flat Box Main Body 8 in (FFB8)",
       "quantity": 1,
       "sku": "FFB8"
     },
     {
       "id": "FA221",
-      "name": "#6 Belleville Washer",
+      "name": "#6 Belleville Washer (FA221)",
       "quantity": 1,
       "sku": "FA221"
     }

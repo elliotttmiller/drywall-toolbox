@@ -8,13 +8,13 @@
   "parts": [
     {
       "id": "FA323",
-      "name": "1/4-20 X 1\" Hex Bolt",
+      "name": "1/4-20 X 1\" Hex Bolt (FA323)",
       "quantity": 1,
       "sku": "FA323"
     },
     {
       "id": "CMT8",
-      "name": "Mastic Tube Washer",
+      "name": "Mastic Tube Washer (CMT8)",
       "quantity": 1,
       "sku": "CMT8"
     },
@@ -26,7 +26,7 @@
     },
     {
       "id": "CT111",
-      "name": "Taper Piston Cup - CT111",
+      "name": "Taper Piston Cup (CT-111)",
       "quantity": 1,
       "sku": "CT-111"
     },
@@ -38,13 +38,13 @@
     },
     {
       "id": "CT111",
-      "name": "Taper Piston Cup - CT111",
+      "name": "Taper Piston Cup (CT-111)",
       "quantity": 1,
       "sku": "CT-111"
     },
     {
       "id": "CMT8",
-      "name": "Mastic Tube Washer",
+      "name": "Mastic Tube Washer (CMT8)",
       "quantity": 1,
       "sku": "CMT8"
     },
@@ -56,13 +56,13 @@
     },
     {
       "id": "FA284",
-      "name": "3/16 x 3/8 SS Pop Rivet",
+      "name": "3/16 x 3/8 SS Pop Rivet (FA284)",
       "quantity": 1,
       "sku": "FA284"
     },
     {
       "id": "CMT4",
-      "name": "Plunger Housing",
+      "name": "Plunger Housing (CMT4)",
       "quantity": 1,
       "sku": "CMT4"
     },
@@ -74,13 +74,13 @@
     },
     {
       "id": "CMT1A-24\"",
-      "name": "Draw Tube - 24\"",
+      "name": "Draw Tube - 24\" (CMT1A-24)",
       "quantity": 1,
       "sku": "CMT1A-24"
     },
     {
       "id": "EXT35",
-      "name": "EXT35",
+      "name": "Extension Tube 35 in (EXT35)",
       "quantity": 1,
       "sku": "EXT35"
     },
@@ -110,7 +110,7 @@
     },
     {
       "id": "CT115A",
-      "name": "Taper Gasket New Style End Ring - CT115A",
+      "name": "Taper Gasket New Style End Ring (CT115A)",
       "quantity": 1,
       "sku": "CT115A"
     },
@@ -128,13 +128,13 @@
     },
     {
       "id": "CMT1-24\"",
-      "name": "Barrel Main Body 24 in",
+      "name": "Barrel Main Body 24 in (CMT1-24)",
       "quantity": 1,
       "sku": "CMT1-24"
     },
     {
       "id": "CMT5",
-      "name": "Plastic Handle Collar",
+      "name": "Plastic Handle Collar (CMT5)",
       "quantity": 1,
       "sku": "CMT5"
     },

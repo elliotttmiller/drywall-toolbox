@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "MP 9A",
-      "name": "Connecting Chain",
+      "name": "Connecting Chain (MP9A)",
       "quantity": 1,
       "sku": "MP9A"
     },
@@ -20,7 +20,7 @@
     },
     {
       "id": "MP 34",
-      "name": "Adaptor",
+      "name": "Adaptor (MP34)",
       "quantity": 1,
       "sku": "MP34"
     },
@@ -32,13 +32,13 @@
     },
     {
       "id": "MP 9",
-      "name": "Standard Fitting",
+      "name": "Standard Fitting (MP9)",
       "quantity": 1,
       "sku": "MP9"
     },
     {
       "id": "MP 33A",
-      "name": "Mud Pump Spring Assembly",
+      "name": "Mud Pump Spring Assembly (MP33A)",
       "quantity": 1,
       "sku": "MP33A"
     }

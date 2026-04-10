@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "FA 302",
-      "name": "1/4-28 X 1/4in Set Screw - FA302",
+      "name": "1/4-28 X 1/4in Set Screw (FA302)",
       "quantity": 1,
       "sku": "FA302"
     },
@@ -26,7 +26,7 @@
     },
     {
       "id": "BH 26",
-      "name": "Box Handle Cam for 180 Handle - BH26",
+      "name": "Box Handle Cam for 180 Handle (BH26)",
       "quantity": 1,
       "sku": "BH26"
     },
@@ -38,13 +38,13 @@
     },
     {
       "id": "BH2",
-      "name": "Box Handle 180 Grip Plate - BH2",
+      "name": "Box Handle 180 Grip Plate (BH2)",
       "quantity": 1,
       "sku": "BH2"
     },
     {
       "id": "BH 6",
-      "name": "Box Handle Hinge Pin - BH6",
+      "name": "Box Handle Hinge Pin (BH6)",
       "quantity": 1,
       "sku": "BH6"
     },
@@ -68,61 +68,61 @@
     },
     {
       "id": "FA 260",
-      "name": "8-32 x 3/4 Socket Head Screw",
+      "name": "8-32 x 3/4 Socket Head Screw (FA260)",
       "quantity": 1,
       "sku": "FA260"
     },
     {
       "id": "BH 5",
-      "name": "Box Handle Upper Mounting Bracket - BH5",
+      "name": "Box Handle Upper Mounting Bracket - BH5 (BH-5)",
       "quantity": 1,
       "sku": "BH-5"
     },
     {
       "id": "FA 311",
-      "name": "5/16-18 Hex Nut",
+      "name": "5/16-18 Hex Nut (FA311)",
       "quantity": 1,
       "sku": "FA311"
     },
     {
       "id": "BH 8-3'",
-      "name": "3 ft Box Handle 8 in",
+      "name": "3 ft Box Handle 8 in (BH8-3)",
       "quantity": 1,
       "sku": "BH8-3"
     },
     {
       "id": "BH 9-3'",
-      "name": "3 ft Box Handle 9 in",
+      "name": "3 ft Box Handle 9 in (BH9-3)",
       "quantity": 1,
       "sku": "BH9-3"
     },
     {
       "id": "FA 260",
-      "name": "8-32 x 3/4 Socket Head Screw",
+      "name": "8-32 x 3/4 Socket Head Screw (FA260)",
       "quantity": 1,
       "sku": "FA260"
     },
     {
       "id": "FA 202",
-      "name": "FA202",
+      "name": "1/16\" x 1/2\" Split Pin (FA202)",
       "quantity": 1,
       "sku": "FA202"
     },
     {
       "id": "BH 4",
-      "name": "Flat Box Handle Lower Brake Lever - BH4",
+      "name": "Flat Box Handle Lower Brake Lever (BH4)",
       "quantity": 1,
       "sku": "BH4"
     },
     {
       "id": "BH 3",
-      "name": "Lower Mounting Bracket",
+      "name": "Lower Mounting Bracket (BH3)",
       "quantity": 1,
       "sku": "BH3"
     },
     {
       "id": "BH 11",
-      "name": "Flat Box Handle Strap Connecting Pin - BH11",
+      "name": "Flat Box Handle Strap Connecting Pin - BH11 (BH-11)",
       "quantity": 1,
       "sku": "BH-11"
     },
@@ -134,7 +134,7 @@
     },
     {
       "id": "BH 24A",
-      "name": "Box Handle Door Clip Assembly",
+      "name": "Box Handle Door Clip Assembly (BH24A)",
       "quantity": 1,
       "sku": "BH24A"
     }

@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "CT119",
-      "name": "Spool Retaining Spring - CT119",
+      "name": "Spool Retaining Spring (CT-119)",
       "quantity": 1,
       "sku": "CT-119"
     },
@@ -20,25 +20,25 @@
     },
     {
       "id": "CT121B",
-      "name": "Tape Spool Shaft (Quick Release) - CT121B",
+      "name": "Tape Spool Shaft (Quick Release)",
       "quantity": 1,
       "sku": "CT-121B"
     },
     {
       "id": "FA362",
-      "name": "10-24 x 3/4 Flat Head Screw",
+      "name": "10-24 x 3/4 Flat Head Screw (FA362)",
       "quantity": 1,
       "sku": "FA362"
     },
     {
       "id": "CT120",
-      "name": "Taper Tape Spool - CT120",
+      "name": "Taper Tape Spool (CT-120)",
       "quantity": 1,
       "sku": "CT-120"
     },
     {
       "id": "CT118A",
-      "name": "Retaining Spring Clip(Quick Realease) - CT118A",
+      "name": "Retaining Spring Clip(Quick Realease)",
       "quantity": 1,
       "sku": "CT118A"
     },
@@ -50,13 +50,13 @@
     },
     {
       "id": "CT106A",
-      "name": "Taper Bearing Shaft - CT106",
+      "name": "Taper Bearing Shaft - CT106 (CT-106A)",
       "quantity": 1,
       "sku": "CT-106A"
     },
     {
       "id": "FA298",
-      "name": "1/4-20 X 7/8in Flat Socket - FA298",
+      "name": "1/4-20 X 7/8in Flat Socket (FA-298)",
       "quantity": 1,
       "sku": "FA-298"
     },
@@ -86,37 +86,37 @@
     },
     {
       "id": "CT122A",
-      "name": "Taper Strap - CT122",
+      "name": "Taper Strap - CT122 (CT-122A)",
       "quantity": 1,
       "sku": "CT-122A"
     },
     {
       "id": "CT116A",
-      "name": "Taper Strap - CT116A",
+      "name": "Taper Strap (CT-116A)",
       "quantity": 1,
       "sku": "CT-116A"
     },
     {
       "id": "CT116A",
-      "name": "Taper Strap - CT116A",
+      "name": "Taper Strap (CT-116A)",
       "quantity": 1,
       "sku": "CT-116A"
     },
     {
       "id": "CT116A",
-      "name": "Taper Strap - CT116A",
+      "name": "Taper Strap (CT-116A)",
       "quantity": 1,
       "sku": "CT-116A"
     },
     {
       "id": "CT115A",
-      "name": "Taper Gasket New Style End Ring - CT115A",
+      "name": "Taper Gasket New Style End Ring (CT115A)",
       "quantity": 1,
       "sku": "CT115A"
     },
     {
       "id": "FA237",
-      "name": "6-32 x 3/16 Binder Slot Screw",
+      "name": "6-32 x 3/16 Binder Slot Screw (FA237)",
       "quantity": 1,
       "sku": "FA237"
     },
@@ -128,19 +128,19 @@
     },
     {
       "id": "CT104",
-      "name": "Taper Connection Strap - CT104",
+      "name": "Taper Connection Strap (CT-104)",
       "quantity": 1,
       "sku": "CT-104"
     },
     {
       "id": "CT105",
-      "name": "Taper Crimper Lever - CT105",
+      "name": "Taper Crimper Lever (CT-105)",
       "quantity": 1,
       "sku": "CT-105"
     },
     {
       "id": "CT130",
-      "name": "CT130 - Taper Extension Shaft",
+      "name": "Taper Extension Shaft (CT-130)",
       "quantity": 1,
       "sku": "CT-130"
     },
@@ -152,7 +152,7 @@
     },
     {
       "id": "CT127",
-      "name": "CT127 - Taper Extension Shaft Bracket",
+      "name": "Taper Extension Shaft Bracket (CT127)",
       "quantity": 1,
       "sku": "CT127"
     },
@@ -170,7 +170,7 @@
     },
     {
       "id": "CTA128",
-      "name": "Predator Taper Shaft Guide Roller Bushing Assembly",
+      "name": "Predator Taper Shaft Guide Roller Bushing Assembly (CTA128)",
       "quantity": 1,
       "sku": "CTA128"
     },
@@ -182,7 +182,7 @@
     },
     {
       "id": "CT103",
-      "name": "Taper Barrel Main Body - CT103",
+      "name": "Taper Barrel Main Body (CT-103)",
       "quantity": 1,
       "sku": "CT-103"
     },
@@ -194,7 +194,7 @@
     },
     {
       "id": "FA342",
-      "name": "FA342",
+      "name": "1/4-20 x 3/4 Hex Bolt (FA342)",
       "quantity": 1,
       "sku": "FA342"
     },
@@ -242,7 +242,7 @@
     },
     {
       "id": "CT111",
-      "name": "Taper Piston Cup - CT111",
+      "name": "Taper Piston Cup (CT-111)",
       "quantity": 1,
       "sku": "CT-111"
     },
@@ -284,7 +284,7 @@
     },
     {
       "id": "FA374",
-      "name": "10-32 x 1/4 Flat Head Screw",
+      "name": "10-32 x 1/4 Flat Head Screw (FA374)",
       "quantity": 1,
       "sku": "FA374"
     },

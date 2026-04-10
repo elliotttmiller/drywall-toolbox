@@ -8,55 +8,55 @@
   "parts": [
     {
       "id": "FA327",
-      "name": "8-32 x 1/4 Pan Head Screw",
+      "name": "8-32 x 1/4 Pan Head Screw (FA327)",
       "quantity": 1,
       "sku": "FA327"
     },
     {
       "id": "FA272",
-      "name": "6-32 x 3/8 Set Screw",
+      "name": "6-32 x 3/8 Set Screw (FA272)",
       "quantity": 1,
       "sku": "FA272"
     },
     {
       "id": "FA271",
-      "name": "6-32 x 5/16 Pan Head Screw",
+      "name": "6-32 x 5/16 Pan Head Screw (FA271)",
       "quantity": 1,
       "sku": "FA271"
     },
     {
       "id": "SB5 & SB6",
-      "name": "Tomahawk Blade Holder Spring",
+      "name": "Tomahawk Blade Holder Spring (SB5)",
       "quantity": 1,
       "sku": "SB5"
     },
     {
       "id": "SB4 RIGHT",
-      "name": "Tomahawk Right Arm Assembly",
+      "name": "Tomahawk Right Arm Assembly (SB4-RIGHT)",
       "quantity": 1,
       "sku": "SB4-RIGHT"
     },
     {
       "id": "SB1-12IN",
-      "name": "Tomahawk 12 in Smoothing Blade",
+      "name": "Tomahawk 12 in Smoothing Blade (SB1-12)",
       "quantity": 1,
       "sku": "SB1-12"
     },
     {
       "id": "SB3 LEFT",
-      "name": "Tomahawk Left Arm Assembly",
+      "name": "Tomahawk Left Arm Assembly (SB3-LEFT)",
       "quantity": 1,
       "sku": "SB3-LEFT"
     },
     {
       "id": "SB7",
-      "name": "Tomahawk Handle Fitting",
+      "name": "Tomahawk Handle Fitting (SB7)",
       "quantity": 1,
       "sku": "SB7"
     },
     {
       "id": "SB2-12IN",
-      "name": "Replacement 12\" Blade for Tomahawk SB2-12",
+      "name": "Replacement 12\" Blade for Tomahawk SB2-12 (SB2-12)",
       "quantity": 1,
       "sku": "SB2-12"
     }

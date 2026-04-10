@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "FAJ144",
-      "name": "Predator Joint Fastener 14-4",
+      "name": "Predator Joint Fastener 14-4 (FAJ144)",
       "quantity": 1,
       "sku": "FAJ144"
     },
@@ -26,19 +26,19 @@
     },
     {
       "id": "PA266",
-      "name": "Predator Taper Head Sub Assembly",
+      "name": "Predator Taper Head Sub Assembly (PA266)",
       "quantity": 1,
       "sku": "PA266"
     },
     {
       "id": "CT794",
-      "name": "Predator Taper Mud Shut Off Upper Plate",
+      "name": "Predator Taper Mud Shut Off Upper Plate (CT794)",
       "quantity": 1,
       "sku": "CT794"
     },
     {
       "id": "CT624",
-      "name": "Predator Taper Needle Shaft Assembly",
+      "name": "Predator Taper Needle Shaft Assembly (CT624)",
       "quantity": 1,
       "sku": "CT624"
     },
@@ -56,13 +56,13 @@
     },
     {
       "id": "FAZ1S",
-      "name": "Predator Taper 4-40 x 1/8 Set Screw",
+      "name": "Predator Taper 4-40 x 1/8 Set Screw (FAZ1S)",
       "quantity": 1,
       "sku": "FAZ1S"
     },
     {
       "id": "FAZ21S",
-      "name": "Predator Taper 6-32 x 1/8 Set Screw",
+      "name": "Predator Taper 6-32 x 1/8 Set Screw (FAZ21S)",
       "quantity": 1,
       "sku": "FAZ21S"
     },
@@ -74,7 +74,7 @@
     },
     {
       "id": "CT054",
-      "name": "Predator Taper Toe Kicker Rail",
+      "name": "Predator Taper Toe Kicker Rail (CT054)",
       "quantity": 1,
       "sku": "CT054"
     },
@@ -98,37 +98,37 @@
     },
     {
       "id": "PA2LS",
-      "name": "Predator Taper Left Side Assembly",
+      "name": "Predator Taper Left Side Assembly (PA2LS)",
       "quantity": 1,
       "sku": "PA2LS"
     },
     {
       "id": "CT87-CS",
-      "name": "Cover Plate Cork Seal",
+      "name": "Cover Plate Cork Seal (CT-87CS)",
       "quantity": 1,
       "sku": "CT-87CS"
     },
     {
       "id": "CT240-DL",
-      "name": "Predator Taper Deep Lever Assembly",
+      "name": "Predator Taper Deep Lever Assembly (CT240-DL)",
       "quantity": 1,
       "sku": "CT240-DL"
     },
     {
       "id": "FAZ20",
-      "name": "Predator Taper 6-32 x 3/4 Hex Bolt",
+      "name": "Predator Taper 6-32 x 3/4 Hex Bolt (FAZ20)",
       "quantity": 1,
       "sku": "FAZ20"
     },
     {
       "id": "FAZ07",
-      "name": "Predator Taper 4-40 x 3/16 Binder Slot",
+      "name": "Predator Taper 4-40 x 3/16 Binder Slot (FAZ07)",
       "quantity": 1,
       "sku": "FAZ07"
     },
     {
       "id": "CT98",
-      "name": "Taper Mud Supply Seal Plate - CT98",
+      "name": "Taper Mud Supply Seal Plate (CT-98)",
       "quantity": 1,
       "sku": "CT-98"
     },
@@ -140,13 +140,13 @@
     },
     {
       "id": "FAZ2R",
-      "name": "Predator Taper 6-32 Nyloc Nut",
+      "name": "Predator Taper 6-32 Nyloc Nut (FAZ2R)",
       "quantity": 1,
       "sku": "FAZ2R"
     },
     {
       "id": "FA2J0",
-      "name": "#10 Belleville Washer",
+      "name": "#10 Belleville Washer (FA280)",
       "quantity": 1,
       "sku": "FA280"
     },
@@ -158,7 +158,7 @@
     },
     {
       "id": "CT20",
-      "name": "CT20 - Taper Hinge Block",
+      "name": "Taper Hinge Block (CT20)",
       "quantity": 1,
       "sku": "CT20"
     },
@@ -176,55 +176,55 @@
     },
     {
       "id": "FAZ6S",
-      "name": "Predator Taper 8-32 x 3/16 Set Screw",
+      "name": "Predator Taper 8-32 x 3/16 Set Screw (FAZ6S)",
       "quantity": 1,
       "sku": "FAZ6S"
     },
     {
       "id": "CT726",
-      "name": "Predator Taper Drive Chain Predator",
+      "name": "Predator Taper Drive Chain Predator (CT726)",
       "quantity": 1,
       "sku": "CT726"
     },
     {
       "id": "CT00",
-      "name": "Predator Taper Head Cover Plate",
+      "name": "Predator Taper Head Cover Plate (CT00)",
       "quantity": 1,
       "sku": "CT00"
     },
     {
       "id": "VAZ10",
-      "name": "Predator Taper Valve Assembly Zinc",
+      "name": "Predator Taper Valve Assembly Zinc (VAZ10)",
       "quantity": 1,
       "sku": "VAZ10"
     },
     {
       "id": "FAZ5S",
-      "name": "Predator Taper 8-32 x 1/4 Set Screw",
+      "name": "Predator Taper 8-32 x 1/4 Set Screw (FAZ5S)",
       "quantity": 1,
       "sku": "FAZ5S"
     },
     {
       "id": "CT25",
-      "name": "CT25 - Taper Knife Guide Square Tube",
+      "name": "Taper Knife Guide Square Tube (CT-25)",
       "quantity": 1,
       "sku": "CT-25"
     },
     {
       "id": "FAZ54",
-      "name": "Predator Taper 3/8-16 x 3/4 Socket Head",
+      "name": "Predator Taper 3/8-16 x 3/4 Socket Head (FAZ54)",
       "quantity": 1,
       "sku": "FAZ54"
     },
     {
       "id": "PAZ49",
-      "name": "Predator Taper Zinc Pivot Pin",
+      "name": "Predator Taper Zinc Pivot Pin (PAZ49)",
       "quantity": 1,
       "sku": "PAZ49"
     },
     {
       "id": "FAZ0A",
-      "name": "Predator Taper 4-40 Lock Washer",
+      "name": "Predator Taper 4-40 Lock Washer (FAZ0A)",
       "quantity": 1,
       "sku": "FAZ0A"
     },
@@ -236,19 +236,19 @@
     },
     {
       "id": "FAZOR",
-      "name": "Predator Taper 4-40 O-Ring",
+      "name": "Predator Taper 4-40 O-Ring (FAZOR)",
       "quantity": 1,
       "sku": "FAZOR"
     },
     {
       "id": "CT10A",
-      "name": "Taper Crimping Arm Bushing Left - CT10A",
+      "name": "Taper Crimping Arm Bushing Left (CT10A)",
       "quantity": 1,
       "sku": "CT10A"
     },
     {
       "id": "CT364",
-      "name": "Predator Taper Knife Guide Bracket",
+      "name": "Predator Taper Knife Guide Bracket (CT364)",
       "quantity": 1,
       "sku": "CT364"
     },
@@ -272,55 +272,55 @@
     },
     {
       "id": "CT840",
-      "name": "Predator Taper Control Valve Body",
+      "name": "Predator Taper Control Valve Body (CT840)",
       "quantity": 1,
       "sku": "CT840"
     },
     {
       "id": "CTSAA",
-      "name": "Predator Taper Side Assembly Left",
+      "name": "Predator Taper Side Assembly Left (CTSAA)",
       "quantity": 1,
       "sku": "CTSAA"
     },
     {
       "id": "CTSS",
-      "name": "Carriage Guide Rod",
+      "name": "Carriage Guide Rod (CT55)",
       "quantity": 1,
       "sku": "CT55"
     },
     {
       "id": "CT99",
-      "name": "Removable Cover Plate Pin - CT99",
+      "name": "Removable Cover Plate Pin (CT-99)",
       "quantity": 1,
       "sku": "CT-99"
     },
     {
       "id": "PACTS",
-      "name": "Predator Taper Cam Track Spring",
+      "name": "Predator Taper Cam Track Spring (PACTS)",
       "quantity": 1,
       "sku": "PACTS"
     },
     {
       "id": "CT790",
-      "name": "Predator Taper Rod Sleeve Housing",
+      "name": "Predator Taper Rod Sleeve Housing (CT790)",
       "quantity": 1,
       "sku": "CT790"
     },
     {
       "id": "C78S",
-      "name": "Predator Carbon Fiber Drive Chain Short",
+      "name": "Predator Carbon Fiber Drive Chain Short (C78S)",
       "quantity": 1,
       "sku": "C78S"
     },
     {
       "id": "FAZ14",
-      "name": "Predator Taper 4-40 x 3/8 Hex Bolt",
+      "name": "Predator Taper 4-40 x 3/8 Hex Bolt (FAZ14)",
       "quantity": 1,
       "sku": "FAZ14"
     },
     {
       "id": "CT24",
-      "name": "Predator Taper Brass Bushing",
+      "name": "Predator Taper Brass Bushing (CT24)",
       "quantity": 1,
       "sku": "CT24"
     },
@@ -332,19 +332,19 @@
     },
     {
       "id": "CT6",
-      "name": "Taper Side Plate Right - CT6",
+      "name": "Taper Side Plate Right (CT-6)",
       "quantity": 1,
       "sku": "CT-6"
     },
     {
       "id": "CT76",
-      "name": "Taper Nylatron Washer - CT76",
+      "name": "Taper Nylatron Washer (CT-76)",
       "quantity": 1,
       "sku": "CT-76"
     },
     {
       "id": "CT79",
-      "name": "Taper Hollow Shaft - CT79",
+      "name": "Taper Hollow Shaft (CT-79)",
       "quantity": 1,
       "sku": "CT-79"
     },
@@ -362,31 +362,31 @@
     },
     {
       "id": "FAZ10",
-      "name": "Predator Taper 4-40 x 1/4 Fillister Slot",
+      "name": "Predator Taper 4-40 x 1/4 Fillister Slot (FAZ10)",
       "quantity": 1,
       "sku": "FAZ10"
     },
     {
       "id": "CT25",
-      "name": "CT25 - Taper Knife Guide Square Tube",
+      "name": "Taper Knife Guide Square Tube (CT-25)",
       "quantity": 1,
       "sku": "CT-25"
     },
     {
       "id": "CT18",
-      "name": "Predator Taper Guide Bracket",
+      "name": "Predator Taper Guide Bracket (CT18)",
       "quantity": 1,
       "sku": "CT18"
     },
     {
       "id": "FA2L3",
-      "name": "4-40 X 3/4\" Hex Bolt",
+      "name": "4-40 X 3/4\" Hex Bolt (FA283)",
       "quantity": 1,
       "sku": "FA283"
     },
     {
       "id": "CT53",
-      "name": "Taper Toe Kicker - CT53",
+      "name": "Taper Toe Kicker (CT-53)",
       "quantity": 1,
       "sku": "CT-53"
     },
@@ -398,25 +398,25 @@
     },
     {
       "id": "PAS80",
-      "name": "Predator Taper Pull Rod Assembly",
+      "name": "Predator Taper Pull Rod Assembly (PAS80)",
       "quantity": 1,
       "sku": "PAS80"
     },
     {
       "id": "FAZ1S",
-      "name": "Predator Taper 4-40 x 1/8 Set Screw",
+      "name": "Predator Taper 4-40 x 1/8 Set Screw (FAZ1S)",
       "quantity": 1,
       "sku": "FAZ1S"
     },
     {
       "id": "PAS07",
-      "name": "Predator Taper Pivot Assembly Small",
+      "name": "Predator Taper Pivot Assembly Small (PAS07)",
       "quantity": 1,
       "sku": "PAS07"
     },
     {
       "id": "CT114",
-      "name": "Predator Taper Locking Block",
+      "name": "Predator Taper Locking Block (CT114)",
       "quantity": 1,
       "sku": "CT114"
     },
@@ -434,13 +434,13 @@
     },
     {
       "id": "CT 140",
-      "name": "Predator Taper Tape Advance Plate",
+      "name": "Predator Taper Tape Advance Plate (CT140)",
       "quantity": 1,
       "sku": "CT140"
     },
     {
       "id": "PA277",
-      "name": "Predator Taper Creaser Arm Assembly",
+      "name": "Predator Taper Creaser Arm Assembly (PA277)",
       "quantity": 1,
       "sku": "PA277"
     },
@@ -458,25 +458,25 @@
     },
     {
       "id": "CT43",
-      "name": "Taper Micro Chain #5618 - CT43",
+      "name": "Taper Micro Chain #5618 (CT-43)",
       "quantity": 1,
       "sku": "CT-43"
     },
     {
       "id": "CT741A",
-      "name": "Predator Taper Cutter Block Clamp",
+      "name": "Predator Taper Cutter Block Clamp (CT741A)",
       "quantity": 1,
       "sku": "CT741A"
     },
     {
       "id": "CT43",
-      "name": "Taper Micro Chain #5618 - CT43",
+      "name": "Taper Micro Chain #5618 (CT-43)",
       "quantity": 1,
       "sku": "CT-43"
     },
     {
       "id": "CTA1A",
-      "name": "Predator Taper Cutter Block Assembly",
+      "name": "Predator Taper Cutter Block Assembly (CTA1A)",
       "quantity": 1,
       "sku": "CTA1A"
     },
@@ -506,49 +506,49 @@
     },
     {
       "id": "FAS46",
-      "name": "Predator Taper 4-40 x 5/16 Set Screw",
+      "name": "Predator Taper 4-40 x 5/16 Set Screw (FAS46)",
       "quantity": 1,
       "sku": "FAS46"
     },
     {
       "id": "FA202",
-      "name": "FA202",
+      "name": "1/16\" x 1/2\" Split Pin (FA202)",
       "quantity": 1,
       "sku": "FA202"
     },
     {
       "id": "CT45",
-      "name": "Taper Connecting Rod - CT45",
+      "name": "Taper Connecting Rod (CT-45)",
       "quantity": 1,
       "sku": "CT-45"
     },
     {
       "id": "CT19",
-      "name": "CT19 - Taper Paper Feed Guide",
+      "name": "Taper Paper Feed Guide (CT-19)",
       "quantity": 1,
       "sku": "CT-19"
     },
     {
       "id": "CT22",
-      "name": "CT22 - Taper Brass Bracket",
+      "name": "Taper Brass Bracket (CT22)",
       "quantity": 1,
       "sku": "CT22"
     },
     {
       "id": "FX242",
-      "name": "Predator Taper Flex Connector",
+      "name": "Predator Taper Flex Connector (FX242)",
       "quantity": 1,
       "sku": "FX242"
     },
     {
       "id": "CTS6",
-      "name": "Carriage Guide Rod Stop",
+      "name": "Carriage Guide Rod Stop (CT56)",
       "quantity": 1,
       "sku": "CT56"
     },
     {
       "id": "CTYS",
-      "name": "Predator Taper Y-Cam Spring",
+      "name": "Predator Taper Y-Cam Spring (CTYS)",
       "quantity": 1,
       "sku": "CTYS"
     },
@@ -566,25 +566,25 @@
     },
     {
       "id": "FA2AS",
-      "name": "1/4 in Plastic Washer",
+      "name": "1/4 in Plastic Washer (FA285)",
       "quantity": 1,
       "sku": "FA285"
     },
     {
       "id": "PAZ20",
-      "name": "Predator Taper Zinc Cam Roller",
+      "name": "Predator Taper Zinc Cam Roller (PAZ20)",
       "quantity": 1,
       "sku": "PAZ20"
     },
     {
       "id": "CTS6",
-      "name": "Carriage Guide Rod Stop",
+      "name": "Carriage Guide Rod Stop (CT56)",
       "quantity": 1,
       "sku": "CT56"
     },
     {
       "id": "CT759",
-      "name": "Predator Taper Hollow Shaft Predator",
+      "name": "Predator Taper Hollow Shaft Predator (CT759)",
       "quantity": 1,
       "sku": "CT759"
     },
@@ -596,7 +596,7 @@
     },
     {
       "id": "LT54",
-      "name": "Predator Taper Titanium Pull Rod 54",
+      "name": "Predator Taper Titanium Pull Rod 54 (LT54)",
       "quantity": 1,
       "sku": "LT54"
     },
@@ -608,7 +608,7 @@
     },
     {
       "id": "FA32S",
-      "name": "1/4-20 X 1\" Hex Bolt",
+      "name": "1/4-20 X 1\" Hex Bolt (FA323)",
       "quantity": 1,
       "sku": "FA323"
     },
@@ -620,37 +620,37 @@
     },
     {
       "id": "CTS9",
-      "name": "Magnet",
+      "name": "Magnet (CT59)",
       "quantity": 1,
       "sku": "CT59"
     },
     {
       "id": "FAZ48",
-      "name": "Predator Taper 5/16-18 x 3/4 Hex Bolt",
+      "name": "Predator Taper 5/16-18 x 3/4 Hex Bolt (FAZ48)",
       "quantity": 1,
       "sku": "FAZ48"
     },
     {
       "id": "EA:CLS",
-      "name": "Predator Taper Cam Lock Sleeve",
+      "name": "Predator Taper Cam Lock Sleeve (EA:CLS)",
       "quantity": 1,
       "sku": "EA:CLS"
     },
     {
       "id": "ER2LT",
-      "name": "Predator Taper Tension Rod Left",
+      "name": "Predator Taper Tension Rod Left (ER2LT)",
       "quantity": 1,
       "sku": "ER2LT"
     },
     {
       "id": "LT06",
-      "name": "Predator Taper Lightweight Frame Bracket",
+      "name": "Predator Taper Lightweight Frame Bracket (LT06)",
       "quantity": 1,
       "sku": "LT06"
     },
     {
       "id": "FA21A",
-      "name": "4-40 X 1/2 in Fill. Head Screw",
+      "name": "4-40 X 1/2 in Fill. Head Screw (FA219)",
       "quantity": 1,
       "sku": "FA219"
     },
@@ -668,7 +668,7 @@
     },
     {
       "id": "PA214",
-      "name": "Predator Taper Head Assembly 14 in",
+      "name": "Predator Taper Head Assembly 14 in (PA214)",
       "quantity": 1,
       "sku": "PA214"
     },
@@ -686,13 +686,13 @@
     },
     {
       "id": "CT98",
-      "name": "Taper Mud Supply Seal Plate - CT98",
+      "name": "Taper Mud Supply Seal Plate (CT-98)",
       "quantity": 1,
       "sku": "CT-98"
     },
     {
       "id": "FAZ21S",
-      "name": "Predator Taper 6-32 x 1/8 Set Screw",
+      "name": "Predator Taper 6-32 x 1/8 Set Screw (FAZ21S)",
       "quantity": 1,
       "sku": "FAZ21S"
     },
@@ -704,19 +704,19 @@
     },
     {
       "id": "FAZ20",
-      "name": "Predator Taper 6-32 x 3/4 Hex Bolt",
+      "name": "Predator Taper 6-32 x 3/4 Hex Bolt (FAZ20)",
       "quantity": 1,
       "sku": "FAZ20"
     },
     {
       "id": "CT711A",
-      "name": "Predator Taper Crimping Arm Bearing",
+      "name": "Predator Taper Crimping Arm Bearing (CT711A)",
       "quantity": 1,
       "sku": "CT711A"
     },
     {
       "id": "FRZ13",
-      "name": "Predator Taper Zinc Frame Rivet",
+      "name": "Predator Taper Zinc Frame Rivet (FRZ13)",
       "quantity": 1,
       "sku": "FRZ13"
     },
@@ -734,7 +734,7 @@
     },
     {
       "id": "CT98",
-      "name": "Taper Mud Supply Seal Plate - CT98",
+      "name": "Taper Mud Supply Seal Plate (CT-98)",
       "quantity": 1,
       "sku": "CT-98"
     },
@@ -758,7 +758,7 @@
     },
     {
       "id": "PA266",
-      "name": "Predator Taper Head Sub Assembly",
+      "name": "Predator Taper Head Sub Assembly (PA266)",
       "quantity": 1,
       "sku": "PA266"
     },
@@ -770,7 +770,7 @@
     },
     {
       "id": "CT776",
-      "name": "Predator Taper Drive Sprocket Large",
+      "name": "Predator Taper Drive Sprocket Large (CT776)",
       "quantity": 1,
       "sku": "CT776"
     },
@@ -788,49 +788,49 @@
     },
     {
       "id": "FAZ14",
-      "name": "Predator Taper 4-40 x 3/8 Hex Bolt",
+      "name": "Predator Taper 4-40 x 3/8 Hex Bolt (FAZ14)",
       "quantity": 1,
       "sku": "FAZ14"
     },
     {
       "id": "CT25",
-      "name": "CT25 - Taper Knife Guide Square Tube",
+      "name": "Taper Knife Guide Square Tube (CT-25)",
       "quantity": 1,
       "sku": "CT-25"
     },
     {
       "id": "C779-CS",
-      "name": "Predator Carbon Fiber Cover Plate Cork Seal",
+      "name": "Predator Carbon Fiber Cover Plate Cork Seal (C779-CS)",
       "quantity": 1,
       "sku": "C779-CS"
     },
     {
       "id": "PA277",
-      "name": "Predator Taper Creaser Arm Assembly",
+      "name": "Predator Taper Creaser Arm Assembly (PA277)",
       "quantity": 1,
       "sku": "PA277"
     },
     {
       "id": "FR258",
-      "name": "Predator Taper Frame Reinforcement",
+      "name": "Predator Taper Frame Reinforcement (FR258)",
       "quantity": 1,
       "sku": "FR258"
     },
     {
       "id": "CT18",
-      "name": "Predator Taper Guide Bracket",
+      "name": "Predator Taper Guide Bracket (CT18)",
       "quantity": 1,
       "sku": "CT18"
     },
     {
       "id": "FA22K",
-      "name": "4-40 Nyloc Nut",
+      "name": "4-40 Nyloc Nut (FA22K)",
       "quantity": 1,
       "sku": "FA22K"
     },
     {
       "id": "PA2S4",
-      "name": "Predator Taper Side Plate Assembly",
+      "name": "Predator Taper Side Plate Assembly (PA2S4)",
       "quantity": 1,
       "sku": "PA2S4"
     },
@@ -842,37 +842,37 @@
     },
     {
       "id": "FA227",
-      "name": "#6 Star Washer",
+      "name": "#6 Star Washer (FA227)",
       "quantity": 1,
       "sku": "FA227"
     },
     {
       "id": "CT10",
-      "name": "Taper Crimping Arm Bushing Right - CT10",
+      "name": "Taper Crimping Arm Bushing Right (CT10)",
       "quantity": 1,
       "sku": "CT10"
     },
     {
       "id": "EA200",
-      "name": "Predator Taper External Adapter 200",
+      "name": "Predator Taper External Adapter 200 (EA200)",
       "quantity": 1,
       "sku": "EA200"
     },
     {
       "id": "CA239",
-      "name": "Predator Taper Adjusting Screw",
+      "name": "Predator Taper Adjusting Screw (CA239)",
       "quantity": 1,
       "sku": "CA239"
     },
     {
       "id": "CT132",
-      "name": "CT132 - Taper Connecting Link (709043-A)",
+      "name": "Taper Connecting Link (709043-A)",
       "quantity": 1,
       "sku": "709043-A"
     },
     {
       "id": "CT154",
-      "name": "Predator Taper Cam Roller",
+      "name": "Predator Taper Cam Roller (CT154)",
       "quantity": 1,
       "sku": "CT154"
     },
@@ -884,7 +884,7 @@
     },
     {
       "id": "CT52",
-      "name": "Predator Taper Spacer Bar",
+      "name": "Predator Taper Spacer Bar (CT52)",
       "quantity": 1,
       "sku": "CT52"
     },
@@ -902,67 +902,67 @@
     },
     {
       "id": "FA20A",
-      "name": "4-40 x 3/16 Flat Head Screw",
+      "name": "4-40 x 3/16 Flat Head Screw (FA20A)",
       "quantity": 1,
       "sku": "FA20A"
     },
     {
       "id": "FA27A",
-      "name": "6-32 x 1/4 Pan Head Screw",
+      "name": "6-32 x 1/4 Pan Head Screw (FA27A)",
       "quantity": 1,
       "sku": "FA27A"
     },
     {
       "id": "CT74",
-      "name": "Predator Taper Cable Guide Pulley",
+      "name": "Predator Taper Cable Guide Pulley (CT74)",
       "quantity": 1,
       "sku": "CT74"
     },
     {
       "id": "CT03",
-      "name": "Predator Taper Left Insert Bushing",
+      "name": "Predator Taper Left Insert Bushing (CT03)",
       "quantity": 1,
       "sku": "CT03"
     },
     {
       "id": "C154",
-      "name": "Predator Carbon Fiber Cam Roller",
+      "name": "Predator Carbon Fiber Cam Roller (C154)",
       "quantity": 1,
       "sku": "C154"
     },
     {
       "id": "FA526",
-      "name": "3/8-16 x 1 Hex Bolt",
+      "name": "3/8-16 x 1 Hex Bolt (FA526)",
       "quantity": 1,
       "sku": "FA526"
     },
     {
       "id": "FAJ706",
-      "name": "Predator Joint Fastener 70-6",
+      "name": "Predator Joint Fastener 70-6 (FAJ706)",
       "quantity": 1,
       "sku": "FAJ706"
     },
     {
       "id": "CT77",
-      "name": "Taper Drive Sprocket Large - CT77",
+      "name": "Taper Drive Sprocket Large (CT-77)",
       "quantity": 1,
       "sku": "CT-77"
     },
     {
       "id": "CTS6A",
-      "name": "CT56A",
+      "name": "Carriage Guide Rod Stop A (CT56A)",
       "quantity": 1,
       "sku": "CT56A"
     },
     {
       "id": "CT67",
-      "name": "Taper Ratchet Gear - CT67",
+      "name": "Taper Ratchet Gear (CT-67)",
       "quantity": 1,
       "sku": "CT-67"
     },
     {
       "id": "CT771",
-      "name": "Predator Taper Drive Sprocket Small",
+      "name": "Predator Taper Drive Sprocket Small (CT771)",
       "quantity": 1,
       "sku": "CT771"
     },
@@ -980,31 +980,31 @@
     },
     {
       "id": "CT66",
-      "name": "Taper Drive Drum",
+      "name": "Taper Drive Drum (CT66)",
       "quantity": 1,
       "sku": "CT66"
     },
     {
       "id": "CT69",
-      "name": "Predator Taper Drive Cam",
+      "name": "Predator Taper Drive Cam (CT69)",
       "quantity": 1,
       "sku": "CT69"
     },
     {
       "id": "CT67",
-      "name": "Taper Ratchet Gear - CT67",
+      "name": "Taper Ratchet Gear (CT-67)",
       "quantity": 1,
       "sku": "CT-67"
     },
     {
       "id": "FA283",
-      "name": "4-40 X 3/4\" Hex Bolt",
+      "name": "4-40 X 3/4\" Hex Bolt (FA283)",
       "quantity": 1,
       "sku": "FA283"
     },
     {
       "id": "CT67",
-      "name": "Taper Ratchet Gear - CT67",
+      "name": "Taper Ratchet Gear (CT-67)",
       "quantity": 1,
       "sku": "CT-67"
     },
@@ -1016,13 +1016,13 @@
     },
     {
       "id": "C159",
-      "name": "Predator Carbon Fiber Magnet",
+      "name": "Predator Carbon Fiber Magnet (C159)",
       "quantity": 1,
       "sku": "C159"
     },
     {
       "id": "FA220",
-      "name": "4-40 X 3/4in Bind Head Screw - FA220",
+      "name": "4-40 X 3/4in Bind Head Screw (FA220)",
       "quantity": 1,
       "sku": "FA220"
     },
@@ -1040,7 +1040,7 @@
     },
     {
       "id": "CT02",
-      "name": "Predator Taper Insert Bushing",
+      "name": "Predator Taper Insert Bushing (CT02)",
       "quantity": 1,
       "sku": "CT02"
     },
@@ -1070,19 +1070,19 @@
     },
     {
       "id": "CT768",
-      "name": "Predator Taper Clutch Lever",
+      "name": "Predator Taper Clutch Lever (CT768)",
       "quantity": 1,
       "sku": "CT768"
     },
     {
       "id": "CT765",
-      "name": "Predator Taper Manual Drive Grip",
+      "name": "Predator Taper Manual Drive Grip (CT765)",
       "quantity": 1,
       "sku": "CT765"
     },
     {
       "id": "C148",
-      "name": "Predator Carbon Fiber Crimping Arm Left",
+      "name": "Predator Carbon Fiber Crimping Arm Left (C148)",
       "quantity": 1,
       "sku": "C148"
     },
@@ -1100,19 +1100,19 @@
     },
     {
       "id": "CT747",
-      "name": "Predator Taper Crimping Wheel Bushing",
+      "name": "Predator Taper Crimping Wheel Bushing (CT747)",
       "quantity": 1,
       "sku": "CT747"
     },
     {
       "id": "CT00",
-      "name": "Predator Taper Head Cover Plate",
+      "name": "Predator Taper Head Cover Plate (CT00)",
       "quantity": 1,
       "sku": "CT00"
     },
     {
       "id": "PASS9",
-      "name": "Predator Taper Spring Set",
+      "name": "Predator Taper Spring Set (PASS9)",
       "quantity": 1,
       "sku": "PASS9"
     },

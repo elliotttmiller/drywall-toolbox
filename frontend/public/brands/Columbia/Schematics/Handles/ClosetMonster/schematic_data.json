@@ -8,13 +8,13 @@
   "parts": [
     {
       "id": "FA 272",
-      "name": "6-32 x 3/8 Set Screw",
+      "name": "6-32 x 3/8 Set Screw (FA272)",
       "quantity": 1,
       "sku": "FA272"
     },
     {
       "id": "FA 311",
-      "name": "5/16-18 Hex Nut",
+      "name": "5/16-18 Hex Nut (FA311)",
       "quantity": 1,
       "sku": "FA311"
     },
@@ -32,7 +32,7 @@
     },
     {
       "id": "BH 6",
-      "name": "Box Handle Hinge Pin - BH6",
+      "name": "Box Handle Hinge Pin (BH6)",
       "quantity": 1,
       "sku": "BH6"
     },
@@ -44,19 +44,19 @@
     },
     {
       "id": "AH 15",
-      "name": "Handle Ball",
+      "name": "Handle Ball (AH15)",
       "quantity": 1,
       "sku": "AH15"
     },
     {
       "id": "AH Ball",
-      "name": "AHA",
+      "name": "Angle Head Ball Adapter (AHA)",
       "quantity": 1,
       "sku": "AHA"
     },
     {
       "id": "BH 5",
-      "name": "Box Handle Upper Mounting Bracket - BH5",
+      "name": "Box Handle Upper Mounting Bracket - BH5 (BH-5)",
       "quantity": 1,
       "sku": "BH-5"
     },
@@ -68,7 +68,7 @@
     },
     {
       "id": "FA 325",
-      "name": "3/8-16 x 1-1/2 Socket Head Screw",
+      "name": "3/8-16 x 1-1/2 Socket Head Screw (FA325)",
       "quantity": 1,
       "sku": "FA325"
     },

@@ -8,7 +8,7 @@
   "parts": [
     {
       "id": "MP 27B",
-      "name": "Mud Pump O-Ring Retainer B",
+      "name": "Mud Pump O-Ring Retainer B (MP27B)",
       "quantity": 1,
       "sku": "MP27B"
     },
@@ -20,13 +20,13 @@
     },
     {
       "id": "MP 27C",
-      "name": "Mud Pump O Ring Retainer - MP27C",
+      "name": "Mud Pump O Ring Retainer - MP27C (MP-27C)",
       "quantity": 1,
       "sku": "MP-27C"
     },
     {
       "id": "MP 27",
-      "name": "Mud Pump O-Ring Retainer",
+      "name": "Mud Pump O-Ring Retainer (MP27)",
       "quantity": 1,
       "sku": "MP27"
     }
