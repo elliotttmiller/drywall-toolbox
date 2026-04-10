@@ -53,7 +53,26 @@ export default function CartSidebar({ isOpen, onClose }) {
           ) : (
             cartItems.map((item) => (
               <div key={item.id} className="cart-item">
-                <div>
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    style={{
+                      width: '44px',
+                      height: '44px',
+                      objectFit: 'contain',
+                      borderRadius: '6px',
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      flexShrink: 0,
+                      marginRight: '10px',
+                    }}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ 
                     fontWeight: 600, 
                     fontSize: '0.9rem',

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import Toast from '../components/Toast';
 import BrandSelector from '../components/BrandSelector';
@@ -587,6 +588,7 @@ export default function Parts() {
   const [activeHotspotPart, setActiveHotspotPart] = useState(null);
   const [hotspotStockStatus, setHotspotStockStatus] = useState(null); // 'instock' | 'outofstock' | null (loading)
   const [hotspotProduct, setHotspotProduct] = useState(null); // full WC product for the active hotspot (image, etc.)
+  const [hotspotLightbox, setHotspotLightbox] = useState(false); // fullscreen lightbox for hotspot image
   // Position of the detached desktop modal within schematic-container (px from top-left)
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [toast, setToast] = useState(null);
@@ -1867,7 +1869,16 @@ export default function Parts() {
     setActiveHotspot(null);
     setActiveHotspotPart(null);
     setHotspotProduct(null);
+    setHotspotLightbox(false);
   };
+
+  // Close hotspot image lightbox on Escape
+  useEffect(() => {
+    if (!hotspotLightbox) return;
+    const handler = (e) => { if (e.key === 'Escape') setHotspotLightbox(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [hotspotLightbox]);
 
   // Calculate and apply an optimal position for the detached desktop modal so it
   // remains fully visible within the schematic-container regardless of where the
@@ -2663,11 +2674,18 @@ export default function Parts() {
                     {/* Desktop inline modal (hidden on mobile via CSS) */}
                     <div className="part-modal" onClick={(e) => e.stopPropagation()}>
                     {activeHotspot === hotspotKey && hotspotProduct?.images?.[0] && (
-                      <img
-                        src={hotspotProduct.images[0]}
-                        alt={part.name}
-                        className="hotspot-modal-image"
-                      />
+                      <button
+                        className="hotspot-modal-image-btn"
+                        onClick={(e) => { e.stopPropagation(); setHotspotLightbox(true); }}
+                        aria-label="View full-size image"
+                        title="View full-size image"
+                      >
+                        <img
+                          src={hotspotProduct.images[0]}
+                          alt={part.name}
+                          className="hotspot-modal-image"
+                        />
+                      </button>
                     )}
                     <h4 style={{
                       textTransform: 'uppercase',
@@ -2675,7 +2693,18 @@ export default function Parts() {
                       letterSpacing: '0.1em',
                       marginBottom: '8px'
                     }}>
-                      {part.name}
+                      {hotspotProduct?.slug ? (
+                        <Link
+                          to={`/products/${hotspotProduct.slug}`}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ color: 'inherit', textDecoration: 'none' }}
+                          className="hotspot-modal-title-link"
+                        >
+                          {part.name}
+                        </Link>
+                      ) : (
+                        part.name
+                      )}
                     </h4>
                     <div className="part-meta">
                       SKU: {part.sku}
@@ -2788,11 +2817,18 @@ export default function Parts() {
                 }}
               >
                 {hotspotProduct?.images?.[0] ? (
-                  <img
-                    src={hotspotProduct.images[0]}
-                    alt={activeHotspotPart.name}
-                    className="hotspot-modal-image"
-                  />
+                  <button
+                    className="hotspot-modal-image-btn"
+                    onClick={(e) => { e.stopPropagation(); setHotspotLightbox(true); }}
+                    aria-label="View full-size image"
+                    title="View full-size image"
+                  >
+                    <img
+                      src={hotspotProduct.images[0]}
+                      alt={activeHotspotPart.name}
+                      className="hotspot-modal-image"
+                    />
+                  </button>
                 ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
                   <div className="hotspot-modal-image-skeleton hotspot-modal-image-skeleton--desktop" aria-hidden="true" />
                 ) : null}
@@ -2802,7 +2838,18 @@ export default function Parts() {
                   letterSpacing: '0.1em',
                   marginBottom: '8px'
                 }}>
-                  {activeHotspotPart.name}
+                  {hotspotProduct?.slug ? (
+                    <Link
+                      to={`/products/${hotspotProduct.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                      className="hotspot-modal-title-link"
+                    >
+                      {activeHotspotPart.name}
+                    </Link>
+                  ) : (
+                    activeHotspotPart.name
+                  )}
                 </h4>
                 <div className="part-meta">
                   SKU: {activeHotspotPart.sku}
@@ -2896,11 +2943,18 @@ export default function Parts() {
             <div className="mobile-modal-top-row">
               <div className="mobile-modal-thumb">
                 {hotspotProduct?.images?.[0] ? (
-                  <img
-                    src={hotspotProduct.images[0]}
-                    alt={activeHotspotPart.name}
-                    className="hotspot-modal-image hotspot-modal-image--mobile"
-                  />
+                  <button
+                    className="hotspot-modal-image-btn hotspot-modal-image-btn--mobile"
+                    onClick={(e) => { e.stopPropagation(); setHotspotLightbox(true); }}
+                    aria-label="View full-size image"
+                    title="View full-size image"
+                  >
+                    <img
+                      src={hotspotProduct.images[0]}
+                      alt={activeHotspotPart.name}
+                      className="hotspot-modal-image hotspot-modal-image--mobile"
+                    />
+                  </button>
                 ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
                   <div className="hotspot-modal-image-skeleton" aria-hidden="true" />
                 ) : null}
@@ -2916,7 +2970,18 @@ export default function Parts() {
                   wordBreak: 'break-word',
                   color: '#0f172a'
                 }}>
-                  {activeHotspotPart.name}
+                  {hotspotProduct?.slug ? (
+                    <Link
+                      to={`/products/${hotspotProduct.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                      className="hotspot-modal-title-link"
+                    >
+                      {activeHotspotPart.name}
+                    </Link>
+                  ) : (
+                    activeHotspotPart.name
+                  )}
                 </h4>
                 <div className="part-meta" style={{ fontSize: '0.75rem' }}>
                   SKU: {activeHotspotPart.sku}
@@ -2981,6 +3046,80 @@ export default function Parts() {
           type={toast.type}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {/* Fullscreen lightbox for hotspot part image */}
+      {hotspotLightbox && hotspotProduct?.images?.[0] && typeof document !== 'undefined' && createPortal(
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={activeHotspotPart?.name ? `Full-size image: ${activeHotspotPart.name}` : 'Full-size image'}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 999999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onClick={() => setHotspotLightbox(false)}
+          onKeyDown={(e) => { if (e.key === 'Escape') setHotspotLightbox(false); }}
+          tabIndex={-1}
+        >
+          {/* Backdrop */}
+          <div
+            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.96)' }}
+            aria-hidden="true"
+          />
+          {/* Image */}
+          <img
+            src={hotspotProduct.images[0]}
+            alt={activeHotspotPart?.name || 'Part image'}
+            style={{
+              position: 'relative',
+              maxWidth: '90vw',
+              maxHeight: '78vh',
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'contain',
+              borderRadius: '8px',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+            draggable={false}
+          />
+          {/* Close button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setHotspotLightbox(false); }}
+            aria-label="Close full-size image"
+            autoFocus
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none',
+              borderRadius: '50%',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '20px',
+              lineHeight: 1,
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>,
+        document.body
       )}
       </div>
     </section>
