@@ -14,13 +14,13 @@
     },
     {
       "id": "CT83",
-      "name": "CT83",
+      "name": "Columbia Clutch Dog (CT83)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT94",
-      "name": "CT94",
+      "name": "Columbia Mud Shut-Off Upper Plate (CT94)",
       "quantity": 1,
       "sku": ""
     },
@@ -44,13 +44,13 @@
     },
     {
       "id": "CT87-CL",
-      "name": "CT87-CL",
+      "name": "Columbia Cam Lock Taper Cap (CT87-CL)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA244",
-      "name": "FA244",
+      "name": "Columbia 6-32 x ½ Pan Slot (FA244)",
       "quantity": 1,
       "sku": ""
     },
@@ -68,7 +68,7 @@
     },
     {
       "id": "CT1R",
-      "name": "CT1R",
+      "name": "Columbia Head (No Holes for Cap) (CT1R)",
       "quantity": 1,
       "sku": ""
     },
@@ -86,13 +86,13 @@
     },
     {
       "id": "CT34CL",
-      "name": "CT34CL",
+      "name": "Columbia Cam Lock Cap Side Block (CT34-CL)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA238",
-      "name": "FA238",
+      "name": "Columbia 6-32 x 3/16 Fillister Slot (FA238)",
       "quantity": 1,
       "sku": ""
     },
@@ -152,9 +152,9 @@
     },
     {
       "id": "CT17",
-      "name": "CT17",
+      "name": "Columbia Separation Plate (CT17)",
       "quantity": 1,
-      "sku": ""
+      "sku": "054048F-A"
     },
     {
       "id": "CT20",
@@ -164,15 +164,15 @@
     },
     {
       "id": "FA243",
-      "name": "FA243",
+      "name": "Columbia 6-32 x 3/8 Flat Slot (FA243)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT23",
-      "name": "CT23",
+      "name": "Columbia Reinforcing Rod (CT23)",
       "quantity": 1,
-      "sku": ""
+      "sku": "050152F-A"
     },
     {
       "id": "FAZ6S",
@@ -230,9 +230,9 @@
     },
     {
       "id": "CT8",
-      "name": "CT8",
+      "name": "Columbia Side Plate Support  Left (CT8)",
       "quantity": 1,
-      "sku": ""
+      "sku": "54104-A"
     },
     {
       "id": "FAZOR",
@@ -254,13 +254,13 @@
     },
     {
       "id": "CT4",
-      "name": "CT4",
+      "name": "Columbia Wafer Bushing (CT4)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT72",
-      "name": "CT72",
+      "name": "Columbia Cable (CT72)",
       "quantity": 1,
       "sku": ""
     },
@@ -326,7 +326,7 @@
     },
     {
       "id": "CT36",
-      "name": "CT36",
+      "name": "Columbia Return Spring Tube (CT36)",
       "quantity": 1,
       "sku": ""
     },
@@ -350,13 +350,13 @@
     },
     {
       "id": "CT78",
-      "name": "CT78",
+      "name": "Columbia Drive Chain (CT78)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT34",
-      "name": "CT34",
+      "name": "Columbia Cover Plate Attachment Block (CT34)",
       "quantity": 1,
       "sku": ""
     },
@@ -392,7 +392,7 @@
     },
     {
       "id": "CT15A",
-      "name": "CT15A",
+      "name": "Columbia Old Style Ratchet Rod (CT15A)",
       "quantity": 1,
       "sku": ""
     },
@@ -422,13 +422,13 @@
     },
     {
       "id": "FA228",
-      "name": "FA228",
+      "name": "Columbia #6 Flat Washer (FA228)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT71",
-      "name": "CT71",
+      "name": "Columbia Drive Sprocket Small (CT71)",
       "quantity": 1,
       "sku": ""
     },
@@ -446,13 +446,13 @@
     },
     {
       "id": "CT12",
-      "name": "CT12",
+      "name": "Columbia Tape Advance Release Bracket (CT12)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA239",
-      "name": "FA239",
+      "name": "Columbia 6-32 x ¼ Binder Slot (FA239)",
       "quantity": 1,
       "sku": ""
     },
@@ -482,13 +482,13 @@
     },
     {
       "id": "FA214",
-      "name": "FA214",
+      "name": "Columbia 4/40 x ¼ Flat Slot (FA214)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA200",
-      "name": "FA200",
+      "name": "Columbia 1/16 x ¼ Split Pin (FA200)",
       "quantity": 1,
       "sku": ""
     },
@@ -554,13 +554,13 @@
     },
     {
       "id": "FA243",
-      "name": "FA243",
+      "name": "Columbia 6-32 x 3/8 Flat Slot (FA243)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT59",
-      "name": "CT59",
+      "name": "Columbia Magnet (CT59)",
       "quantity": 1,
       "sku": ""
     },
@@ -590,7 +590,7 @@
     },
     {
       "id": "CT40",
-      "name": "CT40",
+      "name": "Columbia Return Spring Ring (CT40)",
       "quantity": 1,
       "sku": ""
     },
@@ -656,7 +656,7 @@
     },
     {
       "id": "FA207",
-      "name": "FA207",
+      "name": "Columbia 4-40 Nyloc Nut (FA207)",
       "quantity": 1,
       "sku": ""
     },
@@ -674,13 +674,13 @@
     },
     {
       "id": "CT87",
-      "name": "CT87",
+      "name": "Columbia Old Style Taper Cap (CT87)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA228",
-      "name": "FA228",
+      "name": "Columbia #6 Flat Washer (FA228)",
       "quantity": 1,
       "sku": ""
     },
@@ -698,7 +698,7 @@
     },
     {
       "id": "CT34CL",
-      "name": "CT34CL",
+      "name": "Columbia Cam Lock Cap Side Block (CT34-CL)",
       "quantity": 1,
       "sku": ""
     },
@@ -722,13 +722,13 @@
     },
     {
       "id": "FA199",
-      "name": "FA199",
+      "name": "Columbia 2-56 x 3/16 Binder Slot (FA199)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT95",
-      "name": "CT95",
+      "name": "Columbia Control Valve (CT95)",
       "quantity": 1,
       "sku": ""
     },
@@ -740,19 +740,19 @@
     },
     {
       "id": "CT95",
-      "name": "CT95",
+      "name": "Columbia Control Valve (CT95)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT87-CL",
-      "name": "CT87-CL",
+      "name": "Columbia Cam Lock Taper Cap (CT87-CL)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT94",
-      "name": "CT94",
+      "name": "Columbia Mud Shut-Off Upper Plate (CT94)",
       "quantity": 1,
       "sku": ""
     },
@@ -764,7 +764,7 @@
     },
     {
       "id": "CT3",
-      "name": "CT3",
+      "name": "Columbia Stainless Steel Right Insert Bushing (CT3)",
       "quantity": 1,
       "sku": ""
     },
@@ -776,13 +776,13 @@
     },
     {
       "id": "CT7",
-      "name": "CT7",
+      "name": "Columbia Side Plate Support  Right (CT7)",
       "quantity": 1,
-      "sku": ""
+      "sku": "54075-A"
     },
     {
       "id": "FA214",
-      "name": "FA214",
+      "name": "Columbia 4/40 x ¼ Flat Slot (FA214)",
       "quantity": 1,
       "sku": ""
     },
@@ -836,9 +836,9 @@
     },
     {
       "id": "CT17",
-      "name": "CT17",
+      "name": "Columbia Separation Plate (CT17)",
       "quantity": 1,
-      "sku": ""
+      "sku": "054048F-A"
     },
     {
       "id": "FA227",
@@ -866,9 +866,9 @@
     },
     {
       "id": "CT132",
-      "name": "CT132",
+      "name": "Columbia CT132 - Taper Connecting Link (709043-A)",
       "quantity": 1,
-      "sku": ""
+      "sku": "709043-A"
     },
     {
       "id": "CT154",
@@ -878,7 +878,7 @@
     },
     {
       "id": "CT72",
-      "name": "CT72",
+      "name": "Columbia Cable (CT72)",
       "quantity": 1,
       "sku": ""
     },
@@ -896,9 +896,9 @@
     },
     {
       "id": "CT2",
-      "name": "CT2",
+      "name": "Columbia Insert Bushings (CT2)",
       "quantity": 1,
-      "sku": ""
+      "sku": "59078-A"
     },
     {
       "id": "FA20A",
@@ -968,13 +968,13 @@
     },
     {
       "id": "CT70",
-      "name": "CT70",
+      "name": "Columbia Drive Shaft (CT70)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA258",
-      "name": "FA258",
+      "name": "Columbia 8-32 x ¼ Half Dog Set (FA258)",
       "quantity": 1,
       "sku": ""
     },
@@ -1010,7 +1010,7 @@
     },
     {
       "id": "CT58",
-      "name": "CT58",
+      "name": "Columbia Guide Rod Bushing (CT58)",
       "quantity": 1,
       "sku": ""
     },
@@ -1028,13 +1028,13 @@
     },
     {
       "id": "CT64",
-      "name": "CT64",
+      "name": "Columbia Needle Return Shaft (CT64)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA238",
-      "name": "FA238",
+      "name": "Columbia 6-32 x 3/16 Fillister Slot (FA238)",
       "quantity": 1,
       "sku": ""
     },
@@ -1046,25 +1046,25 @@
     },
     {
       "id": "FA219",
-      "name": "FA219",
+      "name": "Columbia 4-40 x ½ Fillister Slot (FA219)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT65",
-      "name": "CT65",
+      "name": "Columbia Needle Return Spring (CT65)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "CT59",
-      "name": "CT59",
+      "name": "Columbia Magnet (CT59)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA210",
-      "name": "FA210",
+      "name": "Columbia 4/40 x 3/16\"  Binder Slot (FA210)",
       "quantity": 1,
       "sku": ""
     },
@@ -1088,13 +1088,13 @@
     },
     {
       "id": "FA241",
-      "name": "FA241",
+      "name": "Columbia 6-32 x 3/8 Binder Slot (FA241)",
       "quantity": 1,
       "sku": ""
     },
     {
       "id": "FA254",
-      "name": "FA254",
+      "name": "Columbia 8-32 Nyloc Nut (FA254)",
       "quantity": 1,
       "sku": ""
     },
@@ -1124,7 +1124,7 @@
     },
     {
       "id": "CT31",
-      "name": "CT31",
+      "name": "Columbia Chain Tension & Guide Bracket (CT31)",
       "quantity": 1,
       "sku": ""
     }
