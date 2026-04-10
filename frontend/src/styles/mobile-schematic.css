@@ -65,7 +65,7 @@
   width: 100%;
   height: 100%;
   max-height: none;
-  padding: 6px;
+  padding: 0;
   border-radius: 10px;
   margin-bottom: 0;
   background: #f1f5f9;
@@ -84,8 +84,8 @@
 
 .mobile-modal-thumb {
   flex-shrink: 0;
-  width: 88px;
-  height: 88px;
+  width: clamp(80px, 22vw, 110px);
+  height: clamp(80px, 22vw, 110px);
   border-radius: 10px;
   overflow: hidden;
   background: #f1f5f9;
