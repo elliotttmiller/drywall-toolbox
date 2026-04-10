@@ -1,14 +1,10 @@
 /**
  * TechnicalSpecifications.jsx — Product technical specifications table renderer
- * 
- * Provides consistent rendering of product technical specs across all brands.
- * Matches Asgard's professional HTML table formatting with:
- * - Alternating row colors for readability
- * - Proper typography hierarchy
- * - Responsive scrolling on mobile
- * - Support for both plain text and HTML values
- * - Consistent padding and borders
- * 
+ *
+ * Clean, modern, mobile-first two-column specification list.
+ * Uses semantic <dl>/<dt>/<dd> markup with a CSS-grid row layout so
+ * label and value always sit side-by-side — even on the narrowest phone.
+ *
  * Usage:
  * <TechnicalSpecifications specs={[
  *   { label: 'Brand', value: 'Asgard' },
@@ -17,48 +13,35 @@
  */
 
 export default function TechnicalSpecifications({ specs = [], title = 'Technical Specifications' }) {
-  if (!specs || specs.length === 0) {
-    return null;
-  }
+  if (!specs || specs.length === 0) return null;
 
   return (
-    <div className="mt-8 sm:mt-10 mb-6 sm:mb-8">
-      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-5 tracking-tight">
-        {title}
-      </h3>
-      
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-xs">
-        <table className="w-full border-collapse">
-          <tbody>
-            {specs.map((spec, index) => (
-              <tr
-                key={index}
-                className={`
-                  border-b border-gray-200 transition-colors
-                  ${index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'}
-                `}
-              >
-                {/* Label Column */}
-                <td className="px-4 sm:px-5 py-3 sm:py-4 font-semibold text-gray-900 w-2/5 sm:w-1/3 text-sm sm:text-base">
-                  {spec.label}
-                </td>
-                
-                {/* Value Column */}
-                <td className="px-4 sm:px-5 py-3 sm:py-4 text-gray-700 text-sm sm:text-base">
-                  {typeof spec.value === 'string' && spec.value.includes('<') ? (
-                    <div 
-                      className="prose prose-sm max-w-none inline-block"
-                      dangerouslySetInnerHTML={{ __html: spec.value }} 
-                    />
-                  ) : (
-                    spec.value
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <section className="tech-specs mt-8 sm:mt-10 mb-6 sm:mb-8" aria-label={title}>
+      {/* ── Heading ── */}
+      <div className="tech-specs__heading mb-4 sm:mb-5">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+          {title}
+        </h3>
+        <div className="mt-2 h-[2px] w-8 bg-gray-900 rounded-full" />
       </div>
-    </div>
+
+      {/* ── Spec rows ── */}
+      <dl className="tech-specs__list divide-y divide-gray-100">
+        {specs.map((spec, index) => (
+          <div key={index} className="tech-specs__row grid py-3 sm:py-3.5 gap-x-4 sm:gap-x-6">
+            <dt className="tech-specs__label text-xs sm:text-sm font-medium text-gray-400 leading-5 self-start pt-px">
+              {spec.label}
+            </dt>
+            <dd className="tech-specs__value text-sm sm:text-[0.9375rem] font-medium text-gray-900 leading-5 m-0">
+              {typeof spec.value === 'string' && spec.value.includes('<') ? (
+                <span dangerouslySetInnerHTML={{ __html: spec.value }} />
+              ) : (
+                spec.value
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }
