@@ -3063,8 +3063,6 @@ export default function Parts() {
             justifyContent: 'center',
           }}
           onClick={() => setHotspotLightbox(false)}
-          onKeyDown={(e) => { if (e.key === 'Escape') setHotspotLightbox(false); }}
-          tabIndex={-1}
         >
           {/* Backdrop */}
           <div
