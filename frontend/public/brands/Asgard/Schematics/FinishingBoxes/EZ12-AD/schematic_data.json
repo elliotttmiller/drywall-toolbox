@@ -1,7 +1,7 @@
 {
   "id": "1775158856269",
   "title": "EZ12-AD_SCH",
-  "product_name": "12\u2033 Flat Finishing Box",
+  "product_name": "12″ Flat Finishing Box",
   "sku": "EZ12-AD",
   "diagramPages": [
     1
@@ -16,9 +16,9 @@
     },
     {
       "id": "10",
-      "name": "10",
+      "name": "TapeTech 18 Gauge Work Glove, L (10) (PWG18-L)",
       "quantity": 1,
-      "sku": ""
+      "sku": "18488"
     },
     {
       "id": "300001",
@@ -174,7 +174,7 @@
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "202021",
@@ -318,7 +318,7 @@
       "id": "059225",
       "name": "059225 - 10-32 Thin Pattern Stop Nut",
       "quantity": 1,
-      "sku": "059225"
+      "sku": "4446"
     },
     {
       "id": "209047",

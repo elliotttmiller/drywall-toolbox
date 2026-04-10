@@ -26,7 +26,7 @@
     },
     {
       "id": "FA 268",
-      "name": "FA 268",
+      "name": "Columbia #10 Flat Washer (FA268)",
       "quantity": 1,
       "sku": "FA268"
     },
@@ -38,9 +38,9 @@
     },
     {
       "id": "CMH 8",
-      "name": "CMH 8",
+      "name": "Columbia Closet Monster 18\" Flat Box Handle (CMH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMH"
     },
     {
       "id": "AH 15",
@@ -62,9 +62,9 @@
     },
     {
       "id": "CMH 2",
-      "name": "CMH 2",
+      "name": "Columbia Closet Monster 18\" Flat Box Handle (CMH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CMH"
     },
     {
       "id": "FA 325",
@@ -74,15 +74,15 @@
     },
     {
       "id": "FA 312",
-      "name": "FA 312",
+      "name": "Columbia 10-24 X 1/4\" Set Screw (FA312)",
       "quantity": 1,
       "sku": "FA312"
     },
     {
       "id": "BH 1",
-      "name": "BH 1",
+      "name": "Columbia Box Handle Mounting Plate (BH01)",
       "quantity": 1,
-      "sku": ""
+      "sku": "BH01"
     }
   ],
   "coordinates": {

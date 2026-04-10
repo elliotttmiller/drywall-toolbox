@@ -1,7 +1,7 @@
 {
   "id": "1775158856266",
   "title": "EZ10-AD_SCH",
-  "product_name": "10\u2033 Flat Finishing Box",
+  "product_name": "10″ Flat Finishing Box",
   "sku": "EZ10-AD",
   "diagramPages": [
     1
@@ -36,7 +36,7 @@
       "id": "250040F",
       "name": "10\" Tie Rod",
       "quantity": 1,
-      "sku": "250040F"
+      "sku": ""
     },
     {
       "id": "251032G",
@@ -162,7 +162,7 @@
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "202021",
@@ -312,7 +312,7 @@
       "id": "059225",
       "name": "059225 - 10-32 Thin Pattern Stop Nut",
       "quantity": 1,
-      "sku": "059225"
+      "sku": "4446"
     },
     {
       "id": "209042",

@@ -1,7 +1,7 @@
 {
   "id": "1775158856252",
   "title": "EZ07-AD_SCH",
-  "product_name": "7\u2033 Flat Finishing Box",
+  "product_name": "7″ Flat Finishing Box",
   "sku": "EZ07-AD",
   "diagramPages": [
     1
@@ -48,7 +48,7 @@
       "id": "059012",
       "name": "6-32 X 3/8 Fillister Hd  - 059012",
       "quantity": 1,
-      "sku": "059012"
+      "sku": "4387"
     },
     {
       "id": "609012",
@@ -72,7 +72,7 @@
       "id": "059015",
       "name": "6-32 X 1/4 Fillister Hd Screw - 059015",
       "quantity": 1,
-      "sku": "059015"
+      "sku": "4390"
     },
     {
       "id": "251025B",
@@ -84,7 +84,7 @@
       "id": "209050",
       "name": "4-40 x 7/16 Slotted FL. Head, SS",
       "quantity": 1,
-      "sku": "209050"
+      "sku": ""
     },
     {
       "id": "2020338",
@@ -96,7 +96,7 @@
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "209041",
@@ -162,7 +162,7 @@
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "202021",
@@ -198,7 +198,7 @@
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "489024",
@@ -222,7 +222,7 @@
       "id": "502034",
       "name": "502034 - Corner Box Latch",
       "quantity": 1,
-      "sku": "502034"
+      "sku": "4860"
     },
     {
       "id": "200026F",
@@ -276,7 +276,7 @@
       "id": "059015",
       "name": "6-32 X 1/4 Fillister Hd Screw - 059015",
       "quantity": 1,
-      "sku": "059015"
+      "sku": "4390"
     },
     {
       "id": "209048",
@@ -294,7 +294,7 @@
       "id": "059225",
       "name": "059225 - 10-32 Thin Pattern Stop Nut",
       "quantity": 1,
-      "sku": "059225"
+      "sku": "4446"
     },
     {
       "id": "209042",

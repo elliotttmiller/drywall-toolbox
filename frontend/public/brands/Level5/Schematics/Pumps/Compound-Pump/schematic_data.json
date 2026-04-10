@@ -73,16 +73,16 @@
     },
     {
       "id": "10",
-      "name": "Quick Release Pin",
+      "name": "10",
       "quantity": 1,
-      "sku": "7622",
+      "sku": "",
       "price": 20.24
     },
     {
       "id": "11",
-      "name": "Quick Release Pin",
+      "name": "11",
       "quantity": 1,
-      "sku": "7622",
+      "sku": "",
       "price": 20.24
     },
     {
@@ -198,9 +198,9 @@
     },
     {
       "id": "28",
-      "name": "Filler O'Ring",
+      "name": "28",
       "quantity": 1,
-      "sku": "7350",
+      "sku": "",
       "price": 1.79
     },
     {

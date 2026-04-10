@@ -14,9 +14,9 @@
     },
     {
       "id": "MH 10",
-      "name": "MH 10",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "SEE PINCHBOX DETAIL",
@@ -26,15 +26,15 @@
     },
     {
       "id": "FA 256",
-      "name": "FA 256",
+      "name": "Columbia 8-32 x 3/16\" Pan Slot SS Screw (FA256)",
       "quantity": 1,
       "sku": "FA256"
     },
     {
       "id": "MH 9A",
-      "name": "MH 9A",
+      "name": "Columbia CTTMH9 (MH9)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH9"
     },
     {
       "id": "SEE EXTENSION HOUSING DETAIL",
@@ -50,7 +50,7 @@
     },
     {
       "id": "FA 256",
-      "name": "FA 256",
+      "name": "Columbia 8-32 x 3/16\" Pan Slot SS Screw (FA256)",
       "quantity": 1,
       "sku": "FA256"
     },
@@ -62,7 +62,7 @@
     },
     {
       "id": "MH 9",
-      "name": "MH 9",
+      "name": "Columbia CTTMH9 (MH9)",
       "quantity": 1,
       "sku": "MH9"
     },

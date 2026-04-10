@@ -1,7 +1,7 @@
 {
   "id": "1775158856309",
   "title": "PA10-AD_SCH",
-  "product_name": "10\u2033 Power Assist Finishing Box",
+  "product_name": "10″ Power Assist Finishing Box",
   "sku": "PA10-AD",
   "diagramPages": [
     1
@@ -77,13 +77,13 @@
     {
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
-      "sku": "059018",
+      "sku": "4392",
       "quantity": 1
     },
     {
       "id": "059020",
       "name": "6-32 X 3/8 Bind Hd Screw - 059020",
-      "sku": "059020",
+      "sku": "4393",
       "quantity": 2
     },
     {
@@ -119,7 +119,7 @@
     {
       "id": "489023",
       "name": "489023 - #6 SS Flat Washer",
-      "sku": "489023",
+      "sku": "4849",
       "quantity": 2
     },
     {
@@ -179,7 +179,7 @@
     {
       "id": "059161",
       "name": "059161 - 4-40 X 3/8 Fillister Head Screw",
-      "sku": "059161",
+      "sku": "4435",
       "quantity": 6
     },
     {
@@ -191,13 +191,13 @@
     {
       "id": "059038",
       "name": "059038 - Lock Washer #4",
-      "sku": "059038",
+      "sku": "4400",
       "quantity": 6
     },
     {
       "id": "059015",
       "name": "6-32 X 1/4 Fillister Hd Screw - 059015",
-      "sku": "059015",
+      "sku": "4390",
       "quantity": 4
     },
     {
@@ -215,7 +215,7 @@
     {
       "id": "059020",
       "name": "6-32 X 3/8 Bind Hd Screw - 059020",
-      "sku": "059020",
+      "sku": "4393",
       "quantity": 6
     },
     {
@@ -239,13 +239,13 @@
     {
       "id": "059016",
       "name": "#6 Med. Spring Lockwasher - 059016",
-      "sku": "059016",
+      "sku": "4391",
       "quantity": 6
     },
     {
       "id": "059102",
       "name": "059102 - 4-40 X 1/4 Flat Hd Screw",
-      "sku": "059102",
+      "sku": "4420",
       "quantity": 2
     },
     {
@@ -263,7 +263,7 @@
     {
       "id": "059020",
       "name": "6-32 X 3/8 Bind Hd Screw - 059020",
-      "sku": "059020",
+      "sku": "4393",
       "quantity": 4
     },
     {
@@ -275,13 +275,13 @@
     {
       "id": "059016",
       "name": "#6 Med. Spring Lockwasher - 059016",
-      "sku": "059016",
+      "sku": "4391",
       "quantity": 2
     },
     {
       "id": "059051",
       "name": "059051 - 6-32 X 3/16 Fillister Screw",
-      "sku": "059051",
+      "sku": "4405",
       "quantity": 2
     },
     {
@@ -323,7 +323,7 @@
     {
       "id": "059020",
       "name": "6-32 X 3/8 Bind Hd Screw - 059020",
-      "sku": "059020",
+      "sku": "4393",
       "quantity": 2
     },
     {
@@ -365,7 +365,7 @@
     {
       "id": "059012",
       "name": "6-32 X 3/8 Fillister Hd  - 059012",
-      "sku": "059012",
+      "sku": "4387",
       "quantity": 1
     },
     {
@@ -412,7 +412,7 @@
     },
     {
       "id": "219092",
-      "name": "219092",
+      "name": "TapeTech Screw, 4-40 X 1\" Binder Head SS (219092)",
       "sku": "12397",
       "quantity": 1
     },
@@ -424,7 +424,7 @@
     },
     {
       "id": "209047",
-      "name": "209047",
+      "name": "TapeTech Nyliner Bearing (209047)",
       "sku": "4713",
       "quantity": 1
     },

@@ -1,7 +1,7 @@
 {
   "id": "1775158856169",
   "title": "AH30-AD_SCH",
-  "product_name": "3\u2033 Angle Head Corner Finisher",
+  "product_name": "3″ Angle Head Corner Finisher",
   "sku": "AH30-AD",
   "diagramPages": [
     1
@@ -12,7 +12,7 @@
       "id": "059091",
       "name": "059091 - 6-32 X 1/2 Fill. Hd Screw",
       "quantity": 1,
-      "sku": "059091"
+      "sku": "4417"
     },
     {
       "id": "4020028",
@@ -46,15 +46,15 @@
     },
     {
       "id": "486001",
-      "name": "486001",
+      "name": "TapeTech 3\" Easy Roll Head Casting (486001)",
       "quantity": 1,
-      "sku": ""
+      "sku": "4845"
     },
     {
       "id": "059084",
       "name": "059084 - 8-32 X 1/4 1/2 Dog Setscrew",
       "quantity": 1,
-      "sku": "059084"
+      "sku": "4414"
     },
     {
       "id": "460005",
@@ -130,9 +130,9 @@
     },
     {
       "id": "480016",
-      "name": "480016",
+      "name": "TapeTech Stainless Steel Frame, Right (480016)",
       "quantity": 1,
-      "sku": ""
+      "sku": "4838"
     },
     {
       "id": "4B0002B",
@@ -168,7 +168,7 @@
       "id": "489023",
       "name": "489023 - #6 SS Flat Washer",
       "quantity": 1,
-      "sku": "489023"
+      "sku": "4849"
     },
     {
       "id": "489029",

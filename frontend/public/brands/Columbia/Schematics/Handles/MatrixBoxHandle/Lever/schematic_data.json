@@ -8,27 +8,27 @@
   "parts": [
     {
       "id": "MH 4",
-      "name": "MH 4",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 23",
-      "name": "MH 23",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 21",
-      "name": "MH 21",
+      "name": "Columbia Matrix Grip Adjuster Housing (MH21)",
       "quantity": 1,
       "sku": "MH21"
     },
     {
       "id": "MH 22",
-      "name": "MH 22",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "FA 376",
@@ -38,9 +38,9 @@
     },
     {
       "id": "MH 3A",
-      "name": "MH 3A",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "FA 365",
@@ -50,15 +50,15 @@
     },
     {
       "id": "MH 11",
-      "name": "MH 11",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 3",
-      "name": "MH 3",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     }
   ],
   "coordinates": {

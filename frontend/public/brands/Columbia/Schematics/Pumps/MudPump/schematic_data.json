@@ -20,7 +20,7 @@
     },
     {
       "id": "FA290",
-      "name": "FA290",
+      "name": "Columbia 1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
       "sku": "FA290"
     },
@@ -68,13 +68,13 @@
     },
     {
       "id": "FA292",
-      "name": "FA292",
+      "name": "Columbia 1/4-20 Nyloc Jam Nut (FA292)",
       "quantity": 1,
       "sku": "FA292"
     },
     {
       "id": "FA300",
-      "name": "FA300",
+      "name": "Columbia 1/4-20 X 2\" Hex Bolt (FA300)",
       "quantity": 1,
       "sku": "FA300"
     },
@@ -98,7 +98,7 @@
     },
     {
       "id": "FA305",
-      "name": "FA305",
+      "name": "Columbia 5/16-18 X 3/4\" Hex Bolt (FA305)",
       "quantity": 1,
       "sku": "FA305"
     },
@@ -128,7 +128,7 @@
     },
     {
       "id": "FA256",
-      "name": "FA256",
+      "name": "Columbia 8-32 x 3/16\" Pan Slot SS Screw (FA256)",
       "quantity": 1,
       "sku": "FA256"
     },
@@ -146,15 +146,15 @@
     },
     {
       "id": "FA294",
-      "name": "FA294",
+      "name": "Columbia 1/4-20 X 3/8\" Socket Hd Screw (FA294)",
       "quantity": 1,
       "sku": "FA294"
     },
     {
       "id": "MP23A",
-      "name": "MP23A",
+      "name": "Columbia Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-23"
     },
     {
       "id": "HP4",
@@ -242,13 +242,13 @@
     },
     {
       "id": "FA270",
-      "name": "FA270",
+      "name": "Columbia #10 X 3/4\" Fender Washer (FA270)",
       "quantity": 1,
       "sku": "FA270"
     },
     {
       "id": "FA273",
-      "name": "FA273",
+      "name": "Columbia 10-24 X 1\" Hex Bolt (FA273)",
       "quantity": 1,
       "sku": "FA273"
     },
@@ -284,7 +284,7 @@
     },
     {
       "id": "FA274",
-      "name": "FA274",
+      "name": "Columbia 10-24 X 3/8\" Socket Hd Screw (FA274)",
       "quantity": 1,
       "sku": "FA274"
     },

@@ -8,63 +8,63 @@
   "parts": [
     {
       "id": "FA 379",
-      "name": "FA 379",
+      "name": "Columbia 1/4\" E-Clip for Matrix Handle (FA379)",
       "quantity": 1,
       "sku": "FA379"
     },
     {
       "id": "FA 380",
-      "name": "FA 380",
+      "name": "Columbia 1/8\" E-Clip for Matrix Handle (FA380)",
       "quantity": 1,
       "sku": "FA380"
     },
     {
       "id": "MH 15",
-      "name": "MH 15",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 16",
-      "name": "MH 16",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 12",
-      "name": "MH 12",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 25",
-      "name": "MH 25",
+      "name": "Columbia Matrix Pinch Brake Stem (MH25)",
       "quantity": 1,
       "sku": "MH25"
     },
     {
       "id": "MH 24",
-      "name": "MH 24",
+      "name": "Columbia Matrix Pinch Brake Bushing (MH24)",
       "quantity": 1,
       "sku": "MH24"
     },
     {
       "id": "MH 17",
-      "name": "MH 17",
+      "name": "Columbia Matrix Pinch Brake (MH17)",
       "quantity": 1,
       "sku": "MH17"
     },
     {
       "id": "MH 18",
-      "name": "MH 18",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 19",
-      "name": "MH 19",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     }
   ],
   "coordinates": {

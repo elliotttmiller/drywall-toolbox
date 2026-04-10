@@ -1,7 +1,7 @@
 {
   "id": "1775158856245",
   "title": "EHC12-AD_SCH",
-  "product_name": "12\u2033 MaxxBox Finishing Box",
+  "product_name": "12″ MaxxBox Finishing Box",
   "sku": "EHC12-AD",
   "diagramPages": [
     1
@@ -42,7 +42,7 @@
       "id": "489023",
       "name": "489023 - #6 SS Flat Washer",
       "quantity": 1,
-      "sku": "489023"
+      "sku": "4849"
     },
     {
       "id": "219064",
@@ -60,7 +60,7 @@
       "id": "502034",
       "name": "502034 - Corner Box Latch",
       "quantity": 1,
-      "sku": "502034"
+      "sku": "4860"
     },
     {
       "id": "310024F",
@@ -108,7 +108,7 @@
       "id": "059051",
       "name": "059051 - 6-32 X 3/16 Fillister Screw",
       "quantity": 1,
-      "sku": "059051"
+      "sku": "4405"
     },
     {
       "id": "889030",
@@ -156,7 +156,7 @@
       "id": "059225",
       "name": "059225 - 10-32 Thin Pattern Stop Nut",
       "quantity": 1,
-      "sku": "059225"
+      "sku": "4446"
     },
     {
       "id": "202036",
@@ -210,7 +210,7 @@
       "id": "059029",
       "name": "059029 - 6-32 X 5/8 Flat Hd Screw",
       "quantity": 1,
-      "sku": "059029"
+      "sku": "4398"
     },
     {
       "id": "3100338",
@@ -252,19 +252,19 @@
       "id": "059016",
       "name": "#6 Med. Spring Lockwasher - 059016",
       "quantity": 1,
-      "sku": "059016"
+      "sku": "4391"
     },
     {
       "id": "059020",
       "name": "6-32 X 3/8 Bind Hd Screw - 059020",
       "quantity": 1,
-      "sku": "059020"
+      "sku": "4393"
     },
     {
       "id": "059102",
       "name": "059102 - 4-40 X 1/4 Flat Hd Screw",
       "quantity": 1,
-      "sku": "059102"
+      "sku": "4420"
     },
     {
       "id": "202022",
@@ -282,19 +282,19 @@
       "id": "059015",
       "name": "6-32 X 1/4 Fillister Hd Screw - 059015",
       "quantity": 1,
-      "sku": "059015"
+      "sku": "4390"
     },
     {
       "id": "059038",
       "name": "059038 - Lock Washer #4",
       "quantity": 1,
-      "sku": "059038"
+      "sku": "4400"
     },
     {
       "id": "059161",
       "name": "059161 - 4-40 X 3/8 Fillister Head Screw",
       "quantity": 1,
-      "sku": "059161"
+      "sku": "4435"
     },
     {
       "id": "280023B",
@@ -318,13 +318,13 @@
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "059018",
       "name": "6-32 Thin Pattern Stopnut - 059018",
       "quantity": 1,
-      "sku": "059018"
+      "sku": "4392"
     },
     {
       "id": "202007",

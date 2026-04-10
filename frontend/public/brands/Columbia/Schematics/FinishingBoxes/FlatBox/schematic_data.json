@@ -8,25 +8,25 @@
   "parts": [
     {
       "id": "FA274",
-      "name": "FA274",
+      "name": "Columbia 10-24 X 3/8\" Socket Hd Screw (FA274)",
       "quantity": 1,
       "sku": "FA274"
     },
     {
       "id": "FA275",
-      "name": "FA275",
+      "name": "Columbia 10-24 X 3/4\" Hex Bolt (FA275)",
       "quantity": 1,
       "sku": "FA275"
     },
     {
       "id": "FA268",
-      "name": "FA268",
+      "name": "Columbia #10 Flat Washer (FA268)",
       "quantity": 1,
       "sku": "FA268"
     },
     {
       "id": "FA268",
-      "name": "FA268",
+      "name": "Columbia #10 Flat Washer (FA268)",
       "quantity": 1,
       "sku": "FA268"
     },
@@ -68,13 +68,13 @@
     },
     {
       "id": "FA231",
-      "name": "FA231",
+      "name": "Columbia #6 X 3/8\" Hex Bolt (FA231)",
       "quantity": 1,
       "sku": "FA231"
     },
     {
       "id": "FA231",
-      "name": "FA231",
+      "name": "Columbia #6 X 3/8\" Hex Bolt (FA231)",
       "quantity": 1,
       "sku": "FA231"
     },
@@ -110,13 +110,13 @@
     },
     {
       "id": "FFB43",
-      "name": "FFB43",
+      "name": "Columbia Bead Wheel Bushing (FFB43)",
       "quantity": 1,
       "sku": "FFB43"
     },
     {
       "id": "FA268",
-      "name": "FA268",
+      "name": "Columbia #10 Flat Washer (FA268)",
       "quantity": 1,
       "sku": "FA268"
     },
@@ -284,15 +284,15 @@
     },
     {
       "id": "FA234",
-      "name": "FA234",
+      "name": "Columbia 6-32 Nyloc Jam Nut (FA234)",
       "quantity": 1,
       "sku": "FA234"
     },
     {
       "id": "FFB25-10'",
-      "name": "FFB25-10'",
+      "name": "Columbia Flat Box Rubber Gasket Retainer 10in (FFB-25-10)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB-25-10"
     },
     {
       "id": "FA258",
@@ -314,7 +314,7 @@
     },
     {
       "id": "FA232",
-      "name": "FA232",
+      "name": "Columbia 6-32 Hex Nut (FA232)",
       "quantity": 1,
       "sku": "FA232"
     },
@@ -350,9 +350,9 @@
     },
     {
       "id": "FFB9-10'",
-      "name": "FFB9-10'",
+      "name": "Columbia Flat Box Blade 10\" (FFB9-10)",
       "quantity": 1,
-      "sku": ""
+      "sku": "FFB9-10"
     }
   ],
   "coordinates": {

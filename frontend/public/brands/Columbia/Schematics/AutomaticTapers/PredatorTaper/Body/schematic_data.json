@@ -14,9 +14,9 @@
     },
     {
       "id": "CT119A",
-      "name": "CT119A",
+      "name": "Columbia Spool Retaining Spring (CT-119)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-119"
     },
     {
       "id": "CT121B",
@@ -44,7 +44,7 @@
     },
     {
       "id": "FA292",
-      "name": "FA292",
+      "name": "Columbia 1/4-20 Nyloc Jam Nut (FA292)",
       "quantity": 1,
       "sku": "FA292"
     },
@@ -68,15 +68,15 @@
     },
     {
       "id": "CT123A",
-      "name": "CT123A",
+      "name": "Columbia Taper Retaining Spring Shaft (CT-123)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-123"
     },
     {
       "id": "MP23A",
-      "name": "MP23A",
+      "name": "Columbia Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-23"
     },
     {
       "id": "CT117A",
@@ -176,7 +176,7 @@
     },
     {
       "id": "FA234",
-      "name": "FA234",
+      "name": "Columbia 6-32 Nyloc Jam Nut (FA234)",
       "quantity": 1,
       "sku": "FA234"
     },
@@ -188,7 +188,7 @@
     },
     {
       "id": "FA295",
-      "name": "FA295",
+      "name": "Columbia 1/4-20 X 1/2\" Flat Socket (FA295)",
       "quantity": 1,
       "sku": "FA295"
     },
@@ -200,7 +200,7 @@
     },
     {
       "id": "CT128A",
-      "name": "CT128A",
+      "name": "Columbia Taper Shaft Guide Roller Bushing (CT128A)",
       "quantity": 1,
       "sku": "CT128A"
     },

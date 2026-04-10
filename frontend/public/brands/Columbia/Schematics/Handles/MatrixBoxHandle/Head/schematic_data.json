@@ -8,15 +8,15 @@
   "parts": [
     {
       "id": "MH 6",
-      "name": "MH 6",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 5",
-      "name": "MH 5",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "FA 362",
@@ -32,45 +32,45 @@
     },
     {
       "id": "MH 13",
-      "name": "MH 13",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 1",
-      "name": "MH 1",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 20",
-      "name": "MH 20",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 7",
-      "name": "MH 7",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 14",
-      "name": "MH 14",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 8",
-      "name": "MH 8",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     },
     {
       "id": "MH 2",
-      "name": "MH 2",
+      "name": "Columbia Matrix Extendable Flat Box Handle (MH)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MH"
     }
   ],
   "coordinates": {
@@ -190,4 +190,3 @@
   "image_natural_width": 1200,
   "image_natural_height": 896
 }
-

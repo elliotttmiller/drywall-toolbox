@@ -8,21 +8,21 @@
   "parts": [
     {
       "id": "CR 12",
-      "name": "CR 12",
+      "name": "Columbia Swivel Coupling Pin (CR12)",
       "quantity": 1,
       "sku": "CR12"
     },
     {
       "id": "CR 1",
-      "name": "CR 1",
+      "name": "Columbia Corner Roller (CR)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR"
     },
     {
       "id": "CR 4",
-      "name": "CR 4",
+      "name": "Columbia Corner Roller (CR)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR"
     },
     {
       "id": "FA 288",
@@ -44,27 +44,27 @@
     },
     {
       "id": "FA 262",
-      "name": "FA 262",
+      "name": "Columbia 8-32 X 1/2\" Socket Hd. Screw (FA262)",
       "quantity": 1,
       "sku": "FA262"
     },
     {
       "id": "CR 2A",
-      "name": "CR 2A",
+      "name": "Columbia Corner Roller (CR)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR"
     },
     {
       "id": "CR 2B",
-      "name": "CR 2B",
+      "name": "Columbia Corner Roller (CR)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR"
     },
     {
       "id": "CR 3",
-      "name": "CR 3",
+      "name": "Columbia Corner Roller (CR)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CR"
     },
     {
       "id": "FA 299",

@@ -47,7 +47,7 @@
       "id": "059143",
       "name": "059143 - Cotter Pin",
       "quantity": 1,
-      "sku": "059143"
+      "sku": "4430"
     },
     {
       "id": "809006",
@@ -65,13 +65,13 @@
       "id": "050249",
       "name": "Creaser Connector - 050249",
       "quantity": 1,
-      "sku": "050249"
+      "sku": "4566"
     },
     {
       "id": "059143",
       "name": "059143 - Cotter Pin",
       "quantity": 1,
-      "sku": "059143"
+      "sku": "4430"
     },
     {
       "id": "054032F",
@@ -101,7 +101,7 @@
       "id": "059074",
       "name": "059074 - 8-32 Hex Nylock Nut",
       "quantity": 1,
-      "sku": "059074"
+      "sku": "4411"
     },
     {
       "id": "CUTTER PARTS ASSY",
@@ -119,19 +119,19 @@
       "id": "050068",
       "name": "Gooser & Cutter Chain Stop - 050068",
       "quantity": 1,
-      "sku": "050068"
+      "sku": "4510"
     },
     {
       "id": "059025",
       "name": "059025 - Cotter Pin",
       "quantity": 1,
-      "sku": "059025"
+      "sku": "4397"
     },
     {
       "id": "050163",
       "name": "Main Chain Guard - 050163",
       "quantity": 1,
-      "sku": "050163"
+      "sku": "4546"
     },
     {
       "id": "MAIN WHEEL ASSY",
@@ -143,19 +143,19 @@
       "id": "059078",
       "name": "059078 - Nyliner Bearing",
       "quantity": 1,
-      "sku": "059078"
+      "sku": "4412"
     },
     {
       "id": "059084",
       "name": "059084 - 8-32 X 1/4 1/2 Dog Setscrew",
       "quantity": 1,
-      "sku": "059084"
+      "sku": "4414"
     },
     {
       "id": "059084",
       "name": "059084 - 8-32 X 1/4 1/2 Dog Setscrew",
       "quantity": 1,
-      "sku": "059084"
+      "sku": "4414"
     },
     {
       "id": "050083F",
@@ -167,7 +167,7 @@
       "id": "059217",
       "name": "059217 - 4-40 X 3/8 Bind Head Screw",
       "quantity": 1,
-      "sku": "059217"
+      "sku": "4443"
     },
     {
       "id": "COVER PLATE ASSY",
@@ -179,13 +179,13 @@
       "id": "059156",
       "name": "059156 - 4-40 X 5/16 Bind Hd Screw",
       "quantity": 1,
-      "sku": "059156"
+      "sku": "4434"
     },
     {
       "id": "059082",
       "name": "Drum Washer - 059082",
       "quantity": 1,
-      "sku": "059082"
+      "sku": "4413"
     },
     {
       "id": "054114F",
@@ -219,7 +219,7 @@
     },
     {
       "id": "052125",
-      "name": "052125",
+      "name": "TapeTech Sprocket Driver (052125)",
       "quantity": 1,
       "sku": ""
     },
@@ -227,7 +227,7 @@
       "id": "050110F",
       "name": "Driver Shaft - 050110",
       "quantity": 1,
-      "sku": "050110F"
+      "sku": ""
     }
   ],
   "coordinates": {

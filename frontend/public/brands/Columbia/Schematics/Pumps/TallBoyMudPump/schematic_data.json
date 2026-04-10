@@ -8,9 +8,9 @@
   "parts": [
     {
       "id": "MP23A",
-      "name": "MP23A",
+      "name": "Columbia Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": ""
+      "sku": "MP-23"
     },
     {
       "id": "MP5",
@@ -38,7 +38,7 @@
     },
     {
       "id": "FA294",
-      "name": "FA294",
+      "name": "Columbia 1/4-20 X 3/8\" Socket Hd Screw (FA294)",
       "quantity": 1,
       "sku": "FA294"
     },
@@ -98,7 +98,7 @@
     },
     {
       "id": "FA290",
-      "name": "FA290",
+      "name": "Columbia 1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
       "sku": "FA290"
     },
@@ -110,9 +110,9 @@
     },
     {
       "id": "TBMP8B",
-      "name": "TBMP8B",
+      "name": "Columbia Tall Boy Loading Pump (TBMP)",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP"
     },
     {
       "id": "FA303",
@@ -128,13 +128,13 @@
     },
     {
       "id": "FA300",
-      "name": "FA300",
+      "name": "Columbia 1/4-20 X 2\" Hex Bolt (FA300)",
       "quantity": 1,
       "sku": "FA300"
     },
     {
       "id": "FA292",
-      "name": "FA292",
+      "name": "Columbia 1/4-20 Nyloc Jam Nut (FA292)",
       "quantity": 1,
       "sku": "FA292"
     },
@@ -152,9 +152,9 @@
     },
     {
       "id": "TBMP1",
-      "name": "TBMP1",
+      "name": "Columbia Tall Boy Loading Pump (TBMP)",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP"
     },
     {
       "id": "TBMP8C",
@@ -200,9 +200,9 @@
     },
     {
       "id": "TBMP11",
-      "name": "TBMP11",
+      "name": "Columbia Tall Boy Loading Pump (TBMP)",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP"
     },
     {
       "id": "MP3",
@@ -272,7 +272,7 @@
     },
     {
       "id": "FA270",
-      "name": "FA270",
+      "name": "Columbia #10 X 3/4\" Fender Washer (FA270)",
       "quantity": 1,
       "sku": "FA270"
     },
@@ -290,9 +290,9 @@
     },
     {
       "id": "TBMP2",
-      "name": "TBMP2",
+      "name": "Columbia Tall Boy Loading Pump (TBMP)",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP"
     },
     {
       "id": "FA350",
@@ -308,9 +308,9 @@
     },
     {
       "id": "TBMP24",
-      "name": "TBMP24",
+      "name": "Columbia Tall Boy Loading Pump (TBMP)",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP"
     },
     {
       "id": "FA210",
@@ -320,9 +320,9 @@
     },
     {
       "id": "TBMP8",
-      "name": "TBMP8",
+      "name": "Columbia Tall Boy Loading Pump (TBMP)",
       "quantity": 1,
-      "sku": ""
+      "sku": "TBMP"
     },
     {
       "id": "FA313",

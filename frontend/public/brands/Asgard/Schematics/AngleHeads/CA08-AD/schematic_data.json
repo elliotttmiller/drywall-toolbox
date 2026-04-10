@@ -1,7 +1,7 @@
 {
   "id": "1775158856203",
   "title": "CA08-AD_SCH",
-  "product_name": "8\u2033 Angle Box Corner Applicator",
+  "product_name": "8″ Angle Box Corner Applicator",
   "sku": "CA08-AD",
   "diagramPages": [
     1
@@ -64,9 +64,9 @@
     },
     {
       "id": "050064",
-      "name": "050064",
+      "name": "TapeTech Valve (050064)",
       "quantity": 1,
-      "sku": ""
+      "sku": "4509"
     },
     {
       "id": "609021",
@@ -84,7 +84,7 @@
       "id": "502034",
       "name": "502034 - Corner Box Latch",
       "quantity": 1,
-      "sku": "502034"
+      "sku": "4860"
     },
     {
       "id": "609018",
@@ -96,7 +96,7 @@
       "id": "059225",
       "name": "059225 - 10-32 Thin Pattern Stop Nut",
       "quantity": 1,
-      "sku": "059225"
+      "sku": "4446"
     },
     {
       "id": "502007",
@@ -114,13 +114,13 @@
       "id": "059084",
       "name": "059084 - 8-32 X 1/4 1/2 Dog Setscrew",
       "quantity": 1,
-      "sku": "059084"
+      "sku": "4414"
     },
     {
       "id": "059060",
       "name": "059060 - 3-48 Stop Nut",
       "quantity": 1,
-      "sku": "059060"
+      "sku": "4408"
     },
     {
       "id": "059061F",
@@ -156,13 +156,13 @@
       "id": "059012",
       "name": "6-32 X 3/8 Fillister Hd  - 059012",
       "quantity": 1,
-      "sku": "059012"
+      "sku": "4387"
     },
     {
       "id": "059156",
       "name": "059156 - 4-40 X 5/16 Bind Hd Screw",
       "quantity": 1,
-      "sku": "059156"
+      "sku": "4434"
     },
     {
       "id": "609012",
@@ -198,7 +198,7 @@
       "id": "059012",
       "name": "6-32 X 3/8 Fillister Hd  - 059012",
       "quantity": 1,
-      "sku": "059012"
+      "sku": "4387"
     }
   ],
   "coordinates": {

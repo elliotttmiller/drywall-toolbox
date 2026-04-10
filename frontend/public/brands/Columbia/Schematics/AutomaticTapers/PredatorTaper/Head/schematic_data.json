@@ -80,9 +80,9 @@
     },
     {
       "id": "CT6R",
-      "name": "CT6R",
+      "name": "Columbia Taper Side Plate Right - CT6 (CT-6)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-6"
     },
     {
       "id": "CT34CL",
@@ -134,9 +134,9 @@
     },
     {
       "id": "CT10I",
-      "name": "CT10I",
+      "name": "Columbia Taper Crimping Arm Bushing Right (CT10)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT10"
     },
     {
       "id": "FAZ2R",
@@ -266,9 +266,9 @@
     },
     {
       "id": "CT77S",
-      "name": "CT77S",
+      "name": "Columbia Taper Drive Sprocket Large (CT-77)",
       "quantity": 1,
-      "sku": ""
+      "sku": "CT-77"
     },
     {
       "id": "CT840",
@@ -494,13 +494,13 @@
     },
     {
       "id": "CT47",
-      "name": "CT47",
+      "name": "Columbia Taper Crimping Wheel (CT47)",
       "quantity": 1,
       "sku": "CT47"
     },
     {
       "id": "FA234",
-      "name": "FA234",
+      "name": "Columbia 6-32 Nyloc Jam Nut (FA234)",
       "quantity": 1,
       "sku": "FA234"
     },
@@ -602,7 +602,7 @@
     },
     {
       "id": "CT93",
-      "name": "CT93",
+      "name": "Columbia Taper Mud Shut Off Lever Arm (CT93)",
       "quantity": 1,
       "sku": "CT93"
     },
@@ -614,7 +614,7 @@
     },
     {
       "id": "FA290",
-      "name": "FA290",
+      "name": "Columbia 1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
       "sku": "FA290"
     },
@@ -890,7 +890,7 @@
     },
     {
       "id": "FA224",
-      "name": "FA224",
+      "name": "Columbia 1/8\" X 3/8\" Split Pin (FA224)",
       "quantity": 1,
       "sku": "FA224"
     },
@@ -1118,7 +1118,7 @@
     },
     {
       "id": "CT49",
-      "name": "CT49",
+      "name": "Columbia Taper Crimping Arm Right (CT49)",
       "quantity": 1,
       "sku": "CT49"
     },
