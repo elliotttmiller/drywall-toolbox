@@ -7,15 +7,16 @@ import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 const LIGHTBOX_Z_INDEX = 10010;
 
 // Directional slide variants — enter from the side, exit to the opposite side
+// Shorter travel distance (55%) for a snappier, less laggy feel
 const slideVariants = {
-  enter: (dir) => ({ x: dir >= 0 ? '100%' : '-100%', opacity: 0 }),
+  enter: (dir) => ({ x: dir >= 0 ? '55%' : '-55%', opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (dir) => ({ x: dir >= 0 ? '-100%' : '100%', opacity: 0 }),
+  exit: (dir) => ({ x: dir >= 0 ? '-55%' : '55%', opacity: 0 }),
 };
 
 const slideTransition = {
-  x: { type: 'spring', stiffness: 380, damping: 38, mass: 0.8 },
-  opacity: { duration: 0.18 },
+  x: { type: 'spring', stiffness: 500, damping: 42, mass: 0.55 },
+  opacity: { duration: 0.1 },
 };
 
 // Shared className for the lightbox prev/next nav buttons
@@ -158,7 +159,7 @@ export default function ProductImageGallery({ product }) {
     imagesRef.current = images;
   }, [currentIndex, lightbox, images]);
 
-  // ── Preload the next/prev images so swiping feels instant ────────────────
+  // ── Preload + pre-decode the next/prev images so swiping feels instant ────
   useEffect(() => {
     if (images.length <= 1) return;
     const len = images.length;
@@ -170,6 +171,10 @@ export default function ProductImageGallery({ product }) {
       if (!src) return;
       const img = new Image();
       img.src = src;
+      // Pre-decode so the browser doesn't flash when painting the image
+      if (typeof img.decode === 'function') {
+        img.decode().catch(() => {});
+      }
     });
   }, [currentIndex, images]);
   useEffect(() => {
@@ -256,11 +261,12 @@ export default function ProductImageGallery({ product }) {
               animate="center"
               exit="exit"
               transition={slideTransition}
-              loading={currentIndex === 0 ? 'eager' : 'lazy'}
+              loading="eager"
               fetchpriority={currentIndex === 0 ? 'high' : undefined}
-              decoding="async"
+              decoding="auto"
               draggable={false}
-              className={`absolute inset-0 w-full h-full object-contain p-3 sm:p-4 transition-opacity duration-150 ${imgLoaded[currentIndex] ? 'opacity-100' : 'opacity-0'}`}
+              className="absolute inset-0 w-full h-full object-contain p-3 sm:p-4"
+              style={{ willChange: 'transform' }}
               onLoad={() => setImgLoaded(prev => ({ ...prev, [currentIndex]: true }))}
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -400,9 +406,10 @@ export default function ProductImageGallery({ product }) {
                     animate="center"
                     exit="exit"
                     transition={slideTransition}
+                    decoding="auto"
                     className="max-w-[90vw] max-h-[78vh] w-auto h-auto object-contain select-none"
                     draggable={false}
-                    style={{ pointerEvents: 'none' }}
+                    style={{ pointerEvents: 'none', willChange: 'transform' }}
                   />
                 </AnimatePresence>
 
