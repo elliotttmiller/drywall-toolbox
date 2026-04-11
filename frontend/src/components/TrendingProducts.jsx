@@ -5,6 +5,7 @@ import { ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import Toast from './Toast';
 import ProductDetail from './ProductDetail';
+import ProductModal from './ProductModal';
 import LoadingSpinner from './LoadingSpinner';
 import ProductCardImage from './ProductCardImage';
 
@@ -422,37 +423,11 @@ export default function TrendingProducts() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Product detail modal */}
-      {isModalOpen && modalProduct && (
-        <>
-          {/* Backdrop covers full screen */}
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            style={{ zIndex: 10001 }}
-            onClick={closeModal}
-            aria-hidden="true"
-          />
-          {/* Scroll container starts below the fixed header */}
-          <div
-            className="fixed left-0 right-0 bottom-0 overflow-y-auto"
-            style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
-            role="dialog"
-            aria-modal="true"
-            aria-label={modalProduct.name || 'Product detail'}
-          >
-            <div
-              className="flex items-start justify-center min-h-full p-4 py-6"
-              onClick={closeModal}
-            >
-              <div
-                className="w-full max-w-6xl"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} onClose={closeModal} />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      <ProductModal isOpen={isModalOpen && !!modalProduct} product={modalProduct} onClose={closeModal}>
+        {modalProduct && (
+          <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} onClose={closeModal} />
+        )}
+      </ProductModal>
     </section>
   );
 }

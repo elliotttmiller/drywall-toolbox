@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 
-const LIGHTBOX_Z_INDEX = 999999;
+// Sits above the product modal (10002) and its backdrop (10001)
+const LIGHTBOX_Z_INDEX = 10010;
 
 // Directional slide variants — enter from the side, exit to the opposite side
 const slideVariants = {
@@ -35,6 +36,10 @@ export default function ProductImageGallery({ product }) {
   const touchStartY = useRef(null);
   const isDragging = useRef(false);
   const lbTouchStartX = useRef(null);
+  const lbTouchStartTime = useRef(null);
+  // Focus management for lightbox
+  const lbCloseBtnRef = useRef(null);
+  const lbPrevFocusRef = useRef(null);
 
   // ── Images normalisation ──────────────────────────────────────────────────
   const images = (() => {
@@ -80,8 +85,20 @@ export default function ProductImageGallery({ product }) {
   }, [goTo]);
 
   // ── Lightbox helpers ──────────────────────────────────────────────────────
-  const openLb = useCallback((idx) => setLightbox({ open: true, index: idx, dir: 0 }), []);
-  const closeLb = useCallback(() => setLightbox(lb => ({ ...lb, open: false })), []);
+  const openLb = useCallback((idx) => {
+    lbPrevFocusRef.current = document.activeElement;
+    setLightbox({ open: true, index: idx, dir: 0 });
+  }, []);
+  const closeLb = useCallback(() => {
+    setLightbox(lb => ({ ...lb, open: false }));
+    // Restore focus after exit animation (~220 ms)
+    setTimeout(() => {
+      if (lbPrevFocusRef.current && typeof lbPrevFocusRef.current.focus === 'function') {
+        lbPrevFocusRef.current.focus({ preventScroll: true });
+      }
+      lbPrevFocusRef.current = null;
+    }, 280);
+  }, []);
   const lbPrev = useCallback(() => {
     const len = imagesRef.current.length;
     setLightbox(lb => ({ ...lb, dir: -1, index: (lb.index - 1 + len) % len }));
@@ -104,12 +121,50 @@ export default function ProductImageGallery({ product }) {
         e.preventDefault();
         lb.open ? lbNext() : (imagesRef.current.length > 1 && next());
       } else if (e.key === 'Escape' && lb.open) {
+        // Stop here so ProductModal's Escape handler doesn't also close the modal
+        e.stopImmediatePropagation();
         closeLb();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [prev, next, lbPrev, lbNext, closeLb]);
+
+  // ── Body scroll lock while lightbox is open ──────────────────────────────
+  useEffect(() => {
+    if (!lightbox.open) return;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const prevOverflow = document.body.style.overflow;
+    const prevPaddingRight = document.body.style.paddingRight;
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.paddingRight = prevPaddingRight;
+    };
+  }, [lightbox.open]);
+
+  // ── Focus the close button when lightbox opens ───────────────────────────
+  useEffect(() => {
+    if (lightbox.open && lbCloseBtnRef.current) {
+      lbCloseBtnRef.current.focus({ preventScroll: true });
+    }
+  }, [lightbox.open]);
+
+  // ── Preload the next/prev images so swiping feels instant ────────────────
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const len = images.length;
+    const toPreload = [
+      images[(currentIndex + 1) % len],
+      images[(currentIndex - 1 + len) % len],
+    ];
+    toPreload.forEach((src) => {
+      if (!src) return;
+      const img = new Image();
+      img.src = src;
+    });
+  }, [currentIndex, images]);
 
   // ── Non-passive touchmove to prevent vertical scroll during horizontal swipe
   useEffect(() => {
@@ -145,12 +200,21 @@ export default function ProductImageGallery({ product }) {
   };
 
   // ── Lightbox touch handlers ───────────────────────────────────────────────
-  const onLbTouchStart = (e) => { lbTouchStartX.current = e.touches[0].clientX; };
+  const onLbTouchStart = (e) => {
+    lbTouchStartX.current = e.touches[0].clientX;
+    lbTouchStartTime.current = Date.now();
+  };
   const onLbTouchEnd = (e) => {
     if (lbTouchStartX.current === null) return;
     const diff = lbTouchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) diff > 0 ? lbNext() : lbPrev();
+    const elapsed = Date.now() - (lbTouchStartTime.current ?? 0);
+    // Trigger on distance >40 px OR fast flick >0.3 px/ms over at least 10 px
+    const velocity = Math.abs(diff) / Math.max(elapsed, 1);
+    if (Math.abs(diff) > 40 || (velocity > 0.3 && Math.abs(diff) > 10)) {
+      diff > 0 ? lbNext() : lbPrev();
+    }
     lbTouchStartX.current = null;
+    lbTouchStartTime.current = null;
   };
 
   return (
@@ -201,9 +265,9 @@ export default function ProductImageGallery({ product }) {
             />
           </AnimatePresence>
 
-          {/* Expand / zoom-in button (visible on hover/focus) */}
+          {/* Expand / zoom-in button — always visible on touch devices, hover-only on pointer devices */}
           <button
-            className="absolute top-2.5 right-2.5 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/90 shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-150"
+            className="absolute top-2.5 right-2.5 z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/90 shadow-sm opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity duration-150"
             onClick={(e) => { e.stopPropagation(); openLb(currentIndex); }}
             aria-label="Expand image to fullscreen"
             tabIndex={0}
@@ -293,7 +357,10 @@ export default function ProductImageGallery({ product }) {
           {lightbox.open && (
             <motion.div
               className="fixed inset-0 flex items-center justify-center"
-          style={{ zIndex: LIGHTBOX_Z_INDEX }}
+              style={{ zIndex: LIGHTBOX_Z_INDEX }}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Full-screen image — ${product?.name || 'Product'}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -334,10 +401,11 @@ export default function ProductImageGallery({ product }) {
                   />
                 </AnimatePresence>
 
-                {/* Close button */}
+                {/* Close button — receives focus when lightbox opens */}
                 <button
+                  ref={lbCloseBtnRef}
                   onClick={closeLb}
-                  className="absolute top-4 right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-105 active:scale-95"
+                  className="absolute top-4 right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
                   aria-label="Close fullscreen image"
                 >
                   <X size={20} />
@@ -348,14 +416,14 @@ export default function ProductImageGallery({ product }) {
                   <>
                     <button
                       onClick={lbPrev}
-                      className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/22 text-white transition-all hover:scale-105 active:scale-95"
+                      className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/[0.22] text-white transition-all hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
                       aria-label="Previous image"
                     >
                       <ChevronLeft size={24} />
                     </button>
                     <button
                       onClick={lbNext}
-                      className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/22 text-white transition-all hover:scale-105 active:scale-95"
+                      className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/[0.22] text-white transition-all hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
                       aria-label="Next image"
                     >
                       <ChevronRight size={24} />

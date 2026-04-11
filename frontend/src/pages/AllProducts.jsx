@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
+import ProductModal from '../components/ProductModal';
 import BackButton from '../components/BackButton';
 import SearchBar from '../components/SearchBar';
 import Toast from '../components/Toast';
@@ -424,37 +425,11 @@ export default function AllProducts() {
       )}
       
       {/* Product Detail Modal */}
-      {isModalOpen && modalProduct && (
-        <>
-          {/* Backdrop covers full screen */}
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            style={{ zIndex: 10001 }}
-            onClick={closeModal}
-            aria-hidden="true"
-          />
-          {/* Scroll container starts below the fixed header */}
-          <div
-            className="fixed left-0 right-0 bottom-0 overflow-y-auto"
-            style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
-            role="dialog"
-            aria-modal="true"
-            aria-label={modalProduct.name || 'Product detail'}
-          >
-            <div
-              className="flex items-start justify-center min-h-full px-3 py-4 sm:p-4 sm:py-6"
-              onClick={closeModal}
-            >
-              <div
-                className="w-full max-w-6xl"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} onClose={closeModal} />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      <ProductModal isOpen={isModalOpen && !!modalProduct} product={modalProduct} onClose={closeModal}>
+        {modalProduct && (
+          <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} onClose={closeModal} />
+        )}
+      </ProductModal>
     </div>
   );
 }

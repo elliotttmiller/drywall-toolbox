@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getProductsByCategory } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
+import ProductModal from '../components/ProductModal';
 import Toast from '../components/Toast';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
@@ -139,36 +140,15 @@ export default function CategoryPage() {
       </div>
 
       {/* Product detail modal */}
-      {modalProduct && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            style={{ zIndex: 10001 }}
-            onClick={() => setModalProduct(null)}
-            aria-hidden="true"
+      <ProductModal isOpen={!!modalProduct} product={modalProduct} onClose={() => setModalProduct(null)}>
+        {modalProduct && (
+          <ProductDetail
+            product={modalProduct}
+            onAddToCart={handleAddToCart}
+            onClose={() => setModalProduct(null)}
           />
-          <div
-            className="fixed left-0 right-0 bottom-0 overflow-y-auto"
-            style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
-            role="dialog"
-            aria-modal="true"
-            aria-label={modalProduct.name || 'Product detail'}
-          >
-            <div
-              className="flex items-start justify-center min-h-full px-3 py-4 sm:p-4 sm:py-6"
-              onClick={() => setModalProduct(null)}
-            >
-              <div className="w-full max-w-6xl" onClick={(e) => e.stopPropagation()}>
-                <ProductDetail
-                  product={modalProduct}
-                  onAddToCart={handleAddToCart}
-                  onClose={() => setModalProduct(null)}
-                />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+        )}
+      </ProductModal>
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />

@@ -69,7 +69,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-2xl overflow-hidden animate-fadeIn w-full max-w-6xl mx-auto flex flex-col relative"
+      className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-6xl mx-auto flex flex-col relative"
     >
       {/* Close Button */}
       {onClose && (
