@@ -18,6 +18,9 @@ const slideTransition = {
   opacity: { duration: 0.18 },
 };
 
+// Shared className for the lightbox prev/next nav buttons
+const LB_NAV_BTN_CLASS = 'absolute top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/[0.22] text-white transition-all hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white';
+
 export default function ProductImageGallery({ product }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -205,9 +208,9 @@ export default function ProductImageGallery({ product }) {
     lbTouchStartTime.current = Date.now();
   };
   const onLbTouchEnd = (e) => {
-    if (lbTouchStartX.current === null) return;
+    if (lbTouchStartX.current === null || lbTouchStartTime.current === null) return;
     const diff = lbTouchStartX.current - e.changedTouches[0].clientX;
-    const elapsed = Date.now() - (lbTouchStartTime.current ?? 0);
+    const elapsed = Date.now() - lbTouchStartTime.current;
     // Trigger on distance >40 px OR fast flick >0.3 px/ms over at least 10 px
     const velocity = Math.abs(diff) / Math.max(elapsed, 1);
     if (Math.abs(diff) > 40 || (velocity > 0.3 && Math.abs(diff) > 10)) {
@@ -416,14 +419,14 @@ export default function ProductImageGallery({ product }) {
                   <>
                     <button
                       onClick={lbPrev}
-                      className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/[0.22] text-white transition-all hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                      className={`${LB_NAV_BTN_CLASS} left-3 sm:left-5`}
                       aria-label="Previous image"
                     >
                       <ChevronLeft size={24} />
                     </button>
                     <button
                       onClick={lbNext}
-                      className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/[0.22] text-white transition-all hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                      className={`${LB_NAV_BTN_CLASS} right-3 sm:right-5`}
                       aria-label="Next image"
                     >
                       <ChevronRight size={24} />
