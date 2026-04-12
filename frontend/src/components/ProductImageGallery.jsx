@@ -6,16 +6,19 @@ import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 // Sits above the product modal (10002) and its backdrop (10001)
 const LIGHTBOX_Z_INDEX = 10010;
 
-// Directional slide variants — enter from the side, exit to the opposite side
+// Directional slide variants — enter from the side, exit to the opposite side.
+// Opacity stays at 1 throughout so framer-motion never fights CSS opacity classes.
 const slideVariants = {
   enter: (dir) => ({ x: dir >= 0 ? '100%' : '-100%', opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (dir) => ({ x: dir >= 0 ? '-100%' : '100%', opacity: 0 }),
+  exit: (dir) => ({ x: dir >= 0 ? '-80%' : '80%', opacity: 0 }),
 };
 
+// Natural deceleration curve: higher damping removes spring overshoot while
+// keeping the slide crisp; opacity fades in quickly so the skeleton shows through.
 const slideTransition = {
-  x: { type: 'spring', stiffness: 380, damping: 38, mass: 0.8 },
-  opacity: { duration: 0.18 },
+  x: { type: 'spring', stiffness: 340, damping: 44, mass: 0.75 },
+  opacity: { duration: 0.14, ease: [0.4, 0, 0.2, 1] },
 };
 
 // Shared className for the lightbox prev/next nav buttons
@@ -239,12 +242,22 @@ export default function ProductImageGallery({ product }) {
           aria-label="Tap to view fullscreen"
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(currentIndex); } }}
         >
-          {/* Per-image skeleton loader */}
-          {!imgLoaded[currentIndex] && (
-            <div className="absolute inset-0 bg-linear-to-br from-gray-100 to-gray-200 animate-pulse z-0" />
-          )}
+          {/* Per-image skeleton loader — fades out smoothly once the image loads */}
+          <AnimatePresence>
+            {!imgLoaded[currentIndex] && (
+              <Motion.div
+                key={`skeleton-${currentIndex}`}
+                className="absolute inset-0 bg-linear-to-br from-gray-100 to-gray-200 animate-pulse"
+                style={{ zIndex: 1 }}
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+              />
+            )}
+          </AnimatePresence>
 
-          {/* Slide-animated image */}
+          {/* Slide-animated image — framer-motion owns opacity; no CSS opacity class
+              so the two systems never fight. The skeleton above fades out once loaded. */}
           <AnimatePresence initial={false} custom={direction}>
             <Motion.img
               key={currentIndex}
@@ -260,7 +273,8 @@ export default function ProductImageGallery({ product }) {
               fetchpriority={currentIndex === 0 ? 'high' : undefined}
               decoding="async"
               draggable={false}
-              className={`absolute inset-0 w-full h-full object-contain p-3 sm:p-4 transition-opacity duration-150 ${imgLoaded[currentIndex] ? 'opacity-100' : 'opacity-0'}`}
+              className="absolute inset-0 w-full h-full object-contain p-3 sm:p-4"
+              style={{ zIndex: 2, willChange: 'transform, opacity' }}
               onLoad={() => setImgLoaded(prev => ({ ...prev, [currentIndex]: true }))}
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -381,10 +395,11 @@ export default function ProductImageGallery({ product }) {
               {/* Inner — spring-scale entrance */}
               <Motion.div
                 className="relative flex items-center justify-center w-full h-full"
-                initial={{ scale: 0.9, opacity: 0 }}
+                initial={{ scale: 0.92, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.88, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 36, mass: 0.9 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 40, mass: 0.85 }}
+                style={{ willChange: 'transform, opacity' }}
                 onTouchStart={onLbTouchStart}
                 onTouchEnd={onLbTouchEnd}
               >
@@ -402,7 +417,7 @@ export default function ProductImageGallery({ product }) {
                     transition={slideTransition}
                     className="max-w-[90vw] max-h-[78vh] w-auto h-auto object-contain select-none"
                     draggable={false}
-                    style={{ pointerEvents: 'none' }}
+                    style={{ pointerEvents: 'none', willChange: 'transform, opacity' }}
                   />
                 </AnimatePresence>
 

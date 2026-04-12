@@ -94,7 +94,7 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
             initial="hidden"
             animate="visible"
             exit="hidden"
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             onClick={onClose}
             aria-hidden="true"
           />
@@ -104,7 +104,7 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
             key="product-modal-panel"
             ref={scrollRef}
             className="fixed left-0 right-0 bottom-0 overflow-y-auto overscroll-contain outline-none"
-            style={{ zIndex: 10002, top: 'var(--header-height, 100px)' }}
+            style={{ zIndex: 10002, top: 'var(--header-height, 100px)', willChange: 'transform, opacity' }}
             role="dialog"
             aria-modal="true"
             aria-label={product?.name || 'Product detail'}
