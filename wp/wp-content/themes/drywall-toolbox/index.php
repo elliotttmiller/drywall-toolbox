@@ -22,10 +22,12 @@ defined( 'ABSPATH' ) || exit;
 	<meta name="keywords" content="drywall tools, taping tools, finishing tools, construction equipment, TapeTech, Level5">
 	<meta name="theme-color" content="#0f172a">
 	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="apple-mobile-web-app-title" content="Drywall Toolbox">
 	<link rel="icon" type="image/svg+xml" href="<?php echo esc_url( home_url( '/dist/logo.svg' ) ); ?>" />
-	<link rel="apple-touch-icon" href="<?php echo esc_url( home_url( '/dist/pwa_icon.png' ) ); ?>" />
+	<link rel="apple-touch-icon" sizes="512x512" href="<?php echo esc_url( home_url( '/dist/pwa_icon.png' ) ); ?>" />
+	<link rel="manifest" href="<?php echo esc_url( home_url( '/dist/manifest.json' ) ); ?>" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
