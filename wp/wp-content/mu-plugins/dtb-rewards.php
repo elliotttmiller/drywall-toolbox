@@ -14,17 +14,15 @@
  * All user endpoints require a valid DTB JWT (dtb_jwt_permission).
  * The admin endpoint additionally requires manage_woocommerce capability.
  *
- * EARN LOGIC — 5-TIER SYSTEM (based on catalog pricing analysis):
- *   WPLoyalty Lite does not support conditional/tiered campaign rules.
- *   Points are awarded here via the woocommerce_order_status_completed hook.
- *   WPLoyalty is used only as a ledger (storage + balance tracking).
- *   WPLoyalty's own campaign engine should be disabled or set to 0 pts/$.
+ * EARN LOGIC — FLAT RATE (sourced from DTB_Strategy_Overview.md §Loyalty Points):
+ *   1 point per $2.00 of eligible subtotal (0.5 pts/$1).
+ *   WPLoyalty Lite does not support conditional campaign rules.
+ *   Points are awarded here via woocommerce_order_status_completed.
+ *   WPLoyalty is used only as a ledger — disable its own campaigns.
  *
- *   Tier 1: $0    – $49.99   → 2 pts per $1
- *   Tier 2: $50   – $199.99  → 3 pts per $1
- *   Tier 3: $200  – $499.99  → 4 pts per $1
- *   Tier 4: $500  – $1499.99 → 5 pts per $1
- *   Tier 5: $1500+           → 3 pts per $1  (diminishing — protects margin)
+ *   REDEMPTION RATE: 100 pts = $5.00 (0.05 USD/pt)
+ *   MINIMUM REDEEM:  100 pts ($5.00)
+ *   MAXIMUM REDEEM:  5,000 pts ($250.00) per order
  *
  * Depends on (loaded before this via 00-dtb-loader.php):
  *   dtb-auth.php  → dtb_jwt_permission(), dtb_verify_jwt()
@@ -38,42 +36,41 @@ defined( 'ABSPATH' ) || exit;
 // =============================================================================
 // EARN ENGINE — ORDER COMPLETION HOOK
 //
-// WPLoyalty Lite does not support conditional (order-total-based) campaign rules.
-// We bypass its campaign engine entirely and award points here on order completion.
-// WPLoyalty is used only as a ledger — install it, but disable its own campaigns
-// or set them to 0 pts/$ so there's no double-awarding.
+// WPLoyalty Lite does not support conditional campaign rules.
+// We bypass its campaign engine entirely and award points here on order
+// completion. WPLoyalty is used only as a ledger — install it, but disable
+// its own campaigns (or set them to 0 pts/$) so there is no double-awarding.
+//
+// EARN RATE: 1 point per $2.00 spent on eligible subtotal (0.5 pts/$1).
+// SOURCE:    DTB_Strategy_Overview.md §Loyalty Points
 // =============================================================================
 
 add_action( 'woocommerce_order_status_completed', 'dtb_rewards_award_order_points', 20 );
 
 /**
- * Award tiered points when an order is marked complete.
+ * Award points when an order is marked complete.
  *
- * Idempotent: guarded by order meta flag so it cannot fire twice
- * (e.g., if an admin manually switches status back and forth).
+ * EARN RATE: 1 point per $2.00 spent on eligible subtotal.
+ *   - Earn basis: order subtotal (excl. shipping, tax, fees).
+ *   - Membership fees:   0 pts (excluded — see _dtb_exclude_from_points meta).
+ *   - Shipping charges:  0 pts (already excluded by using get_subtotal()).
+ *   - Refunds:           points reversed on refund/cancel (see dtb_rewards_reverse_points).
  *
- * Tier schedule (derived from catalog pricing analysis — 2,304 products):
- *   $0    – $49.99   → 2 pts / $1   (63% of catalog — small parts, tape, screws)
- *   $50   – $199.99  → 3 pts / $1   (consumables, mid-range heads/tools)
- *   $200  – $499.99  → 4 pts / $1   (pro hand tools, individual machines)
- *   $500  – $1499.99 → 5 pts / $1   (full tool sets, automatic tapers)
- *   $1500+           → 3 pts / $1   (diminishing — large machines, protects margin)
+ * Formula: floor( subtotal / 2 )
+ *   $10 → 5 pts  | $49 → 24 pts  | $100 → 50 pts
+ *   $299 → 149 pts | $499 → 249 pts | $1,000 → 500 pts
+ *
+ * Idempotent: guarded by _dtb_rewards_awarded order meta.
  *
  * @param int $order_id
  */
 function dtb_rewards_award_order_points( int $order_id ): void {
-	// Bail if WPLoyalty is not active.
 	if ( ! class_exists( 'WLR\Plugin\Helpers\App' ) ) {
 		return;
 	}
 
 	$order = wc_get_order( $order_id );
-	if ( ! $order ) {
-		return;
-	}
-
-	// Idempotency guard — only award once per order.
-	if ( $order->get_meta( '_dtb_rewards_awarded' ) ) {
+	if ( ! $order || $order->get_meta( '_dtb_rewards_awarded' ) ) {
 		return;
 	}
 
@@ -87,10 +84,19 @@ function dtb_rewards_award_order_points( int $order_id ): void {
 		return;
 	}
 
-	// Use the subtotal (excl. shipping and taxes) as the earn basis.
-	$order_total = (float) $order->get_subtotal();
+	// Earn basis: subtotal only. Shipping = 0 pts. Taxes = 0 pts.
+	$earn_basis = (float) $order->get_subtotal();
 
-	$points = dtb_rewards_calculate_points( $order_total );
+	// Exclude any items flagged as non-earnable (e.g., membership fee products).
+	foreach ( $order->get_items() as $item ) {
+		$product = $item->get_product();
+		if ( $product && $product->get_meta( '_dtb_exclude_from_points' ) === 'yes' ) {
+			$earn_basis -= (float) $item->get_subtotal();
+		}
+	}
+
+	$earn_basis = max( 0.0, $earn_basis );
+	$points     = (int) floor( $earn_basis / 2 ); // 1 pt per $2
 
 	if ( $points <= 0 ) {
 		return;
@@ -101,35 +107,58 @@ function dtb_rewards_award_order_points( int $order_id ): void {
 			$user_email,
 			$points,
 			'purchase',
-			sprintf( 'Order #%d — $%.2f subtotal → %d pts', $order_id, $order_total, $points )
+			sprintf( 'Order #%d — $%.2f eligible subtotal → %d pts (1pt/$2)', $order_id, $earn_basis, $points )
 		);
 
-		// Mark the order so we never double-award.
 		$order->update_meta_data( '_dtb_rewards_awarded', true );
 		$order->update_meta_data( '_dtb_rewards_points', $points );
 		$order->save_meta_data();
 	} catch ( \Throwable $e ) {
-		// Log silently — never block the order completion flow.
 		error_log( '[DTB Rewards] Award failed for order ' . $order_id . ': ' . $e->getMessage() );
 	}
 }
 
 /**
- * Calculate points earned for a given order subtotal using the 5-tier schedule.
+ * Reverse points when an order is refunded or cancelled.
+ * Only reverses if points were actually awarded for this order.
  *
- * @param float $subtotal  Order subtotal in USD (excl. shipping + tax).
- * @return int             Points to award (rounded down).
+ * @param int $order_id
  */
-function dtb_rewards_calculate_points( float $subtotal ): int {
-	$rate = match ( true ) {
-		$subtotal < 50.00    => 2,   // Tier 1: $0    – $49.99
-		$subtotal < 200.00   => 3,   // Tier 2: $50   – $199.99
-		$subtotal < 500.00   => 4,   // Tier 3: $200  – $499.99
-		$subtotal < 1500.00  => 5,   // Tier 4: $500  – $1,499.99
-		default              => 3,   // Tier 5: $1,500+ (diminishing returns)
-	};
+add_action( 'woocommerce_order_status_refunded', 'dtb_rewards_reverse_points', 10 );
+add_action( 'woocommerce_order_status_cancelled', 'dtb_rewards_reverse_points', 10 );
+function dtb_rewards_reverse_points( int $order_id ): void {
+	if ( ! class_exists( 'WLR\Plugin\Helpers\App' ) ) {
+		return;
+	}
 
-	return (int) floor( $subtotal * $rate );
+	$order = wc_get_order( $order_id );
+	if ( ! $order ) {
+		return;
+	}
+
+	$awarded = (int) $order->get_meta( '_dtb_rewards_points' );
+	if ( $awarded <= 0 || $order->get_meta( '_dtb_rewards_reversed' ) ) {
+		return;
+	}
+
+	$user_id    = (int) $order->get_user_id();
+	$user_email = dtb_wlr_get_user_email( $user_id );
+	if ( ! $user_email ) {
+		return;
+	}
+
+	try {
+		\WLR\Plugin\Helpers\App::deductPoints(
+			$user_email,
+			$awarded,
+			'refund',
+			sprintf( 'Points reversed for refunded/cancelled Order #%d (−%d pts)', $order_id, $awarded )
+		);
+		$order->update_meta_data( '_dtb_rewards_reversed', true );
+		$order->save_meta_data();
+	} catch ( \Throwable $e ) {
+		error_log( '[DTB Rewards] Reversal failed for order ' . $order_id . ': ' . $e->getMessage() );
+	}
 }
 
 // =============================================================================
@@ -253,7 +282,7 @@ function dtb_rewards_get_balance( WP_REST_Request $request ) {
 		'points'           => $data['balance'],
 		'points_earned'    => $data['earned'],
 		'points_redeemed'  => $data['redeemed'],
-		'points_value_usd' => round( $data['balance'] / 100, 2 ), // 100 pts = $1
+		'points_value_usd' => round( $data['balance'] * 0.05, 2 ), // 100 pts = $5.00
 	] );
 }
 
@@ -297,14 +326,19 @@ function dtb_rewards_redeem( WP_REST_Request $request ) {
 		return new WP_Error( 'invalid_params', 'user_id and points_to_redeem are required.', [ 'status' => 400 ] );
 	}
 
-	// Minimum redemption threshold: 500 points = $5.00
-	if ( $points_to_redeem < 500 ) {
-		return new WP_Error( 'below_minimum', 'Minimum redemption is 500 points ($5.00).', [ 'status' => 400 ] );
+	// Minimum redemption threshold: 100 points = $5.00
+	if ( $points_to_redeem < 100 ) {
+		return new WP_Error( 'below_minimum', 'Minimum redemption is 100 points ($5.00).', [ 'status' => 400 ] );
 	}
 
-	// Maximum redemption per order: 5,000 points = $50.00
+	// Must be a multiple of 100.
+	if ( $points_to_redeem % 100 !== 0 ) {
+		return new WP_Error( 'invalid_increment', 'Points must be redeemed in multiples of 100.', [ 'status' => 400 ] );
+	}
+
+	// Maximum redemption per order: 5,000 points = $250.00
 	if ( $points_to_redeem > 5000 ) {
-		return new WP_Error( 'above_maximum', 'Maximum redemption per order is 5,000 points ($50.00).', [ 'status' => 400 ] );
+		return new WP_Error( 'above_maximum', 'Maximum redemption per order is 5,000 points ($250.00).', [ 'status' => 400 ] );
 	}
 
 	// Rate limit: 5 redemption requests per user per hour.
@@ -466,8 +500,8 @@ function dtb_wlr_redeem_points( int $user_id, int $points_to_redeem ): array|WP_
 		);
 	}
 
-	// 100 points = $1.00 discount
-	$discount_amount = round( $points_to_redeem / 100, 2 );
+	// 100 points = $5.00 discount  (POINTS_REDEEM_VALUE = 0.05 USD/pt)
+	$discount_amount = round( $points_to_redeem * 0.05, 2 );
 
 	// Collision-resistant coupon code: DTB- + 8 hex chars
 	$coupon_code = 'DTB-' . strtoupper( substr( md5( $user_id . $points_to_redeem . microtime() ), 0, 8 ) );

@@ -24,7 +24,7 @@
  *   /products, /cart, and /checkout is fully public — no auth required.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import {
@@ -39,9 +39,12 @@ import {
   Star,
   Clock,
   CheckCircle,
+  Shield,
 } from 'lucide-react';
 
 import { useAuthContext } from '../auth/AuthContext.js';
+import { getUserPoints, pointsToUsd } from '../api/rewards.js';
+import { getMembershipStatus } from '../api/membership.js';
 
 // ─── Animation variants ───────────────────────────────────────────────────────
 
@@ -55,7 +58,8 @@ const cardVariants = {
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 
-function StatCard( { label, value, color, delay } ) {
+function StatCard( { icon, label, value, color, delay } ) {
+  const Icon = icon;
   return (
     <Motion.div
       custom={ delay }
@@ -99,7 +103,8 @@ function StatCard( { label, value, color, delay } ) {
 
 // ─── Nav link ─────────────────────────────────────────────────────────────────
 
-function SideNavLink( { label, to, external } ) {
+function SideNavLink( { icon, label, to, external } ) {
+  const Icon = icon;
   const inner = (
     <div style={ {
       display:        'flex',
@@ -166,12 +171,23 @@ export default function Dashboard() {
   const navigate                          = useNavigate();
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
 
+  const [pointsData,      setPointsData     ] = useState( null );
+  const [membershipData,  setMembershipData  ] = useState( null );
+
   // Redirect to login if session check done and user is not authenticated.
   useEffect( () => {
     if ( ! isLoading && ! isAuthenticated ) {
       navigate( '/login', { replace: true } );
     }
   }, [ isLoading, isAuthenticated, navigate ] );
+
+  // Fetch points + membership once we have a user ID.
+  useEffect( () => {
+    if ( user?.id ) {
+      getUserPoints( user.id ).then( setPointsData ).catch( () => {} );
+      getMembershipStatus( user.id ).then( setMembershipData ).catch( () => {} );
+    }
+  }, [ user?.id ] );
 
   const handleLogout = async () => {
     await logout();
@@ -343,10 +359,11 @@ export default function Dashboard() {
 
           {/* Nav links */}
           <nav style={ { display: 'flex', flexDirection: 'column', gap: '2px' } }>
-            <SideNavLink icon={ Package }     label="My Orders"        to="/orders"    />
-            <SideNavLink icon={ MapPin }      label="Saved Addresses"  to="/addresses" />
-            <SideNavLink icon={ Star }        label="Saved Items"      to="/wishlist"  />
-            <SideNavLink icon={ Bell }        label="Notifications"    to="/notifications" />
+            <SideNavLink icon={ Package }     label="My Orders"        to="/orders"          />
+            <SideNavLink icon={ Star }        label="My Rewards"       to="/rewards"         />
+            <SideNavLink icon={ Shield }      label="ProCare Plan"     to="/pro-membership"  />
+            <SideNavLink icon={ MapPin }      label="Saved Addresses"  to="/addresses"       />
+            <SideNavLink icon={ Bell }        label="Notifications"    to="/notifications"   />
             <SideNavLink icon={ Settings }    label="Account Settings" to="/account-settings" />
           </nav>
 
@@ -417,7 +434,70 @@ export default function Dashboard() {
               color={ { bg: '#f0fdf4', icon: '#16a34a' } }
               delay={ 0.19 }
             />
+            <StatCard
+              icon={ Star }
+              label="Points Balance"
+              value={ pointsData ? `$${ pointsToUsd( pointsData.points ).toFixed( 2 ) }` : '—' }
+              color={ { bg: '#f0fdf4', icon: '#16a34a' } }
+              delay={ 0.26 }
+            />
           </div>
+
+          {/* ProCare membership status card */}
+          <Motion.div
+            custom={ 0.28 }
+            variants={ cardVariants }
+            initial="hidden"
+            animate="visible"
+            style={ {
+              background:   'white',
+              border:       '1px solid rgba(15,23,42,0.08)',
+              borderRadius: '8px',
+              padding:      'clamp(1.25rem, 3vw, 1.75rem)',
+              boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
+            } }
+          >
+            <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' } }>
+              <h2 style={ { margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' } }>
+                ProCare Membership
+              </h2>
+              { membershipData?.tier !== 'fleet' && (
+                <Link to="/pro-membership" style={ { fontSize: '0.78rem', fontWeight: 600, color: '#2563eb', textDecoration: 'none' } }>
+                  { membershipData?.tier === 'essential' ? 'Join ProCare' : 'Upgrade' }
+                </Link>
+              ) }
+            </div>
+
+            { membershipData ? (
+              <div style={ { display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' } }>
+                <div style={ {
+                  padding:      '4px 12px',
+                  borderRadius: '999px',
+                  background:   membershipData.tier === 'essential'    ? '#f1f5f9'
+                              : membershipData.tier === 'professional' ? '#eff6ff'
+                              : '#f0fdf4',
+                  color:        membershipData.tier === 'essential'    ? 'rgba(15,23,42,0.55)'
+                              : membershipData.tier === 'professional' ? '#2563eb'
+                              : '#16a34a',
+                  fontSize:     '0.75rem',
+                  fontWeight:   700,
+                } }>
+                  { membershipData.tier.charAt( 0 ).toUpperCase() + membershipData.tier.slice( 1 ) }
+                </div>
+                { membershipData.tier !== 'essential' && (
+                  <span style={ { fontSize: '0.78rem', color: 'rgba(15,23,42,0.5)' } }>
+                    { membershipData.labor_discount > 0 && `${ ( membershipData.labor_discount * 100 ).toFixed( 0 ) }% labor discount` }
+                    { ' · ' }
+                    { membershipData.free_diagnostics_remaining } free diagnostic{ membershipData.free_diagnostics_remaining !== 1 ? 's' : '' } remaining
+                  </span>
+                ) }
+              </div>
+            ) : (
+              <p style={ { fontSize: '0.8rem', color: 'rgba(15,23,42,0.45)', margin: 0 } }>
+                <Link to="/pro-membership" style={ { color: '#2563eb' } }>Join ProCare</Link> — starting free.
+              </p>
+            ) }
+          </Motion.div>
 
           {/* Recent orders card */}
           <Motion.div

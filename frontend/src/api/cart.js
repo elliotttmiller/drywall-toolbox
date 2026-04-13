@@ -277,6 +277,7 @@ export async function placeOrder(
  * @param {string} customerNote
  * @param {string} [shippingRateId]  WC rate ID to select (e.g. 'dtb_veeqo_rates:standard').
  *                                   When omitted, WC uses the first available rate.
+ * @param {string[]} [couponCodes]   Coupon codes to apply to the cart (e.g. loyalty redemptions).
  * @returns {Promise<Object>}  WC checkout response (order_id, order_key, …)
  */
 export async function syncAndPlace(
@@ -287,6 +288,7 @@ export async function syncAndPlace(
   paymentData = [],
   customerNote = '',
   shippingRateId = '',
+  couponCodes = [],
 ) {
   // Initialise session + capture nonce.
   await initCart();
@@ -298,6 +300,18 @@ export async function syncAndPlace(
   // the nonce — each response carries the updated nonce in the header.
   for ( const item of cartItems ) {
     await addToCart( item.id, item.quantity );
+  }
+
+  // Apply any coupon codes (e.g. loyalty redemption coupons).
+  for ( const code of couponCodes ) {
+    try {
+      await storeFetch( '/cart/apply-coupon', {
+        method: 'POST',
+        body: JSON.stringify( { code } ),
+      } );
+    } catch ( err ) {
+      console.warn( `Coupon "${ code }" could not be applied (non-fatal):`, err.message );
+    }
   }
 
   // Set the shipping address on the WC cart so the correct shipping zone is

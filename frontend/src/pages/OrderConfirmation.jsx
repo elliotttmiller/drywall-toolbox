@@ -22,20 +22,29 @@ import {
   AlertCircle,
   Loader,
   ArrowLeft,
+  Star,
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
+import { calculatePointsEarned, pointsToUsd } from '../api/rewards.js';
 
 // ─── Status badge helpers ──────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
-  pending:    { label: 'Pending Payment',  color: 'yellow', Icon: Clock    },
-  processing: { label: 'Processing',       color: 'blue',   Icon: Package  },
-  'on-hold':  { label: 'On Hold',          color: 'orange', Icon: Clock    },
-  completed:  { label: 'Completed',        color: 'green',  Icon: CheckCircle },
-  cancelled:  { label: 'Cancelled',        color: 'red',    Icon: AlertCircle },
-  refunded:   { label: 'Refunded',         color: 'gray',   Icon: AlertCircle },
-  failed:     { label: 'Payment Failed',   color: 'red',    Icon: AlertCircle },
-  shipped:    { label: 'Shipped',          color: 'blue',   Icon: Truck    },
+  pending:           { label: 'Pending Payment',    color: 'yellow', Icon: Clock         },
+  processing:        { label: 'Processing',          color: 'blue',   Icon: Package       },
+  'on-hold':         { label: 'On Hold',             color: 'orange', Icon: Clock         },
+  completed:         { label: 'Completed',           color: 'green',  Icon: CheckCircle   },
+  cancelled:         { label: 'Cancelled',           color: 'red',    Icon: AlertCircle   },
+  refunded:          { label: 'Refunded',            color: 'gray',   Icon: AlertCircle   },
+  failed:            { label: 'Payment Failed',      color: 'red',    Icon: AlertCircle   },
+  shipped:           { label: 'Shipped',             color: 'blue',   Icon: Truck         },
+  // ── Repair-specific WooCommerce statuses ──────────────────────────────────
+  'repair-received': { label: 'Repair Received',     color: 'blue',   Icon: Package       },
+  'repair-in-progress': { label: 'Repair In Progress', color: 'blue', Icon: Package      },
+  'repair-awaiting-approval': { label: 'Awaiting Your Approval', color: 'orange', Icon: Clock },
+  'repair-approved': { label: 'Repair Approved',    color: 'blue',   Icon: Package       },
+  'repair-complete': { label: 'Repair Complete',    color: 'green',  Icon: CheckCircle   },
+  'repair-shipped':  { label: 'Tool Shipped Back',  color: 'green',  Icon: Truck         },
 };
 
 const COLOR_CLASSES = {
@@ -253,6 +262,22 @@ export default function OrderConfirmation() {
             Back to Home
           </Link>
         </div>
+
+        {/* Points earned notice */}
+        { order?.status === 'completed' && order?.total && (
+          <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 max-w-md mx-auto">
+            <Star size={ 18 } style={ { color: '#16a34a', flexShrink: 0 } } />
+            <div>
+              <p className="text-sm font-semibold text-green-800">
+                +{ calculatePointsEarned( parseFloat( order.total ) ) } points earned on this order!
+              </p>
+              <p className="text-xs text-green-700 mt-0.5">
+                That's ${ pointsToUsd( calculatePointsEarned( parseFloat( order.total ) ) ).toFixed( 2 ) } toward your next order.&nbsp;
+                <Link to="/rewards" className="underline font-semibold">View your balance</Link>
+              </p>
+            </div>
+          </div>
+        ) }
       </div>
     </div>
   );

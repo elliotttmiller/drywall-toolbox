@@ -34,6 +34,10 @@ const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
 const Login              = lazy(() => import('./pages/Login'));
 const Register           = lazy(() => import('./pages/Register'));
 const Dashboard          = lazy(() => import('./pages/Dashboard'));
+const Orders             = lazy(() => import('./pages/Orders'));
+const Rewards            = lazy(() => import('./pages/Rewards'));
+const ProMembership      = lazy(() => import('./pages/ProMembership'));
+const AccountSettings    = lazy(() => import('./pages/AccountSettings'));
 const Calculators        = lazy(() => import('./pages/Calculators'));
 
 // ─── 404 Not Found page ───────────────────────────────────────────────────────
@@ -104,6 +108,10 @@ function AppRoutes() {
           <Route path="/login"                 element={<Login />} />
           <Route path="/register"              element={<Register />} />
           <Route path="/dashboard"             element={<Dashboard />} />
+          <Route path="/orders"                element={<Orders />} />
+          <Route path="/rewards"               element={<Rewards />} />
+          <Route path="/pro-membership"        element={<ProMembership />} />
+          <Route path="/account-settings"      element={<AccountSettings />} />
           {/* Catch-all: any unmatched route renders a 404 page */}
           <Route path="*"                      element={<NotFound />} />
         </Routes>

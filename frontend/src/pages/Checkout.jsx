@@ -32,7 +32,15 @@ import { useCart } from '../context/CartContext';
 import { syncAndPlace } from '../api/cart.js';
 import veeqoService from '../services/veeqo';
 import SEOHead from '../components/SEOHead';
-
+import { useAuthContext } from '../auth/AuthContext.js';
+import {
+  getUserPoints,
+  redeemPoints,
+  pointsToUsd,
+  POINTS_MIN_REDEEM,
+  POINTS_MAX_REDEEM,
+  POINTS_REDEEM_STEP,
+} from '../api/rewards.js';
 // ─── Payment gateway definitions ──────────────────────────────────────────────
 // IDs must match WC payment gateway slugs enabled in WP Admin →
 // WooCommerce → Settings → Payments.
@@ -385,6 +393,7 @@ function PaymentMethodSelector( { selectedMethod, onChange, inputClass } ) {
 export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems, getCartTotal, clearCart } = useCart();
+  const { user, isAuthenticated } = useAuthContext();
 
   const [formData, setFormData] = useState( {
     firstName:     '',
@@ -407,7 +416,60 @@ export default function Checkout() {
   const [orderDetails,  setOrderDetails ] = useState( null );
   const [step,          setStep         ] = useState( 'form' ); // 'form' | 'syncing' | 'placing'
 
-  // ── Shipping rates ────────────────────────────────────────────────────────
+  // ── Points redemption ─────────────────────────────────────────────────────
+  const [pointsBalance,   setPointsBalance  ] = useState( null );   // raw balance from API
+  const [pointsToRedeem,  setPointsToRedeem ] = useState( 0 );      // chosen by slider
+  const [appliedCoupon,   setAppliedCoupon  ] = useState( null );   // { code, discount_amount }
+  const [applyingPoints,  setApplyingPoints ] = useState( false );
+  const [pointsError,     setPointsError    ] = useState( '' );
+
+  // Fetch points balance once we have an authenticated user.
+  useEffect( () => {
+    if ( isAuthenticated && user?.id ) {
+      getUserPoints( user.id )
+        .then( ( data ) => {
+          setPointsBalance( data );
+          // Snap slider to max allowed or min (whichever is appropriate).
+          if ( data.points >= POINTS_MIN_REDEEM ) {
+            const maxSnapped = Math.min(
+              Math.floor( data.points / POINTS_REDEEM_STEP ) * POINTS_REDEEM_STEP,
+              POINTS_MAX_REDEEM,
+            );
+            setPointsToRedeem( maxSnapped );
+          }
+        } )
+        .catch( () => {} );
+    }
+  }, [ isAuthenticated, user?.id ] );
+
+  const pointsUsd         = pointsToUsd( pointsToRedeem );
+  const availablePts      = pointsBalance?.points ?? 0;
+  const roundedMax        = Math.min(
+    Math.floor( availablePts / POINTS_REDEEM_STEP ) * POINTS_REDEEM_STEP,
+    POINTS_MAX_REDEEM,
+  );
+
+  async function handleApplyPoints() {
+    if ( ! user?.id || pointsToRedeem < POINTS_MIN_REDEEM ) return;
+    setPointsError( '' );
+    setApplyingPoints( true );
+    try {
+      const result = await redeemPoints( user.id, pointsToRedeem );
+      setAppliedCoupon( { code: result.coupon_code, discount_amount: result.discount_amount } );
+      setPointsBalance( ( prev ) => prev ? { ...prev, points: result.new_balance } : prev );
+    } catch ( err ) {
+      setPointsError( err.message || 'Could not apply points. Please try again.' );
+    } finally {
+      setApplyingPoints( false );
+    }
+  }
+
+  function handleRemovePoints() {
+    setAppliedCoupon( null );
+    setPointsError( '' );
+  }
+
+  // ── Shipping rates ─────────────────────────────────────────────────────────
   const [shippingRates,    setShippingRates   ] = useState( [] );
   const [selectedRate,     setSelectedRate    ] = useState( null );   // full rate object
   const [ratesLoading,     setRatesLoading    ] = useState( false );
@@ -571,6 +633,7 @@ export default function Checkout() {
         [],                      // payment_data — extend here for Stripe/PayPal tokens
         formData.customerNote,
         wcRateId,                // selected shipping rate ID
+        appliedCoupon ? [ appliedCoupon.code ] : [],  // loyalty coupon (if applied)
       );
 
       setStep( 'placing' );
@@ -942,6 +1005,65 @@ export default function Checkout() {
                   />
                 </div>
               </StepCard>
+
+              {/* ── Points redemption panel (authenticated users only) ── */}
+              { isAuthenticated && pointsBalance && pointsBalance.points >= POINTS_MIN_REDEEM && (
+                <StepCard delay={ 0.22 } className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                      <span>⭐</span> Redeem Points
+                    </h3>
+                    <span className="text-xs text-gray-500">
+                      Balance: { pointsBalance.points } pts (${pointsToUsd(pointsBalance.points).toFixed(2)})
+                    </span>
+                  </div>
+
+                  { appliedCoupon ? (
+                    <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                      <div>
+                        <p className="text-sm font-semibold text-green-800">
+                          ✓ ${ appliedCoupon.discount_amount.toFixed( 2 ) } discount applied
+                        </p>
+                        <code className="text-xs text-green-700 font-mono">{ appliedCoupon.code }</code>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={ handleRemovePoints }
+                        className="text-xs text-red-600 hover:text-red-800 font-semibold ml-3"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <label className="block text-xs text-gray-500 mb-2">
+                        Redeem&nbsp;
+                        <strong className="text-gray-800">{ pointsToRedeem } pts</strong>
+                        &nbsp;=&nbsp;
+                        <strong className="text-emerald-700">${ pointsUsd.toFixed( 2 ) } off</strong>
+                      </label>
+                      <input
+                        type="range"
+                        min={ POINTS_MIN_REDEEM }
+                        max={ roundedMax || POINTS_MIN_REDEEM }
+                        step={ POINTS_REDEEM_STEP }
+                        value={ pointsToRedeem }
+                        onChange={ ( e ) => setPointsToRedeem( Number( e.target.value ) ) }
+                        className="w-full mb-3 accent-primary-600"
+                      />
+                      { pointsError && <p className="text-xs text-red-600 mb-2">{ pointsError }</p> }
+                      <button
+                        type="button"
+                        onClick={ handleApplyPoints }
+                        disabled={ applyingPoints || pointsToRedeem < POINTS_MIN_REDEEM }
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-600 text-white text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        { applyingPoints ? 'Applying…' : `Apply ${ pointsToRedeem } pts` }
+                      </button>
+                    </>
+                  ) }
+                </StepCard>
+              ) }
 
               {/* Checkout error */}
               <AnimatePresence>

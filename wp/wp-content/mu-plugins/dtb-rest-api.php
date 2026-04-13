@@ -108,6 +108,13 @@ function dtb_register_proxy_routes(): void {
 		'args'                => [ 'id' => [ 'validate_callback' => 'is_numeric' ] ],
 	] );
 
+	// ── GET /drywall/v1/orders — customer's own order list (JWT-gated) ────────
+	register_rest_route( $ns, '/orders', [
+		'methods'             => 'GET',
+		'callback'            => 'dtb_proxy_get_orders',
+		'permission_callback' => 'dtb_jwt_permission',
+	] );
+
 	// ── Coupons ───────────────────────────────────────────────────────────────
 
 	register_rest_route( $ns, '/coupons/(?P<code>[a-zA-Z0-9_-]+)', [
@@ -593,6 +600,34 @@ function dtb_proxy_create_order( WP_REST_Request $request ): WP_REST_Response {
 /** GET /drywall/v1/orders/{id}  (JWT-gated) */
 function dtb_proxy_get_order( WP_REST_Request $request ): WP_REST_Response {
 	return dtb_wc_get( 'wc/v3/orders/' . absint( $request->get_param( 'id' ) ) );
+}
+
+/**
+ * GET /drywall/v1/orders  (JWT-gated — customer's own order list)
+ *
+ * Supported query params: page, per_page, customer (WC customer ID).
+ * The SPA must always pass the authenticated user's customer ID so WC only
+ * returns orders belonging to that customer (no cross-customer data leakage).
+ */
+function dtb_proxy_get_orders( WP_REST_Request $request ): WP_REST_Response {
+	$allowed = [ 'page', 'per_page', 'customer', 'status', 'orderby', 'order' ];
+	$params  = [];
+	foreach ( $allowed as $k ) {
+		$v = $request->get_param( $k );
+		if ( null !== $v ) {
+			$params[ $k ] = sanitize_text_field( $v );
+		}
+	}
+
+	// Safety guard: require a customer filter — never return an unfiltered order list.
+	if ( empty( $params['customer'] ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'missing_param', 'customer parameter is required.', 400 ),
+			400
+		);
+	}
+
+	return dtb_wc_get( 'wc/v3/orders', $params );
 }
 
 /** GET /drywall/v1/coupons/{code} */

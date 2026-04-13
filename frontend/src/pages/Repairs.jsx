@@ -1,8 +1,10 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import veeqoService from '../services/veeqo';
+import { useAuthContext } from '../auth/AuthContext.js';
+import { getMembershipStatus, MEMBERSHIP_TIERS } from '../api/membership.js';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Brands & tools sourced from schematicMappings — the single source of truth
@@ -47,7 +49,7 @@ function getToolDisplayName({ toolBrand, toolModel, toolCategory }) {
 const BLANK_FORM = {
   fullName: '', email: '', phone: '', company: '',
   toolBrand: '', toolCategory: '', toolModel: '', serialNumber: '', toolAge: '',
-  serviceType: '', priority: '', issueStart: '', issueDescription: '',
+  serviceType: '', pricingTierId: '', priority: '', issueStart: '', issueDescription: '',
   contactPreference: 'email',
   // Shipping fields (Step 4)
   address: '', city: '', state: '', zip: '', country: 'US',
@@ -83,13 +85,80 @@ const services = [
   },
 ];
 
+// ─── Authoritative repair pricing — sourced from DTB_Strategy_Overview.md ────
+// Display rules:
+//   • "Best Value" tag on the recommended tier per category
+//   • Auto Taper anchor line displayed when toolCategory is an auto taper
+//   • Member discounts (10% / 15%) shown only to authenticated members in Step 5
+
+export const REPAIR_PRICING = {
+  autoTaper: {
+    label: 'Auto Taper',
+    anchor: { newPrice: 1899, rebuildPrice: 299, savePct: 84 },
+    tiers: [
+      { id: 'qt',  name: 'Quick Fix',         price: 75,  desc: 'Adjustments, cable & blade swap, minor fixes',        badge: null },
+      { id: 'sr',  name: 'Standard Rebuild',  price: 299, desc: 'Full head rebuild — covers most worn-out tapers',     badge: 'Best Value' },
+      { id: 'po',  name: 'Premium Overhaul',  price: 499, desc: 'Complete overhaul including wear kit + all seals',    badge: null },
+      { id: 'ftu', name: 'Factory Tune-Up',   price: 179, desc: 'Deep clean, lube, calibrate — no parts replacement',  badge: null },
+    ],
+  },
+  flatBoxes: {
+    label: 'Flat & Angle Boxes',
+    tiers: [
+      { id: 'fr',  name: 'Refresh',           price: 49,  desc: 'Clean, adjust, test — blade & gate check',           badge: null },
+      { id: 'rb',  name: 'Rebuild',           price: 89,  desc: 'Full disassembly, worn parts replaced',              badge: 'Best Value' },
+      { id: 'pp',  name: 'Pro Package',       price: 149, desc: 'Three boxes rebuilt — best rate per unit',           badge: '3-Box Bundle' },
+      { id: 'tub', name: 'Tune-Up',           price: 59,  perUnit: true, desc: 'Per-box deep clean + lube service',   badge: null },
+    ],
+  },
+  mudPumps: {
+    label: 'Mud Pumps',
+    tiers: [
+      { id: 'ss',  name: 'Seal & Screen',     price: 59,  desc: 'Seal replacement + screen clean — most common fix',  badge: null },
+      { id: 'fr2', name: 'Full Rebuild',      price: 119, desc: 'Complete pump teardown, all wear parts replaced',    badge: 'Best Value' },
+      { id: 'ph',  name: 'Pump + Hose',       price: 159, desc: 'Full rebuild including hose replacement',            badge: null },
+      { id: 'ps',  name: 'Preventive',        price: 79,  desc: 'Pre-season service — seals, screen, lubrication',   badge: null },
+    ],
+  },
+  handles: {
+    label: 'Handles & Accessories',
+    tiers: [
+      { id: 'hr',  name: 'Handle Rebuild',    price: 49,  desc: 'Standard handle rebuild with new hardware',          badge: null },
+      { id: 'gn',  name: 'Gooseneck',         price: 39,  desc: 'Gooseneck corner tool rebuild',                      badge: null },
+      { id: 'cf',  name: 'Corner Flusher',    price: 69,  desc: 'Corner flusher full service',                        badge: null },
+      { id: 'ns',  name: 'Nail Spotter',      price: 45,  desc: 'Nail spotter rebuild',                               badge: null },
+      { id: 'bu',  name: 'Tool Bundle',       price: 99,  desc: 'Any three handles serviced together',                badge: 'Bundle Savings' },
+    ],
+  },
+  diagnostic: {
+    label: 'Diagnostic',
+    tiers: [
+      { id: 'dx', name: 'Diagnostic / Bench Fee', priceMin: 50, priceMax: 75,
+        desc: 'Full inspection and written quote. Fee credited toward repair cost if you approve.', badge: null },
+    ],
+  },
+};
+
+// Legacy flat list — used for the pricing reference table in the UI.
 const PRICING_TIERS = [
-  { service: 'Auto Taper Head Rebuild', totalRange: '$160–$362+', note: 'Most common; includes wear kit' },
-  { service: 'Small Tool Rebuild', totalRange: '$62–$140', note: 'Flat box, angle box, mud pump' },
-  { service: 'Blade / Cable Replacement', totalRange: '$50–$75', note: 'Flat rate labor' },
-  { service: 'Full Overhaul (labor + parts)', totalRange: '$450–$600', note: 'Complete rebuild' },
-  { service: 'Diagnostic / Bench Fee', totalRange: '$50–$75', note: 'Credited if repair approved' },
+  { service: 'Auto Taper — Standard Rebuild', totalRange: '$299',      note: 'Best Value • vs. ~$1,899 new' },
+  { service: 'Auto Taper — Premium Overhaul', totalRange: '$499',      note: 'Full wear kit + all seals' },
+  { service: 'Flat / Angle Box Rebuild',      totalRange: '$89–$149',  note: 'Per box or 3-box bundle' },
+  { service: 'Mud Pump Rebuild',              totalRange: '$59–$159',  note: 'Seal & Screen to Full + Hose' },
+  { service: 'Handles & Accessories',         totalRange: '$39–$99',   note: 'Per tool or 3-handle bundle' },
+  { service: 'Diagnostic / Bench Fee',        totalRange: '$50–$75',   note: 'Credited toward repair if approved' },
 ];
+
+// Copy blocks — anchor pricing and trust signals
+const REPAIR_COPY = {
+  anchor:         'New Taper: ~$1,899  |  Standard Rebuild: $299  —  Save 84%',
+  partsLock:      'All replacement parts quoted and locked before work begins. No surprise invoices.',
+  noCharge:       'No charges until you review and approve your final quote.',
+  sustainability: 'Every rebuilt tool keeps ~2.5 lbs of steel out of the landfill.',
+  warrantyBase:   '15-day workmanship warranty on all repairs.',
+  warrantyPro:    '30-day warranty — Professional members.',
+  warrantyFleet:  '60-day warranty — Fleet members.',
+};
 
 const MAINTENANCE_SCHEDULE = [
   { level: 'High-Volume Pro', usage: '6+ rolls (500 ft) / day', interval: 'Every 6 months', badge: 'Heavy' },
@@ -357,6 +426,42 @@ export default function Repairs() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef(null);
+
+  // Auth + membership state
+  const { user, isAuthenticated } = useAuthContext();
+  const [membershipStatus, setMembershipStatus] = useState(null);
+
+  // Fetch membership status once user is authenticated
+  const fetchedMembership = useRef(false);
+  if (isAuthenticated && user?.id && !fetchedMembership.current) {
+    fetchedMembership.current = true;
+    getMembershipStatus(user.id).then(setMembershipStatus).catch(() => {});
+  }
+
+  // Derive which REPAIR_PRICING category maps to the selected toolCategory
+  const repairCategory = useMemo(() => {
+    const cat = (formData.toolCategory || '').toLowerCase();
+    if (/auto.?tap/i.test(cat)) return 'autoTaper';
+    if (/flat|angle/i.test(cat)) return 'flatBoxes';
+    if (/pump/i.test(cat)) return 'mudPumps';
+    if (/handle|corner|nail|gooseneck|flusher|spotter/i.test(cat)) return 'handles';
+    return 'diagnostic';
+  }, [formData.toolCategory]);
+
+  const isAutoTaper = repairCategory === 'autoTaper';
+
+  // Pricing tier selection helper
+  function selectTier(tier) {
+    const priceDisplay = tier.priceMin
+      ? `$${tier.priceMin}–$${tier.priceMax}`
+      : `$${tier.price}${tier.perUnit ? '/box' : ''}`;
+    setFormData((prev) => ({
+      ...prev,
+      serviceType:    `${tier.name} (${priceDisplay})`,
+      pricingTierId:  tier.id,
+    }));
+    setErrors((prev) => { const n = { ...prev }; delete n.serviceType; return n; });
+  }
 
   // Submission state
   const [submitting, setSubmitting]   = useState(false);
@@ -1317,30 +1422,110 @@ export default function Repairs() {
                       Tell us what kind of service you need and describe the issue in as much detail as possible.
                     </p>
 
+                    {/* Auto Taper anchor banner */}
+                    {isAutoTaper && (
+                      <div style={{
+                        background: 'linear-gradient(135deg, #0f172a, #1e3a8a)',
+                        borderRadius: '8px',
+                        padding: '14px 20px',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        flexWrap: 'wrap',
+                      }}>
+                        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.78rem', fontWeight: 600 }}>
+                          NEW TAPER
+                        </span>
+                        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>~$1,899</span>
+                        <span style={{ color: 'rgba(255,255,255,0.3)' }}>vs.</span>
+                        <span style={{ color: '#60a5fa', fontWeight: 800, fontSize: '1rem' }}>REBUILD $299</span>
+                        <span style={{
+                          background: '#16a34a', color: 'white',
+                          borderRadius: '999px', padding: '2px 10px',
+                          fontSize: '0.72rem', fontWeight: 700,
+                        }}>
+                          SAVE 84%
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Service Tier Cards */}
+                    <div style={{ marginBottom: '24px' }}>
+                      <label className="machined-label" style={{ color: 'var(--primary-600)', marginBottom: 10, display: 'block' }}>
+                        Service Type <span style={{ color: '#ef4444', marginLeft: 3 }}>*</span>
+                      </label>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                        gap: '12px',
+                      }}>
+                        {(REPAIR_PRICING[repairCategory]?.tiers || []).map((tier) => {
+                          const selected = formData.pricingTierId === tier.id;
+                          return (
+                            <div
+                              key={tier.id}
+                              onClick={() => selectTier(tier)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => e.key === 'Enter' && selectTier(tier)}
+                              style={{
+                                border: `2px solid ${selected ? 'var(--primary-600)' : 'rgba(15,23,42,0.1)'}`,
+                                borderRadius: '8px',
+                                padding: '16px',
+                                cursor: 'pointer',
+                                position: 'relative',
+                                background: selected ? '#eff6ff' : 'white',
+                                transition: 'border-color 0.2s, background 0.2s',
+                              }}
+                            >
+                              {tier.badge && (
+                                <div style={{
+                                  position: 'absolute', top: -10, right: 12,
+                                  background: tier.badge === 'Best Value' ? '#16a34a' : '#f59e0b',
+                                  color: 'white', borderRadius: '999px',
+                                  padding: '2px 10px', fontSize: '0.65rem', fontWeight: 700,
+                                }}>
+                                  {tier.badge}
+                                </div>
+                              )}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>{tier.name}</span>
+                                <span style={{ fontWeight: 800, color: 'var(--primary-600)', fontSize: '1.05rem', marginLeft: '8px', whiteSpace: 'nowrap' }}>
+                                  {tier.priceMin ? `$${tier.priceMin}–$${tier.priceMax}` : `$${tier.price}${tier.perUnit ? '/box' : ''}`}
+                                </span>
+                              </div>
+                              <p style={{ margin: '6px 0 0', fontSize: '0.78rem', color: 'rgba(15,23,42,0.55)' }}>
+                                {tier.desc}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {errors.serviceType && <p style={errStyle}>{errors.serviceType}</p>}
+                    </div>
+
+                    {/* Trust signal row */}
+                    <div style={{
+                      display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px',
+                      padding: '14px 16px', background: '#f8fafc', borderRadius: '6px',
+                      borderLeft: '3px solid var(--primary-600)',
+                    }}>
+                      {[REPAIR_COPY.noCharge, REPAIR_COPY.partsLock, REPAIR_COPY.sustainability].map((copy) => (
+                        <span key={copy} style={{ fontSize: '0.75rem', color: 'rgba(15,23,42,0.6)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                          {copy}
+                        </span>
+                      ))}
+                    </div>
+
                     <div style={{
                       display: 'grid',
                       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                       gap: '0 20px',
                     }}>
-                      <Field label="Service Type" required>
-                        <select
-                          className={inputCls}
-                          style={{ cursor: 'pointer' }}
-                          value={formData.serviceType}
-                          onChange={(e) => { set('serviceType')(e); clearErr('serviceType'); }}
-                        >
-                          <option value="" disabled>Select service type…</option>
-                          <option value="Preventative Maintenance">Preventative Maintenance</option>
-                          <option value="General Repair">General Repair</option>
-                          <option value="Emergency Repair">Emergency Repair</option>
-                          <option value="Warranty Claim">Warranty Claim</option>
-                          <option value="Calibration / Adjustment">Calibration / Adjustment</option>
-                          <option value="Parts Replacement Only">Parts Replacement Only</option>
-                          <option value="Full Overhaul / Rebuild">Full Overhaul / Rebuild</option>
-                        </select>
-                        {errors.serviceType && <p style={errStyle}>{errors.serviceType}</p>}
-                      </Field>
-
                       <Field label="Priority Level" required>
                         <select
                           className={inputCls}
@@ -1826,6 +2011,32 @@ export default function Repairs() {
                         </div>
                       )}
                     </div>
+
+                    {/* ProCare member discount preview — only for pro/fleet members */}
+                    {membershipStatus && membershipStatus.tier !== 'essential' && (
+                      <div style={{
+                        padding: '12px 16px',
+                        background: '#eff6ff',
+                        border: '1px solid #bfdbfe',
+                        borderRadius: '6px',
+                        marginBottom: '16px',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                          </svg>
+                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1d4ed8' }}>
+                            {MEMBERSHIP_TIERS[membershipStatus.tier]?.name} Member Discount
+                          </span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(15,23,42,0.6)' }}>
+                          Your {((MEMBERSHIP_TIERS[membershipStatus.tier]?.laborDiscount || 0) * 100).toFixed(0)}% labor
+                          {membershipStatus.tier === 'fleet' ? ' + parts' : ''} discount will be automatically applied
+                          to your final invoice. Estimated savings shown after diagnostic.
+                          {membershipStatus.tier === 'professional' ? ' 30-day workmanship warranty.' : ' 60-day workmanship warranty.'}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Shipping section */}
                     <div style={{

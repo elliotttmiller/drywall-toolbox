@@ -40,3 +40,25 @@ export async function createOrder( payload ) {
 export async function getOrder( id ) {
   return apiClient( `/wp-json/drywall/v1/orders/${ encodeURIComponent( id ) }` );
 }
+
+/**
+ * Retrieve a paginated list of orders for a specific customer.
+ *
+ * The server enforces that the `customer` param matches the JWT's user_id —
+ * never pass another user's ID here.
+ *
+ * @param {number}  customerId  WooCommerce customer ID (same as WP user ID)
+ * @param {number}  [page=1]
+ * @param {number}  [perPage=20]
+ * @returns {Promise<Array<any>>}
+ */
+export async function getCustomerOrders( customerId, page = 1, perPage = 20 ) {
+  const params = new URLSearchParams( {
+    customer: customerId,
+    page,
+    per_page: perPage,
+    orderby: 'date',
+    order:   'desc',
+  } ).toString();
+  return apiClient( `/wp-json/drywall/v1/orders?${ params }` );
+}
