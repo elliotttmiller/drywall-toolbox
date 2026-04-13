@@ -68,19 +68,40 @@ const STEPS = [
 const services = [
   {
     title: 'Preventative Maintenance',
-    description: 'Scheduled inspections, lubrication, seal replacements, and performance tuning to keep tools running at peak condition.',
-    items: ['Seasonal equipment inspections', 'Lubrication & fluid replacement', 'Seal & gasket replacements', 'Calibration & adjustment'],
+    description: 'Annual tune-ups cost ~1/3 of emergency rebuilds and extend tool life 2&ndash;3&times;. Scheduled inspections, lubrication, seal replacements, and performance tuning.',
+    items: ['Usage-based service intervals', 'Lubrication & fluid replacement', 'Seal & gasket replacements', 'Calibration & adjustment'],
   },
   {
-    title: 'Emergency Repairs',
-    description: 'When your tools stop working on the job, our technicians diagnose and resolve issues fast — same-day diagnostics available.',
-    items: ['Same-day diagnostics', 'Expedited repair turnaround', '24/7 emergency support', 'Field service available'],
+    title: 'Repair & Rebuild',
+    description: 'Full overhauls, head rebuilds, and targeted repairs for automatic tapers, flat boxes, angle boxes, and mud pumps. Labor-only quotes provided upfront.',
+    items: ['Automatic taper head rebuilds', 'Flat & angle box repairs', 'Mud pump overhauls', 'Blade, cable & parts replacement'],
   },
   {
-    title: 'Warranty & Extended Coverage',
-    description: 'Protect your investment with manufacturer warranties and extended coverage plans for professional equipment.',
-    items: ['Extended manufacturer warranties', 'Accidental damage coverage', 'Parts & labor protection', 'Annual inspection plans'],
+    title: 'Warranty & Service Guarantee',
+    description: 'Every repair comes with a workmanship warranty. We stand behind our work — if a repair fails, we make it right.',
+    items: ['1-year warranty on replaced parts', 'Free rework if repair fails', 'Transparent labor + parts invoicing', 'No charges until you approve a quote'],
   },
+];
+
+const PRICING_TIERS = [
+  { service: 'Auto Taper Head Rebuild', laborRange: '$115–$225', partsRange: '$45–$137', totalRange: '$160–$362+', note: 'Most common; includes wear kit' },
+  { service: 'Small Tool Rebuild', laborRange: '$35–$100', partsRange: '$27–$40', totalRange: '$62–$140', note: 'Flat box, angle box, mud pump' },
+  { service: 'Blade / Cable Replacement', laborRange: '$35', partsRange: '$15–$40', totalRange: '$50–$75', note: 'Flat rate labor' },
+  { service: 'Full Overhaul (labor + parts)', laborRange: '$150–$225', partsRange: '$300–$375', totalRange: '$450–$600', note: 'Complete rebuild' },
+  { service: 'Diagnostic / Bench Fee', laborRange: '$50–$75', partsRange: '—', totalRange: '$50–$75', note: 'Credited if repair approved' },
+];
+
+const MAINTENANCE_SCHEDULE = [
+  { level: 'High-Volume Pro', usage: '6+ rolls (500 ft) / day', interval: 'Every 6 months', badge: 'Heavy' },
+  { level: 'Standard Pro', usage: '4–10 rolls / week', interval: 'Annually', badge: 'Regular' },
+  { level: 'Occasional User', usage: '<4 rolls / week', interval: 'Every 18–24 months', badge: 'Light' },
+];
+
+const WEAR_PARTS = [
+  { tool: 'Automatic Taper', parts: ['Tape wheels ("teeth")', 'Blade & cable', 'Plunger cup', 'Wear bushings', 'Drive dog spring'] },
+  { tool: 'Flat / Angle Boxes', parts: ['Blades', 'Skids & wheels', 'Tension springs', 'O-rings'] },
+  { tool: 'Mud Pumps', parts: ['Gaskets & u-cups', 'Screens & valve discs', 'Bushings'] },
+  { tool: 'Handles & Extensions', parts: ['Brake adjusters', 'Conical springs', 'Friction washers'] },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -637,6 +658,355 @@ export default function Repairs() {
         </div>
       </section>
 
+      {/* ── Pricing Reference ───────────────────────────────────────────────────── */}
+      <section style={{
+        background: 'var(--alloy-base)',
+        borderTop: '1px solid var(--machined-border)',
+        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <div style={{
+              display: 'inline-block',
+              background: 'rgba(37,99,235,0.08)',
+              border: '1px solid rgba(37,99,235,0.2)',
+              borderRadius: '3px', padding: '4px 12px',
+              fontSize: '0.7rem', fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: 'var(--primary-600)', marginBottom: '14px',
+            }}>
+              Industry Pricing Reference
+            </div>
+            <h2 style={{
+              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+              fontWeight: 800, color: 'var(--primary-600)',
+              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+            }}>
+              Transparent Repair Pricing
+            </h2>
+            <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+              Industry-standard labor and parts ranges for professional drywall tool repairs.
+              No charges until you approve your quote.
+            </p>
+          </div>
+
+          {/* Pricing table — scrollable on mobile */}
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', borderRadius: '6px', border: '1px solid var(--machined-border)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '520px', background: 'white' }}>
+              <thead>
+                <tr style={{ background: 'var(--primary-600)', color: 'white' }}>
+                  {['Service', 'Labor', 'Parts (Est.)', 'Total Range', 'Notes'].map((h) => (
+                    <th key={h} style={{
+                      padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)',
+                      textAlign: 'left', fontSize: '0.72rem',
+                      fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+                      whiteSpace: 'nowrap',
+                    }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {PRICING_TIERS.map((row, i) => (
+                  <tr key={row.service} style={{ background: i % 2 === 0 ? 'white' : 'rgba(15,23,42,0.02)' }}>
+                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', fontWeight: 600, color: 'black', borderBottom: '1px solid var(--machined-border)' }}>{row.service}</td>
+                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', color: 'rgba(15,23,42,0.75)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.laborRange}</td>
+                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', color: 'rgba(15,23,42,0.75)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.partsRange}</td>
+                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.totalRange}</td>
+                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.78rem', color: 'rgba(15,23,42,0.5)', borderBottom: '1px solid var(--machined-border)' }}>{row.note}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: 'rgba(15,23,42,0.4)', marginTop: '12px', textAlign: 'center' }}>
+            * All prices are industry estimates. Actual costs may vary based on tool condition, parts availability, and additional findings during disassembly.
+            Budget an extra 20–30% for potential "hard parts" (chains, sprockets, shafts) discovered during service.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Maintenance Guide ─────────────────────────────────────────────── */}
+      <section style={{
+        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <h2 style={{
+              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+              fontWeight: 800, color: 'var(--primary-600)',
+              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+            }}>
+              Maintenance Schedule
+            </h2>
+            <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0 }}>
+              Industry-recommended service intervals based on your usage level
+            </p>
+          </div>
+
+          {/* Usage cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '20px',
+            marginBottom: 'clamp(2rem, 4vw, 3rem)',
+          }}>
+            {MAINTENANCE_SCHEDULE.map((row) => {
+              const badgeColors = {
+                Heavy: { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626' },
+                Regular: { bg: 'rgba(37,99,235,0.06)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)' },
+                Light: { bg: '#f0fdf4', border: '#86efac', text: '#16a34a' },
+              };
+              const colors = badgeColors[row.badge] || badgeColors.Regular;
+              return (
+                <div key={row.level} style={{
+                  background: 'white',
+                  border: '1px solid var(--machined-border)',
+                  borderRadius: '6px',
+                  padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+                }}>
+                  <div style={{
+                    display: 'inline-block',
+                    background: colors.bg,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '3px', padding: '3px 10px',
+                    fontSize: '0.68rem', fontWeight: 700,
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    color: colors.text, marginBottom: '12px',
+                  }}>
+                    {row.badge} Use
+                  </div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 6px 0' }}>
+                    {row.level}
+                  </h3>
+                  <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.55)', margin: '0 0 14px 0' }}>
+                    {row.usage}
+                  </p>
+                  <div style={{
+                    background: 'var(--alloy-base)',
+                    border: '1px solid var(--machined-border)',
+                    borderRadius: '4px',
+                    padding: '10px 14px',
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                  }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)' }}>
+                      {row.interval}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Wear parts grid */}
+          <div>
+            <h3 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', fontWeight: 700, color: 'black', margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0' }}>
+              Critical Wear Parts to Monitor
+            </h3>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '16px',
+            }}>
+              {WEAR_PARTS.map((wp) => (
+                <div key={wp.tool} style={{
+                  background: 'white',
+                  border: '1px solid var(--machined-border)',
+                  borderRadius: '4px',
+                  padding: 'clamp(1rem, 2.5vw, 1.5rem)',
+                }}>
+                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    {wp.tool}
+                  </h4>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {wp.parts.map((part) => (
+                      <li key={part} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)' }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        {part}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Repair vs. Replace ───────────────────────────────────────────── */}
+      <section style={{
+        background: 'var(--alloy-base)',
+        borderTop: '1px solid var(--machined-border)',
+        borderBottom: '1px solid var(--machined-border)',
+        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <h2 style={{
+              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+              fontWeight: 800, color: 'var(--primary-600)',
+              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+            }}>
+              Repair vs. Replace Decision Guide
+            </h2>
+            <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0 }}>
+              Use the industry-standard 70% rule to make the right call
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '24px',
+            alignItems: 'stretch',
+          }}>
+            {/* Rule card */}
+            <div style={{
+              background: 'white',
+              border: '1px solid var(--machined-border)',
+              borderRadius: '6px',
+              padding: 'clamp(1.5rem, 3vw, 2rem)',
+            }}>
+              <div style={{
+                display: 'inline-block',
+                background: 'rgba(37,99,235,0.08)',
+                border: '1px solid rgba(37,99,235,0.2)',
+                borderRadius: '3px', padding: '4px 12px',
+                fontSize: '0.7rem', fontWeight: 700,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: 'var(--primary-600)', marginBottom: '14px',
+              }}>
+                The 70% Rule
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 12px 0' }}>
+                How to decide
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{
+                  background: '#f0fdf4', border: '1px solid #86efac',
+                  borderRadius: '4px', padding: '12px 16px',
+                }}>
+                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#15803d' }}>
+                    ✓ Repair is economical if repair cost is under 70% of new tool price
+                  </p>
+                </div>
+                <div style={{
+                  background: '#fef2f2', border: '1px solid #fca5a5',
+                  borderRadius: '4px', padding: '12px 16px',
+                }}>
+                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#dc2626' }}>
+                    ✗ Consider replacement if repair cost reaches 70%+ of new tool price
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Example card */}
+            <div style={{
+              background: 'white',
+              border: '1px solid var(--machined-border)',
+              borderRadius: '6px',
+              padding: 'clamp(1.5rem, 3vw, 2rem)',
+            }}>
+              <div style={{
+                display: 'inline-block',
+                background: '#f0fdf4', border: '1px solid #86efac',
+                borderRadius: '3px', padding: '4px 12px',
+                fontSize: '0.7rem', fontWeight: 700,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: '#15803d', marginBottom: '14px',
+              }}>
+                Real-World Example
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 16px 0' }}>
+                Automatic Taper Rebuild
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { label: 'New Tool Price', value: '~$2,000', color: 'rgba(15,23,42,0.7)' },
+                  { label: 'Full Rebuild Cost', value: '$450–$600', color: 'rgba(15,23,42,0.7)' },
+                  { label: 'Your Savings', value: '70–77%', color: '#15803d' },
+                ].map((item) => (
+                  <div key={item.label} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '8px 12px',
+                    background: 'var(--alloy-base)',
+                    border: '1px solid var(--machined-border)',
+                    borderRadius: '4px',
+                  }}>
+                    <span style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.6)', fontWeight: 500 }}>{item.label}</span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: item.color }}>{item.value}</span>
+                  </div>
+                ))}
+                <div style={{
+                  background: '#f0fdf4', border: '1px solid #86efac',
+                  borderRadius: '4px', padding: '10px 14px',
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  marginTop: '4px',
+                }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#15803d' }}>Verdict: Repair Recommended</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro tips card */}
+            <div style={{
+              background: 'white',
+              border: '1px solid var(--machined-border)',
+              borderRadius: '6px',
+              padding: 'clamp(1.5rem, 3vw, 2rem)',
+            }}>
+              <div style={{
+                display: 'inline-block',
+                background: 'rgba(37,99,235,0.08)',
+                border: '1px solid rgba(37,99,235,0.2)',
+                borderRadius: '3px', padding: '4px 12px',
+                fontSize: '0.7rem', fontWeight: 700,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: 'var(--primary-600)', marginBottom: '14px',
+              }}>
+                Pro Tips
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 14px 0' }}>
+                Before You Ship
+              </h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  'Photograph your tool and document symptoms before packaging',
+                  'Budget 20–30% extra for hard parts (chains, sprockets, shafts)',
+                  'Annual tune-ups cost ~1/3 of emergency rebuilds',
+                  'Verify your brand/model year is supported before shipping',
+                  'Wrap in bubble wrap; use the smallest sturdy box available',
+                ].map((tip, i) => (
+                  <li key={i} style={{ display: 'flex', gap: '10px', fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.5 }}>
+                    <span style={{
+                      flexShrink: 0,
+                      width: '20px', height: '20px',
+                      background: 'rgba(37,99,235,0.1)',
+                      border: '1px solid rgba(37,99,235,0.2)',
+                      borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '0.65rem', fontWeight: 800, color: 'var(--primary-600)',
+                      marginTop: '1px',
+                    }}>
+                      {i + 1}
+                    </span>
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Repair Request Form ──────────────────────────────────────────── */}
       <section style={{
         background: 'var(--alloy-base)',
@@ -713,6 +1083,46 @@ export default function Repairs() {
                   Our service team will contact you at <strong>{formData.email}</strong> within one business day
                   with a quote and estimated turnaround time.
                 </p>
+                {/* What Happens Next */}
+                <div style={{
+                  background: 'var(--alloy-base)',
+                  border: '1px solid var(--machined-border)',
+                  borderRadius: '6px',
+                  padding: 'clamp(1.25rem, 3vw, 1.75rem)',
+                  marginBottom: '28px',
+                  textAlign: 'left',
+                  maxWidth: '480px',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                }}>
+                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'black', margin: '0 0 14px 0', textAlign: 'center' }}>
+                    What Happens Next
+                  </h4>
+                  <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {[
+                      { step: '1', text: 'Our team reviews your request and emails you a prepaid inbound shipping label within 1 business day.' },
+                      { step: '2', text: 'Pack your tool in bubble wrap inside a sturdy box. Include a printed copy of this request if possible.' },
+                      { step: '3', text: 'Ship with USPS, FedEx, or UPS using the provided label. Keep your tracking number.' },
+                      { step: '4', text: 'We diagnose your tool and send you a quote. No work begins until you approve pricing.' },
+                      { step: '5', text: 'Repaired tool ships back to you within 1–3 weeks depending on parts availability.' },
+                    ].map((item) => (
+                      <li key={item.step} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                        <span style={{
+                          flexShrink: 0,
+                          width: '22px', height: '22px',
+                          background: 'var(--primary-600)',
+                          borderRadius: '50%',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '0.65rem', fontWeight: 800, color: 'white',
+                          marginTop: '1px',
+                        }}>
+                          {item.step}
+                        </span>
+                        <span style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.5 }}>{item.text}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <button
                     className="alloy-button"
@@ -1084,7 +1494,7 @@ export default function Repairs() {
                       </div>
                     </Field>
 
-                    <Field label="Details & Notes" required hint="Describe the issue, symptoms, sounds, leaks, damage, or any relevant repair history">
+                    <Field label="Details & Notes" required hint="Describe symptoms, sounds, leaks, damage, and prior repair history. Tip: photograph your tool before shipping — it speeds up diagnosis.">
                       <div style={{ position: 'relative' }}>
                         <textarea
                           rows="6"
@@ -1141,6 +1551,42 @@ export default function Repairs() {
                       Enter the address where we should return your repaired tool. We'll email you a prepaid inbound
                       shipping label, and the selected option covers return delivery.
                     </p>
+
+                    {/* Packaging Tips */}
+                    <div style={{
+                      background: 'rgba(37,99,235,0.04)',
+                      border: '1px solid rgba(37,99,235,0.2)',
+                      borderRadius: '6px',
+                      padding: 'clamp(12px, 2vw, 16px) clamp(14px, 2.5vw, 20px)',
+                      marginBottom: '24px',
+                      display: 'flex',
+                      gap: '12px',
+                      alignItems: 'flex-start',
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '1px' }}>
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                      </svg>
+                      <div>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '0.825rem', fontWeight: 700, color: 'var(--primary-600)' }}>
+                          Packaging Guidance
+                        </p>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                          {[
+                            'Use the smallest sturdy box available; wrap tool in bubble wrap or paper.',
+                            'Include a printed copy of this repair form or a written description of the issue.',
+                            'Photograph your tool before sealing the box — keep the photos for your records.',
+                            'Accepted carriers: USPS, FedEx, UPS. Keep your outbound tracking number.',
+                          ].map((tip, i) => (
+                            <li key={i} style={{ display: 'flex', gap: '7px', fontSize: '0.8rem', color: 'rgba(15,23,42,0.65)', lineHeight: 1.5 }}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '3px' }}>
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                              {tip}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
 
                     {/* Address fields */}
                     <Field label="Street Address" required>
