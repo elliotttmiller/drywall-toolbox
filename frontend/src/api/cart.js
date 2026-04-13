@@ -310,7 +310,7 @@ export async function syncAndPlace(
         body: JSON.stringify( { code } ),
       } );
     } catch ( err ) {
-      console.warn( `Coupon "${ code }" could not be applied (non-fatal):`, err.message );
+      console.warn( `[DTB Checkout] Coupon "${ code }" could not be applied (non-fatal):`, err.message );
     }
   }
 

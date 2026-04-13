@@ -200,12 +200,12 @@ function dtb_membership_enroll( WP_REST_Request $request ): WP_REST_Response|WP_
 		return new WP_Error( 'not_found', 'User not found.', [ 'status' => 404 ] );
 	}
 
-	// Idempotency guard — prevent double-enrollment within the same second.
+	// Atomic idempotency guard using wp_cache_add (returns false if key already exists).
+	// This prevents double-enrollment from concurrent requests within the same 10-second window.
 	$lock_key = 'dtb_membership_enroll_' . $user_id;
-	if ( get_transient( $lock_key ) ) {
+	if ( ! wp_cache_add( $lock_key, 1, '', 10 ) ) {
 		return new WP_Error( 'conflict', 'Enrollment already in progress.', [ 'status' => 409 ] );
 	}
-	set_transient( $lock_key, 1, 10 );
 
 	$tier_config = DTB_MEMBERSHIP_TIERS[ $tier ];
 	$expires     = strtotime( '+1 year' );
@@ -240,7 +240,7 @@ function dtb_membership_enroll( WP_REST_Request $request ): WP_REST_Response|WP_
 		}
 	}
 
-	delete_transient( $lock_key );
+	wp_cache_delete( $lock_key );
 
 	return rest_ensure_response( [
 		'success'    => true,

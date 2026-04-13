@@ -184,8 +184,12 @@ export default function Dashboard() {
   // Fetch points + membership once we have a user ID.
   useEffect( () => {
     if ( user?.id ) {
-      getUserPoints( user.id ).then( setPointsData ).catch( () => {} );
-      getMembershipStatus( user.id ).then( setMembershipData ).catch( () => {} );
+      getUserPoints( user.id ).then( setPointsData ).catch( ( err ) => {
+        console.warn( '[Dashboard] Points fetch failed:', err?.message );
+      } );
+      getMembershipStatus( user.id ).then( setMembershipData ).catch( ( err ) => {
+        console.warn( '[Dashboard] Membership fetch failed:', err?.message );
+      } );
     }
   }, [ user?.id ] );
 

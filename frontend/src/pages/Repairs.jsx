@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
@@ -49,6 +49,9 @@ function getToolDisplayName({ toolBrand, toolModel, toolCategory }) {
 const BLANK_FORM = {
   fullName: '', email: '', phone: '', company: '',
   toolBrand: '', toolCategory: '', toolModel: '', serialNumber: '', toolAge: '',
+  // serviceType: human-readable label displayed in Step 5 Review (e.g. "Standard Repair ($85–$195)")
+  // pricingTierId: machine-readable tier id for logic/validation (e.g. "standard")
+  // Both set together when the user picks a tier card in Step 3.
   serviceType: '', pricingTierId: '', priority: '', issueStart: '', issueDescription: '',
   contactPreference: 'email',
   // Shipping fields (Step 4)
@@ -432,11 +435,11 @@ export default function Repairs() {
   const [membershipStatus, setMembershipStatus] = useState(null);
 
   // Fetch membership status once user is authenticated
-  const fetchedMembership = useRef(false);
-  if (isAuthenticated && user?.id && !fetchedMembership.current) {
-    fetchedMembership.current = true;
-    getMembershipStatus(user.id).then(setMembershipStatus).catch(() => {});
-  }
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      getMembershipStatus(user.id).then(setMembershipStatus).catch(() => {});
+    }
+  }, [isAuthenticated, user?.id]);
 
   // Derive which REPAIR_PRICING category maps to the selected toolCategory
   const repairCategory = useMemo(() => {
