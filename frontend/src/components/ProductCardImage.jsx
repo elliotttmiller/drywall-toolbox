@@ -96,6 +96,7 @@ export default function ProductCardImage({
           height: '100%',
           objectFit: 'contain',
           objectPosition: 'center',
+          imageRendering: '-webkit-optimize-contrast',
           padding,
           opacity: loaded ? 1 : 0,
           transform: loaded ? 'translateY(0)' : 'translateY(6px)',

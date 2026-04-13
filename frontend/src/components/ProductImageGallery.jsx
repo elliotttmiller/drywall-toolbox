@@ -274,7 +274,7 @@ export default function ProductImageGallery({ product }) {
               decoding="async"
               draggable={false}
               className="absolute inset-0 w-full h-full object-contain p-3 sm:p-4"
-              style={{ zIndex: 2, willChange: 'transform, opacity' }}
+              style={{ zIndex: 2, willChange: 'transform, opacity', imageRendering: '-webkit-optimize-contrast' }}
               onLoad={() => setImgLoaded(prev => ({ ...prev, [currentIndex]: true }))}
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -417,7 +417,7 @@ export default function ProductImageGallery({ product }) {
                     transition={slideTransition}
                     className="max-w-[90vw] max-h-[78vh] w-auto h-auto object-contain select-none"
                     draggable={false}
-                    style={{ pointerEvents: 'none', willChange: 'transform, opacity' }}
+                    style={{ pointerEvents: 'none', willChange: 'transform, opacity', imageRendering: '-webkit-optimize-contrast' }}
                   />
                 </AnimatePresence>
 

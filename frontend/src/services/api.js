@@ -186,6 +186,25 @@ function extractBrand(wcProduct) {
 }
 
 /**
+ * Upgrade a WooCommerce image URL to the full-size original by stripping any
+ * WordPress-generated size suffix (e.g. "-300x300", "-800x600") from the
+ * filename.  WordPress always keeps the original file on disk, so requesting
+ * the suffix-free URL yields the highest-resolution version available.
+ *
+ * Examples:
+ *   ".../product-300x300.webp"  → ".../product.webp"
+ *   ".../product-1024x768.jpg"  → ".../product.jpg"
+ *   ".../product.webp"          → ".../product.webp"  (unchanged)
+ *
+ * @param {string} src  Raw WooCommerce image src
+ * @returns {string}    Full-size image URL
+ */
+function upgradeImageUrl(src) {
+  if (!src) return src;
+  return src.replace(/-\d+x\d+(\.[a-zA-Z0-9]+)$/, '$1');
+}
+
+/**
  * Normalise a WooCommerce product object to the internal product shape used
  * throughout the UI.
  *
@@ -195,8 +214,10 @@ function extractBrand(wcProduct) {
 export function normalizeProduct(wcProduct) {
   if (!wcProduct) return null;
 
-  // Images: prefer array of src strings; keep single `image` for legacy compat
-  const images = (wcProduct.images || []).map((img) => img.src).filter(Boolean);
+  // Images: prefer array of src strings; keep single `image` for legacy compat.
+  // upgradeImageUrl strips any WordPress size suffix so we always load the
+  // full-resolution original instead of a small-thumbnail variant.
+  const images = (wcProduct.images || []).map((img) => upgradeImageUrl(img.src)).filter(Boolean);
   if (images.length === 0) images.push('https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/04/no-image-placeholder.webp');
   const image = images[0];
 
