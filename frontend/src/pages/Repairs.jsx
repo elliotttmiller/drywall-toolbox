@@ -68,7 +68,7 @@ const STEPS = [
 const services = [
   {
     title: 'Preventative Maintenance',
-    description: 'Annual tune-ups cost ~1/3 of emergency rebuilds and extend tool life 2&ndash;3&times;. Scheduled inspections, lubrication, seal replacements, and performance tuning.',
+    description: 'Annual tune-ups cost ~1/3 of emergency rebuilds and extend tool life 2–3×. Scheduled inspections, lubrication, seal replacements, and performance tuning.',
     items: ['Usage-based service intervals', 'Lubrication & fluid replacement', 'Seal & gasket replacements', 'Calibration & adjustment'],
   },
   {
