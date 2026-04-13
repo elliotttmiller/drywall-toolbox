@@ -97,12 +97,6 @@ const MAINTENANCE_SCHEDULE = [
   { level: 'Occasional User', usage: '<4 rolls / week', interval: 'Every 18–24 months', badge: 'Light' },
 ];
 
-const WEAR_PARTS = [
-  { tool: 'Automatic Taper', parts: ['Tape wheels ("teeth")', 'Blade & cable', 'Plunger cup', 'Wear bushings', 'Drive dog spring'] },
-  { tool: 'Flat / Angle Boxes', parts: ['Blades', 'Skids & wheels', 'Tension springs', 'O-rings'] },
-  { tool: 'Mud Pumps', parts: ['Gaskets & u-cups', 'Screens & valve discs', 'Bushings'] },
-  { tool: 'Handles & Extensions', parts: ['Brake adjusters', 'Conical springs', 'Friction washers'] },
-];
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Reusable labelled field wrapper
@@ -798,40 +792,6 @@ export default function Repairs() {
             })}
           </div>
 
-          {/* Wear parts grid */}
-          <div>
-            <h3 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', fontWeight: 700, color: 'black', margin: '0 0 clamp(1rem, 2vw, 1.5rem) 0' }}>
-              Critical Wear Parts to Monitor
-            </h3>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: '16px',
-            }}>
-              {WEAR_PARTS.map((wp) => (
-                <div key={wp.tool} style={{
-                  background: 'white',
-                  border: '1px solid var(--machined-border)',
-                  borderRadius: '4px',
-                  padding: 'clamp(1rem, 2.5vw, 1.5rem)',
-                }}>
-                  <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                    {wp.tool}
-                  </h4>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {wp.parts.map((part) => (
-                      <li key={part} style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)' }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        {part}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
