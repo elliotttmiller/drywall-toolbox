@@ -84,11 +84,11 @@ const services = [
 ];
 
 const PRICING_TIERS = [
-  { service: 'Auto Taper Head Rebuild', laborRange: '$115–$225', partsRange: '$45–$137', totalRange: '$160–$362+', note: 'Most common; includes wear kit' },
-  { service: 'Small Tool Rebuild', laborRange: '$35–$100', partsRange: '$27–$40', totalRange: '$62–$140', note: 'Flat box, angle box, mud pump' },
-  { service: 'Blade / Cable Replacement', laborRange: '$35', partsRange: '$15–$40', totalRange: '$50–$75', note: 'Flat rate labor' },
-  { service: 'Full Overhaul (labor + parts)', laborRange: '$150–$225', partsRange: '$300–$375', totalRange: '$450–$600', note: 'Complete rebuild' },
-  { service: 'Diagnostic / Bench Fee', laborRange: '$50–$75', partsRange: '—', totalRange: '$50–$75', note: 'Credited if repair approved' },
+  { service: 'Auto Taper Head Rebuild', totalRange: '$160–$362+', note: 'Most common; includes wear kit' },
+  { service: 'Small Tool Rebuild', totalRange: '$62–$140', note: 'Flat box, angle box, mud pump' },
+  { service: 'Blade / Cable Replacement', totalRange: '$50–$75', note: 'Flat rate labor' },
+  { service: 'Full Overhaul (labor + parts)', totalRange: '$450–$600', note: 'Complete rebuild' },
+  { service: 'Diagnostic / Bench Fee', totalRange: '$50–$75', note: 'Credited if repair approved' },
 ];
 
 const MAINTENANCE_SCHEDULE = [
@@ -692,10 +692,10 @@ export default function Repairs() {
 
           {/* Pricing table — scrollable on mobile */}
           <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', borderRadius: '6px', border: '1px solid var(--machined-border)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '520px', background: 'white' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '320px', background: 'white' }}>
               <thead>
                 <tr style={{ background: 'var(--primary-600)', color: 'white' }}>
-                  {['Service', 'Labor', 'Parts (Est.)', 'Total Range', 'Notes'].map((h) => (
+                  {['Service', 'Total Range', 'Notes'].map((h) => (
                     <th key={h} style={{
                       padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)',
                       textAlign: 'left', fontSize: '0.72rem',
@@ -709,8 +709,6 @@ export default function Repairs() {
                 {PRICING_TIERS.map((row, i) => (
                   <tr key={row.service} style={{ background: i % 2 === 0 ? 'white' : 'rgba(15,23,42,0.02)' }}>
                     <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', fontWeight: 600, color: 'black', borderBottom: '1px solid var(--machined-border)' }}>{row.service}</td>
-                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', color: 'rgba(15,23,42,0.75)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.laborRange}</td>
-                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', color: 'rgba(15,23,42,0.75)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.partsRange}</td>
                     <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.totalRange}</td>
                     <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.78rem', color: 'rgba(15,23,42,0.5)', borderBottom: '1px solid var(--machined-border)' }}>{row.note}</td>
                   </tr>
