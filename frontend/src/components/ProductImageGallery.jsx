@@ -273,8 +273,8 @@ export default function ProductImageGallery({ product }) {
               fetchpriority={currentIndex === 0 ? 'high' : undefined}
               decoding="async"
               draggable={false}
-              className="absolute inset-0 w-full h-full object-contain p-3 sm:p-4"
-              style={{ zIndex: 2, willChange: 'transform, opacity', imageRendering: '-webkit-optimize-contrast' }}
+              className="dtb-product-img absolute inset-0 w-full h-full object-contain p-3 sm:p-4"
+              style={{ zIndex: 2, willChange: 'transform, opacity' }}
               onLoad={() => setImgLoaded(prev => ({ ...prev, [currentIndex]: true }))}
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -415,9 +415,9 @@ export default function ProductImageGallery({ product }) {
                     animate="center"
                     exit="exit"
                     transition={slideTransition}
-                    className="max-w-[90vw] max-h-[78vh] w-auto h-auto object-contain select-none"
+                    className="dtb-product-img max-w-[90vw] max-h-[78vh] w-auto h-auto object-contain select-none"
                     draggable={false}
-                    style={{ pointerEvents: 'none', willChange: 'transform, opacity', imageRendering: '-webkit-optimize-contrast' }}
+                    style={{ pointerEvents: 'none', willChange: 'transform, opacity' }}
                   />
                 </AnimatePresence>
 

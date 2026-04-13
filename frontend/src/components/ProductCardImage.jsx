@@ -88,7 +88,7 @@ export default function ProductCardImage({
         loading={eager ? 'eager' : 'lazy'}
         fetchpriority={eager ? 'high' : 'auto'}
         decoding="async"
-        className={className}
+        className={`dtb-product-img${className ? ` ${className}` : ''}`}
         style={{
           position: 'absolute',
           inset: 0,
@@ -96,7 +96,6 @@ export default function ProductCardImage({
           height: '100%',
           objectFit: 'contain',
           objectPosition: 'center',
-          imageRendering: '-webkit-optimize-contrast',
           padding,
           opacity: loaded ? 1 : 0,
           transform: loaded ? 'translateY(0)' : 'translateY(6px)',

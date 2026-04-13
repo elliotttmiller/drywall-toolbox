@@ -85,6 +85,23 @@ body {
     100% { background-position: -200% 0; }
 }
 
+/* --- PRODUCT IMAGE RENDERING QUALITY --- */
+/*
+  Applied to every product image (gallery, lightbox, card) to ensure the
+  browser uses its highest-quality scaling algorithm.
+
+  Cascade trick: list smooth (standard) first, then the webkit vendor prefix.
+    • Firefox / standard browsers: recognise "smooth", ignore the unknown
+      -webkit-optimize-contrast → renders with high-quality bicubic.
+    • Chrome / Safari / Edge:      override "smooth" with the vendor value
+      which triggers an even sharper contrast-preserving interpolation,
+      making product photos look pixel-perfect at any display density.
+*/
+.dtb-product-img {
+  image-rendering: smooth;
+  image-rendering: -webkit-optimize-contrast;
+}
+
 /* --- SECTION ANIMATIONS --- */
 /*
   Reduced from 600ms → 280ms and translateY from 20px → 10px.

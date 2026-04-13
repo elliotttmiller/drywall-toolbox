@@ -201,7 +201,7 @@ function extractBrand(wcProduct) {
  */
 function upgradeImageUrl(src) {
   if (!src) return src;
-  return src.replace(/-\d+x\d+(\.[a-zA-Z0-9]+)$/, '$1');
+  return src.replace(/-\d+x\d+(\.(jpg|jpeg|png|webp|gif|avif|svg))$/i, '$1');
 }
 
 /**
