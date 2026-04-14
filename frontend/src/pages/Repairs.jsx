@@ -1458,7 +1458,7 @@ export default function Repairs() {
                 {MAINTENANCE_SCHEDULE.map((row, idx) => {
                   const badgeColors = {
                     Heavy:   { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626' },
-                    Regular: { bg: 'rgba(37,99,235,0.07)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)' },
+                    Regular: { bg: 'rgba(37,99,235,0.06)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)' },
                     Light:   { bg: '#f0fdf4', border: '#86efac', text: '#16a34a' },
                   };
                   const colors = badgeColors[row.badge] || badgeColors.Regular;
