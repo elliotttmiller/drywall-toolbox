@@ -1010,12 +1010,34 @@ export default function Repairs() {
      Render
      ────────────────────────────────────────────────────────────────────── */
   return (
-    <div style={{ minHeight: '100vh' }} className="page-wrapper">
+    <div style={{ minHeight: '100vh' }} className="page-wrapper repairs-page">
       <SEOHead
         title="Tool Repair Services"
         description="Professional drywall tool repair services and guides. Find repair solutions for TapeTech, Columbia, Asgard, Graco, and other professional drywall finishing tools."
         canonical="https://drywalltoolbox.com/repairs"
       />
+
+      {/* ── Floating CTA Bar (mobile only) ───────────────────────────────── */}
+      <div className="repairs-floating-cta">
+        <button
+          className="alloy-button repairs-floating-btn repairs-floating-btn--primary"
+          onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        >
+          Request Repair
+        </button>
+        <button
+          type="button"
+          className="repairs-floating-btn repairs-floating-btn--secondary"
+          onClick={() => {
+            document.getElementById('pricing-tabs-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        >
+          View Pricing
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+      </div>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section style={{
@@ -1084,7 +1106,7 @@ export default function Repairs() {
                 Professional drywall tool repair for automatic tapers, flat boxes, mud pumps, and accessories.
                 Transparent pricing, 90-day warranty, no charges until you approve.
               </p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div className="repairs-hero-cta" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <button
                   className="alloy-button"
                   style={{ background: 'white', color: '#1e3a8a', border: 'none', cursor: 'pointer', fontWeight: 800 }}
