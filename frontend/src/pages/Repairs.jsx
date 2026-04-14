@@ -286,7 +286,7 @@ export const PRICING_TAB_DATA = [
       {
         id: 'iu', name: 'Insurance Upgrade', price: '+$15', badge: null,
         target: 'Recommended for tools valued over $500',
-        features: ['Full declared value coverage', 'Recommended for tools over $500 in value'],
+        features: ['Full declared value coverage'],
       },
       {
         id: 'pk', name: 'Packaging Kit (Pre-Paid)', price: '$12 credit', badge: null,
@@ -302,7 +302,7 @@ export const PRICING_TAB_DATA = [
   },
 ];
 
-// Copy blocks — trust signals
+// Copy blocks — trust signals and pricing anchor
 const REPAIR_COPY = {
   anchor:         'New Taper: ~$1,899  |  Standard Rebuild: $299  —  Save 84%',
   partsLock:      'All replacement parts quoted and locked before work begins. No surprise invoices.',
