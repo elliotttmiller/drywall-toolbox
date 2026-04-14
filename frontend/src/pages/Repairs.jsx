@@ -1433,266 +1433,64 @@ export default function Repairs() {
             </p>
           </div>
 
-          {/* Usage cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
-            gap: '20px',
-            marginBottom: 'clamp(2rem, 4vw, 3rem)',
-          }}>
-            {MAINTENANCE_SCHEDULE.map((row) => {
-              const badgeColors = {
-                Heavy: { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626', icon: '#dc2626' },
-                Regular: { bg: 'rgba(37,99,235,0.06)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)', icon: '#2563eb' },
-                Light: { bg: '#f0fdf4', border: '#86efac', text: '#16a34a', icon: '#16a34a' },
-              };
-              const colors = badgeColors[row.badge] || badgeColors.Regular;
-              return (
-                <div key={row.level} style={{
-                  background: 'white',
-                  border: '1px solid var(--machined-border)',
-                  borderRadius: '12px',
-                  padding: 'clamp(1.25rem, 3vw, 1.75rem)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'box-shadow 0.2s',
-                }}
-                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(15,23,42,0.08)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
-                >
-                  {/* Colored top bar */}
-                  <div style={{
-                    position: 'absolute', top: 0, left: 0, right: 0,
-                    height: '3px',
-                    background: colors.icon,
-                    opacity: 0.6,
-                  }} />
-                  <div style={{
-                    display: 'inline-block',
-                    background: colors.bg,
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '99px', padding: '3px 12px',
-                    fontSize: '0.68rem', fontWeight: 800,
-                    letterSpacing: '0.08em', textTransform: 'uppercase',
-                    color: colors.text, marginBottom: '14px',
-                  }}>
-                    {row.badge} Use
-                  </div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
-                    {row.level}
-                  </h3>
-                  <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 16px 0', lineHeight: 1.5 }}>
-                    {row.usage}
-                  </p>
-                  <div style={{
-                    background: colors.bg,
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: '8px',
-                    padding: '11px 16px',
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                  }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.icon} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <div>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: colors.text, marginBottom: '1px' }}>Recommended Interval</div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: colors.icon }}>{row.interval}</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-      </section>
-
-      {/* ── Repair vs. Replace ───────────────────────────────────────────── */}
-      <section style={{
-        background: 'var(--alloy-base)',
-        borderTop: '1px solid var(--machined-border)',
-        borderBottom: '1px solid var(--machined-border)',
-        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
-      }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
-            <div style={{
-              display: 'inline-block',
-              background: 'rgba(37,99,235,0.08)',
-              border: '1px solid rgba(37,99,235,0.2)',
-              borderRadius: '99px', padding: '5px 16px',
-              fontSize: '0.68rem', fontWeight: 700,
-              letterSpacing: '0.12em', textTransform: 'uppercase',
-              color: 'var(--primary-600)', marginBottom: '14px',
-            }}>
-              Decision Guide
-            </div>
-            <h2 style={{
-              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 900, color: '#0f172a',
-              margin: '0 0 12px 0', letterSpacing: '-0.025em',
-            }}>
-              Repair vs. Replace
-            </h2>
-            <p style={{ color: 'rgba(15,23,42,0.55)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0 }}>
-              Use the industry-standard 70% rule to make the right call
-            </p>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
-            gap: '20px',
-            alignItems: 'stretch',
-          }}>
-            {/* Rule card */}
-            <div style={{
-              background: 'white',
-              border: '1px solid var(--machined-border)',
-              borderRadius: '12px',
-              padding: 'clamp(1.5rem, 3vw, 2rem)',
-            }}>
-              <div style={{
-                display: 'inline-block',
-                background: 'rgba(37,99,235,0.08)',
-                border: '1px solid rgba(37,99,235,0.2)',
-                borderRadius: '99px', padding: '4px 14px',
-                fontSize: '0.68rem', fontWeight: 700,
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: 'var(--primary-600)', marginBottom: '16px',
-              }}>
-                The 70% Rule
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 14px 0' }}>
-                How to decide
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{
-                  background: '#f0fdf4', border: '1px solid #86efac',
-                  borderRadius: '8px', padding: '14px 16px',
-                  display: 'flex', gap: '10px', alignItems: 'flex-start',
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '1px' }}>
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#15803d', lineHeight: 1.5 }}>
-                    Repair is economical if repair cost is under 70% of new tool price
-                  </p>
-                </div>
-                <div style={{
-                  background: '#fef2f2', border: '1px solid #fca5a5',
-                  borderRadius: '8px', padding: '14px 16px',
-                  display: 'flex', gap: '10px', alignItems: 'flex-start',
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '1px' }}>
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                  </svg>
-                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#dc2626', lineHeight: 1.5 }}>
-                    Consider replacement if repair cost reaches 70%+ of new tool price
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Example card */}
-            <div style={{
-              background: 'white',
-              border: '1px solid var(--machined-border)',
-              borderRadius: '12px',
-              padding: 'clamp(1.5rem, 3vw, 2rem)',
-            }}>
-              <div style={{
-                display: 'inline-block',
-                background: '#f0fdf4', border: '1px solid #86efac',
-                borderRadius: '99px', padding: '4px 14px',
-                fontSize: '0.68rem', fontWeight: 700,
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: '#15803d', marginBottom: '16px',
-              }}>
-                Real-World Example
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 16px 0' }}>
-                Automatic Taper Rebuild
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {[
-                  { label: 'New Tool Price', value: '~$2,000', color: 'rgba(15,23,42,0.7)' },
-                  { label: 'Full Rebuild Cost', value: '$450–$600', color: 'rgba(15,23,42,0.7)' },
-                  { label: 'Your Savings', value: '70–77%', color: '#15803d' },
-                ].map((item) => (
-                  <div key={item.label} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '10px 14px',
-                    background: 'var(--alloy-base)',
-                    border: '1px solid var(--machined-border)',
-                    borderRadius: '8px',
-                  }}>
-                    <span style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.6)', fontWeight: 500 }}>{item.label}</span>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 800, color: item.color }}>{item.value}</span>
-                  </div>
-                ))}
-                <div style={{
-                  background: '#f0fdf4', border: '1px solid #86efac',
-                  borderRadius: '8px', padding: '11px 16px',
-                  display: 'flex', alignItems: 'center', gap: '8px',
-                  marginTop: '4px',
-                }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#15803d' }}>Verdict: Repair Recommended</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Pro tips card */}
-            <div style={{
-              background: 'white',
-              border: '1px solid var(--machined-border)',
-              borderRadius: '12px',
-              padding: 'clamp(1.5rem, 3vw, 2rem)',
-            }}>
-              <div style={{
-                display: 'inline-block',
-                background: 'rgba(37,99,235,0.08)',
-                border: '1px solid rgba(37,99,235,0.2)',
-                borderRadius: '99px', padding: '4px 14px',
-                fontSize: '0.68rem', fontWeight: 700,
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: 'var(--primary-600)', marginBottom: '16px',
-              }}>
-                Pro Tips
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 16px 0' }}>
-                Before You Ship
-              </h3>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  'Photograph your tool and document symptoms before packaging',
-                  'Budget 20–30% extra for hard parts (chains, sprockets, shafts)',
-                  'Annual tune-ups cost ~1/3 of emergency rebuilds',
-                  'Verify your brand/model year is supported before shipping',
-                  'Wrap in bubble wrap; use the smallest sturdy box available',
-                ].map((tip, i) => (
-                  <li key={i} style={{ display: 'flex', gap: '12px', fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.5 }}>
-                    <span style={{
-                      flexShrink: 0,
-                      width: '22px', height: '22px',
-                      background: 'rgba(37,99,235,0.08)',
-                      border: '1px solid rgba(37,99,235,0.2)',
-                      borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.65rem', fontWeight: 900, color: 'var(--primary-600)',
-                      marginTop: '1px',
+          {/* Maintenance schedule table */}
+          <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--machined-border)', boxShadow: '0 2px 12px rgba(15,23,42,0.06)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', fontSize: '0.9rem' }}>
+              <thead>
+                <tr style={{ background: '#0f172a' }}>
+                  {['Usage Level', 'Typical Usage', 'Recommended Interval', 'Priority'].map((heading) => (
+                    <th key={heading} style={{
+                      padding: '14px 20px',
+                      textAlign: 'left',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(255,255,255,0.75)',
+                      whiteSpace: 'nowrap',
                     }}>
-                      {i + 1}
-                    </span>
-                    {tip}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {MAINTENANCE_SCHEDULE.map((row, idx) => {
+                  const badgeColors = {
+                    Heavy:   { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626' },
+                    Regular: { bg: 'rgba(37,99,235,0.07)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)' },
+                    Light:   { bg: '#f0fdf4', border: '#86efac', text: '#16a34a' },
+                  };
+                  const colors = badgeColors[row.badge] || badgeColors.Regular;
+                  return (
+                    <tr key={row.level} style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--machined-border)', background: idx % 2 === 0 ? 'white' : 'var(--alloy-base, #f8fafc)' }}>
+                      <td style={{ padding: '16px 20px', fontWeight: 700, color: '#0f172a' }}>{row.level}</td>
+                      <td style={{ padding: '16px 20px', color: 'rgba(15,23,42,0.6)' }}>{row.usage}</td>
+                      <td style={{ padding: '16px 20px', fontWeight: 700, color: '#0f172a' }}>{row.interval}</td>
+                      <td style={{ padding: '16px 20px' }}>
+                        <span style={{
+                          display: 'inline-block',
+                          background: colors.bg,
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: '99px',
+                          padding: '3px 12px',
+                          fontSize: '0.68rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          color: colors.text,
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {row.badge} Use
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
+
         </div>
       </section>
 
