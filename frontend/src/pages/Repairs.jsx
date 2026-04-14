@@ -1145,8 +1145,6 @@ export default function Repairs() {
               gap: '12px',
             }}>
               {[
-                { value: '84%', label: 'Avg. savings vs. new tool', sub: 'Rebuild vs. replace' },
-                { value: '$299', label: 'Auto taper full rebuild', sub: 'Most popular service' },
                 { value: '24 hr', label: 'Quote turnaround', sub: 'Photo quote included' },
                 { value: '90-day', label: 'Workmanship warranty', sub: 'Premium overhaul tier' },
               ].map((stat, i) => (
