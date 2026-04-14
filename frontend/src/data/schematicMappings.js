@@ -251,7 +251,7 @@ export function getSchematicIdForProduct(product) {
 
     // Name-keyword fallback
     if (name.includes('8054tt') || (name.includes('8054') && name.includes('flat box handle'))) return 'tapetech-8054tt';
-    if (name.includes('17tt')   || (name.includes('17tt'))) return 'tapetech-17tt';
+    if (name.includes('17tt')) return 'tapetech-17tt';
     if (name.includes('20ttx'))  return 'tapetech-20ttx';
     if (name.includes('25ttx'))  return 'tapetech-25ttx';
     if (name.includes('30ttx'))  return 'tapetech-30ttx';
