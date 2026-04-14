@@ -2099,7 +2099,7 @@ aside input[type="range"],
     .dtb-hero-title {
         font-size: clamp(2.4rem, 3.6vw, 3.6rem);
         font-weight: 900;
-        line-height: 1.0;
+        line-height: 1.05;
         letter-spacing: -0.03em;
         color: white;
         margin: 0;

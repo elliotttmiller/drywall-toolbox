@@ -109,7 +109,7 @@ export default function Home() {
             </span>
 
             <h1 className="dtb-hero-title">
-              The Pro&apos;s<br />
+              The Pros&apos;<br />
               <span>One-Stop Shop</span><br />
               for Drywall Tools.
             </h1>
