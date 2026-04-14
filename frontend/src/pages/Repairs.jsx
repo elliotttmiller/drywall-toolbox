@@ -71,24 +71,6 @@ const STEPS = [
 /* ─────────────────────────────────────────────────────────────────────────────
    Service cards shown above the form
    ───────────────────────────────────────────────────────────────────────── */
-const services = [
-  {
-    title: 'Preventative Maintenance',
-    description: 'Annual tune-ups cost ~1/3 of emergency rebuilds and extend tool life 2–3×. Scheduled inspections, lubrication, seal replacements, and performance tuning.',
-    items: ['Usage-based service intervals', 'Lubrication & fluid replacement', 'Seal & gasket replacements', 'Calibration & adjustment'],
-  },
-  {
-    title: 'Repair & Rebuild',
-    description: 'Full overhauls, head rebuilds, and targeted repairs for automatic tapers, flat boxes, angle boxes, and mud pumps. Labor-only quotes provided upfront.',
-    items: ['Automatic taper head rebuilds', 'Flat & angle box repairs', 'Mud pump overhauls', 'Blade, cable & parts replacement'],
-  },
-  {
-    title: 'Warranty & Service Guarantee',
-    description: 'Every repair comes with a workmanship warranty. We stand behind our work — if a repair fails, we make it right.',
-    items: ['1-year warranty on replaced parts', 'Free rework if repair fails', 'Transparent labor + parts invoicing', 'No charges until you approve a quote'],
-  },
-];
-
 // ─── Authoritative repair pricing — sourced from DTB_Strategy_Overview.md ────
 // Display rules:
 //   • "Best Value" tag on the recommended tier per category
@@ -1253,114 +1235,6 @@ export default function Repairs() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── Services ─────────────────────────────────────────────────────── */}
-      <section style={{
-        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
-        maxWidth: '1400px', margin: '0 auto',
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
-          <div style={{
-            display: 'inline-block',
-            background: 'rgba(37,99,235,0.08)',
-            border: '1px solid rgba(37,99,235,0.2)',
-            borderRadius: '99px', padding: '5px 16px',
-            fontSize: '0.68rem', fontWeight: 700,
-            letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: 'var(--primary-600)', marginBottom: '14px',
-          }}>
-            What We Do
-          </div>
-          <h2 style={{
-            fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-            fontWeight: 900, color: '#0f172a',
-            margin: '0 0 12px 0', letterSpacing: '-0.025em',
-          }}>Our Repair Services</h2>
-          <p style={{ color: 'rgba(15,23,42,0.55)', fontSize: '1rem', margin: 0, maxWidth: '520px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Comprehensive coverage for all professional drywall equipment, from tapers to accessories.
-          </p>
-        </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
-          gap: '20px',
-        }}>
-          {[
-            {
-              icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-              ),
-              ...services[0],
-            },
-            {
-              icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-              ),
-              ...services[1],
-            },
-            {
-              icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-              ),
-              ...services[2],
-            },
-          ].map((svc) => (
-            <div key={svc.title}
-              style={{
-                background: 'white',
-                border: '1px solid var(--machined-border)',
-                borderRadius: '12px',
-                padding: 'clamp(1.5rem, 3vw, 2rem)',
-                transition: 'box-shadow 0.22s, transform 0.22s',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 10px 40px rgba(37,99,235,0.12)';
-                e.currentTarget.style.transform = 'translateY(-3px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              {/* Icon */}
-              <div style={{
-                width: '48px', height: '48px',
-                background: 'rgba(37,99,235,0.07)',
-                border: '1px solid rgba(37,99,235,0.15)',
-                borderRadius: '10px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '16px', flexShrink: 0,
-              }}>
-                {svc.icon}
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 10px 0', letterSpacing: '-0.01em' }}>
-                {svc.title}
-              </h3>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 18px 0', lineHeight: 1.6, flex: 1 }}>
-                {svc.description}
-              </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '7px' }}>
-                {svc.items.map((item) => (
-                  <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.82rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.4 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
         </div>
       </section>
 
