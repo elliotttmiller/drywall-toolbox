@@ -266,6 +266,8 @@ export default function Header({ onCartToggle }) {
           <div className="header-right">
             <nav className="nav-links" aria-label="Secondary">
               <Link to="/repairs" className={`nav-link ${isActive('/repairs') ? 'active' : ''}`} style={{ color: isActive('/repairs') ? 'var(--color-primary-600)' : 'black' }}>Repairs</Link>
+              <Link to="/shipping" className={`nav-link ${isActive('/shipping') ? 'active' : ''}`} style={{ color: isActive('/shipping') ? 'var(--color-primary-600)' : 'black' }}>Shipping</Link>
+              <Link to="/info" className={`nav-link ${isActive('/info') ? 'active' : ''}`} style={{ color: isActive('/info') ? 'var(--color-primary-600)' : 'black' }}>Info</Link>
               <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`} style={{ color: isActive('/about') ? 'var(--color-primary-600)' : 'black' }}>About</Link>
               <Link to="/contact" className={`nav-link ${isActive('/contact') ? 'active' : ''}`} style={{ color: isActive('/contact') ? 'var(--color-primary-600)' : 'black' }}>Contact</Link>
             </nav>
@@ -487,6 +489,20 @@ export default function Header({ onCartToggle }) {
               onClick={closeMobileMenu}
             >
               Repairs
+            </Link>
+            <Link
+              to="/shipping"
+              className={`nav-link-mobile ${isActive('/shipping') ? 'active' : ''}`}
+              onClick={closeMobileMenu}
+            >
+              Shipping
+            </Link>
+            <Link
+              to="/info"
+              className={`nav-link-mobile ${isActive('/info') ? 'active' : ''}`}
+              onClick={closeMobileMenu}
+            >
+              Info
             </Link>
             <Link
               to="/calculators"

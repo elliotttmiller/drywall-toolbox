@@ -2505,6 +2505,26 @@ export default function Repairs() {
                 ),
               },
               {
+                to: '/shipping',
+                title: 'Shipping Information',
+                description: 'Free prepaid inbound label, transparent return pricing, and step-by-step packaging guidance.',
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                ),
+              },
+              {
+                to: '/info',
+                title: 'Maintenance & Repair Guide',
+                description: 'Service intervals, critical wear-part checklists, pro care tips, and repair FAQs.',
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                ),
+              },
+              {
                 to: '/products',
                 title: 'Shop Replacement Tools',
                 description: 'Upgrade your toolkit — browse our full catalog of professional drywall tools and accessories.',
