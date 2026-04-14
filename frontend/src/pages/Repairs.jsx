@@ -1010,34 +1010,12 @@ export default function Repairs() {
      Render
      ────────────────────────────────────────────────────────────────────── */
   return (
-    <div style={{ minHeight: '100vh' }} className="page-wrapper repairs-page">
+    <div style={{ minHeight: '100vh' }} className="page-wrapper">
       <SEOHead
         title="Tool Repair Services"
         description="Professional drywall tool repair services and guides. Find repair solutions for TapeTech, Columbia, Asgard, Graco, and other professional drywall finishing tools."
         canonical="https://drywalltoolbox.com/repairs"
       />
-
-      {/* ── Floating CTA Bar (mobile only) ───────────────────────────────── */}
-      <div className="repairs-floating-cta">
-        <button
-          className="alloy-button repairs-floating-btn repairs-floating-btn--primary"
-          onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-        >
-          Request Repair
-        </button>
-        <button
-          type="button"
-          className="repairs-floating-btn repairs-floating-btn--secondary"
-          onClick={() => {
-            document.getElementById('pricing-tabs-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
-        >
-          View Pricing
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </button>
-      </div>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section style={{
@@ -1106,7 +1084,7 @@ export default function Repairs() {
                 Professional drywall tool repair for automatic tapers, flat boxes, mud pumps, and accessories.
                 Transparent pricing, 90-day warranty, no charges until you approve.
               </p>
-              <div className="repairs-hero-cta" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <button
                   className="alloy-button"
                   style={{ background: 'white', color: '#1e3a8a', border: 'none', cursor: 'pointer', fontWeight: 800 }}
@@ -1116,26 +1094,22 @@ export default function Repairs() {
                 </button>
                 <button
                   type="button"
+                  className="alloy-button"
                   style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '6px',
-                    padding: '12px 20px',
                     background: 'transparent',
-                    border: '1.5px solid rgba(255,255,255,0.35)',
-                    borderRadius: '4px',
-                    color: 'rgba(255,255,255,0.85)',
+                    color: 'white',
+                    border: '1.5px solid rgba(255,255,255,0.5)',
                     cursor: 'pointer',
-                    fontSize: '0.875rem', fontWeight: 700,
-                    transition: 'border-color 0.2s, color 0.2s',
-                    letterSpacing: '0.02em',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
                   }}
                   onClick={() => {
                     document.getElementById('pricing-tabs-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.7)'; e.currentTarget.style.color = 'white'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}
                 >
                   View Pricing
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="6 9 12 15 18 9"/>
                   </svg>
                 </button>
