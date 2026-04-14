@@ -9,6 +9,7 @@ import platinumLogo from '/brands/Platinum/platinum_logo.svg';
 import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
 import SEOHead from '../components/SEOHead';
 import { buildOrganizationSchema, buildSiteLinksSearchBoxSchema } from '../utils/schema';
+import { ShoppingBag, Wrench, Layers, FileText, Truck, Shield, Phone, ChevronRight, Star } from 'lucide-react';
 
 const trustBadges = [
   {
@@ -60,7 +61,9 @@ export default function Home() {
         schema={[buildOrganizationSchema(), buildSiteLinksSearchBoxSchema()]}
       />
       <div style={{ background: 'white' }} className="page-wrapper">
-      {/* ─── HERO ─── */}
+
+      {/* ─── MOBILE/TABLET HERO (hidden on desktop ≥ 1025px) ─── */}
+      <div className="dtb-hero-mobile-wrapper">
       <section
         className="section-enter home-hero-section"
       >
@@ -93,6 +96,125 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </div>
+
+      {/* ─── DESKTOP HERO (hidden on mobile/tablet ≤ 1024px) ─── */}
+      <section className="dtb-desktop-hero section-enter" aria-label="Hero">
+        <div className="dtb-desktop-hero-inner">
+          {/* Left: headline + CTAs + trust stats */}
+          <div className="dtb-hero-content">
+            <span className="dtb-hero-eyebrow">
+              <Star size={11} />
+              Professional Grade · Trade Trusted
+            </span>
+
+            <h1 className="dtb-hero-title">
+              The Pro&apos;s<br />
+              <span>One-Stop Shop</span><br />
+              for Drywall Tools.
+            </h1>
+
+            <p className="dtb-hero-subtitle">
+              Production-grade taping, finishing, and sanding equipment from the industry&apos;s most trusted brands — at unbeatable prices with lightning-fast shipping.
+            </p>
+
+            <div className="dtb-hero-actions">
+              <Link to="/all-products" className="dtb-hero-cta-primary">
+                Shop All Products <ChevronRight size={15} />
+              </Link>
+              <Link to="/parts" className="dtb-hero-cta-secondary">
+                Replacement Parts
+              </Link>
+            </div>
+
+            <div className="dtb-hero-stats">
+              <div className="dtb-hero-stat">
+                <span className="dtb-hero-stat-num">7+</span>
+                <span className="dtb-hero-stat-label">Pro Brands</span>
+              </div>
+              <span className="dtb-hero-stat-divider" />
+              <div className="dtb-hero-stat">
+                <span className="dtb-hero-stat-num">Fast</span>
+                <span className="dtb-hero-stat-label">Shipping</span>
+              </div>
+              <span className="dtb-hero-stat-divider" />
+              <div className="dtb-hero-stat">
+                <span className="dtb-hero-stat-num">OEM</span>
+                <span className="dtb-hero-stat-label">Certified Parts</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: quick-navigate category cards */}
+          <div className="dtb-hero-visual">
+            <p className="dtb-hero-visual-label">Shop by Category</p>
+            <div className="dtb-hero-categories">
+              <Link to="/products?category=taping" className="dtb-hero-cat-card">
+                <div className="dtb-hero-cat-icon"><Wrench size={18} /></div>
+                <div>
+                  <span className="dtb-hero-cat-name">Taping Tools</span>
+                  <span className="dtb-hero-cat-sub">Automatic tapers &amp; more</span>
+                </div>
+              </Link>
+              <Link to="/products?category=finishing" className="dtb-hero-cat-card">
+                <div className="dtb-hero-cat-icon"><Layers size={18} /></div>
+                <div>
+                  <span className="dtb-hero-cat-name">Finishing Tools</span>
+                  <span className="dtb-hero-cat-sub">Boxes, pumps &amp; knives</span>
+                </div>
+              </Link>
+              <Link to="/products?category=sanding" className="dtb-hero-cat-card">
+                <div className="dtb-hero-cat-icon"><Star size={18} /></div>
+                <div>
+                  <span className="dtb-hero-cat-name">Sanding Tools</span>
+                  <span className="dtb-hero-cat-sub">Sanders &amp; dust control</span>
+                </div>
+              </Link>
+              <Link to="/parts" className="dtb-hero-cat-card">
+                <div className="dtb-hero-cat-icon"><FileText size={18} /></div>
+                <div>
+                  <span className="dtb-hero-cat-name">Parts &amp; Schematics</span>
+                  <span className="dtb-hero-cat-sub">OEM parts &amp; diagrams</span>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── DESKTOP FEATURE STRIP (hidden on mobile/tablet) ─── */}
+      <div className="dtb-feature-strip" aria-hidden="true">
+        <div className="dtb-feature-strip-inner">
+          <div className="dtb-feature-item">
+            <div className="dtb-feature-icon"><Truck size={18} /></div>
+            <div className="dtb-feature-text">
+              <strong>Free Shipping</strong>
+              <span>On qualifying orders</span>
+            </div>
+          </div>
+          <div className="dtb-feature-item">
+            <div className="dtb-feature-icon"><Shield size={18} /></div>
+            <div className="dtb-feature-text">
+              <strong>Warranty Covered</strong>
+              <span>Full manufacturer coverage</span>
+            </div>
+          </div>
+          <div className="dtb-feature-item">
+            <div className="dtb-feature-icon"><Wrench size={18} /></div>
+            <div className="dtb-feature-text">
+              <strong>Repair Services</strong>
+              <span>Professional tool repair</span>
+            </div>
+          </div>
+          <div className="dtb-feature-item">
+            <div className="dtb-feature-icon"><Phone size={18} /></div>
+            <div className="dtb-feature-text">
+              <strong>Expert Support</strong>
+              <span>Real help from real pros</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ─── TRENDING PRODUCTS ─── */}
       <TrendingProducts />

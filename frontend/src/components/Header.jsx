@@ -1,13 +1,14 @@
-﻿import { Link, useLocation } from 'react-router-dom';
+﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuthContext } from '../auth/AuthContext.js';
-import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Search, Truck, Phone } from 'lucide-react';
 import Logo from '/logo2.svg';
 import MobileSearch from './MobileSearch';
 
 export default function Header({ onCartToggle }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { getCartCount } = useCart();
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -134,6 +135,29 @@ export default function Header({ onCartToggle }) {
 
   return (
     <header className="site-header" role="banner">
+      {/* ── Desktop Promo Bar — hidden on mobile/tablet via CSS ── */}
+      <div className="dtb-promo-bar" aria-hidden="true">
+        <div className="dtb-promo-bar-inner">
+          <div className="dtb-promo-center">
+            <Truck size={13} />
+            <span>Free Shipping on qualifying orders</span>
+            <span className="dtb-promo-divider">·</span>
+            <span>Professional-grade tools for the trade</span>
+            <span className="dtb-promo-divider">·</span>
+            <span className="dtb-promo-badge">
+              <span>Pro Trusted</span>
+            </span>
+          </div>
+          <div className="dtb-promo-links">
+            <Link to="/contact">Support</Link>
+            <span className="dtb-promo-divider">|</span>
+            <Link to="/faq">FAQ</Link>
+            <span className="dtb-promo-divider">|</span>
+            <Link to="/repairs">Repairs</Link>
+          </div>
+        </div>
+      </div>
+
       <div className="site-header-inner">
   {/* Mobile Layout */}
   <div className="flex md:hidden items-center justify-between w-full header-mobile-layout" style={{ display: isTablet ? 'flex' : undefined }}>
@@ -164,118 +188,104 @@ export default function Header({ onCartToggle }) {
           </button>
         </div>
 
-  {/* Desktop Layout */}
+  {/* ── Desktop Layout — restructured: Logo Left | Nav Center | Actions Right ── */}
   <div className="hidden md:contents header-desktop-layout" style={{ display: isTablet ? 'none' : undefined }}>
+
+          {/* Logo — Left */}
           <div className="header-left">
+            <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src={Logo} alt="Drywall Toolbox Logo" className="logo-image" />
+            </Link>
+          </div>
+
+          {/* Primary Nav — Center (all links combined) */}
+          <div className="header-center">
             <nav className="nav-links" aria-label="Primary">
-              <div 
+              {/* Shop dropdown */}
+              <div
                 style={{ position: 'relative' }}
                 onMouseEnter={handleDropdownMouseEnter}
                 onMouseLeave={handleDropdownMouseLeave}
               >
-                <button 
-                  className={`nav-link flex items-center gap-1 ${isActive('/products') ? 'active' : ''}`}
-                  style={{ color: isActive('/products') ? 'var(--color-primary-600)' : 'black', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 0', fontSize: 'inherit' }}
+                <button
+                  className={`nav-link flex items-center gap-1 ${isActive('/products') || isActive('/all-products') || isActive('/parts') ? 'active' : ''}`}
+                  style={{ color: isActive('/products') || isActive('/all-products') || isActive('/parts') ? 'var(--color-primary-600)' : 'black', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit' }}
                 >
                   Shop
-                  <ChevronDown size={16} style={{ transition: 'transform 200ms ease-out', transform: shopDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                  <ChevronDown size={14} style={{ transition: 'transform 200ms ease-out', transform: shopDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                 </button>
-                
-                {/* Always render dropdown, control visibility with opacity/pointer-events */}
-                <div 
+
+                <div
                   style={{
                     position: 'absolute',
                     top: '100%',
                     left: 0,
                     backgroundColor: 'white',
                     border: '1px solid var(--machined-border)',
-                    borderRadius: '6px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    minWidth: '200px',
+                    borderRadius: '8px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
+                    minWidth: '210px',
                     width: 'max-content',
                     zIndex: 10000,
-                    marginTop: '4px',
+                    marginTop: '6px',
                     opacity: shopDropdownOpen ? 1 : 0,
                     visibility: shopDropdownOpen ? 'visible' : 'hidden',
                     pointerEvents: shopDropdownOpen ? 'auto' : 'none',
-                    transition: 'opacity 150ms ease-out, visibility 150ms ease-out',
-                    animation: shopDropdownOpen ? 'dropdownSlideIn 200ms ease-out' : 'none'
+                    transition: 'opacity 150ms ease-out, visibility 150ms ease-out, transform 150ms ease-out',
+                    transform: shopDropdownOpen ? 'translateY(0)' : 'translateY(-4px)',
+                    padding: '6px',
                   }}
                   className="shop-dropdown-menu"
                 >
-                    <Link 
-                      to="/all-products" 
+                  {[
+                    { to: '/all-products', label: 'All Products', sub: 'Browse our full catalog' },
+                    { to: '/products', label: 'Shop by Brand', sub: 'TapeTech, Columbia, SurPro…' },
+                    { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits & schematics' },
+                  ].map(({ to, label, sub }) => (
+                    <Link
+                      key={to}
+                      to={to}
                       onClick={() => setShopDropdownOpen(false)}
-                      style={{
-                        display: 'block',
-                        padding: '12px 16px',
-                        color: 'black',
-                        textDecoration: 'none',
-                        transition: 'background-color 150ms ease-out',
-                        borderRadius: '6px 6px 0 0'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--alloy-base)'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                      style={{ display: 'block', padding: '10px 14px', textDecoration: 'none', borderRadius: '6px', transition: 'background 130ms' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--alloy-base)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                      All Products
+                      <span style={{ display: 'block', fontWeight: 700, fontSize: '0.83rem', color: '#0f172a', lineHeight: 1.3 }}>{label}</span>
+                      <span style={{ display: 'block', fontSize: '0.7rem', color: 'rgba(15,23,42,0.45)', marginTop: '1px' }}>{sub}</span>
                     </Link>
-                    <Link 
-                      to="/products" 
-                      onClick={() => setShopDropdownOpen(false)}
-                      style={{
-                        display: 'block',
-                        padding: '12px 16px',
-                        color: 'black',
-                        textDecoration: 'none',
-                        transition: 'background-color 150ms ease-out'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--alloy-base)'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                    >
-                      Brands
-                    </Link>
-                    <Link 
-                      to="/parts" 
-                      onClick={() => setShopDropdownOpen(false)}
-                      style={{
-                        display: 'block',
-                        padding: '12px 16px',
-                        color: 'black',
-                        textDecoration: 'none',
-                        transition: 'background-color 150ms ease-out',
-                        borderRadius: '0 0 6px 6px'
-                      }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--alloy-base)'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-                    >
-                      Replacement Parts
-                    </Link>
-                  </div>
+                  ))}
+                </div>
               </div>
+
               <Link to="/schematics" className={`nav-link ${isActive('/schematics') ? 'active' : ''}`} style={{ color: isActive('/schematics') ? 'var(--color-primary-600)' : 'black' }}>Schematics</Link>
               <Link to="/calculators" className={`nav-link ${isActive('/calculators') ? 'active' : ''}`} style={{ color: isActive('/calculators') ? 'var(--color-primary-600)' : 'black' }}>Calculators</Link>
-            </nav>
-          </div>
 
-          <div className="header-center">
-            <Link to="/" className="flex items-center justify-center">
-              <img src={Logo} alt="Drywall Toolbox Logo" className="logo-image" />
-            </Link>
-          </div>
+              {/* Visual separator */}
+              <span style={{ width: '1px', height: '18px', background: 'rgba(15,23,42,0.1)', flexShrink: 0, margin: '0 4px' }} aria-hidden="true" />
 
-          <div className="header-right">
-            <nav className="nav-links" aria-label="Secondary">
               <Link to="/repairs" className={`nav-link ${isActive('/repairs') ? 'active' : ''}`} style={{ color: isActive('/repairs') ? 'var(--color-primary-600)' : 'black' }}>Repairs</Link>
               <Link to="/faq" className={`nav-link ${isActive('/faq') ? 'active' : ''}`} style={{ color: isActive('/faq') ? 'var(--color-primary-600)' : 'black' }}>FAQ</Link>
               <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`} style={{ color: isActive('/about') ? 'var(--color-primary-600)' : 'black' }}>About</Link>
               <Link to="/contact" className={`nav-link ${isActive('/contact') ? 'active' : ''}`} style={{ color: isActive('/contact') ? 'var(--color-primary-600)' : 'black' }}>Contact</Link>
             </nav>
+          </div>
 
-            {/* ── Desktop account icon + dropdown ─────────────────────────── */}
+          {/* Actions — Right: Search + Account + Cart */}
+          <div className="header-right">
+
+            {/* Search icon */}
+            <button
+              onClick={() => navigate('/all-products')}
+              className="dtb-search-btn header-icon"
+              aria-label="Search products"
+              title="Search products"
+            >
+              <Search size={16} />
+            </button>
+
+            {/* ── Account icon + dropdown ── */}
             {!isLoading && (
               <div ref={accountDropdownRef} style={{ position: 'relative' }}>
-
-                {/* Trigger — circle icon button */}
                 <button
                   onClick={() => setAccountDropdownOpen((o) => !o)}
                   aria-label="Account menu"
@@ -301,7 +311,6 @@ export default function Header({ onCartToggle }) {
                   <User size={16} style={{ color: isAuthenticated ? 'white' : '#475569' }} />
                 </button>
 
-                {/* Dropdown panel — always rendered, CSS-driven open/close */}
                 <div
                   style={{
                     position:        'absolute',
@@ -323,9 +332,7 @@ export default function Header({ onCartToggle }) {
                   }}
                 >
                   {isAuthenticated ? (
-                    /* ── Logged-in state ── */
                     <>
-                      {/* Identity header */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px 12px', borderBottom: '1px solid rgba(15,23,42,0.07)' }}>
                         <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <User size={15} style={{ color: 'white' }} />
@@ -341,8 +348,6 @@ export default function Header({ onCartToggle }) {
                           )}
                         </div>
                       </div>
-
-                      {/* Dashboard */}
                       <Link
                         to="/dashboard"
                         onClick={() => setAccountDropdownOpen(false)}
@@ -353,10 +358,7 @@ export default function Header({ onCartToggle }) {
                         <User size={14} style={{ opacity: 0.45, flexShrink: 0 }} />
                         My Dashboard
                       </Link>
-
                       <div style={{ height: '1px', background: 'rgba(15,23,42,0.07)', margin: '2px 0' }} />
-
-                      {/* Sign out */}
                       <button
                         onClick={async () => { setAccountDropdownOpen(false); await logout(); }}
                         style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '11px 16px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '0.845rem', fontWeight: 600, color: '#dc2626', transition: 'background 130ms' }}
@@ -368,16 +370,12 @@ export default function Header({ onCartToggle }) {
                       </button>
                     </>
                   ) : (
-                    /* ── Guest state ── */
                     <>
-                      {/* Label */}
                       <div style={{ padding: '13px 16px 10px', borderBottom: '1px solid rgba(15,23,42,0.07)' }}>
                         <p style={{ margin: 0, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#94a3b8' }}>
                           My Account
                         </p>
                       </div>
-
-                      {/* Sign In */}
                       <Link
                         to="/login"
                         onClick={() => setAccountDropdownOpen(false)}
@@ -388,10 +386,7 @@ export default function Header({ onCartToggle }) {
                         <LogIn size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
                         Sign In
                       </Link>
-
                       <div style={{ height: '1px', background: 'rgba(15,23,42,0.07)', margin: '2px 16px' }} />
-
-                      {/* Create Account */}
                       <div style={{ padding: '10px 12px 12px' }}>
                         <Link
                           to="/register"

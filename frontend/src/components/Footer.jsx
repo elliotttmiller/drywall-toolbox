@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Instagram, Facebook, Twitter, ChevronDown } from 'lucide-react';
+import { Instagram, Facebook, Twitter, ChevronDown, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import Logo from '/logo2.svg';
 
 export default function Footer() {
@@ -202,6 +202,27 @@ export default function Footer() {
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Contact column — desktop only, hidden on mobile/tablet via CSS */}
+        <div className="dtb-footer-contact-col">
+          <h5>Contact &amp; Support</h5>
+          <a href="mailto:support@drywalltoolbox.com" className="dtb-footer-contact-item">
+            <Mail size={14} />
+            support@drywalltoolbox.com
+          </a>
+          <Link to="/contact" className="dtb-footer-contact-item">
+            <Phone size={14} />
+            Contact Us Online
+          </Link>
+          <span className="dtb-footer-contact-item" style={{ cursor: 'default' }}>
+            <Clock size={14} />
+            Mon – Fri&nbsp;· 8AM – 5PM CST
+          </span>
+          <Link to="/repairs" className="dtb-footer-contact-item" style={{ marginTop: '4px' }}>
+            <MapPin size={14} />
+            Tool Repair Services
+          </Link>
         </div>
       </div>
 

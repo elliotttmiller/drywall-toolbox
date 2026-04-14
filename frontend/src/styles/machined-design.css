@@ -1842,3 +1842,579 @@ aside input[type="range"],
     background: none;
     border-radius: 0;
 }
+
+/* =========================================================
+   DESKTOP UI/UX REDESIGN  — ≥ 1025px ONLY
+   Every rule below is wrapped in @media (min-width: 1025px)
+   (or the .dtb-desktop-only / .dtb-mobile-only utilities)
+   to guarantee zero impact on mobile and tablet viewports.
+   ========================================================= */
+
+/* ── Viewport visibility utilities ────────────────────── */
+.dtb-desktop-only { display: none !important; }
+.dtb-mobile-only  { display: block; }
+
+@media (min-width: 1025px) {
+    .dtb-desktop-only { display: block !important; }
+    .dtb-mobile-only  { display: none !important; }
+}
+
+/* ── PROMO BAR ──────────────────────────────────────────
+   A slim full-width announcement strip that sits at the
+   very top of the fixed header, desktop-only.
+   ─────────────────────────────────────────────────────── */
+.dtb-promo-bar { display: none; }
+
+@media (min-width: 1025px) {
+    .dtb-promo-bar {
+        display: flex;
+        align-items: center;
+        background: #0b1220;
+        height: 36px;
+        width: 100%;
+        flex-shrink: 0;
+        padding: 0 clamp(1rem, 3vw, 2.5rem);
+    }
+
+    .dtb-promo-bar-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .dtb-promo-center {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: rgba(255,255,255,0.8);
+    }
+
+    .dtb-promo-center svg {
+        color: var(--primary-400, #60a5fa);
+        flex-shrink: 0;
+    }
+
+    .dtb-promo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(37,99,235,0.3);
+        border: 1px solid rgba(37,99,235,0.4);
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--primary-300, #93c5fd);
+    }
+
+    .dtb-promo-links {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .dtb-promo-links a {
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        font-size: 0.72rem;
+        font-weight: 500;
+        transition: color 150ms;
+    }
+
+    .dtb-promo-links a:hover { color: var(--primary-400, #60a5fa); }
+
+    .dtb-promo-divider {
+        color: rgba(255,255,255,0.18);
+        font-size: 0.65rem;
+        user-select: none;
+    }
+}
+
+/* ── HEADER: Desktop Compact Restructure ───────────────
+   Collapses the large logo-centric header into a compact
+   64 px nav bar + 36 px promo bar  = 100 px total.
+   Logo moves to the left; all nav links to the center;
+   search / account / cart stay on the right.
+   ─────────────────────────────────────────────────────── */
+@media (min-width: 1025px) {
+    :root { --header-height: 100px; }
+
+    .site-header {
+        display: flex;
+        flex-direction: column;
+        min-height: var(--header-height);
+        padding: 0;
+    }
+
+    .site-header-inner {
+        height: 64px !important;
+        min-height: 64px !important;
+        flex: 1;
+        display: grid !important;
+        grid-template-columns: auto 1fr auto !important;
+        gap: 32px !important;
+        padding: 0 clamp(1rem, 3vw, 2.5rem) !important;
+        align-items: center;
+    }
+
+    /* Logo: compact, left-anchored */
+    .header-left { justify-self: start; }
+
+    .logo-image {
+        width: auto;
+        height: 42px;
+        max-height: 42px;
+        max-width: 170px;
+    }
+
+    /* Nav: all links in center, tighter spacing */
+    .header-center { justify-self: center; justify-content: center; }
+
+    .header-center .nav-links { gap: 2px; }
+
+    .header-center .nav-link {
+        font-size: 0.78rem;
+        padding: 6px 9px;
+        letter-spacing: 0.04em;
+    }
+
+    /* Actions: right-aligned, hide old duplicate right-side nav */
+    .header-right { justify-self: end; gap: 4px; }
+
+    .header-right > .nav-links { display: none !important; }
+
+    /* Search icon button */
+    .dtb-search-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(15,23,42,0.1);
+        background: transparent;
+        cursor: pointer;
+        color: #0f172a;
+        transition: background 150ms, border-color 150ms;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .dtb-search-btn:hover {
+        background: var(--alloy-base, #f8fafc);
+        border-color: rgba(37,99,235,0.25);
+        color: var(--primary-600, #2563eb);
+    }
+}
+
+/* ── HOME PAGE: Desktop Hero Section ───────────────────
+   The mobile centered-text hero is hidden at ≥ 1025px and
+   replaced by a full-width dark split-layout hero.
+   ─────────────────────────────────────────────────────── */
+.dtb-hero-mobile-wrapper { display: block; }
+
+@media (min-width: 1025px) {
+    .dtb-hero-mobile-wrapper { display: none !important; }
+}
+
+.dtb-desktop-hero { display: none; }
+
+@media (min-width: 1025px) {
+    .dtb-desktop-hero {
+        display: flex;
+        align-items: center;
+        min-height: 460px;
+        background: linear-gradient(145deg, #080e1c 0%, #0d1f4a 50%, #152f7a 100%);
+        position: relative;
+        overflow: hidden;
+        padding: 0 clamp(2rem, 5vw, 5rem);
+    }
+
+    /* Subtle dot-grid texture */
+    .dtb-desktop-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.055) 1px, transparent 0);
+        background-size: 36px 36px;
+        pointer-events: none;
+    }
+
+    /* Right-side radial blue glow */
+    .dtb-desktop-hero::after {
+        content: '';
+        position: absolute;
+        right: -80px;
+        top: -120px;
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, rgba(37,99,235,0.22) 0%, transparent 68%);
+        pointer-events: none;
+    }
+
+    .dtb-desktop-hero-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        padding: 56px 0;
+    }
+
+    /* ── Left: headline + CTAs + stats ── */
+    .dtb-hero-content {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .dtb-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(37,99,235,0.18);
+        border: 1px solid rgba(37,99,235,0.32);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--primary-300, #93c5fd);
+        width: fit-content;
+    }
+
+    .dtb-hero-title {
+        font-size: clamp(2.4rem, 3.6vw, 3.6rem);
+        font-weight: 900;
+        line-height: 1.0;
+        letter-spacing: -0.03em;
+        color: white;
+        margin: 0;
+    }
+
+    .dtb-hero-title span { color: var(--primary-400, #60a5fa); }
+
+    .dtb-hero-subtitle {
+        font-size: 1rem;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.7;
+        max-width: 460px;
+        margin: 0;
+    }
+
+    .dtb-hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .dtb-hero-cta-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 28px;
+        background: var(--primary-600, #2563eb);
+        color: white;
+        font-weight: 700;
+        font-size: 0.83rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background 180ms, transform 180ms, box-shadow 180ms;
+        box-shadow: 0 8px 24px rgba(37,99,235,0.38);
+        border: none;
+        cursor: pointer;
+    }
+
+    .dtb-hero-cta-primary:hover {
+        background: var(--primary-700, #1d4ed8);
+        transform: translateY(-2px);
+        box-shadow: 0 14px 36px rgba(37,99,235,0.48);
+    }
+
+    .dtb-hero-cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        background: transparent;
+        color: rgba(255,255,255,0.8);
+        font-weight: 600;
+        font-size: 0.83rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        border-radius: 6px;
+        text-decoration: none;
+        border: 1.5px solid rgba(255,255,255,0.22);
+        transition: border-color 180ms, color 180ms, background 180ms;
+    }
+
+    .dtb-hero-cta-secondary:hover {
+        border-color: rgba(255,255,255,0.45);
+        color: white;
+        background: rgba(255,255,255,0.06);
+    }
+
+    .dtb-hero-stats {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding-top: 6px;
+        border-top: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .dtb-hero-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .dtb-hero-stat-num {
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: white;
+        line-height: 1;
+        font-family: var(--font-mono, monospace);
+        letter-spacing: -0.02em;
+    }
+
+    .dtb-hero-stat-label {
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255,255,255,0.38);
+        font-weight: 600;
+    }
+
+    .dtb-hero-stat-divider {
+        width: 1px;
+        height: 34px;
+        background: rgba(255,255,255,0.1);
+        flex-shrink: 0;
+    }
+
+    /* ── Right: category quick-link cards ── */
+    .dtb-hero-visual {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .dtb-hero-visual-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 700;
+        color: rgba(255,255,255,0.3);
+        margin-bottom: 6px;
+    }
+
+    .dtb-hero-categories {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .dtb-hero-cat-card {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 16px 18px;
+        background: rgba(255,255,255,0.055);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 10px;
+        text-decoration: none;
+        transition: background 200ms, border-color 200ms, transform 200ms;
+    }
+
+    .dtb-hero-cat-card:hover {
+        background: rgba(37,99,235,0.16);
+        border-color: rgba(37,99,235,0.38);
+        transform: translateY(-2px);
+    }
+
+    .dtb-hero-cat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: rgba(37,99,235,0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--primary-300, #93c5fd);
+    }
+
+    .dtb-hero-cat-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.88);
+        line-height: 1.25;
+        display: block;
+    }
+
+    .dtb-hero-cat-sub {
+        font-size: 0.65rem;
+        color: rgba(255,255,255,0.38);
+        font-weight: 500;
+        display: block;
+        margin-top: 1px;
+    }
+}
+
+/* ── FEATURE STRIP ──────────────────────────────────────
+   Four feature-benefit pillars displayed below the hero
+   on desktop only, as a horizontal bar.
+   ─────────────────────────────────────────────────────── */
+.dtb-feature-strip { display: none; }
+
+@media (min-width: 1025px) {
+    .dtb-feature-strip {
+        display: block;
+        background: #ffffff;
+        border-bottom: 1px solid var(--machined-border);
+    }
+
+    .dtb-feature-strip-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+    }
+
+    .dtb-feature-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px clamp(1.5rem, 3vw, 2.5rem);
+        flex: 1;
+        border-right: 1px solid var(--machined-border);
+        transition: background 180ms;
+    }
+
+    .dtb-feature-item:last-child { border-right: none; }
+
+    .dtb-feature-item:hover { background: var(--alloy-base, #f8fafc); }
+
+    .dtb-feature-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: rgba(37,99,235,0.09);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--primary-600, #2563eb);
+        transition: background 180ms;
+    }
+
+    .dtb-feature-item:hover .dtb-feature-icon {
+        background: rgba(37,99,235,0.15);
+    }
+
+    .dtb-feature-text strong {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.3;
+    }
+
+    .dtb-feature-text span {
+        font-size: 0.7rem;
+        color: rgba(15,23,42,0.48);
+    }
+}
+
+/* ── FOOTER: Desktop 4-column Enhancement ──────────────
+   Adds a "Contact & Support" 4th column visible only on
+   desktop. All columns left-align for a professional look.
+   ─────────────────────────────────────────────────────── */
+.dtb-footer-contact-col { display: none; }
+
+@media (min-width: 1025px) {
+    .dtb-footer-contact-col {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dtb-footer-contact-col h5 {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        margin: 0 0 4px 0;
+        font-weight: 800;
+        color: var(--primary-600);
+    }
+
+    .dtb-footer-contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 0.83rem;
+        color: rgba(15,23,42,0.58);
+        line-height: 1.5;
+        text-decoration: none;
+        transition: color 150ms;
+    }
+
+    .dtb-footer-contact-item:hover { color: var(--primary-600); }
+
+    .dtb-footer-contact-item svg {
+        color: var(--primary-600);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    /* Expand footer grid to include 4th column */
+    .site-footer .footer-grid {
+        grid-template-columns: 1.15fr 1fr 1fr 1.15fr !important;
+        gap: 40px !important;
+        align-items: start !important;
+    }
+
+    /* Left-align brand column on desktop */
+    .site-footer .footer-grid > div:first-child {
+        align-items: flex-start !important;
+    }
+
+    /* Left-align footer columns */
+    .site-footer .footer-col {
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+
+    /* Left-align footer lists */
+    .site-footer .footer-list-shop,
+    .site-footer .footer-list-support {
+        align-items: flex-start !important;
+    }
+
+    /* Show column heading h5 on desktop */
+    .site-footer .footer-col h5 { display: block !important; }
+
+    /* Hide the mobile accordion button on desktop */
+    .site-footer .footer-header-mobile { display: none !important; }
+
+    /* Always show footer lists on desktop */
+    .site-footer .footer-col ul { display: flex !important; }
+}
