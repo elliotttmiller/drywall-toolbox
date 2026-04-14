@@ -186,7 +186,6 @@ export default function Footer() {
             {[
               { to: '/contact', label: 'Contact Us' },
               { to: '/repairs', label: 'Repair Services' },
-              { to: '/about', label: 'About Us' },
               { to: '#', label: 'Shipping Policy' },
               { to: '#', label: 'Return Portal' }
             ].map(({ to, label }) => (

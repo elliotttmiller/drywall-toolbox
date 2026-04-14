@@ -27,7 +27,6 @@ const Repairs            = lazy(() => import('./pages/Repairs'));
 const Cart               = lazy(() => import('./pages/Cart'));
 const Checkout           = lazy(() => import('./pages/Checkout'));
 const OrderConfirmation  = lazy(() => import('./pages/OrderConfirmation'));
-const About              = lazy(() => import('./pages/About'));
 const Contact            = lazy(() => import('./pages/Contact'));
 // Admin/settings pages are rarely visited — ideal lazy candidates
 const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
@@ -106,7 +105,6 @@ function AppRoutes() {
           <Route path="/cart"                  element={<Cart />} />
           <Route path="/checkout"              element={<Checkout />} />
           <Route path="/order/:id"             element={<OrderConfirmation />} />
-          <Route path="/about"                 element={<About />} />
           <Route path="/contact"               element={<Contact />} />
           <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
           {/* Auth + account pages — dev-only, standalone, no WP admin changes */}

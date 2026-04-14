@@ -265,7 +265,6 @@ export default function Header({ onCartToggle }) {
 
               <Link to="/repairs" className={`nav-link ${isActive('/repairs') ? 'active' : ''}`} style={{ color: isActive('/repairs') ? 'var(--color-primary-600)' : 'black' }}>Repairs</Link>
               <Link to="/faq" className={`nav-link ${isActive('/faq') ? 'active' : ''}`} style={{ color: isActive('/faq') ? 'var(--color-primary-600)' : 'black' }}>FAQ</Link>
-              <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`} style={{ color: isActive('/about') ? 'var(--color-primary-600)' : 'black' }}>About</Link>
               <Link to="/contact" className={`nav-link ${isActive('/contact') ? 'active' : ''}`} style={{ color: isActive('/contact') ? 'var(--color-primary-600)' : 'black' }}>Contact</Link>
             </nav>
           </div>
@@ -504,13 +503,6 @@ export default function Header({ onCartToggle }) {
               onClick={closeMobileMenu}
             >
               Contact
-            </Link>
-            <Link 
-              to="/about" 
-              className={`nav-link-mobile ${isActive('/about') ? 'active' : ''}`}
-              onClick={closeMobileMenu}
-            >
-              About
             </Link>
             <Link
               to="/faq"
