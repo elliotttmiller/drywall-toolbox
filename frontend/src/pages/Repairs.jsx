@@ -1432,19 +1432,19 @@ export default function Repairs() {
           </div>
 
           {/* Maintenance schedule table */}
-          <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--machined-border)', boxShadow: '0 2px 12px rgba(15,23,42,0.06)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', fontSize: '0.9rem' }}>
+          <div style={{ overflowX: 'auto', borderRadius: '16px', border: '1px solid var(--machined-border)', boxShadow: '0 4px 24px rgba(15,23,42,0.08)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', fontSize: '0.925rem', minWidth: '480px' }}>
               <thead>
-                <tr style={{ background: '#0f172a' }}>
-                  {['Usage Level', 'Typical Usage', 'Recommended Interval', 'Priority'].map((heading) => (
+                <tr style={{ background: 'var(--alloy-deep)' }}>
+                  {['Usage Level & Priority', 'Typical Usage', 'Service Interval'].map((heading) => (
                     <th key={heading} style={{
-                      padding: '14px 20px',
+                      padding: '16px 24px',
                       textAlign: 'left',
-                      fontSize: '0.68rem',
+                      fontSize: '0.7rem',
                       fontWeight: 700,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      color: 'rgba(255,255,255,0.75)',
+                      color: 'rgba(255,255,255,0.92)',
                       whiteSpace: 'nowrap',
                     }}>
                       {heading}
@@ -1456,32 +1456,36 @@ export default function Repairs() {
                 {MAINTENANCE_SCHEDULE.map((row, idx) => {
                   const badgeColors = {
                     Heavy:   { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626' },
-                    Regular: { bg: 'rgba(37,99,235,0.06)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)' },
+                    Regular: { bg: 'var(--primary-100)', border: 'rgba(37,99,235,0.3)', text: 'var(--primary-700)' },
                     Light:   { bg: '#f0fdf4', border: '#86efac', text: '#16a34a' },
                   };
                   const colors = badgeColors[row.badge] || badgeColors.Regular;
                   return (
-                    <tr key={row.level} style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--machined-border)', background: idx % 2 === 0 ? 'white' : 'var(--alloy-base, #f8fafc)' }}>
-                      <td style={{ padding: '16px 20px', fontWeight: 700, color: '#0f172a' }}>{row.level}</td>
-                      <td style={{ padding: '16px 20px', color: 'rgba(15,23,42,0.6)' }}>{row.usage}</td>
-                      <td style={{ padding: '16px 20px', fontWeight: 700, color: '#0f172a' }}>{row.interval}</td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{
-                          display: 'inline-block',
-                          background: colors.bg,
-                          border: `1px solid ${colors.border}`,
-                          borderRadius: '99px',
-                          padding: '3px 12px',
-                          fontSize: '0.68rem',
-                          fontWeight: 800,
-                          letterSpacing: '0.08em',
-                          textTransform: 'uppercase',
-                          color: colors.text,
-                          whiteSpace: 'nowrap',
-                        }}>
-                          {row.badge} Use
-                        </span>
+                    <tr key={row.level} style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--machined-border)', background: idx % 2 === 0 ? 'white' : 'var(--alloy-base)' }}>
+                      <td style={{ padding: '20px 24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            background: colors.bg,
+                            border: `1px solid ${colors.border}`,
+                            borderRadius: '99px',
+                            padding: '3px 10px',
+                            fontSize: '0.62rem',
+                            fontWeight: 800,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            color: colors.text,
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                          }}>
+                            {row.badge}
+                          </span>
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{row.level}</span>
+                        </div>
                       </td>
+                      <td style={{ padding: '20px 24px', color: 'rgba(15,23,42,0.6)', lineHeight: 1.5 }}>{row.usage}</td>
+                      <td style={{ padding: '20px 24px', fontWeight: 700, color: 'var(--primary-700)' }}>{row.interval}</td>
                     </tr>
                   );
                 })}
