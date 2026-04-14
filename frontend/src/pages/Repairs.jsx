@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import SEOHead from '../components/SEOHead';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import veeqoService from '../services/veeqo';
@@ -142,14 +143,168 @@ export const REPAIR_PRICING = {
   },
 };
 
-// Legacy flat list — used for the pricing reference table in the UI.
-const PRICING_TIERS = [
-  { service: 'Auto Taper — Standard Rebuild', totalRange: '$299',      note: 'Best Value • vs. ~$1,899 new' },
-  { service: 'Auto Taper — Premium Overhaul', totalRange: '$499',      note: 'Full wear kit + all seals' },
-  { service: 'Flat / Angle Box Rebuild',      totalRange: '$89–$149',  note: 'Per box or 3-box bundle' },
-  { service: 'Mud Pump Rebuild',              totalRange: '$59–$159',  note: 'Seal & Screen to Full + Hose' },
-  { service: 'Handles & Accessories',         totalRange: '$39–$99',   note: 'Per tool or 3-handle bundle' },
-  { service: 'Diagnostic / Bench Fee',        totalRange: '$50–$75',   note: 'Credited toward repair if approved' },
+// ─── Full pricing tab data — sourced from research_repairs.md ────────────────
+export const PRICING_TAB_DATA = [
+  {
+    id: 'autoTaper',
+    label: 'Auto Tapers',
+    shortLabel: 'Auto Tapers',
+    icon: '⚙️',
+    anchor: { newPrice: '$1,899', rebuildPrice: '$299', savePct: '84%' },
+    note: 'Anchor pricing: New taper ~$1,899 vs. rebuild $299 — save 84%',
+    tiers: [
+      {
+        id: 'qt', name: 'Quick Fix', price: '$75', badge: null,
+        target: 'Minor symptoms, budget-conscious',
+        features: ['Blade + cable replacement', 'Lubrication service', 'Minor adjustments', '~65% labor margin'],
+      },
+      {
+        id: 'sr', name: 'Standard Rebuild', price: '$299', badge: 'Best Value',
+        target: 'Most common repair; value-seeker',
+        features: ['Wheels, bushings & liners', 'Plunger cup, cable & blade', 'Needle + calibration', 'Full wear-kit replacement', '~55% blended margin'],
+      },
+      {
+        id: 'po', name: 'Premium Overhaul', price: '$499', badge: null,
+        target: 'High-volume pros, fleet managers',
+        features: ['Everything in Standard Rebuild', 'Chain/sprocket inspection', 'Tube flip option', 'Priority turnaround', '90-day workmanship warranty'],
+      },
+      {
+        id: 'ftu', name: 'Factory Tune-Up', price: '$179', badge: null,
+        target: 'Maintenance-focused contractors',
+        features: ['Deep cleaning & inspection', '11+ wear-part replacements', 'Performance report', 'Lubrication & calibration', '~70% margin (predictable)'],
+      },
+    ],
+  },
+  {
+    id: 'flatBoxes',
+    label: 'Flat & Angle Boxes',
+    shortLabel: 'Flat Boxes',
+    icon: '📦',
+    anchor: null,
+    note: 'Bundle: Rebuild 3 boxes, get the 4th at 50% off',
+    tiers: [
+      {
+        id: 'bwr', name: 'Blade & Wheel Refresh', price: '$49', badge: null,
+        target: 'Quick performance boost',
+        features: ['New blades + wheels', 'Basic adjustment & test', 'Clean & lubricate'],
+      },
+      {
+        id: 'fbr', name: 'Full Box Rebuild', price: '$89', badge: 'Best Value',
+        target: 'Standard repair for streaking/drag',
+        features: ['Blades, wheels & skids', 'Springs, seals & O-rings', 'Full calibration', 'Comprehensive teardown'],
+      },
+      {
+        id: 'pbp', name: 'Pro Box Package', price: '$149', badge: '3-Box Bundle',
+        target: 'Fleet discount; encourages volume',
+        features: ['Full rebuild on 3 boxes', 'Free handle inspection', '60-day workmanship warranty', 'Best rate per unit'],
+      },
+      {
+        id: 'abtu', name: 'Annual Box Tune-Up', price: '$59/box', badge: null,
+        target: 'Retention-focused maintenance plan',
+        features: ['Preventive cleaning', 'Wear inspection', 'Minor adjustments', 'Per-box service'],
+      },
+    ],
+  },
+  {
+    id: 'mudPumps',
+    label: 'Mud Pumps',
+    shortLabel: 'Mud Pumps',
+    icon: '🔧',
+    anchor: null,
+    note: 'Comprehensive fluid system servicing for all major pump brands',
+    tiers: [
+      {
+        id: 'sss', name: 'Seal & Screen Service', price: '$59', badge: null,
+        target: 'Minor flow issues',
+        features: ['Gaskets & u-cups', 'Screens & valve discs', 'Pressure test'],
+      },
+      {
+        id: 'fpr', name: 'Full Pump Rebuild', price: '$119', badge: 'Best Value',
+        target: 'Weak pressure or leakage',
+        features: ['Complete disassembly', 'All wear parts replaced', 'Housing inspection', 'Flow calibration'],
+      },
+      {
+        id: 'php', name: 'Pump + Hose Package', price: '$159', badge: null,
+        target: 'Comprehensive fluid system service',
+        features: ['Full pump rebuild', 'Hose inspection/repair', 'Fittings check', 'End-to-end fluid test'],
+      },
+      {
+        id: 'ppt', name: 'Preventive Pump Tune', price: '$79', badge: null,
+        target: 'High-volume users avoiding downtime',
+        features: ['Cleaning & inspection', 'Seal inspection', 'Screen replacement', 'Lubrication'],
+      },
+    ],
+  },
+  {
+    id: 'handles',
+    label: 'Handles & Accessories',
+    shortLabel: 'Accessories',
+    icon: '🛠️',
+    anchor: null,
+    note: 'Bundle: Handle + Gooseneck + Corner Flusher = $99 (save $38)',
+    tiers: [
+      {
+        id: 'hr2', name: 'Handle Rebuild', price: '$49', badge: null,
+        target: 'Any handle length',
+        features: ['Brake adjusters', 'Springs & washers', 'Couplers', 'Any standard length'],
+      },
+      {
+        id: 'gns', name: 'Gooseneck Service', price: '$39', badge: null,
+        target: 'Corner tool stability',
+        features: ['Pivot bushings', 'Tension adjustment', 'Lubrication'],
+      },
+      {
+        id: 'cfr', name: 'Corner Flusher Rebuild', price: '$69', badge: null,
+        target: 'Corner finishing quality',
+        features: ['Blades & springs', 'Pivot point service', 'Calibration'],
+      },
+      {
+        id: 'nss', name: 'Nail Spotter Service', price: '$45', badge: null,
+        target: 'Consistent spotting results',
+        features: ['Plunger service', 'Seal replacement', 'Trigger mechanism'],
+      },
+      {
+        id: 'ab2', name: 'Accessory Bundle', price: '$99', badge: 'Bundle Savings',
+        target: 'Complete accessory overhaul',
+        features: ['Handle + Gooseneck + Corner Flusher', 'Save $38 vs individual', 'All three rebuilt together'],
+      },
+    ],
+  },
+  {
+    id: 'shipping',
+    label: 'Shipping & Logistics',
+    shortLabel: 'Shipping',
+    icon: '🚚',
+    anchor: null,
+    note: 'Transparent pricing — no hidden fees or surprise surcharges',
+    tiers: [
+      {
+        id: 'srs', name: 'Standard Return Shipping', price: 'Actual cost', badge: null,
+        target: 'All customers',
+        features: ['Customer pays actual carrier cost', 'Transparent; no markup', 'USPS, FedEx, or UPS'],
+      },
+      {
+        id: 'er', name: 'Expedited Return (2-Day)', price: '+$25 flat', badge: 'Popular',
+        target: 'Urgent jobs & tight deadlines',
+        features: ['2-day air return', '+$25 flat fee', 'High-margin add-on', 'Track every step'],
+      },
+      {
+        id: 'iu', name: 'Insurance Upgrade', price: '+$15', badge: null,
+        target: 'Tools valued over $500',
+        features: ['Full declared value coverage', 'On tools >$500 value', 'Peace of mind; low risk'],
+      },
+      {
+        id: 'pk', name: 'Packaging Kit (Pre-Paid)', price: '$12 credit', badge: null,
+        target: 'First-time shippers',
+        features: ['Pre-paid packaging supplied', '$12 credited toward repair', 'Reduces damage claims', 'Builds commitment to service'],
+      },
+      {
+        id: 'ldp', name: 'Local Drop-Off / Pick-Up', price: 'FREE', badge: 'Free',
+        target: 'Local customers',
+        features: ['No shipping required', 'Incentivizes local customers', 'Saves shipping coordination', 'Fastest turnaround option'],
+      },
+    ],
+  },
 ];
 
 // Copy blocks — anchor pricing and trust signals
@@ -420,6 +575,251 @@ function PhotoUploader({ photos, onChange }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   Multi-tab pricing component — shows all repair categories with tier cards
+   ───────────────────────────────────────────────────────────────────────── */
+const tabPanelVariants = {
+  enter: { opacity: 0, y: 10 },
+  center: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, y: -6, transition: { duration: 0.16, ease: [0.36, 0, 0.66, 0] } },
+};
+
+function PricingTabs() {
+  const [activeTab, setActiveTab] = useState(0);
+  const tab = PRICING_TAB_DATA[activeTab];
+
+  return (
+    <div>
+      {/* Tab navigation */}
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: '28px' }}>
+        <div style={{
+          display: 'flex',
+          gap: '4px',
+          minWidth: 'max-content',
+          padding: '4px',
+          background: 'rgba(15,23,42,0.04)',
+          borderRadius: '10px',
+          border: '1px solid var(--machined-border)',
+        }}>
+          {PRICING_TAB_DATA.map((t, i) => {
+            const active = i === activeTab;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(i)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: 'clamp(8px, 1.5vw, 10px) clamp(12px, 2.5vw, 18px)',
+                  borderRadius: '7px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: active ? 700 : 500,
+                  fontSize: 'clamp(0.75rem, 1.8vw, 0.85rem)',
+                  whiteSpace: 'nowrap',
+                  transition: 'background 0.18s, color 0.18s, box-shadow 0.18s',
+                  background: active ? 'white' : 'transparent',
+                  color: active ? 'var(--primary-600)' : 'rgba(15,23,42,0.55)',
+                  boxShadow: active ? '0 1px 6px rgba(15,23,42,0.1)' : 'none',
+                  letterSpacing: active ? '0.01em' : 'normal',
+                }}
+              >
+                <span style={{ fontSize: '1em', lineHeight: 1 }} aria-hidden="true">{t.icon}</span>
+                <span className="tab-label-full" style={{ display: 'block' }}>{t.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Anchor banner for Auto Tapers */}
+      {tab.anchor && (
+        <div style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%)',
+          borderRadius: '10px',
+          padding: 'clamp(14px, 3vw, 20px) clamp(16px, 3vw, 24px)',
+          marginBottom: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 600 }}>New Taper</span>
+          <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', fontWeight: 700 }}>{tab.anchor.newPrice}</span>
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>vs.</span>
+          <span style={{ color: '#60a5fa', fontWeight: 900, fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', letterSpacing: '-0.02em' }}>REBUILD {tab.anchor.rebuildPrice}</span>
+          <span style={{
+            background: '#16a34a', color: 'white',
+            borderRadius: '999px', padding: '3px 12px',
+            fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em',
+          }}>
+            SAVE {tab.anchor.savePct}
+          </span>
+          <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', flexBasis: '100%', textAlign: 'center', marginTop: '4px' }}>
+            Psychological anchor: always compare against new tool retail price
+          </span>
+        </div>
+      )}
+
+      {/* Note bar */}
+      {tab.note && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 16px',
+          background: 'rgba(37,99,235,0.05)',
+          border: '1px solid rgba(37,99,235,0.15)',
+          borderRadius: '6px',
+          marginBottom: '20px',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span style={{ fontSize: '0.8rem', color: 'var(--primary-600)', fontWeight: 600 }}>{tab.note}</span>
+        </div>
+      )}
+
+      {/* Tab content with animation */}
+      <AnimatePresence mode="wait" initial={false}>
+        <Motion.div
+          key={tab.id}
+          variants={tabPanelVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+        >
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(220px, 28vw, 280px), 1fr))',
+            gap: '16px',
+          }}>
+            {tab.tiers.map((tier) => {
+              const isBestValue = tier.badge === 'Best Value';
+              const isFree = tier.price === 'FREE';
+              return (
+                <div
+                  key={tier.id}
+                  style={{
+                    background: isBestValue ? 'linear-gradient(160deg, #eff6ff 0%, #dbeafe 100%)' : 'white',
+                    border: isBestValue ? '2px solid var(--primary-600)' : '1px solid var(--machined-border)',
+                    borderRadius: '10px',
+                    padding: 'clamp(16px, 3vw, 22px)',
+                    position: 'relative',
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = isBestValue
+                      ? '0 8px 32px rgba(37,99,235,0.2)'
+                      : '0 6px 24px rgba(15,23,42,0.08)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {/* Badge */}
+                  {tier.badge && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '-11px',
+                      right: '14px',
+                      background: isBestValue ? 'var(--primary-600)'
+                        : tier.badge === 'Bundle Savings' || tier.badge === '3-Box Bundle' ? '#f59e0b'
+                        : tier.badge === 'Free' ? '#16a34a'
+                        : tier.badge === 'Popular' ? '#8b5cf6'
+                        : '#64748b',
+                      color: 'white',
+                      borderRadius: '999px',
+                      padding: '3px 11px',
+                      fontSize: '0.62rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    }}>
+                      {tier.badge}
+                    </div>
+                  )}
+
+                  {/* Name + Price */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                    <h4 style={{
+                      margin: 0,
+                      fontSize: 'clamp(0.875rem, 1.8vw, 0.95rem)',
+                      fontWeight: 800,
+                      color: isBestValue ? 'var(--primary-600)' : '#0f172a',
+                      lineHeight: 1.3,
+                      flex: 1,
+                      paddingRight: '8px',
+                    }}>
+                      {tier.name}
+                    </h4>
+                    <span style={{
+                      fontSize: 'clamp(1rem, 2.2vw, 1.2rem)',
+                      fontWeight: 900,
+                      color: isFree ? '#16a34a' : isBestValue ? 'var(--primary-600)' : '#0f172a',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}>
+                      {tier.price}
+                    </span>
+                  </div>
+
+                  {/* Target */}
+                  <p style={{
+                    margin: '0 0 12px 0',
+                    fontSize: '0.75rem',
+                    color: 'rgba(15,23,42,0.5)',
+                    lineHeight: 1.4,
+                    fontStyle: 'italic',
+                  }}>
+                    {tier.target}
+                  </p>
+
+                  {/* Feature list */}
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {tier.features.map((feat) => (
+                      <li key={feat} style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '7px',
+                        fontSize: '0.78rem',
+                        color: 'rgba(15,23,42,0.7)',
+                        lineHeight: 1.45,
+                      }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isBestValue ? 'var(--primary-600)' : '#16a34a'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </Motion.div>
+      </AnimatePresence>
+
+      {/* Disclaimer */}
+      <p style={{
+        fontSize: '0.72rem',
+        color: 'rgba(15,23,42,0.38)',
+        marginTop: '20px',
+        lineHeight: 1.6,
+      }}>
+        * All prices are industry estimates. Actual costs may vary based on tool condition, parts availability, and findings during disassembly.
+        Budget an extra 20–30% for potential "hard parts" (chains, sprockets, shafts). No charges until you approve your quote.
+      </p>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    Main Repairs page
    ───────────────────────────────────────────────────────────────────────── */
 export default function Repairs() {
@@ -646,50 +1046,224 @@ export default function Repairs() {
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%)',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%)',
         padding: 'clamp(60px, 10vw, 100px) clamp(1.5rem, 5vw, 3rem)',
         position: 'relative',
         overflow: 'hidden',
       }}>
+        {/* Grid dot overlay */}
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.06) 1px, transparent 0)',
           backgroundSize: '40px 40px', pointerEvents: 'none',
         }} />
+        {/* Glow blobs */}
         <div style={{
-          position: 'absolute', top: '-100px', right: '-100px',
-          width: '400px', height: '400px',
-          background: 'radial-gradient(circle, rgba(96,165,250,0.15) 0%, transparent 70%)',
+          position: 'absolute', top: '-80px', right: '-80px',
+          width: '420px', height: '420px',
+          background: 'radial-gradient(circle, rgba(96,165,250,0.18) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
+        <div style={{
+          position: 'absolute', bottom: '-60px', left: '10%',
+          width: '300px', height: '300px',
+          background: 'radial-gradient(circle, rgba(29,78,216,0.25) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{
-            display: 'inline-block',
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '3px', padding: '4px 12px',
-            fontSize: '0.7rem', fontWeight: 700,
-            letterSpacing: '0.12em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.8)', marginBottom: '20px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))',
+            gap: 'clamp(2rem, 5vw, 4rem)',
+            alignItems: 'center',
           }}>
-            Tool Repair & Maintenance
+            {/* Left: copy */}
+            <div>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '99px', padding: '5px 14px',
+                fontSize: '0.68rem', fontWeight: 700,
+                letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.8)', marginBottom: '24px',
+              }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', flexShrink: 0, boxShadow: '0 0 8px #4ade80' }} />
+                Tool Repair &amp; Maintenance
+              </div>
+              <h1 style={{
+                color: 'white',
+                fontSize: 'clamp(2.2rem, 5.5vw, 4rem)',
+                fontWeight: 900, margin: '0 0 16px 0',
+                lineHeight: 1.08, letterSpacing: '-0.035em',
+              }}>
+                KEEP YOUR TOOLS<br />
+                <span style={{ color: '#93c5fd' }}>RUNNING STRONG.</span>
+              </h1>
+              <p style={{
+                color: 'rgba(255,255,255,0.65)',
+                fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+                margin: '0 0 32px 0',
+                lineHeight: 1.6,
+                maxWidth: '480px',
+              }}>
+                Professional drywall tool repair for automatic tapers, flat boxes, mud pumps, and accessories.
+                Transparent pricing, 90-day warranty, no charges until you approve.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <button
+                  className="alloy-button"
+                  style={{ background: 'white', color: '#1e3a8a', border: 'none', cursor: 'pointer', fontWeight: 800 }}
+                  onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                >
+                  Request Repair Service
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '12px 20px',
+                    background: 'transparent',
+                    border: '1.5px solid rgba(255,255,255,0.35)',
+                    borderRadius: '4px',
+                    color: 'rgba(255,255,255,0.85)',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem', fontWeight: 700,
+                    transition: 'border-color 0.2s, color 0.2s',
+                    letterSpacing: '0.02em',
+                  }}
+                  onClick={() => {
+                    document.getElementById('pricing-tabs-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.7)'; e.currentTarget.style.color = 'white'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.color = 'rgba(255,255,255,0.85)'; }}
+                >
+                  View Pricing
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Right: stat cards */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+            }}>
+              {[
+                { value: '84%', label: 'Avg. savings vs. new tool', sub: 'Rebuild vs. replace' },
+                { value: '$299', label: 'Auto taper full rebuild', sub: 'Most popular service' },
+                { value: '24 hr', label: 'Quote turnaround', sub: 'Photo quote included' },
+                { value: '90-day', label: 'Workmanship warranty', sub: 'Premium overhaul tier' },
+              ].map((stat, i) => (
+                <div
+                  key={i}
+                  style={{
+                    background: 'rgba(255,255,255,0.07)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: '10px',
+                    padding: 'clamp(14px, 2.5vw, 20px)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <div style={{
+                    fontSize: 'clamp(1.4rem, 3vw, 2rem)',
+                    fontWeight: 900,
+                    color: '#93c5fd',
+                    letterSpacing: '-0.03em',
+                    lineHeight: 1,
+                    marginBottom: '6px',
+                  }}>
+                    {stat.value}
+                  </div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: '2px' }}>
+                    {stat.label}
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.45)' }}>
+                    {stat.sub}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <h1 style={{
-            color: 'white',
-            fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
-            fontWeight: 800, margin: '0 0 16px 0',
-            lineHeight: 1.1, letterSpacing: '-0.03em',
+        </div>
+      </section>
+
+      {/* ── Trust Signal Strip ───────────────────────────────────────────── */}
+      <section style={{
+        background: 'white',
+        borderBottom: '1px solid var(--machined-border)',
+        padding: 'clamp(1.25rem, 3vw, 2rem) clamp(1.5rem, 5vw, 3rem)',
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+            gap: 'clamp(1rem, 3vw, 1.5rem)',
           }}>
-            KEEP YOUR TOOLS<br />
-            <span style={{ color: '#93c5fd' }}>RUNNING STRONG.</span>
-          </h1>
-          <button
-            className="alloy-button"
-            style={{ background: 'white', color: '#1e3a8a', border: 'none', cursor: 'pointer' }}
-            onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          >
-            Request Repair Service
-          </button>
+            {[
+              {
+                icon: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21H5a2 2 0 0 1-2-2V7l5-5h11a2 2 0 0 1 2 2v15z"/>
+                  </svg>
+                ),
+                title: 'Transparent Pricing',
+                desc: 'Itemized labor + parts invoice. No surprises.',
+              },
+              {
+                icon: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+                  </svg>
+                ),
+                title: 'Free Photo Quote',
+                desc: 'Send a photo, get a quote in 24 hours.',
+              },
+              {
+                icon: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                ),
+                title: '90-Day Warranty',
+                desc: 'Industry-leading workmanship guarantee.',
+              },
+              {
+                icon: (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                ),
+                title: 'Parts Price Lock',
+                desc: 'Hard parts capped at 20% above quote.',
+              },
+            ].map((item) => (
+              <div key={item.title} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}>
+                <div style={{
+                  flexShrink: 0,
+                  width: '40px', height: '40px',
+                  background: 'rgba(37,99,235,0.07)',
+                  border: '1px solid rgba(37,99,235,0.15)',
+                  borderRadius: '8px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {item.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', marginBottom: '2px' }}>{item.title}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(15,23,42,0.55)', lineHeight: 1.4 }}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -699,48 +1273,97 @@ export default function Repairs() {
         maxWidth: '1400px', margin: '0 auto',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+          <div style={{
+            display: 'inline-block',
+            background: 'rgba(37,99,235,0.08)',
+            border: '1px solid rgba(37,99,235,0.2)',
+            borderRadius: '99px', padding: '5px 16px',
+            fontSize: '0.68rem', fontWeight: 700,
+            letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: 'var(--primary-600)', marginBottom: '14px',
+          }}>
+            What We Do
+          </div>
           <h2 style={{
             fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-            fontWeight: 800, color: 'var(--primary-600)',
-            margin: '0 0 12px 0', letterSpacing: '-0.02em',
+            fontWeight: 900, color: '#0f172a',
+            margin: '0 0 12px 0', letterSpacing: '-0.025em',
           }}>Our Repair Services</h2>
-          <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: '1rem', margin: 0 }}>
-            Comprehensive coverage for all professional drywall equipment
+          <p style={{ color: 'rgba(15,23,42,0.55)', fontSize: '1rem', margin: 0, maxWidth: '520px', marginLeft: 'auto', marginRight: 'auto' }}>
+            Comprehensive coverage for all professional drywall equipment, from tapers to accessories.
           </p>
         </div>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '24px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+          gap: '20px',
         }}>
-          {services.map((svc) => (
+          {[
+            {
+              icon: (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              ),
+              ...services[0],
+            },
+            {
+              icon: (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+              ),
+              ...services[1],
+            },
+            {
+              icon: (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              ),
+              ...services[2],
+            },
+          ].map((svc) => (
             <div key={svc.title}
               style={{
                 background: 'white',
                 border: '1px solid var(--machined-border)',
-                borderRadius: '4px',
+                borderRadius: '12px',
                 padding: 'clamp(1.5rem, 3vw, 2rem)',
-                transition: 'box-shadow 0.2s, transform 0.2s',
+                transition: 'box-shadow 0.22s, transform 0.22s',
+                display: 'flex',
+                flexDirection: 'column',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 8px 32px rgba(37,99,235,0.1)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 10px 40px rgba(37,99,235,0.12)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = 'none';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 10px 0' }}>
+              {/* Icon */}
+              <div style={{
+                width: '48px', height: '48px',
+                background: 'rgba(37,99,235,0.07)',
+                border: '1px solid rgba(37,99,235,0.15)',
+                borderRadius: '10px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: '16px', flexShrink: 0,
+              }}>
+                {svc.icon}
+              </div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 10px 0', letterSpacing: '-0.01em' }}>
                 {svc.title}
               </h3>
-              <p style={{ fontSize: '0.85rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 16px 0', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '0.85rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 18px 0', lineHeight: 1.6, flex: 1 }}>
                 {svc.description}
               </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 {svc.items.map((item) => (
-                  <li key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: 'rgba(15,23,42,0.7)' }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.82rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.4 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     {item}
@@ -752,20 +1375,23 @@ export default function Repairs() {
         </div>
       </section>
 
-      {/* ── Pricing Reference ───────────────────────────────────────────────────── */}
-      <section style={{
-        background: 'var(--alloy-base)',
-        borderTop: '1px solid var(--machined-border)',
-        padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
-      }}>
+      {/* ── Pricing Tabs ────────────────────────────────────────────────── */}
+      <section
+        id="pricing-tabs-section"
+        style={{
+          background: 'var(--alloy-base)',
+          borderTop: '1px solid var(--machined-border)',
+          padding: 'clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 3rem)',
+        }}
+      >
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
             <div style={{
               display: 'inline-block',
               background: 'rgba(37,99,235,0.08)',
               border: '1px solid rgba(37,99,235,0.2)',
-              borderRadius: '3px', padding: '4px 12px',
-              fontSize: '0.7rem', fontWeight: 700,
+              borderRadius: '99px', padding: '5px 16px',
+              fontSize: '0.68rem', fontWeight: 700,
               letterSpacing: '0.12em', textTransform: 'uppercase',
               color: 'var(--primary-600)', marginBottom: '14px',
             }}>
@@ -773,47 +1399,17 @@ export default function Repairs() {
             </div>
             <h2 style={{
               fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 800, color: 'var(--primary-600)',
-              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+              fontWeight: 900, color: '#0f172a',
+              margin: '0 0 12px 0', letterSpacing: '-0.025em',
             }}>
               Transparent Repair Pricing
             </h2>
-            <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-              Industry-standard labor and parts ranges for professional drywall tool repairs.
-              No charges until you approve your quote.
+            <p style={{ color: 'rgba(15,23,42,0.55)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0, maxWidth: '580px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
+              Industry-standard labor and parts ranges across all service categories.
+              Select a tab to explore tier options, features, and target use cases.
             </p>
           </div>
-
-          {/* Pricing table — scrollable on mobile */}
-          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', borderRadius: '6px', border: '1px solid var(--machined-border)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '320px', background: 'white' }}>
-              <thead>
-                <tr style={{ background: 'var(--primary-600)', color: 'white' }}>
-                  {['Service', 'Total Range', 'Notes'].map((h) => (
-                    <th key={h} style={{
-                      padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)',
-                      textAlign: 'left', fontSize: '0.72rem',
-                      fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-                      whiteSpace: 'nowrap',
-                    }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {PRICING_TIERS.map((row, i) => (
-                  <tr key={row.service} style={{ background: i % 2 === 0 ? 'white' : 'rgba(15,23,42,0.02)' }}>
-                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', fontWeight: 600, color: 'black', borderBottom: '1px solid var(--machined-border)' }}>{row.service}</td>
-                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)', borderBottom: '1px solid var(--machined-border)', whiteSpace: 'nowrap' }}>{row.totalRange}</td>
-                    <td style={{ padding: 'clamp(10px, 2vw, 14px) clamp(12px, 2vw, 18px)', fontSize: '0.78rem', color: 'rgba(15,23,42,0.5)', borderBottom: '1px solid var(--machined-border)' }}>{row.note}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'rgba(15,23,42,0.4)', marginTop: '12px', textAlign: 'center' }}>
-            * All prices are industry estimates. Actual costs may vary based on tool condition, parts availability, and additional findings during disassembly.
-            Budget an extra 20–30% for potential "hard parts" (chains, sprockets, shafts) discovered during service.
-          </p>
+          <PricingTabs />
         </div>
       </section>
 
@@ -823,14 +1419,25 @@ export default function Repairs() {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <div style={{
+              display: 'inline-block',
+              background: 'rgba(37,99,235,0.08)',
+              border: '1px solid rgba(37,99,235,0.2)',
+              borderRadius: '99px', padding: '5px 16px',
+              fontSize: '0.68rem', fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: 'var(--primary-600)', marginBottom: '14px',
+            }}>
+              Service Intervals
+            </div>
             <h2 style={{
               fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 800, color: 'var(--primary-600)',
-              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+              fontWeight: 900, color: '#0f172a',
+              margin: '0 0 12px 0', letterSpacing: '-0.025em',
             }}>
               Maintenance Schedule
             </h2>
-            <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0 }}>
+            <p style={{ color: 'rgba(15,23,42,0.55)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0, maxWidth: '520px', marginLeft: 'auto', marginRight: 'auto' }}>
               Industry-recommended service intervals based on your usage level
             </p>
           </div>
@@ -838,54 +1445,68 @@ export default function Repairs() {
           {/* Usage cards */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '20px',
             marginBottom: 'clamp(2rem, 4vw, 3rem)',
           }}>
             {MAINTENANCE_SCHEDULE.map((row) => {
               const badgeColors = {
-                Heavy: { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626' },
-                Regular: { bg: 'rgba(37,99,235,0.06)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)' },
-                Light: { bg: '#f0fdf4', border: '#86efac', text: '#16a34a' },
+                Heavy: { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626', icon: '#dc2626' },
+                Regular: { bg: 'rgba(37,99,235,0.06)', border: 'rgba(37,99,235,0.25)', text: 'var(--primary-600)', icon: '#2563eb' },
+                Light: { bg: '#f0fdf4', border: '#86efac', text: '#16a34a', icon: '#16a34a' },
               };
               const colors = badgeColors[row.badge] || badgeColors.Regular;
               return (
                 <div key={row.level} style={{
                   background: 'white',
                   border: '1px solid var(--machined-border)',
-                  borderRadius: '6px',
+                  borderRadius: '12px',
                   padding: 'clamp(1.25rem, 3vw, 1.75rem)',
-                }}>
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'box-shadow 0.2s',
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(15,23,42,0.08)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  {/* Colored top bar */}
+                  <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0,
+                    height: '3px',
+                    background: colors.icon,
+                    opacity: 0.6,
+                  }} />
                   <div style={{
                     display: 'inline-block',
                     background: colors.bg,
                     border: `1px solid ${colors.border}`,
-                    borderRadius: '3px', padding: '3px 10px',
-                    fontSize: '0.68rem', fontWeight: 700,
-                    letterSpacing: '0.1em', textTransform: 'uppercase',
-                    color: colors.text, marginBottom: '12px',
+                    borderRadius: '99px', padding: '3px 12px',
+                    fontSize: '0.68rem', fontWeight: 800,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    color: colors.text, marginBottom: '14px',
                   }}>
                     {row.badge} Use
                   </div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 6px 0' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
                     {row.level}
                   </h3>
-                  <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.55)', margin: '0 0 14px 0' }}>
+                  <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 16px 0', lineHeight: 1.5 }}>
                     {row.usage}
                   </p>
                   <div style={{
-                    background: 'var(--alloy-base)',
-                    border: '1px solid var(--machined-border)',
-                    borderRadius: '4px',
-                    padding: '10px 14px',
-                    display: 'flex', alignItems: 'center', gap: '8px',
+                    background: colors.bg,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '8px',
+                    padding: '11px 16px',
+                    display: 'flex', alignItems: 'center', gap: '10px',
                   }}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.icon} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                       <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--primary-600)' }}>
-                      {row.interval}
-                    </span>
+                    <div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: colors.text, marginBottom: '1px' }}>Recommended Interval</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: colors.icon }}>{row.interval}</div>
+                    </div>
                   </div>
                 </div>
               );
@@ -904,60 +1525,75 @@ export default function Repairs() {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 'clamp(2rem, 4vw, 3rem)' }}>
+            <div style={{
+              display: 'inline-block',
+              background: 'rgba(37,99,235,0.08)',
+              border: '1px solid rgba(37,99,235,0.2)',
+              borderRadius: '99px', padding: '5px 16px',
+              fontSize: '0.68rem', fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: 'var(--primary-600)', marginBottom: '14px',
+            }}>
+              Decision Guide
+            </div>
             <h2 style={{
               fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 800, color: 'var(--primary-600)',
-              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+              fontWeight: 900, color: '#0f172a',
+              margin: '0 0 12px 0', letterSpacing: '-0.025em',
             }}>
-              Repair vs. Replace Decision Guide
+              Repair vs. Replace
             </h2>
-            <p style={{ color: 'rgba(15,23,42,0.6)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0 }}>
+            <p style={{ color: 'rgba(15,23,42,0.55)', fontSize: 'clamp(0.875rem, 2vw, 1rem)', margin: 0 }}>
               Use the industry-standard 70% rule to make the right call
             </p>
           </div>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '24px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+            gap: '20px',
             alignItems: 'stretch',
           }}>
             {/* Rule card */}
             <div style={{
               background: 'white',
               border: '1px solid var(--machined-border)',
-              borderRadius: '6px',
+              borderRadius: '12px',
               padding: 'clamp(1.5rem, 3vw, 2rem)',
             }}>
               <div style={{
                 display: 'inline-block',
                 background: 'rgba(37,99,235,0.08)',
                 border: '1px solid rgba(37,99,235,0.2)',
-                borderRadius: '3px', padding: '4px 12px',
-                fontSize: '0.7rem', fontWeight: 700,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: 'var(--primary-600)', marginBottom: '14px',
+                borderRadius: '99px', padding: '4px 14px',
+                fontSize: '0.68rem', fontWeight: 700,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: 'var(--primary-600)', marginBottom: '16px',
               }}>
                 The 70% Rule
               </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 12px 0' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 14px 0' }}>
                 How to decide
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{
                   background: '#f0fdf4', border: '1px solid #86efac',
-                  borderRadius: '4px', padding: '12px 16px',
+                  borderRadius: '8px', padding: '14px 16px',
+                  display: 'flex', gap: '10px', alignItems: 'flex-start',
                 }}>
-                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#15803d' }}>
-                    ✓ Repair is economical if repair cost is under 70% of new tool price
+                  <span style={{ fontSize: '1.1rem', flexShrink: 0, marginTop: '1px' }}>✅</span>
+                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#15803d', lineHeight: 1.5 }}>
+                    Repair is economical if repair cost is under 70% of new tool price
                   </p>
                 </div>
                 <div style={{
                   background: '#fef2f2', border: '1px solid #fca5a5',
-                  borderRadius: '4px', padding: '12px 16px',
+                  borderRadius: '8px', padding: '14px 16px',
+                  display: 'flex', gap: '10px', alignItems: 'flex-start',
                 }}>
-                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#dc2626' }}>
-                    ✗ Consider replacement if repair cost reaches 70%+ of new tool price
+                  <span style={{ fontSize: '1.1rem', flexShrink: 0, marginTop: '1px' }}>⚠️</span>
+                  <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#dc2626', lineHeight: 1.5 }}>
+                    Consider replacement if repair cost reaches 70%+ of new tool price
                   </p>
                 </div>
               </div>
@@ -967,20 +1603,20 @@ export default function Repairs() {
             <div style={{
               background: 'white',
               border: '1px solid var(--machined-border)',
-              borderRadius: '6px',
+              borderRadius: '12px',
               padding: 'clamp(1.5rem, 3vw, 2rem)',
             }}>
               <div style={{
                 display: 'inline-block',
                 background: '#f0fdf4', border: '1px solid #86efac',
-                borderRadius: '3px', padding: '4px 12px',
-                fontSize: '0.7rem', fontWeight: 700,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: '#15803d', marginBottom: '14px',
+                borderRadius: '99px', padding: '4px 14px',
+                fontSize: '0.68rem', fontWeight: 700,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: '#15803d', marginBottom: '16px',
               }}>
                 Real-World Example
               </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 16px 0' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 16px 0' }}>
                 Automatic Taper Rebuild
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -991,25 +1627,25 @@ export default function Repairs() {
                 ].map((item) => (
                   <div key={item.label} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '8px 12px',
+                    padding: '10px 14px',
                     background: 'var(--alloy-base)',
                     border: '1px solid var(--machined-border)',
-                    borderRadius: '4px',
+                    borderRadius: '8px',
                   }}>
                     <span style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.6)', fontWeight: 500 }}>{item.label}</span>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: item.color }}>{item.value}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 800, color: item.color }}>{item.value}</span>
                   </div>
                 ))}
                 <div style={{
                   background: '#f0fdf4', border: '1px solid #86efac',
-                  borderRadius: '4px', padding: '10px 14px',
+                  borderRadius: '8px', padding: '11px 16px',
                   display: 'flex', alignItems: 'center', gap: '8px',
                   marginTop: '4px',
                 }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#15803d' }}>Verdict: Repair Recommended</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#15803d' }}>Verdict: Repair Recommended</span>
                 </div>
               </div>
             </div>
@@ -1018,21 +1654,21 @@ export default function Repairs() {
             <div style={{
               background: 'white',
               border: '1px solid var(--machined-border)',
-              borderRadius: '6px',
+              borderRadius: '12px',
               padding: 'clamp(1.5rem, 3vw, 2rem)',
             }}>
               <div style={{
                 display: 'inline-block',
                 background: 'rgba(37,99,235,0.08)',
                 border: '1px solid rgba(37,99,235,0.2)',
-                borderRadius: '3px', padding: '4px 12px',
-                fontSize: '0.7rem', fontWeight: 700,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: 'var(--primary-600)', marginBottom: '14px',
+                borderRadius: '99px', padding: '4px 14px',
+                fontSize: '0.68rem', fontWeight: 700,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: 'var(--primary-600)', marginBottom: '16px',
               }}>
                 Pro Tips
               </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'black', margin: '0 0 14px 0' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: '0 0 16px 0' }}>
                 Before You Ship
               </h3>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1043,15 +1679,15 @@ export default function Repairs() {
                   'Verify your brand/model year is supported before shipping',
                   'Wrap in bubble wrap; use the smallest sturdy box available',
                 ].map((tip, i) => (
-                  <li key={i} style={{ display: 'flex', gap: '10px', fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.5 }}>
+                  <li key={i} style={{ display: 'flex', gap: '12px', fontSize: '0.825rem', color: 'rgba(15,23,42,0.7)', lineHeight: 1.5 }}>
                     <span style={{
                       flexShrink: 0,
-                      width: '20px', height: '20px',
-                      background: 'rgba(37,99,235,0.1)',
+                      width: '22px', height: '22px',
+                      background: 'rgba(37,99,235,0.08)',
                       border: '1px solid rgba(37,99,235,0.2)',
                       borderRadius: '50%',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.65rem', fontWeight: 800, color: 'var(--primary-600)',
+                      fontSize: '0.65rem', fontWeight: 900, color: 'var(--primary-600)',
                       marginTop: '1px',
                     }}>
                       {i + 1}
@@ -1080,8 +1716,8 @@ export default function Repairs() {
               display: 'inline-block',
               background: 'rgba(37,99,235,0.08)',
               border: '1px solid rgba(37,99,235,0.2)',
-              borderRadius: '3px', padding: '4px 12px',
-              fontSize: '0.7rem', fontWeight: 700,
+              borderRadius: '99px', padding: '5px 16px',
+              fontSize: '0.68rem', fontWeight: 700,
               letterSpacing: '0.12em', textTransform: 'uppercase',
               color: 'var(--primary-600)', marginBottom: '14px',
             }}>
@@ -1089,8 +1725,8 @@ export default function Repairs() {
             </div>
             <h2 style={{
               fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 800, color: 'black',
-              margin: '0 0 12px 0', letterSpacing: '-0.02em',
+              fontWeight: 900, color: '#0f172a',
+              margin: '0 0 12px 0', letterSpacing: '-0.025em',
             }}>
               Submit a Repair Inquiry
             </h2>
@@ -2183,38 +2819,59 @@ export default function Repairs() {
       {/* ── Quick Links ──────────────────────────────────────────────────── */}
       <section style={{
         padding: 'clamp(3rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem)',
+        background: 'white',
+        borderTop: '1px solid var(--machined-border)',
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          <h2 style={{
-            textAlign: 'center',
-            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-            fontWeight: 800,
-            color: 'var(--primary-600)',
-            margin: '0 0 clamp(1.5rem, 3vw, 2rem) 0',
-            letterSpacing: '-0.02em',
-          }}>
-            Related Resources
-          </h2>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem, 3vw, 2rem)' }}>
+            <h2 style={{
+              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontWeight: 900,
+              color: '#0f172a',
+              margin: '0 0 8px 0',
+              letterSpacing: '-0.02em',
+            }}>
+              Related Resources
+            </h2>
+            <p style={{ fontSize: '0.9rem', color: 'rgba(15,23,42,0.5)', margin: 0 }}>
+              Everything you need to keep your tools in top shape
+            </p>
+          </div>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '20px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
+            gap: '16px',
           }}>
             {[
               {
                 to: '/parts',
                 title: 'Parts & Schematics',
                 description: 'Browse interactive part diagrams and order replacement parts for all major brands.',
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h1M3 12H2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 20v1M12 3V2"/>
+                  </svg>
+                ),
               },
               {
                 to: '/products',
                 title: 'Shop Replacement Tools',
                 description: 'Upgrade your toolkit — browse our full catalog of professional drywall tools and accessories.',
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                ),
               },
               {
                 to: '/contact',
                 title: 'Talk to an Expert',
                 description: 'Our industry veterans are ready to help — no bots, no runaround, just real support.',
+                icon: (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.59 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 5.56 5.56l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 16.92z"/>
+                  </svg>
+                ),
               },
             ].map((ql) => (
               <Link key={ql.to} to={ql.to} style={{ textDecoration: 'none' }}>
@@ -2222,27 +2879,42 @@ export default function Repairs() {
                   style={{
                     background: 'white',
                     border: '1px solid var(--machined-border)',
-                    borderRadius: '4px',
+                    borderRadius: '12px',
                     padding: '24px',
                     cursor: 'pointer',
-                    transition: 'box-shadow 0.2s, border-color 0.2s',
+                    transition: 'box-shadow 0.22s, border-color 0.22s, transform 0.22s',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(37,99,235,0.08)';
+                    e.currentTarget.style.boxShadow = '0 8px 32px rgba(37,99,235,0.1)';
                     e.currentTarget.style.borderColor = 'rgba(37,99,235,0.3)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.boxShadow = 'none';
                     e.currentTarget.style.borderColor = 'var(--machined-border)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'black', margin: '0 0 8px 0' }}>{ql.title}</h3>
-                  <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.6)', margin: 0, lineHeight: 1.5 }}>{ql.description}</p>
+                  <div style={{
+                    width: '44px', height: '44px',
+                    background: 'rgba(37,99,235,0.07)',
+                    border: '1px solid rgba(37,99,235,0.15)',
+                    borderRadius: '10px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: '14px', flexShrink: 0,
+                  }}>
+                    {ql.icon}
+                  </div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 8px 0' }}>{ql.title}</h3>
+                  <p style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 16px 0', lineHeight: 1.5, flex: 1 }}>{ql.description}</p>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '4px',
                     color: 'var(--primary-600)', fontSize: '0.75rem',
-                    fontWeight: 700, textTransform: 'uppercase',
-                    letterSpacing: '0.08em', marginTop: '16px',
+                    fontWeight: 800, textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
                   }}>
                     Learn more
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
