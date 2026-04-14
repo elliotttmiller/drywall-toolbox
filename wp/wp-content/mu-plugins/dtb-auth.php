@@ -321,10 +321,16 @@ function dtb_register_auth_routes(): void {
 		'callback'            => 'dtb_auth_forgot_password',
 		'permission_callback' => '__return_true',
 		'args'                => [
-			'email' => [
+			'email'   => [
 				'required'          => true,
 				'sanitize_callback' => 'sanitize_email',
 				'description'       => 'E-mail address to send the reset link to.',
+			],
+			'spa_url' => [
+				'required'          => false,
+				'sanitize_callback' => 'esc_url_raw',
+				'default'           => '',
+				'description'       => 'Base URL of the SPA (e.g. GitHub Pages URL). When provided and valid, the password reset link in the email will point to this URL instead of WP_HOME.',
 			],
 		],
 	] );
@@ -526,6 +532,10 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
  * password reset key and sends a reset link pointing to the React SPA
  * at /reset-password?key={key}&login={login} (NOT wp-login.php).
  *
+ * Optional `spa_url` parameter: when a cross-origin SPA (e.g. GitHub Pages)
+ * provides its own base URL, the reset link in the email will target that SPA
+ * instead of WP_HOME.  The origin is validated against dtb_allowed_origins().
+ *
  * Always returns HTTP 200 with the same message regardless of whether the
  * email matched a real account (prevents user enumeration).
  *
@@ -558,13 +568,41 @@ function dtb_auth_forgot_password( WP_REST_Request $request ): WP_REST_Response 
 	}
 
 	// Build the reset URL pointing to the React SPA (not wp-login.php).
-	$spa_origin = defined( 'WP_HOME' ) ? rtrim( WP_HOME, '/' ) : '';
-	$reset_url  = add_query_arg(
+	//
+	// When a cross-origin SPA (e.g. GitHub Pages) sends a `spa_url` parameter,
+	// use that URL as the reset-link base so the emailed link sends the user
+	// back to the correct SPA origin (e.g. https://elliotttmiller.github.io/drywall-toolbox).
+	// The origin component of the provided URL is validated against the DTB
+	// allowlist before use; unknown/untrusted URLs fall back to WP_HOME.
+	$default_spa_base = defined( 'WP_HOME' ) ? rtrim( (string) WP_HOME, '/' ) : '';
+	$spa_url_param    = (string) $request->get_param( 'spa_url' );
+	$spa_base         = $default_spa_base; // default: same-origin (production domain)
+
+	if ( $spa_url_param ) {
+		$parsed      = wp_parse_url( $spa_url_param );
+		$parsed_host = ! empty( $parsed['host'] ) ? (string) $parsed['host'] : '';
+
+		if ( $parsed_host ) {
+			$parsed_origin = ( ! empty( $parsed['scheme'] ) ? $parsed['scheme'] : 'https' )
+				. '://'
+				. $parsed_host;
+
+			if (
+				function_exists( 'dtb_allowed_origins' ) &&
+				in_array( rtrim( $parsed_origin, '/' ), dtb_allowed_origins(), true )
+			) {
+				// Strip any trailing slash so '/reset-password' appends cleanly.
+				$spa_base = rtrim( $spa_url_param, '/' );
+			}
+		}
+	}
+
+	$reset_url = add_query_arg(
 		[
 			'key'   => rawurlencode( $reset_key ),
 			'login' => rawurlencode( $user->user_login ),
 		],
-		$spa_origin . '/reset-password'
+		$spa_base . '/reset-password'
 	);
 
 	$site_name = get_bloginfo( 'name' ) ?: 'Drywall Toolbox';

@@ -337,7 +337,8 @@ function dtb_emit_cors_headers( string $raw_origin ): void {
 
 	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
 	header( 'Access-Control-Allow-Credentials: true' );
-	header( 'Access-Control-Allow-Headers: Content-Type, X-WP-Nonce, Authorization, X-Requested-With' );
+	header( 'Access-Control-Allow-Headers: Content-Type, X-WP-Nonce, Authorization, X-Requested-With, X-WC-Store-API-Nonce' );
+	header( 'Access-Control-Expose-Headers: X-WC-Store-API-Nonce' );
 	header( 'Access-Control-Max-Age: 86400' );
 	header( 'Vary: Origin' );
 }

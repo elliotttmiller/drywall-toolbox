@@ -164,10 +164,15 @@ export function useAuth() {
   const forgotPassword = useCallback( async ( email ) => {
     setError( null );
     try {
+      // Pass the SPA's own base URL so the server can build a reset link that
+      // points back to this deployment (e.g. GitHub Pages) rather than the
+      // production domain.  The backend validates the origin against its
+      // allowlist before using it.
+      const spaUrl = process.env.REACT_APP_SITE_URL || '';
       const res = await fetch( `${ DTB_AUTH_BASE }/forgot-password`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify( { email } ),
+        body:    JSON.stringify( { email, ...( spaUrl ? { spa_url: spaUrl } : {} ) } ),
       } );
       return await res.json();
     } catch ( err ) {
