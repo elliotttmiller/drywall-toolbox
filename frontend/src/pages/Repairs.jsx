@@ -149,29 +149,28 @@ export const PRICING_TAB_DATA = [
     id: 'autoTaper',
     label: 'Auto Tapers',
     shortLabel: 'Auto Tapers',
-    icon: '⚙️',
     anchor: { newPrice: '$1,899', rebuildPrice: '$299', savePct: '84%' },
-    note: 'Anchor pricing: New taper ~$1,899 vs. rebuild $299 — save 84%',
+    note: 'Rebuild vs. new taper: save up to 84% with a Standard Rebuild',
     tiers: [
       {
         id: 'qt', name: 'Quick Fix', price: '$75', badge: null,
-        target: 'Minor symptoms, budget-conscious',
-        features: ['Blade + cable replacement', 'Lubrication service', 'Minor adjustments', '~65% labor margin'],
+        target: 'Ideal for minor symptoms and straightforward fixes',
+        features: ['Blade + cable replacement', 'Lubrication service', 'Minor adjustments'],
       },
       {
         id: 'sr', name: 'Standard Rebuild', price: '$299', badge: 'Best Value',
-        target: 'Most common repair; value-seeker',
-        features: ['Wheels, bushings & liners', 'Plunger cup, cable & blade', 'Needle + calibration', 'Full wear-kit replacement', '~55% blended margin'],
+        target: 'Most common service for worn-out tapers',
+        features: ['Wheels, bushings & liners', 'Plunger cup, cable & blade', 'Needle + calibration', 'Full wear-kit replacement'],
       },
       {
         id: 'po', name: 'Premium Overhaul', price: '$499', badge: null,
-        target: 'High-volume pros, fleet managers',
+        target: 'Ideal for high-volume professionals and fleet operators',
         features: ['Everything in Standard Rebuild', 'Chain/sprocket inspection', 'Tube flip option', 'Priority turnaround', '90-day workmanship warranty'],
       },
       {
         id: 'ftu', name: 'Factory Tune-Up', price: '$179', badge: null,
-        target: 'Maintenance-focused contractors',
-        features: ['Deep cleaning & inspection', '11+ wear-part replacements', 'Performance report', 'Lubrication & calibration', '~70% margin (predictable)'],
+        target: 'Preventive care for maintenance-focused contractors',
+        features: ['Deep cleaning & inspection', '11+ wear-part replacements', 'Performance report', 'Lubrication & calibration'],
       },
     ],
   },
@@ -179,7 +178,6 @@ export const PRICING_TAB_DATA = [
     id: 'flatBoxes',
     label: 'Flat & Angle Boxes',
     shortLabel: 'Flat Boxes',
-    icon: '📦',
     anchor: null,
     note: 'Bundle: Rebuild 3 boxes, get the 4th at 50% off',
     tiers: [
@@ -190,17 +188,17 @@ export const PRICING_TAB_DATA = [
       },
       {
         id: 'fbr', name: 'Full Box Rebuild', price: '$89', badge: 'Best Value',
-        target: 'Standard repair for streaking/drag',
+        target: 'Standard repair for streaking or drag issues',
         features: ['Blades, wheels & skids', 'Springs, seals & O-rings', 'Full calibration', 'Comprehensive teardown'],
       },
       {
         id: 'pbp', name: 'Pro Box Package', price: '$149', badge: '3-Box Bundle',
-        target: 'Fleet discount; encourages volume',
+        target: 'Best value for multiple boxes',
         features: ['Full rebuild on 3 boxes', 'Free handle inspection', '60-day workmanship warranty', 'Best rate per unit'],
       },
       {
         id: 'abtu', name: 'Annual Box Tune-Up', price: '$59/box', badge: null,
-        target: 'Retention-focused maintenance plan',
+        target: 'Preventive maintenance plan',
         features: ['Preventive cleaning', 'Wear inspection', 'Minor adjustments', 'Per-box service'],
       },
     ],
@@ -209,18 +207,17 @@ export const PRICING_TAB_DATA = [
     id: 'mudPumps',
     label: 'Mud Pumps',
     shortLabel: 'Mud Pumps',
-    icon: '🔧',
     anchor: null,
     note: 'Comprehensive fluid system servicing for all major pump brands',
     tiers: [
       {
         id: 'sss', name: 'Seal & Screen Service', price: '$59', badge: null,
-        target: 'Minor flow issues',
+        target: 'Recommended for minor flow issues',
         features: ['Gaskets & u-cups', 'Screens & valve discs', 'Pressure test'],
       },
       {
         id: 'fpr', name: 'Full Pump Rebuild', price: '$119', badge: 'Best Value',
-        target: 'Weak pressure or leakage',
+        target: 'Recommended for weak pressure or leakage',
         features: ['Complete disassembly', 'All wear parts replaced', 'Housing inspection', 'Flow calibration'],
       },
       {
@@ -230,7 +227,7 @@ export const PRICING_TAB_DATA = [
       },
       {
         id: 'ppt', name: 'Preventive Pump Tune', price: '$79', badge: null,
-        target: 'High-volume users avoiding downtime',
+        target: 'Ideal for high-volume users preventing downtime',
         features: ['Cleaning & inspection', 'Seal inspection', 'Screen replacement', 'Lubrication'],
       },
     ],
@@ -239,7 +236,6 @@ export const PRICING_TAB_DATA = [
     id: 'handles',
     label: 'Handles & Accessories',
     shortLabel: 'Accessories',
-    icon: '🛠️',
     anchor: null,
     note: 'Bundle: Handle + Gooseneck + Corner Flusher = $99 (save $38)',
     tiers: [
@@ -274,40 +270,39 @@ export const PRICING_TAB_DATA = [
     id: 'shipping',
     label: 'Shipping & Logistics',
     shortLabel: 'Shipping',
-    icon: '🚚',
     anchor: null,
     note: 'Transparent pricing — no hidden fees or surprise surcharges',
     tiers: [
       {
         id: 'srs', name: 'Standard Return Shipping', price: 'Actual cost', badge: null,
-        target: 'All customers',
+        target: 'Available to all customers',
         features: ['Customer pays actual carrier cost', 'Transparent; no markup', 'USPS, FedEx, or UPS'],
       },
       {
         id: 'er', name: 'Expedited Return (2-Day)', price: '+$25 flat', badge: 'Popular',
-        target: 'Urgent jobs & tight deadlines',
-        features: ['2-day air return', '+$25 flat fee', 'High-margin add-on', 'Track every step'],
+        target: 'Ideal for urgent jobs and tight deadlines',
+        features: ['2-day air return', '+$25 flat fee', 'Track every step'],
       },
       {
         id: 'iu', name: 'Insurance Upgrade', price: '+$15', badge: null,
-        target: 'Tools valued over $500',
-        features: ['Full declared value coverage', 'On tools >$500 value', 'Peace of mind; low risk'],
+        target: 'Recommended for tools valued over $500',
+        features: ['Full declared value coverage', 'Recommended for tools over $500 in value'],
       },
       {
         id: 'pk', name: 'Packaging Kit (Pre-Paid)', price: '$12 credit', badge: null,
-        target: 'First-time shippers',
-        features: ['Pre-paid packaging supplied', '$12 credited toward repair', 'Reduces damage claims', 'Builds commitment to service'],
+        target: 'Ideal for first-time shippers',
+        features: ['Pre-paid packaging supplied', '$12 credited toward repair'],
       },
       {
         id: 'ldp', name: 'Local Drop-Off / Pick-Up', price: 'FREE', badge: 'Free',
-        target: 'Local customers',
-        features: ['No shipping required', 'Incentivizes local customers', 'Saves shipping coordination', 'Fastest turnaround option'],
+        target: 'Available to local customers',
+        features: ['No shipping required', 'Fastest turnaround option'],
       },
     ],
   },
 ];
 
-// Copy blocks — anchor pricing and trust signals
+// Copy blocks — trust signals
 const REPAIR_COPY = {
   anchor:         'New Taper: ~$1,899  |  Standard Rebuild: $299  —  Save 84%',
   partsLock:      'All replacement parts quoted and locked before work begins. No surprise invoices.',
@@ -625,7 +620,6 @@ function PricingTabs() {
                   letterSpacing: active ? '0.01em' : 'normal',
                 }}
               >
-                <span style={{ fontSize: '1em', lineHeight: 1 }} aria-hidden="true">{t.icon}</span>
                 <span className="tab-label-full" style={{ display: 'block' }}>{t.label}</span>
               </button>
             );
@@ -656,9 +650,6 @@ function PricingTabs() {
             fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em',
           }}>
             SAVE {tab.anchor.savePct}
-          </span>
-          <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', flexBasis: '100%', textAlign: 'center', marginTop: '4px' }}>
-            Psychological anchor: always compare against new tool retail price
           </span>
         </div>
       )}
@@ -1581,7 +1572,9 @@ export default function Repairs() {
                   borderRadius: '8px', padding: '14px 16px',
                   display: 'flex', gap: '10px', alignItems: 'flex-start',
                 }}>
-                  <span style={{ fontSize: '1.1rem', flexShrink: 0, marginTop: '1px' }}>✅</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '1px' }}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
                   <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#15803d', lineHeight: 1.5 }}>
                     Repair is economical if repair cost is under 70% of new tool price
                   </p>
@@ -1591,7 +1584,9 @@ export default function Repairs() {
                   borderRadius: '8px', padding: '14px 16px',
                   display: 'flex', gap: '10px', alignItems: 'flex-start',
                 }}>
-                  <span style={{ fontSize: '1.1rem', flexShrink: 0, marginTop: '1px' }}>⚠️</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '1px' }}>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
                   <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: '#dc2626', lineHeight: 1.5 }}>
                     Consider replacement if repair cost reaches 70%+ of new tool price
                   </p>
