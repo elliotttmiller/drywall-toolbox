@@ -558,8 +558,13 @@
   /* Let the inline style own the dimensions entirely */
   width: unset !important;
   height: unset !important;
-  min-width: unset !important;
-  min-height: unset !important;
+  /* Enforce a minimum touch target so small percentage-based hotspots (e.g.
+     TapeTech schematics where widthPx is small relative to image dimensions)
+     are still clickable.  Unlike the ::after ring this does NOT expand the
+     hit zone beyond the hotspot itself — it merely sets a floor so that very
+     narrow hotspots become usable without overlapping neighbours. */
+  min-width: 20px !important;
+  min-height: 16px !important;
   /* Pointer precision: block all browser gesture interference */
   touch-action: none !important;
 }
@@ -594,8 +599,6 @@
   .hotspot.hotspot-precise.hotspot-rectangle {
     width: unset !important;
     height: unset !important;
-    min-width: unset !important;
-    min-height: unset !important;
   }
 }
 
@@ -619,8 +622,6 @@
   .hotspot.hotspot-precise.hotspot-rectangle {
     width: unset !important;
     height: unset !important;
-    min-width: unset !important;
-    min-height: unset !important;
   }
 }
 
@@ -652,8 +653,6 @@
   .hotspot.hotspot-precise.hotspot-rectangle {
     width: unset !important;
     height: unset !important;
-    min-width: unset !important;
-    min-height: unset !important;
   }
 }
 
@@ -685,8 +684,6 @@
   .hotspot.hotspot-precise.hotspot-rectangle {
     width: unset !important;
     height: unset !important;
-    min-width: unset !important;
-    min-height: unset !important;
   }
 }
 
@@ -706,8 +703,6 @@
   .hotspot.hotspot-precise.hotspot-rectangle {
     width: unset !important;
     height: unset !important;
-    min-width: unset !important;
-    min-height: unset !important;
   }
 }
 

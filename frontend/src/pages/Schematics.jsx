@@ -648,7 +648,10 @@ const ALLOWED_BRANDS = [
     const imgW = data.image_natural_width  ?? null;
     const imgH = data.image_natural_height ?? null;
     return data.parts.map((p) => {
-      const c = coords[p.id] || null;
+      // Look up coordinate entry by part id first; fall back to part sku so that
+      // schematics where the coordinates dict is keyed by part number (sku) rather
+      // than by the internal part id (e.g. 45TT) still resolve correctly.
+      const c = coords[p.id] || (p.sku && coords[p.sku]) || null;
       // Resolve horizontal position (CSS left):
       //   1. x_pct (official schema, percentage of image width)
       //   2. x_px  → converted to % using image_natural_width
@@ -678,6 +681,11 @@ const ALLOWED_BRANDS = [
       const pageNumber = c && c.pageNumber
         ? c.pageNumber
         : (data.diagramPages && data.diagramPages[0]) || 1;
+      // A coordinate entry where both x_pct and y_pct are exactly 0 is a
+      // placeholder that was never properly positioned (the tool default).
+      // Mark these so the render loop can skip them rather than stacking
+      // all unpositioned hotspots at the image origin (top-left corner).
+      const skipHotspot = c !== null && leftVal === 0 && topVal === 0;
       return {
         id: p.id,
         name: p.name,
@@ -692,6 +700,7 @@ const ALLOWED_BRANDS = [
         widthPx: c && c.widthPx ? c.widthPx : null,
         heightPx: c && c.heightPx ? c.heightPx : null,
         rotation: c && c.rotation ? c.rotation : 0,
+        skipHotspot,
         // Pass through official schema fields for optional consumer use
         xPx:  c && c.x_px  !== null && c.x_px  !== undefined ? c.x_px  : null,
         yPx:  c && c.y_px  !== null && c.y_px  !== undefined ? c.y_px  : null,
@@ -2550,7 +2559,7 @@ const ALLOWED_BRANDS = [
                 )}
 
                 {/* Hotspots rendered INSIDE the transformed container so they scale and pan with the image */}
-                {currentSchematic.parts.filter(part => !part.pageNumber || part.pageNumber === currentPage).map((part, index) => {
+                {currentSchematic.parts.filter(part => (!part.pageNumber || part.pageNumber === currentPage) && !part.skipHotspot).map((part, index) => {
                   // Use a composite key so duplicate part IDs (e.g. shared fasteners
                   // that appear twice on a schematic) each get an independent active
                   // state — only the clicked instance highlights, not all copies.

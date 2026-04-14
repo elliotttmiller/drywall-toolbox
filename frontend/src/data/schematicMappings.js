@@ -39,7 +39,19 @@ export const SCHEMATIC_DEFINITIONS = {
     { id: 'columbia-cam-lock-tube',                 title: 'Cam Lock Compound Tube',           mpn: 'CTT-CLT',  category: 'Compound Tubes'        },
   ],
   'TapeTech': [
-    { id: 'tapetech-extendable-support-handle', title: 'Extendable Support Handle', mpn: 'TT-ESH', category: 'Handles' }
+    { id: 'tapetech-8054tt',  title: '8054TT Flat Box Handle',     mpn: '8054TT',  category: 'Handles'        },
+    { id: 'tapetech-17tt',   title: '17TT Taper',                  mpn: '17TT',    category: 'Tapers'         },
+    { id: 'tapetech-20ttx',  title: '20TTX Taper',                 mpn: '20TTX',   category: 'Tapers'         },
+    { id: 'tapetech-25ttx',  title: '25TTX Taper',                 mpn: '25TTX',   category: 'Tapers'         },
+    { id: 'tapetech-30ttx',  title: '30TTX Taper',                 mpn: '30TTX',   category: 'Tapers'         },
+    { id: 'tapetech-35tt',   title: '35TT Flat Box',               mpn: '35TT',    category: 'Finishing Boxes' },
+    { id: 'tapetech-40tt',   title: '40TT Flat Box',               mpn: '40TT',    category: 'Finishing Boxes' },
+    { id: 'tapetech-42tt',   title: '42TT Corner Finisher',        mpn: '42TT',    category: 'Corner Boxes'   },
+    { id: 'tapetech-45tt',   title: '45TT Angle Head',             mpn: '45TT',    category: 'Angle Heads'    },
+    { id: 'tapetech-48tt',   title: '48TT Corner Finisher',        mpn: '48TT',    category: 'Corner Boxes'   },
+    { id: 'tapetech-50tt',   title: '50TT Flat Box',               mpn: '50TT',    category: 'Finishing Boxes' },
+    { id: 'tapetech-63tt',   title: '63TT Flat Box',               mpn: '63TT',    category: 'Finishing Boxes' },
+    { id: 'tapetech-68tt',   title: '68TT Flat Box',               mpn: '68TT',    category: 'Finishing Boxes' },
   ],
   'Asgard': [
     { id: 'asgard-at01-ad',  title: 'HAMMER Automatic Taper',                mpn: 'AT01-AD',  category: 'Tapers'          },
@@ -219,9 +231,38 @@ export function getSchematicIdForProduct(product) {
 
   // ── TapeTech ─────────────────────────────────────────────────────────────
   if (brand === 'TapeTech') {
-    if (sku.startsWith('XHTT') || name.includes('extendable support handle')) {
-      return 'tapetech-extendable-support-handle';
-    }
+    // SKU-exact match maps tool-level product SKUs to their schematics
+    const tapeTechSkuMap = {
+      '8054TT': 'tapetech-8054tt',
+      '17TT':   'tapetech-17tt',
+      '20TTX':  'tapetech-20ttx',
+      '25TTX':  'tapetech-25ttx',
+      '30TTX':  'tapetech-30ttx',
+      '35TT':   'tapetech-35tt',
+      '40TT':   'tapetech-40tt',
+      '42TT':   'tapetech-42tt',
+      '45TT':   'tapetech-45tt',
+      '48TT':   'tapetech-48tt',
+      '50TT':   'tapetech-50tt',
+      '63TT':   'tapetech-63tt',
+      '68TT':   'tapetech-68tt',
+    };
+    if (tapeTechSkuMap[sku]) return tapeTechSkuMap[sku];
+
+    // Name-keyword fallback
+    if (name.includes('8054tt') || (name.includes('8054') && name.includes('flat box handle'))) return 'tapetech-8054tt';
+    if (name.includes('17tt')   || (name.includes('17tt'))) return 'tapetech-17tt';
+    if (name.includes('20ttx'))  return 'tapetech-20ttx';
+    if (name.includes('25ttx'))  return 'tapetech-25ttx';
+    if (name.includes('30ttx'))  return 'tapetech-30ttx';
+    if (name.includes('35tt'))   return 'tapetech-35tt';
+    if (name.includes('40tt'))   return 'tapetech-40tt';
+    if (name.includes('42tt'))   return 'tapetech-42tt';
+    if (name.includes('45tt'))   return 'tapetech-45tt';
+    if (name.includes('48tt'))   return 'tapetech-48tt';
+    if (name.includes('50tt'))   return 'tapetech-50tt';
+    if (name.includes('63tt'))   return 'tapetech-63tt';
+    if (name.includes('68tt'))   return 'tapetech-68tt';
     return null;
   }
 
