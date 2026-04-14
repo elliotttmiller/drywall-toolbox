@@ -1090,7 +1090,7 @@ export default function Repairs() {
                 color: 'rgba(255,255,255,0.8)', marginBottom: '24px',
               }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', flexShrink: 0, boxShadow: '0 0 8px #4ade80' }} />
-                Tool Repair &amp; Maintenance
+                Tool Repair & Maintenance
               </div>
               <h1 style={{
                 color: 'white',
