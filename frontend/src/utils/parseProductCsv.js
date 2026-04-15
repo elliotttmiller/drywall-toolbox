@@ -303,6 +303,142 @@ export function htmlToMarkdown(html) {
   return md;
 }
 
+// ─── Spec extraction from HTML pipe-table description ─────────────────────────
+
+/**
+ * Split a comma-separated includes string into items, respecting parentheses.
+ * Local duplicate of parseIncludesList (productSpecifications.js) to keep this
+ * module self-contained and free of circular imports.
+ *
+ * @param {string} str  e.g. '10" Flat Box, Repair Kits (AH-RK, FFBR9-10)'
+ * @returns {string[]}
+ */
+function splitIncludesList(str) {
+  if (!str) return [];
+  const items = [];
+  let cur = '';
+  let depth = 0;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === '(')      { depth++; cur += ch; }
+    else if (ch === ')') { depth--; cur += ch; }
+    else if (ch === ',' && depth === 0) {
+      const t = cur.trim();
+      if (t) items.push(t);
+      cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  const t = cur.trim();
+  if (t) items.push(t);
+  return items;
+}
+
+/**
+ * Try to extract a single product SKU from an include item string.
+ *
+ * Handles the common WooCommerce export format where a product's SKU is
+ * appended in parentheses: "Hammer Automatic Taper (AT01-AD)"
+ * Items with multiple values in parens (e.g. "Repair Kits (AH-RK, CTR-1)")
+ * are left as-is — no sku is extracted.
+ *
+ * @param {string} item  Raw include item, e.g. 'Loading Pump (LP01-AD)'
+ * @returns {{ name: string, sku?: string }}
+ */
+const INCLUDE_SKU_RE = /^(.*?)\s*\(([A-Z0-9][A-Z0-9-]{1,})\)\s*$/;
+function parseIncludeItem(item) {
+  const m = item.match(INCLUDE_SKU_RE);
+  if (m) return { name: m[1].trim(), sku: m[2] };
+  return { name: item };
+}
+
+/**
+ * Scan an HTML product description for a pipe-table <p> that looks like a
+ * specifications table, extract the rows as meta_data entries, and return the
+ * HTML with that block (and its preceding "Specifications:" heading) removed
+ * so the description doesn't render specs twice.
+ *
+ * WooCommerce CSV descriptions embed specs as a single-line pipe table inside
+ * a <p> element, e.g.:
+ *   <p>| Specification | Detail | | :--- | :--- | | SKU | TACSET | ...</p>
+ *
+ * The extracted data is stored as:
+ *   _specs_N_label / _specs_N_value  — one pair per spec row
+ *   _includes_N_name / _includes_N_sku — one entry per included item
+ *
+ * @param {string} html  Raw HTML description from the CSV
+ * @returns {{ specsMeta: Array<{key:string,value:string}>, strippedHtml: string }}
+ */
+function extractSpecsFromHtml(html) {
+  if (!html) return { specsMeta: [], strippedHtml: html };
+
+  const specsMeta = [];
+  let strippedHtml = html;
+
+  const pTagRe = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let match;
+
+  while ((match = pTagRe.exec(html)) !== null) {
+    const inner = match[1].trim();
+
+    // Must be a single-line pipe table with an alignment row
+    if (
+      !inner.startsWith('|') ||
+      !inner.endsWith('|') ||
+      inner.includes('\n') ||
+      !/\|\s*:?-+:?\s*\|/.test(inner)
+    ) continue;
+
+    // Split into rows (same approach as htmlToMarkdown)
+    const rows = inner.replace(/\|\s*\|/g, '|\n|').split('\n').map(r => r.trim()).filter(Boolean);
+
+    // Need header + alignment + at least one data row; header must look like a spec table
+    if (rows.length < 3 || !/specification|sku|brand/i.test(rows[0])) continue;
+
+    // Parse data rows (skip header [0] and alignment [1])
+    const specs = [];
+    for (let i = 2; i < rows.length; i++) {
+      // Split on | — first and last tokens are empty (table edges)
+      const cells = rows[i].split('|').map(c => c.trim());
+      if (cells.length >= 3 && cells[1]) {
+        specs.push({ label: cells[1], value: cells[2] || '' });
+      }
+    }
+
+    if (specs.length === 0) continue;
+
+    // Build _specs_ meta_data entries
+    specs.forEach((spec, i) => {
+      specsMeta.push({ key: `_specs_${i}_label`, value: spec.label });
+      specsMeta.push({ key: `_specs_${i}_value`, value: spec.value });
+    });
+
+    // Build _includes_ meta_data entries for the "Includes" / "Set Includes" row
+    const includesSpec = specs.find(s => /^(set\s+)?includes?$/i.test(s.label.trim()));
+    if (includesSpec) {
+      const includeItems = splitIncludesList(includesSpec.value);
+      includeItems.forEach((item, i) => {
+        const parsed = parseIncludeItem(item);
+        specsMeta.push({ key: `_includes_${i}_name`, value: parsed.name });
+        if (parsed.sku) {
+          specsMeta.push({ key: `_includes_${i}_sku`, value: parsed.sku });
+        }
+      });
+    }
+
+    // Strip the specs table <p> and its preceding "Specifications:" heading
+    strippedHtml = strippedHtml.replace(match[0], '');
+    strippedHtml = strippedHtml.replace(
+      /<p[^>]*>\s*<(?:strong|b)[^>]*>Specifications?:?<\/(?:strong|b)>\s*<\/p>\s*/gi,
+      ''
+    );
+    break; // Only process the first matching specs table
+  }
+
+  return { specsMeta, strippedHtml };
+}
+
 // ─── Normalizer ───────────────────────────────────────────────────────────────
 
 /**
@@ -357,6 +493,18 @@ function normalizeRow(row, idx) {
   // Tags as array
   const tags = (row['Tags'] || '').split(',').map(t => t.trim()).filter(Boolean);
 
+  // Extract structured specs from HTML description before converting to Markdown.
+  // This populates meta_data with _specs_N_label/value and _includes_N_name/sku
+  // entries so the TechnicalSpecifications component can render them with proper
+  // per-item formatting. The specs <p> block is stripped from the HTML so it
+  // doesn't appear twice (once in the description and once in the specs table).
+  const { specsMeta, strippedHtml } = extractSpecsFromHtml(row['Description'] || '');
+
+  // Build meta_data: UPC first (if present), then extracted spec entries
+  const meta_data = [];
+  if (upc) meta_data.push({ key: 'upc', value: upc });
+  meta_data.push(...specsMeta);
+
   return {
     // Identity — use SKU; fall back to row index so IDs are always defined
     id:          sku || `csv-${idx}`,
@@ -386,13 +534,14 @@ function normalizeRow(row, idx) {
     manage_stock:  false,
     stock_quantity: row['Stock'] ? (parseInt(row['Stock'], 10) || null) : null,
 
-    // Descriptions — convert HTML → Markdown for ReactMarkdown rendering
+    // Descriptions — convert HTML → Markdown for ReactMarkdown rendering.
+    // strippedHtml has the specs table removed to avoid rendering it twice.
     short_description: (row['Short description'] || '').replace(/<[^>]+>/g, '').slice(0, 200),
-    description_full:  htmlToMarkdown(row['Description'] || ''),
+    description_full:  htmlToMarkdown(strippedHtml),
 
     // Attributes / meta preserved for schematic lookups
     attributes: brand ? [{ name: 'Brand', options: [brand] }] : [],
-    meta_data:  upc   ? [{ key: 'upc', value: upc }]         : [],
+    meta_data,
 
     // Ratings — CSV does not carry ratings
     rating:  0,
