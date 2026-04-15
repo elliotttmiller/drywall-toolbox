@@ -70,9 +70,11 @@ export default function AccountHub() {
   const { user, isAuthenticated, isLoading, logout }  = useAuthContext();
   const [ searchParams, setSearchParams ]             = useSearchParams();
 
-  // Resolve initial tab from URL param → localStorage → 0
-  const resolveInitialTab = useCallback( () => {
-    const urlTab = searchParams.get( 'tab' );
+  // Resolve initial tab from URL param → localStorage → 0.
+  // This runs once at mount; searchParams is read directly from the initial
+  // URLSearchParams snapshot so no stale-closure risk here.
+  const resolveInitialTab = () => {
+    const urlTab = new URLSearchParams( window.location.search ).get( 'tab' );
     if ( urlTab ) {
       const idx = TABS.findIndex( ( t ) => t.id === urlTab );
       if ( idx >= 0 ) return idx;
@@ -81,7 +83,7 @@ export default function AccountHub() {
       const cached = JSON.parse( localStorage.getItem( 'dtb_dashboard_tab' ) || '0' );
       return typeof cached === 'number' && cached >= 0 && cached < TABS.length ? cached : 0;
     } catch { return 0; }
-  }, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+  };
 
   const [ activeTab,      setActiveTab      ] = useState( resolveInitialTab );
   const [ pointsData,     setPointsData     ] = useState( null );
@@ -136,8 +138,16 @@ export default function AccountHub() {
     setActiveTab( idx );
   }
 
-  function handleTouchStart( e ) { touchStartX.current = e.targetTouches[0].clientX; }
-  function handleTouchMove( e )  { touchEndX.current   = e.targetTouches[0].clientX; }
+  function handleTouchStart( e ) {
+    if ( e.targetTouches && e.targetTouches.length > 0 ) {
+      touchStartX.current = e.targetTouches[0].clientX;
+    }
+  }
+  function handleTouchMove( e ) {
+    if ( e.targetTouches && e.targetTouches.length > 0 ) {
+      touchEndX.current = e.targetTouches[0].clientX;
+    }
+  }
   function handleTouchEnd() {
     if ( touchStartX.current === null || touchEndX.current === null ) return;
     const dist = touchStartX.current - touchEndX.current;
