@@ -567,6 +567,9 @@ const ALLOWED_BRANDS = [
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [toast, setToast] = useState(null);
   const [brands, setBrands] = useState([]);
+  // Tracks whether the main schematic diagram image has finished loading.
+  // Drives the skeleton placeholder and fade-in transition on the <img>.
+  const [diagramImageLoaded, setDiagramImageLoaded] = useState(false);
   const { addToCart } = useCart();
 
   // Mobile zoom/pan state
@@ -1917,6 +1920,12 @@ const ALLOWED_BRANDS = [
       return () => clearTimeout(t);
     }, [selectedSchematic, currentPage]);
 
+  // Reset the loaded flag whenever the diagram image src changes so the
+  // skeleton re-appears and the new image fades in cleanly.
+  useEffect(() => {
+    setDiagramImageLoaded(false);
+  }, [schematicImageSrc]);
+
   // Touch and zoom handlers for mobile - enhanced with smooth interactions
   const handleTouchStart = useCallback((e) => {
     if (e.touches.length === 2) {
@@ -2330,14 +2339,17 @@ const ALLOWED_BRANDS = [
         />
       ) : (
         /* Show Schematic Viewer if schematic selected */
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          minHeight: 0,
-          width: '100%',
-          overflow: 'hidden',
-        }}>
+        <div
+          className="viewer-panel section-enter"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            minHeight: 0,
+            width: '100%',
+            overflow: 'hidden',
+          }}
+        >
           {/* ── Compact viewer top bar: back | logo + title | pager ── */}
           <div className="viewer-top-bar">
             <button
@@ -2537,23 +2549,32 @@ const ALLOWED_BRANDS = [
                   onClick={(e) => e.stopPropagation()}
                 >
                 {schematicImageSrc ? (
-                  <img
-                    src={schematicImageSrc}
-                    alt={currentSchematic.title}
-                    style={{
-                      // Let CSS own all size rules for the img.
-                      // On mobile: .schematic-container img sets width:100% height:auto
-                      // On desktop: .schematic-image-bounds img sets width:100% height:100%
-                      display: 'block',
-                      pointerEvents: 'none',
-                      imageRendering: 'auto',
-                      WebkitTouchCallout: 'none',
-                      WebkitUserSelect: 'none',
-                      userSelect: 'none',
-                    }}
-                    loading="eager"
-                    decoding="async"
-                  />
+                  <>
+                    {/* Shimmer skeleton — visible while image is loading, hidden once loaded */}
+                    {!diagramImageLoaded && (
+                      <div className="schematic-diagram-skeleton" aria-hidden="true" />
+                    )}
+                    <img
+                      src={schematicImageSrc}
+                      alt={currentSchematic.title}
+                      style={{
+                        // Let CSS own all size rules for the img.
+                        // On mobile: .schematic-container img sets width:100% height:auto
+                        // On desktop: .schematic-image-bounds img sets width:100% height:100%
+                        display: 'block',
+                        pointerEvents: 'none',
+                        imageRendering: 'auto',
+                        WebkitTouchCallout: 'none',
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none',
+                        opacity: diagramImageLoaded ? 1 : 0,
+                        transition: diagramImageLoaded ? 'opacity 0.35s ease' : 'none',
+                      }}
+                      loading="eager"
+                      decoding="async"
+                      onLoad={() => setDiagramImageLoaded(true)}
+                    />
+                  </>
                 ) : (
                   currentSchematic.svg
                 )}
