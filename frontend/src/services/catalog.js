@@ -41,7 +41,15 @@ async function fetchFromApi() {
 
   let done = false;
   while (!done) {
-    const batch = await apiGetProducts({ per_page: PER, page, status: 'publish' });
+    let batch;
+    try {
+      batch = await apiGetProducts({ per_page: PER, page, status: 'publish' });
+    } catch (pageErr) {
+      // If earlier pages already loaded, return those rather than discarding everything.
+      // Propagate the error only when we have nothing at all so the outer catch can handle it.
+      if (all.length > 0) break;
+      throw pageErr;
+    }
     all = all.concat(batch);
     if (batch.length < PER) { done = true; break; }
     page++;

@@ -194,8 +194,12 @@ function extractBrand(wcProduct) {
 export function normalizeProduct(wcProduct) {
   if (!wcProduct) return null;
 
-  // Images: prefer array of src strings; keep single `image` for legacy compat
-  const images = (wcProduct.images || []).map((img) => img.src).filter(Boolean);
+  // Images: prefer array of src strings; keep single `image` for legacy compat.
+  // Handle both WooCommerce image objects ({ src, id, ... }) and plain string URLs
+  // so that this function is idempotent even if called on an already-normalised product.
+  const images = (wcProduct.images || [])
+    .map((img) => (typeof img === 'string' ? img : (img?.src ?? '')))
+    .filter(Boolean);
   if (images.length === 0) images.push('https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/04/no-image-placeholder.webp');
   const image = images[0];
 
