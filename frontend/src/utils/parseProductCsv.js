@@ -346,7 +346,7 @@ function splitIncludesList(str) {
  * @param {string} item  Raw include item, e.g. 'Loading Pump (LP01-AD)'
  * @returns {{ name: string, sku?: string }}
  */
-const INCLUDE_SKU_RE = /^(.*?)\s*\(([A-Z0-9][A-Z0-9-]{1,})\)\s*$/;
+const INCLUDE_SKU_RE = /^(.*?)\s*\(([A-Z0-9][A-Z0-9-]+)\)\s*$/;
 function parseIncludeItem(item) {
   const m = item.match(INCLUDE_SKU_RE);
   if (m) return { name: m[1].trim(), sku: m[2] };
@@ -376,10 +376,8 @@ function extractSpecsFromHtml(html) {
   const specsMeta = [];
   let strippedHtml = html;
 
-  const pTagRe = /<p[^>]*>([\s\S]*?)<\/p>/gi;
-  let match;
-
-  while ((match = pTagRe.exec(html)) !== null) {
+  // Use matchAll to safely iterate over all <p> matches without exec() state concerns
+  for (const match of html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
     const inner = match[1].trim();
 
     // Must be a single-line pipe table with an alignment row
