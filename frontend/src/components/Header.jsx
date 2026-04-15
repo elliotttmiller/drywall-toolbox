@@ -513,74 +513,66 @@ export default function Header({ onCartToggle }) {
             </Link>
 
             {/* ── Account / Auth — bottom of mobile menu ─────────────────── */}
-            <div style={{ marginTop: '8px', paddingTop: '12px', borderTop: '1px solid var(--machined-border)' }}>
+            <div className="mobile-nav-account">
               {!isLoading && (
                 isAuthenticated ? (
                   /* ── Logged-in ── */
                   <>
-                    {/* Identity row */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 20px', marginBottom: '4px' }}>
-                      <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <User size={16} style={{ color: 'white' }} />
+                    {/* User identity card */}
+                    <div className="mobile-nav-user-card">
+                      <div className="mobile-nav-avatar">
+                        <User size={17} style={{ color: 'white' }} />
                       </div>
-                      <div>
-                        <p style={{ margin: 0, fontWeight: 700, fontSize: '0.875rem', color: '#0f172a', lineHeight: 1.2 }}>
-                          {user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.email || 'My Account'}
-                        </p>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <span className="mobile-nav-user-name">
+                          {user?.first_name && user?.last_name
+                            ? `${user.first_name} ${user.last_name}`
+                            : user?.email ? user.email.split('@')[0] : 'My Account'}
+                        </span>
                         {user?.email && (
-                          <p style={{ margin: 0, fontSize: '0.72rem', color: '#64748b', lineHeight: 1.3 }}>
-                            {user.email}
-                          </p>
+                          <span className="mobile-nav-user-email">{user.email}</span>
                         )}
                       </div>
                     </div>
 
-                    <Link
-                      to="/dashboard"
-                      className={`nav-link-mobile ${isActive('/dashboard') ? 'active' : ''}`}
-                      onClick={closeMobileMenu}
-                      style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-                    >
-                      <User size={16} style={{ flexShrink: 0, opacity: 0.55 }} />
-                      My Dashboard
-                    </Link>
-
-                    <button
-                      onClick={async () => { await logout(); closeMobileMenu(); }}
-                      style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: 'inherit', color: '#dc2626', fontWeight: 600, borderRadius: '6px', transition: 'background 150ms' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#fef2f2'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                    >
-                      <LogOut size={16} style={{ flexShrink: 0 }} />
-                      Sign Out
-                    </button>
+                    {/* Action rows */}
+                    <div className="mobile-nav-actions">
+                      <Link
+                        to="/dashboard"
+                        onClick={closeMobileMenu}
+                        className={`mobile-nav-action-row${isActive('/dashboard') ? ' active' : ''}`}
+                      >
+                        <User size={15} style={{ flexShrink: 0, opacity: 0.6 }} />
+                        My Dashboard
+                      </Link>
+                      <button
+                        onClick={async () => { await logout(); closeMobileMenu(); }}
+                        className="mobile-nav-action-row mobile-nav-action-row--danger"
+                      >
+                        <LogOut size={15} style={{ flexShrink: 0 }} />
+                        Sign Out
+                      </button>
+                    </div>
                   </>
                 ) : (
                   /* ── Guest ── */
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px 20px 8px' }}>
+                  <div className="mobile-nav-guest">
                     <Link
                       to="/login"
                       onClick={closeMobileMenu}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 16px', border: '1.5px solid #cbd5e1', borderRadius: '6px', color: '#0f172a', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none', background: 'white', transition: 'background 150ms' }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                      className="mobile-nav-guest-btn mobile-nav-guest-btn--signin"
                     >
-                      <LogIn size={16} />
+                      <LogIn size={15} />
                       Sign In
                     </Link>
                     <Link
                       to="/register"
                       onClick={closeMobileMenu}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 16px', background: 'linear-gradient(135deg, #1d4ed8, #2563eb)', borderRadius: '6px', color: 'white', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', transition: 'opacity 150ms' }}
-                      onMouseEnter={(e) => e.currentTarget.style.opacity = '0.88'}
-                      onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                      className="mobile-nav-guest-btn mobile-nav-guest-btn--register"
                     >
-                      <UserPlus size={16} />
+                      <UserPlus size={15} />
                       Create Account
                     </Link>
-                    <p style={{ margin: '2px 0 0', fontSize: '0.72rem', color: '#94a3b8', textAlign: 'center', lineHeight: 1.4 }}>
-                      No account needed to browse or checkout.
-                    </p>
                   </div>
                 )
               )}

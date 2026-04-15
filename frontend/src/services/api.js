@@ -27,7 +27,24 @@ const KNOWN_BRANDS = [
   'SurPro',
   'Graco',
   'Platinum Drywall Tools',
+  'Dura-Stilts',
 ];
+
+// Maps common brand name variations to the canonical brand name used throughout the UI.
+const BRAND_ALIASES = {
+  'platinum':                  'Platinum Drywall Tools',
+  'platinum tools':            'Platinum Drywall Tools',
+  'platinum drywall':          'Platinum Drywall Tools',
+  'platinum drywall tools':    'Platinum Drywall Tools',
+  'dura stilts':               'Dura-Stilts',
+  'dura_stilts':               'Dura-Stilts',
+  'columbia':                  'Columbia Taping Tools',
+  'columbia taping':           'Columbia Taping Tools',
+  'tapetech':                  'TapeTech',
+  'tape tech':                 'TapeTech',
+  'surpro':                    'SurPro',
+  'sur pro':                   'SurPro',
+};
 
 // ─── Auth header (lazy, runtime-safe) ────────────────────────────────────────
 //
@@ -95,6 +112,17 @@ const wcFetch = async (endpoint, params = {}) => {
 // Parts leaf category names — must match isPartsRow() in parseProductCsv.js
 const PARTS_LEAF_NAMES = ['parts & accessories', 'repair kits & parts', 'pumps & parts'];
 
+// WooCommerce auto-generates slugs by lowercasing and hyphenating the name.
+// Include additional slug variants that may appear in different WC installs.
+const PARTS_LEAF_SLUGS = [
+  'parts-accessories',
+  'repair-kits-parts',
+  'pumps-parts',
+  'replacement-parts',
+  'spare-parts',
+  'parts',
+];
+
 /**
  * Map a WooCommerce REST API categories array to our internal category key.
  *
@@ -125,7 +153,8 @@ function mapApiCategory(wcCategories) {
 function isPartsFromApi(wcCategories) {
   if (!wcCategories || !wcCategories.length) return false;
   return wcCategories.some(cat =>
-    PARTS_LEAF_NAMES.includes((cat.name || '').toLowerCase())
+    PARTS_LEAF_NAMES.includes((cat.name || '').toLowerCase()) ||
+    PARTS_LEAF_SLUGS.includes((cat.slug || '').toLowerCase())
   );
 }
 
@@ -164,7 +193,9 @@ function extractBrand(wcProduct) {
       (a) => a.name && a.name.toLowerCase() === 'brand'
     );
     if (brandAttr && brandAttr.options && brandAttr.options.length) {
-      return brandAttr.options[0];
+      const raw = brandAttr.options[0];
+      // Normalize alias → canonical brand name (e.g. "Platinum" → "Platinum Drywall Tools")
+      return BRAND_ALIASES[raw.toLowerCase()] || raw;
     }
   }
 
@@ -174,8 +205,11 @@ function extractBrand(wcProduct) {
   if (wcProduct.categories && wcProduct.categories.length) {
     for (const cat of wcProduct.categories) {
       const catName = cat.name || '';
+      // Try exact canonical match first, then alias normalization
       const match = KNOWN_BRANDS.find(b => b.toLowerCase() === catName.toLowerCase());
       if (match) return match;
+      const alias = BRAND_ALIASES[catName.toLowerCase()];
+      if (alias) return alias;
     }
   }
 
