@@ -250,7 +250,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
                   )}
 
                   {/* Technical Specifications Table */}
-                  <TechnicalSpecifications specs={getProductSpecifications(product)} />
+                  <TechnicalSpecifications specs={getProductSpecifications(product)} onItemClick={onClose} />
 
                   {/* Replacement Parts Section */}
                   {partsUrl && (
