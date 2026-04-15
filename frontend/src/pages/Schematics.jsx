@@ -2568,7 +2568,7 @@ const ALLOWED_BRANDS = [
                         WebkitUserSelect: 'none',
                         userSelect: 'none',
                         opacity: diagramImageLoaded ? 1 : 0,
-                        transition: diagramImageLoaded ? 'opacity 0.35s ease' : 'none',
+                        transition: 'opacity 0.35s ease',
                       }}
                       loading="eager"
                       decoding="async"
