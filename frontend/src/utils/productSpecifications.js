@@ -118,7 +118,7 @@ export function parseSpecificationsFromDescription(htmlDescription) {
  * Respects parentheses so that grouped entries like
  * "Repair Kits (AH-RK, FFBR9-10, FFBR9-12)" are kept as a single item.
  *
- * @param {string} str  Raw includes string, e.g. "10" Flat Box, Filler Adapter"
+ * @param {string} str  Raw includes string, e.g. '10" Flat Box, Filler Adapter'
  * @returns {string[]}
  */
 export function parseIncludesList(str) {
@@ -244,7 +244,7 @@ function enrichIncludesSpec(specs, meta_data) {
   // 3. Plain comma-split into display-only items
   if (includesSpec) {
     const names = parseIncludesList(includesSpec.value);
-    if (names.length > 1) {
+    if (names.length > 0) {
       return specs.map(spec =>
         isIncludesLabel(spec.label)
           ? { ...spec, items: names.map(name => ({ name })) }
