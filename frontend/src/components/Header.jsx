@@ -136,29 +136,6 @@ export default function Header({ onCartToggle }) {
 
   return (
     <header className="site-header" role="banner">
-      {/* ── Desktop Promo Bar — hidden on mobile/tablet via CSS ── */}
-      <div className="dtb-promo-bar" aria-hidden="true">
-        <div className="dtb-promo-bar-inner">
-          <div className="dtb-promo-center">
-            <Truck size={13} />
-            <span>Free Shipping on qualifying orders</span>
-            <span className="dtb-promo-divider">·</span>
-            <span>Professional-grade tools for the trade</span>
-            <span className="dtb-promo-divider">·</span>
-            <span className="dtb-promo-badge">
-              <span>Pro Trusted</span>
-            </span>
-          </div>
-          <div className="dtb-promo-links">
-            <Link to="/contact">Support</Link>
-            <span className="dtb-promo-divider">|</span>
-            <Link to="/faq">FAQ</Link>
-            <span className="dtb-promo-divider">|</span>
-            <Link to="/repairs">Repairs</Link>
-          </div>
-        </div>
-      </div>
-
       <div className="site-header-inner">
   {/* Mobile Layout */}
   <div className="flex md:hidden items-center justify-between w-full header-mobile-layout" style={{ display: isTablet ? 'flex' : undefined }}>
@@ -598,6 +575,15 @@ export default function Header({ onCartToggle }) {
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
+
+      {/* ── Free Shipping Bar — desktop only, sits below the nav bar ── */}
+      <div className="dtb-promo-bar" aria-label="Free shipping announcement">
+        <div className="dtb-promo-bar-inner">
+          <Truck size={13} aria-hidden="true" />
+          <span>FREE SHIPPING ON ALL ORDERS $50+ (Contiguous USA Only)</span>
+        </div>
+      </div>
+
     </header>
   );
 }

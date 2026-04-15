@@ -2017,9 +2017,10 @@ aside input[type="range"],
     .dtb-mobile-only  { display: none !important; }
 }
 
-/* ── PROMO BAR ──────────────────────────────────────────
-   A slim full-width announcement strip that sits at the
-   very top of the fixed header, desktop-only.
+/* ── FREE SHIPPING BAR ──────────────────────────────────
+   Slim full-width bar below the nav on desktop (≥1025px).
+   Hidden on mobile/tablet — those breakpoints render the
+   bar as a static element in Home.jsx instead.
    ─────────────────────────────────────────────────────── */
 .dtb-promo-bar { display: none; }
 
@@ -2027,6 +2028,7 @@ aside input[type="range"],
     .dtb-promo-bar {
         display: flex;
         align-items: center;
+        justify-content: center;
         background: #0b1220;
         height: 36px;
         width: 100%;
@@ -2035,64 +2037,20 @@ aside input[type="range"],
     }
 
     .dtb-promo-bar-inner {
-        max-width: 1400px;
-        margin: 0 auto;
-        width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-    }
-
-    .dtb-promo-center {
-        display: flex;
-        align-items: center;
+        justify-content: center;
         gap: 8px;
-        font-size: 0.72rem;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        color: rgba(255,255,255,0.8);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.85);
     }
 
-    .dtb-promo-center svg {
+    .dtb-promo-bar-inner svg {
         color: var(--primary-400, #60a5fa);
         flex-shrink: 0;
-    }
-
-    .dtb-promo-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: rgba(37,99,235,0.3);
-        border: 1px solid rgba(37,99,235,0.4);
-        border-radius: 999px;
-        padding: 2px 10px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--primary-300, #93c5fd);
-    }
-
-    .dtb-promo-links {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .dtb-promo-links a {
-        color: rgba(255,255,255,0.5);
-        text-decoration: none;
-        font-size: 0.72rem;
-        font-weight: 500;
-        transition: color 150ms;
-    }
-
-    .dtb-promo-links a:hover { color: var(--primary-400, #60a5fa); }
-
-    .dtb-promo-divider {
-        color: rgba(255,255,255,0.18);
-        font-size: 0.65rem;
-        user-select: none;
     }
 }
 
@@ -2627,4 +2585,39 @@ aside input[type="range"],
 
     /* Always show footer lists on desktop */
     .site-footer .footer-col ul { display: flex !important; }
+}
+/* ── MOBILE FREE SHIPPING BAR ───────────────────────────
+   Slim full-width banner shown on mobile/tablet only (the
+   desktop header already renders the shipping bar inside
+   the fixed <header>). Appears as the first element inside
+   the Home page content area, flush below the fixed header.
+   ─────────────────────────────────────────────────────── */
+.dtb-mobile-shipping-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    background: #0b1220;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    height: 32px;
+    padding: 0 1rem;
+    text-align: center;
+    /* Negative margin cancels the page-wrapper padding so bar sits flush */
+    margin-left: calc(-1 * var(--page-h-pad, 0px));
+    margin-right: calc(-1 * var(--page-h-pad, 0px));
+}
+
+.dtb-mobile-shipping-bar svg {
+    color: var(--primary-400, #60a5fa);
+    flex-shrink: 0;
+}
+
+/* Hide on desktop — the fixed header bar handles it there */
+@media (min-width: 1025px) {
+    .dtb-mobile-shipping-bar { display: none; }
 }
