@@ -57,7 +57,7 @@ function getAuthHeader() {
   const pass = process.env.REACT_APP_WC_AUTH_PASS || '';
   if (user && pass) return { Authorization: 'Basic ' + btoa(`${user}:${pass}`) };
 
-  // No credentials available — request will 401 and catalog.js will fall back to CSV
+  // No credentials available — request will 401; ensure credentials are configured
   return {};
 }
 

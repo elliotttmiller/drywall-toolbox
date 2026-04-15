@@ -42,11 +42,6 @@ jobs:
           NODE_ENV: production
           # GitHub Pages sub-path (repo name); adjust if the Pages site uses a custom domain
           PUBLIC_URL: /drywall-toolbox
-          # ── GitHub Pages: fetch live catalog from drywalltoolbox.com ──────────
-          # catalog.js will fetch from the live WC REST API / PHP proxy endpoints.
-          # The bundled wp-catalog.csv serves as a fallback if the remote is down.
-          REACT_APP_WC_CSV_URL: ''
-          REACT_APP_USE_LOCAL_CSV: 'false'
           # ── Live backend endpoints ─────────────────────────────────────────────
           # Use the domain-root canonical URLs — the root .htaccess rewrites
           # /wp-json/* → /wp/wp-json/* so our CORS mu-plugin intercepts correctly.
@@ -65,17 +60,6 @@ jobs:
           REACT_APP_SITE_URL: 'https://elliotttmiller.github.io/drywall-toolbox'
           REACT_APP_APP_ENV: development
           REACT_APP_ENV: development
-
-      # ── Verify bundled CSV fallback exists in dist ──────────────────
-      # wp-catalog.csv is copied into dist/ by webpack during the build.
-      # It acts as the offline/fallback catalog if the live API is unreachable.
-      - name: Verify bundled CSV fallback exists in dist
-        run: |
-          if [ -f "dist/wp-catalog.csv" ]; then
-            echo "✓ Fallback catalog bundled successfully ($(wc -l < dist/wp-catalog.csv) rows)"
-          else
-            echo "⚠ Fallback catalog not found in dist/ — live API is the only data source"
-          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

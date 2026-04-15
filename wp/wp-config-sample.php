@@ -121,8 +121,10 @@ define( 'DTB_IMPORT_SECRET', 'change_me_to_a_secure_import_secret' );
 // define( 'DRYWALL_ALLOWED_ORIGIN', 'https://staging.drywalltoolbox.com' );
 // Custom webhook delivery URL (default: https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products):
 // define( 'DTB_WEBHOOK_DELIVERY_URL', 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products' );
-// Custom product CSV filename (default: product-wp-catalog-c7p3my05pn.csv):
-// define( 'DTB_WC_CSV_FILENAME', 'product-wp-catalog-c7p3my05pn.csv' );
+// Optional: override the catalog CSV filename used by /dtb/v1/products-csv and /dtb/v1/import-catalog.
+// When omitted, dtb-utils.php auto-discovers the newest product-wc-*.csv file in wc-imports/ via glob.
+// Manage catalog CSV files via WooCommerce → Products → Import in WP Admin.
+// define( 'DTB_WC_CSV_FILENAME', 'product-wc-catalog-abc123.csv' );
 
 // ── Security hardening
 define( 'DISALLOW_FILE_EDIT', true );   // disable theme/plugin editor in WP Admin

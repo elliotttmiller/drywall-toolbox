@@ -155,17 +155,16 @@ export async function getProductBySku( sku ) {
       // .stock_status, .images, .price, .name, .sku, etc.
       return normalizeProduct( products[ 0 ] );
     }
-    // WC proxy returned an empty list — fall through to catalog fallback below.
+    // WC proxy returned an empty list — fall through to catalog lookup below.
   } catch {
     // Network error or proxy unavailable (e.g. GitHub Pages) — fall through to
-    // catalog fallback which loads from CSV when the WC backend is unreachable.
+    // catalog lookup below.
   }
 
   // WC proxy returned nothing (e.g. GitHub Pages, offline, product not yet in WC).
   // catalog.js getProductById accepts both numeric IDs and SKU strings — it
   // searches the in-memory catalog by id, slug, sku, and part_number in order.
-  // The catalog has a CSV fallback with product images, so this reliably returns
-  // a product (with image) even without a live WordPress backend.
+  // Falls back to the catalog cache populated from the live WC REST API.
   try {
     return await getCatalogProductById( sku ) ?? null;
   } catch {

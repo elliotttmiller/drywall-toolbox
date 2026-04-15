@@ -67,7 +67,6 @@ function dtb_get_config(): array {
 	//   2. DTB_WC_CSV_FILENAME   — legacy single-filename string (still supported)
 	//   3. Auto-discovery        — glob wc-imports/ for product-wc-*.csv, newest file per brand prefix.
 	//                               Eliminates the need to update wp-config.php after every CSV upload.
-	//   4. Hard-coded fallback   — the original single filename.
 	$csv_filenames = [];
 	if ( defined( 'DTB_WC_CSV_FILENAMES' ) ) {
 		$decoded = json_decode( DTB_WC_CSV_FILENAMES, true );
@@ -105,10 +104,6 @@ function dtb_get_config(): array {
 			$csv_filenames = array_values( array_map( 'basename', $by_prefix ) );
 		}
 	}
-	if ( empty( $csv_filenames ) ) {
-		// Final hard-coded fallback — only reached when wc-imports/ is empty.
-		$csv_filenames = [ 'product-wp-catalog-c7p3my05pn.csv' ];
-	}
 
 	$GLOBALS['_dtb_config_cache'] = [
 		'wc_proxy_key'     => defined( 'WC_PROXY_CONSUMER_KEY' )    ? WC_PROXY_CONSUMER_KEY    : '',
@@ -119,7 +114,7 @@ function dtb_get_config(): array {
 		'import_secret'    => defined( 'DTB_IMPORT_SECRET' )        ? DTB_IMPORT_SECRET        : '',
 		'jwt_secret'       => defined( 'DRYWALL_JWT_SECRET' )       ? DRYWALL_JWT_SECRET       : '',
 		// Legacy single-filename key — first entry in the array for backward compat.
-		'csv_filename'     => $csv_filenames[0],
+		'csv_filename'     => $csv_filenames[0] ?? '',
 		// Full ordered list — used by the multi-file import and products-csv merge.
 		'csv_filenames'    => $csv_filenames,
 		'webhook_delivery' => defined( 'DTB_WEBHOOK_DELIVERY_URL' ) ? DTB_WEBHOOK_DELIVERY_URL : 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products',

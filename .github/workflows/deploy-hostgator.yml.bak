@@ -252,8 +252,7 @@ jobs:
             logo.svg \
             logo2.svg \
             pwa_icon.png \
-            vite.svg \
-            wp-catalog.csv; do
+            vite.svg; do
             if [ -f "dist/$file" ]; then
               cp "dist/$file" "dist-deploy/$file"
               echo "✓ Copied $file"
@@ -421,48 +420,11 @@ jobs:
           || echo "⚠ Cleanup step exited non-zero (expected when target dirs are absent — no action required)."
 
       # ── Catalog sync ───────────────────────────────────────────────────────
-      # After the React assets and wp-content are on the server, push the
-      # WooCommerce import CSV to the uploads/wc-imports/ directory and trigger
-      # a background product re-import.  Both steps are non-fatal: a failure
-      # here does not block the deployment — the site still serves products
-      # from the wp-catalog.csv fallback deployed above.
+      # After the React assets and wp-content are on the server, trigger a
+      # background WooCommerce product re-import using the CSV files already
+      # present in the server's wc-imports/ directory (managed via WP Admin).
+      # This step is non-fatal: a failure here does not block the deployment.
       # ───────────────────────────────────────────────────────────────────────
-
-      - name: Upload catalog CSV to WooCommerce imports directory
-        if: ${{ github.event.inputs.dry_run != 'true' }}
-        run: |
-          set -euo pipefail
-          if ! command -v lftp >/dev/null 2>&1; then
-            echo "Installing lftp..."
-            sudo apt-get update -y -qq && sudo apt-get install -y -qq lftp
-          fi
-
-          CSV_SRC="dist/wp-catalog.csv"
-          if [ ! -f "$CSV_SRC" ]; then
-            echo "⚠ $CSV_SRC not found in build artifact — skipping WC imports upload."
-            exit 0
-          fi
-
-          WC_IMPORTS_PATH="${{ env.SERVER_DIR }}/wp/wp-content/uploads/wc-imports"
-          CSV_DEST="product-wp-catalog-c7p3my05pn.csv"
-          HOST="${{ secrets.HOSTGATOR_FTP_HOST }}"
-
-          echo "Uploading $CSV_SRC → ${WC_IMPORTS_PATH}/${CSV_DEST} ..."
-
-          lftp -u "${{ secrets.HOSTGATOR_FTP_USER }}","${{ secrets.HOSTGATOR_FTP_PASS }}" \
-               -e "set ftp:ssl-allow yes; \
-                   set ssl:verify-certificate no; \
-                   set xfer:clobber yes; \
-                   set net:max-retries 3; \
-                   set net:reconnect-interval-base 5; \
-                   mkdir ${WC_IMPORTS_PATH}; \
-                   cd ${WC_IMPORTS_PATH}; \
-                   put ${CSV_SRC} -o ${CSV_DEST}; \
-                   echo Uploaded.; \
-                   bye" \
-               "$HOST" \
-          && echo "✓ Catalog CSV uploaded to wc-imports/${CSV_DEST}." \
-          || echo "⚠ Catalog CSV upload step failed (non-fatal — frontend CSV fallback still active)."
 
       - name: Trigger WooCommerce catalog import
         if: ${{ github.event.inputs.dry_run != 'true' }}
@@ -515,15 +477,12 @@ jobs:
           echo "  • dist/logo2.svg → root/"
           echo "  • dist/pwa_icon.png → root/"
           echo "  • dist/vite.svg → root/"
-          echo "  • dist/wp-catalog.csv → root/"
-          echo "  • dist/wp-catalog.csv → wp/wp-content/uploads/wc-imports/product-wp-catalog-c7p3my05pn.csv"
           echo "  • .htaccess → root/"
           echo "  • index.php → root/"
           echo "  • wp/wp-content/* → wp/wp-content/"
           echo ""
           echo "  Notes:"
           echo "  • Only whitelisted dist/ files are deployed"
-          echo "  • wp-catalog.csv is also pushed to wc-imports/ to keep WooCommerce products in sync"
           echo "  • WooCommerce import is triggered via POST /wp-json/dtb/v1/import-catalog"
           echo "    (requires DTB_IMPORT_SECRET repo secret + define in wp-config.php)"
           echo "  • WordPress core files (/wp/wp-admin, /wp/wp-includes, etc.)"

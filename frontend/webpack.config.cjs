@@ -107,14 +107,6 @@ module.exports = (envFlags, argv) => {
     'process.env.REACT_APP_WOOCOMMERCE_CONSUMER_KEY':   JSON.stringify(env('REACT_APP_WOOCOMMERCE_CONSUMER_KEY')),
     'process.env.REACT_APP_WOOCOMMERCE_CONSUMER_SECRET':JSON.stringify(env('REACT_APP_WOOCOMMERCE_CONSUMER_SECRET')),
 
-    // Product catalog CSV fallback URL
-    'process.env.REACT_APP_WC_CSV_URL':                 JSON.stringify(env('REACT_APP_WC_CSV_URL')),
-
-    // ─── Local Development Mode ───────────────────────────────────────────────
-    // When set, frontend loads from /public/wp-catalog.csv instead of live API.
-    // Only used in 'npm run dev' with .env.local; never affects production builds.
-    'process.env.REACT_APP_USE_LOCAL_CSV':              JSON.stringify(env('REACT_APP_USE_LOCAL_CSV')),
-
     // ─── Headless WooCommerce proxy (drywall/v1) ──────────────────────────────
     // Read from the environment-specific .env file loaded above.
     'process.env.REACT_APP_API_BASE_URL':               JSON.stringify(env('REACT_APP_API_BASE_URL')),
@@ -274,8 +266,7 @@ module.exports = (envFlags, argv) => {
               ignore: [
                 // HTML handled by HtmlWebpackPlugin
                 '**/index.html',
-                // CSV data files — most are served via API, not bundled
-                // (except product catalog which is handled separately below)
+                // CSV data files — served via WooCommerce REST API, not bundled
                 '**/*.csv',
                 '**/*.bak',
                 '**/products_catalog.csv',
@@ -286,15 +277,6 @@ module.exports = (envFlags, argv) => {
                 '**/scraped_results/**',
               ],
             },
-          },
-          // ── Product catalog CSV: bundle for GitHub Pages + dev ────────────────
-          // Copy wp-catalog.csv (dev/test catalog with all products) into dist/
-          // for use on GitHub Pages and offline environments.
-          // catalog.js will load this as a fallback when APIs are unavailable.
-          {
-            from:  path.resolve(__dirname, 'public', 'wp-catalog.csv'),
-            to:    'wp-catalog.csv',
-            noErrorOnMissing: false,
           },
         ],
       }),

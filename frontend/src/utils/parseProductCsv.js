@@ -1,9 +1,8 @@
 /**
  * frontend/src/utils/parseProductCsv.js
  *
- * Parses a WooCommerce product-import CSV (the same file that lives on the
- * live server at:
- *   /wp-content/uploads/wc-imports/product-wp-catalog-c7p3my05pn.csv
+ * Parses a WooCommerce product-import CSV (the same format used by
+ * WooCommerce → Products → Import and the /dtb/v1/products-csv endpoint).
  *
  * The CSV uses:
  *   • RFC-4180 quoting — fields containing commas/newlines are wrapped in ""

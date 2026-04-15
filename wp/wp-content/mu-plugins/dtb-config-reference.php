@@ -102,8 +102,11 @@
  * OPTIONAL CONSTANTS (not shown in the ready-to-copy block above)
  * -----------------------------------------------------------------------------
  *
- * define('DTB_WC_CSV_FILENAME', 'product-wp-catalog-c7p3my05pn.csv');
- *   Override the default catalog CSV filename (set in dtb-utils.php).
+ * define('DTB_WC_CSV_FILENAME', 'product-wc-catalog-abc123.csv');
+ *   Override the catalog CSV filename used by the /dtb/v1/products-csv and
+ *   /dtb/v1/import-catalog endpoints (set in dtb-utils.php).
+ *   When omitted, dtb-utils.php auto-discovers the newest product-wc-*.csv
+ *   file in wp-content/uploads/wc-imports/ via glob.
  *
  * define('DTB_WEBHOOK_DELIVERY_URL', 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products');
  *   Override the WooCommerce webhook delivery URL (drywall_ensure_webhooks).
@@ -184,23 +187,19 @@
  *
  * The workflow to wire those images to WooCommerce products is:
  *
- * STEP 1 — Rewrite image URLs in wp-catalog.csv (run once locally)
- * ----------------------------------------------------------------
- *   python scripts/rewrite_csv_image_urls.py
- *
- *   This changes every Images column entry from:
- *     https://drywalltoolbox.com/brands/<Brand>/Products/<file>.webp
- *   to:
- *     https://drywalltoolbox.com/wp-content/uploads/2026/04/<file>.webp
- *
- *   A .bak backup is written before overwriting the file. Use --dry-run
- *   to preview changes without writing.
+ * STEP 1 — Export the product catalog CSV from WooCommerce
+ * ----------------------------------------------------------
+ *   WooCommerce → Products → Export (or use WP Admin CSV export).
+ *   Update image URLs in the exported CSV if needed:
+ *     python scripts/rewrite_csv_image_urls.py
  *
  * STEP 2 — Upload the updated CSV to the server
  * -----------------------------------------------
- *   Via cPanel File Manager or SFTP, copy the updated wp-catalog.csv to:
+ *   Via WooCommerce → Products → Import, or via cPanel File Manager / SFTP,
+ *   copy the updated catalog CSV to:
  *     public_html/drywalltoolbox/wp/wp-content/uploads/wc-imports/
- *   (filename must match DTB_WC_CSV_FILENAME / dtb_get_config()['csv_filename'])
+ *   (filename must match DTB_WC_CSV_FILENAME / dtb_get_config()['csv_filename'],
+ *    or use auto-discovery by naming it product-wc-<brand>-<suffix>.csv)
  *
  * STEP 3 — Register images in the WP Media Library
  * --------------------------------------------------

@@ -31,8 +31,8 @@ export default function Product() {
     const key = slug || partNumber;
 
     const load = async () => {
-      // catalog service handles API-first → CSV-fallback transparently,
-      // and resolves by numeric ID, slug, SKU, or part_number.
+      // catalog service resolves by numeric ID, slug, SKU, or part_number
+      // using the live WooCommerce REST API.
       return getProductById(key);
     };
 

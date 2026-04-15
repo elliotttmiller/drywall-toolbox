@@ -22,7 +22,7 @@ import {
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
 
-// products will be loaded from CSV at runtime
+// products will be loaded from WooCommerce REST API at runtime
 const categories = [
   { id: 'taping', name: 'Automatic Taping' },
   { id: 'finishing', name: 'Finishing Tools' },
@@ -108,14 +108,14 @@ export default function AllProducts() {
     );
   };
 
-  // load products once — catalog service tries WC REST API then CSV fallback
+  // load products once — catalog service fetches from WC REST API
   useEffect(() => {
     let mounted = true;
     getProducts().then(list => {
       if (!mounted) return;
       setProducts(list);
       // Always show every ALLOWED_BRAND in the selector regardless of whether
-      // the catalog has products for it yet (e.g. Platinum has no CSV rows).
+      // the catalog has products for it yet (e.g. Platinum has no products yet).
       const fromCatalog = Array.from(new Set(list.map(p => p.brand).filter(Boolean))).sort();
       const inCatalog = fromCatalog.filter(b => ALLOWED_BRANDS.includes(b));
       const notInCatalog = ALLOWED_BRANDS.filter(b => !inCatalog.includes(b));
@@ -150,7 +150,7 @@ export default function AllProducts() {
   const filteredProducts = (products || []).filter(product => {
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
     if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) return false;
-    // price may not exist in CSV; ignore if missing
+    // price may not be set on all products; ignore if missing
     if (product.price && (product.price < priceRange[0] || product.price > priceRange[1])) return false;
     // Search filter
     if (searchQuery) {

@@ -96,7 +96,7 @@ export default function Parts() {
       const parts = list.filter(p => p.is_parts);
       setAllParts(parts);
       // Always show every PARTS_BRAND in the filter regardless of whether
-      // the catalog has parts for it yet (e.g. Platinum has no CSV rows).
+      // the catalog has parts for it yet (e.g. Platinum has no products yet).
       const unique = Array.from(new Set(parts.map(p => p.brand).filter(Boolean)));
       const inCatalog = PARTS_BRANDS.filter(b => unique.includes(b));
       const notInCatalog = PARTS_BRANDS.filter(b => !unique.includes(b));
