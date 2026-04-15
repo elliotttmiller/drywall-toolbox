@@ -46,10 +46,14 @@ export default function ProductImageGallery({ product }) {
   const lbPrevFocusRef = useRef(null);
 
   // ── Images normalisation ──────────────────────────────────────────────────
+  // Accepts both string URLs (normalizeProduct output) and WooCommerce image
+  // objects ({ id, src, name, alt }) so that raw WC API responses render
+  // correctly even if the product has not been passed through normalizeProduct().
+  const toImgUrl = (img) => (typeof img === 'string' ? img : (img?.src ?? ''));
   const images = (() => {
     const arr = Array.isArray(product?.images) && product.images.length
-      ? product.images
-      : product?.image ? [product.image] : [];
+      ? product.images.map(toImgUrl).filter(Boolean)
+      : product?.image ? [toImgUrl(product.image)] : [];
     return arr.length ? arr : ['https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/04/no-image-placeholder.webp'];
   })();
   const imagesRef = useRef(images);

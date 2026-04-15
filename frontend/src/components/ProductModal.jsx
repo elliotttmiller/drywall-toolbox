@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 
 const backdropVariants = {
   hidden:  { opacity: 0 },
@@ -86,7 +86,7 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
       {isOpen && product && (
         <>
           {/* ── Backdrop ───────────────────────────────────────────────── */}
-          <motion.div
+          <Motion.div
             key="product-modal-backdrop"
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             style={{ zIndex: 10001 }}
@@ -100,7 +100,7 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
           />
 
           {/* ── Scroll container ───────────────────────────────────────── */}
-          <motion.div
+          <Motion.div
             key="product-modal-panel"
             ref={scrollRef}
             className="fixed left-0 right-0 bottom-0 overflow-y-auto overscroll-contain outline-none"
@@ -128,7 +128,7 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
                 {children}
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         </>
       )}
     </AnimatePresence>,

@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react';
 import { fetchProduct, fetchProductBySlug } from '../api/products.js';
+import { normalizeProduct } from '../services/api.js';
 
 export function useProduct( idOrSlug ) {
   const [ product,   setProduct   ] = useState( null );
@@ -35,8 +36,10 @@ export function useProduct( idOrSlug ) {
       .then( ( data ) => {
         if ( cancelled ) return;
         // fetchProductBySlug returns an array (WC ?slug= query); unwrap it.
-        const resolved = Array.isArray( data ) ? ( data[ 0 ] ?? null ) : data;
-        setProduct( resolved );
+        const raw = Array.isArray( data ) ? ( data[ 0 ] ?? null ) : data;
+        // Normalize raw WooCommerce product so images, category, brand, etc.
+        // are in the consistent internal shape used by all UI components.
+        setProduct( raw ? normalizeProduct( raw ) : null );
       } )
       .catch( ( err ) => {
         if ( cancelled ) return;
