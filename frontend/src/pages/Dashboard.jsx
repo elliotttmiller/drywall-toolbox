@@ -1,30 +1,23 @@
 /**
  * frontend/src/pages/Dashboard.jsx
  *
- * Authenticated user dashboard — mobile-first layout.
+ * Authenticated user account dashboard — /dashboard
  *
- * Layout (desktop ≥ lg):
- *   Left sidebar  — avatar, user info, navigation links
- *   Right main    — stats row, orders table placeholder, account info card
+ * Mobile (< 1024 px):
+ *   Full-width hero → profile card → iOS-style menu list (My Orders, Rewards,
+ *   ProCare Plan, Saved Addresses, Notifications, Account Settings) → stats row.
  *
- * Layout (mobile):
- *   Full-width stacked cards: header → stats → orders → account → logout
+ * Desktop (≥ 1024 px):
+ *   Gradient hero → 2-column grid:
+ *     Left  280 px sidebar  — profile card + full menu list + shop links + logout
+ *     Right flexible main   — stats row, ProCare card, recent orders, account info
  *
- * Animations:
- *   - Page-level entry via PageTransition (framer-motion, 0.25 s ease).
- *   - Sidebar and each main card staggered via Framer Motion cardVariants.
- *   - Stat counters animate in with opacity+y on mount.
- *
- * Auth:
- *   Reads user profile from useAuthContext().  If the user is not
- *   authenticated (and the session check has completed), redirects to /login.
- *
- * Guest checkout / store browsing:
- *   Dashboard is only accessible while logged in; every other route including
- *   /products, /cart, and /checkout is fully public — no auth required.
+ * Auth: Redirects to /login if unauthenticated (via ProtectedRoute + inner check).
+ * Data: Points balance + membership status fetched on mount.
+ *       Recent orders fetched on mount (up to 5) for the dashboard preview.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import {
@@ -40,60 +33,158 @@ import {
   Clock,
   CheckCircle,
   Shield,
+  Loader,
+  Wrench,
+  CreditCard,
 } from 'lucide-react';
 
-import { useAuthContext } from '../auth/AuthContext.js';
-import { getUserPoints, pointsToUsd } from '../api/rewards.js';
-import { getMembershipStatus } from '../api/membership.js';
+import { useAuthContext }                   from '../auth/AuthContext.js';
+import { getUserPoints, pointsToUsd }       from '../api/rewards.js';
+import { getMembershipStatus }              from '../api/membership.js';
+import { getCustomerOrders }                from '../api/orders.js';
+import SEOHead                              from '../components/SEOHead';
+
+// ─── Design tokens ────────────────────────────────────────────────────────────
+
+const HERO_BG = 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%)';
+
+const DOT_GRID = {
+  position:        'absolute',
+  inset:           0,
+  backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.07) 1px, transparent 0)',
+  backgroundSize:  '36px 36px',
+  pointerEvents:   'none',
+};
+
+const CARD = {
+  background:   'white',
+  border:       '1px solid rgba(15,23,42,0.08)',
+  borderRadius: '14px',
+  boxShadow:    '0 2px 16px rgba(15,23,42,0.06)',
+};
 
 // ─── Animation variants ───────────────────────────────────────────────────────
 
-const cardVariants = {
-  hidden:  { opacity: 0, y: 18 },
-  visible: ( delay ) => ( {
+const fadeUp = {
+  hidden:  { opacity: 0, y: 16 },
+  visible: ( d ) => ( {
     opacity: 1, y: 0,
-    transition: { duration: 0.42, ease: [ 0.16, 1, 0.3, 1 ], delay: delay ?? 0 },
+    transition: { duration: 0.42, ease: [ 0.16, 1, 0.3, 1 ], delay: d ?? 0 },
   } ),
 };
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+// ─── Menu navigation data ─────────────────────────────────────────────────────
 
-function StatCard( { icon, label, value, color, delay } ) {
+const MAIN_NAV = [
+  { icon: Package,  label: 'My Orders',       to: '/orders',           color: '#2563eb', bg: '#eff6ff'  },
+  { icon: Star,     label: 'My Rewards',      to: '/rewards',          color: '#d97706', bg: '#fffbeb'  },
+  { icon: Shield,   label: 'ProCare Plan',    to: '/pro-membership',   color: '#16a34a', bg: '#f0fdf4'  },
+  { icon: MapPin,   label: 'Saved Addresses', to: '/addresses',        color: '#7c3aed', bg: '#faf5ff'  },
+  { icon: Bell,     label: 'Notifications',   to: '/notifications',    color: '#0891b2', bg: '#ecfeff'  },
+  { icon: Settings, label: 'Account Settings',to: '/account-settings', color: '#64748b', bg: '#f8fafc'  },
+];
+
+const SHOP_NAV = [
+  { icon: ShoppingCart, label: 'Browse Products', to: '/products', color: '#2563eb', bg: '#eff6ff' },
+  { icon: ShoppingCart, label: 'View Cart',        to: '/cart',     color: '#ea580c', bg: '#fff7ed' },
+  { icon: Wrench,       label: 'Book a Repair',    to: '/repairs',  color: '#16a34a', bg: '#f0fdf4' },
+];
+
+// ─── Order status helpers ─────────────────────────────────────────────────────
+
+const ORDER_STATUS = {
+  pending:    { label: 'Pending',    color: '#d97706', bg: '#fffbeb' },
+  processing: { label: 'Processing', color: '#2563eb', bg: '#eff6ff' },
+  'on-hold':  { label: 'On Hold',    color: '#d97706', bg: '#fff7ed' },
+  completed:  { label: 'Completed',  color: '#16a34a', bg: '#f0fdf4' },
+  cancelled:  { label: 'Cancelled',  color: '#dc2626', bg: '#fef2f2' },
+  refunded:   { label: 'Refunded',   color: '#64748b', bg: '#f8fafc' },
+  shipped:    { label: 'Shipped',    color: '#2563eb', bg: '#eff6ff' },
+  failed:     { label: 'Failed',     color: '#dc2626', bg: '#fef2f2' },
+};
+
+function StatusPill( { status } ) {
+  const cfg = ORDER_STATUS[ status ] || { label: status, color: '#64748b', bg: '#f8fafc' };
+  return (
+    <span style={ {
+      padding:       '2px 9px',
+      borderRadius:  '999px',
+      background:    cfg.bg,
+      color:         cfg.color,
+      fontSize:      '0.7rem',
+      fontWeight:    700,
+      letterSpacing: '0.02em',
+      whiteSpace:    'nowrap',
+    } }>
+      { cfg.label }
+    </span>
+  );
+}
+
+// ─── Menu row ─────────────────────────────────────────────────────────────────
+
+function MenuRow( { icon, label, to, color, bg, noBorderBottom } ) {
   const Icon = icon;
   return (
-    <Motion.div
-      custom={ delay }
-      variants={ cardVariants }
-      initial="hidden"
-      animate="visible"
-      style={ {
-        background:   'white',
-        border:       '1px solid rgba(15,23,42,0.08)',
-        borderRadius: '8px',
-        padding:      '20px 24px',
+    <Link to={ to } style={ { textDecoration: 'none', display: 'block' } }>
+      <div style={ {
         display:      'flex',
         alignItems:   'center',
-        gap:          '16px',
-        boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
+        gap:          '13px',
+        padding:      '13px 20px',
+        borderBottom: noBorderBottom ? 'none' : '1px solid rgba(15,23,42,0.055)',
+        cursor:       'pointer',
+        transition:   'background 0.12s',
       } }
+        onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#f8fafc'; } }
+        onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; } }
+      >
+        <div style={ {
+          width:          '36px',
+          height:         '36px',
+          borderRadius:   '9px',
+          background:     bg,
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          flexShrink:     0,
+        } }>
+          <Icon size={ 17 } style={ { color } } />
+        </div>
+        <span style={ { flex: 1, fontSize: '0.9rem', fontWeight: 550, color: '#1e293b' } }>
+          { label }
+        </span>
+        <ChevronRight size={ 15 } style={ { color: 'rgba(15,23,42,0.3)', flexShrink: 0 } } />
+      </div>
+    </Link>
+  );
+}
+
+// ─── Stat card ────────────────────────────────────────────────────────────────
+
+function StatCard( { icon, label, value, color, bg, delay } ) {
+  const Icon = icon;
+  return (
+    <Motion.div custom={ delay } variants={ fadeUp } initial="hidden" animate="visible"
+      style={ { ...CARD, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: '14px' } }
     >
       <div style={ {
-        width:           '44px',
-        height:          '44px',
-        borderRadius:    '10px',
-        background:      color.bg,
-        display:         'flex',
-        alignItems:      'center',
-        justifyContent:  'center',
-        flexShrink:      0,
+        width:          '42px',
+        height:         '42px',
+        borderRadius:   '10px',
+        background:     bg,
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        flexShrink:     0,
       } }>
-        <Icon size={ 20 } style={ { color: color.icon } } />
+        <Icon size={ 19 } style={ { color } } />
       </div>
       <div>
-        <p style={ { margin: 0, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(15,23,42,0.45)', fontWeight: 700 } }>
+        <p style={ { margin: 0, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.09em', color: 'rgba(15,23,42,0.45)', fontWeight: 700 } }>
           { label }
         </p>
-        <p style={ { margin: '3px 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 } }>
+        <p style={ { margin: '3px 0 0', fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 } }>
           { value }
         </p>
       </div>
@@ -101,104 +192,54 @@ function StatCard( { icon, label, value, color, delay } ) {
   );
 }
 
-// ─── Nav link ─────────────────────────────────────────────────────────────────
-
-function SideNavLink( { icon, label, to, external } ) {
-  const Icon = icon;
-  const inner = (
-    <div style={ {
-      display:        'flex',
-      alignItems:     'center',
-      gap:            '12px',
-      padding:        '11px 16px',
-      borderRadius:   '6px',
-      cursor:         'pointer',
-      color:          'rgba(15,23,42,0.65)',
-      fontSize:       '0.875rem',
-      fontWeight:     500,
-      textDecoration: 'none',
-      transition:     'background 0.15s, color 0.15s',
-    } }
-      onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#0f172a'; } }
-      onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(15,23,42,0.65)'; } }
-    >
-      <Icon size={ 16 } style={ { flexShrink: 0 } } />
-      { label }
-      <ChevronRight size={ 14 } style={ { marginLeft: 'auto', opacity: 0.4 } } />
-    </div>
-  );
-
-  if ( external ) {
-    return <a href={ to } style={ { textDecoration: 'none', display: 'block' } }>{ inner }</a>;
-  }
-  return <Link to={ to } style={ { textDecoration: 'none', display: 'block' } }>{ inner }</Link>;
-}
-
-// ─── OrderRow placeholder ─────────────────────────────────────────────────────
-
-function OrderRowPlaceholder( { delay } ) {
-  return (
-    <Motion.div
-      custom={ delay }
-      variants={ cardVariants }
-      initial="hidden"
-      animate="visible"
-      style={ {
-        display:      'flex',
-        alignItems:   'center',
-        gap:          '16px',
-        padding:      '14px 0',
-        borderBottom: '1px solid rgba(15,23,42,0.06)',
-      } }
-    >
-      <div style={ {
-        width: '36px', height: '36px', borderRadius: '8px',
-        background: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)',
-        flexShrink: 0,
-      } } />
-      <div style={ { flex: 1 } }>
-        <div style={ { height: '12px', width: '60%', background: '#f1f5f9', borderRadius: '4px', marginBottom: '6px' } } />
-        <div style={ { height: '10px', width: '35%', background: '#f8fafc', borderRadius: '4px' } } />
-      </div>
-      <div style={ { height: '22px', width: '60px', background: '#f1f5f9', borderRadius: '999px' } } />
-    </Motion.div>
-  );
-}
-
-// ─── Dashboard page ───────────────────────────────────────────────────────────
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const navigate                          = useNavigate();
-  const { user, isAuthenticated, isLoading, logout } = useAuthContext();
+  const navigate                                       = useNavigate();
+  const { user, isAuthenticated, isLoading, logout }  = useAuthContext();
 
-  const [pointsData,      setPointsData     ] = useState( null );
-  const [membershipData,  setMembershipData  ] = useState( null );
+  const [ pointsData,    setPointsData    ] = useState( null );
+  const [ membershipData,setMembershipData] = useState( null );
+  const [ recentOrders,  setRecentOrders  ] = useState( [] );
+  const [ ordersLoading, setOrdersLoading ] = useState( true );
 
-  // Redirect to login if session check done and user is not authenticated.
+  // Auth redirect
   useEffect( () => {
     if ( ! isLoading && ! isAuthenticated ) {
       navigate( '/login', { replace: true } );
     }
   }, [ isLoading, isAuthenticated, navigate ] );
 
-  // Fetch points + membership once we have a user ID.
-  useEffect( () => {
-    if ( user?.id ) {
-      getUserPoints( user.id ).then( setPointsData ).catch( ( err ) => {
-        console.warn( '[Dashboard] Points fetch failed:', err?.message );
-      } );
-      getMembershipStatus( user.id ).then( setMembershipData ).catch( ( err ) => {
-        console.warn( '[Dashboard] Membership fetch failed:', err?.message );
-      } );
-    }
+  // Fetch supporting data once user ID is available
+  const loadDashboardData = useCallback( () => {
+    if ( ! user?.id ) return;
+
+    getUserPoints( user.id )
+      .then( setPointsData )
+      .catch( () => {} );
+
+    getMembershipStatus( user.id )
+      .then( setMembershipData )
+      .catch( () => {} );
+
+    setOrdersLoading( true );
+    getCustomerOrders( user.id, 1, 5 )
+      .then( ( data ) => {
+        const fetched = Array.isArray( data ) ? data : ( data?.orders ?? [] );
+        setRecentOrders( fetched );
+      } )
+      .catch( () => {} )
+      .finally( () => setOrdersLoading( false ) );
   }, [ user?.id ] );
+
+  useEffect( () => { loadDashboardData(); }, [ loadDashboardData ] );
 
   const handleLogout = async () => {
     await logout();
     navigate( '/', { replace: true } );
   };
 
-  // Show minimal loading state while the initial session validate runs.
+  // ── Loading state ──
   if ( isLoading || ! user ) {
     return (
       <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' } }>
@@ -206,9 +247,9 @@ export default function Dashboard() {
           { [ 0, 1, 2 ].map( ( i ) => (
             <Motion.span
               key={ i }
-              style={ { display: 'block', width: '10px', height: '10px', borderRadius: '50%', background: '#3b82f6' } }
-              animate={ { scale: [ 1, 1.45, 1 ], opacity: [ 0.35, 1, 0.35 ] } }
-              transition={ { duration: 1.2, repeat: Infinity, delay: i * 0.22, ease: 'easeInOut' } }
+              style={ { display: 'block', width: '9px', height: '9px', borderRadius: '50%', background: '#3b82f6' } }
+              animate={ { scale: [ 1, 1.5, 1 ], opacity: [ 0.3, 1, 0.3 ] } }
+              transition={ { duration: 1.1, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' } }
             />
           ) ) }
         </div>
@@ -216,48 +257,137 @@ export default function Dashboard() {
     );
   }
 
-  const displayName = [ user.first_name, user.last_name ].filter( Boolean ).join( ' ' ) || user.email;
-  const initials    = ( user.first_name?.[0] || '' ) + ( user.last_name?.[0] || user.email?.[0] || '' );
+  const displayName  = [ user.first_name, user.last_name ].filter( Boolean ).join( ' ' ) || user.email;
+  const initials     = ( ( user.first_name?.[0] || '' ) + ( user.last_name?.[0] || user.email?.[0] || '' ) ).toUpperCase();
+  const tierName     = membershipData?.tier
+    ? membershipData.tier.charAt( 0 ).toUpperCase() + membershipData.tier.slice( 1 )
+    : null;
+
+  // ── Sidebar / profile card (shared between mobile card and desktop aside) ──
+
+  const ProfileCard = (
+    <>
+      {/* Avatar + name + email */}
+      <div style={ { padding: '22px 20px 18px', textAlign: 'center', borderBottom: '1px solid rgba(15,23,42,0.07)' } }>
+        <div style={ {
+          width:          '72px',
+          height:         '72px',
+          borderRadius:   '50%',
+          background:     'linear-gradient(135deg, #dbeafe, #93c5fd)',
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          fontSize:       '1.4rem',
+          fontWeight:     800,
+          color:          '#1d4ed8',
+          margin:         '0 auto 12px',
+          letterSpacing:  '-0.02em',
+        } }>
+          { initials || <User size={ 30 } /> }
+        </div>
+        <p style={ { margin: '0 0 3px', fontWeight: 750, fontSize: '0.95rem', color: '#0f172a' } }>
+          { displayName }
+        </p>
+        <p style={ { margin: 0, fontSize: '0.78rem', color: 'rgba(15,23,42,0.45)' } }>
+          { user.email }
+        </p>
+        { tierName && (
+          <span style={ {
+            display:       'inline-block',
+            marginTop:     '8px',
+            padding:       '3px 12px',
+            borderRadius:  '999px',
+            background:    membershipData?.tier === 'fleet' ? '#f0fdf4' : membershipData?.tier === 'professional' ? '#eff6ff' : '#f1f5f9',
+            color:         membershipData?.tier === 'fleet' ? '#16a34a' : membershipData?.tier === 'professional' ? '#2563eb' : 'rgba(15,23,42,0.5)',
+            fontSize:      '0.7rem',
+            fontWeight:    700,
+            letterSpacing: '0.03em',
+          } }>
+            { tierName }
+          </span>
+        ) }
+      </div>
+
+      {/* Main nav */}
+      <nav>
+        { MAIN_NAV.map( ( item, i ) => (
+          <MenuRow key={ item.to } { ...item } noBorderBottom={ i === MAIN_NAV.length - 1 } />
+        ) ) }
+      </nav>
+
+      {/* Divider */}
+      <div style={ { height: '1px', background: 'rgba(15,23,42,0.07)', margin: '4px 0' } } />
+
+      {/* Shop nav */}
+      <nav>
+        { SHOP_NAV.map( ( item, i ) => (
+          <MenuRow key={ item.to } { ...item } noBorderBottom={ i === SHOP_NAV.length - 1 } />
+        ) ) }
+      </nav>
+
+      {/* Divider */}
+      <div style={ { height: '1px', background: 'rgba(15,23,42,0.07)', margin: '4px 0' } } />
+
+      {/* Logout */}
+      <button
+        type="button"
+        onClick={ handleLogout }
+        style={ {
+          display:        'flex',
+          alignItems:     'center',
+          gap:            '13px',
+          width:          '100%',
+          padding:        '13px 20px',
+          border:         'none',
+          background:     'transparent',
+          cursor:         'pointer',
+          textAlign:      'left',
+          borderRadius:   '0 0 14px 14px',
+          transition:     'background 0.12s',
+        } }
+        onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#fef2f2'; } }
+        onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; } }
+      >
+        <div style={ {
+          width: '36px', height: '36px', borderRadius: '9px',
+          background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        } }>
+          <LogOut size={ 17 } style={ { color: '#dc2626' } } />
+        </div>
+        <span style={ { flex: 1, fontSize: '0.9rem', fontWeight: 550, color: '#dc2626' } }>Sign out</span>
+      </button>
+    </>
+  );
 
   return (
-    <div className="page-wrapper" style={ { minHeight: '100vh', background: '#f8fafc' } }>
+    <div className="page-wrapper" style={ { minHeight: '100vh', background: '#f4f6fb' } }>
+      <SEOHead noindex title="My Account" />
 
-      {/* ── Page hero strip ── */}
-      <div style={ {
-        background:   'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%)',
-        padding:      'clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem) clamp(2rem, 5vw, 3.5rem)',
-        position:     'relative',
-        overflow:     'hidden',
-      } }>
-        <div style={ {
-          position:        'absolute',
-          inset:           0,
-          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.06) 1px, transparent 0)',
-          backgroundSize:  '40px 40px',
-          pointerEvents:   'none',
-        } } />
+      {/* ── Hero ── */}
+      <div style={ { background: HERO_BG, padding: 'clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 5vw, 3rem)', position: 'relative', overflow: 'hidden' } }>
+        <div style={ DOT_GRID } />
         <div style={ { position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto' } }>
           <Motion.div
             initial={ { opacity: 0, y: 14 } }
             animate={ { opacity: 1, y: 0  } }
             transition={ { duration: 0.5, ease: [ 0.16, 1, 0.3, 1 ] } }
-            style={ { display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' } }
+            style={ { display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' } }
           >
-            {/* Avatar */}
+            {/* Hero avatar */}
             <div style={ {
-              width:           '56px',
-              height:          '56px',
-              borderRadius:    '50%',
-              background:      'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-              display:         'flex',
-              alignItems:      'center',
-              justifyContent:  'center',
-              fontSize:        '1.1rem',
-              fontWeight:      800,
-              color:           'white',
-              border:          '2px solid rgba(255,255,255,0.25)',
-              flexShrink:      0,
-              textTransform:   'uppercase',
+              width:          '58px',
+              height:         '58px',
+              borderRadius:   '50%',
+              background:     'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              fontSize:       '1.15rem',
+              fontWeight:     800,
+              color:          'white',
+              border:         '2.5px solid rgba(255,255,255,0.25)',
+              flexShrink:     0,
+              letterSpacing:  '-0.02em',
             } }>
               { initials || <User size={ 24 } /> }
             </div>
@@ -265,229 +395,131 @@ export default function Dashboard() {
             <div>
               <div style={ {
                 display:       'inline-block',
-                background:    'rgba(255,255,255,0.1)',
+                background:    'rgba(255,255,255,0.12)',
                 border:        '1px solid rgba(255,255,255,0.2)',
-                borderRadius:  '3px',
+                borderRadius:  '4px',
                 padding:       '3px 10px',
-                fontSize:      '0.65rem',
+                fontSize:      '0.62rem',
                 fontWeight:    700,
-                letterSpacing: '0.12em',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color:         'rgba(255,255,255,0.7)',
+                color:         'rgba(255,255,255,0.75)',
                 marginBottom:  '6px',
               } }>
                 My Account
               </div>
               <h1 style={ {
                 color:         'white',
-                fontSize:      'clamp(1.25rem, 3vw, 1.75rem)',
+                fontSize:      'clamp(1.2rem, 3vw, 1.75rem)',
                 fontWeight:    800,
                 margin:        0,
-                letterSpacing: '-0.02em',
+                letterSpacing: '-0.025em',
               } }>
-                Welcome back, { user.first_name || displayName }!
+                Welcome back, { user.first_name || user.email }!
               </h1>
             </div>
           </Motion.div>
         </div>
       </div>
 
-      {/* ── Main content ── */}
+      {/* ── Main layout ── */}
+      {/*
+        Mobile  (<1024px): single column, profile card → stats → content cards
+        Desktop (≥1024px): sidebar + main two-column grid
+      */}
       <div style={ {
         maxWidth: '1400px',
         margin:   '0 auto',
-        padding:  'clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)',
-        display:  'grid',
-        gridTemplateColumns: 'minmax(0, 1fr)',
-        gap:      'clamp(1.5rem, 3vw, 2.5rem)',
+        padding:  'clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2rem)',
       } }
-        className="lg:grid-cols-[280px_1fr]"
+        className="dash-layout"
       >
 
-        {/* ── Sidebar ── */}
+        {/* ── Sidebar / Profile card ── */}
         <Motion.aside
           custom={ 0 }
-          variants={ cardVariants }
+          variants={ fadeUp }
           initial="hidden"
           animate="visible"
-          style={ {
-            background:   'white',
-            border:       '1px solid rgba(15,23,42,0.08)',
-            borderRadius: '8px',
-            padding:      '24px',
-            boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
-            height:       'fit-content',
-          } }
+          style={ { ...CARD, overflow: 'hidden', height: 'fit-content' } }
+          className="dash-sidebar"
         >
-          {/* Sidebar user summary */}
-          <div style={ { textAlign: 'center', paddingBottom: '20px', borderBottom: '1px solid rgba(15,23,42,0.06)', marginBottom: '16px' } }>
-            <div style={ {
-              width:           '64px',
-              height:          '64px',
-              borderRadius:    '50%',
-              background:      'linear-gradient(135deg, #dbeafe, #bfdbfe)',
-              display:         'flex',
-              alignItems:      'center',
-              justifyContent:  'center',
-              fontSize:        '1.25rem',
-              fontWeight:      800,
-              color:           '#1d4ed8',
-              margin:          '0 auto 12px',
-              textTransform:   'uppercase',
-            } }>
-              { initials || <User size={ 28 } /> }
-            </div>
-            <p style={ { margin: '0 0 4px', fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' } }>
-              { displayName }
-            </p>
-            <p style={ { margin: 0, fontSize: '0.8rem', color: 'rgba(15,23,42,0.45)' } }>
-              { user.email }
-            </p>
-            { user.role && (
-              <div style={ {
-                display:       'inline-block',
-                marginTop:     '8px',
-                background:    '#eff6ff',
-                border:        '1px solid #bfdbfe',
-                borderRadius:  '999px',
-                padding:       '3px 10px',
-                fontSize:      '0.7rem',
-                fontWeight:    600,
-                color:         '#1d4ed8',
-                textTransform: 'capitalize',
-              } }>
-                { user.role }
-              </div>
-            ) }
-          </div>
-
-          {/* Nav links */}
-          <nav style={ { display: 'flex', flexDirection: 'column', gap: '2px' } }>
-            <SideNavLink icon={ Package }     label="My Orders"        to="/orders"          />
-            <SideNavLink icon={ Star }        label="My Rewards"       to="/rewards"         />
-            <SideNavLink icon={ Shield }      label="ProCare Plan"     to="/pro-membership"  />
-            <SideNavLink icon={ MapPin }      label="Saved Addresses"  to="/addresses"       />
-            <SideNavLink icon={ Bell }        label="Notifications"    to="/notifications"   />
-            <SideNavLink icon={ Settings }    label="Account Settings" to="/account-settings" />
-          </nav>
-
-          <div style={ { margin: '16px 0', height: '1px', background: 'rgba(15,23,42,0.06)' } } />
-
-          {/* Shop links */}
-          <nav style={ { display: 'flex', flexDirection: 'column', gap: '2px' } }>
-            <SideNavLink icon={ ShoppingCart } label="Browse Products" to="/products"  />
-            <SideNavLink icon={ ShoppingCart } label="Go to Cart"      to="/cart"      />
-          </nav>
-
-          <div style={ { margin: '16px 0', height: '1px', background: 'rgba(15,23,42,0.06)' } } />
-
-          {/* Logout */}
-          <button
-            onClick={ handleLogout }
-            style={ {
-              display:       'flex',
-              alignItems:    'center',
-              gap:           '10px',
-              width:         '100%',
-              padding:       '11px 16px',
-              borderRadius:  '6px',
-              border:        'none',
-              background:    'transparent',
-              cursor:        'pointer',
-              color:         '#dc2626',
-              fontSize:      '0.875rem',
-              fontWeight:    500,
-              textAlign:     'left',
-              transition:    'background 0.15s',
-            } }
-            onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#fef2f2'; } }
-            onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; } }
-          >
-            <LogOut size={ 16 } style={ { flexShrink: 0 } } />
-            Sign out
-          </button>
+          { ProfileCard }
         </Motion.aside>
 
-        {/* ── Main content area ── */}
-        <div style={ { display: 'flex', flexDirection: 'column', gap: 'clamp(1.25rem, 3vw, 2rem)' } }>
+        {/* ── Main content ── */}
+        <div style={ { display: 'flex', flexDirection: 'column', gap: '20px' } } className="dash-main">
 
           {/* Stats row */}
           <div style={ {
             display:             'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap:                 '16px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
+            gap:                 '14px',
           } }>
             <StatCard
               icon={ Package }
               label="Total Orders"
-              value="—"
-              color={ { bg: '#eff6ff', icon: '#2563eb' } }
+              value={ ordersLoading ? '…' : String( recentOrders.length < 5 ? recentOrders.length : '5+' ) }
+              color="#2563eb"
+              bg="#eff6ff"
               delay={ 0.05 }
             />
             <StatCard
               icon={ Clock }
               label="Pending"
-              value="—"
-              color={ { bg: '#fff7ed', icon: '#ea580c' } }
-              delay={ 0.12 }
+              value={ ordersLoading ? '…' : String( recentOrders.filter( ( o ) => [ 'pending', 'processing', 'on-hold' ].includes( o.status ) ).length ) }
+              color="#d97706"
+              bg="#fffbeb"
+              delay={ 0.1 }
             />
             <StatCard
               icon={ CheckCircle }
               label="Completed"
-              value="—"
-              color={ { bg: '#f0fdf4', icon: '#16a34a' } }
-              delay={ 0.19 }
+              value={ ordersLoading ? '…' : String( recentOrders.filter( ( o ) => o.status === 'completed' ).length ) }
+              color="#16a34a"
+              bg="#f0fdf4"
+              delay={ 0.15 }
             />
             <StatCard
               icon={ Star }
-              label="Points Balance"
+              label="Reward Balance"
               value={ pointsData ? `$${ pointsToUsd( pointsData.points ).toFixed( 2 ) }` : '—' }
-              color={ { bg: '#f0fdf4', icon: '#16a34a' } }
-              delay={ 0.26 }
+              color="#d97706"
+              bg="#fffbeb"
+              delay={ 0.2 }
             />
           </div>
 
-          {/* ProCare membership status card */}
-          <Motion.div
-            custom={ 0.28 }
-            variants={ cardVariants }
-            initial="hidden"
-            animate="visible"
-            style={ {
-              background:   'white',
-              border:       '1px solid rgba(15,23,42,0.08)',
-              borderRadius: '8px',
-              padding:      'clamp(1.25rem, 3vw, 1.75rem)',
-              boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
-            } }
+          {/* ProCare membership card */}
+          <Motion.div custom={ 0.22 } variants={ fadeUp } initial="hidden" animate="visible"
+            style={ { ...CARD, padding: '20px 22px' } }
           >
-            <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' } }>
-              <h2 style={ { margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a' } }>
-                ProCare Membership
-              </h2>
+            <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' } }>
+              <div style={ { display: 'flex', alignItems: 'center', gap: '10px' } }>
+                <div style={ { width: '36px', height: '36px', borderRadius: '9px', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
+                  <Shield size={ 17 } style={ { color: '#16a34a' } } />
+                </div>
+                <h2 style={ { margin: 0, fontSize: '0.95rem', fontWeight: 750, color: '#0f172a' } }>ProCare Membership</h2>
+              </div>
               { membershipData?.tier !== 'fleet' && (
-                <Link to="/pro-membership" style={ { fontSize: '0.78rem', fontWeight: 600, color: '#2563eb', textDecoration: 'none' } }>
-                  { membershipData?.tier === 'essential' ? 'Join ProCare' : 'Upgrade' }
+                <Link to="/pro-membership" style={ { fontSize: '0.78rem', fontWeight: 650, color: '#2563eb', textDecoration: 'none', padding: '5px 12px', borderRadius: '6px', background: '#eff6ff', transition: 'background 0.15s' } }>
+                  { membershipData?.tier === 'essential' ? 'Join ProCare →' : 'Upgrade →' }
                 </Link>
               ) }
             </div>
 
             { membershipData ? (
-              <div style={ { display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' } }>
-                <div style={ {
+              <div style={ { display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' } }>
+                <span style={ {
                   padding:      '4px 12px',
                   borderRadius: '999px',
-                  background:   membershipData.tier === 'essential'    ? '#f1f5f9'
-                              : membershipData.tier === 'professional' ? '#eff6ff'
-                              : '#f0fdf4',
-                  color:        membershipData.tier === 'essential'    ? 'rgba(15,23,42,0.55)'
-                              : membershipData.tier === 'professional' ? '#2563eb'
-                              : '#16a34a',
+                  background:   membershipData.tier === 'fleet' ? '#f0fdf4' : membershipData.tier === 'professional' ? '#eff6ff' : '#f1f5f9',
+                  color:        membershipData.tier === 'fleet' ? '#16a34a' : membershipData.tier === 'professional' ? '#2563eb' : 'rgba(15,23,42,0.5)',
                   fontSize:     '0.75rem',
                   fontWeight:   700,
                 } }>
-                  { membershipData.tier.charAt( 0 ).toUpperCase() + membershipData.tier.slice( 1 ) }
-                </div>
+                  { tierName }
+                </span>
                 { membershipData.tier !== 'essential' && (
                   <span style={ { fontSize: '0.78rem', color: 'rgba(15,23,42,0.5)' } }>
                     { membershipData.labor_discount > 0 && `${ ( membershipData.labor_discount * 100 ).toFixed( 0 ) }% labor discount` }
@@ -497,117 +529,103 @@ export default function Dashboard() {
                 ) }
               </div>
             ) : (
-              <p style={ { fontSize: '0.8rem', color: 'rgba(15,23,42,0.45)', margin: 0 } }>
-                <Link to="/pro-membership" style={ { color: '#2563eb' } }>Join ProCare</Link> — starting free.
+              <p style={ { margin: 0, fontSize: '0.82rem', color: 'rgba(15,23,42,0.5)' } }>
+                <Link to="/pro-membership" style={ { color: '#2563eb', fontWeight: 600 } }>Join ProCare</Link> — get discounts, extended warranty, and free diagnostics.
               </p>
             ) }
           </Motion.div>
 
           {/* Recent orders card */}
-          <Motion.div
-            custom={ 0.28 }
-            variants={ cardVariants }
-            initial="hidden"
-            animate="visible"
-            style={ {
-              background:   'white',
-              border:       '1px solid rgba(15,23,42,0.08)',
-              borderRadius: '8px',
-              padding:      'clamp(1.5rem, 3vw, 2rem)',
-              boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
-            } }
+          <Motion.div custom={ 0.3 } variants={ fadeUp } initial="hidden" animate="visible"
+            style={ { ...CARD, padding: '20px 22px' } }
           >
-            <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' } }>
-              <h2 style={ { margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' } }>
-                Recent Orders
-              </h2>
-              <Link
-                to="/orders"
-                style={ {
-                  fontSize:       '0.78rem',
-                  fontWeight:     600,
-                  color:          '#2563eb',
-                  textDecoration: 'none',
-                  display:        'flex',
-                  alignItems:     'center',
-                  gap:            '4px',
-                } }
-              >
-                View all <ChevronRight size={ 14 } />
+            <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '8px' } }>
+              <div style={ { display: 'flex', alignItems: 'center', gap: '10px' } }>
+                <div style={ { width: '36px', height: '36px', borderRadius: '9px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
+                  <Package size={ 17 } style={ { color: '#2563eb' } } />
+                </div>
+                <h2 style={ { margin: 0, fontSize: '0.95rem', fontWeight: 750, color: '#0f172a' } }>Recent Orders</h2>
+              </div>
+              <Link to="/orders" style={ { fontSize: '0.78rem', fontWeight: 650, color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' } }>
+                View all <ChevronRight size={ 13 } />
               </Link>
             </div>
 
-            {/* Placeholder skeleton rows */}
-            <div>
-              { [ 0.35, 0.43, 0.51 ].map( ( d, i ) => (
-                <OrderRowPlaceholder key={ i } delay={ d } />
-              ) ) }
-            </div>
-
-            <div style={ {
-              marginTop:    '20px',
-              padding:      '16px',
-              background:   '#f8fafc',
-              borderRadius: '6px',
-              textAlign:    'center',
-            } }>
-              <Package size={ 24 } style={ { color: 'rgba(15,23,42,0.2)', marginBottom: '8px' } } />
-              <p style={ { margin: 0, fontSize: '0.85rem', color: 'rgba(15,23,42,0.45)' } }>
-                Order history will appear here once you place your first order.
-              </p>
-              <Link
-                to="/products"
-                style={ {
-                  display:       'inline-flex',
-                  alignItems:    'center',
-                  gap:           '6px',
-                  marginTop:     '12px',
-                  fontSize:      '0.78rem',
-                  fontWeight:    600,
-                  color:         '#2563eb',
-                  textDecoration: 'none',
-                } }
-              >
-                <ShoppingCart size={ 14 } />
-                Start shopping
-              </Link>
-            </div>
+            { ordersLoading ? (
+              <div style={ { display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' } }>
+                <Loader size={ 16 } className="animate-spin" style={ { color: '#2563eb' } } />
+                <span style={ { fontSize: '0.83rem', color: 'rgba(15,23,42,0.45)' } }>Loading orders…</span>
+              </div>
+            ) : recentOrders.length === 0 ? (
+              <div style={ { textAlign: 'center', padding: '28px 16px', background: '#f8fafc', borderRadius: '8px' } }>
+                <Package size={ 28 } style={ { color: 'rgba(15,23,42,0.18)', margin: '0 auto 10px', display: 'block' } } />
+                <p style={ { margin: '0 0 14px', fontSize: '0.85rem', color: 'rgba(15,23,42,0.45)' } }>No orders yet — let's change that!</p>
+                <Link to="/products" style={ { display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 650, color: '#2563eb', textDecoration: 'none', background: '#eff6ff', padding: '7px 14px', borderRadius: '7px' } }>
+                  <ShoppingCart size={ 13 } /> Browse Products
+                </Link>
+              </div>
+            ) : (
+              <div>
+                { recentOrders.map( ( order, i ) => (
+                  <Link key={ order.id } to={ `/order/${ order.id }` } style={ { textDecoration: 'none', display: 'block' } }>
+                    <div style={ {
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          '12px',
+                      padding:      '12px 0',
+                      borderBottom: i < recentOrders.length - 1 ? '1px solid rgba(15,23,42,0.06)' : 'none',
+                      transition:   'background 0.12s',
+                    } }
+                      onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderRadius = '6px'; e.currentTarget.style.padding = '12px 8px'; } }
+                      onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderRadius = '0'; e.currentTarget.style.padding = '12px 0'; } }
+                    >
+                      <div style={ { width: '38px', height: '38px', borderRadius: '9px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }>
+                        <Package size={ 16 } style={ { color: '#2563eb' } } />
+                      </div>
+                      <div style={ { flex: 1 } }>
+                        <p style={ { margin: 0, fontSize: '0.87rem', fontWeight: 650, color: '#0f172a' } }>Order #{ order.id }</p>
+                        <p style={ { margin: '2px 0 0', fontSize: '0.72rem', color: 'rgba(15,23,42,0.45)' } }>
+                          { order.date_created ? new Date( order.date_created ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric' } ) : '' }
+                          { order.line_items?.length > 0 && ` · ${ order.line_items.length } item${ order.line_items.length !== 1 ? 's' : '' }` }
+                        </p>
+                      </div>
+                      <div style={ { display: 'flex', alignItems: 'center', gap: '8px' } }>
+                        <StatusPill status={ order.status } />
+                        <span style={ { fontWeight: 750, color: '#0f172a', fontSize: '0.9rem' } }>${ parseFloat( order.total ?? 0 ).toFixed( 2 ) }</span>
+                        <ChevronRight size={ 14 } style={ { color: 'rgba(15,23,42,0.25)' } } />
+                      </div>
+                    </div>
+                  </Link>
+                ) ) }
+              </div>
+            ) }
           </Motion.div>
 
           {/* Account info card */}
-          <Motion.div
-            custom={ 0.38 }
-            variants={ cardVariants }
-            initial="hidden"
-            animate="visible"
-            style={ {
-              background:   'white',
-              border:       '1px solid rgba(15,23,42,0.08)',
-              borderRadius: '8px',
-              padding:      'clamp(1.5rem, 3vw, 2rem)',
-              boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
-            } }
+          <Motion.div custom={ 0.38 } variants={ fadeUp } initial="hidden" animate="visible"
+            style={ { ...CARD, padding: '20px 22px' } }
           >
-            <h2 style={ { margin: '0 0 20px', fontSize: '1rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' } }>
-              Account Information
-            </h2>
+            <div style={ { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' } }>
+              <div style={ { width: '36px', height: '36px', borderRadius: '9px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
+                <CreditCard size={ 17 } style={ { color: '#64748b' } } />
+              </div>
+              <h2 style={ { margin: 0, fontSize: '0.95rem', fontWeight: 750, color: '#0f172a' } }>Account Information</h2>
+            </div>
 
-            <div style={ {
-              display:             'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap:                 '20px',
-            } }>
+            <div style={ { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '18px' } }>
               { [
-                { label: 'Full Name',  value: displayName },
-                { label: 'Email',      value: user.email },
-                { label: 'Role',       value: user.role  || '—' },
-                { label: 'Member Since', value: user.registered ? new Date( user.registered ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'long' } ) : '—' },
+                { label: 'Full Name',    value: displayName },
+                { label: 'Email',        value: user.email  },
+                { label: 'Account Type', value: user.role || '—' },
+                { label: 'Member Since', value: user.registered
+                    ? new Date( user.registered ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'long' } )
+                    : '—' },
               ].map( ( row ) => (
                 <div key={ row.label }>
-                  <p style={ { margin: '0 0 4px', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, color: 'rgba(15,23,42,0.4)' } }>
+                  <p style={ { margin: '0 0 4px', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700, color: 'rgba(15,23,42,0.38)' } }>
                     { row.label }
                   </p>
-                  <p style={ { margin: 0, fontSize: '0.9rem', color: '#0f172a', fontWeight: 500, wordBreak: 'break-word' } }>
+                  <p style={ { margin: 0, fontSize: '0.88rem', color: '#0f172a', fontWeight: 500, wordBreak: 'break-word' } }>
                     { row.value }
                   </p>
                 </div>
@@ -615,87 +633,24 @@ export default function Dashboard() {
             </div>
           </Motion.div>
 
-          {/* Quick actions card */}
-          <Motion.div
-            custom={ 0.46 }
-            variants={ cardVariants }
-            initial="hidden"
-            animate="visible"
-            style={ {
-              background:   'white',
-              border:       '1px solid rgba(15,23,42,0.08)',
-              borderRadius: '8px',
-              padding:      'clamp(1.5rem, 3vw, 2rem)',
-              boxShadow:    '0 2px 10px rgba(15,23,42,0.04)',
-            } }
-          >
-            <h2 style={ { margin: '0 0 20px', fontSize: '1rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.01em' } }>
-              Quick Actions
-            </h2>
-
-            <div style={ {
-              display:             'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap:                 '12px',
-            } }>
-              { [
-                { icon: ShoppingCart, label: 'Shop Products', to: '/products',  color: { bg: '#eff6ff', icon: '#2563eb' } },
-                { icon: ShoppingCart, label: 'View Cart',     to: '/cart',      color: { bg: '#fff7ed', icon: '#ea580c' } },
-                { icon: Package,      label: 'My Orders',     to: '/orders',    color: { bg: '#f0fdf4', icon: '#16a34a' } },
-                { icon: Settings,     label: 'Settings',      to: '/account-settings', color: { bg: '#faf5ff', icon: '#7c3aed' } },
-              ].map( ( action ) => (
-                <Link
-                  key={ action.label }
-                  to={ action.to }
-                  style={ { textDecoration: 'none' } }
-                >
-                  <div
-                    style={ {
-                      display:        'flex',
-                      flexDirection:  'column',
-                      alignItems:     'center',
-                      justifyContent: 'center',
-                      gap:            '10px',
-                      padding:        '20px 16px',
-                      border:         '1px solid rgba(15,23,42,0.07)',
-                      borderRadius:   '8px',
-                      textAlign:      'center',
-                      transition:     'border-color 0.18s, box-shadow 0.18s, transform 0.15s',
-                      cursor:         'pointer',
-                    } }
-                    onMouseEnter={ ( e ) => {
-                      e.currentTarget.style.borderColor = action.color.icon;
-                      e.currentTarget.style.boxShadow   = `0 4px 16px ${ action.color.icon }22`;
-                      e.currentTarget.style.transform   = 'translateY(-2px)';
-                    } }
-                    onMouseLeave={ ( e ) => {
-                      e.currentTarget.style.borderColor = 'rgba(15,23,42,0.07)';
-                      e.currentTarget.style.boxShadow   = 'none';
-                      e.currentTarget.style.transform   = 'translateY(0)';
-                    } }
-                  >
-                    <div style={ {
-                      width:          '40px',
-                      height:         '40px',
-                      borderRadius:   '10px',
-                      background:     action.color.bg,
-                      display:        'flex',
-                      alignItems:     'center',
-                      justifyContent: 'center',
-                    } }>
-                      <action.icon size={ 18 } style={ { color: action.color.icon } } />
-                    </div>
-                    <span style={ { fontSize: '0.78rem', fontWeight: 600, color: '#374151' } }>
-                      { action.label }
-                    </span>
-                  </div>
-                </Link>
-              ) ) }
-            </div>
-          </Motion.div>
-
         </div>
       </div>
+
+      {/* ── Responsive grid styles (injected via a <style> tag) ── */}
+      <style>{ `
+        .dash-layout {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: clamp(1.25rem, 3vw, 1.75rem);
+        }
+        @media (min-width: 1024px) {
+          .dash-layout {
+            grid-template-columns: 300px 1fr;
+            align-items: start;
+          }
+        }
+      ` }</style>
+
     </div>
   );
 }
