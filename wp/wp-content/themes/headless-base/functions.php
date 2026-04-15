@@ -231,69 +231,6 @@ function hb_security_headers(): void {
 
 
 // =============================================================================
-// 5. CORS — Cross-Origin Resource Sharing
-// Allows the React SPA to call WordPress REST API endpoints. Restricted to
-// known production and development origins — never a wildcard.
-//
-// To add staging or preview URLs, append them to $allowed_origins below.
-// =============================================================================
-
-add_action( 'rest_api_init', 'hb_register_cors', 15 );
-add_action( 'send_headers',  'hb_register_cors' );
-
-function hb_register_cors(): void {
-	// Remove WordPress default CORS handler — we replace it entirely.
-	remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
-	add_filter( 'rest_pre_serve_request', 'hb_send_cors_headers' );
-}
-
-/**
- * Emit CORS headers scoped to an explicit origin allowlist.
- *
- * @param mixed $served Whether the request has already been served.
- * @return mixed        Unchanged $served value (we only add headers).
- */
-function hb_send_cors_headers( mixed $served ): mixed {
-	$allowed_origins = array_map(
-		'rtrim',
-		[
-			home_url(),
-			'https://drywalltoolbox.com',
-			'https://www.drywalltoolbox.com',
-			'http://localhost:3000',   // CRA dev server.
-			'http://localhost:5173',   // Vite dev server.
-			'http://127.0.0.1:5173',
-			// 'https://staging.drywalltoolbox.com', // Uncomment for staging.
-		],
-		array_fill( 0, 8, '/' )
-	);
-
-	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
-		? rtrim( wp_unslash( $_SERVER['HTTP_ORIGIN'] ), '/' )
-		: '';
-
-	$origin_to_send = in_array( $raw_origin, $allowed_origins, true )
-		? $raw_origin
-		: 'https://drywalltoolbox.com'; // Safe fallback for same-origin requests.
-
-	header( 'Access-Control-Allow-Origin: '      . esc_url_raw( $origin_to_send ) );
-	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
-	header( 'Access-Control-Allow-Credentials: true' );
-	header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With' );
-	header( 'Access-Control-Max-Age: 600' );
-	header( 'Vary: Origin' );
-
-	// Respond to preflight OPTIONS requests immediately and exit.
-	if ( 'OPTIONS' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
-		status_header( 204 );
-		exit;
-	}
-
-	return $served;
-}
-
-
-// =============================================================================
 // 6. REST API CONFIGURATION
 // =============================================================================
 

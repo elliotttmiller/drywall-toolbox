@@ -463,63 +463,6 @@ if ( ! defined( 'DISALLOW_FILE_EDIT' ) ) {
 
 
 // =============================================================================
-// 6. CORS — Cross-Origin Resource Sharing
-// Allows the React SPA and local dev servers to call WordPress REST API
-// endpoints. Restricted to an explicit origin allowlist — never a wildcard.
-// =============================================================================
-
-add_action( 'rest_api_init', 'dtb_rest_cors', 15 );
-function dtb_rest_cors(): void {
-	// Remove WordPress's default CORS handler and replace with our own.
-	remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
-	add_filter( 'rest_pre_serve_request', 'dtb_send_cors_headers' );
-}
-
-/**
- * Emit CORS headers for all REST API responses.
- *
- * @param mixed $served Passed through unchanged — we only add headers.
- * @return mixed
- */
-function dtb_send_cors_headers( mixed $served ): mixed {
-	$allowed_origins = [
-		rtrim( home_url(), '/' ),
-		'https://drywalltoolbox.com',
-		'https://www.drywalltoolbox.com',
-		'http://localhost:3000',   // CRA local dev.
-		'http://localhost:5173',   // Vite local dev.
-		'http://127.0.0.1:5173',
-		// 'https://staging.drywalltoolbox.com', // Uncomment for staging environment.
-	];
-
-	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
-		? rtrim( wp_unslash( $_SERVER['HTTP_ORIGIN'] ), '/' )
-		: '';
-
-	// Echo back the exact origin if it is in the allowlist.
-	// Fall back to the canonical production domain for same-origin / no-origin requests.
-	$emit_origin = in_array( $raw_origin, $allowed_origins, true )
-		? $raw_origin
-		: 'https://drywalltoolbox.com';
-
-	header( 'Access-Control-Allow-Origin: '      . esc_url_raw( $emit_origin ) );
-	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
-	header( 'Access-Control-Allow-Credentials: true' );
-	header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With' );
-	header( 'Access-Control-Max-Age: 600' );
-	header( 'Vary: Origin' );
-
-	// Respond to CORS preflight OPTIONS requests immediately — no further processing needed.
-	if ( 'OPTIONS' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
-		status_header( 204 );
-		exit;
-	}
-
-	return $served;
-}
-
-
-// =============================================================================
 // 7. WOOCOMMERCE: PUBLIC READ ACCESS
 // Allows unauthenticated GET requests to product and taxonomy endpoints.
 // Write operations (create, update, delete) always require authentication.
