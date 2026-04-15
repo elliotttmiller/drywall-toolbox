@@ -11,10 +11,11 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
-import { Star, Clock, ArrowRight, ChevronRight, Loader } from 'lucide-react';
+import { Star, ArrowRight, ChevronRight, Loader } from 'lucide-react';
 import { useAuthContext } from '../auth/AuthContext.js';
+import AccountLayout from '../components/AccountLayout.jsx';
 import SEOHead from '../components/SEOHead';
 import {
   getUserPoints,
@@ -57,8 +58,7 @@ function eventLabel( type ) {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Rewards() {
-  const navigate                      = useNavigate();
-  const { user, isAuthenticated, isLoading } = useAuthContext();
+  const { user } = useAuthContext();
 
   const [balance,          setBalance         ] = useState( null );
   const [history,          setHistory         ] = useState( null );
@@ -72,12 +72,6 @@ export default function Rewards() {
   const [redeemResult,     setRedeemResult    ] = useState( null );
   const [redeemError,      setRedeemError     ] = useState( '' );
   const [copied,           setCopied          ] = useState( false );
-
-  useEffect( () => {
-    if ( ! isLoading && ! isAuthenticated ) {
-      navigate( '/login', { replace: true } );
-    }
-  }, [ isLoading, isAuthenticated, navigate ] );
 
   const loadBalance = useCallback( () => {
     if ( ! user?.id ) return;
@@ -112,13 +106,7 @@ export default function Rewards() {
     loadHistory( 0 );
   }, [ loadBalance, loadHistory ] );
 
-  if ( isLoading || ! user ) {
-    return (
-      <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' } }>
-        <Loader className="animate-spin text-primary-600" size={ 32 } />
-      </div>
-    );
-  }
+  if ( ! user ) return null;
 
   const availablePts    = balance?.points ?? 0;
   const clampedMax      = Math.min( POINTS_MAX_REDEEM, availablePts );
@@ -150,33 +138,8 @@ export default function Rewards() {
   }
 
   return (
-    <div className="page-wrapper" style={ { minHeight: '100vh', background: '#f8fafc' } }>
+    <AccountLayout title="My Rewards" subtitle={ `Earn 1 pt per $2 spent · $5 per 100 pts · Expire after ${ POINTS_EXPIRY_MONTHS } months` }>
       <SEOHead noindex title="My Rewards" />
-
-      {/* Hero strip */}
-      <div style={ {
-        background:   'linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%)',
-        padding:      'clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem) clamp(2rem, 5vw, 3.5rem)',
-        position:     'relative',
-        overflow:     'hidden',
-      } }>
-        <div style={ { position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.06) 1px, transparent 0)', backgroundSize: '40px 40px', pointerEvents: 'none' } } />
-        <div style={ { position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto' } }>
-          <Motion.div initial={ { opacity: 0, y: 14 } } animate={ { opacity: 1, y: 0 } } transition={ { duration: 0.5, ease: [ 0.16, 1, 0.3, 1 ] } }>
-            <div style={ { display: 'inline-block', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '3px', padding: '3px 10px', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '10px' } }>
-              Points &amp; Rewards
-            </div>
-            <h1 style={ { color: 'white', fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 800, margin: '0 0 8px', letterSpacing: '-0.02em' } }>
-              My Rewards
-            </h1>
-            <p style={ { color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: 0 } }>
-              Earn 1 point for every $2 spent · Redeem $5 per 100 pts · Points expire after { POINTS_EXPIRY_MONTHS } months inactivity
-            </p>
-          </Motion.div>
-        </div>
-      </div>
-
-      <div style={ { maxWidth: '900px', margin: '0 auto', padding: 'clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.5rem)', display: 'flex', flexDirection: 'column', gap: '2rem' } }>
 
         {/* Balance card */}
         <Motion.div custom={ 0 } variants={ cardVariants } initial="hidden" animate="visible"
@@ -388,7 +351,6 @@ export default function Rewards() {
           </Link>
         </div>
 
-      </div>
-    </div>
+    </AccountLayout>
   );
 }

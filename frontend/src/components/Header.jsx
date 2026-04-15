@@ -5,6 +5,7 @@ import { useAuthContext } from '../auth/AuthContext.js';
 import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Search, Truck, Phone } from 'lucide-react';
 import Logo from '/logo2.svg';
 import MobileSearch from './MobileSearch';
+import NotificationsBell from './NotificationsBell';
 
 export default function Header({ onCartToggle }) {
   const location = useLocation();
@@ -175,17 +176,20 @@ export default function Header({ onCartToggle }) {
             <img src={Logo} alt="Drywall Toolbox Logo" className="logo-image-mobile" />
           </Link>
 
-          {/* Cart Icon - Far Right */}
-          <button 
-            onClick={onCartToggle} 
-            className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors header-icon" 
-            aria-label="Toggle cart"
-          >
-            <ShoppingCart size={22} />
-            {getCartCount() > 0 && (
-              <span className="cart-badge">{getCartCount()}</span>
-            )}
-          </button>
+          {/* Right: Notifications Bell + Cart */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <NotificationsBell />
+            <button 
+              onClick={onCartToggle} 
+              className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors header-icon" 
+              aria-label="Toggle cart"
+            >
+              <ShoppingCart size={22} />
+              {getCartCount() > 0 && (
+                <span className="cart-badge">{getCartCount()}</span>
+              )}
+            </button>
+          </div>
         </div>
 
   {/* ── Desktop Layout — restructured: Logo Left | Nav Center | Actions Right ── */}
@@ -406,6 +410,9 @@ export default function Header({ onCartToggle }) {
                 </div>
               </div>
             )}
+
+            {/* ── Notifications Bell ── */}
+            {!isLoading && isAuthenticated && <NotificationsBell />}
 
             <div className="cart-area">
               <button onClick={onCartToggle} className="cart-toggle header-icon" aria-label="Toggle cart">
