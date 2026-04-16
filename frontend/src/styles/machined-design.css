@@ -3122,7 +3122,6 @@ aside input[type="range"],
     padding-top: 8px;
     border-top: 1px solid rgba(15, 23, 42, 0.06);
     margin-top: auto;
-    padding-top: 8px;
 }
 
 .dtb-trending-card-price {
@@ -3253,9 +3252,5 @@ aside input[type="range"],
     .dtb-cart-item {
         padding: 14px 16px !important;
         gap: 12px !important;
-    }
-    .dtb-cart-item-img {
-        width: 64px !important;
-        height: 64px !important;
     }
 }
