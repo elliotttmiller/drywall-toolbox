@@ -28,6 +28,7 @@ import platinumLogo from '/brands/Platinum/platinum_logo.svg';
 import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
+import '../styles/shop-modern.css';
 
 // products will be loaded from WooCommerce REST API at runtime
 // brands list will be derived from loaded products
@@ -308,14 +309,14 @@ export default function Products() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 page-wrapper">
+    <div className="min-h-screen bg-gray-50 page-wrapper shop-page">
       <SEOHead
         title="Products"
         description="Shop professional drywall tools from TapeTech, Columbia, Asgard, Graco, SurPro and more. Automatic taping tools, finishing tools, mud boxes, and replacement parts."
         canonical="https://drywalltoolbox.com/products"
         schema={buildSiteLinksSearchBoxSchema()}
       />
-      <div className="container mx-auto px-4 py-4 pt-6">
+      <div className="container mx-auto px-4 py-4 pt-6 shop-shell">
         {/* Back to Brands button - shows when brand is selected (moved above header) */}
         {selectedBrands.length > 0 && (
           <div className="mb-6">
@@ -327,8 +328,8 @@ export default function Products() {
         )}
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Products</h1>
+        <div className="mb-8 shop-hero">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 shop-hero-title">Products</h1>
           <p className="text-gray-600">Browse our extensive collection of professional drywall tools</p>
         </div>
 
@@ -342,7 +343,7 @@ export default function Products() {
         )}
 
         {selectedBrands.length === 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 shop-brand-grid">
             {brands.map(brand => (
               <button
                 key={brand}
@@ -351,7 +352,7 @@ export default function Products() {
                   navigate(`/products?brand=${encodeURIComponent(brandSlug)}`);
                   setSelectedBrands([brand]);
                 }}
-                className="dtb-brand-card"
+                className="dtb-brand-card shop-brand-card"
                 aria-label={`Shop ${brand}`}
               >
                 {brandLogos[brand] ? (
@@ -382,7 +383,7 @@ export default function Products() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 shop-content-shell">
             {/* Filter Panel - Modern Mobile-First Design */}
             <FilterPanel
               isOpen={showFilters}
@@ -406,9 +407,9 @@ export default function Products() {
             />
 
           {/* Products Grid */}
-          <div className="flex-1">
+          <div className="flex-1 shop-grid-shell">
             {/* Sort and Results */}
-            <div className="flex flex-row justify-between items-center gap-4 mb-6">
+            <div className="flex flex-row justify-between items-center gap-4 mb-6 shop-toolbar">
               <SortDropdown
                 value={sortBy}
                 onChange={(value) => setSortBy(value)}
@@ -416,7 +417,7 @@ export default function Products() {
               {/* Mobile Filter Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors"
+                className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors shop-filter-trigger"
                 aria-label="Toggle Filters"
               >
                 <Filter size={18} />
@@ -430,15 +431,15 @@ export default function Products() {
             ) : (
             <>
             {/* Products Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 shop-product-grid">
               {pageProducts.map((product, index) => (
                 <div
                   key={product.id}
-                  className="product-card-enter bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full"
+                  className="product-card-enter bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full shop-product-card"
                   style={{ '--card-index': index }}
                 >
                   {/* Product Image Container */}
-                  <div className="relative bg-gray-50 aspect-square overflow-hidden shrink-0">
+                  <div className="relative bg-gray-50 aspect-square overflow-hidden shrink-0 shop-product-image">
                     <button
                       onClick={() => openModal(product)}
                       className="absolute inset-0 w-full h-full"
@@ -469,7 +470,7 @@ export default function Products() {
                   </div>
 
                   {/* Product Info - Grows to fill available space */}
-                  <div className="p-3 sm:p-4 flex flex-col grow dtb-plp-card-body">
+                  <div className="p-3 sm:p-4 flex flex-col grow dtb-plp-card-body shop-product-body">
                     {/* Brand */}
                     <p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">{product.brand}</p>
 
@@ -491,7 +492,7 @@ export default function Products() {
                     </div>
 
                     {/* Price and Add to Cart */}
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100 shop-product-footer">
                       <p className="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
                         ${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}
                       </p>
@@ -519,7 +520,7 @@ export default function Products() {
                   onPageChange={goToPage}
                   className="mt-8"
                 />
-                <p className="text-center text-sm text-gray-400 mt-2">
+                <p className="text-center text-sm text-gray-400 mt-2 shop-results-summary">
                   Showing {pageStart + 1}–{Math.min(pageStart + ITEMS_PER_PAGE, sortedProducts.length)} of{' '}
                   {sortedProducts.length.toLocaleString()} results
                 </p>
@@ -528,7 +529,7 @@ export default function Products() {
 
             {/* Empty State */}
             {sortedProducts.length === 0 && (
-              <div className="text-center py-16">
+              <div className="text-center py-16 shop-empty-state">
                 <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
                 <p className="text-gray-600 mb-6">Try adjusting your filters to see more products.</p>

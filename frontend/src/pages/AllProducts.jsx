@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
+import '../styles/shop-modern.css';
 
 // products will be loaded from WooCommerce REST API at runtime
 const categories = [
@@ -225,17 +226,17 @@ export default function AllProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 page-wrapper">
+    <div className="min-h-screen bg-gray-50 page-wrapper shop-page">
       <SEOHead
         title="All Products"
         description="Browse our complete collection of professional drywall tools and equipment from top brands including TapeTech, Columbia, Asgard, and more."
         canonical="https://drywalltoolbox.com/all-products"
         schema={buildSiteLinksSearchBoxSchema()}
       />
-      <div className="container mx-auto px-4 py-8 pt-12">
+      <div className="container mx-auto px-4 py-8 pt-12 shop-shell">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">All Products</h1>
+        <div className="mb-8 shop-hero">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 shop-hero-title">All Products</h1>
           <p className="text-gray-600">Browse our complete collection of professional drywall tools from all brands</p>
         </div>
 
@@ -246,7 +247,7 @@ export default function AllProducts() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 shop-content-shell">
           {/* Filter Panel - Modern Mobile-First Design */}
           <FilterPanel
             isOpen={showFilters}
@@ -269,9 +270,9 @@ export default function AllProducts() {
           />
 
           {/* Products Grid */}
-          <div className="flex-1">
+          <div className="flex-1 shop-grid-shell">
             {/* Sort Bar */}
-            <div className="flex flex-row justify-between items-center gap-4 mb-6">
+            <div className="flex flex-row justify-between items-center gap-4 mb-6 shop-toolbar">
               <SortDropdown
                 value={sortBy}
                 onChange={(value) => setSortBy(value)}
@@ -279,7 +280,7 @@ export default function AllProducts() {
               {/* Mobile Filter Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors"
+                className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors shop-filter-trigger"
                 aria-label="Toggle Filters"
               >
                 <Filter size={18} />
@@ -293,15 +294,15 @@ export default function AllProducts() {
             ) : (
             <>
             {/* Products Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6 shop-product-grid">
               {pageProducts.map((product, index) => (
                 <div
                   key={product.id}
-                  className="product-card-enter bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full"
+                  className="product-card-enter bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full shop-product-card"
                   style={{ '--card-index': index }}
                 >
                   {/* Product Image Container */}
-                  <div className="relative bg-gray-50 aspect-square overflow-hidden shrink-0">
+                  <div className="relative bg-gray-50 aspect-square overflow-hidden shrink-0 shop-product-image">
                     <button
                       onClick={() => openModal(product)}
                       className="absolute inset-0 w-full h-full"
@@ -332,7 +333,7 @@ export default function AllProducts() {
                   </div>
 
                   {/* Product Info - Grows to fill available space */}
-                  <div className="p-3 sm:p-4 flex flex-col grow dtb-plp-card-body">
+                  <div className="p-3 sm:p-4 flex flex-col grow dtb-plp-card-body shop-product-body">
                     {/* Brand */}
                     <p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">{product.brand}</p>
 
@@ -354,7 +355,7 @@ export default function AllProducts() {
                     </div>
 
                     {/* Price and Add to Cart */}
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100 shop-product-footer">
                       <p className="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
                         ${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}
                       </p>
@@ -382,7 +383,7 @@ export default function AllProducts() {
                   onPageChange={goToPage}
                   className="mt-8"
                 />
-                <p className="text-center text-sm text-gray-400 mt-2">
+                <p className="text-center text-sm text-gray-400 mt-2 shop-results-summary">
                   Showing {pageStart + 1}–{Math.min(pageStart + ITEMS_PER_PAGE, sortedProducts.length)} of{' '}
                   {sortedProducts.length.toLocaleString()} results
                 </p>
@@ -391,7 +392,7 @@ export default function AllProducts() {
 
             {/* Empty State */}
             {sortedProducts.length === 0 && (
-              <div className="text-center py-16">
+              <div className="text-center py-16 shop-empty-state">
                 <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
                 <p className="text-gray-600 mb-6">Try adjusting your filters to see more products.</p>
