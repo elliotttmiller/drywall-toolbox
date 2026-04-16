@@ -40,8 +40,9 @@ BLOCKED_DOMAINS = {
 
 # Source files with image columns already present in this repository.
 DEFAULT_SOURCE_CSVS = (
-    "scraped_results/TapeTech/tapetech_master_catalog.csv",
-    "scraped_results/Level5/level5_tools.csv",
+    "scripts/scraped_results/TapeTech/tapetech_master_catalog.csv",
+    "scripts/scraped_results/Level5/level5_tools.csv",
+    "scripts/scraped_results/Columbia/columbia_walltools.csv",
 )
 
 
