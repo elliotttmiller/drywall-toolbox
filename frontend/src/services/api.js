@@ -191,6 +191,22 @@ function isPartsFromApi(wcCategories) {
 }
 
 /**
+ * Return the human-readable leaf WC category name for use in category cards.
+ * Finds the most-specific category whose name maps to a CATEGORY_MAP key.
+ *
+ * @param {Array<{id:number, name:string, slug:string}>} wcCategories
+ * @returns {string}  e.g. "Finishing Boxes", "Automatic Tapers"
+ */
+function extractDisplayCategory(wcCategories) {
+  if (!wcCategories || !wcCategories.length) return '';
+  for (const cat of wcCategories) {
+    const name = decodeHtmlEntities(cat.name);
+    if (CATEGORY_MAP[name.toLowerCase()]) return name;
+  }
+  return '';
+}
+
+/**
  * Extract the UPC/GTIN from WooCommerce product meta_data.
  * WooCommerce CSV importer stores UPC in meta_data under key 'upc'.
  *
@@ -283,6 +299,38 @@ export function normalizeProduct(wcProduct) {
   // UPC: extract from meta_data (WC CSV importer stores it under key 'upc')
   const upc = extractUpc(wcProduct.meta_data);
 
+  // ── Variable-product support ───────────────────────────────────────────────
+  // WooCommerce REST API returns type: 'variable' for variable products and
+  // type: 'variation' for individual variation records.
+  const productType = wcProduct.type || 'simple';
+  const isVariable  = productType === 'variable';
+
+  // Variation-attribute options (only populated for variable products).
+  // Each entry: { name: 'Size', options: ['7"', '10"', '12"'], id: 1 }
+  const variation_attributes = isVariable
+    ? (wcProduct.attributes || [])
+        .filter((a) => a.variation)
+        .map((a) => ({ id: a.id || 0, name: a.name, options: a.options || [] }))
+    : [];
+
+  // For variable products, WC returns price_html with min/max range.
+  // Use min_price / max_price when available, fall back to price.
+  const min_price = wcProduct.min_price
+    ? (parseFloat(wcProduct.min_price) || 0)
+    : (isVariable ? (parseFloat(wcProduct.price) || 0) : null);
+  const max_price = wcProduct.max_price
+    ? (parseFloat(wcProduct.max_price) || 0)
+    : null;
+
+  // Human-readable leaf category name for category-card grouping (e.g. "Finishing Boxes").
+  const display_category = extractDisplayCategory(wcProduct.categories);
+
+  // For individual variations: the parent product ID and selected attribute.
+  const parent_id = wcProduct.parent_id || null;
+  const variation_attribute = wcProduct.attributes && productType === 'variation'
+    ? (wcProduct.attributes[0] || null)
+    : null;
+
   return {
     // Identity
     id:           wcProduct.id,
@@ -295,6 +343,7 @@ export function normalizeProduct(wcProduct) {
     name:         wcProduct.name || wcProduct.sku || String(wcProduct.id),
     brand:        extractBrand(wcProduct),
     category,
+    display_category,
     is_parts,
     categories:   wcProduct.categories || [],
 
@@ -318,6 +367,16 @@ export function normalizeProduct(wcProduct) {
     // Attributes / meta (preserved for schematic / parts lookups)
     attributes: wcProduct.attributes || [],
     meta_data:  wcProduct.meta_data  || [],
+
+    // Variable-product fields
+    type:                productType,
+    is_variable:         isVariable,
+    variation_attributes,
+    variations:          wcProduct.variations || [],   // array of variation IDs
+    min_price,
+    max_price,
+    parent_id,
+    variation_attribute,  // selected attribute for a variation record
 
     // Rating placeholder (WooCommerce provides this via reviews endpoint)
     rating:  Number(wcProduct.average_rating) || 0,
@@ -364,6 +423,18 @@ export const getProductsByCategory = (categoryId, params = {}) =>
  */
 export const searchProducts = (searchTerm) =>
   wcFetch('/products', { search: searchTerm, per_page: 50, status: 'publish' })
+    .then((list) => list.map(normalizeProduct));
+
+/**
+ * Fetch all variations for a variable product.
+ * Returns each variation normalised through normalizeProduct() so the shape
+ * is consistent with parent products.
+ *
+ * @param {number|string} parentId  WooCommerce parent product ID
+ * @returns {Promise<Array>}        Array of normalised variation objects
+ */
+export const getProductVariations = (parentId) =>
+  wcFetch(`/products/${parentId}/variations`, { per_page: 100, status: 'publish' })
     .then((list) => list.map(normalizeProduct));
 
 // ─── Categories ──────────────────────────────────────────────────────────────

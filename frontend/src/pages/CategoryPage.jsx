@@ -1,10 +1,11 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getProductsByCategory } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
 import Toast from '../components/Toast';
+import VariantChips from '../components/VariantChips';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
 
@@ -24,6 +25,14 @@ export default function CategoryPage() {
     addToCart(product, quantity);
     showToast(`${product.name} added to cart!`, 'cart');
   };
+
+  const [cardVariants, setCardVariants] = useState({});
+  const handleVariantSelect = useCallback((productId, attrName, value) => {
+    setCardVariants(prev => ({
+      ...prev,
+      [productId]: { ...(prev[productId] || {}), [attrName]: value },
+    }));
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -121,16 +130,36 @@ export default function CategoryPage() {
                     <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{product.brand}</p>
                   )}
                   <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2">{product.name}</h3>
+                  {product.is_variable && product.variation_attributes && product.variation_attributes.length > 0 && (
+                    <div className="mb-2">
+                      <VariantChips
+                        attributes={product.variation_attributes}
+                        selected={cardVariants[product.id] || {}}
+                        onSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
+                        compact
+                      />
+                    </div>
+                  )}
                   {product.price !== '' && (
                     <p className="text-primary-600 font-bold">
-                      ${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}
+                      {product.is_variable && product.min_price != null
+                        ? `From $${product.min_price.toFixed(2)}`
+                        : `$${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}`
+                      }
                     </p>
                   )}
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (product.is_variable) {
+                        setModalProduct(product);
+                      } else {
+                        handleAddToCart(product);
+                      }
+                    }}
                     className="mt-3 w-full py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
                   >
-                    Add to Cart
+                    {product.is_variable ? 'View Options' : 'Add to Cart'}
                   </button>
                 </div>
               </div>

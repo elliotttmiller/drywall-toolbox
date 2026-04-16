@@ -7,7 +7,9 @@ import TechnicalSpecifications from './TechnicalSpecifications';
 import { useCart } from '../context/CartContext';
 import { Heart, Plus, Minus, X, ShoppingCart } from 'lucide-react';
 import ProductImageGallery from './ProductImageGallery';
+import VariantChips from './VariantChips';
 import { getProductSpecifications } from '../utils/productSpecifications';
+import { getProductVariations } from '../services/api';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
@@ -29,6 +31,56 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
 
+  // ── Variable product variations ──────────────────────────────────────────
+  const [variations, setVariations]             = useState([]);
+  const [variationsLoading, setVariationsLoading] = useState(false);
+  // selectedAttrs: { [attrName]: value } — tracks the user's chip selections
+  const [selectedAttrs, setSelectedAttrs]       = useState({});
+
+  // When a variable product is opened, fetch its variations from the API.
+  // All state updates run asynchronously (via Promise chain) to satisfy the
+  // react-hooks/set-state-in-effect rule from eslint-plugin-react-hooks v7.
+  useEffect(() => {
+    if (!product?.is_variable || !product.id) return;
+
+    let mounted = true;
+
+    Promise.resolve()
+      .then(() => {
+        if (!mounted) return;
+        setVariations([]);
+        setSelectedAttrs({});
+        setVariationsLoading(true);
+        return getProductVariations(product.id);
+      })
+      .then((vars) => {
+        if (!mounted || !vars) return;
+        setVariations(vars);
+        // Pre-select the first in-stock variation's attributes
+        const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
+        if (firstInStock?.variation_attribute) {
+          setSelectedAttrs({ [firstInStock.variation_attribute.name]: firstInStock.variation_attribute.option });
+        }
+      })
+      .catch(() => { /* variations not critical — fail silently */ })
+      .finally(() => { if (mounted) setVariationsLoading(false); });
+
+    return () => { mounted = false; };
+  }, [product?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Find the variation that matches the current chip selections
+  const selectedVariation = (() => {
+    if (!product?.is_variable || variations.length === 0) return null;
+    const attrEntries = Object.entries(selectedAttrs);
+    if (attrEntries.length === 0) return null;
+    return variations.find((v) => {
+      if (!v.variation_attribute) return false;
+      return attrEntries.every(([name, value]) =>
+        v.variation_attribute.name === name && v.variation_attribute.option === value
+      );
+    }) || null;
+  })();
+
   // Lock body scroll while this detail panel is mounted
   useEffect(() => {
     if (!product) return;
@@ -47,11 +99,18 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
   const schematicId = getSchematicIdForProduct(product);
   const partsUrl = schematicId ? buildSchematicsUrl(schematicId) : null;
 
+  // Effective product data: use selected variation's data when available
+  const effectiveProduct = selectedVariation || product;
+  const effectiveSku   = effectiveProduct.sku || product.sku || '';
+  const effectiveStock = effectiveProduct.stock_status || product.stock_status || 'instock';
+  const isOutOfStock   = effectiveStock === 'outofstock';
+
   const handleAddToCart = () => {
+    const productToAdd = selectedVariation || product;
     if (onAddToCart) {
-      onAddToCart(product, quantity);
+      onAddToCart(productToAdd, quantity);
     } else {
-      addToCart(product, quantity);
+      addToCart(productToAdd, quantity);
     }
     try {
       if (typeof onClose === 'function') {
@@ -64,8 +123,15 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
-  const price = product.price || 0;
-  const displayPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+
+  // Price: use variation price when selected, otherwise product min_price or regular price
+  const rawPrice = selectedVariation
+    ? (selectedVariation.price || 0)
+    : (product.is_variable && product.min_price != null ? product.min_price : (product.price || 0));
+  const displayPrice = typeof rawPrice === 'number'
+    ? rawPrice.toFixed(2)
+    : parseFloat(rawPrice || 0).toFixed(2);
+  const pricePrefix = product.is_variable && !selectedVariation ? 'From $' : '$';
 
   return (
     <div
@@ -96,9 +162,9 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
               {/* Stock Badge & Brand */}
               <div className="flex items-center flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <span className={`inline-block px-2.5 py-1 sm:px-3 text-white text-xs font-semibold rounded ${
-                  product.stock_status === 'outofstock' ? 'bg-red-500' : 'bg-black'
+                  isOutOfStock ? 'bg-red-500' : 'bg-black'
                 }`}>
-                  {product.stock_status === 'outofstock' ? 'Out of Stock' : 'In Stock'}
+                  {isOutOfStock ? 'Out of Stock' : 'In Stock'}
                 </span>
                 <span className="text-xs sm:text-sm text-gray-600">{product.brand}</span>
               </div>
@@ -123,15 +189,40 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
 
               {/* Price */}
               <div className="mb-4 sm:mb-6">
-                <span className="text-3xl sm:text-4xl font-bold text-gray-900">${displayPrice}</span>
+                <span className="text-3xl sm:text-4xl font-bold text-gray-900">
+                  {pricePrefix}{displayPrice}
+                </span>
               </div>
 
-              {/* SKU & UPC */}
+              {/* Variation selector — visible for variable products */}
+              {product.is_variable && product.variation_attributes && product.variation_attributes.length > 0 && (
+                <div className="mb-4 sm:mb-5">
+                  {variationsLoading ? (
+                    <p className="text-xs text-gray-400">Loading options…</p>
+                  ) : (
+                    <VariantChips
+                      attributes={product.variation_attributes}
+                      selected={selectedAttrs}
+                      onSelect={(attrName, value) =>
+                        setSelectedAttrs(prev => ({ ...prev, [attrName]: value }))
+                      }
+                    />
+                  )}
+                  {/* Out-of-stock notice for the selected variation */}
+                  {selectedVariation && selectedVariation.stock_status === 'outofstock' && (
+                    <p className="mt-2 text-xs font-semibold text-red-600">
+                      This size is currently out of stock.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* SKU & UPC — reflects selected variation when applicable */}
               <div className="mb-4 sm:mb-6 space-y-1 text-xs sm:text-sm text-gray-600">
-                {product.sku && (
+                {effectiveSku && (
                   <div>
                     <span className="font-medium">SKU:</span>{' '}
-                    <span className="font-mono">{product.sku}</span>
+                    <span className="font-mono">{effectiveSku}</span>
                   </div>
                 )}
                 {product.upc && (
@@ -186,11 +277,11 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
               {/* Add to Cart — full width */}
               <button
                 onClick={handleAddToCart}
-                disabled={product.stock_status === 'outofstock'}
+                disabled={isOutOfStock}
                 className="w-full flex items-center justify-center gap-2.5 h-12 px-6 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm tracking-wide rounded-xl transition-all mb-4 sm:mb-6 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 <ShoppingCart size={17} aria-hidden="true" />
-                {product.stock_status === 'outofstock' ? 'OUT OF STOCK' : 'ADD TO CART'}
+                {isOutOfStock ? 'OUT OF STOCK' : 'ADD TO CART'}
               </button>
             </div>
           </div>

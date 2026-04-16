@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
@@ -8,10 +8,9 @@ import Toast from '../components/Toast';
 import SortDropdown from '../components/SortDropdown';
 import FilterPanel from '../components/FilterPanel';
 import Pagination from '../components/Pagination';
-import LoadingSpinner from '../components/LoadingSpinner';
 import ProductCardImage from '../components/ProductCardImage';
 import { ProductSkeletonGrid } from '../components/ProductSkeletonCard';
-import { X } from 'lucide-react';
+import VariantChips from '../components/VariantChips';
 import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import {
@@ -69,6 +68,7 @@ export default function AllProducts() {
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [cardVariants, setCardVariants] = useState({});
 
   const showToast = (message, type = 'cart') => {
     setToast({ message, type });
@@ -78,6 +78,13 @@ export default function AllProducts() {
     addToCart(product, quantity);
     showToast(`${product.name} added to cart!`, 'cart');
   };
+
+  const handleVariantSelect = useCallback((productId, attrName, value) => {
+    setCardVariants(prev => ({
+      ...prev,
+      [productId]: { ...(prev[productId] || {}), [attrName]: value },
+    }));
+  }, []);
 
   const openModal = (product) => {
     setModalProduct(product);
@@ -344,7 +351,7 @@ export default function AllProducts() {
                     </h3>
 
                     {/* SKU/UPC - hidden on very small screens via dtb-plp-sku */}
-                    <div className="flex flex-wrap gap-2 mb-3 text-xs text-gray-500 dtb-plp-sku">
+                    <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dtb-plp-sku">
                       {product.sku && (
                         <span className="truncate">SKU: {product.sku}</span>
                       )}
@@ -353,17 +360,37 @@ export default function AllProducts() {
                       )}
                     </div>
 
+                    {/* Inline variant chips for variable products */}
+                    {product.is_variable && product.variation_attributes && product.variation_attributes.length > 0 && (
+                      <div className="mb-2">
+                        <VariantChips
+                          attributes={product.variation_attributes}
+                          selected={cardVariants[product.id] || {}}
+                          onSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
+                          compact
+                        />
+                      </div>
+                    )}
+
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
                       <p className="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
-                        ${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}
+                        {product.is_variable && product.min_price != null
+                          ? `From $${product.min_price.toFixed(2)}`
+                          : `$${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}`
+                        }
                       </p>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleAddToCart(product, 1);
+                          if (product.is_variable) {
+                            openModal(product);
+                          } else {
+                            handleAddToCart(product, 1);
+                          }
                         }}
                         className="shrink-0 p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all hover:scale-110 active:scale-95"
+                        aria-label={product.is_variable ? 'View options' : 'Add to cart'}
                       >
                         <ShoppingCart size={20} />
                       </button>

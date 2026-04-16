@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
 import BackButton from '../components/BackButton';
@@ -8,10 +8,10 @@ import SortDropdown from '../components/SortDropdown';
 import FilterPanel from '../components/FilterPanel';
 import Toast from '../components/Toast';
 import Pagination from '../components/Pagination';
-import LoadingSpinner from '../components/LoadingSpinner';
 import ProductCardImage from '../components/ProductCardImage';
 import { ProductSkeletonGrid } from '../components/ProductSkeletonCard';
-import { X } from 'lucide-react';
+import VariantChips from '../components/VariantChips';
+import { ChevronRight } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import {
@@ -102,6 +102,10 @@ export default function Products() {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  // selectedDisplayCategory: WC leaf category name used for the brand→category drill-down.
+  // null  → show category cards for the selected brand
+  // string → show product grid filtered to that WC leaf category (e.g. "Finishing Boxes")
+  const [selectedDisplayCategory, setSelectedDisplayCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
@@ -110,6 +114,8 @@ export default function Products() {
   const [modalProduct, setModalProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  // Per-card variant selection map: { [productId]: { [attrName]: value } }
+  const [cardVariants, setCardVariants] = useState({});
 
   const showToast = (message, type = 'cart') => {
     setToast({ message, type });
@@ -119,6 +125,14 @@ export default function Products() {
     addToCart(product, quantity);
     showToast(`${product.name} added to cart!`, 'cart');
   };
+
+  // Update a single chip selection for a product card
+  const handleVariantSelect = useCallback((productId, attrName, value) => {
+    setCardVariants(prev => ({
+      ...prev,
+      [productId]: { ...(prev[productId] || {}), [attrName]: value },
+    }));
+  }, []);
 
   const openModal = (product) => {
     setModalProduct(product);
@@ -148,8 +162,15 @@ export default function Products() {
   const resetToBrandList = () => {
     setSelectedBrands([]);
     setSelectedCategories([]);
+    setSelectedDisplayCategory(null);
     setPriceRange([0, MAX_PRICE]);
     navigate('/products');
+  };
+
+  const resetToCategoryCards = () => {
+    setSelectedDisplayCategory(null);
+    setSelectedCategories([]);
+    navigate(`/products?brand=${encodeURIComponent(BRAND_TO_SLUG[selectedBrands[0]] || selectedBrands[0])}`);
   };
 
   // load products once — catalog service fetches from WC REST API
@@ -234,6 +255,8 @@ export default function Products() {
   const filteredProducts = (products || []).filter(product => {
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
     if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) return false;
+    // WC leaf-category drill-down (category cards layer)
+    if (selectedDisplayCategory && product.display_category !== selectedDisplayCategory) return false;
     // price may not be set on all products; ignore if missing
     if (product.price && (product.price < priceRange[0] || product.price > priceRange[1])) return false;
     // Search filter
@@ -247,6 +270,23 @@ export default function Products() {
     }
     return true;
   });
+
+  // Unique WC leaf category cards for the currently selected brand(s).
+  // Only computed when we're in the brand→category intermediate view.
+  const brandCategoryCards = (() => {
+    if (selectedBrands.length === 0) return [];
+    const brandProducts = (products || []).filter(p => selectedBrands.includes(p.brand));
+    const seen = new Set();
+    const cards = [];
+    for (const p of brandProducts) {
+      const dc = p.display_category;
+      if (dc && !seen.has(dc)) {
+        seen.add(dc);
+        cards.push({ name: dc, image: p.image });
+      }
+    }
+    return cards.sort((a, b) => a.name.localeCompare(b.name));
+  })();
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
@@ -317,11 +357,14 @@ export default function Products() {
       />
       <div className="container mx-auto px-4 py-4 pt-6">
         {/* Back to Brands button - shows when brand is selected (moved above header) */}
+        {/* Back button — context-aware:
+              • Showing product grid with category drill-down → back to category cards
+              • Showing category cards → back to brand grid               */}
         {selectedBrands.length > 0 && (
           <div className="mb-6">
             <BackButton
-              onClick={resetToBrandList}
-              label="Brands"
+              onClick={selectedDisplayCategory ? resetToCategoryCards : resetToBrandList}
+              label={selectedDisplayCategory ? selectedBrands[0] || 'Categories' : 'Brands'}
             />
           </div>
         )}
@@ -342,6 +385,7 @@ export default function Products() {
         )}
 
         {selectedBrands.length === 0 ? (
+          /* ── Brand grid ───────────────────────────────────────────────── */
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {brands.map(brand => (
               <button
@@ -350,6 +394,7 @@ export default function Products() {
                   const brandSlug = BRAND_TO_SLUG[brand] || brand;
                   navigate(`/products?brand=${encodeURIComponent(brandSlug)}`);
                   setSelectedBrands([brand]);
+                  setSelectedDisplayCategory(null);
                 }}
                 className="dtb-brand-card"
                 aria-label={`Shop ${brand}`}
@@ -380,6 +425,58 @@ export default function Products() {
                 )}
               </button>
             ))}
+          </div>
+        ) : !selectedDisplayCategory && brandCategoryCards.length > 1 ? (
+          /* ── Category cards (brand → category drill-down) ─────────────── */
+          <div>
+            {/* Brand logo / header */}
+            <div className="flex items-center gap-4 mb-6">
+              {brandLogos[selectedBrands[0]] && (
+                <img
+                  src={brandLogos[selectedBrands[0]]}
+                  alt={`${selectedBrands[0]} logo`}
+                  style={{
+                    height: ['Columbia Taping Tools', 'Graco'].includes(selectedBrands[0])
+                      ? 'clamp(2.5rem, 8vw, 4rem)'
+                      : 'clamp(2rem, 6vw, 3rem)',
+                    width: 'auto',
+                    objectFit: 'contain',
+                  }}
+                />
+              )}
+            </div>
+            <div className="categories-grid">
+              {brandCategoryCards.map((cat, index) => {
+                // Count products for this category
+                const count = (products || []).filter(
+                  p => selectedBrands.includes(p.brand) && p.display_category === cat.name
+                ).length;
+                return (
+                  <button
+                    key={cat.name}
+                    className={`category-card${cat.image ? '' : ' category-card--no-image'}`}
+                    style={{ animationDelay: `${(index + 1) * 0.07}s` }}
+                    onClick={() => {
+                      setSelectedDisplayCategory(cat.name);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    aria-label={`Browse ${cat.name}`}
+                  >
+                    {cat.image && (
+                      <img src={cat.image} alt={cat.name} className="category-card-img" />
+                    )}
+                    <div className="category-card-scrim" />
+                    <div className="category-card-content">
+                      <div className="category-card-text">
+                        <h3 className="category-name">{cat.name}</h3>
+                        <span className="category-count">{count} product{count !== 1 ? 's' : ''}</span>
+                      </div>
+                      <ChevronRight className="category-card-chevron" size={18} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-8">
@@ -481,7 +578,7 @@ export default function Products() {
                     </h3>
 
                     {/* SKU/UPC - hidden on very small screens via dtb-plp-sku */}
-                    <div className="flex flex-wrap gap-2 mb-3 text-xs text-gray-500 dtb-plp-sku">
+                    <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dtb-plp-sku">
                       {product.sku && (
                         <span className="truncate">SKU: {product.sku}</span>
                       )}
@@ -490,17 +587,37 @@ export default function Products() {
                       )}
                     </div>
 
+                    {/* Inline variant chips for variable products */}
+                    {product.is_variable && product.variation_attributes && product.variation_attributes.length > 0 && (
+                      <div className="mb-2">
+                        <VariantChips
+                          attributes={product.variation_attributes}
+                          selected={cardVariants[product.id] || {}}
+                          onSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
+                          compact
+                        />
+                      </div>
+                    )}
+
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
                       <p className="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
-                        ${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}
+                        {product.is_variable && product.min_price != null
+                          ? `From $${product.min_price.toFixed(2)}`
+                          : `$${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}`
+                        }
                       </p>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleAddToCart(product, 1);
+                          if (product.is_variable) {
+                            openModal(product);
+                          } else {
+                            handleAddToCart(product, 1);
+                          }
                         }}
                         className="shrink-0 p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all hover:scale-110 active:scale-95"
+                        aria-label={product.is_variable ? 'View options' : 'Add to cart'}
                       >
                         <ShoppingCart size={20} />
                       </button>
