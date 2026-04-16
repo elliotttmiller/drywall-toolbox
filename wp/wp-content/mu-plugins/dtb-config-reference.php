@@ -190,8 +190,13 @@
  * STEP 1 — Export the product catalog CSV from WooCommerce
  * ----------------------------------------------------------
  *   WooCommerce → Products → Export (or use WP Admin CSV export).
- *   Update image URLs in the exported CSV if needed:
- *     python scripts/rewrite_csv_image_urls.py
+ *   Audit/fix missing or placeholder image URLs and optionally convert
+ *   replacements to high-quality WebP:
+ *     python scripts/audit_catalog_images.py --download-convert --write
+ *
+ *   Safety guardrails in the script block prohibited sources:
+ *     - alstapingtools.com
+ *     - all-wall.com / allwall.com
  *
  * STEP 2 — Upload the updated CSV to the server
  * -----------------------------------------------
