@@ -153,11 +153,11 @@ export default function BrandSelector({
               onClick={() => onSelectBrand(brand)}
               style={{
                 background: 'white',
-                borderRadius: '0.5rem',
+                borderRadius: '14px',
                 padding: 'clamp(1rem, 4vw, 1.5rem)',
                 boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                 border: '1px solid rgb(229, 231, 235)',
-                transition: 'all 0.3s ease-out',
+                transition: 'box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1), transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

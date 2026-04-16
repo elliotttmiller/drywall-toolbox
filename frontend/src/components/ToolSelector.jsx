@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import '../styles/tool-selector.css';
 import BackButton from './BackButton';
 
@@ -49,71 +50,67 @@ export default function ToolSelector({ brand, brandLogo, tools, onSelectTool, on
       </div>
 
       {showCategoryCards ? (
-        // Show category cards
+        // Show category cards — image-forward landscape cards
         <div className="categories-grid">
-          {categories.map((category) => (
+          {categories.map((category, index) => {
+            const firstTool = groupedTools[category][0];
+            const categoryImage = firstTool?.previewImage ||
+              (firstTool?.imagePages && firstTool.imagePages[Object.keys(firstTool.imagePages)[0]]);
+            const count = groupedTools[category].length;
+            return (
             <button
               key={category}
-              className="category-card"
+              className={`category-card${categoryImage ? '' : ' category-card--no-image'}`}
+              style={{ animationDelay: `${(index + 1) * 0.07}s` }}
               onClick={() => {
                 setSelectedCategory(category);
                 setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
               }}
             >
+              {categoryImage && (
+                <img src={categoryImage} alt={category} className="category-card-img" />
+              )}
+              <div className="category-card-scrim" />
               <div className="category-card-content">
-                <h3 className="category-name">{category}</h3>
-                <p className="category-count">{groupedTools[category].length} tool{groupedTools[category].length !== 1 ? 's' : ''}</p>
+                <div className="category-card-text">
+                  <h3 className="category-name">{category}</h3>
+                  <span className="category-count">{count} tool{count !== 1 ? 's' : ''}</span>
+                </div>
+                <ChevronRight className="category-card-chevron" size={18} />
               </div>
-              <div className="category-card-background" />
             </button>
-          ))}
+            );
+          })}
         </div>
       ) : showCategoryCards === false && selectedCategory ? (
         // Show tools in selected category
         <div className="tools-grid">
-          {groupedTools[selectedCategory].map((tool) => (
+          {groupedTools[selectedCategory].map((tool, index) => (
             <button
               key={tool.id}
               className="tool-card"
+              style={{ animationDelay: `${(index + 1) * 0.07}s` }}
               onClick={() => onSelectTool(tool)}
             >
               {/* Image Background */}
               <div className="tool-card-image-bg">
                 {tool.previewImage ? (
-                  <img
-                    src={tool.previewImage}
-                    alt={tool.title}
-                  />
+                  <img src={tool.previewImage} alt={tool.title} />
                 ) : tool.imagePages && Object.keys(tool.imagePages).length > 0 ? (
-                  <img
-                    src={tool.imagePages[Object.keys(tool.imagePages)[0]]}
-                    alt={tool.title}
-                  />
+                  <img src={tool.imagePages[Object.keys(tool.imagePages)[0]]} alt={tool.title} />
                 ) : (
-                  <svg
-                    className="placeholder-icon"
-                    width="60"
-                    height="60"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
+                  <svg className="placeholder-icon" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <circle cx="8.5" cy="8.5" r="1.5" />
                     <path d="M21 15l-5-5L5 21" />
                   </svg>
                 )}
               </div>
-
               {/* Title Overlay */}
               <div className="tool-card-overlay">
                 <h3 className="tool-name">{tool.title}</h3>
               </div>
-
-              {/* Hover Background */}
+              {/* Hover accent layer */}
               <div className="tool-card-background" />
             </button>
           ))}
@@ -121,49 +118,32 @@ export default function ToolSelector({ brand, brandLogo, tools, onSelectTool, on
       ) : (
         // Fallback: show all tools without categories
         <div className="tools-grid">
-          {tools.map((tool) => (
+          {tools.map((tool, index) => (
             <button
               key={tool.id}
               className="tool-card"
+              style={{ animationDelay: `${(index + 1) * 0.07}s` }}
               onClick={() => onSelectTool(tool)}
             >
               {/* Image Background */}
               <div className="tool-card-image-bg">
                 {tool.previewImage ? (
-                  <img
-                    src={tool.previewImage}
-                    alt={tool.title}
-                  />
+                  <img src={tool.previewImage} alt={tool.title} />
                 ) : tool.imagePages && Object.keys(tool.imagePages).length > 0 ? (
-                  <img
-                    src={tool.imagePages[Object.keys(tool.imagePages)[0]]}
-                    alt={tool.title}
-                  />
+                  <img src={tool.imagePages[Object.keys(tool.imagePages)[0]]} alt={tool.title} />
                 ) : (
-                  <svg
-                    className="placeholder-icon"
-                    width="60"
-                    height="60"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
+                  <svg className="placeholder-icon" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <circle cx="8.5" cy="8.5" r="1.5" />
                     <path d="M21 15l-5-5L5 21" />
                   </svg>
                 )}
               </div>
-
               {/* Title Overlay */}
               <div className="tool-card-overlay">
                 <h3 className="tool-name">{tool.title}</h3>
               </div>
-
-              {/* Hover Background */}
+              {/* Hover accent layer */}
               <div className="tool-card-background" />
             </button>
           ))}
