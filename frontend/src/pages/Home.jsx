@@ -201,27 +201,11 @@ export default function Home() {
       <section className="home-trust-section dtb-mobile-only">
         <div className="trust-badges-grid">
           {trustBadges.map((badge) => (
-            <div
-              key={badge.label}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '16px',
-                background: 'white',
-                border: '1px solid var(--machined-border)',
-                borderRadius: '4px',
-                padding: '20px 24px',
-                transition: 'box-shadow 0.2s',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ color: 'var(--primary-600)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '28px' }}>
-                {badge.icon}
-              </div>
+            <div key={badge.label} className="dtb-trust-badge">
+              <div className="dtb-trust-badge__icon">{badge.icon}</div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'black', marginBottom: '2px' }}>{badge.label}</div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(15,23,42,0.5)' }}>{badge.sub}</div>
+                <div className="dtb-trust-badge__label">{badge.label}</div>
+                <div className="dtb-trust-badge__sub">{badge.sub}</div>
               </div>
             </div>
           ))}
@@ -230,28 +214,8 @@ export default function Home() {
 
       {/* ─── BRAND LOGOS (mobile only) ─── */}
       <section className="home-brands-section dtb-mobile-only">
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '32px'
-        }}>
-          <p style={{
-            textTransform: 'uppercase',
-            fontSize: '0.7rem',
-            letterSpacing: '0.15em',
-            fontWeight: 700,
-            color: 'var(--primary-600)',
-            margin: 0,
-            paddingBottom: '6px',
-            paddingLeft: '12px',
-            paddingRight: '12px',
-            borderBottom: '2px solid var(--primary-600)',
-            transition: 'all 0.3s ease-out'
-          }}>
-            Trusted Brands
-          </p>
+        <div className="dtb-trending-header">
+          <p className="dtb-section-eyebrow">Trusted Brands</p>
         </div>
         <div className="brand-logos-row">
           {brandLogos.map((brand) => (

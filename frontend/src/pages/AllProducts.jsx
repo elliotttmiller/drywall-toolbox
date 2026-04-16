@@ -332,7 +332,7 @@ export default function AllProducts() {
                   </div>
 
                   {/* Product Info - Grows to fill available space */}
-                  <div className="p-3 sm:p-4 flex flex-col grow">
+                  <div className="p-3 sm:p-4 flex flex-col grow dtb-plp-card-body">
                     {/* Brand */}
                     <p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">{product.brand}</p>
 
@@ -343,8 +343,8 @@ export default function AllProducts() {
                       </button>
                     </h3>
 
-                    {/* SKU/UPC - Mobile optimized */}
-                    <div className="flex flex-wrap gap-2 mb-3 text-xs text-gray-500">
+                    {/* SKU/UPC - hidden on very small screens via dtb-plp-sku */}
+                    <div className="flex flex-wrap gap-2 mb-3 text-xs text-gray-500 dtb-plp-sku">
                       {product.sku && (
                         <span className="truncate">SKU: {product.sku}</span>
                       )}
@@ -364,7 +364,6 @@ export default function AllProducts() {
                           handleAddToCart(product, 1);
                         }}
                         className="shrink-0 p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all hover:scale-110 active:scale-95"
-
                       >
                         <ShoppingCart size={20} />
                       </button>

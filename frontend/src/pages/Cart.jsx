@@ -58,62 +58,62 @@ export default function Cart() {
               {cartItems.map((item, index) => (
                 <div
                   key={item.id}
-                  className={`p-6 flex flex-col sm:flex-row gap-6 ${
+                  className={`p-4 sm:p-6 flex flex-row sm:flex-row gap-4 sm:gap-6 dtb-cart-item ${
                     index !== cartItems.length - 1 ? 'border-b border-gray-200' : ''
                   }`}
                 >
                   {/* Product Image */}
-                  <div className="shrink-0 w-full sm:w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className="shrink-0 w-20 h-20 sm:w-32 sm:h-32 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden dtb-cart-item-img">
                     {item.image ? (
                       <img src={item.image} alt={item.name} className="object-contain w-full h-full" />
                     ) : (
-                      <ShoppingCart className="h-12 w-12 text-gray-400" />
+                      <ShoppingCart className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
                     )}
                   </div>
 
                   {/* Product Info */}
-                  <div className="grow">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">{item.brand}</p>
-                        <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                  <div className="grow min-w-0">
+                    <div className="flex justify-between items-start mb-1 sm:mb-2">
+                      <div className="min-w-0 pr-2">
+                        <p className="text-xs text-gray-500 mb-0.5">{item.brand}</p>
+                        <h3 className="text-sm sm:text-lg font-semibold text-gray-900 leading-snug">{item.name}</h3>
                       </div>
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="shrink-0 p-1.5 sm:p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                         aria-label="Remove item"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mt-2 sm:mt-4">
                       {/* Quantity Controls */}
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-600">Quantity:</span>
-                        <div className="flex items-center gap-2 border border-gray-300 rounded-lg">
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-2 hover:bg-gray-100 transition-colors rounded-l-lg"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus size={16} />
-                        </button>
-                        <span className="px-4 font-semibold">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-2 hover:bg-gray-100 transition-colors rounded-r-lg"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus size={16} />
-                        </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs sm:text-sm text-gray-600">Qty:</span>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="p-1.5 sm:p-2 hover:bg-gray-100 transition-colors"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="px-2 sm:px-4 font-semibold text-sm">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="p-1.5 sm:p-2 hover:bg-gray-100 transition-colors"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus size={14} />
+                          </button>
                         </div>
                       </div>
 
                       {/* Price */}
                       <div className="text-right">
-                        <p className="text-sm text-gray-500">${item.price.toFixed(2)} each</p>
-                        <p className="text-xl font-bold text-primary-600">
+                        <p className="text-xs text-gray-500">${item.price.toFixed(2)} each</p>
+                        <p className="text-base sm:text-xl font-bold text-primary-600">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
