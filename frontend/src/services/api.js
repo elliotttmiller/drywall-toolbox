@@ -192,7 +192,10 @@ function isPartsFromApi(wcCategories) {
 
 /**
  * Return the human-readable leaf WC category name for use in category cards.
- * Finds the most-specific category whose name maps to a CATEGORY_MAP key.
+ * WooCommerce REST API returns categories from most-generic to most-specific
+ * (e.g. ["Drywall Finishing Tools", "TapeTech", "Finishing Boxes"]).
+ * We iterate the array and return the name of the first category whose name
+ * maps to a CATEGORY_MAP key, which is typically the most-specific leaf.
  *
  * @param {Array<{id:number, name:string, slug:string}>} wcCategories
  * @returns {string}  e.g. "Finishing Boxes", "Automatic Tapers"

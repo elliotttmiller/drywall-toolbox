@@ -66,7 +66,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
       .finally(() => { if (mounted) setVariationsLoading(false); });
 
     return () => { mounted = false; };
-  }, [product?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [product?.id, product?.is_variable]); // is_variable must be listed — a product could share an id across type changes
 
   // Find the variation that matches the current chip selections
   const selectedVariation = (() => {
