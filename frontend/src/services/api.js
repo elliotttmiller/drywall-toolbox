@@ -135,6 +135,7 @@ const PARTS_SLUG_PREFIXES = [
 
 // Generic catch-all category labels that should be treated as lowest priority
 // when a more specific mapped category is also present on the same product.
+// NOTE: names are lowercase because category-name normalization lowercases first.
 const GENERIC_MAPPED_CATEGORY_NAMES = new Set([
   'tools',
 ]);
@@ -174,8 +175,8 @@ function mapApiCategory(wcCategories) {
     .filter(Boolean);
 
   if (mapped.length > 0) {
-    const specific = mapped.filter(({ normalizedName }) => !GENERIC_MAPPED_CATEGORY_NAMES.has(normalizedName));
-    const preferred = specific.length > 0 ? specific : mapped;
+    const nonGenericMapped = mapped.filter(({ normalizedName }) => !GENERIC_MAPPED_CATEGORY_NAMES.has(normalizedName));
+    const preferred = nonGenericMapped.length > 0 ? nonGenericMapped : mapped;
     // WooCommerce category arrays are typically ordered broad → specific.
     // Use the last preferred mapped category so generic ancestors like "Tools"
     // don't override specific leaves like "Tool Sets & Bundles" or parts leaves.
@@ -232,8 +233,8 @@ function extractDisplayCategory(wcCategories) {
     .filter(Boolean);
 
   if (mapped.length > 0) {
-    const specific = mapped.filter(({ normalizedName }) => !GENERIC_MAPPED_CATEGORY_NAMES.has(normalizedName));
-    const preferred = specific.length > 0 ? specific : mapped;
+    const nonGenericMapped = mapped.filter(({ normalizedName }) => !GENERIC_MAPPED_CATEGORY_NAMES.has(normalizedName));
+    const preferred = nonGenericMapped.length > 0 ? nonGenericMapped : mapped;
     // Keep the human-readable mapped leaf category for category-card UI grouping.
     return preferred[preferred.length - 1].name;
   }
