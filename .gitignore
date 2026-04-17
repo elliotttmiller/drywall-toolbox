@@ -124,3 +124,5 @@ image-manifest.csv
 # OS artifacts
 ehthumbs.db
 Desktop.ini
+__pycache__/
+*.pyc

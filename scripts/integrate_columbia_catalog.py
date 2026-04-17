@@ -2,39 +2,42 @@
 """
 End-to-End Columbia Catalog Integration
 =========================================
-Merges ALL Columbia Tools data from every scraped source into the live
-frontend/public/wp-catalog.csv.
+Replaces ALL existing Columbia rows in frontend/public/wp-catalog.csv with a
+new, optimized and polished catalog built entirely from the two scraped sources.
 
 Strategy
 --------
 1. Create a timestamped backup of the live catalog before any changes.
 2. Load three inputs:
-     a. Live catalog  (frontend/public/wp-catalog.csv)          — primary
+     a. Live catalog   (frontend/public/wp-catalog.csv)
      b. Columbia scrape (scraped_results/columbia_tools/wp-catalog.csv)
-     c. TSW scrape    (scraped_results/tsw_columbia/products_tsw.csv)
-3. For all Columbia rows already in the live catalog:
-     - Keep every field as-is (they carry richer descriptions + prices).
-     - Augment the Images field with any unique extra images from scraped
-       sources (gallery enrichment, de-duplicated).
-4. For scraped SKUs NOT in the live catalog (new items):
-     - Normalize brand to "Columbia Taping Tools".
-     - Map scraped category to live category hierarchy.
-     - Assign the next available Position value.
-     - Mark Published=1, In stock?=1, Tax status=taxable, Visibility=visible.
-5. Keep every non-Columbia row exactly unchanged.
-6. Write the merged catalog back to frontend/public/wp-catalog.csv.
-7. Write audit artifacts to scraped_results/columbia_merged/.
+     c. TSW scrape      (scraped_results/tsw_columbia/products_tsw.csv)
+3. Strip ALL existing "Columbia Taping Tools" rows from the live catalog.
+4. Build a fresh Columbia section from the scraped sources (367 unique SKUs):
+     - For SKUs present in both scraped sources:
+         • Pick the longer description (Columbia scrape often has richer HTML).
+         • Merge image galleries from both (Columbia scrape multi-image + TSW
+           single absolute URL), de-duplicated.
+         • Use TSW SEO meta fields (already optimized).
+     - For SKUs only in Columbia scrape: use as-is (images absolutized).
+     - For SKUs only in TSW: use as-is.
+     - Normalize Brand to "Columbia Taping Tools" for all rows.
+     - Map scraped category to the live catalog's category hierarchy.
+     - Regenerate Position numbers sequentially (1-N) for the whole section.
+5. Append the fresh Columbia rows after all non-Columbia rows.
+6. Write the combined catalog back to frontend/public/wp-catalog.csv.
+7. Write full audit artifacts to scraped_results/columbia_merged/.
 
 Usage
 -----
   python scripts/integrate_columbia_catalog.py
-  python scripts/integrate_columbia_catalog.py --dry-run   # preview only
-  python scripts/integrate_columbia_catalog.py --no-backup # skip backup (not recommended)
-  python scripts/integrate_columbia_catalog.py \
-      --live-csv    frontend/public/wp-catalog.csv \
-      --columbia-csv scraped_results/columbia_tools/wp-catalog.csv \
-      --tsw-csv      scraped_results/tsw_columbia/products_tsw.csv \
-      --output-dir   scraped_results/columbia_merged
+  python scripts/integrate_columbia_catalog.py --dry-run    # preview, no writes
+  python scripts/integrate_columbia_catalog.py --no-backup  # skip backup
+  python scripts/integrate_columbia_catalog.py \\
+      --live-csv      frontend/public/wp-catalog.csv \\
+      --columbia-csv  scraped_results/columbia_tools/wp-catalog.csv \\
+      --tsw-csv       scraped_results/tsw_columbia/products_tsw.csv \\
+      --output-dir    scraped_results/columbia_merged
 """
 
 from __future__ import annotations
@@ -105,35 +108,99 @@ CATEGORY_MAP: Dict[str, str] = {
     "Drywall Finishing Tools > Columbia Tools > Sanders":             f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts",
     "Drywall Finishing Tools > Columbia Tools > Smoothing Blades":    f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts",
     "Drywall Finishing Tools > Columbia Tools > Tool Cases":          f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts",
+    "Drywall Finishing Tools > Columbia Tools > Suggested Tool Sets": f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts",
+    "Drywall Finishing Tools > Columbia Tools > The Tool Sets":       f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts",
+    "Drywall Finishing Tools > Columbia Tools > Tool Sets":           f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts",
+    "Drywall Finishing Tools > Columbia Tools > Semi Automatic Taper":f"{LIVE_CATEGORY_PREFIX} > Automatic Tapers",
 }
 
+import re as _re
+
+# SKU-prefix rules that override name inference (applied before name keywords)
+_SKU_PREFIX_CATEGORY: List[Tuple[str, str]] = [
+    # Taper parts: CT*, CTA*, CTR*, CTK*
+    ("^CT[A-Z0-9]",     f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts"),
+    # Flat-box spare parts: CFB*
+    ("^CFB[0-9A-Z]",    f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts"),
+    # Flat-box spare parts with numeric suffix: FFB[0-9]*
+    ("^FFB[0-9]",       f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts"),
+    # Fasteners / hardware: FA*
+    ("^FA[0-9]",        f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts"),
+    # Box-handle mounting parts: BH[0-9]*
+    ("^BH[0-9]",        f"{LIVE_CATEGORY_PREFIX} > Handles & Extensions"),
+    # Matrix Handle parts: MH[0-9]*
+    ("^MH[0-9]",        f"{LIVE_CATEGORY_PREFIX} > Handles & Extensions"),
+]
+
+
 # Fallback by keyword match on product name (for TSW rows with generic category)
-def infer_category_from_name(name: str) -> str:
+def infer_category_from_sku_and_name(sku: str, name: str) -> str:
+    # SKU-prefix rules take highest priority
+    s = (sku or "").upper().strip()
+    for pattern, cat in _SKU_PREFIX_CATEGORY:
+        if _re.match(pattern, s):
+            return cat
+
     n = (name or "").lower()
-    if any(x in n for x in ["flat box", "finishing box", "fat boy box"]):
+
+    # Throttle boxes are genuine finishing boxes
+    if "throttle box" in n:
         return f"{LIVE_CATEGORY_PREFIX} > Finishing Boxes"
-    if any(x in n for x in ["automatic taper", "taper semi"]):
+
+    # Handles & extensions — check BEFORE flat box to catch "Flat Box Handle"
+    if any(x in n for x in ["flat box handle", "handle", "extension", "brake",
+                              "mounting plate", "mounting bracket", "cam lock"]):
+        return f"{LIVE_CATEGORY_PREFIX} > Handles & Extensions"
+
+    # Taper-related components (name contains "taper" + part keyword)
+    taper_part_kws = ["casting", "bracket", "bushing", "spring", "pin", "shaft",
+                      "lever", "plate", "block", "valve", "cable", "chain", "gear",
+                      "roller", "seal", "drum", "clutch", "release", "crimp",
+                      "ratchet", "spacer", "strap", "spool", "piston", "guard",
+                      "needle", "bushing", "carriage", "assembly", "bracket base"]
+    if "taper" in n and any(kw in n for kw in taper_part_kws):
+        return f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts"
+
+    # Genuine flat boxes / finishing boxes (product, not spare part)
+    if any(x in n for x in ["flat box", "finishing box", "fat boy box", "angle box"]):
+        return f"{LIVE_CATEGORY_PREFIX} > Finishing Boxes"
+
+    # Automatic tapers (complete tools)
+    if any(x in n for x in ["automatic taper", "taper semi", "semi-automatic taper"]):
         return f"{LIVE_CATEGORY_PREFIX} > Automatic Tapers"
+
+    # Corner / angle tools
     if any(x in n for x in ["anglehead", "angle head", "corner flusher", "corner roller",
                               "corner tool", "combo flusher", "direct corner", "standard corner"]):
         return f"{LIVE_CATEGORY_PREFIX} > Corner & Angle Tools"
+
+    # Nailspotters
     if any(x in n for x in ["nailspotter", "nail spotter", "spotter"]):
         return f"{LIVE_CATEGORY_PREFIX} > Spotters"
-    if any(x in n for x in ["handle", "extension", "brake"]):
-        return f"{LIVE_CATEGORY_PREFIX} > Handles & Extensions"
-    if any(x in n for x in ["pump", "compound tube", "applicator", "mud head", "grooved"]):
+
+    # Pumps & accessories
+    if any(x in n for x in ["pump", "compound tube", "applicator", "mud head", "grooved",
+                              "gooseneck", "powerfill", "cam lock tube", "coupling pin",
+                              "swivel coupling", "valve unit"]):
         return f"{LIVE_CATEGORY_PREFIX} > Pumps & Accessories"
+
+    # Repair kits & parts (broad bucket)
     if any(x in n for x in ["maintenance kit", "repair kit", "blade", "spring", "part",
                               "trowel", "hawk", "knife", "knives", "putty", "sander",
-                              "smoothing", "tool case", "carrying"]):
+                              "smoothing", "tool case", "carrying", "mud pan", "mud pans",
+                              "screw", "bolt", "nut", "washer", "pin", "clip", "bushing",
+                              "bracket", "casting", "hinge", "seal", "door", "gasket",
+                              "roll face", "nylatron", "plate", "adaptor", "adapter",
+                              "set", "commando", "tactical", "predator", "sabre", "kit"]):
         return f"{LIVE_CATEGORY_PREFIX} > Repair Kits & Parts"
+
     return f"{LIVE_CATEGORY_PREFIX} > Finishing Boxes"
 
 
-def map_category(scraped_cat: str, name: str) -> str:
+def map_category(scraped_cat: str, name: str, sku: str = "") -> str:
     if scraped_cat in CATEGORY_MAP:
         return CATEGORY_MAP[scraped_cat]
-    return infer_category_from_name(name)
+    return infer_category_from_sku_and_name(sku, name)
 
 # ── Image helpers ─────────────────────────────────────────────────────────────
 
@@ -208,149 +275,196 @@ def new_row_defaults(headers: List[str]) -> Dict[str, str]:
         "Attribute 1 global":       "1",
     }
 
+# ── Core merge logic for a single Columbia SKU ───────────────────────────────
+
+def build_columbia_row(
+    key: str,
+    col_by_sku: Dict[str, Dict[str, str]],
+    tsw_by_sku: Dict[str, Dict[str, str]],
+    columbia_images_root: Path,
+    columbia_image_base_url: str,
+    headers: List[str],
+    position: int,
+) -> Dict[str, str]:
+    """
+    Construct one polished WooCommerce row for a Columbia SKU.
+
+    Priority rules:
+    - Description: prefer the longer HTML description (Columbia scrape is usually
+      richer; TSW is used as fallback).
+    - Short description: prefer TSW (clean prose), fall back to Columbia scrape.
+    - Images: Columbia scrape provides multi-image galleries (absolutized);
+      TSW provides a single canonical absolute URL.  We put gallery images first,
+      then add any unique TSW image after, so the primary/featured image is the
+      gallery lead shot from Columbia's own site.
+    - SEO meta: TSW has optimized title/description; use them when available.
+    - Tags: merge unique tags from both sources.
+    - All WC control fields use safe, production-ready defaults.
+    """
+    c_row: Optional[Dict[str, str]] = col_by_sku.get(key)
+    t_row: Optional[Dict[str, str]] = tsw_by_sku.get(key)
+    base  = t_row or c_row
+    if base is None:
+        raise ValueError(f"build_columbia_row: no source for key {key!r}")
+
+    # ── Description: longer wins ──────────────────────────────────────────────
+    c_desc  = (c_row or {}).get("Description","")
+    t_desc  = (t_row or {}).get("Description","")
+    description = c_desc if len(c_desc) >= len(t_desc) else t_desc
+
+    # ── Short description ─────────────────────────────────────────────────────
+    t_short = (t_row or {}).get("Short description","")
+    c_short = (c_row or {}).get("Short description","")
+    short_description = t_short or c_short
+
+    # ── Images: Columbia gallery first, TSW featured image appended ───────────
+    col_imgs: List[str] = []
+    for img in split_images((c_row or {}).get("Images","")):
+        col_imgs.append(absolutize_image(img, columbia_images_root, columbia_image_base_url))
+    tsw_imgs: List[str] = []
+    for img in split_images((t_row or {}).get("Images","")):
+        tsw_imgs.append(absolutize_image(img, columbia_images_root, columbia_image_base_url))
+    image_str = merge_images(col_imgs, tsw_imgs, columbia_images_root, columbia_image_base_url)
+
+    # ── Category ──────────────────────────────────────────────────────────────
+    # Columbia scrape has richer sub-categories; prefer it over the generic TSW category
+    c_cat = (c_row or {}).get("Categories","")
+    t_cat = (t_row or {}).get("Categories","")
+    raw_cat = c_cat if c_cat else t_cat
+    live_cat = map_category(raw_cat, base.get("Name",""), sku=base.get("SKU",""))
+
+    # ── Tags: merge and deduplicate ───────────────────────────────────────────
+    c_tags = [t.strip() for t in (c_row or {}).get("Tags","").split(",") if t.strip()]
+    t_tags = [t.strip() for t in (t_row or {}).get("Tags","").split(",") if t.strip()]
+    seen_tags: OrderedDict[str, bool] = OrderedDict()
+    for tag in t_tags + c_tags:  # TSW tags first (cleaner, keyword-optimized)
+        seen_tags[tag] = True
+    tags = ", ".join(seen_tags.keys())
+
+    # ── SEO meta: prefer TSW ──────────────────────────────────────────────────
+    seo_title = (t_row or {}).get("meta:_dtb_seo_title","") or (c_row or {}).get("meta:_dtb_seo_title","")
+    seo_desc  = (t_row or {}).get("meta:_dtb_seo_description","") or (c_row or {}).get("meta:_dtb_seo_description","")
+
+    # If TSW SEO title is missing, generate a clean one
+    if not seo_title:
+        sku  = base.get("SKU","")
+        name = base.get("Name","")
+        seo_title = f"{name} | {sku}" if sku and name else name
+
+    row = new_row_defaults(headers)
+    row.update({
+        "Brands":                    LIVE_COLUMBIA_BRAND,
+        "SKU":                       base.get("SKU",""),
+        "MPN":                       base.get("MPN", base.get("SKU","")),
+        "Name":                      base.get("Name",""),
+        "Type":                      "simple",
+        "Description":               description,
+        "Short description":         short_description,
+        "Regular price":             base.get("Regular price",""),
+        "Sale price":                base.get("Sale price",""),
+        "Images":                    image_str,
+        "Categories":                live_cat,
+        "Tags":                      tags,
+        "Position":                  str(position),
+        "Published":                 "1",
+        "Is featured?":              "0",
+        "Visibility in catalog":     "visible",
+        "Tax status":                "taxable",
+        "Tax class":                 "",
+        "In stock?":                 "1",
+        "Stock":                     "",
+        "Low stock amount":          "",
+        "Backorders allowed?":       "0",
+        "Sold individually?":        "0",
+        "Allow customer reviews?":   "1",
+        "Attribute 1 name":          "Brand",
+        "Attribute 1 value(s)":      LIVE_COLUMBIA_BRAND,
+        "Attribute 1 visible":       "1",
+        "Attribute 1 global":        "1",
+        "meta:_dtb_seo_title":       seo_title,
+        "meta:_dtb_seo_description": seo_desc,
+    })
+    return row
+
+
 # ── Main integration ──────────────────────────────────────────────────────────
 
-def build_integrated_catalog(
-    live_rows:     List[Dict[str, str]],
-    col_rows:      List[Dict[str, str]],
-    tsw_rows:      List[Dict[str, str]],
+def build_replacement_catalog(
+    live_rows:            List[Dict[str, str]],
+    col_rows:             List[Dict[str, str]],
+    tsw_rows:             List[Dict[str, str]],
     columbia_images_root: Path,
     columbia_image_base_url: str,
 ) -> Tuple[List[Dict[str, str]], Dict]:
     """
-    Returns (merged_rows, stats_dict).
-    merged_rows keeps the live catalog column order.
+    Returns (output_rows, stats).
+
+    All existing Columbia Taping Tools rows are discarded.
+    A fresh set of Columbia rows is built from the scraped sources.
+    Non-Columbia rows are preserved verbatim.
     """
-    headers = list(live_rows[0].keys()) if live_rows else []
-    # Remove trailing empty column if present (live CSV artefact)
-    clean_headers = [h for h in headers if h]
+    # Remove trailing empty header column that the live CSV sometimes carries
+    headers = [h for h in (live_rows[0].keys() if live_rows else []) if h]
 
-    # Index scraped sources by normalized SKU
-    col_by_sku  = {normalize_sku(r["SKU"]): r for r in col_rows  if normalize_sku(r.get("SKU",""))}
-    tsw_by_sku  = {normalize_sku(r["SKU"]): r for r in tsw_rows  if normalize_sku(r.get("SKU",""))}
-    live_by_sku = {normalize_sku(r["SKU"]): r for r in live_rows if normalize_sku(r.get("SKU",""))}
+    # Index scraped sources
+    col_by_sku = {normalize_sku(r["SKU"]): r for r in col_rows if normalize_sku(r.get("SKU",""))}
+    tsw_by_sku = {normalize_sku(r["SKU"]): r for r in tsw_rows if normalize_sku(r.get("SKU",""))}
 
-    # Determine which live rows belong to Columbia (by brand)
-    live_columbia_keys = {normalize_sku(r["SKU"]) for r in live_rows
-                          if r.get("Brands") == LIVE_COLUMBIA_BRAND
-                          and normalize_sku(r.get("SKU",""))}
+    # All unique SKUs across both scraped sources
+    all_scraped_keys = sorted(set(col_by_sku.keys()) | set(tsw_by_sku.keys()))
 
-    all_scraped_keys  = set(col_by_sku.keys()) | set(tsw_by_sku.keys())
-    new_sku_keys      = all_scraped_keys - live_columbia_keys  # scraped not yet in live
+    # Count rows being removed
+    old_columbia_keys = {normalize_sku(r.get("SKU","")) for r in live_rows
+                         if r.get("Brands") == LIVE_COLUMBIA_BRAND and normalize_sku(r.get("SKU",""))}
 
-    # Max position currently used in the Columbia section
-    max_col_pos = 0
-    for r in live_rows:
-        if r.get("Brands") == LIVE_COLUMBIA_BRAND:
-            try:
-                pos = int(r.get("Position", 0) or 0)
-                if pos > max_col_pos:
-                    max_col_pos = pos
-            except ValueError:
-                pass
-
-    # Stats
     stats: Dict = {
-        "live_total_rows_in":          len(live_rows),
-        "live_columbia_rows":          len(live_columbia_keys),
-        "live_non_columbia_rows":      len(live_rows) - len(live_columbia_keys),
-        "scraped_columbia_skus":       len(col_by_sku),
-        "scraped_tsw_skus":            len(tsw_by_sku),
-        "all_scraped_unique_skus":     len(all_scraped_keys),
-        "overlap_skus":                len(all_scraped_keys & live_columbia_keys),
-        "new_skus_added":              0,
-        "image_galleries_enriched":    0,
-        "extra_images_added":          0,
-        "live_total_rows_out":         0,
+        "live_total_rows_in":      len(live_rows),
+        "old_columbia_rows_removed": len(old_columbia_keys),
+        "live_non_columbia_rows":  sum(1 for r in live_rows if r.get("Brands") != LIVE_COLUMBIA_BRAND),
+        "scraped_columbia_skus":   len(col_by_sku),
+        "scraped_tsw_skus":        len(tsw_by_sku),
+        "all_scraped_unique_skus": len(all_scraped_keys),
+        "in_both_sources":         len(set(col_by_sku.keys()) & set(tsw_by_sku.keys())),
+        "only_in_columbia_scrape": len(set(col_by_sku.keys()) - set(tsw_by_sku.keys())),
+        "only_in_tsw":             len(set(tsw_by_sku.keys()) - set(col_by_sku.keys())),
+        "new_columbia_rows":       0,
+        "with_gallery_images":     0,
+        "live_total_rows_out":     0,
     }
 
-    # ── Pass 1: copy every live row, enriching Columbia image galleries ────────
-    merged: List[Dict[str, str]] = []
+    # ── Pass 1: keep all non-Columbia rows exactly ────────────────────────────
+    output: List[Dict[str, str]] = []
     for row in live_rows:
-        if not row.get("Brands") == LIVE_COLUMBIA_BRAND:
-            # Non-Columbia row — copy verbatim
-            merged.append({h: row.get(h, "") for h in clean_headers})
+        if row.get("Brands") != LIVE_COLUMBIA_BRAND:
+            output.append({h: row.get(h, "") for h in headers})
+
+    # ── Pass 2: build fresh Columbia section ──────────────────────────────────
+    position = 1
+    for key in all_scraped_keys:
+        # Skip rows where the SKU is empty (category-header artefacts with no SKU)
+        c_row = col_by_sku.get(key)
+        t_row = tsw_by_sku.get(key)
+        sku = ((c_row or t_row) or {}).get("SKU","").strip()
+        if not sku:
             continue
 
-        # Columbia row — enrich images if scraped has more
-        key = normalize_sku(row.get("SKU",""))
-        live_imgs = split_images(row.get("Images",""))
+        new_row = build_columbia_row(
+            key=key,
+            col_by_sku=col_by_sku,
+            tsw_by_sku=tsw_by_sku,
+            columbia_images_root=columbia_images_root,
+            columbia_image_base_url=columbia_image_base_url,
+            headers=headers,
+            position=position,
+        )
+        output.append(new_row)
+        if len(split_images(new_row.get("Images",""))) > 1:
+            stats["with_gallery_images"] += 1
+        position += 1
+        stats["new_columbia_rows"] += 1
 
-        extra: List[str] = []
-        for scraped_dict in (col_by_sku, tsw_by_sku):
-            scraped_row = scraped_dict.get(key)
-            if scraped_row:
-                for img in split_images(scraped_row.get("Images","")):
-                    abs_img = absolutize_image(img, columbia_images_root, columbia_image_base_url)
-                    if abs_img not in live_imgs:
-                        extra.append(abs_img)
-
-        if extra:
-            new_imgs = merge_images(live_imgs, extra, columbia_images_root, columbia_image_base_url)
-            added = len([x for x in extra if x])
-            stats["image_galleries_enriched"] += 1
-            stats["extra_images_added"] += added
-            enriched = {h: row.get(h, "") for h in clean_headers}
-            enriched["Images"] = new_imgs
-            merged.append(enriched)
-        else:
-            merged.append({h: row.get(h, "") for h in clean_headers})
-
-    # ── Pass 2: append new Columbia SKUs ──────────────────────────────────────
-    next_pos = max_col_pos + 1
-
-    for key in sorted(new_sku_keys):
-        # Prefer TSW over Columbia-scrape (TSW has absolute image URLs)
-        scraped_row: Optional[Dict[str, str]] = tsw_by_sku.get(key) or col_by_sku.get(key)
-        if not scraped_row:
-            continue
-
-        raw_cat  = scraped_row.get("Categories","")
-        live_cat = map_category(raw_cat, scraped_row.get("Name",""))
-
-        # Build image string
-        imgs = []
-        for img in split_images(scraped_row.get("Images","")):
-            imgs.append(absolutize_image(img, columbia_images_root, columbia_image_base_url))
-        image_str = "|".join(imgs) if imgs else ""
-
-        new_row = new_row_defaults(clean_headers)
-        new_row.update({
-            "Brands":                      LIVE_COLUMBIA_BRAND,
-            "SKU":                         scraped_row.get("SKU",""),
-            "MPN":                         scraped_row.get("MPN", scraped_row.get("SKU","")),
-            "Name":                        scraped_row.get("Name",""),
-            "Type":                        "simple",
-            "Description":                 scraped_row.get("Description",""),
-            "Short description":           scraped_row.get("Short description",""),
-            "Regular price":               scraped_row.get("Regular price",""),
-            "Sale price":                  scraped_row.get("Sale price",""),
-            "Images":                      image_str,
-            "Categories":                  live_cat,
-            "Tags":                        scraped_row.get("Tags",""),
-            "Position":                    str(next_pos),
-            "Published":                   "1",
-            "Is featured?":                "0",
-            "Visibility in catalog":       "visible",
-            "Tax status":                  "taxable",
-            "In stock?":                   "1",
-            "Backorders allowed?":         "0",
-            "Sold individually?":          "0",
-            "Allow customer reviews?":     "1",
-            "Attribute 1 name":            "Brand",
-            "Attribute 1 value(s)":        LIVE_COLUMBIA_BRAND,
-            "Attribute 1 visible":         "1",
-            "Attribute 1 global":          "1",
-            "meta:_dtb_seo_title":         scraped_row.get("meta:_dtb_seo_title",""),
-            "meta:_dtb_seo_description":   scraped_row.get("meta:_dtb_seo_description",""),
-        })
-
-        merged.append(new_row)
-        next_pos += 1
-        stats["new_skus_added"] += 1
-
-    stats["live_total_rows_out"] = len(merged)
-    return merged, stats
+    stats["live_total_rows_out"] = len(output)
+    return output, stats
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -411,35 +525,37 @@ def main() -> None:
         info("Dry-run: backup skipped")
 
     # ── Merge ──────────────────────────────────────────────────────────────────
-    step("Running integration merge")
-    merged_rows, stats = build_integrated_catalog(
+    step("Building replacement Columbia catalog")
+    merged_rows, stats = build_replacement_catalog(
         live_rows=live_rows,
         col_rows=col_rows,
         tsw_rows=tsw_rows,
         columbia_images_root=args.columbia_images_root,
         columbia_image_base_url=args.columbia_image_base_url,
     )
-    ok(f"Merge complete")
+    ok("Build complete")
 
     # ── Print stats ────────────────────────────────────────────────────────────
     step("Integration results")
-    info(f"Live rows in:                  {stats['live_total_rows_in']:>5}")
-    info(f"  Columbia Taping Tools rows:  {stats['live_columbia_rows']:>5}")
-    info(f"  Non-Columbia rows:           {stats['live_non_columbia_rows']:>5}")
+    info(f"Live rows in (original):       {stats['live_total_rows_in']:>5}")
+    info(f"  Old Columbia rows removed:   {stats['old_columbia_rows_removed']:>5}")
+    info(f"  Non-Columbia rows kept:      {stats['live_non_columbia_rows']:>5}")
     info(f"Scraped Columbia unique SKUs:  {stats['scraped_columbia_skus']:>5}")
     info(f"Scraped TSW unique SKUs:       {stats['scraped_tsw_skus']:>5}")
     info(f"All scraped unique SKUs:       {stats['all_scraped_unique_skus']:>5}")
-    info(f"Overlap (live ∩ scraped):      {stats['overlap_skus']:>5}")
-    info(f"Image galleries enriched:      {stats['image_galleries_enriched']:>5}  (+{stats['extra_images_added']} images)")
-    info(f"New SKUs added from scraped:   {stats['new_skus_added']:>5}")
-    info(f"Live rows out:                 {stats['live_total_rows_out']:>5}")
+    info(f"  In both sources:             {stats['in_both_sources']:>5}  (best-of merge)")
+    info(f"  Only in Columbia scrape:     {stats['only_in_columbia_scrape']:>5}")
+    info(f"  Only in TSW:                 {stats['only_in_tsw']:>5}")
+    info(f"New Columbia rows built:       {stats['new_columbia_rows']:>5}")
+    info(f"  With multi-image galleries:  {stats['with_gallery_images']:>5}")
+    info(f"Live rows out (total):         {stats['live_total_rows_out']:>5}")
 
     if args.dry_run:
         warn("Dry-run mode: no files written")
         return
 
     # ── Write live catalog ─────────────────────────────────────────────────────
-    step(f"Writing merged catalog → {args.live_csv}")
+    step(f"Writing replacement catalog → {args.live_csv}")
     live_headers = [h for h in live_rows[0].keys() if h]
     write_csv(args.live_csv, live_headers, merged_rows)
     ok(f"Wrote {len(merged_rows)} rows to {args.live_csv}")
@@ -448,35 +564,35 @@ def main() -> None:
     step(f"Writing audit artifacts → {args.output_dir}")
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Merged Columbia-only CSV (for standalone import if needed)
-    col_headers = [h for h in col_rows[0].keys() if h]
-    col_merged_rows = [
-        r for r in merged_rows if r.get("Brands") == LIVE_COLUMBIA_BRAND
-    ]
-    write_csv(args.output_dir / "wp-catalog.csv", live_headers, col_merged_rows)
-    ok(f"Columbia-only CSV: {len(col_merged_rows)} rows")
+    # Columbia-only CSV (the new section for standalone import if needed)
+    col_only_rows = [r for r in merged_rows if r.get("Brands") == LIVE_COLUMBIA_BRAND]
+    write_csv(args.output_dir / "wp-catalog.csv", live_headers, col_only_rows)
+    ok(f"Columbia-only CSV: {len(col_only_rows)} rows")
 
     # SKU cross-reference
-    col_by_sku  = {normalize_sku(r["SKU"]): r for r in col_rows  if normalize_sku(r.get("SKU",""))}
-    tsw_by_sku  = {normalize_sku(r["SKU"]): r for r in tsw_rows  if normalize_sku(r.get("SKU",""))}
-    live_col_d  = {normalize_sku(r["SKU"]): r for r in live_rows
-                   if r.get("Brands") == LIVE_COLUMBIA_BRAND and normalize_sku(r.get("SKU",""))}
+    col_by_sku_ref = {normalize_sku(r["SKU"]): r for r in col_rows if normalize_sku(r.get("SKU",""))}
+    tsw_by_sku_ref = {normalize_sku(r["SKU"]): r for r in tsw_rows if normalize_sku(r.get("SKU",""))}
 
     xref_rows: List[Dict[str, str]] = []
-    for row in col_merged_rows:
+    for row in col_only_rows:
         key = normalize_sku(row.get("SKU",""))
+        in_col = "1" if key in col_by_sku_ref else "0"
+        in_tsw = "1" if key in tsw_by_sku_ref else "0"
+        source = ("both" if in_col == "1" and in_tsw == "1"
+                  else "columbia" if in_col == "1"
+                  else "tsw")
         xref_rows.append({
-            "sku":             row.get("SKU",""),
-            "in_live_before":  "1" if key in live_col_d else "0",
-            "in_columbia_scrape": "1" if key in col_by_sku else "0",
-            "in_tsw_scrape":   "1" if key in tsw_by_sku else "0",
-            "action":          "existing" if key in live_col_d else "added",
-            "name":            row.get("Name",""),
-            "category":        row.get("Categories",""),
-            "has_image":       "1" if row.get("Images","").strip() else "0",
+            "sku":              row.get("SKU",""),
+            "in_columbia_scrape": in_col,
+            "in_tsw_scrape":    in_tsw,
+            "source":           source,
+            "name":             row.get("Name",""),
+            "category":         row.get("Categories",""),
+            "has_image":        "1" if row.get("Images","").strip() else "0",
+            "image_count":      str(len(split_images(row.get("Images","")))),
         })
     xref_path = args.output_dir / "sku-cross-reference.csv"
-    xref_headers = ["sku","in_live_before","in_columbia_scrape","in_tsw_scrape","action","name","category","has_image"]
+    xref_headers = ["sku","in_columbia_scrape","in_tsw_scrape","source","name","category","has_image","image_count"]
     write_csv(xref_path, xref_headers, xref_rows)
     ok(f"Cross-reference CSV: {len(xref_rows)} rows")
 
@@ -484,17 +600,17 @@ def main() -> None:
     summary = {
         "run_at": datetime.now().isoformat(),
         "inputs": {
-            "live_csv":             str(args.live_csv),
-            "columbia_csv":         str(args.columbia_csv),
-            "tsw_csv":              str(args.tsw_csv),
-            "columbia_images_root": str(args.columbia_images_root),
+            "live_csv":              str(args.live_csv),
+            "columbia_csv":          str(args.columbia_csv),
+            "tsw_csv":               str(args.tsw_csv),
+            "columbia_images_root":  str(args.columbia_images_root),
             "columbia_image_base_url": args.columbia_image_base_url,
         },
         "stats": stats,
         "outputs": {
-            "merged_live_csv":  str(args.live_csv),
+            "merged_live_csv":   str(args.live_csv),
             "columbia_only_csv": str(args.output_dir / "wp-catalog.csv"),
-            "xref_csv":         str(xref_path),
+            "xref_csv":          str(xref_path),
         },
     }
     summary_json = args.output_dir / "audit-summary.json"
@@ -507,30 +623,47 @@ def main() -> None:
         "",
         f"**Run at:** {summary['run_at']}",
         "",
+        "## Strategy",
+        "",
+        "All existing Columbia Taping Tools rows were **replaced** with a fresh catalog",
+        "built entirely from the Columbia Tools scrape and TSW scrape sources.",
+        "",
         "## Source files",
         "",
-        f"- Live catalog: `{args.live_csv}`",
-        f"- Columbia scrape: `{args.columbia_csv}`",
+        f"- Live catalog (original): `{args.live_csv}`",
+        f"- Columbia Tools scrape: `{args.columbia_csv}`",
         f"- TSW scrape: `{args.tsw_csv}`",
         "",
         "## Integration stats",
         "",
-        f"| Metric | Count |",
-        f"|--------|-------|",
-        f"| Live rows in | {s['live_total_rows_in']} |",
-        f"| Columbia Taping Tools rows (live) | {s['live_columbia_rows']} |",
-        f"| Non-Columbia rows (unchanged) | {s['live_non_columbia_rows']} |",
+        "| Metric | Count |",
+        "|--------|-------|",
+        f"| Original live rows | {s['live_total_rows_in']} |",
+        f"| Old Columbia rows removed | {s['old_columbia_rows_removed']} |",
+        f"| Non-Columbia rows kept unchanged | {s['live_non_columbia_rows']} |",
         f"| Scraped Columbia unique SKUs | {s['scraped_columbia_skus']} |",
         f"| Scraped TSW unique SKUs | {s['scraped_tsw_skus']} |",
-        f"| All scraped unique SKUs | {s['all_scraped_unique_skus']} |",
-        f"| Overlap (live ∩ scraped) | {s['overlap_skus']} |",
-        f"| Image galleries enriched | {s['image_galleries_enriched']} (+{s['extra_images_added']} images) |",
-        f"| New SKUs added from scraped | {s['new_skus_added']} |",
-        f"| Live rows out | {s['live_total_rows_out']} |",
+        f"| Total unique scraped SKUs | {s['all_scraped_unique_skus']} |",
+        f"| In both sources (best-of merge) | {s['in_both_sources']} |",
+        f"| Only in Columbia scrape | {s['only_in_columbia_scrape']} |",
+        f"| Only in TSW | {s['only_in_tsw']} |",
+        f"| New Columbia rows built | {s['new_columbia_rows']} |",
+        f"| With multi-image galleries | {s['with_gallery_images']} |",
+        f"| Final catalog rows | {s['live_total_rows_out']} |",
+        "",
+        "## Merge rules",
+        "",
+        "- **Description**: longer HTML from either source wins",
+        "- **Images**: Columbia scrape gallery images first (multi-image), TSW canonical image appended",
+        "- **Short description**: TSW preferred (clean prose), Columbia scrape fallback",
+        "- **SEO meta**: TSW optimized titles/descriptions preferred",
+        "- **Tags**: merged and deduplicated (TSW tags first)",
+        "- **Category**: Columbia scrape sub-category preferred; mapped to live catalog hierarchy",
+        "- **Brand**: normalized to `Columbia Taping Tools`",
         "",
         "## Outputs",
         "",
-        f"- Integrated live catalog: `{args.live_csv}`",
+        f"- Updated live catalog: `{args.live_csv}`",
         f"- Columbia-only CSV: `{args.output_dir}/wp-catalog.csv`",
         f"- SKU cross-reference: `{xref_path}`",
         f"- JSON summary: `{summary_json}`",

@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-04-17T23:18:05.475465",
+  "run_at": "2026-04-17T23:26:58.954575",
   "inputs": {
     "live_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/frontend/public/wp-catalog.csv",
     "columbia_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/columbia_tools/wp-catalog.csv",
@@ -8,17 +8,18 @@
     "columbia_image_base_url": "https://drywalltoolbox.com/wp/wp-content/uploads/columbia-tools"
   },
   "stats": {
-    "live_total_rows_in": 1553,
-    "live_columbia_rows": 1004,
-    "live_non_columbia_rows": 549,
+    "live_total_rows_in": 914,
+    "old_columbia_rows_removed": 367,
+    "live_non_columbia_rows": 547,
     "scraped_columbia_skus": 83,
     "scraped_tsw_skus": 335,
     "all_scraped_unique_skus": 367,
-    "overlap_skus": 294,
-    "new_skus_added": 73,
-    "image_galleries_enriched": 286,
-    "extra_images_added": 417,
-    "live_total_rows_out": 1626
+    "in_both_sources": 51,
+    "only_in_columbia_scrape": 32,
+    "only_in_tsw": 284,
+    "new_columbia_rows": 367,
+    "with_gallery_images": 72,
+    "live_total_rows_out": 914
   },
   "outputs": {
     "merged_live_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/frontend/public/wp-catalog.csv",
