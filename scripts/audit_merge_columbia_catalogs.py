@@ -96,7 +96,8 @@ def choose_best(columbia_row: Dict[str, str] | None, tsw_row: Dict[str, str] | N
     if tsw_row and not columbia_row:
         return dict(tsw_row), "tsw"
 
-    assert columbia_row is not None and tsw_row is not None
+    if columbia_row is None or tsw_row is None:
+        raise ValueError("choose_best expected both source rows for overlap comparison.")
     columbia_score = row_score(columbia_row, "columbia")
     tsw_score = row_score(tsw_row, "tsw")
     if columbia_score >= tsw_score:
@@ -115,8 +116,10 @@ def main() -> None:
 
     columbia_rows = load_csv(args.columbia_csv)
     tsw_rows = load_csv(args.tsw_csv)
-    if not columbia_rows or not tsw_rows:
-        raise SystemExit("One or more inputs are empty; aborting.")
+    if not columbia_rows:
+        raise SystemExit(f"Columbia CSV is empty: {args.columbia_csv}")
+    if not tsw_rows:
+        raise SystemExit(f"TSW CSV is empty: {args.tsw_csv}")
 
     headers = list(columbia_rows[0].keys())
     columbia_by_sku = {
