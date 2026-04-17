@@ -64,6 +64,7 @@ Headless React storefront for Drywalltoolbox.com — powered by WordPress + WooC
 │   ├── index.php              ← WordPress bootstrap entry point
 │   └── wp-config-sample.php   ← Configuration template (copy to wp-config.php on server)
 ├── scripts/
+│   ├── audit_merge_columbia_catalogs.py ← Cross-reference + merge Columbia/TSW Woo CSV + image mappings
 │   ├── audit_catalog_images.py        ← Audit/fix wp-catalog image URLs + WebP conversion
 │   ├── convert_schematics_to_webp.py  ← Batch PNG/JPG → WebP conversion
 │   ├── upload_schematics_to_wp.py     ← Batch upload to WP Media Library
