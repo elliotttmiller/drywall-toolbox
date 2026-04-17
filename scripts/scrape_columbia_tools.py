@@ -39,7 +39,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 from collections import defaultdict
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 try:
     import cloudscraper
@@ -176,7 +176,13 @@ def derive_parent_sku(skus: List[str]) -> str:
     return prefix if len(prefix) >= 2 else skus[0]
 
 
-def short_desc(html_desc: str, max_chars: int = 200) -> str:
+def _is_columbia_image_url(url: str) -> bool:
+    """Return True only if the URL's host is exactly www.columbiatools.com or columbiatools.com."""
+    try:
+        host = urlparse(url).hostname or ''
+        return host in ('www.columbiatools.com', 'columbiatools.com')
+    except Exception:
+        return False
     """Extract a plain-text short description from full HTML description."""
     text = strip_tags(html_desc)
     if len(text) <= max_chars:
@@ -327,7 +333,8 @@ class ColumbiaToolsScraper:
                 url = urljoin(cat_url, raw)
 
             url = url.rstrip('/')
-            if url in seen or 'columbiatools.com' not in url:
+            parsed = urlparse(url)
+            if url in seen or parsed.hostname not in ('www.columbiatools.com', 'columbiatools.com'):
                 continue
             if any(x in url.lower() for x in [
                 '/wp-admin', '/wp-content', '/wp-includes',
@@ -478,7 +485,7 @@ class ColumbiaToolsScraper:
                 re.IGNORECASE,
             ):
                 url = m.group(1)
-                if 'columbiatools.com' in url.lower() and not any(
+                if _is_columbia_image_url(url) and not any(
                     x in url.lower() for x in ['100x100', '150x150', '300x', '-crop', 'thumb']
                 ):
                     if url not in image_urls:
@@ -488,7 +495,7 @@ class ColumbiaToolsScraper:
             if not image_urls:
                 for m in re.finditer(r'<a[^>]+href="([^"]+\.(jpe?g|png|webp))"', gallery_html, re.IGNORECASE):
                     url = m.group(1)
-                    if 'columbiatools.com' in url.lower():
+                    if _is_columbia_image_url(url):
                         if url not in image_urls:
                             image_urls.append(url)
 
