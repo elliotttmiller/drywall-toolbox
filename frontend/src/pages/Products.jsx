@@ -28,6 +28,7 @@ import platinumLogo from '/brands/Platinum/platinum_logo.svg';
 import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
+import '../styles/tool-selector.css';
 
 // products will be loaded from WooCommerce REST API at runtime
 // brands list will be derived from loaded products
