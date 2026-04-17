@@ -439,6 +439,7 @@ export default function Products() {
                   src={brandLogos[selectedBrands[0]]}
                   alt={`${selectedBrands[0]} logo`}
                   style={{
+                    // Columbia and Graco logos are wide/horizontal so need more height to remain visible
                     height: ['Columbia Taping Tools', 'Graco'].includes(selectedBrands[0])
                       ? 'clamp(4.5rem, 15vw, 7rem)'
                       : 'clamp(3.75rem, 13vw, 6rem)',
