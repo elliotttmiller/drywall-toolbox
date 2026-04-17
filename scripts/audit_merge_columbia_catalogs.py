@@ -90,14 +90,16 @@ def merge_image_field(
     return "|".join(merged.keys())
 
 
-def choose_best(columbia_row: Dict[str, str] | None, tsw_row: Dict[str, str] | None) -> tuple[Dict[str, str], str]:
+def select_preferred_row(
+    columbia_row: Dict[str, str] | None, tsw_row: Dict[str, str] | None
+) -> tuple[Dict[str, str], str]:
     if columbia_row and not tsw_row:
         return dict(columbia_row), "columbia"
     if tsw_row and not columbia_row:
         return dict(tsw_row), "tsw"
 
     if columbia_row is None or tsw_row is None:
-        raise ValueError("choose_best expected both source rows for overlap comparison.")
+        raise ValueError("select_preferred_row expected both source rows for overlap comparison.")
     columbia_score = row_score(columbia_row, "columbia")
     tsw_score = row_score(tsw_row, "tsw")
     if columbia_score >= tsw_score:
@@ -122,6 +124,8 @@ def main() -> None:
         raise SystemExit(f"TSW CSV is empty: {args.tsw_csv}")
 
     headers = list(columbia_rows[0].keys())
+    if not headers:
+        raise SystemExit(f"Columbia CSV has no headers: {args.columbia_csv}")
     columbia_by_sku = {
         normalize_sku(r.get("SKU", "")): r for r in columbia_rows if normalize_sku(r.get("SKU", ""))
     }
@@ -145,7 +149,7 @@ def main() -> None:
         if c_row and t_row:
             overlapping += 1
 
-        chosen, selected_source = choose_best(c_row, t_row)
+        chosen, selected_source = select_preferred_row(c_row, t_row)
         chosen["Images"] = merge_image_field(
             chosen=chosen,
             alternate=t_row if selected_source == "columbia" else c_row,
