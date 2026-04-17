@@ -2,18 +2,22 @@
 """
 Columbia Tools Website Scraper
 ================================
-Scrapes all products from Columbia Tools official website (columbiatools.com).
-Handles variable products with multiple SKUs, extracts all gallery images, and
-converts them to WebP format.
+Scrapes every product in every category from https://www.columbiatools.com/columbia-tools/
 
-Features:
-- Crawls all tool categories from the Columbia Tools directory
-- Extracts: Product Name, SKU/MPN, Description, Features, Category
-- Handles variable products (multiple SKUs for different sizes)
-- Downloads all gallery images and converts to WebP
-- Organizes output by tool category and SKU
-- Saves results to structured CSV and JSON formats
-- Uses cloudscraper to bypass anti-bot detection
+Extracts per product:
+  - Product name
+  - All SKU/MPN values  (multiple SKUs on one page → variable product with variants)
+  - Full HTML description and features
+  - Every gallery image (downloaded as high-quality WebP)
+
+Output:
+  - scraped_results/columbia_tools/wp-catalog.csv  — WooCommerce import format
+      matching the column structure of frontend/server/wp-catalog.csv,
+      with proper variable (parent + variation) rows for multi-SKU products
+  - scraped_results/columbia_tools/products.json   — full data for debugging
+  - scraped_results/columbia_tools/images/{category_slug}/  — WebP images
+  - scraped_results/columbia_tools/by_category/{slug}/      — per-category CSVs
+  - scraped_results/columbia_tools/SUMMARY.md
 
 Usage:
     python scripts/scrape_columbia_tools.py
@@ -24,741 +28,850 @@ Usage:
 
 import argparse
 import csv
+import html as html_module
+import io
 import json
-import os
 import re
 import sys
 import time
 import urllib.request
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, List, Any, Set
-from urllib.parse import urljoin, urlparse
+from typing import Any, Dict, List, Optional, Set
 from collections import defaultdict
+from urllib.parse import urljoin
 
 try:
     import cloudscraper
     CLOUDSCRAPER_AVAILABLE = True
 except ImportError:
     CLOUDSCRAPER_AVAILABLE = False
-    print("⚠  cloudscraper not installed. Install with: pip install cloudscraper")
+    print("⚠  cloudscraper not installed — run: pip install cloudscraper")
 
 try:
     from PIL import Image
     PILLOW_AVAILABLE = True
 except ImportError:
     PILLOW_AVAILABLE = False
-    print("⚠  Pillow not installed. Install with: pip install Pillow")
+    print("⚠  Pillow not installed — run: pip install Pillow")
 
 
-# ── ANSI Colour Helpers ────────────────────────────────────────────────────
+# ── ANSI helpers ──────────────────────────────────────────────────────────────
 
-CYAN    = "\033[96m"
-GREEN   = "\033[92m"
-YELLOW  = "\033[93m"
-RED     = "\033[91m"
-GREY    = "\033[90m"
-RESET   = "\033[0m"
-BOLD    = "\033[1m"
+CYAN  = "\033[96m"; GREEN = "\033[92m"; YELLOW = "\033[93m"
+RED   = "\033[91m"; GREY  = "\033[90m"; RESET  = "\033[0m"; BOLD = "\033[1m"
 
-def step(msg: str)  -> None:
-    print(f"\n{CYAN}{BOLD}▶  {msg}{RESET}")
-
-def ok(msg: str)    -> None:
-    print(f"   {GREEN}✔  {msg}{RESET}")
-
-def warn(msg: str)  -> None:
-    print(f"   {YELLOW}⚠  {msg}{RESET}")
-
-def fail(msg: str)  -> None:
-    print(f"   {RED}✘  {msg}{RESET}")
-
-def info(msg: str)  -> None:
-    print(f"   {GREY}·  {msg}{RESET}")
+def step(m): print(f"\n{CYAN}{BOLD}▶  {m}{RESET}")
+def ok(m):   print(f"   {GREEN}✔  {m}{RESET}")
+def warn(m): print(f"   {YELLOW}⚠  {m}{RESET}")
+def fail(m): print(f"   {RED}✘  {m}{RESET}")
+def info(m): print(f"   {GREY}·  {m}{RESET}")
 
 
-# ── HTTP & Scraping Helpers ────────────────────────────────────────────────
+# ── WooCommerce CSV column order (matches wp-catalog.csv exactly) ─────────────
+
+WC_FIELDS = [
+    "Brands", "SKU", "MPN", "Name", "Type", "Description", "Short description",
+    "Regular price", "Sale price", "Images", "Categories", "Tags",
+    "Position", "Published", "Is featured?", "Visibility in catalog",
+    "Date sale price starts", "Date sale price ends",
+    "Tax status", "Tax class", "In stock?", "Stock", "Low stock amount",
+    "Backorders allowed?", "Sold individually?",
+    "Weight (lbs)", "Length (in)", "Width (in)", "Height (in)",
+    "Allow customer reviews?", "Purchase note", "Shipping class",
+    "Download limit", "Download expiry days",
+    "Parent", "Grouped products", "Upsells", "Cross-sells",
+    "External URL", "Button text",
+    "Attribute 1 name", "Attribute 1 value(s)", "Attribute 1 visible", "Attribute 1 global",
+    "meta:_dtb_seo_title", "meta:_dtb_seo_description",
+]
+
+BRAND = "Columbia Tools"
+
+
+# ── HTML utility helpers ──────────────────────────────────────────────────────
+
+def strip_tags(text: str) -> str:
+    """Remove all HTML tags and decode entities."""
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = html_module.unescape(text)
+    return ' '.join(text.split()).strip()
+
+
+def extract_balanced_div(html: str, start_pos: int) -> str:
+    """
+    Starting at start_pos (which must be the '<' of a <div...> tag),
+    return the complete HTML including the matching closing </div>.
+    Falls back to the remainder of the string if nesting can't be resolved.
+    """
+    depth = 0
+    i = start_pos
+    length = len(html)
+    while i < length:
+        if html[i] == '<':
+            # Closing tag?
+            if html[i:i+2] == '</':
+                tag_end = html.find('>', i)
+                tag_name = html[i+2:tag_end].strip().lower().split()[0] if tag_end != -1 else ''
+                if tag_name == 'div':
+                    depth -= 1
+                    if depth == 0:
+                        return html[start_pos:tag_end + 1]
+                i = tag_end + 1 if tag_end != -1 else i + 1
+                continue
+            # Self-closing?
+            tag_end = html.find('>', i)
+            if tag_end == -1:
+                break
+            tag_content = html[i+1:tag_end]
+            if tag_content.endswith('/'):
+                i = tag_end + 1
+                continue
+            tag_name = tag_content.strip().lower().split()[0] if tag_content.strip() else ''
+            if tag_name == 'div':
+                depth += 1
+            i = tag_end + 1
+        else:
+            i += 1
+    return html[start_pos:]
+
+
+def find_marker_div(html: str, marker: str) -> str:
+    """
+    Find the first <div ...> that contains `marker` in its attributes,
+    then return its complete balanced HTML block.
+    Returns '' if not found.
+    """
+    pos = html.find(marker)
+    if pos == -1:
+        return ''
+    # Walk backwards to find the start of this tag
+    div_start = html.rfind('<div', 0, pos)
+    if div_start == -1:
+        return ''
+    return extract_balanced_div(html, div_start)
+
+
+# ── SKU helpers ───────────────────────────────────────────────────────────────
+
+_SKU_RE = re.compile(r'\b([A-Z][A-Z0-9]{1,}(?:-[A-Z0-9]+)*)\b')
+
+def derive_parent_sku(skus: List[str]) -> str:
+    """
+    Derive a synthetic parent SKU from a list of variant SKUs.
+    Strategy: longest common alphabetic prefix, upper-cased.
+    Falls back to first SKU if prefix is too short.
+    """
+    if not skus:
+        return ''
+    if len(skus) == 1:
+        return skus[0]
+    prefix = skus[0]
+    for sku in skus[1:]:
+        while not sku.startswith(prefix):
+            prefix = prefix[:-1]
+            if not prefix:
+                break
+    prefix = re.sub(r'[-_\d]+$', '', prefix).strip('-_').upper()
+    return prefix if len(prefix) >= 2 else skus[0]
+
+
+def short_desc(html_desc: str, max_chars: int = 200) -> str:
+    """Extract a plain-text short description from full HTML description."""
+    text = strip_tags(html_desc)
+    if len(text) <= max_chars:
+        return text
+    cut = text[:max_chars].rsplit(' ', 1)[0]
+    return cut + '…'
+
+
+def make_tags(name: str, category: str, skus: List[str]) -> str:
+    """Generate a sensible comma-separated tags string."""
+    parts = []
+    parts.append(f"Columbia Tools")
+    for sku in skus:
+        parts.append(sku)
+    # Add words from the product name
+    words = re.sub(r'[^a-zA-Z0-9\s]', '', name).split()
+    for w in words:
+        if len(w) > 3:
+            parts.append(w)
+    parts.append(category)
+    # Deduplicate preserving order
+    seen: dict = {}
+    for p in parts:
+        p = p.strip()
+        if p and p.lower() not in seen:
+            seen[p.lower()] = p
+    return ', '.join(seen.values())
+
+
+def make_wc_category(category_name: str) -> str:
+    return f"Drywall Finishing Tools > Columbia Tools > {category_name}"
+
+
+def make_seo_title(name: str, sku: str) -> str:
+    return f"{name} | {sku} | Columbia Tools"
+
+
+def make_seo_desc(name: str, category: str) -> str:
+    return f"Professional {name} by Columbia Tools. {category} drywall taping tool for contractors."
+
+
+# ── Core scraper class ────────────────────────────────────────────────────────
 
 class ColumbiaToolsScraper:
-    """Scrapes Columbia Tools website products catalog."""
-    
+    """Full Columbia Tools website scraper → wp-catalog.csv output."""
+
     BASE_URL = "https://www.columbiatools.com/columbia-tools/"
-    
-    def __init__(self, output_dir: str = "scraped_results/columbia_tools", 
-                 category_filter: Optional[str] = None, download_images: bool = True):
-        """
-        Initialize the scraper.
-        
-        Args:
-            output_dir: Directory to save results
-            category_filter: Only scrape this category (e.g., 'compound-tubes')
-            download_images: Whether to download and convert images
-        """
+
+    def __init__(
+        self,
+        output_dir: str = "scraped_results/columbia_tools",
+        category_filter: Optional[str] = None,
+        download_images: bool = True,
+    ):
         self.output_dir = Path(output_dir)
         self.category_filter = category_filter
         self.download_images = download_images
         self.products: List[Dict[str, Any]] = []
-        self.categories: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
-        self.session = None
-        
-        # Track processed products to avoid duplicates
+        self.by_category: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
         self.processed_urls: Set[str] = set()
-        
-        # Create output directories
+
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        self.images_dir = self.output_dir / "images"
-        self.images_dir.mkdir(exist_ok=True)
-        
-        # Initialize scraper
-        if CLOUDSCRAPER_AVAILABLE:
-            self.session = cloudscraper.create_scraper()
-        else:
-            fail("cloudscraper not available. Install with: pip install cloudscraper")
+        self.images_base = self.output_dir / "images"
+        self.images_base.mkdir(exist_ok=True)
+
+        if not CLOUDSCRAPER_AVAILABLE:
+            fail("cloudscraper not available — install with: pip install cloudscraper")
             sys.exit(1)
-    
-    def fetch_page(self, url: str, retries: int = 3) -> Optional[str]:
-        """
-        Fetch a page with retry logic.
-        
-        Args:
-            url: URL to fetch
-            retries: Number of retry attempts
-            
-        Returns:
-            Page HTML or None if failed
-        """
+        self.session = cloudscraper.create_scraper()
+
+    # ── HTTP ──────────────────────────────────────────────────────────────────
+
+    def fetch(self, url: str, retries: int = 3) -> Optional[str]:
         for attempt in range(1, retries + 1):
             try:
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                }
-                response = self.session.get(url, headers=headers, timeout=30)
-                
-                # Don't retry on 404 - page doesn't exist
-                if response.status_code == 404:
+                resp = self.session.get(
+                    url,
+                    headers={"User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/120.0.0.0 Safari/537.36"
+                    )},
+                    timeout=30,
+                )
+                if resp.status_code == 404:
                     return None
-                
-                response.raise_for_status()
-                return response.text
-            except Exception as e:
+                resp.raise_for_status()
+                return resp.text
+            except Exception as exc:
                 if attempt < retries:
-                    wait_time = 2 ** attempt
-                    warn(f"Fetch failed (attempt {attempt}/{retries}): {str(e)}")
-                    info(f"Retrying in {wait_time}s...")
-                    time.sleep(wait_time)
+                    wait = 2 ** attempt
+                    warn(f"Fetch attempt {attempt} failed ({exc}) — retry in {wait}s")
+                    time.sleep(wait)
                 else:
-                    fail(f"Failed to fetch {url}: {str(e)}")
-                    return None
+                    fail(f"Failed to fetch {url}: {exc}")
         return None
-    
-    def extract_category_links(self, html: str) -> List[Dict[str, str]]:
+
+    # ── Category discovery ────────────────────────────────────────────────────
+
+    def discover_categories(self, html: str) -> List[Dict[str, str]]:
         """
-        Extract all category links from the Columbia Tools directory page.
-        
-        Args:
-            html: HTML content of the directory page
-            
-        Returns:
-            List of dicts with category info: {'name': str, 'url': str, 'slug': str}
+        Return list of {name, url, slug} from the main directory page.
+        Only 1-level paths after /columbia-tools/ are categories.
         """
-        categories = []
-        seen = set()
-        
-        # Pattern: Find category links - look for /columbia-tools/category-name/ links
-        # Category pages have exactly 1 path segment after /columbia-tools/
-        # (Product pages have 2 segments: /columbia-tools/category/product)
-        pattern = r'href="([^"]*?/columbia-tools/([a-z0-9\-]+)/?)"'
-        
-        for match in re.finditer(pattern, html):
-            full_path = match.group(1).rstrip('/')
-            slug = match.group(2).lower().strip()
-            
-            # Skip if we've seen this slug already
+        categories: List[Dict[str, str]] = []
+        seen: Set[str] = set()
+
+        pattern = re.compile(
+            r'href="(https?://www\.columbiatools\.com/columbia-tools/([a-z0-9\-]+)/?)"',
+            re.IGNORECASE,
+        )
+        for m in pattern.finditer(html):
+            url = m.group(1).rstrip('/') + '/'
+            slug = m.group(2).lower()
+
             if slug in seen:
                 continue
-            
-            # Only process if it's a category page (just /columbia-tools/category/)
-            # Not a product page (which would have /columbia-tools/category/product/)
-            if full_path.count('/') - full_path.count('//') > 2:
-                # Has more path segments, might be a product page
+            if any(x in slug for x in ['dealer', 'contact', 'new-release', 'home', 'cart', 'account']):
                 continue
-            
-            # Skip non-tool categories
-            if any(skip in slug.lower() for skip in ['dealer', 'home', 'cart', 'account', 'contact', 'new-releases']):
+            if self.category_filter and self.category_filter.lower() not in slug:
                 continue
-            
-            # Build full URL
-            url = urljoin(self.BASE_URL, full_path) if full_path.startswith('/') else full_path
-            if not url.endswith('/'):
-                url += '/'
-            
-            # Apply category filter if specified
-            if self.category_filter and self.category_filter.lower() not in slug.lower():
-                continue
-            
-            category = {
-                'name': slug.replace('-', ' ').title(),  # Convert slug to title case
-                'url': url,
-                'slug': slug
-            }
-            
-            categories.append(category)
+
             seen.add(slug)
-        
+            categories.append({
+                'name': slug.replace('-', ' ').title(),
+                'url': url,
+                'slug': slug,
+            })
+
         return categories
-    
-    def extract_product_links_from_category(self, html: str, category_url: str) -> List[str]:
+
+    # ── Product link discovery ────────────────────────────────────────────────
+
+    def product_links_from_category(self, html: str, cat_url: str) -> List[str]:
         """
-        Extract individual product links from a category page.
-        
-        Args:
-            html: Category page HTML
-            category_url: URL of the category page (for constructing absolute URLs)
-            
-        Returns:
-            List of product URLs
+        Return product-page URLs from a category listing page.
+        Product pages have the pattern: /columbia-tools/{cat}/{product}/
         """
-        product_links = []
-        seen_urls = set()
-        
-        # Extract all href attributes
-        all_links = re.findall(r'href="([^"]+)"', html)
-        
-        for url in all_links:
-            # Make absolute if relative
-            if url.startswith('/'):
-                full_url = urljoin('https://www.columbiatools.com', url)
-            elif not url.startswith('http'):
-                full_url = urljoin(category_url, url)
+        links: List[str] = []
+        seen: Set[str] = set()
+
+        for raw in re.findall(r'href="([^"]+)"', html):
+            if raw.startswith('/'):
+                url = 'https://www.columbiatools.com' + raw
+            elif raw.startswith('http'):
+                url = raw
             else:
-                full_url = url
-            
-            # Normalize
-            normalized = full_url.rstrip('/')
-            
-            # Skip if already processed
-            if normalized in seen_urls:
+                url = urljoin(cat_url, raw)
+
+            url = url.rstrip('/')
+            if url in seen or 'columbiatools.com' not in url:
                 continue
-            
-            # Skip non-columbiatools URLs
-            if 'columbiatools.com' not in normalized:
-                continue
-            
-            # Skip common non-product pages
-            if any(skip in normalized.lower() for skip in [
+            if any(x in url.lower() for x in [
                 '/wp-admin', '/wp-content', '/wp-includes',
-                '.pdf', '.csv', '.zip',
-                'find-a-dealer', 'contact', 'about', 'cart', 'account', 'checkout', 'search'
+                '.pdf', '.zip', 'dealer', 'contact', 'cart', 'checkout', 'account',
             ]):
                 continue
-            
-            # Product pages must match: /columbia-tools/category-slug/product-slug/
-            # This means: count path segments after domain
-            # Pattern: domain/columbia-tools/category/product
-            if '/columbia-tools/' in normalized:
-                # Extract the path after domain
-                parts = normalized.split('/columbia-tools/')
-                if len(parts) == 2:
-                    after = parts[1].strip('/')
-                    # Product page should have: category/product format
-                    segments = [s for s in after.split('/') if s]
-                    
-                    # Product pages have exactly 2 segments: category and product
-                    if len(segments) == 2:
-                        # This looks like a product page
-                        seen_urls.add(normalized)
-                        product_links.append(normalized)
-        
-        return product_links
-    
-    def extract_product_details(self, html: str, page_url: str) -> Optional[Dict[str, Any]]:
-        """
-        Extract detailed product information from a product page.
-        
-        Args:
-            html: Product page HTML
-            page_url: Product page URL
-            
-        Returns:
-            Dictionary with product details or None if not a product page
-        """
-        # Extract product title
-        title_match = re.search(r'<h1[^>]*>([^<]+)</h1>', html)
-        if not title_match:
-            # Try h2 as fallback
-            title_match = re.search(r'<h2\s+class="product_title[^"]*">([^<]+)</h2>', html)
-        
-        if not title_match:
+
+            if '/columbia-tools/' in url:
+                after = url.split('/columbia-tools/', 1)[-1].strip('/')
+                segs = [s for s in after.split('/') if s]
+                if len(segs) == 2:          # category/product — this is a product page
+                    seen.add(url)
+                    links.append(url)
+
+        return links
+
+    # ── Product detail extraction ─────────────────────────────────────────────
+
+    def extract_product(self, html: str, page_url: str) -> Optional[Dict[str, Any]]:
+        """Parse a single product page and return a product dict."""
+
+        # ── Product name ──────────────────────────────────────────────────────
+        name_m = (
+            re.search(r'<h2[^>]+class="product_title[^"]*"[^>]*>\s*([^<]+?)\s*</h2>', html)
+            or re.search(r'<h1[^>]*class="[^"]*product_title[^"]*"[^>]*>\s*([^<]+?)\s*</h1>', html)
+            or re.search(r'<h1[^>]*>\s*([^<]{3,}?)\s*</h1>', html)
+        )
+        if not name_m:
             return None
-        
-        product_name = title_match.group(1).strip()
-        
-        # Extract category from breadcrumb
-        # Pattern: <a href="/columbia-tools/compound-tubes/">Compound Tubes</a>
-        category_match = re.search(r'<a[^>]*href="/columbia-tools/([^/"]+)/"[^>]*>([^<]+)</a>', html)
-        category_name = ""
-        category_slug = ""
-        if category_match:
-            category_slug = category_match.group(1).strip()
-            category_name = category_match.group(2).strip()
-        
-        # Extract SKU/MPN from product details
-        # Pattern: <span class="sku">SKU: CLT24</span>
-        sku_match = re.search(r'(?:SKU|MPN)[\s:]*([A-Z0-9\-]+)', html, re.IGNORECASE)
-        sku = sku_match.group(1).strip() if sku_match else ""
-        
-        # Extract description from content area
-        # Looking for main product description (usually first paragraph)
-        desc_match = re.search(
-            r'<div[^>]*class="(?:[^"]*product[^"]*|[^"]*content[^"]*)"[^>]*>.*?<p>([^<]+)</p>',
+        product_name = html_module.unescape(name_m.group(1)).strip()
+
+        # ── Category from breadcrumb ──────────────────────────────────────────
+        cat_m = re.search(
+            r'<a[^>]+href="https?://www\.columbiatools\.com/columbia-tools/([^/"]+)/?"[^>]*>([^<]+)</a>',
             html,
-            re.DOTALL | re.IGNORECASE
         )
-        description = ""
-        if desc_match:
-            description = desc_match.group(1).strip()
-            description = ' '.join(description.split())
-        
-        # Extract features from FEATURES section
-        # Pattern: <h4>FEATURES:</h4> ... <li>Feature text</li>
-        features = []
-        features_section = re.search(
-            r'<h4[^>]*>FEATURES:?</h4>\s*<ul[^>]*>(.*?)</ul>',
+        category_slug = cat_m.group(1).strip() if cat_m else ''
+        category_name = html_module.unescape(cat_m.group(2)).strip() if cat_m else ''
+
+        # ── Raw product content div ───────────────────────────────────────────
+        # The block we want is inside data-widget_type="woocommerce-product-content.default"
+        content_html = find_marker_div(html, 'woocommerce-product-content.default')
+        if not content_html:
+            # Fallback: look for <div class="product">
+            pm = re.search(r'<div[^>]+class="product"[^>]*>', html)
+            if pm:
+                content_html = extract_balanced_div(html, pm.start())
+
+        # ── SKU extraction ────────────────────────────────────────────────────
+        # Priority 1: explicit WooCommerce SKU meta element
+        sku_elem_m = re.search(
+            r'<span[^>]+class="[^"]*sku[^"]*"[^>]*>\s*([A-Z0-9][A-Z0-9\-]*)\s*</span>',
             html,
-            re.DOTALL | re.IGNORECASE
+            re.IGNORECASE,
         )
-        if features_section:
-            feature_items = re.findall(
-                r'<li[^>]*>([^<]+)</li>',
-                features_section.group(1),
-                re.IGNORECASE
+        page_sku = sku_elem_m.group(1).strip().upper() if sku_elem_m else ''
+
+        # Priority 2: extract all SKU-like tokens from the first line of product content
+        # Columbia Tools lists them as "(CLT24, CLT32, CLT42, CLT55)" near the top of content
+        all_skus: List[str] = []
+        if content_html:
+            # Look for a parenthesised list of SKUs at the very start of the content
+            paren_m = re.search(
+                r'<p[^>]*>\s*\(([A-Z0-9][A-Z0-9,\s\-]*)\)\s*</p>',
+                content_html,
+                re.IGNORECASE,
             )
-            features = [f.strip() for f in feature_items if f.strip()]
-        
-        # Extract all gallery images from woocommerce-product-gallery__wrapper
-        # Only product images from the gallery, exclude videos
-        image_urls = []
-        
-        # Find the gallery wrapper section
-        gallery_section = re.search(
-            r'<div[^>]*class="[^"]*woocommerce-product-gallery__wrapper[^"]*"[^>]*>(.*?)</div>\s*</div>',
-            html,
-            re.DOTALL
-        )
-        
-        if gallery_section:
-            gallery_html = gallery_section.group(1)
-            
-            # Extract all href attributes with html5lightbox class
-            # These are the actual gallery images/links
-            links = re.findall(
-                r'<a[^>]*href="([^"]+)"[^>]*class="[^"]*html5lightbox',
+            if paren_m:
+                candidates = [s.strip().upper() for s in paren_m.group(1).split(',')]
+                all_skus = [s for s in candidates if re.match(r'^[A-Z][A-Z0-9\-]{1,}$', s)]
+
+        # Also try to grab SKUs from product title itself e.g. "Cam Lock Tube (CLT24)"
+        title_paren_m = re.search(r'\(([A-Z0-9][A-Z0-9,\s\-]*)\)', product_name)
+        if title_paren_m:
+            candidates = [s.strip().upper() for s in title_paren_m.group(1).split(',')]
+            for c in candidates:
+                if re.match(r'^[A-Z][A-Z0-9\-]{1,}$', c) and c not in all_skus:
+                    all_skus.append(c)
+
+        # If we only have the page_sku and no paren list, treat it as the sole SKU
+        if not all_skus and page_sku:
+            all_skus = [page_sku]
+
+        if not all_skus:
+            # Last resort: try to find a SKU from the URL slug
+            slug_m = re.search(r'/columbia-tools/[^/]+/([^/]+)/?$', page_url)
+            if slug_m:
+                candidate = slug_m.group(1).upper().replace('-', '')
+                if re.match(r'^[A-Z][A-Z0-9]{2,}$', candidate):
+                    all_skus = [candidate]
+
+        # ── Description / features ────────────────────────────────────────────
+        desc_html = ''
+        features: List[str] = []
+
+        if content_html:
+            # Remove the leading SKU paragraph if present
+            cleaned = re.sub(
+                r'^.*?<p[^>]*>\s*\([A-Z0-9][A-Z0-9,\s\-]*\)\s*</p>\s*',
+                '',
+                content_html,
+                count=1,
+                flags=re.DOTALL | re.IGNORECASE,
+            )
+            # Extract features list items
+            feat_m = re.search(
+                r'<h4[^>]*>\s*FEATURES:?\s*</h4>\s*<ul[^>]*>(.*?)</ul>',
+                cleaned,
+                re.DOTALL | re.IGNORECASE,
+            )
+            if feat_m:
+                li_texts = re.findall(r'<li[^>]*>(.*?)</li>', feat_m.group(1), re.DOTALL)
+                features = [strip_tags(t) for t in li_texts if strip_tags(t)]
+
+            # Build full description HTML: paragraphs + features
+            # Strip download buttons, warranty badges etc.
+            cleaned = re.sub(r'<button[^>]*>.*?</button>', '', cleaned, flags=re.DOTALL)
+            cleaned = re.sub(r'<h4[^>]*>\s*DOWNLOAD:?\s*</h4>.*?(?=<h4|$)', '', cleaned, flags=re.DOTALL | re.IGNORECASE)
+            # Keep only the <p> and <ul>/<ol> blocks and headings
+            desc_parts = re.findall(
+                r'(<(?:p|ul|ol|h[2-5]|blockquote)[^>]*>.*?</(?:p|ul|ol|h[2-5]|blockquote)>)',
+                cleaned,
+                re.DOTALL | re.IGNORECASE,
+            )
+            desc_html = '\n'.join(desc_parts).strip()
+
+        # If description is empty, build a minimal one
+        if not desc_html and features:
+            feat_html = '<ul>' + ''.join(f'<li>{f}</li>' for f in features) + '</ul>'
+            desc_html = f'<p>{product_name} by Columbia Tools.</p>\n<h4>Features:</h4>\n{feat_html}'
+        elif not desc_html:
+            desc_html = f'<p>{product_name} by Columbia Tools.</p>'
+
+        # ── Gallery images ────────────────────────────────────────────────────
+        gallery_html = find_marker_div(html, 'woocommerce-product-gallery__wrapper')
+        if not gallery_html:
+            # Fallback: look for the gallery class directly
+            gm = re.search(r'<div[^>]+class="[^"]*woocommerce-product-gallery__wrapper[^"]*"[^>]*>', html)
+            if gm:
+                gallery_html = extract_balanced_div(html, gm.start())
+
+        image_urls: List[str] = []
+        if gallery_html:
+            # Primary: html5lightbox hrefs pointing to full-size images
+            for m in re.finditer(
+                r'<a[^>]+href="([^"]+\.(jpe?g|png|webp))"[^>]*class="[^"]*html5lightbox[^"]*"',
                 gallery_html,
-                re.IGNORECASE
-            )
-            
-            for url in links:
-                # Check if it's an image (not a video link)
-                is_image = url.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))
-                is_video = 'youtube' in url.lower() or 'youtu.be' in url.lower()
-                
-                # Only add Columbia Tools images, skip videos
-                if is_image and 'columbiatools.com' in url.lower():
-                    # Skip thumbnail variants
-                    if not any(x in url.lower() for x in ['100x100', '300x300', '500x500', '-crop']):
+                re.IGNORECASE,
+            ):
+                url = m.group(1)
+                if 'columbiatools.com' in url.lower() and not any(
+                    x in url.lower() for x in ['100x100', '150x150', '300x', '-crop', 'thumb']
+                ):
+                    if url not in image_urls:
+                        image_urls.append(url)
+
+            # Secondary: feat_image href
+            if not image_urls:
+                for m in re.finditer(r'<a[^>]+href="([^"]+\.(jpe?g|png|webp))"', gallery_html, re.IGNORECASE):
+                    url = m.group(1)
+                    if 'columbiatools.com' in url.lower():
                         if url not in image_urls:
                             image_urls.append(url)
-        
-        # Check if this is a variable product (multiple SKUs listed in description)
-        # Pattern: (SKU1, SKU2, SKU3) in description
-        variable_skus = []
-        sku_pattern = re.search(r'\(([A-Z0-9\-,\s]+)\)', product_name + ' ' + description)
-        if sku_pattern:
-            potential_skus = [s.strip() for s in sku_pattern.group(1).split(',')]
-            # Validate they look like SKUs (contain letters and/or numbers)
-            variable_skus = [s for s in potential_skus if re.match(r'^[A-Z0-9\-]+$', s)]
-        
-        product = {
+
+        # Tertiary fallback: any large product image
+        if not image_urls:
+            for m in re.finditer(r'<img[^>]+src="([^"]+/wp-content/uploads/[^"]+\.(jpe?g|png))"', html, re.IGNORECASE):
+                url = m.group(1)
+                if not any(x in url.lower() for x in ['100x100', '150x150', 'hqdefault', 'thumb']):
+                    if url not in image_urls:
+                        image_urls.append(url)
+
+        return {
             'name': product_name,
-            'sku': sku,
-            'variable_skus': variable_skus,  # For products with multiple size/variant SKUs
+            'all_skus': all_skus,          # all variant SKUs
             'category': category_name,
             'category_slug': category_slug,
-            'description': description,
+            'description': desc_html,
             'features': features,
             'image_urls': image_urls,
-            'local_images': [],
-            'url': page_url
+            'local_images': [],            # filled after download
+            'url': page_url,
         }
-        
-        return product
-    
-    def download_image(self, url: str, filename: str) -> Optional[Path]:
-        """
-        Download an image from URL.
-        
-        Args:
-            url: Image URL
-            filename: Filename to save as (without extension)
-            
-        Returns:
-            Path to downloaded image or None if failed
-        """
+
+    # ── Image download + WebP conversion ─────────────────────────────────────
+
+    def _download_raw(self, url: str, dest: Path) -> Optional[Path]:
         try:
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=15) as response:
-                # Determine extension from content-type or URL
-                content_type = response.headers.get('content-type', 'image/jpeg').lower()
-                url_lower = url.lower()
-                
-                if 'png' in content_type or url_lower.endswith('.png'):
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "Mozilla/5.0 (compatible; ColumbiaToolsScraper/1.0)"},
+            )
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                ct = resp.headers.get('content-type', '').lower()
+                if 'png' in ct or url.lower().endswith('.png'):
                     ext = '.png'
-                elif 'gif' in content_type or url_lower.endswith('.gif'):
-                    ext = '.gif'
-                elif 'webp' in content_type or url_lower.endswith('.webp'):
+                elif 'webp' in ct or url.lower().endswith('.webp'):
                     ext = '.webp'
+                elif 'gif' in ct or url.lower().endswith('.gif'):
+                    ext = '.gif'
                 else:
                     ext = '.jpg'
-                
-                temp_path = self.images_dir / f"{filename}{ext}"
-                
-                with open(temp_path, 'wb') as f:
-                    f.write(response.read())
-                
-                return temp_path
-        except Exception as e:
-            warn(f"Failed to download image: {str(e)}")
+                out = dest.with_suffix(ext)
+                out.write_bytes(resp.read())
+                return out
+        except Exception as exc:
+            warn(f"Download failed ({url[-60:]}): {exc}")
             return None
-    
-    def convert_to_webp(self, input_path: Path, output_filename: str) -> Optional[Path]:
-        """
-        Convert an image to WebP format.
-        
-        Args:
-            input_path: Path to the source image
-            output_filename: Output filename (without extension)
-            
-        Returns:
-            Path to the WebP image or None if conversion failed
-        """
+
+    def _to_webp(self, src: Path, dest_stem: Path) -> Optional[Path]:
         if not PILLOW_AVAILABLE:
             return None
-        
         try:
-            output_path = self.images_dir / f"{output_filename}.webp"
-            img = Image.open(input_path)
-            
-            # Convert to RGB if necessary
+            out = dest_stem.with_suffix('.webp')
+            img = Image.open(src)
             if img.mode == 'RGBA':
-                rgb_img = Image.new('RGB', img.size, (255, 255, 255))
-                rgb_img.paste(img, mask=img.split()[3])
-                img = rgb_img
-            elif img.mode != 'RGB':
+                bg = Image.new('RGB', img.size, (255, 255, 255))
+                bg.paste(img, mask=img.split()[3])
+                img = bg
+            elif img.mode not in ('RGB',):
                 img = img.convert('RGB')
-            
-            img.save(output_path, 'WEBP', quality=85)
-            
-            # Remove original if conversion successful
-            if output_path.exists():
-                input_path.unlink()
-                return output_path
-        except Exception as e:
-            warn(f"Failed to convert image to WebP: {str(e)}")
-        
-        return None
-    
-    def process_product_image(self, image_url: str, product_sku: str, image_index: int) -> Optional[str]:
-        """
-        Download and convert product image.
-        
-        Args:
-            image_url: Image URL
-            product_sku: Product SKU (used as base filename)
-            image_index: Index of image in gallery
-            
-        Returns:
-            Filename of the webp image or None if failed
-        """
-        if not self.download_images or not image_url:
+            img.save(out, 'WEBP', quality=90, method=6)
+            if out.exists() and src.suffix.lower() != '.webp':
+                src.unlink(missing_ok=True)
+            return out
+        except Exception as exc:
+            warn(f"WebP conversion failed: {exc}")
             return None
-        
-        try:
-            # Create filename with SKU and zero-padded index (01, 02, 03, etc.)
-            safe_sku = product_sku.lower().replace('-', '_') if product_sku else 'image'
-            padded_index = f"{image_index:02d}"  # Zero-pad to 2 digits
-            filename = f"temp_{safe_sku}_{padded_index}"
-            
-            # Download image
-            temp_path = self.download_image(image_url, filename)
-            if not temp_path:
-                return None
-            
-            # Convert to WebP
-            output_filename = f"{safe_sku}_{padded_index}"
-            webp_path = self.convert_to_webp(temp_path, output_filename)
-            if webp_path:
-                return webp_path.name  # Just return filename
-            else:
-                # Keep original if conversion failed
-                new_path = self.images_dir / f"{output_filename}{temp_path.suffix}"
-                temp_path.rename(new_path)
-                return new_path.name
-        except Exception as e:
-            warn(f"Error processing image: {str(e)}")
-        
-        return None
-    
-    def scrape(self):
-        """
-        Main scraping function. Discovers categories and scrapes all products.
-        """
-        step("Starting Columbia Tools website scrape")
-        info(f"Output directory: {self.output_dir}")
-        info(f"Base URL: {self.BASE_URL}")
-        
-        # Step 1: Fetch main directory page
-        step("Fetching category directory")
-        html = self.fetch_page(self.BASE_URL)
-        if not html:
-            fail("Failed to fetch main directory page")
-            return
-        
-        # Step 2: Extract categories
-        categories = self.extract_category_links(html)
-        ok(f"Found {len(categories)} categories")
-        
-        for cat in categories:
-            info(f"  - {cat['name']} ({cat['slug']})")
-        
-        # Step 3: Process each category
-        total_products = 0
-        
-        for category in categories:
-            step(f"Processing category: {category['name']}")
-            
-            # Fetch category page
-            cat_html = self.fetch_page(category['url'])
-            if not cat_html:
-                warn(f"Failed to fetch category page")
-                continue
-            
-            # Extract product links
-            product_urls = self.extract_product_links_from_category(cat_html, category['url'])
-            info(f"Found {len(product_urls)} products in {category['name']}")
-            
-            # Process each product
-            for idx, product_url in enumerate(product_urls, 1):
-                # Skip if already processed
-                if product_url in self.processed_urls:
-                    continue
-                
-                self.processed_urls.add(product_url)
-                
-                info(f"Processing {idx}/{len(product_urls)}: {product_url[-50:]}")
-                
-                # Fetch product page
-                product_html = self.fetch_page(product_url)
-                if not product_html:
-                    warn(f"Skipping product: Page not accessible")
-                    continue
-                
-                # Extract product details
-                product = self.extract_product_details(product_html, product_url)
-                if not product:
-                    warn(f"Skipping product: Could not extract details")
-                    continue
-                
-                # Ensure category is set
-                if not product['category']:
-                    product['category'] = category['name']
-                    product['category_slug'] = category['slug']
-                
-                # Download and convert images
-                local_images = []
-                info(f"  Found {len(product['image_urls'])} images to process")
-                for img_url in product['image_urls']:
-                    info(f"    - {img_url[-60:]}")
-                
-                for img_idx, img_url in enumerate(product['image_urls'], 1):
-                    local_img = self.process_product_image(
-                        img_url,
-                        product['sku'],
-                        img_idx
-                    )
-                    if local_img:
-                        local_images.append(local_img)
-                        info(f"  Image {img_idx}: {local_img}")
-                
-                product['local_images'] = local_images
-                
-                # Add to products list and categorized dict
-                self.products.append(product)
-                self.categories[product['category_slug']].append(product)
-                total_products += 1
-                
-                info(f"  Name: {product['name']}")
-                info(f"  SKU: {product['sku']}")
-                if product['variable_skus']:
-                    info(f"  Sizes: {', '.join(product['variable_skus'])}")
-                info(f"  Images: {len(local_images)}")
-                
-                time.sleep(0.5)  # Rate limiting
-            
-            time.sleep(1)  # Rate limiting between categories
-        
-        ok(f"Scraping complete. Found {total_products} total products")
-        self.save_results()
-    
-    def save_results(self):
-        """
-        Save scraped results to CSV and JSON files.
-        """
-        step("Saving results")
-        
-        if not self.products:
-            warn("No products to save")
-            return
-        
-        # Save main products CSV
-        csv_path = self.output_dir / "products.csv"
-        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=[
-                    'name', 'sku', 'variable_skus', 'category', 'description',
-                    'features', 'image_count', 'local_images', 'url'
-                ]
-            )
-            writer.writeheader()
-            
-            for product in self.products:
-                writer.writerow({
-                    'name': product.get('name', ''),
-                    'sku': product.get('sku', ''),
-                    'variable_skus': '|'.join(product.get('variable_skus', [])),
-                    'category': product.get('category', ''),
-                    'description': product.get('description', ''),
-                    'features': ' | '.join(product.get('features', [])),
-                    'image_count': len(product.get('local_images', [])),
-                    'local_images': '|'.join(product.get('local_images', [])),
-                    'url': product.get('url', '')
-                })
-        
-        ok(f"Saved {len(self.products)} products to {csv_path}")
-        
-        # Save JSON with full details
-        json_path = self.output_dir / "products.json"
-        with open(json_path, 'w', encoding='utf-8') as f:
-            json.dump(self.products, f, indent=2, ensure_ascii=False)
-        ok(f"Saved full details to {json_path}")
-        
-        # Save by-category CSV files
-        step("Saving category-specific files")
-        for category_slug, products in self.categories.items():
-            if not products:
-                continue
-            
-            category_dir = self.output_dir / "by_category" / category_slug
-            category_dir.mkdir(parents=True, exist_ok=True)
-            
-            category_csv = category_dir / "products.csv"
-            with open(category_csv, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.DictWriter(
-                    f,
-                    fieldnames=[
-                        'name', 'sku', 'variable_skus', 'description',
-                        'features', 'image_count', 'local_images', 'url'
-                    ]
-                )
-                writer.writeheader()
-                
-                for product in products:
-                    writer.writerow({
-                        'name': product.get('name', ''),
-                        'sku': product.get('sku', ''),
-                        'variable_skus': '|'.join(product.get('variable_skus', [])),
-                        'description': product.get('description', ''),
-                        'features': ' | '.join(product.get('features', [])),
-                        'image_count': len(product.get('local_images', [])),
-                        'local_images': '|'.join(product.get('local_images', [])),
-                        'url': product.get('url', '')
-                    })
-            
-            ok(f"Saved {len(products)} products from {category_slug} to {category_csv}")
-        
-        # Save summary
-        summary_path = self.output_dir / "SUMMARY.md"
-        with open(summary_path, 'w', encoding='utf-8') as f:
-            f.write(f"# Columbia Tools - Scrape Results\n\n")
-            f.write(f"**Scraped:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-            f.write(f"## Statistics\n\n")
-            f.write(f"- **Total Products:** {len(self.products)}\n")
-            f.write(f"- **Total Images:** {sum(len(p.get('local_images', [])) for p in self.products)}\n")
-            f.write(f"- **Categories:** {len(self.categories)}\n")
-            f.write(f"- **Image Format:** WebP (converted)\n\n")
-            
-            f.write(f"## Categories\n\n")
-            for slug, products in sorted(self.categories.items()):
-                category_name = products[0].get('category', slug) if products else slug
-                f.write(f"- **{category_name}** ({slug}): {len(products)} products\n")
-            
-            f.write(f"\n## Files\n\n")
-            f.write(f"- `products.csv` - All products in CSV format\n")
-            f.write(f"- `products.json` - All products with full details in JSON format\n")
-            f.write(f"- `by_category/` - Products organized by category\n")
-            f.write(f"- `images/` - Product images (WebP format, named as `{'{sku}_{index}.webp'}`)\n\n")
-            
-            f.write(f"## CSV Columns\n\n")
-            f.write(f"- **name** - Product name\n")
-            f.write(f"- **sku** - Primary SKU/MPN\n")
-            f.write(f"- **variable_skus** - Alternative SKUs for different sizes (pipe-separated)\n")
-            f.write(f"- **category** - Product category\n")
-            f.write(f"- **description** - Product description\n")
-            f.write(f"- **features** - Features list (pipe-separated)\n")
-            f.write(f"- **image_count** - Number of images in gallery\n")
-            f.write(f"- **local_images** - Local image filenames (pipe-separated)\n")
-            f.write(f"- **url** - Product page URL\n\n")
-            
-            f.write(f"## Variable Products\n\n")
-            f.write(f"Some products come in multiple sizes with different SKUs.\n")
-            f.write(f"These are listed in the **variable_skus** column (pipe-separated).\n")
-            f.write(f"For example: CLT24|CLT32|CLT42|CLT55 for different Cam Lock Tube sizes.\n")
-        
-        ok(f"Saved summary to {summary_path}")
 
+    def process_image(self, img_url: str, cat_slug: str, sku: str, idx: int) -> Optional[str]:
+        """Download image, convert to WebP, return relative path from output_dir."""
+        if not self.download_images:
+            return None
+
+        cat_dir = self.images_base / (cat_slug or 'uncategorised')
+        cat_dir.mkdir(parents=True, exist_ok=True)
+
+        safe_sku = re.sub(r'[^a-z0-9]', '_', sku.lower()) if sku else 'img'
+        stem = cat_dir / f"tmp_{safe_sku}_{idx:02d}"
+        raw = self._download_raw(img_url, stem)
+        if not raw:
+            return None
+
+        final_stem = cat_dir / f"{safe_sku}_{idx:02d}"
+        webp = self._to_webp(raw, final_stem)
+        if webp:
+            return str(webp.relative_to(self.output_dir))
+        # Keep original if WebP failed
+        kept = final_stem.with_suffix(raw.suffix)
+        raw.rename(kept)
+        return str(kept.relative_to(self.output_dir))
+
+    # ── WooCommerce row builders ──────────────────────────────────────────────
+
+    def _base_row(self) -> Dict[str, str]:
+        return {f: '' for f in WC_FIELDS}
+
+    def _common_fields(self, row: Dict[str, str], product: Dict[str, Any],
+                       sku: str, name: str, images_str: str, pos: int) -> None:
+        """Populate fields shared by simple, variable-parent, and variation rows."""
+        cat_wc = make_wc_category(product['category'])
+        all_skus = product['all_skus']
+        row.update({
+            'Brands': BRAND,
+            'SKU': sku,
+            'MPN': sku,
+            'Name': name,
+            'Images': images_str,
+            'Categories': cat_wc,
+            'Tags': make_tags(product['name'], product['category'], all_skus),
+            'Position': str(pos),
+            'Published': '1',
+            'Is featured?': '0',
+            'Visibility in catalog': 'visible',
+            'Tax status': 'taxable',
+            'Tax class': '',
+            'In stock?': '1',
+            'Stock': '',
+            'Low stock amount': '',
+            'Backorders allowed?': '0',
+            'Sold individually?': '0',
+            'Allow customer reviews?': '1',
+            'Sold individually?': '0',
+        })
+
+    def build_simple_row(self, product: Dict[str, Any], pos: int) -> Dict[str, str]:
+        sku = product['all_skus'][0] if product['all_skus'] else ''
+        name = product['name']
+        images_str = '|'.join(product['local_images'])
+        row = self._base_row()
+        self._common_fields(row, product, sku, name, images_str, pos)
+        row['Type'] = 'simple'
+        row['Description'] = product['description']
+        row['Short description'] = short_desc(product['description'])
+        row['Attribute 1 name'] = 'Brand'
+        row['Attribute 1 value(s)'] = BRAND
+        row['Attribute 1 visible'] = '1'
+        row['Attribute 1 global'] = '1'
+        row['meta:_dtb_seo_title'] = make_seo_title(name, sku)
+        row['meta:_dtb_seo_description'] = make_seo_desc(name, product['category'])
+        return row
+
+    def build_variable_parent_row(
+        self, product: Dict[str, Any], parent_sku: str, all_skus: List[str], pos: int
+    ) -> Dict[str, str]:
+        name = product['name']
+        images_str = '|'.join(product['local_images'])
+        row = self._base_row()
+        self._common_fields(row, product, parent_sku, name, images_str, pos)
+        row['Type'] = 'variable'
+        row['Description'] = product['description']
+        row['Short description'] = short_desc(product['description'])
+        row['Attribute 1 name'] = 'SKU'
+        row['Attribute 1 value(s)'] = '|'.join(all_skus)
+        row['Attribute 1 visible'] = '1'
+        row['Attribute 1 global'] = '1'
+        row['meta:_dtb_seo_title'] = make_seo_title(name, parent_sku)
+        row['meta:_dtb_seo_description'] = make_seo_desc(name, product['category'])
+        return row
+
+    def build_variation_row(
+        self, product: Dict[str, Any], parent_sku: str, variant_sku: str, pos: int
+    ) -> Dict[str, str]:
+        name = f"{product['name']} – {variant_sku}"
+        images_str = '|'.join(product['local_images'])
+        row = self._base_row()
+        self._common_fields(row, product, variant_sku, name, images_str, pos)
+        row['Type'] = 'variation'
+        row['Description'] = ''        # Inherited from parent
+        row['Short description'] = ''
+        row['Parent'] = parent_sku
+        row['Attribute 1 name'] = 'SKU'
+        row['Attribute 1 value(s)'] = variant_sku
+        row['Attribute 1 visible'] = '1'
+        row['Attribute 1 global'] = '1'
+        row['meta:_dtb_seo_title'] = ''
+        row['meta:_dtb_seo_description'] = ''
+        return row
+
+    def product_to_wc_rows(self, product: Dict[str, Any], pos: int) -> List[Dict[str, str]]:
+        """
+        Convert a product dict to one or more WooCommerce CSV rows.
+        - 1 SKU  → simple product (1 row)
+        - N SKUs → variable parent row + N variation rows
+        """
+        all_skus = product['all_skus']
+        if not all_skus:
+            all_skus = ['UNKNOWN']
+
+        if len(all_skus) == 1:
+            return [self.build_simple_row(product, pos)]
+
+        parent_sku = derive_parent_sku(all_skus)
+        rows = [self.build_variable_parent_row(product, parent_sku, all_skus, pos)]
+        for i, sku in enumerate(all_skus, 1):
+            rows.append(self.build_variation_row(product, parent_sku, sku, pos + i))
+        return rows
+
+    # ── Main scrape loop ──────────────────────────────────────────────────────
+
+    def scrape(self):
+        step("Columbia Tools full-catalog scrape")
+        info(f"Output: {self.output_dir}")
+
+        # Fetch main directory
+        step("Fetching main category directory")
+        html = self.fetch(self.BASE_URL)
+        if not html:
+            fail("Could not load main page — aborting")
+            return
+
+        categories = self.discover_categories(html)
+        ok(f"Discovered {len(categories)} categories")
+        for c in categories:
+            info(f"  {c['slug']} → {c['url']}")
+
+        position = 1
+
+        for cat in categories:
+            step(f"Category: {cat['name']} ({cat['slug']})")
+
+            cat_html = self.fetch(cat['url'])
+            if not cat_html:
+                warn("Could not fetch category page — skipping")
+                continue
+
+            product_urls = self.product_links_from_category(cat_html, cat['url'])
+            ok(f"  {len(product_urls)} products found")
+
+            # Create category image directory
+            cat_img_dir = self.images_base / cat['slug']
+            cat_img_dir.mkdir(exist_ok=True)
+
+            for idx, purl in enumerate(product_urls, 1):
+                if purl in self.processed_urls:
+                    info(f"  [{idx}/{len(product_urls)}] already processed — skip")
+                    continue
+                self.processed_urls.add(purl)
+
+                info(f"  [{idx}/{len(product_urls)}] {purl.split('/')[-2] or purl[-40:]}")
+
+                phtml = self.fetch(purl)
+                if not phtml:
+                    warn("  Could not fetch product page — skip")
+                    continue
+
+                product = self.extract_product(phtml, purl)
+                if not product:
+                    warn("  Could not parse product details — skip")
+                    continue
+
+                if not product['category']:
+                    product['category'] = cat['name']
+                    product['category_slug'] = cat['slug']
+
+                # Download images
+                ref_sku = product['all_skus'][0] if product['all_skus'] else 'img'
+                for img_idx, img_url in enumerate(product['image_urls'], 1):
+                    local = self.process_image(img_url, product['category_slug'], ref_sku, img_idx)
+                    if local:
+                        product['local_images'].append(local)
+
+                info(f"    name={product['name']!r}  skus={product['all_skus']}  imgs={len(product['local_images'])}")
+
+                self.products.append(product)
+                self.by_category[product['category_slug']].append(product)
+                position += len(product['all_skus']) + 1  # Reserve slots for variations
+
+                time.sleep(0.4)
+
+            time.sleep(0.8)
+
+        ok(f"Scraping done — {len(self.products)} products across {len(self.by_category)} categories")
+        self.save_results()
+
+    # ── Output ────────────────────────────────────────────────────────────────
+
+    def save_results(self):
+        step("Saving outputs")
+
+        if not self.products:
+            warn("No products to save — nothing written")
+            return
+
+        # ── 1. Master wp-catalog.csv ──────────────────────────────────────────
+        catalog_path = self.output_dir / "wp-catalog.csv"
+        pos = 1
+        all_wc_rows: List[Dict[str, str]] = []
+        for product in self.products:
+            rows = self.product_to_wc_rows(product, pos)
+            all_wc_rows.extend(rows)
+            pos += len(rows) + 1
+
+        with open(catalog_path, 'w', newline='', encoding='utf-8') as fh:
+            writer = csv.DictWriter(fh, fieldnames=WC_FIELDS)
+            writer.writeheader()
+            writer.writerows(all_wc_rows)
+
+        ok(f"wp-catalog.csv → {len(all_wc_rows)} rows ({catalog_path})")
+
+        # ── 2. Full JSON dump ─────────────────────────────────────────────────
+        json_path = self.output_dir / "products.json"
+        with open(json_path, 'w', encoding='utf-8') as fh:
+            json.dump(self.products, fh, indent=2, ensure_ascii=False)
+        ok(f"products.json  → {len(self.products)} products ({json_path})")
+
+        # ── 3. Per-category CSVs ──────────────────────────────────────────────
+        step("Saving per-category CSVs")
+        for slug, cat_products in self.by_category.items():
+            cat_dir = self.output_dir / "by_category" / slug
+            cat_dir.mkdir(parents=True, exist_ok=True)
+            cat_rows: List[Dict[str, str]] = []
+            for p in cat_products:
+                cat_rows.extend(self.product_to_wc_rows(p, 1))
+            cat_csv = cat_dir / "wp-catalog.csv"
+            with open(cat_csv, 'w', newline='', encoding='utf-8') as fh:
+                writer = csv.DictWriter(fh, fieldnames=WC_FIELDS)
+                writer.writeheader()
+                writer.writerows(cat_rows)
+            ok(f"  {slug}: {len(cat_products)} products → {cat_csv.name}")
+
+        # ── 4. SUMMARY.md ─────────────────────────────────────────────────────
+        total_imgs = sum(len(p['local_images']) for p in self.products)
+        variable_count = sum(1 for p in self.products if len(p['all_skus']) > 1)
+        simple_count = len(self.products) - variable_count
+
+        summary = self.output_dir / "SUMMARY.md"
+        with open(summary, 'w', encoding='utf-8') as fh:
+            fh.write("# Columbia Tools — Scrape Results\n\n")
+            fh.write(f"**Scraped:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            fh.write("## Statistics\n\n")
+            fh.write(f"| Metric | Value |\n|:---|---:|\n")
+            fh.write(f"| Total product pages | {len(self.products)} |\n")
+            fh.write(f"| Simple products | {simple_count} |\n")
+            fh.write(f"| Variable products (multi-SKU) | {variable_count} |\n")
+            fh.write(f"| Total WC CSV rows | {len(all_wc_rows)} |\n")
+            fh.write(f"| Total images downloaded | {total_imgs} |\n")
+            fh.write(f"| Categories | {len(self.by_category)} |\n\n")
+            fh.write("## Categories\n\n")
+            fh.write("| Category | Slug | Products |\n|:---|:---|---:|\n")
+            for slug, prods in sorted(self.by_category.items()):
+                cat_name = prods[0]['category'] if prods else slug
+                fh.write(f"| {cat_name} | `{slug}` | {len(prods)} |\n")
+            fh.write("\n## Output Files\n\n")
+            fh.write("| File | Description |\n|:---|:---|\n")
+            fh.write("| `wp-catalog.csv` | Full WooCommerce import CSV (all categories) |\n")
+            fh.write("| `products.json` | Raw scraped data with all fields |\n")
+            fh.write("| `by_category/{slug}/wp-catalog.csv` | Per-category WC CSV |\n")
+            fh.write("| `images/{slug}/{sku}_{nn}.webp` | Product gallery images (WebP) |\n\n")
+            fh.write("## Variable Product Format\n\n")
+            fh.write("Products with multiple SKUs (different sizes/lengths) are stored as:\n\n")
+            fh.write("- **Variable parent row** — `Type=variable`, `SKU=<common-prefix>`, "
+                     "`Attribute 1 name=SKU`, `Attribute 1 value(s)=SKU1|SKU2|...`\n")
+            fh.write("- **Variation rows** — `Type=variation`, `SKU=<variant>`, "
+                     "`Parent=<parent-sku>`, `Attribute 1 value(s)=<this-sku>`\n")
+
+        ok(f"SUMMARY.md → {summary}")
+
+
+# ── CLI entry-point ───────────────────────────────────────────────────────────
 
 def main():
-    """Parse arguments and run scraper."""
     parser = argparse.ArgumentParser(
-        description="Scrape Columbia Tools website products catalog"
+        description="Scrape Columbia Tools catalog → wp-catalog.csv + WebP images"
     )
     parser.add_argument(
-        "--output-dir",
-        default="scraped_results/columbia_tools",
-        help="Output directory for scraped data (default: scraped_results/columbia_tools)"
+        "--output-dir", default="scraped_results/columbia_tools",
+        help="Root output directory (default: scraped_results/columbia_tools)",
     )
     parser.add_argument(
-        "--category",
-        default=None,
-        help="Only scrape a specific category (e.g., 'compound-tubes')"
+        "--category", default=None,
+        help="Limit to one category slug, e.g. compound-tubes",
     )
     parser.add_argument(
-        "--no-images",
-        action="store_true",
-        help="Skip image download and conversion"
+        "--no-images", action="store_true",
+        help="Skip image download and WebP conversion",
     )
-    
     args = parser.parse_args()
-    
+
     scraper = ColumbiaToolsScraper(
         output_dir=args.output_dir,
         category_filter=args.category,
-        download_images=not args.no_images
+        download_images=not args.no_images,
     )
-    
     scraper.scrape()
 
 
