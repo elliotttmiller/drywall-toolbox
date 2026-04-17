@@ -83,7 +83,8 @@ def merge_image_field(
     columbia_image_base_url: str,
 ) -> str:
     merged = OrderedDict()
-    for row in (chosen, alternate or {}):
+    alternate_row = alternate or {}
+    for row in (chosen, alternate_row):
         for img in split_images(row.get("Images", "")):
             normalized = absolutize_image(img, columbia_images_root, columbia_image_base_url)
             merged[normalized] = True
@@ -97,6 +98,8 @@ def select_preferred_row(
         return dict(columbia_row), "columbia"
     if tsw_row is not None and columbia_row is None:
         return dict(tsw_row), "tsw"
+    if columbia_row is None and tsw_row is None:
+        raise ValueError("select_preferred_row requires at least one source row.")
 
     columbia = columbia_row or {}
     tsw = tsw_row or {}
