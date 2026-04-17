@@ -84,7 +84,7 @@ def merge_image_field(
 ) -> str:
     merged = OrderedDict()
     for row in (chosen, alternate or {}):
-        for img in split_images((row or {}).get("Images", "")):
+        for img in split_images(row.get("Images", "")):
             normalized = absolutize_image(img, columbia_images_root, columbia_image_base_url)
             merged[normalized] = True
     return "|".join(merged.keys())
@@ -98,8 +98,8 @@ def select_preferred_row(
     if tsw_row and not columbia_row:
         return dict(tsw_row), "tsw"
 
-    if columbia_row is None or tsw_row is None:
-        raise ValueError("select_preferred_row expected both source rows for overlap comparison.")
+    if columbia_row is None and tsw_row is None:
+        raise ValueError("select_preferred_row requires at least one source row.")
     columbia_score = row_score(columbia_row, "columbia")
     tsw_score = row_score(tsw_row, "tsw")
     if columbia_score >= tsw_score:
