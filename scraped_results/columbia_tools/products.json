@@ -15,21 +15,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/hand-tools/#content"
   },
   {
-    "name": "Hand Tools",
-    "all_skus": [],
-    "category": "Hand Tools",
-    "category_slug": "hand-tools",
-    "description": "<p>Hand Tools by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/hand-tools/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/hand-tools/#menu"
-  },
-  {
     "name": "Putty Knives",
     "all_skus": [
       "PUTTYKNIVES"
@@ -170,21 +155,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/hand-tools/three-way-knives-copy"
   },
   {
-    "name": "Hand Tools",
-    "all_skus": [],
-    "category": "Hand Tools",
-    "category_slug": "hand-tools",
-    "description": "<p>Hand Tools by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/hand-tools/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/hand-tools/#top"
-  },
-  {
     "name": "The Tool Sets",
     "all_skus": [],
     "category": "Tool Sets",
@@ -198,21 +168,6 @@
       "images/tool-sets/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/tool-sets/#content"
-  },
-  {
-    "name": "The Tool Sets",
-    "all_skus": [],
-    "category": "Tool Sets",
-    "category_slug": "tool-sets",
-    "description": "<p>The Tool Sets by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/tool-sets/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/tool-sets/#menu"
   },
   {
     "name": "The Tactical Set",
@@ -312,21 +267,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/tool-sets/the-sabre-set"
   },
   {
-    "name": "The Tool Sets",
-    "all_skus": [],
-    "category": "Tool Sets",
-    "category_slug": "tool-sets",
-    "description": "<p>The Tool Sets by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/tool-sets/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/tool-sets/#top"
-  },
-  {
     "name": "Automatic Tapers",
     "all_skus": [],
     "category": "Automatic Tapers",
@@ -340,21 +280,6 @@
       "images/automatic-tapers/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/automatic-tapers/#content"
-  },
-  {
-    "name": "Automatic Tapers",
-    "all_skus": [],
-    "category": "Automatic Tapers",
-    "category_slug": "automatic-tapers",
-    "description": "<p>Automatic Tapers by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/automatic-tapers/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/automatic-tapers/#menu"
   },
   {
     "name": "Columbia One Predator Taper",
@@ -466,21 +391,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/automatic-tapers/sawed-off-taper"
   },
   {
-    "name": "Automatic Tapers",
-    "all_skus": [],
-    "category": "Automatic Tapers",
-    "category_slug": "automatic-tapers",
-    "description": "<p>Automatic Tapers by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/automatic-tapers/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/automatic-tapers/#top"
-  },
-  {
     "name": "SUGGESTED SETS",
     "all_skus": [],
     "category": "Suggested Tool Sets",
@@ -508,60 +418,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/suggested-tool-sets/#content"
   },
   {
-    "name": "SUGGESTED SETS",
-    "all_skus": [],
-    "category": "Suggested Tool Sets",
-    "category_slug": "suggested-tool-sets",
-    "description": "<p>SUGGESTED SETS by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/e6bb9a9686f8745de33dd2f179c61ecf.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/8f4d947d9b2ec7a37e02899222dfd835.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/d63643dea9fd8c3ee1a6b3865b643c8d.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/1e5d0342dcef118de1101892c2be885a.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/bd1e59062def93ce8bd63c6843d4d364.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/384f0046d472f0336960dbb0b0c7998c.jpg"
-    ],
-    "local_images": [
-      "images/suggested-tool-sets/img_01.webp",
-      "images/suggested-tool-sets/img_02.webp",
-      "images/suggested-tool-sets/img_03.webp",
-      "images/suggested-tool-sets/img_04.webp",
-      "images/suggested-tool-sets/img_05.webp",
-      "images/suggested-tool-sets/img_06.webp",
-      "images/suggested-tool-sets/img_07.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/suggested-tool-sets/#menu"
-  },
-  {
-    "name": "SUGGESTED SETS",
-    "all_skus": [],
-    "category": "Suggested Tool Sets",
-    "category_slug": "suggested-tool-sets",
-    "description": "<p>SUGGESTED SETS by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/e6bb9a9686f8745de33dd2f179c61ecf.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/8f4d947d9b2ec7a37e02899222dfd835.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/d63643dea9fd8c3ee1a6b3865b643c8d.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/1e5d0342dcef118de1101892c2be885a.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/bd1e59062def93ce8bd63c6843d4d364.jpg",
-      "https://www.columbiatools.com/wp-content/uploads/2022/03/384f0046d472f0336960dbb0b0c7998c.jpg"
-    ],
-    "local_images": [
-      "images/suggested-tool-sets/img_01.webp",
-      "images/suggested-tool-sets/img_02.webp",
-      "images/suggested-tool-sets/img_03.webp",
-      "images/suggested-tool-sets/img_04.webp",
-      "images/suggested-tool-sets/img_05.webp",
-      "images/suggested-tool-sets/img_06.webp",
-      "images/suggested-tool-sets/img_07.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/suggested-tool-sets/#top"
-  },
-  {
     "name": "Pumps",
     "all_skus": [],
     "category": "Pumps",
@@ -575,21 +431,6 @@
       "images/pumps/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/pumps/#content"
-  },
-  {
-    "name": "Pumps",
-    "all_skus": [],
-    "category": "Pumps",
-    "category_slug": "pumps",
-    "description": "<p>Pumps by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/pumps/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/pumps/#menu"
   },
   {
     "name": "Tall Boy Mud Pump",
@@ -708,21 +549,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/pumps/columbiapowerfill"
   },
   {
-    "name": "Pumps",
-    "all_skus": [],
-    "category": "Pumps",
-    "category_slug": "pumps",
-    "description": "<p>Pumps by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/pumps/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/pumps/#top"
-  },
-  {
     "name": "Tool Cases",
     "all_skus": [],
     "category": "Tool Cases",
@@ -736,21 +562,6 @@
       "images/tool-cases/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/tool-cases/#content"
-  },
-  {
-    "name": "Tool Cases",
-    "all_skus": [],
-    "category": "Tool Cases",
-    "category_slug": "tool-cases",
-    "description": "<p>Tool Cases by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/tool-cases/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/tool-cases/#menu"
   },
   {
     "name": "The Road Case",
@@ -809,21 +620,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/tool-cases/the-semi-automatic-case"
   },
   {
-    "name": "Tool Cases",
-    "all_skus": [],
-    "category": "Tool Cases",
-    "category_slug": "tool-cases",
-    "description": "<p>Tool Cases by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/tool-cases/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/tool-cases/#top"
-  },
-  {
     "name": "Smoothing Blades",
     "all_skus": [],
     "category": "Smoothing Blades",
@@ -837,21 +633,6 @@
       "images/smoothing-blades/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/smoothing-blades/#content"
-  },
-  {
-    "name": "Smoothing Blades",
-    "all_skus": [],
-    "category": "Smoothing Blades",
-    "category_slug": "smoothing-blades",
-    "description": "<p>Smoothing Blades by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/smoothing-blades/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/smoothing-blades/#menu"
   },
   {
     "name": "Tomahawk Smoothing Blades",
@@ -954,21 +735,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/smoothing-blades/fatboy-smoothing-blades"
   },
   {
-    "name": "Smoothing Blades",
-    "all_skus": [],
-    "category": "Smoothing Blades",
-    "category_slug": "smoothing-blades",
-    "description": "<p>Smoothing Blades by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/smoothing-blades/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/smoothing-blades/#top"
-  },
-  {
     "name": "Finishing Boxes",
     "all_skus": [],
     "category": "Finishing Boxes",
@@ -982,21 +748,6 @@
       "images/finishing-boxes/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/finishing-boxes/#content"
-  },
-  {
-    "name": "Finishing Boxes",
-    "all_skus": [],
-    "category": "Finishing Boxes",
-    "category_slug": "finishing-boxes",
-    "description": "<p>Finishing Boxes by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/finishing-boxes/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/finishing-boxes/#menu"
   },
   {
     "name": "Flat Boxes",
@@ -1107,21 +858,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/finishing-boxes/inside-track-boxes"
   },
   {
-    "name": "Finishing Boxes",
-    "all_skus": [],
-    "category": "Finishing Boxes",
-    "category_slug": "finishing-boxes",
-    "description": "<p>Finishing Boxes by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/finishing-boxes/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/finishing-boxes/#top"
-  },
-  {
     "name": "Corner Rollers",
     "all_skus": [],
     "category": "Corner Rollers",
@@ -1135,21 +871,6 @@
       "images/corner-rollers/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/corner-rollers/#content"
-  },
-  {
-    "name": "Corner Rollers",
-    "all_skus": [],
-    "category": "Corner Rollers",
-    "category_slug": "corner-rollers",
-    "description": "<p>Corner Rollers by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/corner-rollers/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/corner-rollers/#menu"
   },
   {
     "name": "Corner Cobra",
@@ -1291,21 +1012,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/corner-rollers/european-micro-outside-corner-roller"
   },
   {
-    "name": "Corner Rollers",
-    "all_skus": [],
-    "category": "Corner Rollers",
-    "category_slug": "corner-rollers",
-    "description": "<p>Corner Rollers by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/corner-rollers/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/corner-rollers/#top"
-  },
-  {
     "name": "Angleheads",
     "all_skus": [],
     "category": "Angle Heads",
@@ -1319,21 +1025,6 @@
       "images/angle-heads/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/angle-heads/#content"
-  },
-  {
-    "name": "Angleheads",
-    "all_skus": [],
-    "category": "Angle Heads",
-    "category_slug": "angle-heads",
-    "description": "<p>Angleheads by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/angle-heads/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/angle-heads/#menu"
   },
   {
     "name": "2″ Anglehead",
@@ -1475,21 +1166,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/angleheads/anglehead-adaptor"
   },
   {
-    "name": "Angleheads",
-    "all_skus": [],
-    "category": "Angle Heads",
-    "category_slug": "angle-heads",
-    "description": "<p>Angleheads by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/angle-heads/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/angle-heads/#top"
-  },
-  {
     "name": "Nailspotters",
     "all_skus": [],
     "category": "Nailspotters",
@@ -1503,21 +1179,6 @@
       "images/nailspotters/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/nailspotters/#content"
-  },
-  {
-    "name": "Nailspotters",
-    "all_skus": [],
-    "category": "Nailspotters",
-    "category_slug": "nailspotters",
-    "description": "<p>Nailspotters by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/nailspotters/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/nailspotters/#menu"
   },
   {
     "name": "2″ Nailspotter",
@@ -1562,21 +1223,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/nailspotters/3-nailspotter"
   },
   {
-    "name": "Nailspotters",
-    "all_skus": [],
-    "category": "Nailspotters",
-    "category_slug": "nailspotters",
-    "description": "<p>Nailspotters by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/nailspotters/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/nailspotters/#top"
-  },
-  {
     "name": "Corner Tools",
     "all_skus": [],
     "category": "Corner Tools",
@@ -1590,21 +1236,6 @@
       "images/corner-tools/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/corner-tools/#content"
-  },
-  {
-    "name": "Corner Tools",
-    "all_skus": [],
-    "category": "Corner Tools",
-    "category_slug": "corner-tools",
-    "description": "<p>Corner Tools by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/corner-tools/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/corner-tools/#menu"
   },
   {
     "name": "8 Inch Throttle Box",
@@ -1661,21 +1292,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/corner-boxes/7-inch-throttle-box"
   },
   {
-    "name": "Corner Tools",
-    "all_skus": [],
-    "category": "Corner Tools",
-    "category_slug": "corner-tools",
-    "description": "<p>Corner Tools by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/corner-tools/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/corner-tools/#top"
-  },
-  {
     "name": "Corner Flushers",
     "all_skus": [],
     "category": "Corner Flushers",
@@ -1689,21 +1305,6 @@
       "images/corner-flushers/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/corner-flushers/#content"
-  },
-  {
-    "name": "Corner Flushers",
-    "all_skus": [],
-    "category": "Corner Flushers",
-    "category_slug": "corner-flushers",
-    "description": "<p>Corner Flushers by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/corner-flushers/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/corner-flushers/#menu"
   },
   {
     "name": "Standard Corner Flusher",
@@ -1782,51 +1383,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/corner-flushers/combo-flusher"
   },
   {
-    "name": "Corner Flushers",
-    "all_skus": [],
-    "category": "Corner Flushers",
-    "category_slug": "corner-flushers",
-    "description": "<p>Corner Flushers by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/corner-flushers/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/corner-flushers/#top"
-  },
-  {
-    "name": "Semi Automatic Taper",
-    "all_skus": [],
-    "category": "Semi Automatic Taper",
-    "category_slug": "semi-automatic-taper",
-    "description": "<p>Semi Automatic Taper by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/semi-automatic-taper/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/semi-automatic-taper/#content"
-  },
-  {
-    "name": "Semi Automatic Taper",
-    "all_skus": [],
-    "category": "Semi Automatic Taper",
-    "category_slug": "semi-automatic-taper",
-    "description": "<p>Semi Automatic Taper by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/semi-automatic-taper/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/semi-automatic-taper/#menu"
-  },
-  {
     "name": "Semi Automatic Taper",
     "all_skus": [
       "SAT"
@@ -1848,21 +1404,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/semi-automatic-taper/semi-automatic-taper"
   },
   {
-    "name": "Semi Automatic Taper",
-    "all_skus": [],
-    "category": "Semi Automatic Taper",
-    "category_slug": "semi-automatic-taper",
-    "description": "<p>Semi Automatic Taper by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/semi-automatic-taper/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/semi-automatic-taper/#top"
-  },
-  {
     "name": "Sanders",
     "all_skus": [],
     "category": "Sanders",
@@ -1876,21 +1417,6 @@
       "images/sanders/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/sanders/#content"
-  },
-  {
-    "name": "Sanders",
-    "all_skus": [],
-    "category": "Sanders",
-    "category_slug": "sanders",
-    "description": "<p>Sanders by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/sanders/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/sanders/#menu"
   },
   {
     "name": "Sander Head",
@@ -1945,21 +1471,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/sanders/the-phantom-sander"
   },
   {
-    "name": "Sanders",
-    "all_skus": [],
-    "category": "Sanders",
-    "category_slug": "sanders",
-    "description": "<p>Sanders by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/sanders/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/sanders/#top"
-  },
-  {
     "name": "Applicators",
     "all_skus": [],
     "category": "Applicators",
@@ -1973,21 +1484,6 @@
       "images/applicators/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/applicators/#content"
-  },
-  {
-    "name": "Applicators",
-    "all_skus": [],
-    "category": "Applicators",
-    "category_slug": "applicators",
-    "description": "<p>Applicators by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/applicators/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/applicators/#menu"
   },
   {
     "name": "External Corner Applicator",
@@ -2084,21 +1580,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/applicators/flat-applicators"
   },
   {
-    "name": "Applicators",
-    "all_skus": [],
-    "category": "Applicators",
-    "category_slug": "applicators",
-    "description": "<p>Applicators by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/applicators/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/applicators/#top"
-  },
-  {
     "name": "Handles",
     "all_skus": [],
     "category": "Handles",
@@ -2112,21 +1593,6 @@
       "images/handles/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/handles/#content"
-  },
-  {
-    "name": "Handles",
-    "all_skus": [],
-    "category": "Handles",
-    "category_slug": "handles",
-    "description": "<p>Handles by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/handles/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/handles/#menu"
   },
   {
     "name": "Columbia One",
@@ -2305,51 +1771,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/handles/flat-box-handle"
   },
   {
-    "name": "Handles",
-    "all_skus": [],
-    "category": "Handles",
-    "category_slug": "handles",
-    "description": "<p>Handles by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/handles/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/handles/#top"
-  },
-  {
-    "name": "Compound Tubes",
-    "all_skus": [],
-    "category": "Compound Tubes",
-    "category_slug": "compound-tubes",
-    "description": "<p>Compound Tubes by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/compound-tubes/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/compound-tubes/#content"
-  },
-  {
-    "name": "Compound Tubes",
-    "all_skus": [],
-    "category": "Compound Tubes",
-    "category_slug": "compound-tubes",
-    "description": "<p>Compound Tubes by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/compound-tubes/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/compound-tubes/#menu"
-  },
-  {
     "name": "Compound Tubes",
     "all_skus": [
       "CMT24",
@@ -2436,21 +1857,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/compound-tubes/cam-lock-tube-box-filler"
   },
   {
-    "name": "Compound Tubes",
-    "all_skus": [],
-    "category": "Compound Tubes",
-    "category_slug": "compound-tubes",
-    "description": "<p>Compound Tubes by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/compound-tubes/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/compound-tubes/#top"
-  },
-  {
     "name": "Commercial Grade Drywall Finishing Tools | Columbia Taping Tools",
     "all_skus": [],
     "category": "Maintenance Kits",
@@ -2464,21 +1870,6 @@
       "images/maintenance-kits/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/maintenance-kits/#content"
-  },
-  {
-    "name": "Commercial Grade Drywall Finishing Tools | Columbia Taping Tools",
-    "all_skus": [],
-    "category": "Maintenance Kits",
-    "category_slug": "maintenance-kits",
-    "description": "<p>Commercial Grade Drywall Finishing Tools | Columbia Taping Tools by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/maintenance-kits/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/maintenance-kits/#menu"
   },
   {
     "name": "Automatic Taper Maintenance Kits",
@@ -2600,21 +1991,6 @@
     "url": "https://www.columbiatools.com/columbia-tools/maintenance-kits/mud-pump-maintenance-kit"
   },
   {
-    "name": "Commercial Grade Drywall Finishing Tools | Columbia Taping Tools",
-    "all_skus": [],
-    "category": "Maintenance Kits",
-    "category_slug": "maintenance-kits",
-    "description": "<p>Commercial Grade Drywall Finishing Tools | Columbia Taping Tools by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/maintenance-kits/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/maintenance-kits/#top"
-  },
-  {
     "name": "Grooved Mud Heads",
     "all_skus": [],
     "category": "Mud Heads",
@@ -2628,21 +2004,6 @@
       "images/mud-heads/img_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/mud-heads/#content"
-  },
-  {
-    "name": "Grooved Mud Heads",
-    "all_skus": [],
-    "category": "Mud Heads",
-    "category_slug": "mud-heads",
-    "description": "<p>Grooved Mud Heads by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/mud-heads/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/mud-heads/#menu"
   },
   {
     "name": "Inside 90 Grooved Mud Heads",
@@ -2715,20 +2076,5 @@
       "images/mud-heads/fmh_01.webp"
     ],
     "url": "https://www.columbiatools.com/columbia-tools/grooved-mud-heads/flat-grooved-mud-heads"
-  },
-  {
-    "name": "Grooved Mud Heads",
-    "all_skus": [],
-    "category": "Mud Heads",
-    "category_slug": "mud-heads",
-    "description": "<p>Grooved Mud Heads by Columbia Tools.</p>",
-    "features": [],
-    "image_urls": [
-      "https://www.columbiatools.com/wp-content/uploads/2022/02/columbialogo.png"
-    ],
-    "local_images": [
-      "images/mud-heads/img_01.webp"
-    ],
-    "url": "https://www.columbiatools.com/columbia-tools/mud-heads/#top"
   }
 ]

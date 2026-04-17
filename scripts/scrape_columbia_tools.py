@@ -183,6 +183,9 @@ def _is_columbia_image_url(url: str) -> bool:
         return host in ('www.columbiatools.com', 'columbiatools.com')
     except Exception:
         return False
+
+
+def short_desc(html_desc: str, max_chars: int = 200) -> str:
     """Extract a plain-text short description from full HTML description."""
     text = strip_tags(html_desc)
     if len(text) <= max_chars:
@@ -698,6 +701,9 @@ class ColumbiaToolsScraper:
     def scrape(self):
         step("Columbia Tools full-catalog scrape")
         info(f"Output: {self.output_dir}")
+        # (cat_slug, normalised_name) pairs we've already stored — prevents duplicate
+        # category-overview pages from inflating the product list.
+        self._seen_products: Set[tuple] = set()
 
         # Fetch main directory
         step("Fetching main category directory")
@@ -749,6 +755,36 @@ class ColumbiaToolsScraper:
                 if not product['category']:
                     product['category'] = cat['name']
                     product['category_slug'] = cat['slug']
+
+                # Deduplicate by (category_slug, normalised_name).
+                # Exception: if an already-stored entry has NO SKUs but the new entry
+                # DOES have SKUs, the new entry is richer — replace the old one.
+                dedup_key = (product['category_slug'], product['name'].lower().strip())
+                if dedup_key in self._seen_products:
+                    if product['all_skus']:
+                        # Replace the placeholder entry with this richer one.
+                        idx_to_replace = next(
+                            (i for i, p in enumerate(self.products)
+                             if (p['category_slug'], p['name'].lower().strip()) == dedup_key
+                             and not p['all_skus']),
+                            None,
+                        )
+                        if idx_to_replace is not None:
+                            info(f"    upgrading placeholder '{product['name']}' with SKU-bearing entry")
+                            # Remove old entry from by_category too
+                            old = self.products[idx_to_replace]
+                            self.by_category[old['category_slug']] = [
+                                p for p in self.by_category[old['category_slug']] if p is not old
+                            ]
+                            self.products.pop(idx_to_replace)
+                            # Fall through to add the new entry
+                        else:
+                            info(f"    duplicate — skipping '{product['name']}'")
+                            continue
+                    else:
+                        info(f"    duplicate — skipping '{product['name']}'")
+                        continue
+                self._seen_products.add(dedup_key)
 
                 # Download images
                 ref_sku = product['all_skus'][0] if product['all_skus'] else 'img'
