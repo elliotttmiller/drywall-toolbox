@@ -93,18 +93,18 @@ def merge_image_field(
 def select_preferred_row(
     columbia_row: Dict[str, str] | None, tsw_row: Dict[str, str] | None
 ) -> tuple[Dict[str, str], str]:
-    if columbia_row and not tsw_row:
+    if columbia_row is not None and tsw_row is None:
         return dict(columbia_row), "columbia"
-    if tsw_row and not columbia_row:
+    if tsw_row is not None and columbia_row is None:
         return dict(tsw_row), "tsw"
 
-    if columbia_row is None and tsw_row is None:
-        raise ValueError("select_preferred_row requires at least one source row.")
-    columbia_score = row_score(columbia_row, "columbia")
-    tsw_score = row_score(tsw_row, "tsw")
+    columbia = columbia_row or {}
+    tsw = tsw_row or {}
+    columbia_score = row_score(columbia, "columbia")
+    tsw_score = row_score(tsw, "tsw")
     if columbia_score >= tsw_score:
-        return dict(columbia_row), "columbia"
-    return dict(tsw_row), "tsw"
+        return dict(columbia), "columbia"
+    return dict(tsw), "tsw"
 
 
 def main() -> None:
