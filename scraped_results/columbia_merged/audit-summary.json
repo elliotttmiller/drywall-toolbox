@@ -1,0 +1,28 @@
+{
+  "run_at": "2026-04-17T23:18:05.475465",
+  "inputs": {
+    "live_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/frontend/public/wp-catalog.csv",
+    "columbia_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/columbia_tools/wp-catalog.csv",
+    "tsw_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/tsw_columbia/products_tsw.csv",
+    "columbia_images_root": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/columbia_tools",
+    "columbia_image_base_url": "https://drywalltoolbox.com/wp/wp-content/uploads/columbia-tools"
+  },
+  "stats": {
+    "live_total_rows_in": 1553,
+    "live_columbia_rows": 1004,
+    "live_non_columbia_rows": 549,
+    "scraped_columbia_skus": 83,
+    "scraped_tsw_skus": 335,
+    "all_scraped_unique_skus": 367,
+    "overlap_skus": 294,
+    "new_skus_added": 73,
+    "image_galleries_enriched": 286,
+    "extra_images_added": 417,
+    "live_total_rows_out": 1626
+  },
+  "outputs": {
+    "merged_live_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/frontend/public/wp-catalog.csv",
+    "columbia_only_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/columbia_merged/wp-catalog.csv",
+    "xref_csv": "/home/runner/work/drywall-toolbox/drywall-toolbox/scraped_results/columbia_merged/sku-cross-reference.csv"
+  }
+}
