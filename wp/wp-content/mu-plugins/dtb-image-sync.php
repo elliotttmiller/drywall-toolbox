@@ -135,6 +135,39 @@ function dtb_image_sync_register_routes(): void {
 		'permission_callback' => 'dtb_image_sync_permission',
 	] );
 
+	// POST /dtb/v1/sync-images/link-only
+	register_rest_route( $ns, '/sync-images/link-only', [
+		'methods'             => 'POST',
+		'callback'            => 'dtb_route_link_registered_images',
+		'permission_callback' => 'dtb_image_sync_permission',
+		'args'                => array_merge( $dir_args, [
+			'dry_run' => [
+				'required'          => false,
+				'default'           => false,
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'description'       => 'When true, scan and report without writing to the database.',
+			],
+			'limit'   => [
+				'required'          => false,
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+				'description'       => 'Max SKUs to process. 0 = all. Use with offset for batching.',
+			],
+			'offset'  => [
+				'required'          => false,
+				'default'           => 0,
+				'sanitize_callback' => 'absint',
+				'description'       => 'Number of SKUs to skip. Use with limit for batching.',
+			],
+			'force'   => [
+				'required'          => false,
+				'default'           => false,
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'description'       => 'When true, re-link products even when image assignments already match.',
+			],
+		] ),
+	] );
+
 	// POST /dtb/v1/sync-images/reset — DESTRUCTIVE, dry_run=true by default
 	register_rest_route( $ns, '/sync-images/reset', [
 		'methods'             => 'POST',
@@ -620,6 +653,168 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 			? $offset + $limit
 			: null,
 		'file_based_sync' => ( 'file' === $batch_mode ),
+	] );
+}
+
+/**
+ * Link already-registered image attachments to WooCommerce products by SKU.
+ *
+ * This mode does not register files. It is intended for the post-import step
+ * after products from wp-catalog.csv exist in WooCommerce and image files were
+ * already registered in the Media Library.
+ */
+function dtb_route_link_registered_images( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+	$year    = ltrim( (string) $request->get_param( 'year' ),  '/' );
+	$month   = ltrim( (string) $request->get_param( 'month' ), '/' );
+	$dry_run = (bool) $request->get_param( 'dry_run' );
+	$force   = (bool) $request->get_param( 'force' );
+	$offset  = (int) $request->get_param( 'offset' );
+	$limit   = (int) $request->get_param( 'limit' );
+
+	$upload_dir = wp_upload_dir();
+	$scan_dir   = trailingslashit( $upload_dir['basedir'] ) . "$year/$month";
+	$scan_url   = trailingslashit( $upload_dir['baseurl'] ) . "$year/$month";
+
+	$real_scan = realpath( $scan_dir );
+	$real_base = realpath( $upload_dir['basedir'] );
+	if ( ! $real_scan || ! $real_base || strncmp( $real_scan, $real_base, strlen( $real_base ) ) !== 0 ) {
+		return new WP_Error( 'invalid_path', 'Resolved path is outside the uploads directory.', [ 'status' => 400 ] );
+	}
+	if ( ! is_dir( $scan_dir ) ) {
+		return new WP_Error( 'dir_not_found', "Directory not found: wp-content/uploads/$year/$month", [ 'status' => 404 ] );
+	}
+
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+	$sku_rows = $wpdb->get_results(
+		"SELECT CASE
+		          WHEN p.post_type = 'product_variation' AND p.post_parent > 0 THEN p.post_parent
+		          ELSE p.ID
+		        END AS product_id,
+		        pm.meta_value AS sku
+		 FROM {$wpdb->posts} p
+		 INNER JOIN {$wpdb->postmeta} pm
+		         ON pm.post_id  = p.ID
+		        AND pm.meta_key = '_sku'
+		 WHERE p.post_type   IN ('product', 'product_variation')
+		   AND p.post_status != 'trash'
+		   AND pm.meta_value != ''
+		 ORDER BY p.ID ASC",
+		ARRAY_A
+	);
+
+	$sku_map = [];
+	foreach ( $sku_rows as $row ) {
+		$sku_map[ strtolower( trim( $row['sku'] ) ) ] = (int) $row['product_id'];
+	}
+
+	$sku_keys = array_keys( $sku_map );
+	$total    = count( $sku_keys );
+	$batch    = ( $limit > 0 )
+		? array_slice( $sku_keys, $offset, $limit )
+		: array_slice( $sku_keys, $offset );
+
+	$linked             = 0;
+	$skipped            = 0;
+	$no_file            = 0;
+	$missing_attachment = 0;
+	$errors             = [];
+	$extensions         = [ 'webp', 'jpg', 'jpeg', 'png', 'avif', 'gif' ];
+
+	foreach ( $batch as $sku_lower ) {
+		$product_id = $sku_map[ $sku_lower ];
+
+		[ $primary_path, $primary_url ] = dtb_probe_image( $scan_dir, $scan_url, $sku_lower, $extensions );
+
+		$gallery_pairs = [];
+		for ( $i = 1; $i <= 20; $i++ ) {
+			$suffix = '_' . str_pad( (string) $i, 2, '0', STR_PAD_LEFT );
+			[ $gpath, $gurl ] = dtb_probe_image( $scan_dir, $scan_url, $sku_lower . $suffix, $extensions );
+			if ( $gpath ) {
+				$gallery_pairs[] = [ 'path' => $gpath, 'url' => $gurl ];
+			}
+		}
+
+		if ( ! $primary_path && empty( $gallery_pairs ) ) {
+			$hash_matches = dtb_probe_image_hash_variants( $scan_dir, $scan_url, $sku_lower, $extensions );
+			if ( ! empty( $hash_matches ) ) {
+				$first         = array_shift( $hash_matches );
+				$primary_path  = $first['path'];
+				$primary_url   = $first['url'];
+				$gallery_pairs = $hash_matches;
+			}
+		}
+
+		if ( ! $primary_path || ! $primary_url ) {
+			++$no_file;
+			continue;
+		}
+
+		$primary_att = (int) attachment_url_to_postid( $primary_url );
+		if ( $primary_att <= 0 ) {
+			++$missing_attachment;
+			continue;
+		}
+
+		$gallery_att_ids = [];
+		foreach ( $gallery_pairs as $pair ) {
+			$gatt = (int) attachment_url_to_postid( $pair['url'] );
+			if ( $gatt > 0 ) {
+				$gallery_att_ids[] = $gatt;
+			}
+		}
+
+		if ( $dry_run ) {
+			++$linked;
+			continue;
+		}
+
+		if ( ! $force ) {
+			$current_thumb      = (int) get_post_thumbnail_id( $product_id );
+			$current_gallery    = get_post_meta( $product_id, '_product_image_gallery', true );
+			$current_gallery_ids = array_values( array_filter( array_map( 'absint', explode( ',', (string) $current_gallery ) ) ) );
+			if ( $current_thumb === $primary_att && $current_gallery_ids === $gallery_att_ids ) {
+				++$skipped;
+				continue;
+			}
+		}
+
+		wp_update_post( [ 'ID' => $primary_att, 'post_parent' => $product_id ] );
+		foreach ( $gallery_att_ids as $gallery_att_id ) {
+			wp_update_post( [ 'ID' => $gallery_att_id, 'post_parent' => $product_id ] );
+		}
+
+		$result = dtb_link_images_to_product( $product_id, $primary_att, $gallery_att_ids );
+		if ( is_wp_error( $result ) ) {
+			$errors[] = "[{$sku_lower}] link: " . $result->get_error_message();
+			dtb_image_sync_log( "image_link_only link error [{$sku_lower}]: " . $result->get_error_message() );
+			continue;
+		}
+
+		++$linked;
+	}
+
+	if ( ! $dry_run && class_exists( 'WC_Cache_Helper' ) ) {
+		WC_Cache_Helper::get_transient_version( 'product', true );
+	}
+
+	return rest_ensure_response( [
+		'status'              => $dry_run ? 'dry_run' : 'completed',
+		'directory'           => "wp-content/uploads/$year/$month",
+		'total'               => $total,
+		'offset'              => $offset,
+		'limit'               => $limit,
+		'scanned'             => count( $batch ),
+		'linked'              => $linked,
+		'skipped'             => $skipped,
+		'no_file'             => $no_file,
+		'missing_attachment'  => $missing_attachment,
+		'errors'              => $errors,
+		'dry_run'             => $dry_run,
+		'next_offset'         => ( $limit > 0 && ( $offset + $limit ) < $total )
+			? $offset + $limit
+			: null,
+		'link_only'           => true,
 	] );
 }
 
@@ -1425,7 +1620,7 @@ function dtb_render_image_sync_admin_page(): void {
 		$request->set_param( 'year', $year );
 		$request->set_param( 'month', $month );
 
-		if ( in_array( $action, [ 'sync', 'pipeline', 'reset', 'fix_renamed' ], true ) ) {
+		if ( in_array( $action, [ 'sync', 'pipeline', 'link_only', 'reset', 'fix_renamed' ], true ) ) {
 			$request->set_param( 'dry_run', $dry_run );
 		}
 
@@ -1434,6 +1629,12 @@ function dtb_render_image_sync_admin_page(): void {
 			$request->set_param( 'offset', $offset );
 			$request->set_param( 'force', $force );
 			$action_result = dtb_route_sync_images( $request );
+
+		} elseif ( 'link_only' === $action ) {
+			$request->set_param( 'limit', $limit );
+			$request->set_param( 'offset', $offset );
+			$request->set_param( 'force', $force );
+			$action_result = dtb_route_link_registered_images( $request );
 
 		} elseif ( 'pipeline' === $action ) {
 			// Phase 1 — fix any WP-renamed files (idempotent, non-destructive).
@@ -1597,7 +1798,9 @@ function dtb_render_image_sync_admin_page(): void {
 		<?php
 		// ── Next-batch shortcut ───────────────────────────────────────────────
 		if ( null !== $next_offset ) :
-			$next_action = ! empty( $result_data['pipeline'] ) ? 'pipeline' : 'sync';
+			$next_action = ! empty( $result_data['pipeline'] )
+				? 'pipeline'
+				: ( ! empty( $result_data['link_only'] ) ? 'link_only' : 'sync' );
 			?>
 			<div class="notice notice-info" style="display:flex;align-items:center;gap:16px;">
 				<p style="margin:0;">More batches remaining. Next offset: <strong><?php echo esc_html( (string) $next_offset ); ?></strong></p>
@@ -1675,6 +1878,7 @@ function dtb_render_image_sync_admin_page(): void {
 					<span style="color:#646970;padding:0 4px;">or individually:</span>
 					<button type="submit" class="button" name="dtb_image_sync_action" value="status">Check Status</button>
 					<button type="submit" class="button" name="dtb_image_sync_action" value="fix_renamed">Fix Renamed Files</button>
+					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="link_only">Link Registered Images</button>
 					<button type="submit" class="button button-primary" name="dtb_image_sync_action" value="sync">Run Sync Batch</button>
 					<button type="submit" class="button button-link-delete" name="dtb_image_sync_action" value="reset"
 						style="margin-left:auto;">⚠️ Run Reset</button>
@@ -1711,13 +1915,14 @@ function dtb_render_image_sync_admin_page(): void {
 				<li>Click <strong>🚀 Run Full Pipeline</strong> — it fixes any WP-renamed files, then registers and links images for this batch.</li>
 				<li>If a <em>Continue Next Batch</em> button appears, click it to advance until all SKUs are processed.</li>
 				<li>Run <strong>Check Status</strong> any time to see how many files are registered and linked.</li>
-				<li>After syncing, import <code>wp-catalog.csv</code> via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product&page=product_importer' ) ); ?>">WooCommerce → Products → Import</a>.</li>
+				<li>Import <code>wp-catalog.csv</code> via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product&page=product_importer' ) ); ?>">WooCommerce → Products → Import</a>, then run <strong>Link Registered Images</strong> when products are in place.</li>
 			</ol>
 		</div>
 	</div>
 	<?php
 	$ns                = defined( 'DTB_API_NAMESPACE' ) ? DTB_API_NAMESPACE : 'dtb/v1';
 	$rest_sync_url     = rest_url( $ns . '/sync-images' );
+	$rest_link_url     = rest_url( $ns . '/sync-images/link-only' );
 	$rest_fix_url      = rest_url( $ns . '/sync-images/fix-renamed' );
 	$rest_progress_url = rest_url( $ns . '/sync-images/progress' );
 	?>
@@ -1734,6 +1939,7 @@ function dtb_render_image_sync_admin_page(): void {
 
 		const api = {
 			sync: <?php echo wp_json_encode( esc_url_raw( $rest_sync_url ) ); ?>,
+			link: <?php echo wp_json_encode( esc_url_raw( $rest_link_url ) ); ?>,
 			fix: <?php echo wp_json_encode( esc_url_raw( $rest_fix_url ) ); ?>,
 			progress: <?php echo wp_json_encode( esc_url_raw( $rest_progress_url ) ); ?>,
 			nonce: <?php echo wp_json_encode( wp_create_nonce( 'wp_rest' ) ); ?>
@@ -1840,7 +2046,7 @@ function dtb_render_image_sync_admin_page(): void {
 		} );
 
 		form.addEventListener( 'submit', async ( event ) => {
-			if ( submittedAction !== 'sync' && submittedAction !== 'pipeline' ) {
+			if ( submittedAction !== 'sync' && submittedAction !== 'pipeline' && submittedAction !== 'link_only' ) {
 				return;
 			}
 			event.preventDefault();
@@ -1873,14 +2079,17 @@ function dtb_render_image_sync_admin_page(): void {
 				}
 
 				let batchCount = 0;
+				const syncEndpoint = submittedAction === 'link_only' ? api.link : api.sync;
 				while ( true ) {
 					batchCount += 1;
 					if ( batchCount > MAX_BATCHES ) {
 						throw new Error( 'Maximum batch limit exceeded.' );
 					}
-					setStatus( `Running sync batch ${batchCount}…` );
-					startPolling();
-					const batch = await postJson( api.sync, {
+					setStatus( `Running ${submittedAction === 'link_only' ? 'link-only' : 'sync'} batch ${batchCount}…` );
+					if ( submittedAction !== 'link_only' ) {
+						startPolling();
+					}
+					const batch = await postJson( syncEndpoint, {
 						year: year,
 						month: month,
 						dry_run: dryRun,
@@ -1888,7 +2097,9 @@ function dtb_render_image_sync_admin_page(): void {
 						limit: limit,
 						offset: currentOffset
 					} );
-					stopPolling();
+					if ( submittedAction !== 'link_only' ) {
+						stopPolling();
+					}
 
 					const scanned = parseIntOrDefault( batch.scanned, 0 );
 					const total = Math.max( scanned, parseIntOrDefault( batch.total, 0 ) );
@@ -1896,7 +2107,7 @@ function dtb_render_image_sync_admin_page(): void {
 					const pct = total > 0 ? completed / total : 1;
 					setBar( pct );
 					appendLog(
-						`Batch ${batchCount} done · scanned ${scanned}, registered ${parseIntOrDefault( batch.registered, 0 )}, linked ${parseIntOrDefault( batch.linked, 0 )}, errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}`
+						`Batch ${batchCount} done · scanned ${scanned}, registered ${parseIntOrDefault( batch.registered, 0 )}, linked ${parseIntOrDefault( batch.linked, 0 )}, missing attachments ${parseIntOrDefault( batch.missing_attachment, 0 )}, errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}`
 					);
 
 					if ( batch.next_offset === null || typeof batch.next_offset === 'undefined' ) {
