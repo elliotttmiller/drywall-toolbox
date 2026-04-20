@@ -51,6 +51,7 @@ import re
 import shutil
 import sys
 import unicodedata
+from dataclasses import dataclass
 from pathlib import Path
 from typing import NamedTuple
 
@@ -60,7 +61,7 @@ CYAN    = "\033[96m"
 GREEN   = "\033[92m"
 YELLOW  = "\033[93m"
 RED     = "\033[91m"
-MAGENTA = "\033[95m"
+MAGENTA = "\033[95m"  # noqa: F841 – available for callers
 GREY    = "\033[90m"
 RESET   = "\033[0m"
 BOLD    = "\033[1m"
@@ -71,17 +72,58 @@ def warn(msg: str)  -> None: print(f"   {YELLOW}⚠  {msg}{RESET}")
 def fail(msg: str)  -> None: print(f"   {RED}✘  {msg}{RESET}")
 def info(msg: str)  -> None: print(f"   {GREY}·  {msg}{RESET}")
 
-# ── Path constants ────────────────────────────────────────────────────────────
+# ── Default path constants (may be overridden via CLI) ────────────────────────
 
-REPO_ROOT  = Path(__file__).resolve().parent.parent
-PRODUCTS   = REPO_ROOT / "scripts" / "scraped_results" / "Products"
-MANIFESTS  = PRODUCTS / "_manifests"
-AUDIT_DIR  = PRODUCTS / "_audit"
-CATALOG    = REPO_ROOT / "frontend" / "public" / "wp-catalog.csv"
+_REPO_ROOT_DEFAULT = Path(__file__).resolve().parent.parent
 
-IMAGE_MAP_CSV  = MANIFESTS / "image-map.csv"
-ROLLBACK_CSV   = MANIFESTS / "rollback-map.csv"
-EXCEPTIONS_CSV = AUDIT_DIR / "exceptions.csv"
+
+@dataclass(frozen=True)
+class Paths:
+    """Immutable collection of filesystem paths used throughout the pipeline."""
+    repo_root:      Path
+    products:       Path
+    catalog:        Path
+    manifests:      Path
+    audit_dir:      Path
+    image_map_csv:  Path
+    rollback_csv:   Path
+    exceptions_csv: Path
+
+    @classmethod
+    def default(cls) -> "Paths":
+        repo_root = _REPO_ROOT_DEFAULT
+        products  = repo_root / "scripts" / "scraped_results" / "Products"
+        catalog   = repo_root / "frontend" / "public" / "wp-catalog.csv"
+        manifests = products / "_manifests"
+        audit_dir = products / "_audit"
+        return cls(
+            repo_root=repo_root,
+            products=products,
+            catalog=catalog,
+            manifests=manifests,
+            audit_dir=audit_dir,
+            image_map_csv=manifests / "image-map.csv",
+            rollback_csv=manifests  / "rollback-map.csv",
+            exceptions_csv=audit_dir / "exceptions.csv",
+        )
+
+    @classmethod
+    def from_overrides(cls, products_dir: str | None, catalog: str | None) -> "Paths":
+        defaults = cls.default()
+        products = Path(products_dir) if products_dir else defaults.products
+        cat      = Path(catalog)      if catalog      else defaults.catalog
+        manifests = products / "_manifests"
+        audit_dir = products / "_audit"
+        return cls(
+            repo_root=defaults.repo_root,
+            products=products,
+            catalog=cat,
+            manifests=manifests,
+            audit_dir=audit_dir,
+            image_map_csv=manifests / "image-map.csv",
+            rollback_csv=manifests  / "rollback-map.csv",
+            exceptions_csv=audit_dir / "exceptions.csv",
+        )
 
 # ── Brand slug mapping ────────────────────────────────────────────────────────
 
@@ -158,13 +200,13 @@ class ManifestRow(NamedTuple):
 
 # ── Step 1: Build authoritative product map ───────────────────────────────────
 
-def build_product_map() -> tuple[list[ProductRecord], dict[str, list[ProductRecord]], dict[str, list[ProductRecord]]]:
+def build_product_map(paths: Paths) -> tuple[list[ProductRecord], dict[str, list[ProductRecord]], dict[str, list[ProductRecord]]]:
     """Parse wp-catalog.csv and return product list + SKU/MPN lookup dicts."""
     records: list[ProductRecord] = []
     sku_map:  dict[str, list[ProductRecord]] = {}
     mpn_map:  dict[str, list[ProductRecord]] = {}
 
-    with open(CATALOG, encoding="utf-8-sig", newline="") as f:
+    with open(paths.catalog, encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         for row_id, row in enumerate(reader, start=1):
             brand      = row["Brands"].strip()
@@ -247,12 +289,12 @@ def classify_stem(stem: str) -> tuple[str, int | None, set[str]]:
     return stem, None, flags
 
 
-def build_image_inventory() -> tuple[list[ImageRecord], dict[str, list[ImageRecord]]]:
+def build_image_inventory(paths: Paths) -> tuple[list[ImageRecord], dict[str, list[ImageRecord]]]:
     """Inventory all files in Products/, skipping _manifests/ and _audit/."""
     records: list[ImageRecord] = []
     stem_map: dict[str, list[ImageRecord]] = {}   # raw lowercase stem → files
 
-    for root, dirs, files in os.walk(PRODUCTS):
+    for root, dirs, files in os.walk(paths.products):
         # Skip meta directories
         dirs[:] = [d for d in dirs if d not in ("_manifests", "_audit")]
         for fname in files:
@@ -292,6 +334,7 @@ def match_images_to_products(
     images:    list[ImageRecord],
     sku_map:   dict[str, list[ProductRecord]],
     mpn_map:   dict[str, list[ProductRecord]],
+    paths:     Paths,
 ) -> tuple[list[ManifestRow], list[dict]]:
     """
     Implement the 6-priority matching pipeline described in the plan.
@@ -319,8 +362,10 @@ def match_images_to_products(
             stem_no_hash = strip_hash(stem_lc)
             by_hash.setdefault(stem_no_hash, []).append(ir)
 
+            # Hash stripped + index stripped → index into by_base so that
+            # "pt-10fb_7316520b" is findable by the key "pt-10fb".
             base_no_idx_no_hash = strip_index(strip_hash(stem_lc))[0]
-            by_hash.setdefault(base_no_idx_no_hash, []).append(ir)
+            by_base.setdefault(base_no_idx_no_hash, []).append(ir)
 
             stem_lz = strip_leading_zeros(stem_lc)
             by_lz.setdefault(stem_lz, []).append(ir)
@@ -416,17 +461,19 @@ def match_images_to_products(
             continue
 
         # Assign gallery index
-        # Prefer catalog order when it comes from catalog_url source
-        # For other sources, sort by existing index in the stem
+        # Prefer catalog order when it comes from catalog_url source.
+        # Build a basename-keyed position map from the catalog image list so
+        # that lookup is by filename string, not by ImageRecord object identity.
+        catalog_bn_order: dict[str, int] = {
+            bn.lower(): idx for idx, bn in enumerate(pr.images)
+        }
+
         def _infer_order(pair: tuple[ImageRecord, str]) -> int:
             ir, src = pair
             if src == "catalog_url":
-                # Use catalog position
-                bn = ir.basename.lower()
-                try:
-                    return catalog_imgs.index(ir)
-                except ValueError:
-                    pass
+                pos = catalog_bn_order.get(ir.basename.lower())
+                if pos is not None:
+                    return pos
             # Fall back to numeric index in stem
             _, idx = strip_index(strip_hash(ir.stem.lower()))
             if idx is not None:
@@ -465,7 +512,7 @@ def match_images_to_products(
         # Emit manifest rows
         img_index = 1
         for ir, src in all_cands:
-            rel_old = ir.path.relative_to(REPO_ROOT)
+            rel_old = ir.path.relative_to(paths.repo_root)
             subdir  = canonical_subdir(pr.brand_slug, pr.sku_norm)
             new_fn  = canonical_filename(pr.sku_norm, pr.mpn_norm, img_index)
             new_rel = Path("scripts") / "scraped_results" / "Products" / subdir / new_fn
@@ -507,7 +554,7 @@ def match_images_to_products(
         exceptions.append({
             "type":    "unmatched_images",
             "image":   bn,
-            "path":    str(Path(upath).relative_to(REPO_ROOT)).replace("\\", "/"),
+            "path":    str(Path(upath).relative_to(paths.repo_root)).replace("\\", "/"),
             "details": "File exists in Products/ but was not matched to any catalog product",
         })
 
@@ -526,17 +573,17 @@ EXCEPTION_COLS = [
     "image", "path", "stem_implies_sku", "other_products", "details",
 ]
 
-def write_manifests(manifest_rows: list[ManifestRow], exceptions: list[dict]) -> None:
-    MANIFESTS.mkdir(parents=True, exist_ok=True)
-    AUDIT_DIR.mkdir(parents=True, exist_ok=True)
+def write_manifests(manifest_rows: list[ManifestRow], exceptions: list[dict], paths: Paths) -> None:
+    paths.manifests.mkdir(parents=True, exist_ok=True)
+    paths.audit_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(IMAGE_MAP_CSV, "w", newline="", encoding="utf-8") as f:
+    with open(paths.image_map_csv, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=MANIFEST_COLS)
         w.writeheader()
         for mr in manifest_rows:
             w.writerow(mr._asdict())
 
-    with open(EXCEPTIONS_CSV, "w", newline="", encoding="utf-8") as f:
+    with open(paths.exceptions_csv, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=EXCEPTION_COLS, extrasaction="ignore")
         w.writeheader()
         for ex in exceptions:
@@ -545,13 +592,13 @@ def write_manifests(manifest_rows: list[ManifestRow], exceptions: list[dict]) ->
                    for k, v in ex.items()}
             w.writerow(row)
 
-    ok(f"Manifest written: {IMAGE_MAP_CSV.relative_to(REPO_ROOT)}")
-    ok(f"Exceptions written: {EXCEPTIONS_CSV.relative_to(REPO_ROOT)}")
+    ok(f"Manifest written: {paths.image_map_csv.relative_to(paths.repo_root)}")
+    ok(f"Exceptions written: {paths.exceptions_csv.relative_to(paths.repo_root)}")
 
 
 # ── Step 5: Apply renames/moves ───────────────────────────────────────────────
 
-def apply_migration(manifest_rows: list[ManifestRow], dry_run: bool = False) -> None:
+def apply_migration(manifest_rows: list[ManifestRow], paths: Paths, dry_run: bool = False) -> None:
     rollback: list[dict] = []
     errors   = 0
     moved    = 0
@@ -560,8 +607,8 @@ def apply_migration(manifest_rows: list[ManifestRow], dry_run: bool = False) -> 
         if mr.confidence != "high" or mr.status != "mapped":
             continue
 
-        src  = REPO_ROOT / mr.old_path
-        dst  = REPO_ROOT / mr.new_path
+        src  = paths.repo_root / mr.old_path
+        dst  = paths.repo_root / mr.new_path
 
         if not src.exists():
             warn(f"Source missing, skipping: {mr.old_path}")
@@ -581,13 +628,13 @@ def apply_migration(manifest_rows: list[ManifestRow], dry_run: bool = False) -> 
         moved += 1
 
     if not dry_run and rollback:
-        MANIFESTS.mkdir(parents=True, exist_ok=True)
-        with open(ROLLBACK_CSV, "w", newline="", encoding="utf-8") as f:
+        paths.manifests.mkdir(parents=True, exist_ok=True)
+        with open(paths.rollback_csv, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=["src", "dst"])
             w.writeheader()
             for rb in rollback:
                 w.writerow(rb)
-        ok(f"Rollback map written: {ROLLBACK_CSV.relative_to(REPO_ROOT)}")
+        ok(f"Rollback map written: {paths.rollback_csv.relative_to(paths.repo_root)}")
 
     prefix = "[DRY-RUN] " if dry_run else ""
     ok(f"{prefix}Processed {moved} files; {errors} skipped/errors")
@@ -595,7 +642,7 @@ def apply_migration(manifest_rows: list[ManifestRow], dry_run: bool = False) -> 
 
 # ── Step 6: Rewrite catalog image references ──────────────────────────────────
 
-def rewrite_catalog(manifest_rows: list[ManifestRow]) -> None:
+def rewrite_catalog(manifest_rows: list[ManifestRow], paths: Paths) -> None:
     """
     Update the Images column in wp-catalog.csv to use the new canonical URLs.
     Uses the manifest as the mapping source (old basename → new basename).
@@ -616,7 +663,7 @@ def rewrite_catalog(manifest_rows: list[ManifestRow]) -> None:
     output_rows: list[dict] = []
     fieldnames: list[str] = []
 
-    with open(CATALOG, encoding="utf-8-sig", newline="") as f:
+    with open(paths.catalog, encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         fieldnames = reader.fieldnames or []
         for row in reader:
@@ -646,12 +693,12 @@ def rewrite_catalog(manifest_rows: list[ManifestRow]) -> None:
             output_rows.append(row)
 
     # Write back (preserve UTF-8 BOM for WooCommerce compatibility)
-    with open(CATALOG, "w", encoding="utf-8-sig", newline="") as f:
+    with open(paths.catalog, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
         w.writeheader()
         w.writerows(output_rows)
 
-    ok(f"Catalog rewritten: {rows_updated} rows updated in {CATALOG.relative_to(REPO_ROOT)}")
+    ok(f"Catalog rewritten: {rows_updated} rows updated in {paths.catalog.relative_to(paths.repo_root)}")
 
 
 # ── Step 7: Integrity validation ──────────────────────────────────────────────
@@ -661,17 +708,16 @@ _CANONICAL_RE = re.compile(
 )
 _BAD_CHAR_RE  = re.compile(r'[^a-z0-9\-_.]')
 
-def validate(strict: bool = True) -> int:
+def validate(paths: Paths) -> int:
     """
     Run hard integrity checks.  Returns the number of violations found.
-    If strict=True, all checks must pass; otherwise just report.
     """
     violations = 0
 
     # Load catalog image basenames
     cat_basenames: set[str] = set()
     sku_image_map: dict[str, list[str]] = {}  # sku → basenames
-    with open(CATALOG, encoding="utf-8-sig", newline="") as f:
+    with open(paths.catalog, encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
             sku = row["SKU"].strip()
@@ -688,7 +734,7 @@ def validate(strict: bool = True) -> int:
     non_webp:   list[str] = []
     orig_old:   list[str] = []
 
-    for root, dirs, files in os.walk(PRODUCTS):
+    for root, dirs, files in os.walk(paths.products):
         dirs[:] = [d for d in dirs if d not in ("_manifests", "_audit")]
         for fname in files:
             if not fname.lower().endswith(".webp"):
@@ -715,7 +761,7 @@ def validate(strict: bool = True) -> int:
     orphan_files = prod_files - cat_basenames
     if orphan_files:
         warn(f"[CHECK2] {len(orphan_files)} files in Products/ not referenced in catalog")
-        info("  (Run --dry-run to see details in exceptions.csv)")
+        info("  (Run without --validate to see details in exceptions.csv)")
 
     # Check 3: No non-webp files
     if non_webp:
@@ -753,18 +799,18 @@ def validate(strict: bool = True) -> int:
 
 # ── Step 8: Undo/rollback ─────────────────────────────────────────────────────
 
-def undo_migration() -> None:
-    if not ROLLBACK_CSV.exists():
-        fail(f"Rollback file not found: {ROLLBACK_CSV.relative_to(REPO_ROOT)}")
+def undo_migration(paths: Paths) -> None:
+    if not paths.rollback_csv.exists():
+        fail(f"Rollback file not found: {paths.rollback_csv.relative_to(paths.repo_root)}")
         sys.exit(1)
 
     moved = 0
     errors = 0
-    with open(ROLLBACK_CSV, encoding="utf-8", newline="") as f:
+    with open(paths.rollback_csv, encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         for rb in reader:
-            src = REPO_ROOT / rb["src"]
-            dst = REPO_ROOT / rb["dst"]
+            src = paths.repo_root / rb["src"]
+            dst = paths.repo_root / rb["dst"]
             if not src.exists():
                 warn(f"Rollback source missing, skipping: {rb['src']}")
                 errors += 1
@@ -845,12 +891,12 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--products-dir",
-        default=str(PRODUCTS),
+        default=str(Paths.default().products),
         help="Override the Products directory path",
     )
     p.add_argument(
         "--catalog",
-        default=str(CATALOG),
+        default=str(Paths.default().catalog),
         help="Override the catalog CSV path",
     )
     return p.parse_args()
@@ -861,58 +907,57 @@ def _is_dry_run(args: argparse.Namespace) -> bool:
     return not (args.apply or args.rewrite_csv or args.validate or args.undo)
 
 
+def _load_manifest_from_disk(paths: Paths) -> list[ManifestRow]:
+    """Load a previously written image-map.csv from disk."""
+    manifest_rows: list[ManifestRow] = []
+    with open(paths.image_map_csv, encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            manifest_rows.append(ManifestRow(
+                brand=row["brand"],
+                sku=row["sku"],
+                mpn=row["mpn"],
+                old_path=row["old_path"],
+                new_path=row["new_path"],
+                image_index=int(row["image_index"]),
+                is_primary=row["is_primary"].lower() == "true",
+                source=row["source"],
+                row_id=int(row["row_id"]),
+                confidence=row["confidence"],
+                status=row["status"],
+            ))
+    return manifest_rows
+
+
 def main() -> None:
     args = parse_args()
 
-    # Allow path overrides
-    global PRODUCTS, CATALOG, MANIFESTS, AUDIT_DIR, IMAGE_MAP_CSV, ROLLBACK_CSV, EXCEPTIONS_CSV
-    if args.products_dir != str(PRODUCTS):
-        PRODUCTS      = Path(args.products_dir)
-        MANIFESTS     = PRODUCTS / "_manifests"
-        AUDIT_DIR     = PRODUCTS / "_audit"
-        IMAGE_MAP_CSV = MANIFESTS / "image-map.csv"
-        ROLLBACK_CSV  = MANIFESTS / "rollback-map.csv"
-        EXCEPTIONS_CSV= AUDIT_DIR / "exceptions.csv"
-    if args.catalog != str(CATALOG):
-        CATALOG = Path(args.catalog)
+    # Build path configuration from CLI overrides (no global mutation)
+    paths = Paths.from_overrides(
+        products_dir=args.products_dir if args.products_dir != str(Paths.default().products) else None,
+        catalog=args.catalog if args.catalog != str(Paths.default().catalog) else None,
+    )
 
     # ── --validate ────────────────────────────────────────────────────────────
     if args.validate:
         step("Mode: Validate")
-        violations = validate()
+        violations = validate(paths)
         sys.exit(1 if violations else 0)
 
     # ── --undo ────────────────────────────────────────────────────────────────
     if args.undo:
         step("Mode: Undo")
-        undo_migration()
+        undo_migration(paths)
         return
 
     # ── --rewrite-csv ─────────────────────────────────────────────────────────
     if args.rewrite_csv:
         step("Mode: Rewrite CSV")
-        if not IMAGE_MAP_CSV.exists():
-            fail("image-map.csv not found. Run --dry-run or --apply first.")
+        if not paths.image_map_csv.exists():
+            fail("image-map.csv not found. Run without flags (dry-run) or --apply first.")
             sys.exit(1)
-        # Load manifest from disk
-        manifest_rows: list[ManifestRow] = []
-        with open(IMAGE_MAP_CSV, encoding="utf-8", newline="") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                manifest_rows.append(ManifestRow(
-                    brand=row["brand"],
-                    sku=row["sku"],
-                    mpn=row["mpn"],
-                    old_path=row["old_path"],
-                    new_path=row["new_path"],
-                    image_index=int(row["image_index"]),
-                    is_primary=row["is_primary"].lower() == "true",
-                    source=row["source"],
-                    row_id=int(row["row_id"]),
-                    confidence=row["confidence"],
-                    status=row["status"],
-                ))
-        rewrite_catalog(manifest_rows)
+        manifest_rows = _load_manifest_from_disk(paths)
+        rewrite_catalog(manifest_rows, paths)
         return
 
     # ── Common phases (dry-run and apply share build steps) ───────────────────
@@ -922,31 +967,31 @@ def main() -> None:
         step("Mode: Dry-run (default) — no files will be moved")
 
     step("Phase 1: Build product map from catalog")
-    products, sku_map, mpn_map = build_product_map()
+    products, sku_map, mpn_map = build_product_map(paths)
     ok(f"Loaded {len(products)} product rows; {len(sku_map)} unique SKUs")
 
     step("Phase 2: Inventory image library")
-    images, stem_map = build_image_inventory()
+    images, stem_map = build_image_inventory(paths)
     ok(f"Found {len(images)} .webp files in Products/")
 
     step("Phase 3: Match images to products")
     manifest_rows, exceptions = match_images_to_products(
-        products, images, sku_map, mpn_map,
+        products, images, sku_map, mpn_map, paths,
     )
     ok(f"Generated {len(manifest_rows)} manifest rows; {len(exceptions)} exceptions")
 
     step("Phase 4: Write manifests and exceptions")
-    write_manifests(manifest_rows, exceptions)
+    write_manifests(manifest_rows, exceptions, paths)
 
     print_summary(products, images, manifest_rows, exceptions)
 
     if args.apply:
         step("Phase 5: Apply migration (renames/moves)")
-        apply_migration(manifest_rows, dry_run=False)
+        apply_migration(manifest_rows, paths, dry_run=False)
         ok("Migration applied. Run --validate to verify, then --rewrite-csv to update catalog URLs.")
     else:
         step("Phase 5: [DRY-RUN] Migration plan ready — no files moved")
-        apply_migration(manifest_rows, dry_run=True)
+        apply_migration(manifest_rows, paths, dry_run=True)
         info("Run with --apply to execute the migration.")
         info("Then run --rewrite-csv to update catalog image URLs.")
         info("Then run --validate to confirm integrity.")
