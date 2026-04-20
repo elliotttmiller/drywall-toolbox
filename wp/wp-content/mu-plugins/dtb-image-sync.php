@@ -1891,7 +1891,7 @@ function dtb_render_image_sync_admin_page(): void {
 						`Batch ${batchCount} done · scanned ${scanned}, registered ${parseIntSafe( batch.registered, 0 )}, linked ${parseIntSafe( batch.linked, 0 )}, errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}`
 					);
 
-					if ( batch.next_offset == null ) {
+					if ( batch.next_offset === null || typeof batch.next_offset === 'undefined' ) {
 						appendLog( 'Run complete.' );
 						setStatus( 'Completed successfully.' );
 						setBar( 1 );
