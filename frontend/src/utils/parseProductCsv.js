@@ -82,7 +82,10 @@ export function parseCsvText(csvText) {
 
   if (logicalLines.length < 2) return [];
 
-  const headers = tokenizeLine(logicalLines[0]);
+  // Strip UTF-8 BOM (\uFEFF) from the start of the first line so that the first
+  // column header ("Brands") is keyed correctly in every row object.
+  const firstLine = logicalLines[0].replace(/^\uFEFF/, '');
+  const headers = tokenizeLine(firstLine);
 
   const rows = [];
   for (let i = 1; i < logicalLines.length; i++) {
@@ -493,8 +496,61 @@ function normalizeRow(row, idx) {
   const category = mapCategory(categoriesCell);
   const is_parts = isPartsRow(categoriesCell);
 
+  // Human-readable leaf category name for category-card grouping (e.g. "Finishing Boxes").
+  // This mirrors the display_category field produced by normalizeProduct() in api.js.
+  const categoryLeaf = (() => {
+    if (!categoriesCell) return '';
+    const first = categoriesCell.split('|')[0].trim();
+    const parts = first.split('>');
+    return parts.length >= 2 ? parts[parts.length - 1].trim() : '';
+  })();
+
   // Tags as array
   const tags = (row['Tags'] || '').split(',').map(t => t.trim()).filter(Boolean);
+
+  // ── Variable-product support ───────────────────────────────────────────────
+  // The CSV 'Type' column is 'simple' | 'variable' | 'variation'.
+  // - 'variable'  → parent product; attributes list all available option values
+  // - 'variation' → child product; Attribute 2 value is this variation's option
+  const productType = (row['Type'] || 'simple').trim().toLowerCase();
+  const isVariable  = productType === 'variable';
+
+  // For variable products, parse variation attributes from the Attribute columns.
+  // Attribute 1 is always Brand (not a variation driver). Attribute 2 (Size/Style)
+  // is the variation-driving attribute; its pipe-separated values list all options.
+  const variation_attributes = (() => {
+    if (!isVariable) return [];
+    const result = [];
+    for (let n = 1; n <= 2; n++) {
+      const name  = (row[`Attribute ${n} name`]      || '').trim();
+      const vals  = (row[`Attribute ${n} value(s)`]  || '').trim();
+      const usedForVar = (row[`Attribute ${n} used for variations`] || '0').trim();
+      if (!name || !vals || usedForVar !== '1') continue;
+      const options = vals.split('|').map(v => v.trim()).filter(Boolean);
+      if (options.length > 0) result.push({ id: n, name, options });
+    }
+    return result;
+  })();
+
+  // For variation rows: capture the parent SKU and the specific attribute value
+  // that identifies this variation (Attribute 2 when used for variations).
+  const parent_id = productType === 'variation' ? (row['Parent'] || '').trim() : null;
+  const variation_attribute = (() => {
+    if (productType !== 'variation') return null;
+    for (let n = 1; n <= 2; n++) {
+      const name = (row[`Attribute ${n} name`]     || '').trim();
+      const val  = (row[`Attribute ${n} value(s)`] || '').trim();
+      const usedForVar = (row[`Attribute ${n} used for variations`] || '0').trim();
+      if (name && val && usedForVar === '1') return { name, option: val };
+    }
+    return null;
+  })();
+
+  // Price range for variable products: collect from pipe-separated prices if ever
+  // present; otherwise the catalog CSV doesn't carry variation prices on the parent,
+  // so min/max will be null and the UI shows no "From $X" label.
+  const min_price = isVariable ? null : null;
+  const max_price = isVariable ? null : null;
 
   // Extract structured specs from HTML description before converting to Markdown.
   // This populates meta_data with _specs_N_label/value and _includes_N_name/sku
@@ -520,6 +576,7 @@ function normalizeRow(row, idx) {
     name:   (row['Name']  || sku || `Product ${idx}`).replace(/^"(.*)"$/, '$1'),
     brand,
     category,
+    display_category: categoryLeaf,
     is_parts,
     categories: [{ name: categoriesCell.split('>').pop().trim() }],
     tags,
@@ -546,6 +603,16 @@ function normalizeRow(row, idx) {
     attributes: brand ? [{ name: 'Brand', options: [brand] }] : [],
     meta_data,
 
+    // Variable-product fields (mirrors normalizeProduct() in api.js)
+    type:                productType,
+    is_variable:         isVariable,
+    variation_attributes,
+    variations:          [],   // variation IDs not available in CSV (fetched via API)
+    min_price,
+    max_price,
+    parent_id,
+    variation_attribute,
+
     // Ratings — CSV does not carry ratings
     rating:  0,
     reviews: 0,
@@ -560,6 +627,11 @@ function normalizeRow(row, idx) {
 /**
  * Parse raw CSV text into an array of normalized product objects.
  *
+ * Variation rows (Type=variation) are excluded from the output because they are
+ * child products of a variable parent and should not appear as stand-alone items
+ * in any product listing — exactly mirroring the WooCommerce REST API behaviour
+ * where GET /products returns only parent products (not variations).
+ *
  * @param {string} csvText
  * @returns {Object[]}
  */
@@ -567,5 +639,6 @@ export function parseProductCsv(csvText) {
   const rows = parseCsvText(csvText);
   return rows
     .filter(r => r['SKU'] || r['Name']) // skip blank rows
+    .filter(r => (r['Type'] || '').trim().toLowerCase() !== 'variation') // skip variation children
     .map((r, i) => normalizeRow(r, i));
 }
