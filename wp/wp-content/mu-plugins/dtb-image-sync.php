@@ -394,8 +394,9 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 
 			// Map gallery/hash filename variants back to their base SKU stem.
 			// _NN = numeric gallery image suffix, _{hex} = hashed image suffix.
+			$file_suffix_pattern = '/^(.+?)(?:_\d{2}|_[0-9a-f]{6,16})$/';
 			$product_stem = $stem;
-			$suffix_matched = 1 === preg_match( '/^(.+?)(?:_\d{2}|_[0-9a-f]{6,16})$/', $stem, $m );
+			$suffix_matched = 1 === preg_match( $file_suffix_pattern, $stem, $m );
 			if ( $suffix_matched ) {
 				$product_stem = $m[1];
 			}
