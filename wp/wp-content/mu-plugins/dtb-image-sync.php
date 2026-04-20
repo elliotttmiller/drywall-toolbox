@@ -337,12 +337,16 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 	global $wpdb;
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 	$sku_rows = $wpdb->get_results(
-		"SELECT p.ID AS product_id, pm.meta_value AS sku
+		"SELECT CASE
+		          WHEN p.post_type = 'product_variation' AND p.post_parent > 0 THEN p.post_parent
+		          ELSE p.ID
+		        END AS product_id,
+		        pm.meta_value AS sku
 		 FROM {$wpdb->posts} p
 		 INNER JOIN {$wpdb->postmeta} pm
 		         ON pm.post_id  = p.ID
 		        AND pm.meta_key = '_sku'
-		 WHERE p.post_type   = 'product'
+		 WHERE p.post_type   IN ('product', 'product_variation')
 		   AND p.post_status != 'trash'
 		   AND pm.meta_value != ''
 		 ORDER BY p.ID ASC",
