@@ -1284,7 +1284,9 @@ function dtb_render_image_sync_admin_page(): void {
 	$dry_run   = $get_post_bool( 'dtb_dry_run', false );
 	$force     = $get_post_bool( 'dtb_force', false );
 
-	$action_result = null;
+	// Which action was submitted (null = no form post yet, show status only).
+	$action         = null;
+	$action_result  = null;
 
 	if (
 		$has_valid_nonce
@@ -1296,7 +1298,7 @@ function dtb_render_image_sync_admin_page(): void {
 		$request->set_param( 'year', $year );
 		$request->set_param( 'month', $month );
 
-		if ( in_array( $action, [ 'sync', 'reset', 'fix_renamed' ], true ) ) {
+		if ( in_array( $action, [ 'sync', 'pipeline', 'reset', 'fix_renamed' ], true ) ) {
 			$request->set_param( 'dry_run', $dry_run );
 		}
 
@@ -1305,10 +1307,52 @@ function dtb_render_image_sync_admin_page(): void {
 			$request->set_param( 'offset', $offset );
 			$request->set_param( 'force', $force );
 			$action_result = dtb_route_sync_images( $request );
+
+		} elseif ( 'pipeline' === $action ) {
+			// Phase 1 — fix any WP-renamed files (idempotent, non-destructive).
+			$fix_request = new WP_REST_Request();
+			$fix_request->set_param( 'year',    $year );
+			$fix_request->set_param( 'month',   $month );
+			$fix_request->set_param( 'dry_run', $dry_run );
+			$fix_result = dtb_route_fix_renamed_files( $fix_request );
+
+			$fix_data = is_wp_error( $fix_result ) ? [] : (array) $fix_result->get_data();
+
+			// Phase 2 — sync this batch.
+			$sync_request = new WP_REST_Request();
+			$sync_request->set_param( 'year',    $year );
+			$sync_request->set_param( 'month',   $month );
+			$sync_request->set_param( 'dry_run', $dry_run );
+			$sync_request->set_param( 'force',   $force );
+			$sync_request->set_param( 'limit',   $limit );
+			$sync_request->set_param( 'offset',  $offset );
+			$sync_result = dtb_route_sync_images( $sync_request );
+
+			if ( is_wp_error( $sync_result ) ) {
+				$action_result = $sync_result;
+			} else {
+				$sync_data     = (array) $sync_result->get_data();
+				$action_result = rest_ensure_response( array_merge(
+					$sync_data,
+					[
+						'pipeline'          => true,
+						'fix_renamed_count' => $fix_data['renamed'] ?? 0,
+						'fix_errors'        => $fix_data['errors'] ?? [],
+					]
+				) );
+			}
+
+		} elseif ( 'release_lock' === $action ) {
+			delete_transient( DTB_SYNC_LOCK_KEY );
+			delete_transient( DTB_SYNC_PROGRESS_KEY );
+			$action_result = rest_ensure_response( [ 'released' => true, 'message' => 'Sync lock released.' ] );
+
 		} elseif ( 'status' === $action ) {
 			$action_result = dtb_route_sync_images_status( $request );
+
 		} elseif ( 'fix_renamed' === $action ) {
 			$action_result = dtb_route_fix_renamed_files( $request );
+
 		} elseif ( 'reset' === $action ) {
 			$confirm_reset = $get_post_bool( 'dtb_confirm_reset', false );
 			if ( ! $confirm_reset ) {
@@ -1323,83 +1367,217 @@ function dtb_render_image_sync_admin_page(): void {
 		}
 	}
 
-	if ( null === $action_result ) {
-		$status_request = new WP_REST_Request();
-		$status_request->set_param( 'year', $year );
-		$status_request->set_param( 'month', $month );
-		$action_result = dtb_route_sync_images_status( $status_request );
+	// Initial page load (no action submitted) — show live status for context.
+	$status_data = null;
+	$status_request = new WP_REST_Request();
+	$status_request->set_param( 'year', $year );
+	$status_request->set_param( 'month', $month );
+	$status_result = dtb_route_sync_images_status( $status_request );
+	if ( ! is_wp_error( $status_result ) ) {
+		$status_data = $status_result->get_data();
 	}
 
 	$is_error    = is_wp_error( $action_result );
-	$result_data = $is_error
-		? [
-			'code'    => $action_result->get_error_code(),
-			'message' => $action_result->get_error_message(),
-			'data'    => $action_result->get_error_data(),
-		]
-		: $action_result->get_data();
+	$result_data = null === $action_result
+		? null
+		: (
+			$is_error
+			? [
+				'code'    => $action_result->get_error_code(),
+				'message' => $action_result->get_error_message(),
+				'data'    => $action_result->get_error_data(),
+			]
+			: $action_result->get_data()
+		);
+
+	// Convenience: next-batch offset from a sync/pipeline result.
+	$next_offset = is_array( $result_data ) ? ( $result_data['next_offset'] ?? null ) : null;
 
 	?>
 	<div class="wrap">
-		<h1>DTB Image Sync</h1>
-		<p>Run product image registration/linking from wp-admin. Sync also generates WooCommerce image sub-sizes.</p>
+		<h1>🖼️ DTB Image Sync</h1>
+		<p>Register, link, and optimize product images in <code>wp-content/uploads/<?php echo esc_html( $year . '/' . $month ); ?>/</code> for WooCommerce import readiness.</p>
 
-		<div class="card" style="max-width: 100%; margin: 20px 0; padding: 20px;">
-			<h2 style="margin-top: 0;">Run Image Sync</h2>
+		<?php
+		// ── Live status bar ────────────────────────────────────────────────────
+		if ( is_array( $status_data ) ) :
+			$files_on_disk       = (int) ( $status_data['files_on_disk']    ?? 0 );
+			$registered_in_db    = (int) ( $status_data['registered_in_db'] ?? 0 );
+			$linked_products     = (int) ( $status_data['linked_products']  ?? 0 );
+			$gallery_products    = (int) ( $status_data['gallery_products'] ?? 0 );
+			$sync_locked         = ! empty( $status_data['sync_locked'] );
+			$reg_pct             = $files_on_disk > 0 ? round( ( $registered_in_db / $files_on_disk ) * 100 ) : 0;
+			?>
+			<div class="card" style="max-width:100%;margin:0 0 20px;padding:20px 20px 12px;">
+				<h2 style="margin-top:0;">📊 Directory Status — <code><?php echo esc_html( "uploads/{$year}/{$month}" ); ?></code></h2>
+				<table class="widefat fixed" style="width:auto;min-width:400px;">
+					<tbody>
+						<tr><td><strong>Files on disk</strong></td><td><?php echo esc_html( (string) $files_on_disk ); ?></td></tr>
+						<tr><td><strong>Registered in Media Library</strong></td><td><?php echo esc_html( "{$registered_in_db} ({$reg_pct}%)" ); ?></td></tr>
+						<tr><td><strong>Products with featured image</strong></td><td><?php echo esc_html( (string) $linked_products ); ?></td></tr>
+						<tr><td><strong>Products with gallery images</strong></td><td><?php echo esc_html( (string) $gallery_products ); ?></td></tr>
+						<tr>
+							<td><strong>Sync lock</strong></td>
+							<td><?php echo $sync_locked ? '<span style="color:#d63638;">🔒 Locked</span>' : '<span style="color:#00a32a;">✔ Free</span>'; ?></td>
+						</tr>
+					</tbody>
+				</table>
+				<?php if ( $sync_locked ) : ?>
+					<form method="post" action="" style="margin-top:10px;">
+						<?php wp_nonce_field( 'dtb_image_sync_admin', 'dtb_image_sync_nonce' ); ?>
+						<button type="submit" class="button" name="dtb_image_sync_action" value="release_lock">🔓 Release Stuck Lock</button>
+					</form>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+
+		<?php
+		// ── Action notice (only shown when a form was submitted) ──────────────
+		if ( null !== $action_result ) :
+			if ( $is_error ) : ?>
+				<div class="notice notice-error is-dismissible"><p>
+					<strong>Action failed:</strong> <?php echo esc_html( (string) ( $result_data['message'] ?? '' ) ); ?>
+				</p></div>
+			<?php else : ?>
+				<div class="notice notice-success is-dismissible"><p>
+					<?php
+					$msg_parts = [];
+					if ( ! empty( $result_data['pipeline'] ) ) {
+						$msg_parts[] = 'Pipeline complete';
+						if ( ! empty( $result_data['fix_renamed_count'] ) ) {
+							$msg_parts[] = esc_html( (string) $result_data['fix_renamed_count'] ) . ' file(s) renamed';
+						}
+					}
+					if ( isset( $result_data['registered'] ) ) {
+						$msg_parts[] = esc_html( (string) $result_data['registered'] ) . ' registered';
+					}
+					if ( isset( $result_data['linked'] ) ) {
+						$msg_parts[] = esc_html( (string) $result_data['linked'] ) . ' linked';
+					}
+					if ( isset( $result_data['renamed'] ) && ! isset( $result_data['registered'] ) ) {
+						$msg_parts[] = esc_html( (string) $result_data['renamed'] ) . ' renamed';
+					}
+					if ( ! empty( $result_data['dry_run'] ) ) {
+						$msg_parts[] = '(dry run)';
+					}
+					echo implode( ' · ', $msg_parts ) ?: 'Action completed.'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each part already escaped above
+					?>
+				</p></div>
+			<?php endif;
+		endif;
+		?>
+
+		<?php
+		// ── Next-batch shortcut ───────────────────────────────────────────────
+		if ( null !== $next_offset ) :
+			$next_action = ! empty( $result_data['pipeline'] ) ? 'pipeline' : 'sync';
+			?>
+			<div class="notice notice-info" style="display:flex;align-items:center;gap:16px;">
+				<p style="margin:0;">More batches remaining. Next offset: <strong><?php echo esc_html( (string) $next_offset ); ?></strong></p>
+				<form method="post" action="" style="margin:0;">
+					<?php wp_nonce_field( 'dtb_image_sync_admin', 'dtb_image_sync_nonce' ); ?>
+					<input type="hidden" name="dtb_year"   value="<?php echo esc_attr( $year ); ?>" />
+					<input type="hidden" name="dtb_month"  value="<?php echo esc_attr( $month ); ?>" />
+					<input type="hidden" name="dtb_limit"  value="<?php echo esc_attr( (string) $limit ); ?>" />
+					<input type="hidden" name="dtb_offset" value="<?php echo esc_attr( (string) $next_offset ); ?>" />
+					<?php if ( $dry_run ) : ?><input type="hidden" name="dtb_dry_run" value="1" /><?php endif; ?>
+					<?php if ( $force )   : ?><input type="hidden" name="dtb_force"   value="1" /><?php endif; ?>
+					<button type="submit" class="button button-primary" name="dtb_image_sync_action" value="<?php echo esc_attr( $next_action ); ?>">
+						Continue Next Batch (offset <?php echo esc_html( (string) $next_offset ); ?>) →
+					</button>
+				</form>
+			</div>
+		<?php endif; ?>
+
+		<div class="card" style="max-width:100%;margin:20px 0;padding:20px;">
+			<h2 style="margin-top:0;">⚙️ Run Image Sync</h2>
 			<form method="post" action="">
 				<?php wp_nonce_field( 'dtb_image_sync_admin', 'dtb_image_sync_nonce' ); ?>
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row"><label for="dtb_year">Year</label></th>
-						<td><input id="dtb_year" name="dtb_year" type="text" class="regular-text" value="<?php echo esc_attr( $year ); ?>" /></td>
+						<td>
+							<input id="dtb_year" name="dtb_year" type="text" class="small-text" value="<?php echo esc_attr( $year ); ?>" maxlength="4" />
+							<p class="description">Upload year folder (e.g. 2026)</p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="dtb_month">Month</label></th>
-						<td><input id="dtb_month" name="dtb_month" type="text" class="regular-text" value="<?php echo esc_attr( $month ); ?>" /></td>
+						<td>
+							<input id="dtb_month" name="dtb_month" type="text" class="small-text" value="<?php echo esc_attr( $month ); ?>" maxlength="2" />
+							<p class="description">Zero-padded month (01–12)</p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="dtb_limit">Batch limit</label></th>
-						<td><input id="dtb_limit" name="dtb_limit" type="number" min="1" class="small-text" value="<?php echo esc_attr( (string) $limit ); ?>" /></td>
+						<td>
+							<input id="dtb_limit" name="dtb_limit" type="number" min="1" max="1000" class="small-text" value="<?php echo esc_attr( (string) $limit ); ?>" />
+							<p class="description">Products per batch. Lower values are safer on shared hosting.</p>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row"><label for="dtb_offset">Offset</label></th>
-						<td><input id="dtb_offset" name="dtb_offset" type="number" min="0" class="small-text" value="<?php echo esc_attr( (string) $offset ); ?>" /></td>
+						<td>
+							<input id="dtb_offset" name="dtb_offset" type="number" min="0" class="small-text" value="<?php echo esc_attr( (string) $offset ); ?>" />
+							<p class="description">Skip this many SKUs (for resuming a previous run).</p>
+						</td>
 					</tr>
 				</table>
 
-				<fieldset style="margin: 12px 0;">
-					<label style="display:block; margin-bottom: 6px;">
+				<fieldset style="margin:12px 0;border:1px solid #c3c4c7;padding:12px 16px;border-radius:4px;">
+					<legend style="font-weight:600;padding:0 6px;">Options</legend>
+					<label style="display:block;margin-bottom:8px;">
 						<input type="checkbox" name="dtb_dry_run" value="1" <?php checked( $dry_run ); ?> />
-						Dry run (no DB/file writes)
+						<strong>Dry run</strong> — scan and report without writing to the database
 					</label>
-					<label style="display:block;">
+					<label style="display:block;margin-bottom:8px;">
 						<input type="checkbox" name="dtb_force" value="1" <?php checked( $force ); ?> />
-						Force re-register/re-link existing images
+						<strong>Force</strong> — re-register and re-link images even if already synced
 					</label>
-					<label style="display:block; margin-top: 6px; color: #b32d2e;">
+					<label style="display:block;color:#b32d2e;">
 						<input type="checkbox" name="dtb_confirm_reset" value="1" />
-						I understand reset is destructive (required for reset action)
+						<strong>I understand reset is destructive</strong> — required to run the Reset action
 					</label>
 				</fieldset>
 
-				<p class="submit" style="display:flex; gap:8px; flex-wrap:wrap;">
-					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="status">Check Status</button>
-					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="fix_renamed">Fix Renamed Files</button>
+				<p class="submit" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+					<button type="submit" class="button button-hero button-primary" name="dtb_image_sync_action" value="pipeline"
+						title="Runs Fix Renamed → Sync batch in one click">
+						🚀 Run Full Pipeline
+					</button>
+					<span style="color:#646970;padding:0 4px;">or individually:</span>
+					<button type="submit" class="button" name="dtb_image_sync_action" value="status">Check Status</button>
+					<button type="submit" class="button" name="dtb_image_sync_action" value="fix_renamed">Fix Renamed Files</button>
 					<button type="submit" class="button button-primary" name="dtb_image_sync_action" value="sync">Run Sync Batch</button>
-					<button type="submit" class="button button-link-delete" name="dtb_image_sync_action" value="reset">Run Reset</button>
+					<button type="submit" class="button button-link-delete" name="dtb_image_sync_action" value="reset"
+						style="margin-left:auto;">⚠️ Run Reset</button>
 				</p>
 			</form>
 		</div>
 
-		<?php if ( $is_error ) : ?>
-			<div class="notice notice-error"><p><strong>Action failed:</strong> <?php echo esc_html( (string) $result_data['message'] ); ?></p></div>
-		<?php else : ?>
-			<div class="notice notice-success"><p>Image Sync action completed.</p></div>
+		<?php if ( null !== $result_data ) : ?>
+			<div class="card" style="max-width:100%;margin:20px 0;padding:20px;">
+				<h2 style="margin-top:0;">
+					📋 Result
+					<?php if ( null !== $action ) : ?>
+						— <code><?php echo esc_html( $action ); ?></code>
+					<?php endif; ?>
+				</h2>
+				<pre style="white-space:pre-wrap;margin:0;background:#f0f0f1;padding:12px;border-radius:4px;font-size:12px;"><?php
+					echo esc_html( wp_json_encode( $result_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ?: '{}' );
+				?></pre>
+			</div>
 		<?php endif; ?>
 
-		<div class="card" style="max-width: 100%; margin: 20px 0; padding: 20px;">
-			<h2 style="margin-top: 0;">Result</h2>
-			<pre style="white-space: pre-wrap; margin: 0;"><?php echo esc_html( wp_json_encode( $result_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ?: '{}' ); ?></pre>
+		<div class="card" style="max-width:100%;margin:20px 0;background:#f6f7f7;padding:16px 20px;">
+			<h3 style="margin-top:0;">📖 Quick Guide</h3>
+			<ol style="margin-left:20px;margin-bottom:0;">
+				<li>Set <strong>Year</strong> / <strong>Month</strong> to match your image upload folder (e.g. 2026 / 04).</li>
+				<li>Click <strong>🚀 Run Full Pipeline</strong> — it fixes any WP-renamed files, then registers and links images for this batch.</li>
+				<li>If a <em>Continue Next Batch</em> button appears, click it to advance until all SKUs are processed.</li>
+				<li>Run <strong>Check Status</strong> any time to see how many files are registered and linked.</li>
+				<li>After syncing, import <code>wp-catalog.csv</code> via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product&page=product_importer' ) ); ?>">WooCommerce → Products → Import</a>.</li>
+			</ol>
 		</div>
 	</div>
 	<?php
