@@ -381,22 +381,23 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 	$gallery_images = 0;
 	$errors         = [];
 
-	foreach ( $batch as $sku_lower ) {
+	foreach ( $batch as $batch_item ) {
 		if ( 'file' === $batch_mode ) {
-			$file_path = (string) $sku_lower;
+			$file_path = (string) $batch_item;
 			$filename  = basename( $file_path );
 			$file_url  = trailingslashit( $scan_url ) . $filename;
 			$stem      = strtolower( pathinfo( $filename, PATHINFO_FILENAME ) );
 
 			// Map gallery/hash filename variants back to their base SKU stem.
+			// _NN = numeric gallery image suffix, _{hex} = hashed image suffix.
 			$product_stem = $stem;
-			$has_suffix   = preg_match( '/^(.+?)(?:_\d{2}|_[0-9a-f]{6,16})$/', $stem, $m );
-			if ( $has_suffix ) {
+			$matches_suffix_pattern = preg_match( '/^(.+?)(?:_\d{2}|_[0-9a-f]{6,16})$/', $stem, $m );
+			if ( $matches_suffix_pattern ) {
 				$product_stem = $m[1];
 			}
 
 			$product_id = dtb_find_product_by_sku_stem( $product_stem ) ?? 0;
-			$is_primary = ! $has_suffix;
+			$is_primary = ! $matches_suffix_pattern;
 
 			if ( $dry_run ) {
 				$exists = attachment_url_to_postid( $file_url );
@@ -433,8 +434,10 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 				}
 			}
 
+			continue;
 		}
 
+		$sku_lower  = (string) $batch_item;
 		$product_id = $sku_map[ $sku_lower ];
 
 		// ── Probe for primary image: {sku}.{ext} ────────────────────────────
@@ -558,7 +561,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 		'next_offset'    => ( $limit > 0 && ( $offset + $limit ) < $total )
 			? $offset + $limit
 			: null,
-		'fallback_file_scan' => ( 'file' === $batch_mode ),
+		'file_based_sync' => ( 'file' === $batch_mode ),
 	] );
 }
 
