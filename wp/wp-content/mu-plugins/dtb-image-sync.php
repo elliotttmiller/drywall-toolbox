@@ -391,13 +391,13 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 			// Map gallery/hash filename variants back to their base SKU stem.
 			// _NN = numeric gallery image suffix, _{hex} = hashed image suffix.
 			$product_stem = $stem;
-			$matches_suffix_pattern = preg_match( '/^(.+?)(?:_\d{2}|_[0-9a-f]{6,16})$/', $stem, $m );
-			if ( $matches_suffix_pattern ) {
+			$suffix_matched = 1 === preg_match( '/^(.+?)(?:_\d{2}|_[0-9a-f]{6,16})$/', $stem, $m );
+			if ( $suffix_matched ) {
 				$product_stem = $m[1];
 			}
 
 			$product_id = dtb_find_product_by_sku_stem( $product_stem ) ?? 0;
-			$is_primary = ! $matches_suffix_pattern;
+			$is_primary = ! $suffix_matched;
 
 			if ( $dry_run ) {
 				$exists = attachment_url_to_postid( $file_url );
