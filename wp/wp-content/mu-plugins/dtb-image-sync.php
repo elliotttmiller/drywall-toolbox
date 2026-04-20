@@ -1744,7 +1744,7 @@ function dtb_render_image_sync_admin_page(): void {
 		let pollBusy = false;
 
 		const parseBool = ( value ) => value === '1' || value === 'true' || value === true;
-		const parseIntSafe = ( value, fallback ) => {
+		const parseIntOrDefault = ( value, fallback ) => {
 			const parsed = Number.parseInt( String( value ?? '' ), 10 );
 			return Number.isNaN( parsed ) ? fallback : parsed;
 		};
@@ -1779,12 +1779,12 @@ function dtb_render_image_sync_admin_page(): void {
 				if ( ! p ) {
 					return;
 				}
-				const processed = parseIntSafe( p.processed, 0 );
-				const batchTotal = Math.max( 1, parseIntSafe( p.batch_total, 0 ) );
-				const pct = processed / batchTotal;
+				const processed = parseIntOrDefault( p.processed, 0 );
+				const batchTotal = parseIntOrDefault( p.batch_total, 0 );
+				const pct = batchTotal > 0 ? processed / batchTotal : 0;
 				const label = p.last_item || p.last_sku || 'working';
 				setBar( pct );
-				setStatus( `Running… ${processed}/${batchTotal} (${Math.round( pct * 100 )}%) · ${label}` );
+				setStatus( `Running… ${processed}/${batchTotal > 0 ? batchTotal : '?'} (${Math.round( pct * 100 )}%) · ${label}` );
 			} catch ( err ) {
 				// Ignore transient polling errors while request is active.
 			} finally {
@@ -1843,10 +1843,10 @@ function dtb_render_image_sync_admin_page(): void {
 			const formData = new FormData( form );
 			const year = String( formData.get( 'dtb_year' ) || '' );
 			const month = String( formData.get( 'dtb_month' ) || '' );
-			const limit = Math.max( 1, parseIntSafe( formData.get( 'dtb_limit' ), 100 ) );
+			const limit = Math.max( 1, parseIntOrDefault( formData.get( 'dtb_limit' ), 100 ) );
 			const dryRun = parseBool( formData.get( 'dtb_dry_run' ) );
 			const force = parseBool( formData.get( 'dtb_force' ) );
-			let currentOffset = Math.max( 0, parseIntSafe( formData.get( 'dtb_offset' ), 0 ) );
+			let currentOffset = Math.max( 0, parseIntOrDefault( formData.get( 'dtb_offset' ), 0 ) );
 			const startOffset = currentOffset;
 
 			setButtonsDisabled( true );
@@ -1864,12 +1864,16 @@ function dtb_render_image_sync_admin_page(): void {
 						month: month,
 						dry_run: dryRun
 					} );
-					appendLog( `Fix Renamed complete · renamed ${Number.parseInt( fixResult.renamed || 0, 10 ) || 0}` );
+					appendLog( `Fix Renamed complete · renamed ${parseIntOrDefault( fixResult.renamed, 0 )}` );
 				}
 
 				let batchCount = 0;
+				const MAX_BATCHES = 1000;
 				while ( true ) {
 					batchCount += 1;
+					if ( batchCount > MAX_BATCHES ) {
+						throw new Error( 'Maximum batch limit exceeded.' );
+					}
 					setStatus( `Running sync batch ${batchCount}…` );
 					startPolling();
 					const batch = await postJson( api.sync, {
@@ -1882,13 +1886,13 @@ function dtb_render_image_sync_admin_page(): void {
 					} );
 					stopPolling();
 
-					const scanned = parseIntSafe( batch.scanned, 0 );
-					const total = Math.max( scanned, parseIntSafe( batch.total, 0 ) );
+					const scanned = parseIntOrDefault( batch.scanned, 0 );
+					const total = Math.max( scanned, parseIntOrDefault( batch.total, 0 ) );
 					const completed = Math.min( total, Math.max( 0, currentOffset - startOffset + scanned ) );
 					const pct = total > 0 ? completed / total : 1;
 					setBar( pct );
 					appendLog(
-						`Batch ${batchCount} done · scanned ${scanned}, registered ${parseIntSafe( batch.registered, 0 )}, linked ${parseIntSafe( batch.linked, 0 )}, errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}`
+						`Batch ${batchCount} done · scanned ${scanned}, registered ${parseIntOrDefault( batch.registered, 0 )}, linked ${parseIntOrDefault( batch.linked, 0 )}, errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}`
 					);
 
 					if ( batch.next_offset === null || typeof batch.next_offset === 'undefined' ) {
@@ -1898,7 +1902,11 @@ function dtb_render_image_sync_admin_page(): void {
 						break;
 					}
 
-					currentOffset = Math.max( 0, parseIntSafe( batch.next_offset, currentOffset + scanned ) );
+					const nextOffset = Math.max( 0, parseIntOrDefault( batch.next_offset, currentOffset + scanned ) );
+					if ( nextOffset <= currentOffset ) {
+						throw new Error( 'Sync returned a non-advancing next offset.' );
+					}
+					currentOffset = nextOffset;
 					appendLog( `Continuing to next batch at offset ${currentOffset}…` );
 				}
 			} catch ( err ) {
