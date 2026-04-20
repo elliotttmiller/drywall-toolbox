@@ -1217,3 +1217,161 @@ function dtb_image_sync_log( string $message ): void {
 		error_log( '[DTB Image Sync] ' . $message );
 	}
 }
+
+// ============================================================================
+// WP-ADMIN TOOLING
+// ============================================================================
+
+if ( is_admin() ) {
+	add_action( 'admin_menu', 'dtb_image_sync_add_management_page' );
+}
+
+/**
+ * Register DTB Image Sync page under wp-admin Tools.
+ */
+function dtb_image_sync_add_management_page(): void {
+	add_management_page(
+		'Drywall Toolbox Image Sync',
+		'DTB Image Sync',
+		'manage_woocommerce',
+		'dtb-image-sync',
+		'dtb_render_image_sync_admin_page'
+	);
+}
+
+/**
+ * Render the wp-admin Tools → DTB Image Sync page.
+ */
+function dtb_render_image_sync_admin_page(): void {
+	if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		wp_die( esc_html__( 'Unauthorized', 'drywall-toolbox' ) );
+	}
+
+	$raw = static function ( string $key, string $default = '' ): string {
+		if ( ! isset( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return $default;
+		}
+		return sanitize_text_field( wp_unslash( (string) $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	};
+
+	$year     = preg_replace( '/\D+/', '', $raw( 'dtb_year', gmdate( 'Y' ) ) ) ?: gmdate( 'Y' );
+	$month_in = preg_replace( '/\D+/', '', $raw( 'dtb_month', gmdate( 'm' ) ) ) ?: gmdate( 'm' );
+	$month    = str_pad( substr( $month_in, 0, 2 ), 2, '0', STR_PAD_LEFT );
+	$limit    = max( 1, absint( $raw( 'dtb_limit', '100' ) ) );
+	$offset   = absint( $raw( 'dtb_offset', '0' ) );
+	$dry_run  = isset( $_POST['dtb_dry_run'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$force    = isset( $_POST['dtb_force'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+	$action_result = null;
+
+	if (
+		isset( $_POST['dtb_image_sync_action'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		&& check_admin_referer( 'dtb_image_sync_admin', 'dtb_image_sync_nonce' )
+	) {
+		$action = sanitize_key( wp_unslash( (string) $_POST['dtb_image_sync_action'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		$request = new WP_REST_Request();
+		$request->set_param( 'year', $year );
+		$request->set_param( 'month', $month );
+
+		if ( in_array( $action, [ 'sync', 'reset', 'fix_renamed' ], true ) ) {
+			$request->set_param( 'dry_run', $dry_run );
+		}
+
+		if ( 'sync' === $action ) {
+			$request->set_param( 'limit', $limit );
+			$request->set_param( 'offset', $offset );
+			$request->set_param( 'force', $force );
+			$action_result = dtb_route_sync_images( $request );
+		} elseif ( 'status' === $action ) {
+			$action_result = dtb_route_sync_images_status( $request );
+		} elseif ( 'fix_renamed' === $action ) {
+			$action_result = dtb_route_fix_renamed_files( $request );
+		} elseif ( 'reset' === $action ) {
+			$action_result = dtb_route_reset_images( $request );
+		}
+	}
+
+	if ( null === $action_result ) {
+		$status_request = new WP_REST_Request();
+		$status_request->set_param( 'year', $year );
+		$status_request->set_param( 'month', $month );
+		$action_result = dtb_route_sync_images_status( $status_request );
+	}
+
+	$is_error    = is_wp_error( $action_result );
+	$result_data = $is_error
+		? [
+			'code'    => $action_result->get_error_code(),
+			'message' => $action_result->get_error_message(),
+			'data'    => $action_result->get_error_data(),
+		]
+		: $action_result->get_data();
+
+	?>
+	<div class="wrap">
+		<h1>DTB Image Sync</h1>
+		<p>Run product image registration/linking from wp-admin. Sync also generates WooCommerce image sub-sizes.</p>
+
+		<div class="card" style="max-width: 100%; margin: 20px 0; padding: 20px;">
+			<h2 style="margin-top: 0;">Run Image Sync</h2>
+			<form method="post" action="">
+				<?php wp_nonce_field( 'dtb_image_sync_admin', 'dtb_image_sync_nonce' ); ?>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="dtb_year">Year</label></th>
+						<td><input id="dtb_year" name="dtb_year" type="text" class="regular-text" value="<?php echo esc_attr( $year ); ?>" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="dtb_month">Month</label></th>
+						<td><input id="dtb_month" name="dtb_month" type="text" class="regular-text" value="<?php echo esc_attr( $month ); ?>" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="dtb_limit">Batch limit</label></th>
+						<td><input id="dtb_limit" name="dtb_limit" type="number" min="1" class="small-text" value="<?php echo esc_attr( (string) $limit ); ?>" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="dtb_offset">Offset</label></th>
+						<td><input id="dtb_offset" name="dtb_offset" type="number" min="0" class="small-text" value="<?php echo esc_attr( (string) $offset ); ?>" /></td>
+					</tr>
+				</table>
+
+				<fieldset style="margin: 12px 0;">
+					<label style="display:block; margin-bottom: 6px;">
+						<input type="checkbox" name="dtb_dry_run" value="1" <?php checked( $dry_run ); ?> />
+						Dry run (no DB/file writes)
+					</label>
+					<label style="display:block;">
+						<input type="checkbox" name="dtb_force" value="1" <?php checked( $force ); ?> />
+						Force re-register/re-link existing images
+					</label>
+				</fieldset>
+
+				<p class="submit" style="display:flex; gap:8px; flex-wrap:wrap;">
+					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="status">Check Status</button>
+					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="fix_renamed">Fix Renamed Files</button>
+					<button type="submit" class="button button-primary" name="dtb_image_sync_action" value="sync">Run Sync Batch</button>
+					<button
+						type="submit"
+						class="button"
+						name="dtb_image_sync_action"
+						value="reset"
+						onclick="return confirm('Reset clears existing image links and directory attachments. Continue?');"
+					>Run Reset</button>
+				</p>
+			</form>
+		</div>
+
+		<?php if ( $is_error ) : ?>
+			<div class="notice notice-error"><p><strong>Image Sync failed:</strong> <?php echo esc_html( (string) $result_data['message'] ); ?></p></div>
+		<?php else : ?>
+			<div class="notice notice-success"><p>Image Sync action completed.</p></div>
+		<?php endif; ?>
+
+		<div class="card" style="max-width: 100%; margin: 20px 0; padding: 20px;">
+			<h2 style="margin-top: 0;">Result</h2>
+			<pre style="white-space: pre-wrap; margin: 0;"><?php echo esc_html( wp_json_encode( $result_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ?: '{}' ); ?></pre>
+		</div>
+	</div>
+	<?php
+}
