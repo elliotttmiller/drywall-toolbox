@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
@@ -122,6 +122,7 @@ export default function Products() {
   const [cardVariants, setCardVariants] = useState({});
   // Cached variations per variable parent product ID
   const [cardVariationMap, setCardVariationMap] = useState({});
+  const cardVariationMapRef = useRef({});
 
   const showToast = (message, type = 'cart') => {
     setToast({ message, type });
@@ -353,8 +354,12 @@ export default function Products() {
   const pageProducts = sortedProducts.slice(pageStart, pageStart + ITEMS_PER_PAGE);
 
   useEffect(() => {
+    cardVariationMapRef.current = cardVariationMap;
+  }, [cardVariationMap]);
+
+  useEffect(() => {
     const variableIds = pageProducts
-      .filter((p) => p.is_variable && p.id && !cardVariationMap[p.id])
+      .filter((p) => p.is_variable && p.id && !cardVariationMapRef.current[p.id])
       .map((p) => p.id);
     if (variableIds.length === 0) return;
 
@@ -375,7 +380,7 @@ export default function Products() {
     });
 
     return () => { mounted = false; };
-  }, [pageProducts, cardVariationMap]);
+  }, [pageProducts]);
 
   const getCardDisplayProduct = useCallback((product) => {
     if (!product?.is_variable) return product;
@@ -571,8 +576,7 @@ export default function Products() {
             <>
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
-              {pageProducts.map((product, index) => (
-                (() => {
+              {pageProducts.map((product, index) => {
                   const cardProduct = getCardDisplayProduct(product);
                   const hasSelectedVariation = cardProduct.id !== product.id;
                   return (
@@ -672,8 +676,7 @@ export default function Products() {
                   </div>
                 </div>
                   );
-                })()
-              ))}
+              })}
             </div>
 
             {/* Pagination + results summary */}

@@ -454,7 +454,7 @@ function extractSpecsFromHtml(html) {
  * @param {number} idx  Row index (used as fallback ID)
  * @returns {Object}    Normalized product
  */
-function normalizeRow(row, idx) {
+function normalizeRow(row, idx, attrIndexes = []) {
   // Images: pipe-separated URLs. CSV columns may contain "Images" or "Images (comma separated)"
   const NO_IMAGE = 'https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/04/no-image-placeholder.webp';
 
@@ -514,13 +514,6 @@ function normalizeRow(row, idx) {
   // - 'variation' → child product; its selected variation attributes are on Attribute N columns
   const productType = (row['Type'] || 'simple').trim().toLowerCase();
   const isVariable  = productType === 'variable';
-  const attrIndexes = Object.keys(row)
-    .map((key) => {
-      const m = key.match(/^Attribute\s+(\d+)\s+name$/);
-      return m ? Number(m[1]) : null;
-    })
-    .filter((n) => Number.isInteger(n))
-    .sort((a, b) => a - b);
 
   // For variable products, parse variation attributes from the Attribute columns.
   // Any Attribute N with "used for variations" = 1 is treated as a variation driver.
@@ -611,9 +604,12 @@ function normalizeRow(row, idx) {
     description_full:  htmlToMarkdown(strippedHtml),
 
     // Attributes / meta preserved for schematic lookups
+    // Keep Brand once, then append selected variation attributes.
     attributes: [
       ...(brand ? [{ name: 'Brand', options: [brand] }] : []),
-      ...((variation_attribute_values || []).map((a) => ({ name: a.name, option: a.option }))),
+      ...((variation_attribute_values || [])
+        .filter((a) => a.name.toLowerCase() !== 'brand')
+        .map((a) => ({ name: a.name, option: a.option }))),
     ],
     meta_data,
 
@@ -652,8 +648,16 @@ function normalizeRow(row, idx) {
  */
 export function parseProductCsv(csvText) {
   const rows = parseCsvText(csvText);
+  if (!rows.length) return [];
+  const attrIndexes = Object.keys(rows[0] || {})
+    .map((key) => {
+      const m = key.match(/^Attribute\s+(\d+)\s+name$/);
+      return m ? Number(m[1]) : null;
+    })
+    .filter((n) => Number.isInteger(n))
+    .sort((a, b) => a - b);
   return rows
     .filter(r => r['SKU'] || r['Name']) // skip blank rows
     .filter(r => (r['Type'] || '').trim().toLowerCase() !== 'variation') // skip variation children
-    .map((r, i) => normalizeRow(r, i));
+    .map((r, i) => normalizeRow(r, i, attrIndexes));
 }

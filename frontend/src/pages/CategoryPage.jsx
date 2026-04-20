@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getProductsByCategory } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
@@ -31,6 +31,7 @@ export default function CategoryPage() {
 
   const [cardVariants, setCardVariants] = useState({});
   const [cardVariationMap, setCardVariationMap] = useState({});
+  const cardVariationMapRef = useRef({});
   const handleVariantSelect = useCallback((productId, attrName, value) => {
     setCardVariants(prev => ({
       ...prev,
@@ -60,8 +61,12 @@ export default function CategoryPage() {
   const { loading, products, category, error } = pageState;
 
   useEffect(() => {
+    cardVariationMapRef.current = cardVariationMap;
+  }, [cardVariationMap]);
+
+  useEffect(() => {
     const variableIds = products
-      .filter((p) => p.is_variable && p.id && !cardVariationMap[p.id])
+      .filter((p) => p.is_variable && p.id && !cardVariationMapRef.current[p.id])
       .map((p) => p.id);
     if (variableIds.length === 0) return;
 
@@ -82,7 +87,7 @@ export default function CategoryPage() {
     });
 
     return () => { mounted = false; };
-  }, [products, cardVariationMap]);
+  }, [products]);
 
   const getCardDisplayProduct = useCallback((product) => {
     if (!product?.is_variable) return product;
@@ -134,8 +139,7 @@ export default function CategoryPage() {
           <p className="text-gray-500">No products found in this category.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              (() => {
+            {products.map((product) => {
                 const cardProduct = getCardDisplayProduct(product);
                 const hasSelectedVariation = cardProduct.id !== product.id;
                 return (
@@ -208,8 +212,7 @@ export default function CategoryPage() {
                 </div>
               </div>
                 );
-              })()
-            ))}
+            })}
           </div>
         )}
       </div>

@@ -368,9 +368,16 @@ export function normalizeProduct(wcProduct) {
         .map((attr) => ({ name: (attr?.name || '').trim(), option: (attr?.option || '').trim() }))
         .filter((attr) => attr.name && attr.option)
     : null;
-  const variation_attribute = wcProduct.attributes && productType === 'variation'
-    ? (variation_attribute_values && variation_attribute_values.length > 0 ? variation_attribute_values[0] : (wcProduct.attributes[0] || null))
+  const firstVariationAttribute = variation_attribute_values && variation_attribute_values.length > 0
+    ? variation_attribute_values[0]
     : null;
+  let variation_attribute = null;
+  if (productType === 'variation') {
+    variation_attribute = firstVariationAttribute;
+    if (!variation_attribute && wcProduct.attributes && wcProduct.attributes.length > 0) {
+      variation_attribute = wcProduct.attributes[0];
+    }
+  }
 
   return {
     // Identity
