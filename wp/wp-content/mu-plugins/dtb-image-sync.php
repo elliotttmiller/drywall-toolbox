@@ -334,7 +334,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 		set_time_limit( 300 ); // phpcs:ignore
 	}
 
-	$year    = ltrim( (string) $request->get_param( 'year' ),  '/' );
+	$year    = ltrim( (string) $request->get_param( 'year' ), '/' );
 	$month   = ltrim( (string) $request->get_param( 'month' ), '/' );
 	$dry_run = (bool) $request->get_param( 'dry_run' );
 	$force   = (bool) $request->get_param( 'force' );
@@ -664,7 +664,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
  * already registered in the Media Library.
  */
 function dtb_route_link_registered_images( WP_REST_Request $request ): WP_REST_Response|WP_Error {
-	$year    = ltrim( (string) $request->get_param( 'year' ),  '/' );
+	$year    = ltrim( (string) $request->get_param( 'year' ), '/' );
 	$month   = ltrim( (string) $request->get_param( 'month' ), '/' );
 	$dry_run = (bool) $request->get_param( 'dry_run' );
 	$force   = (bool) $request->get_param( 'force' );
@@ -717,7 +717,7 @@ function dtb_route_link_registered_images( WP_REST_Request $request ): WP_REST_R
 	$linked             = 0;
 	$skipped            = 0;
 	$no_file            = 0;
-	$missing_attachment = 0;
+	$missing_attachment_count = 0;
 	$errors             = [];
 	$extensions         = [ 'webp', 'jpg', 'jpeg', 'png', 'avif', 'gif' ];
 
@@ -752,7 +752,7 @@ function dtb_route_link_registered_images( WP_REST_Request $request ): WP_REST_R
 
 		$primary_att = (int) attachment_url_to_postid( $primary_url );
 		if ( $primary_att <= 0 ) {
-			++$missing_attachment;
+			++$missing_attachment_count;
 			continue;
 		}
 
@@ -772,7 +772,9 @@ function dtb_route_link_registered_images( WP_REST_Request $request ): WP_REST_R
 		if ( ! $force ) {
 			$current_thumb      = (int) get_post_thumbnail_id( $product_id );
 			$current_gallery    = get_post_meta( $product_id, '_product_image_gallery', true );
-			$current_gallery_ids = array_values( array_filter( array_map( 'absint', explode( ',', (string) $current_gallery ) ) ) );
+			$current_gallery_ids_raw = explode( ',', (string) $current_gallery );
+			$current_gallery_ids = array_map( 'absint', $current_gallery_ids_raw );
+			$current_gallery_ids = array_values( array_filter( $current_gallery_ids ) );
 			if ( $current_thumb === $primary_att && $current_gallery_ids === $gallery_att_ids ) {
 				++$skipped;
 				continue;
@@ -808,7 +810,7 @@ function dtb_route_link_registered_images( WP_REST_Request $request ): WP_REST_R
 		'linked'              => $linked,
 		'skipped'             => $skipped,
 		'no_file'             => $no_file,
-		'missing_attachment'  => $missing_attachment,
+		'missing_attachments' => $missing_attachment_count,
 		'errors'              => $errors,
 		'dry_run'             => $dry_run,
 		'next_offset'         => ( $limit > 0 && ( $offset + $limit ) < $total )
@@ -1915,7 +1917,8 @@ function dtb_render_image_sync_admin_page(): void {
 				<li>Click <strong>🚀 Run Full Pipeline</strong> — it fixes any WP-renamed files, then registers and links images for this batch.</li>
 				<li>If a <em>Continue Next Batch</em> button appears, click it to advance until all SKUs are processed.</li>
 				<li>Run <strong>Check Status</strong> any time to see how many files are registered and linked.</li>
-				<li>Import <code>wp-catalog.csv</code> via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product&page=product_importer' ) ); ?>">WooCommerce → Products → Import</a>, then run <strong>Link Registered Images</strong> when products are in place.</li>
+				<li>Flow A: click <strong>🚀 Run Full Pipeline</strong> to fix names, register images, and link products in one run.</li>
+				<li>Flow B: if your image library is already registered, import <code>wp-catalog.csv</code> via <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product&page=product_importer' ) ); ?>">WooCommerce → Products → Import</a>, then run <strong>Link Registered Images</strong>.</li>
 			</ol>
 		</div>
 	</div>
@@ -2085,7 +2088,7 @@ function dtb_render_image_sync_admin_page(): void {
 					if ( batchCount > MAX_BATCHES ) {
 						throw new Error( 'Maximum batch limit exceeded.' );
 					}
-					setStatus( `Running ${submittedAction === 'link_only' ? 'link-only' : 'sync'} batch ${batchCount}…` );
+					setStatus( `Running ${submittedAction === 'link_only' ? 'link only' : 'sync'} batch ${batchCount}…` );
 					if ( submittedAction !== 'link_only' ) {
 						startPolling();
 					}
@@ -2106,9 +2109,17 @@ function dtb_render_image_sync_admin_page(): void {
 					const completed = Math.min( total, Math.max( 0, currentOffset - startOffset + scanned ) );
 					const pct = total > 0 ? completed / total : 1;
 					setBar( pct );
-					appendLog(
-						`Batch ${batchCount} done · scanned ${scanned}, registered ${parseIntOrDefault( batch.registered, 0 )}, linked ${parseIntOrDefault( batch.linked, 0 )}, missing attachments ${parseIntOrDefault( batch.missing_attachment, 0 )}, errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}`
-					);
+					const batchSummary = [
+						`Batch ${batchCount} done`,
+						`scanned ${scanned}`,
+						`linked ${parseIntOrDefault( batch.linked, 0 )}`,
+						`missing_attachments ${parseIntOrDefault( batch.missing_attachments, 0 )}`
+					];
+					if ( 'registered' in batch ) {
+						batchSummary.push( `registered ${parseIntOrDefault( batch.registered, 0 )}` );
+					}
+					batchSummary.push( `errors ${Array.isArray( batch.errors ) ? batch.errors.length : 0}` );
+					appendLog( batchSummary.join( ' · ' ) );
 
 					if ( batch.next_offset === null || typeof batch.next_offset === 'undefined' ) {
 						appendLog( 'Run complete.' );
