@@ -9,7 +9,7 @@ import VariantChips from '../components/VariantChips';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
 import { getProductVariations } from '../services/api';
-import { findMatchingVariation } from '../utils/variationSelection';
+import { findMatchingVariation, fetchVariationsBatched } from '../utils/variationSelection';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -71,17 +71,11 @@ export default function CategoryPage() {
     if (variableIds.length === 0) return;
 
     let mounted = true;
-    Promise.all(
-      variableIds.map((id) =>
-        getProductVariations(id)
-          .then((vars) => [id, vars])
-          .catch(() => [id, []])
-      )
-    ).then((pairs) => {
+    fetchVariationsBatched(variableIds, getProductVariations).then((pairs) => {
       if (!mounted) return;
       const next = {};
       pairs.forEach(([id, vars]) => {
-        next[id] = Array.isArray(vars) ? vars : [];
+        next[id] = vars;
       });
       setCardVariationMap((prev) => ({ ...prev, ...next }));
     });

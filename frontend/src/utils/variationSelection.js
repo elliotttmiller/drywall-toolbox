@@ -59,3 +59,31 @@ export function findMatchingVariation(variations, selectedAttrs) {
     return targetEntries.every(([name, value]) => selected[name] === value);
   }) || null;
 }
+
+/**
+ * Fetch variations for multiple parent product IDs with bounded concurrency.
+ *
+ * Fires at most `concurrency` requests in parallel, then waits for that batch
+ * to complete before starting the next one.  This prevents a page with many
+ * variable products from flooding the server with simultaneous requests.
+ *
+ * @param {Array<string|number>} ids        Parent product IDs to fetch
+ * @param {function(string|number): Promise<Array>} fetchFn  Per-ID variation fetcher
+ * @param {number} [concurrency=5]          Max in-flight requests at a time
+ * @returns {Promise<Array<[string|number, Array]>>} Pairs of [id, variations]
+ */
+export async function fetchVariationsBatched(ids, fetchFn, concurrency = 5) {
+  const results = [];
+  for (let i = 0; i < ids.length; i += concurrency) {
+    const batch = ids.slice(i, i + concurrency);
+    const batchResults = await Promise.all(
+      batch.map((id) =>
+        fetchFn(id)
+          .then((vars) => [id, Array.isArray(vars) ? vars : []])
+          .catch(() => [id, []])
+      )
+    );
+    results.push(...batchResults);
+  }
+  return results;
+}

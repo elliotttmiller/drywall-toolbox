@@ -57,15 +57,15 @@ export default function ProductDetail({ product, onAddToCart, onClose, initialSe
       .then((vars) => {
         if (!mounted || !vars) return;
         setVariations(vars);
-        // Prefer card-selected attributes passed from listing cards when available.
-        const hasInitialSelection = Object.keys(initialSelectedAttrs || {}).length > 0;
-        if (hasInitialSelection) {
+        // Use card-selected attributes when available; otherwise default to the
+        // first in-stock variation.  setVariationsLoading(false) is always
+        // called by the .finally() handler below regardless of this branch.
+        if (Object.keys(initialSelectedAttrs || {}).length > 0) {
           setSelectedAttrs(initialSelectedAttrs);
-          return;
+        } else {
+          const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
+          setSelectedAttrs(getVariationSelectionMap(firstInStock));
         }
-        // Otherwise pre-select the first in-stock variation's full attribute map.
-        const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
-        setSelectedAttrs(getVariationSelectionMap(firstInStock));
       })
       .catch(() => { /* variations not critical — fail silently */ })
       .finally(() => { if (mounted) setVariationsLoading(false); });

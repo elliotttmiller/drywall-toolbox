@@ -303,6 +303,29 @@ function extractBrand(wcProduct) {
 }
 
 /**
+ * Resolve the primary `variation_attribute` for a WooCommerce variation product.
+ *
+ * Prefers the first entry from the already-normalised `variation_attribute_values`
+ * list (which strips empty names/options and normalises whitespace).  Falls back
+ * to the first raw attribute object from the API when that list is empty.
+ *
+ * @param {string} productType
+ * @param {Array<{name:string, option:string}>|null} variation_attribute_values
+ * @param {Array<Object>|undefined} rawAttributes
+ * @returns {{name:string, option:string}|null}
+ */
+function resolveVariationAttribute(productType, variation_attribute_values, rawAttributes) {
+  if (productType !== 'variation') return null;
+  if (variation_attribute_values && variation_attribute_values.length > 0) {
+    return variation_attribute_values[0];
+  }
+  if (rawAttributes && rawAttributes.length > 0) {
+    return rawAttributes[0];
+  }
+  return null;
+}
+
+/**
  * Normalise a WooCommerce product object to the internal product shape used
  * throughout the UI.
  *
@@ -368,16 +391,9 @@ export function normalizeProduct(wcProduct) {
         .map((attr) => ({ name: (attr?.name || '').trim(), option: (attr?.option || '').trim() }))
         .filter((attr) => attr.name && attr.option)
     : null;
-  const firstVariationAttribute = variation_attribute_values && variation_attribute_values.length > 0
-    ? variation_attribute_values[0]
-    : null;
-  let variation_attribute = null;
-  if (productType === 'variation') {
-    variation_attribute = firstVariationAttribute;
-    if (!variation_attribute && wcProduct.attributes && wcProduct.attributes.length > 0) {
-      variation_attribute = wcProduct.attributes[0];
-    }
-  }
+  const variation_attribute = resolveVariationAttribute(
+    productType, variation_attribute_values, wcProduct.attributes
+  );
 
   return {
     // Identity

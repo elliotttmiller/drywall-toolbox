@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
-import { findMatchingVariation } from '../utils/variationSelection';
+import { findMatchingVariation, fetchVariationsBatched } from '../utils/variationSelection';
 
 // products will be loaded from WooCommerce REST API at runtime
 const categories = [
@@ -244,17 +244,11 @@ export default function AllProducts() {
     if (variableIds.length === 0) return;
 
     let mounted = true;
-    Promise.all(
-      variableIds.map((id) =>
-        getProductVariations(id)
-          .then((vars) => [id, vars])
-          .catch(() => [id, []])
-      )
-    ).then((pairs) => {
+    fetchVariationsBatched(variableIds, getProductVariations).then((pairs) => {
       if (!mounted) return;
       const next = {};
       pairs.forEach(([id, vars]) => {
-        next[id] = Array.isArray(vars) ? vars : [];
+        next[id] = vars;
       });
       setCardVariationMap((prev) => ({ ...prev, ...next }));
     });
