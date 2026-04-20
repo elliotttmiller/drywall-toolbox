@@ -10,6 +10,7 @@ import ProductImageGallery from './ProductImageGallery';
 import VariantChips from './VariantChips';
 import { getProductSpecifications } from '../utils/productSpecifications';
 import { getProductVariations } from '../services/api';
+import { findMatchingVariation, getVariationSelectionMap } from '../utils/variationSelection';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
@@ -25,7 +26,7 @@ const BRAND_LOGOS = {
   'Graco': gracoLogo,
 };
 
-export default function ProductDetail({ product, onAddToCart, onClose }) {
+export default function ProductDetail({ product, onAddToCart, onClose, initialSelectedAttrs = {} }) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -56,30 +57,26 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
       .then((vars) => {
         if (!mounted || !vars) return;
         setVariations(vars);
-        // Pre-select the first in-stock variation's attributes
-        const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
-        if (firstInStock?.variation_attribute) {
-          setSelectedAttrs({ [firstInStock.variation_attribute.name]: firstInStock.variation_attribute.option });
+        // Prefer card-selected attributes passed from listing cards when available.
+        const hasInitialSelection = Object.keys(initialSelectedAttrs || {}).length > 0;
+        if (hasInitialSelection) {
+          setSelectedAttrs(initialSelectedAttrs);
+          return;
         }
+        // Otherwise pre-select the first in-stock variation's full attribute map.
+        const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
+        setSelectedAttrs(getVariationSelectionMap(firstInStock));
       })
       .catch(() => { /* variations not critical — fail silently */ })
       .finally(() => { if (mounted) setVariationsLoading(false); });
 
     return () => { mounted = false; };
-  }, [product?.id, product?.is_variable]); // is_variable must be listed — a product could share an id across type changes
+  }, [product?.id, product?.is_variable, initialSelectedAttrs]); // is_variable must be listed — a product could share an id across type changes
 
   // Find the variation that matches the current chip selections
-  const selectedVariation = (() => {
-    if (!product?.is_variable || variations.length === 0) return null;
-    const attrEntries = Object.entries(selectedAttrs);
-    if (attrEntries.length === 0) return null;
-    return variations.find((v) => {
-      if (!v.variation_attribute) return false;
-      return attrEntries.every(([name, value]) =>
-        v.variation_attribute.name === name && v.variation_attribute.option === value
-      );
-    }) || null;
-  })();
+  const selectedVariation = product?.is_variable
+    ? findMatchingVariation(variations, selectedAttrs)
+    : null;
 
   // Lock body scroll while this detail panel is mounted
   useEffect(() => {
@@ -155,7 +152,7 @@ export default function ProductDetail({ product, onAddToCart, onClose }) {
           {/* Top Section — Image left, details right */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
             {/* Product Image Gallery */}
-            <ProductImageGallery product={product} />
+            <ProductImageGallery product={effectiveProduct} />
 
             {/* Product Info */}
             <div className="flex flex-col">

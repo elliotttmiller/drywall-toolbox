@@ -511,17 +511,23 @@ function normalizeRow(row, idx) {
   // ── Variable-product support ───────────────────────────────────────────────
   // The CSV 'Type' column is 'simple' | 'variable' | 'variation'.
   // - 'variable'  → parent product; attributes list all available option values
-  // - 'variation' → child product; Attribute 2 value is this variation's option
+  // - 'variation' → child product; its selected variation attributes are on Attribute N columns
   const productType = (row['Type'] || 'simple').trim().toLowerCase();
   const isVariable  = productType === 'variable';
+  const attrIndexes = Object.keys(row)
+    .map((key) => {
+      const m = key.match(/^Attribute\s+(\d+)\s+name$/);
+      return m ? Number(m[1]) : null;
+    })
+    .filter((n) => Number.isInteger(n))
+    .sort((a, b) => a - b);
 
   // For variable products, parse variation attributes from the Attribute columns.
-  // Attribute 1 is always Brand (not a variation driver). Attribute 2 (Size/Style)
-  // is the variation-driving attribute; its pipe-separated values list all options.
+  // Any Attribute N with "used for variations" = 1 is treated as a variation driver.
   const variation_attributes = (() => {
     if (!isVariable) return [];
     const result = [];
-    for (let n = 1; n <= 2; n++) {
+    for (const n of attrIndexes) {
       const name  = (row[`Attribute ${n} name`]      || '').trim();
       const vals  = (row[`Attribute ${n} value(s)`]  || '').trim();
       const usedForVar = (row[`Attribute ${n} used for variations`] || '0').trim();
@@ -533,17 +539,22 @@ function normalizeRow(row, idx) {
   })();
 
   // For variation rows: capture the parent SKU and the specific attribute value
-  // that identifies this variation (Attribute 2 when used for variations).
+  // that identifies this variation.
   const parent_id = productType === 'variation' ? (row['Parent'] || '').trim() : null;
-  const variation_attribute = (() => {
+  const variation_attribute_values = (() => {
     if (productType !== 'variation') return null;
-    for (let n = 1; n <= 2; n++) {
+    const result = [];
+    for (const n of attrIndexes) {
       const name = (row[`Attribute ${n} name`]     || '').trim();
       const val  = (row[`Attribute ${n} value(s)`] || '').trim();
       const usedForVar = (row[`Attribute ${n} used for variations`] || '0').trim();
-      if (name && val && usedForVar === '1') return { name, option: val };
+      if (name && val && usedForVar === '1') result.push({ name, option: val });
     }
-    return null;
+    return result.length > 0 ? result : null;
+  })();
+  const variation_attribute = (() => {
+    if (!variation_attribute_values || variation_attribute_values.length === 0) return null;
+    return variation_attribute_values[0];
   })();
 
   // Price range for variable products: collect from pipe-separated prices if ever
@@ -600,7 +611,10 @@ function normalizeRow(row, idx) {
     description_full:  htmlToMarkdown(strippedHtml),
 
     // Attributes / meta preserved for schematic lookups
-    attributes: brand ? [{ name: 'Brand', options: [brand] }] : [],
+    attributes: [
+      ...(brand ? [{ name: 'Brand', options: [brand] }] : []),
+      ...((variation_attribute_values || []).map((a) => ({ name: a.name, option: a.option }))),
+    ],
     meta_data,
 
     // Variable-product fields (mirrors normalizeProduct() in api.js)
@@ -612,6 +626,7 @@ function normalizeRow(row, idx) {
     max_price,
     parent_id,
     variation_attribute,
+    variation_attribute_values,
 
     // Ratings — CSV does not carry ratings
     rating:  0,

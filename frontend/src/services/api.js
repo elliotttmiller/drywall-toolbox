@@ -363,8 +363,13 @@ export function normalizeProduct(wcProduct) {
 
   // For individual variations: the parent product ID and selected attribute.
   const parent_id = wcProduct.parent_id || null;
+  const variation_attribute_values = productType === 'variation'
+    ? (wcProduct.attributes || [])
+        .map((attr) => ({ name: (attr?.name || '').trim(), option: (attr?.option || '').trim() }))
+        .filter((attr) => attr.name && attr.option)
+    : null;
   const variation_attribute = wcProduct.attributes && productType === 'variation'
-    ? (wcProduct.attributes[0] || null)
+    ? (variation_attribute_values && variation_attribute_values.length > 0 ? variation_attribute_values[0] : (wcProduct.attributes[0] || null))
     : null;
 
   return {
@@ -413,6 +418,7 @@ export function normalizeProduct(wcProduct) {
     max_price,
     parent_id,
     variation_attribute,  // selected attribute for a variation record
+    variation_attribute_values,
 
     // Rating placeholder (WooCommerce provides this via reviews endpoint)
     rating:  Number(wcProduct.average_rating) || 0,

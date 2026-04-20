@@ -8,6 +8,8 @@ import Toast from '../components/Toast';
 import VariantChips from '../components/VariantChips';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
+import { getProductVariations } from '../services/api';
+import { findMatchingVariation } from '../utils/variationSelection';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -17,6 +19,7 @@ export default function CategoryPage() {
   // inside useEffect (react-hooks/set-state-in-effect rule).
   const [pageState, setPageState] = useState({ loading: true, products: [], category: null, error: null });
   const [modalProduct, setModalProduct] = useState(null);
+  const [modalSelectedAttrs, setModalSelectedAttrs] = useState({});
   const [toast, setToast]         = useState(null);
 
   const showToast = (message, type = 'cart') => setToast({ message, type });
@@ -27,6 +30,7 @@ export default function CategoryPage() {
   };
 
   const [cardVariants, setCardVariants] = useState({});
+  const [cardVariationMap, setCardVariationMap] = useState({});
   const handleVariantSelect = useCallback((productId, attrName, value) => {
     setCardVariants(prev => ({
       ...prev,
@@ -54,6 +58,38 @@ export default function CategoryPage() {
   }, [slug]);
 
   const { loading, products, category, error } = pageState;
+
+  useEffect(() => {
+    const variableIds = products
+      .filter((p) => p.is_variable && p.id && !cardVariationMap[p.id])
+      .map((p) => p.id);
+    if (variableIds.length === 0) return;
+
+    let mounted = true;
+    Promise.all(
+      variableIds.map((id) =>
+        getProductVariations(id)
+          .then((vars) => [id, vars])
+          .catch(() => [id, []])
+      )
+    ).then((pairs) => {
+      if (!mounted) return;
+      const next = {};
+      pairs.forEach(([id, vars]) => {
+        next[id] = Array.isArray(vars) ? vars : [];
+      });
+      setCardVariationMap((prev) => ({ ...prev, ...next }));
+    });
+
+    return () => { mounted = false; };
+  }, [products, cardVariationMap]);
+
+  const getCardDisplayProduct = useCallback((product) => {
+    if (!product?.is_variable) return product;
+    const selectedAttrs = cardVariants[product.id] || {};
+    const selectedVariation = findMatchingVariation(cardVariationMap[product.id] || [], selectedAttrs);
+    return selectedVariation || product;
+  }, [cardVariationMap, cardVariants]);
 
   if (loading) {
     return (
@@ -99,16 +135,23 @@ export default function CategoryPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
+              (() => {
+                const cardProduct = getCardDisplayProduct(product);
+                const hasSelectedVariation = cardProduct.id !== product.id;
+                return (
               <div
                 key={product.id}
                 className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => setModalProduct(product)}
+                onClick={() => {
+                  setModalSelectedAttrs(cardVariants[product.id] || {});
+                  setModalProduct(product);
+                }}
               >
                 <div className="w-full h-48 bg-gray-50 flex items-center justify-center overflow-hidden">
-                  {product.image ? (
+                  {cardProduct.image ? (
                     <img
-                      src={product.image}
-                      alt={product.name}
+                      src={cardProduct.image}
+                      alt={cardProduct.name || product.name}
                       className="w-full h-full object-contain p-4"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
@@ -142,39 +185,53 @@ export default function CategoryPage() {
                   )}
                   {product.price !== '' && (
                     <p className="text-primary-600 font-bold">
-                      {product.is_variable && product.min_price != null
+                      {product.is_variable && !hasSelectedVariation && product.min_price != null
                         ? `From $${product.min_price.toFixed(2)}`
-                        : `$${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}`
+                        : `$${typeof cardProduct.price === 'number' ? cardProduct.price.toFixed(2) : parseFloat(cardProduct.price || 0).toFixed(2)}`
                       }
                     </p>
                   )}
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (product.is_variable) {
-                        setModalProduct(product);
-                      } else {
-                        handleAddToCart(product);
-                      }
-                    }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (product.is_variable) {
+                          setModalSelectedAttrs(cardVariants[product.id] || {});
+                          setModalProduct(product);
+                        } else {
+                          handleAddToCart(product);
+                        }
+                      }}
                     className="mt-3 w-full py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
                   >
                     {product.is_variable ? 'View Options' : 'Add to Cart'}
                   </button>
                 </div>
               </div>
+                );
+              })()
             ))}
           </div>
         )}
       </div>
 
       {/* Product detail modal */}
-      <ProductModal isOpen={!!modalProduct} product={modalProduct} onClose={() => setModalProduct(null)}>
+      <ProductModal
+        isOpen={!!modalProduct}
+        product={modalProduct}
+        onClose={() => {
+          setModalProduct(null);
+          setModalSelectedAttrs({});
+        }}
+      >
         {modalProduct && (
           <ProductDetail
             product={modalProduct}
             onAddToCart={handleAddToCart}
-            onClose={() => setModalProduct(null)}
+            onClose={() => {
+              setModalProduct(null);
+              setModalSelectedAttrs({});
+            }}
+            initialSelectedAttrs={modalSelectedAttrs}
           />
         )}
       </ProductModal>

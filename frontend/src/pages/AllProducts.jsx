@@ -12,6 +12,7 @@ import ProductCardImage from '../components/ProductCardImage';
 import { ProductSkeletonGrid } from '../components/ProductSkeletonCard';
 import VariantChips from '../components/VariantChips';
 import { getProducts } from '../services/catalog';
+import { getProductVariations } from '../services/api';
 import { useCart } from '../context/CartContext';
 import {
   ShoppingCart,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
+import { findMatchingVariation } from '../utils/variationSelection';
 
 // products will be loaded from WooCommerce REST API at runtime
 const categories = [
@@ -66,9 +68,11 @@ export default function AllProducts() {
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [showFilters, setShowFilters] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
+  const [modalSelectedAttrs, setModalSelectedAttrs] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [cardVariants, setCardVariants] = useState({});
+  const [cardVariationMap, setCardVariationMap] = useState({});
 
   const showToast = (message, type = 'cart') => {
     setToast({ message, type });
@@ -88,12 +92,14 @@ export default function AllProducts() {
 
   const openModal = (product) => {
     setModalProduct(product);
+    setModalSelectedAttrs(cardVariants[product.id] || {});
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setModalProduct(null);
+    setModalSelectedAttrs({});
   };
 
   // close on escape
@@ -226,6 +232,38 @@ export default function AllProducts() {
   const pageStart   = (safePage - 1) * ITEMS_PER_PAGE;
   const pageProducts = sortedProducts.slice(pageStart, pageStart + ITEMS_PER_PAGE);
 
+  useEffect(() => {
+    const variableIds = pageProducts
+      .filter((p) => p.is_variable && p.id && !cardVariationMap[p.id])
+      .map((p) => p.id);
+    if (variableIds.length === 0) return;
+
+    let mounted = true;
+    Promise.all(
+      variableIds.map((id) =>
+        getProductVariations(id)
+          .then((vars) => [id, vars])
+          .catch(() => [id, []])
+      )
+    ).then((pairs) => {
+      if (!mounted) return;
+      const next = {};
+      pairs.forEach(([id, vars]) => {
+        next[id] = Array.isArray(vars) ? vars : [];
+      });
+      setCardVariationMap((prev) => ({ ...prev, ...next }));
+    });
+
+    return () => { mounted = false; };
+  }, [pageProducts, cardVariationMap]);
+
+  const getCardDisplayProduct = useCallback((product) => {
+    if (!product?.is_variable) return product;
+    const selectedAttrs = cardVariants[product.id] || {};
+    const selectedVariation = findMatchingVariation(cardVariationMap[product.id] || [], selectedAttrs);
+    return selectedVariation || product;
+  }, [cardVariationMap, cardVariants]);
+
   const goToPage = (n) => {
     setCurrentPage(n);
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -302,6 +340,10 @@ export default function AllProducts() {
             {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {pageProducts.map((product, index) => (
+                (() => {
+                  const cardProduct = getCardDisplayProduct(product);
+                  const hasSelectedVariation = cardProduct.id !== product.id;
+                  return (
                 <div
                   key={product.id}
                   className="product-card-enter bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full"
@@ -309,16 +351,16 @@ export default function AllProducts() {
                 >
                   {/* Product Image Container */}
                   <div className="relative bg-gray-50 aspect-square overflow-hidden shrink-0">
-                    <button
-                      onClick={() => openModal(product)}
-                      className="absolute inset-0 w-full h-full"
-                    >
-                      <ProductCardImage
-                        src={product.image}
-                        alt={product.name}
-                        padding="8px"
-                      />
-                    </button>
+                      <button
+                        onClick={() => openModal(product)}
+                        className="absolute inset-0 w-full h-full"
+                      >
+                        <ProductCardImage
+                          src={cardProduct.image}
+                          alt={cardProduct.name || product.name}
+                          padding="8px"
+                        />
+                      </button>
 
                     {/* Badge */}
                     {product.badge && (
@@ -352,8 +394,8 @@ export default function AllProducts() {
 
                     {/* SKU/UPC - hidden on very small screens via dtb-plp-sku */}
                     <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dtb-plp-sku">
-                      {product.sku && (
-                        <span className="truncate">SKU: {product.sku}</span>
+                      {(cardProduct.sku || product.sku) && (
+                        <span className="truncate">SKU: {cardProduct.sku || product.sku}</span>
                       )}
                       {product.upc && (
                         <span className="truncate">UPC: {product.upc}</span>
@@ -375,9 +417,9 @@ export default function AllProducts() {
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
                       <p className="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
-                        {product.is_variable && product.min_price != null
+                        {product.is_variable && !hasSelectedVariation && product.min_price != null
                           ? `From $${product.min_price.toFixed(2)}`
-                          : `$${typeof product.price === 'number' ? product.price.toFixed(2) : parseFloat(product.price || 0).toFixed(2)}`
+                          : `$${typeof cardProduct.price === 'number' ? cardProduct.price.toFixed(2) : parseFloat(cardProduct.price || 0).toFixed(2)}`
                         }
                       </p>
                       <button
@@ -397,6 +439,8 @@ export default function AllProducts() {
                     </div>
                   </div>
                 </div>
+                  );
+                })()
               ))}
             </div>
 
@@ -452,7 +496,12 @@ export default function AllProducts() {
       {/* Product Detail Modal */}
       <ProductModal isOpen={isModalOpen && !!modalProduct} product={modalProduct} onClose={closeModal}>
         {modalProduct && (
-          <ProductDetail product={modalProduct} onAddToCart={handleAddToCart} onClose={closeModal} />
+          <ProductDetail
+            product={modalProduct}
+            onAddToCart={handleAddToCart}
+            onClose={closeModal}
+            initialSelectedAttrs={modalSelectedAttrs}
+          />
         )}
       </ProductModal>
     </div>
