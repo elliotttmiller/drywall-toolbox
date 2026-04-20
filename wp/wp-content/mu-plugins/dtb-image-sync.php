@@ -390,7 +390,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 	$last_sku       = '';
 	$last_product   = 0;
 
-	$update_progress = static function () use (
+	$sync_progress_updater = static function () use (
 		&$last_item,
 		&$last_sku,
 		&$last_product,
@@ -429,7 +429,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 		], DTB_SYNC_LOCK_TTL );
 	};
 
-	$update_progress();
+	$sync_progress_updater();
 
 	foreach ( $batch as $batch_item ) {
 		++$processed;
@@ -461,7 +461,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 				if ( $product_id > 0 && $is_primary ) {
 					++$linked;
 				}
-				$update_progress();
+				$sync_progress_updater();
 				continue;
 			}
 
@@ -471,7 +471,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 				if ( is_wp_error( $att_id ) ) {
 					$errors[] = "[{$stem}] register: " . $att_id->get_error_message();
 					dtb_image_sync_log( "image_sync register error [{$stem}]: " . $att_id->get_error_message() );
-					$update_progress();
+					$sync_progress_updater();
 					continue;
 				}
 				++$registered;
@@ -492,7 +492,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 				}
 			}
 
-			$update_progress();
+			$sync_progress_updater();
 			continue;
 		}
 
@@ -531,7 +531,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 
 		if ( ! $primary_path ) {
 			++$no_file;
-			$update_progress();
+			$sync_progress_updater();
 			continue;
 		}
 
@@ -540,7 +540,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 			$exists ? ++$skipped : ++$registered;
 			++$linked;
 			$gallery_images += count( $gallery_pairs );
-			$update_progress();
+			$sync_progress_updater();
 			continue;
 		}
 
@@ -551,7 +551,7 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 			if ( is_wp_error( $primary_att ) ) {
 				$errors[] = "[{$sku_lower}] primary: " . $primary_att->get_error_message();
 				dtb_image_sync_log( "image_sync primary error [{$sku_lower}]: " . $primary_att->get_error_message() );
-				$update_progress();
+				$sync_progress_updater();
 				continue;
 			}
 			++$registered;
@@ -585,12 +585,12 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 		if ( is_wp_error( $result ) ) {
 			$errors[] = "[{$sku_lower}] link: " . $result->get_error_message();
 			dtb_image_sync_log( "image_sync link error [{$sku_lower}]: " . $result->get_error_message() );
-			$update_progress();
+			$sync_progress_updater();
 			continue;
 		}
 		++$linked;
 
-		$update_progress();
+		$sync_progress_updater();
 	}
 
 	// ── Bump WC product cache version so REST responses reflect new images ──
@@ -1739,11 +1739,16 @@ function dtb_render_image_sync_admin_page(): void {
 			nonce: <?php echo wp_json_encode( wp_create_nonce( 'wp_rest' ) ); ?>
 		};
 
+		const MAX_BATCHES = 1000;
+
 		let submittedAction = '';
 		let pollTimer = null;
 		let pollBusy = false;
 
-		const parseBool = ( value ) => value === '1' || value === 'true' || value === true;
+		const parseBool = ( value ) => {
+			const v = typeof value === 'string' ? value.toLowerCase() : value;
+			return v === '1' || v === 'true' || v === true;
+		};
 		const parseIntOrDefault = ( value, fallback ) => {
 			const parsed = Number.parseInt( String( value ?? '' ), 10 );
 			return Number.isNaN( parsed ) ? fallback : parsed;
@@ -1868,7 +1873,6 @@ function dtb_render_image_sync_admin_page(): void {
 				}
 
 				let batchCount = 0;
-				const MAX_BATCHES = 1000;
 				while ( true ) {
 					batchCount += 1;
 					if ( batchCount > MAX_BATCHES ) {
@@ -1903,7 +1907,7 @@ function dtb_render_image_sync_admin_page(): void {
 					}
 
 					const nextOffset = Math.max( 0, parseIntOrDefault( batch.next_offset, currentOffset + scanned ) );
-					if ( nextOffset <= currentOffset ) {
+					if ( nextOffset < currentOffset ) {
 						throw new Error( 'Sync returned a non-advancing next offset.' );
 					}
 					currentOffset = nextOffset;
