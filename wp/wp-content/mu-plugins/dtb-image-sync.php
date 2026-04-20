@@ -1247,26 +1247,48 @@ function dtb_render_image_sync_admin_page(): void {
 		wp_die( esc_html__( 'Unauthorized', 'drywall-toolbox' ) );
 	}
 
-	$raw = static function ( string $key, string $default = '' ): string {
-		if ( ! isset( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$nonce_value = isset( $_POST['dtb_image_sync_nonce'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		? sanitize_text_field( wp_unslash( (string) $_POST['dtb_image_sync_nonce'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		: '';
+	$request_method  = isset( $_SERVER['REQUEST_METHOD'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		? strtoupper( sanitize_text_field( wp_unslash( (string) $_SERVER['REQUEST_METHOD'] ) ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		: 'GET';
+	$has_valid_nonce = ( 'POST' === $request_method )
+		&& ( '' !== $nonce_value )
+		&& wp_verify_nonce( $nonce_value, 'dtb_image_sync_admin' );
+
+	$get_post_field = static function ( string $key, string $default = '' ) use ( $has_valid_nonce ): string {
+		if ( ! $has_valid_nonce || ! isset( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return $default;
 		}
 		return sanitize_text_field( wp_unslash( (string) $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	};
 
-	$year     = preg_replace( '/\D+/', '', $raw( 'dtb_year', gmdate( 'Y' ) ) ) ?: gmdate( 'Y' );
-	$month_in = preg_replace( '/\D+/', '', $raw( 'dtb_month', gmdate( 'm' ) ) ) ?: gmdate( 'm' );
-	$month    = str_pad( substr( $month_in, 0, 2 ), 2, '0', STR_PAD_LEFT );
-	$limit    = max( 1, absint( $raw( 'dtb_limit', '100' ) ) );
-	$offset   = absint( $raw( 'dtb_offset', '0' ) );
-	$dry_run  = isset( $_POST['dtb_dry_run'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-	$force    = isset( $_POST['dtb_force'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$get_post_bool = static function ( string $key, bool $default = false ) use ( $has_valid_nonce ): bool {
+		if ( ! $has_valid_nonce || ! isset( $_POST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return $default;
+		}
+		return rest_sanitize_boolean( wp_unslash( (string) $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	};
+
+	$year_digits  = preg_replace( '/\D+/', '', $get_post_field( 'dtb_year', gmdate( 'Y' ) ) );
+	$month_digits = preg_replace( '/\D+/', '', $get_post_field( 'dtb_month', gmdate( 'm' ) ) );
+	$year_digits  = is_string( $year_digits ) ? $year_digits : '';
+	$month_digits = is_string( $month_digits ) ? $month_digits : '';
+	$year         = '' !== $year_digits ? $year_digits : gmdate( 'Y' );
+	$month_candidate = '' !== $month_digits ? absint( $month_digits ) : (int) gmdate( 'm' );
+	$month_int       = ( $month_candidate >= 1 && $month_candidate <= 12 ) ? $month_candidate : (int) gmdate( 'm' );
+	$month     = str_pad( (string) $month_int, 2, '0', STR_PAD_LEFT );
+	$limit     = max( 1, absint( $get_post_field( 'dtb_limit', '100' ) ) );
+	$offset    = absint( $get_post_field( 'dtb_offset', '0' ) );
+	$dry_run   = $get_post_bool( 'dtb_dry_run', false );
+	$force     = $get_post_bool( 'dtb_force', false );
 
 	$action_result = null;
 
 	if (
-		isset( $_POST['dtb_image_sync_action'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		&& check_admin_referer( 'dtb_image_sync_admin', 'dtb_image_sync_nonce' )
+		$has_valid_nonce
+		&& isset( $_POST['dtb_image_sync_action'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	) {
 		$action = sanitize_key( wp_unslash( (string) $_POST['dtb_image_sync_action'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
@@ -1288,7 +1310,16 @@ function dtb_render_image_sync_admin_page(): void {
 		} elseif ( 'fix_renamed' === $action ) {
 			$action_result = dtb_route_fix_renamed_files( $request );
 		} elseif ( 'reset' === $action ) {
-			$action_result = dtb_route_reset_images( $request );
+			$confirm_reset = $get_post_bool( 'dtb_confirm_reset', false );
+			if ( ! $confirm_reset ) {
+				$action_result = new WP_Error(
+					'dtb_reset_confirmation_required',
+					'Check "I understand reset is destructive" before running reset.',
+					[ 'status' => 400 ]
+				);
+			} else {
+				$action_result = dtb_route_reset_images( $request );
+			}
 		}
 	}
 
@@ -1345,25 +1376,23 @@ function dtb_render_image_sync_admin_page(): void {
 						<input type="checkbox" name="dtb_force" value="1" <?php checked( $force ); ?> />
 						Force re-register/re-link existing images
 					</label>
+					<label style="display:block; margin-top: 6px; color: #b32d2e;">
+						<input type="checkbox" name="dtb_confirm_reset" value="1" />
+						I understand reset is destructive (required for reset action)
+					</label>
 				</fieldset>
 
 				<p class="submit" style="display:flex; gap:8px; flex-wrap:wrap;">
 					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="status">Check Status</button>
 					<button type="submit" class="button button-secondary" name="dtb_image_sync_action" value="fix_renamed">Fix Renamed Files</button>
 					<button type="submit" class="button button-primary" name="dtb_image_sync_action" value="sync">Run Sync Batch</button>
-					<button
-						type="submit"
-						class="button"
-						name="dtb_image_sync_action"
-						value="reset"
-						onclick="return confirm('Reset clears existing image links and directory attachments. Continue?');"
-					>Run Reset</button>
+					<button type="submit" class="button button-link-delete" name="dtb_image_sync_action" value="reset">Run Reset</button>
 				</p>
 			</form>
 		</div>
 
 		<?php if ( $is_error ) : ?>
-			<div class="notice notice-error"><p><strong>Image Sync failed:</strong> <?php echo esc_html( (string) $result_data['message'] ); ?></p></div>
+			<div class="notice notice-error"><p><strong>Action failed:</strong> <?php echo esc_html( (string) $result_data['message'] ); ?></p></div>
 		<?php else : ?>
 			<div class="notice notice-success"><p>Image Sync action completed.</p></div>
 		<?php endif; ?>
