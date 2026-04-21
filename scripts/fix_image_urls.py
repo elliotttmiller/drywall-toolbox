@@ -65,6 +65,35 @@ CUSTOM_SKU_PREFIX_MAP = {
     "FBH-TT-42":   "bh",
     "FBH-TT-54":   "bh",
     "FBH-TT-72":   "bh",
+
+    # TapeTech Compound Tube Applicators (size-specific naming)
+    "CT-TT-24":    "ct24tt",
+    "CT-TT-36":    "ct36tt",
+    "CT-TT-42":    "ct42tt",
+
+    # TapeTech ProForm® Flat Boxes (zero-padded size in filename)
+    "PFB-TT-7":    "pfb07",
+    "PFB-TT-12":   "pfb12",
+    "PFB-TT-14":   "pfb14",
+    "PFB-TT-18":   "pfb18",
+    "PFB-TT-24":   "pfb24",
+    "PFB-TT-32":   "pfb32",
+    "PFB-TT-40":   "pfb40",
+    "PFB-TT-48":   "pfb48",
+
+    # TapeTech ProForm® Flat Box Kits (zero-padded size + tt suffix)
+    "PFK-TT-7":    "pfk07tt",
+    "PFK-TT-12":   "pfk12tt",
+    "PFK-TT-14":   "pfk14tt",
+    "PFK-TT-18":   "pfk18tt",
+    "PFK-TT-24":   "pfk24tt",
+    "PFK-TT-32":   "pfk32tt",
+    "PFK-TT-40":   "pfk40tt",
+    "PFK-TT-48":   "pfk48tt",
+
+    # TapeTech QuickBox® QSX (size encoded as width×height digits)
+    "QB-QSX-65":   "qb06-qsx",   # 6" × 5"
+    "QB-QSX-85":   "qb08-qsx",   # 8" × 5"
 }
 
 # TapeTech spare parts SKU pattern (have no images in Products/)
