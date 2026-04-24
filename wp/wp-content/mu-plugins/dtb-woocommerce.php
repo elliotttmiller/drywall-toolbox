@@ -526,6 +526,9 @@ add_filter( 'woocommerce_csv_product_import_mapping_default_columns', function (
 	return $columns;
 } );
 
+// Priority 10 (default) — runs after the skip-images safety net (priority 5,
+// Section 14) so the product object is already stripped of images before meta
+// is written. Execution order on this hook: 5 (image clear) → 10 (meta save).
 add_filter( 'woocommerce_product_import_pre_insert_product_object', function ( \WC_Product $product, array $data ): \WC_Product {
 	if ( ! empty( $data['mpn'] ) ) {
 		$product->update_meta_data( '_mpn', sanitize_text_field( (string) $data['mpn'] ) );
@@ -675,8 +678,10 @@ add_filter( 'woocommerce_product_importer_parsed_data', function ( array $data )
 } );
 
 // Safety net: also clear images from the product object right before save.
-// Runs only in skip-images mode. Handles edge cases where
-// woocommerce_product_importer_parsed_data fired after sideloading started.
+// Runs only in skip-images mode. Priority 5 ensures this fires BEFORE the
+// meta-persistence handler (Section 12, priority 10), so the product object
+// is clean (no image IDs) when meta is written. This also prevents edge cases
+// where woocommerce_product_importer_parsed_data fired after sideloading.
 add_filter( 'woocommerce_product_import_pre_insert_product_object', function ( \WC_Product $product, array $data ): \WC_Product {
 	if ( get_option( 'dtb_import_skip_images' ) ) {
 		$product->set_image_id( '' );
