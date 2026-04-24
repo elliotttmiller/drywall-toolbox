@@ -498,26 +498,40 @@ add_action( 'woocommerce_after_checkout_validation', function ( $data, $errors )
 
 
 // ============================================================================
-// SECTION 12 — CSV IMPORTER: MPN COLUMN MAPPING
+// SECTION 12 — CSV IMPORTER: CUSTOM COLUMN MAPPING
 //
-// Adds "MPN" as a recognised column mapping target in the WooCommerce product
-// CSV importer. The value is persisted to the `_mpn` product meta key.
+// Maps non-standard wp-catalog.csv columns to WooCommerce product fields:
+//
+//   MPN    → persisted to `_mpn` product meta key.
+//   Brands → persisted to `_dtb_brand` product meta key.
+//            The "Brands" column is the first column in wp-catalog.csv and is
+//            NOT a built-in WooCommerce field. Without an explicit mapping it
+//            would be silently ignored by the importer. Storing it as meta lets
+//            dtb-rest-api.php expose it and the frontend filter by brand.
 // ============================================================================
 
 add_filter( 'woocommerce_csv_product_import_mapping_options', function ( array $options ): array {
-	$options['mpn'] = __( 'MPN', 'woocommerce' );
+	$options['mpn']       = __( 'MPN', 'woocommerce' );
+	$options['dtb_brand'] = __( 'Brand (DTB)', 'woocommerce' );
 	return $options;
 } );
 
 add_filter( 'woocommerce_csv_product_import_mapping_default_columns', function ( array $columns ): array {
-	$columns['MPN'] = 'mpn';
-	$columns['mpn'] = 'mpn';
+	$columns['MPN']    = 'mpn';
+	$columns['mpn']    = 'mpn';
+	$columns['Brands'] = 'dtb_brand';
+	$columns['brands'] = 'dtb_brand';
+	$columns['Brand']  = 'dtb_brand';
+	$columns['brand']  = 'dtb_brand';
 	return $columns;
 } );
 
 add_filter( 'woocommerce_product_import_pre_insert_product_object', function ( \WC_Product $product, array $data ): \WC_Product {
 	if ( ! empty( $data['mpn'] ) ) {
 		$product->update_meta_data( '_mpn', sanitize_text_field( (string) $data['mpn'] ) );
+	}
+	if ( ! empty( $data['dtb_brand'] ) ) {
+		$product->update_meta_data( '_dtb_brand', sanitize_text_field( (string) $data['dtb_brand'] ) );
 	}
 	return $product;
 }, 10, 2 );
@@ -526,7 +540,7 @@ add_filter( 'woocommerce_product_import_pre_insert_product_object', function ( \
 // ============================================================================
 // SECTION 13 — CSV IMPORTER: WEBP SUPPORT + BATCH PERFORMANCE
 //
-// Two problems prevented all 2,663 products from importing:
+// Root causes that limited import to only ~20 products:
 //
 //   A) "Invalid image: Sorry, you are not allowed to upload this file type."
 //      WordPress core does not include image/webp in its default allowed-MIME
@@ -537,11 +551,31 @@ add_filter( 'woocommerce_product_import_pre_insert_product_object', function ( \
 //      and the upload_mimes filter. We add webp to both the extension map and
 //      the file_is_valid_image check so sideloading succeeds.
 //
-//   B) Timeout / stall after ~725 rows.
-//      The importer runs in 30-product Ajax batches. On HostGator shared
-//      hosting each batch can time out before completing. Raising the batch
-//      size to 100 cuts round-trips from ~89 to ~27, and bumping
-//      max_execution_time to 120s gives each batch room to finish.
+//   B) Timeout — only ~20 products imported per session.
+//      wp-catalog.csv has ~1,150 rows averaging 1.8 images each (2,072 total
+//      image sideloads). At ~5 s per remote image download + sub-size
+//      generation, a batch of 100 requires ~900 s — far beyond any PHP time
+//      limit. HostGator shared hosting also commonly ignores set_time_limit()
+//      when PHP runs as CGI/FPM, enforcing a hard 30 s limit from php.ini.
+//      At 30 s, only ~20 products could complete per Ajax request.
+//
+//      Fix: batch size reduced to 25. At 25 products × 1.8 images × 5 s =
+//      ~225 s, safely inside the 300 s limit we enforce below. Server-level
+//      limits are locked in via wp/.user.ini so ini_set() restrictions
+//      cannot block us.
+//
+//      RECOMMENDED WORKFLOW: run dtb-image-sync BEFORE importing the CSV.
+//      When images are already registered in the Media Library, WooCommerce
+//      calls attachment_url_to_postid() (a single indexed DB lookup, ~1 ms)
+//      instead of sideloading. A batch of 25 then completes in <1 s.
+//      After import, use dtb-image-sync link-only to attach any remaining
+//      unlinked images by SKU.
+//
+//      SKIP-IMAGES MODE: set the dtb_import_skip_images WP option to 1
+//      (via wp-admin › Settings › DTB Import, or WP-CLI:
+//       wp option update dtb_import_skip_images 1)
+//      to import all products without images first, then run
+//      dtb-image-sync link-only to link images in a separate pass.
 // ============================================================================
 
 // A1 — Add webp to WordPress allowed upload MIME types.
@@ -564,16 +598,26 @@ add_filter( 'wp_check_filetype_and_ext', function ( array $data, string $file, s
 	return $data;
 }, 10, 3 );
 
-// B — Increase batch size and execution time for the importer Ajax actions.
+// B1 — Reduce batch size to 25 products per Ajax call.
 //
-// On shared hosting the WP admin CSV importer can still stall or freeze while
-// resolving remote image URLs or processing large payloads. If the browser
-// import hangs, prefer the DTB backend import workflow with a CSV uploaded to
-// wp-content/uploads/wc-imports/ and images registered first via sync-images.
+// 25 products × avg 1.8 images × ~5 s sideload ≈ 225 s — fits within the
+// 300 s execution window we enforce below. When images are pre-registered in
+// the Media Library (recommended), each batch completes in < 1 s and the full
+// 1,150-product catalog imports in ~46 Ajax calls with no timeout risk.
 add_filter( 'woocommerce_product_import_batch_size', function (): int {
-	return 100;
+	return 25;
 } );
 
+// B2 — Enforce execution time and memory limits for each import Ajax call.
+//
+// Two hooks cover both mod_php and CGI/FPM environments:
+//   admin_init  — fires early in the request, before WC processing begins.
+//   woocommerce_product_import_start — fires immediately before the batch
+//     loop, giving a fresh 300 s window from the moment work starts.
+//
+// Server-level limits (max_execution_time, memory_limit, upload_max_filesize)
+// are also set in wp/.user.ini to override the host php.ini on HostGator
+// without relying on ini_set() or set_time_limit() being available.
 add_action( 'admin_init', function (): void {
 	$action = isset( $_REQUEST['action'] )
 		? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -589,63 +633,54 @@ add_action( 'admin_init', function (): void {
 	}
 } );
 
-
-// ============================================================================
-// SECTION 12 — CSV IMPORTER: MPN COLUMN MAPPING
-//
-// The WooCommerce product CSV importer shows a "Map Fields" step where each
-// CSV column is matched to a WC product field. By default the importer offers
-// "GTIN, UPC, EAN, or ISBN" as the only barcode-style option — there is no
-// built-in MPN mapping.
-//
-// This section adds "MPN" to the mapping dropdown AND persists the value to
-// the `_mpn` product meta key when a row is imported or updated.
-//
-// Two filters are used:
-//   woocommerce_csv_product_import_mapping_options
-//     → Adds the "MPN" label to the column-selector dropdown.
-//   woocommerce_csv_product_import_mapping_default_columns
-//     → Auto-selects "MPN" when the CSV column header is literally "MPN"
-//       so the mapping step requires no manual action.
-//   woocommerce_product_import_pre_insert_product_object
-//     → Writes the mapped value into `_mpn` product meta before save.
-// ============================================================================
-
-/**
- * Add "MPN" to the list of available mapping targets in the importer UI.
- *
- * @param array $options Existing mapping options keyed by internal field name.
- * @return array
- */
-add_filter( 'woocommerce_csv_product_import_mapping_options', function ( array $options ): array {
-	$options['mpn'] = __( 'MPN', 'woocommerce' );
-	return $options;
+// Give each batch a fresh 300 s window right as processing starts.
+add_action( 'woocommerce_product_import_start', function (): void {
+	if ( function_exists( 'set_time_limit' ) ) {
+		set_time_limit( 300 );
+	}
 } );
 
-/**
- * Auto-map CSV columns named "MPN" (case-insensitive) to the mpn field
- * so the import can run without touching the Map Fields screen.
- *
- * @param array $columns Existing auto-map rules [ 'csv header' => 'field key' ].
- * @return array
- */
-add_filter( 'woocommerce_csv_product_import_mapping_default_columns', function ( array $columns ): array {
-	$columns['MPN'] = 'mpn';
-	$columns['mpn'] = 'mpn';
-	return $columns;
+
+// ============================================================================
+// SECTION 14 — CSV IMPORTER: SKIP-IMAGES MODE
+//
+// When the WP option dtb_import_skip_images is truthy, the importer clears
+// image fields from every parsed CSV row before WooCommerce attempts to
+// sideload them. This makes each batch complete in milliseconds instead of
+// minutes, allowing all 1,150 products to import without any timeout risk.
+//
+// Intended workflow:
+//   1. Enable skip-images mode:
+//        wp option update dtb_import_skip_images 1
+//   2. Import wp-catalog.csv via WooCommerce › Products › Import.
+//      All products are created without images.
+//   3. Run dtb-image-sync (sync + link) to register pre-placed image files
+//      and link them to products by SKU.
+//   4. Disable skip-images mode:
+//        wp option delete dtb_import_skip_images
+//
+// Filter: woocommerce_product_importer_parsed_data (WooCommerce 3.1+)
+//   Fires after each CSV row is parsed and column-mapped, before any
+//   sideloading or product-object construction. Removing the 'images' key
+//   here is the earliest and safest interception point — no HTTP requests
+//   are made and no orphaned attachments are created.
+// ============================================================================
+
+add_filter( 'woocommerce_product_importer_parsed_data', function ( array $data ): array {
+	if ( get_option( 'dtb_import_skip_images' ) ) {
+		unset( $data['images'] );
+		unset( $data['thumbnail'] );
+	}
+	return $data;
 } );
 
-/**
- * Persist the mapped MPN value to the `_mpn` product meta key before the
- * product object is inserted or updated in the database.
- *
- * @param \WC_Product $product  Product object being imported.
- * @param array       $data     Parsed CSV row data, keyed by mapped field name.
- * @return \WC_Product
- */
+// Safety net: also clear images from the product object right before save.
+// Runs only in skip-images mode. Handles edge cases where
+// woocommerce_product_importer_parsed_data fired after sideloading started.
 add_filter( 'woocommerce_product_import_pre_insert_product_object', function ( \WC_Product $product, array $data ): \WC_Product {
-	if ( ! empty( $data['mpn'] ) ) {
-		$product->update_meta_data( '_mpn', sanitize_text_field( (string) $data['mpn'] ) );
+	if ( get_option( 'dtb_import_skip_images' ) ) {
+		$product->set_image_id( '' );
+		$product->set_gallery_image_ids( [] );
 	}
 	return $product;
-}, 10, 2 );
+}, 5, 2 );
