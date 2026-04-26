@@ -2,15 +2,14 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
+import ProductCard from '../components/ProductCard';
 import BackButton from '../components/BackButton';
 import SearchBar from '../components/SearchBar';
 import SortDropdown from '../components/SortDropdown';
 import FilterPanel from '../components/FilterPanel';
 import Toast from '../components/Toast';
 import Pagination from '../components/Pagination';
-import ProductCardImage from '../components/ProductCardImage';
 import { ProductSkeletonGrid } from '../components/ProductSkeletonCard';
-import VariantChips from '../components/VariantChips';
 import { ChevronRight } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { getProductVariations } from '../services/api';
@@ -18,7 +17,6 @@ import { useCart } from '../context/CartContext';
 import {
   ShoppingCart,
   Filter,
-  Heart
 } from 'lucide-react';
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
@@ -578,101 +576,17 @@ export default function Products() {
                   const cardProduct = getCardDisplayProduct(product);
                   const hasSelectedVariation = cardProduct.id !== product.id;
                   return (
-                <div
-                  key={product.id}
-                  className="product-card-enter bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-gray-100 hover:border-primary-300 flex flex-col h-full"
-                  style={{ '--card-index': index }}
-                >
-                  {/* Product Image Container */}
-                  <div className="relative bg-gray-50 aspect-square overflow-hidden shrink-0">
-                      <button
-                        onClick={() => openModal(product)}
-                        className="absolute inset-0 w-full h-full"
-                      >
-                        <ProductCardImage
-                          src={cardProduct.image}
-                          alt={cardProduct.name || product.name}
-                          padding="8px"
-                        />
-                      </button>
-
-                    {/* Badge */}
-                    {product.badge && (
-                      <div className={`absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-semibold text-white ${
-                        product.badge === 'Best Seller' ? 'bg-accent-500' :
-                        product.badge === 'Popular' ? 'bg-primary-600' :
-                        product.badge === 'New' ? 'bg-green-500' :
-                        'bg-red-500'
-                      }`}>
-                        {product.badge}
-                      </div>
-                    )}
-
-                    {/* Wishlist Button */}
-                    <button className="absolute top-2 right-2 p-1.5 bg-white/95 rounded-full hover:bg-white transition-all opacity-0 group-hover:opacity-100 shadow-sm hover:shadow-md">
-                      <Heart size={16} className="text-gray-500 hover:text-red-500 transition-colors" />
-                    </button>
-                  </div>
-
-                  {/* Product Info - Grows to fill available space */}
-                  <div className="p-3 sm:p-4 flex flex-col grow dtb-plp-card-body">
-                    {/* Brand */}
-                    <p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">{product.brand}</p>
-
-                    {/* Title */}
-                    <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors grow">
-                      <button onClick={() => openModal(product)} className="block text-left w-full hover:text-primary-600">
-                        {product.name || product.part_number}
-                      </button>
-                    </h3>
-
-                    {/* SKU/UPC - hidden on very small screens via dtb-plp-sku */}
-                    <div className="flex flex-wrap gap-2 mb-2 text-xs text-gray-500 dtb-plp-sku">
-                      {(cardProduct.sku || product.sku) && (
-                        <span className="truncate">SKU: {cardProduct.sku || product.sku}</span>
-                      )}
-                      {product.upc && (
-                        <span className="truncate">UPC: {product.upc}</span>
-                      )}
-                    </div>
-
-                    {/* Inline variant chips for variable products */}
-                    {product.is_variable && product.variation_attributes && product.variation_attributes.length > 0 && (
-                      <div className="mb-2">
-                        <VariantChips
-                          attributes={product.variation_attributes}
-                          selected={cardVariants[product.id] || {}}
-                          onSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
-                          compact
-                        />
-                      </div>
-                    )}
-
-                    {/* Price and Add to Cart */}
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
-                      <p className="text-lg sm:text-xl font-bold text-gray-900 shrink-0">
-                        {product.is_variable && !hasSelectedVariation && product.min_price != null
-                          ? `From $${product.min_price.toFixed(2)}`
-                          : `$${typeof cardProduct.price === 'number' ? cardProduct.price.toFixed(2) : parseFloat(cardProduct.price || 0).toFixed(2)}`
-                        }
-                      </p>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (product.is_variable) {
-                            openModal(product);
-                          } else {
-                            handleAddToCart(product, 1);
-                          }
-                        }}
-                        className="shrink-0 p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all hover:scale-110 active:scale-95"
-                        aria-label={product.is_variable ? 'View options' : 'Add to cart'}
-                      >
-                        <ShoppingCart size={20} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      cardProduct={cardProduct}
+                      hasSelectedVariation={hasSelectedVariation}
+                      cardVariants={cardVariants[product.id] || {}}
+                      onVariantSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
+                      onOpenModal={() => openModal(product)}
+                      onAddToCart={() => handleAddToCart(product, 1)}
+                      index={index}
+                    />
                   );
               })}
             </div>

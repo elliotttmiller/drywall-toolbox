@@ -3361,3 +3361,348 @@ aside input[type="range"],
         gap: 12px !important;
     }
 }
+
+/* =============================================================================
+   DTB PLP CARD — Production-grade Product Listing Page card
+   Used by ProductCard.jsx across Products, AllProducts, and CategoryPage.
+   ============================================================================= */
+
+/* ── Card shell ── */
+.dtb-plp-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid var(--dtb-border-card, rgba(15, 23, 42, 0.07));
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: var(--dtb-shadow-card, 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04));
+    transition:
+        box-shadow 250ms var(--ease-tension, cubic-bezier(0.16,1,0.3,1)),
+        border-color 250ms var(--ease-tension, cubic-bezier(0.16,1,0.3,1)),
+        transform 250ms var(--ease-tension, cubic-bezier(0.16,1,0.3,1));
+    cursor: default;
+}
+
+.dtb-plp-card:hover {
+    box-shadow: var(--dtb-shadow-card-hover, 0 8px 28px rgba(15,23,42,0.10));
+    border-color: rgba(37, 99, 235, 0.22);
+    transform: translateY(-3px);
+}
+
+/* ── Image wrapper ── */
+.dtb-plp-card__img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #f8fafc;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* Full-area image button — no visible focus ring on click, only on keyboard nav */
+.dtb-plp-card__img-btn {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+}
+
+.dtb-plp-card__img-btn:focus-visible {
+    outline: 3px solid var(--tension-accent, #2563eb);
+    outline-offset: -3px;
+}
+
+/* Badge — top-left overlay pill */
+.dtb-plp-card__badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
+    pointer-events: none;
+    line-height: 1.5;
+}
+
+.dtb-plp-card__badge--bestseller { background: #f59e0b; }
+.dtb-plp-card__badge--popular    { background: var(--tension-accent, #2563eb); }
+.dtb-plp-card__badge--new        { background: #10b981; }
+.dtb-plp-card__badge--sale       { background: #ef4444; }
+
+/* Out-of-stock pill — top-right */
+.dtb-plp-card__oos-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: rgba(239,68,68,0.12);
+    color: #dc2626;
+    pointer-events: none;
+    line-height: 1.5;
+}
+
+/* Wishlist button — top-right, revealed on hover */
+.dtb-plp-card__wishlist {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 11;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #94a3b8;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.10);
+    transition: opacity 180ms, color 180ms, background 180ms, box-shadow 180ms;
+    opacity: 0;
+    padding: 0;
+}
+
+/* When the card also has an OOS badge, push wishlist down slightly so they don't overlap */
+.dtb-plp-card:has(.dtb-plp-card__oos-badge) .dtb-plp-card__wishlist {
+    top: 34px;
+}
+
+.dtb-plp-card:hover .dtb-plp-card__wishlist {
+    opacity: 1;
+}
+
+.dtb-plp-card__wishlist:hover {
+    color: #ef4444;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.18);
+}
+
+.dtb-plp-card__wishlist:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--tension-accent, #2563eb);
+    outline-offset: 2px;
+}
+
+/* ── Card body ── */
+.dtb-plp-card__body {
+    padding: clamp(10px, 2.5vw, 13px) clamp(10px, 2.5vw, 14px) clamp(12px, 2.5vw, 14px);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0;
+}
+
+/* Brand eyebrow */
+.dtb-plp-card__brand {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(15, 23, 42, 0.38);
+    margin: 0 0 4px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Product name — 2-line clamp */
+.dtb-plp-card__name {
+    font-size: clamp(0.78rem, 2vw, 0.875rem);
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 5px 0;
+    line-height: 1.35;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 2.4em;
+    flex-shrink: 0;
+    transition: color 180ms;
+}
+
+.dtb-plp-card:hover .dtb-plp-card__name {
+    color: var(--tension-accent, #2563eb);
+}
+
+/* Name inner button — inherits all name styles */
+.dtb-plp-card__name-btn {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+}
+
+.dtb-plp-card__name-btn:focus-visible {
+    outline: 2px solid var(--tension-accent, #2563eb);
+    border-radius: 3px;
+}
+
+/* SKU — monospace, subtle */
+.dtb-plp-card__sku {
+    font-size: 0.62rem;
+    font-family: var(--font-mono, monospace);
+    color: rgba(15, 23, 42, 0.35);
+    margin: 0 0 6px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Variant chips wrapper */
+.dtb-plp-card__variants {
+    margin-bottom: 6px;
+}
+
+/* ── Footer: price + CTA ── */
+.dtb-plp-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    margin-top: auto;
+}
+
+.dtb-plp-card__price {
+    font-size: clamp(0.92rem, 2.5vw, 1.05rem);
+    font-weight: 800;
+    color: #0f172a;
+    font-family: var(--font-mono, monospace);
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.dtb-plp-card__price--oos {
+    color: rgba(15, 23, 42, 0.35);
+}
+
+/* Shared CTA button base */
+.dtb-plp-card__cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: background 180ms, transform 100ms, box-shadow 180ms;
+    border-radius: 8px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.dtb-plp-card__cta:active {
+    transform: scale(0.93);
+}
+
+/* Variable product: "Options ›" text pill */
+.dtb-plp-card__cta--options {
+    padding: 5px 10px;
+    font-size: 0.68rem;
+    gap: 2px;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--tension-accent, #2563eb);
+    white-space: nowrap;
+}
+
+.dtb-plp-card__cta--options:hover {
+    background: rgba(37, 99, 235, 0.14);
+    box-shadow: none;
+}
+
+/* Simple product: cart icon square */
+.dtb-plp-card__cta--cart {
+    width: 32px;
+    height: 32px;
+    background: var(--tension-accent, #2563eb);
+    color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.30);
+}
+
+.dtb-plp-card__cta--cart:hover {
+    background: var(--primary-700, #1d4ed8);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.40);
+}
+
+.dtb-plp-card__cta--cart:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.dtb-plp-card__cta--cart:disabled:active {
+    transform: none;
+}
+
+/* =============================================================================
+   MOBILE OVERRIDES for dtb-plp-card (≤ 479px)
+   ============================================================================= */
+@media (max-width: 479px) {
+    .dtb-plp-card {
+        border-radius: 10px;
+    }
+
+    .dtb-plp-card__body {
+        padding: 8px 9px 10px;
+    }
+
+    /* Hide SKU on xs phones — saves precious vertical space */
+    .dtb-plp-card__sku {
+        display: none;
+    }
+
+    .dtb-plp-card__name {
+        font-size: 0.75rem;
+        min-height: 2.2em;
+    }
+
+    .dtb-plp-card__price {
+        font-size: 0.88rem;
+    }
+
+    .dtb-plp-card__cta--cart {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* =============================================================================
+   TABLET / DESKTOP HOVER — disable expensive transitions on touch devices
+   ============================================================================= */
+@media (hover: none) {
+    .dtb-plp-card:hover {
+        transform: none;
+        box-shadow: var(--dtb-shadow-card, 0 1px 3px rgba(15,23,42,0.06));
+        border-color: var(--dtb-border-card, rgba(15, 23, 42, 0.07));
+    }
+
+    .dtb-plp-card__wishlist {
+        opacity: 1;
+    }
+}

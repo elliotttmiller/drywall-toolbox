@@ -4,8 +4,8 @@ import { getProductsByCategory } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
+import ProductCard from '../components/ProductCard';
 import Toast from '../components/Toast';
-import VariantChips from '../components/VariantChips';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
 import { getProductVariations } from '../services/api';
@@ -132,79 +132,25 @@ export default function CategoryPage() {
         {products.length === 0 ? (
           <p className="text-gray-500">No products found in this category.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => {
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+            {products.map((product, index) => {
                 const cardProduct = getCardDisplayProduct(product);
                 const hasSelectedVariation = cardProduct.id !== product.id;
                 return (
-              <div
-                key={product.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => {
-                  setModalSelectedAttrs(cardVariants[product.id] || {});
-                  setModalProduct(product);
-                }}
-              >
-                <div className="w-full h-48 bg-gray-50 flex items-center justify-center overflow-hidden">
-                  {cardProduct.image ? (
-                    <img
-                      src={cardProduct.image}
-                      alt={cardProduct.name || product.name}
-                      className="w-full h-full object-contain p-4"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = 'https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/04/no-image-placeholder.webp';
-                      }}
-                    />
-                  ) : (
-                    <div className="text-gray-300">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  {product.brand && (
-                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{product.brand}</p>
-                  )}
-                  <h3 className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2">{product.name}</h3>
-                  {product.is_variable && product.variation_attributes && product.variation_attributes.length > 0 && (
-                    <div className="mb-2">
-                      <VariantChips
-                        attributes={product.variation_attributes}
-                        selected={cardVariants[product.id] || {}}
-                        onSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
-                        compact
-                      />
-                    </div>
-                  )}
-                  {product.price !== '' && (
-                    <p className="text-primary-600 font-bold">
-                      {product.is_variable && !hasSelectedVariation && product.min_price != null
-                        ? `From $${product.min_price.toFixed(2)}`
-                        : `$${typeof cardProduct.price === 'number' ? cardProduct.price.toFixed(2) : parseFloat(cardProduct.price || 0).toFixed(2)}`
-                      }
-                    </p>
-                  )}
-                  <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (product.is_variable) {
-                          setModalSelectedAttrs(cardVariants[product.id] || {});
-                          setModalProduct(product);
-                        } else {
-                          handleAddToCart(product);
-                        }
-                      }}
-                    className="mt-3 w-full py-2 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
-                  >
-                    {product.is_variable ? 'View Options' : 'Add to Cart'}
-                  </button>
-                </div>
-              </div>
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    cardProduct={cardProduct}
+                    hasSelectedVariation={hasSelectedVariation}
+                    cardVariants={cardVariants[product.id] || {}}
+                    onVariantSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
+                    onOpenModal={() => {
+                      setModalSelectedAttrs(cardVariants[product.id] || {});
+                      setModalProduct(product);
+                    }}
+                    onAddToCart={() => handleAddToCart(product)}
+                    index={index}
+                  />
                 );
             })}
           </div>
