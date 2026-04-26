@@ -20,6 +20,8 @@ import { ShoppingCart, Heart, ChevronRight } from 'lucide-react';
 import ProductCardImage from './ProductCardImage';
 import VariantChips from './VariantChips';
 
+const STOCK_STATUS_OUT_OF_STOCK = 'outofstock';
+
 export default function ProductCard({
   product,
   cardProduct,
@@ -32,7 +34,7 @@ export default function ProductCard({
 }) {
   // ── Derived display values ────────────────────────────────────────────────
   const effectiveProduct = cardProduct || product;
-  const isOutOfStock = (effectiveProduct?.stock_status || product.stock_status) === 'outofstock';
+  const isOutOfStock = (effectiveProduct?.stock_status || product.stock_status) === STOCK_STATUS_OUT_OF_STOCK;
   const isOnSale     = effectiveProduct?.on_sale || product.on_sale;
 
   // Price display: "From $X.XX" for unresolved variable, otherwise the exact price.

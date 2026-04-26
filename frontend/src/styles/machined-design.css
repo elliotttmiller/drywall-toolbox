@@ -3437,9 +3437,9 @@ aside input[type="range"],
 }
 
 .dtb-plp-card__badge--bestseller { background: #f59e0b; }
-.dtb-plp-card__badge--popular    { background: var(--tension-accent, #2563eb); }
-.dtb-plp-card__badge--new        { background: #10b981; }
-.dtb-plp-card__badge--sale       { background: #ef4444; }
+.dtb-plp-card__badge--popular { background: var(--tension-accent, #2563eb); }
+.dtb-plp-card__badge--new { background: #10b981; }
+.dtb-plp-card__badge--sale { background: #ef4444; }
 
 /* Out-of-stock pill — top-right */
 .dtb-plp-card__oos-badge {
