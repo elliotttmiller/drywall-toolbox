@@ -47,7 +47,7 @@ export default function RoomPresets({ onApply, currentConfig }) {
   const handleSaveCurrent = () => {
     if (!savingName.trim()) return
     const newPreset = {
-      id: `custom-${Date.now()}`,
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `custom-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       name: savingName.trim(),
       ...(currentConfig || {}),
     }

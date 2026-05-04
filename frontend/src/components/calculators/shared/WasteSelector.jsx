@@ -34,6 +34,8 @@ export default function WasteSelector({ value, onChange }) {
     const num = parseFloat(raw)
     if (!isNaN(num) && num >= 0 && num <= 100) {
       onChange(num / 100)
+    } else if (raw === '' || raw === undefined) {
+      onChange(0)
     }
   }
 

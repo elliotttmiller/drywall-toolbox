@@ -423,7 +423,7 @@ export default function SheetCalculator({ onUpdate }) {
                     value={doorSqFt}
                     min={1}
                     step={0.5}
-                    onChange={e => setDoorSqFt(+e.target.value)}
+                    onChange={e => { const v = +e.target.value; if (v >= 1) setDoorSqFt(v) }}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition"
                   />
                   {doorSqFt !== DEFAULT_DOOR_SQ_FT && (
@@ -445,7 +445,7 @@ export default function SheetCalculator({ onUpdate }) {
                     value={windowSqFt}
                     min={1}
                     step={0.5}
-                    onChange={e => setWindowSqFt(+e.target.value)}
+                    onChange={e => { const v = +e.target.value; if (v >= 1) setWindowSqFt(v) }}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-xl bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition"
                   />
                   {windowSqFt !== DEFAULT_WINDOW_SQ_FT && (
