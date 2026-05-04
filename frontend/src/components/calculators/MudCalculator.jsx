@@ -2,12 +2,18 @@ import { useState, useMemo, useEffect } from 'react'
 import ResultCard from './shared/ResultCard'
 import InfoBox from './shared/InfoBox'
 
-// Joint compound coverage rates by finish level (GA-214-2022 / USG / National Gypsum specs)
-// Units: US gallons per 100 sq ft (all coats combined, including 10% applicator waste)
-const MUD_GAL_PER_100 = { 0: 0, 1: 0.5, 2: 1.0, 3: 2.25, 4: 3.0, 5: 4.5 }
+// Joint compound coverage rates by finish level (GA-214-2021 / USG Official Technical Data)
+// Derived from USG Sheetrock® product submittal: taping coat 1 gal/182 sqft,
+// fill coat 1 gal/250 sqft, finish coat 1 gal/300 sqft — all values include 10% applicator waste.
+// Cross-validated against National Gypsum ProForm data and contractor estimating standards:
+//   Level 4 contractor range: 1.2–1.5 gal/100 sqft (12–15 gal per 1,000 sqft, ≈3 five-gal buckets).
+// Units: US gallons per 100 sq ft of gypsum board (all applicable coats combined)
+const MUD_GAL_PER_100 = { 0: 0, 1: 0.60, 2: 1.00, 3: 1.25, 4: 1.40, 5: 1.80 }
 
-// Coat count by finish level (GA-214-2022)
-const COAT_COUNT = { 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 }
+// Coat count by finish level (GA-214-2021):
+// L1=tape embed; L2=tape+fill; L3=tape+fill+finish (joints); L4=same as L3 + extra fastener coat;
+// L5=Level 4 + full-surface skim coat
+const COAT_COUNT = { 0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 4 }
 
 // Coat distribution percentages (thickest first coat, lightest final)
 // Coat 1 (embed/tape): 40%, Coat 2 (fill): 35%, Coat 3 (finish): 25%
@@ -57,9 +63,9 @@ const FINISH_LEVELS = [
     value: 4,
     label: 'Level 4 — Paint ready (standard)',
     short: 'Level 4',
-    description: 'Three coats over tape, joints, fasteners, and accessories. Smooth, primer required. Standard for most residential and commercial painted walls.',
+    description: 'Tape embedded plus two additional coats over flat joints; one additional coat over interior angles. Two coats over fasteners and accessories. Smooth, primer required. Standard for most residential and commercial painted walls.',
     application: 'Most interior painted walls and ceilings, light textures, flat wall coverings',
-    coats: 4,
+    coats: 3,
   },
   {
     value: 5,
@@ -67,7 +73,7 @@ const FINISH_LEVELS = [
     short: 'Level 5',
     description: 'Level 4 plus a full skim coat of compound over the entire surface. Highest quality; eliminates surface variation under critical lighting.',
     application: 'Gloss, semi-gloss, or enamel paint; critical lighting installations; premium residential',
-    coats: 5,
+    coats: 4,
   },
 ]
 
@@ -319,14 +325,14 @@ export default function MudCalculator({ onUpdate, sheetData }) {
           {finishLevel === 2 && 'Level 2: tape embedded + one fill coat on joints and fasteners. Surface must be free of excess compound. Used under tile.'}
           {finishLevel === 3 && `Level 3: ${selectedLevel?.description} Apply primer-sealer before texture.`}
           {finishLevel === 4 && 'Level 4 is the industry standard for most residential interiors. Always prime before painting to prevent photographic panning (variation in sheen).'}
-          {finishLevel === 5 && 'Level 5 requires a full-surface skim coat and uses nearly 50% more compound than Level 4. Consider hiring a professional finisher for this level.'}
+          {finishLevel === 5 && 'Level 5 requires a full-surface skim coat and uses approximately 25% more compound than Level 4. Consider hiring a professional finisher for this level.'}
         </InfoBox>
       </div>
 
       {/* Standards reference */}
       <div className="text-xs text-gray-400 border-t border-gray-100 pt-3">
-        Coverage rates per GA-214-2022 (Gypsum Association) and USG/National Gypsum manufacturer specifications.
-        1 gal ready-mixed compound ≈ 100–120 sq ft per coat at Level 4.
+        Coverage rates per GA-214-2021 (Gypsum Association) and USG Sheetrock® official product data.
+        USG per-coat rates: taping 1 gal/182 sq ft · fill 1 gal/250 sq ft · finish 1 gal/300 sq ft. All rates include 10% applicator waste.
       </div>
     </div>
   )

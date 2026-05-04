@@ -13,9 +13,11 @@ const DEFAULT_WALLS = [
   { id: 4, length: 14 },
 ]
 
-// Standard opening deductions per GA-216 / ASTM C1396 (sq ft)
-const DOOR_SQ_FT = 21   // ~6.8 ft wide × 3.1 ft tall
-const WINDOW_SQ_FT = 15 // ~3 ft × 5 ft
+// Standard opening deductions for net area (mud/tape calculation) per GA-216 / ASTM C1396 (sq ft)
+// Note: GA-216 §11.2.1 requires NO deduction for openings < 16 sq ft when counting SHEETS;
+// these deductions are used for net compound/tape area only (sheet count uses layout method above).
+const DOOR_SQ_FT = 21   // standard 3 ft × 7 ft door opening
+const WINDOW_SQ_FT = 15 // typical 3 ft × 5 ft window opening
 
 // All standard drywall sheets are 4 ft wide (48 in)
 const SHEET_SHORT_DIM = 4  // ft — the narrow dimension, always 4 ft
@@ -486,7 +488,7 @@ export default function SheetCalculator({ onUpdate }) {
         </InfoBox>
 
         <p className="text-xs text-gray-400 mt-3">
-          Layout method per ASTM C840 / GA-216: ⌈wall÷sheet⌉ × ⌈height÷sheet⌉ per wall. Dynamic waste = 10% base + 2% per additional vertical seam. Joint footage auto-populates Tape &amp; Mud calculators.
+          Layout method per ASTM C840 / GA-216: ⌈wall÷sheet⌉ × ⌈height÷sheet⌉ per wall. GA-216 §11.2.1: no sheet deduction for openings &lt; 16 sq ft (openings deducted from net area for compound/tape estimation only). Dynamic waste = 10% base + 2% per additional vertical seam. Joint footage auto-populates Tape &amp; Mud calculators.
         </p>
       </div>
     </div>

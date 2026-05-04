@@ -15,9 +15,9 @@ const spacingOptions = [
 ]
 
 const applicationOptions = [
-  { value: 'wall',    label: 'Walls',           description: '16" field spacing' },
-  { value: 'ceiling', label: 'Ceiling',          description: '12" field spacing (ASTM C840)' },
-  { value: 'both',    label: 'Walls + ceiling',  description: 'Average density' },
+  { value: 'wall',    label: 'Walls',           description: '8" edge / 16" field (ASTM C840)' },
+  { value: 'ceiling', label: 'Ceiling',          description: '8" edge / 12" field (ASTM C840)' },
+  { value: 'both',    label: 'Walls + ceiling',  description: 'Average of wall + ceiling density' },
 ]
 
 const sheetSizeOptions = [
@@ -55,38 +55,24 @@ export default function ScrewCalculator({ onUpdate, sheetData }) {
 
   const results = useMemo(() => {
     const size = +effectiveSheetSize
-    // Per-sheet screw counts per ASTM C840-23:
-    // Walls:    edges 8" OC,  field 16" OC
-    // Ceilings: edges 7" OC,  field 12" OC (tighter per ASTM C840-23 to prevent sag)
-    let perSheet
-    if (size === 32) {          // 4×8 ft
-      perSheet = spacing === '16'
-        ? (application === 'ceiling' ? 40 : 32)
-        : (application === 'ceiling' ? 32 : 28)
-    } else if (size === 40) {   // 4×10 ft
-      perSheet = spacing === '16'
-        ? (application === 'ceiling' ? 50 : 40)
-        : (application === 'ceiling' ? 40 : 34)
-    } else {                    // 4×12 ft
-      perSheet = spacing === '16'
-        ? (application === 'ceiling' ? 60 : 48)
-        : (application === 'ceiling' ? 48 : 40)
-    }
+    const spacingIn  = +spacing              // framing OC in inches: 16 or 24
+    const sheetLongIn = (size / 4) * 12     // sheet long dimension in inches: 96, 120, or 144
 
-    if (application === 'both') {
-      // Average of wall and ceiling density weighted 50/50
-      const wallCount = size === 32
-        ? (spacing === '16' ? 32 : 28)
-        : size === 40
-          ? (spacing === '16' ? 40 : 34)
-          : (spacing === '16' ? 48 : 40)
-      const ceilCount = size === 32
-        ? (spacing === '16' ? 40 : 32)
-        : size === 40
-          ? (spacing === '16' ? 50 : 40)
-          : (spacing === '16' ? 60 : 48)
-      perSheet = Math.round((wallCount + ceilCount) / 2)
-    }
+    // ASTM C840-23 screw spacing:
+    //   Edge studs:  max 8" OC along the sheet length (walls and ceilings)
+    //   Wall field:  max 16" OC along the sheet length
+    //   Ceiling field: max 12" OC along the sheet length
+    // All 4' (48") wide sheets — stud lines at 0, (spacingIn), (2×spacingIn), 48"
+    const studLines  = Math.floor(48 / spacingIn) + 1   // 4 at 16" OC, 3 at 24" OC
+    const fieldStuds = studLines - 2                     // 2 at 16" OC, 1 at 24" OC
+
+    const wallPerSheet = 2 * Math.ceil(sheetLongIn / 8) + fieldStuds * Math.ceil(sheetLongIn / 16)
+    const ceilPerSheet = 2 * Math.ceil(sheetLongIn / 8) + fieldStuds * Math.ceil(sheetLongIn / 12)
+
+    let perSheet
+    if (application === 'wall')         perSheet = wallPerSheet
+    else if (application === 'ceiling') perSheet = ceilPerSheet
+    else                                perSheet = Math.round((wallPerSheet + ceilPerSheet) / 2)
 
     const total = Math.ceil(effectiveSheets * perSheet * 1.10)  // 10% overage for stripping/breakage
     const boxes = Math.ceil(total / boxSize)
@@ -115,8 +101,8 @@ export default function ScrewCalculator({ onUpdate, sheetData }) {
   }, [results, screwLength, boxSize, application, syncedFromSheets, effectiveSheets, onUpdate])
 
   const appLabel = {
-    wall:    'walls (16" field spacing)',
-    ceiling: 'ceilings (12" field spacing)',
+    wall:    'walls (8" edge / 16" field spacing)',
+    ceiling: 'ceilings (8" edge / 12" field spacing)',
     both:    'walls + ceiling'
   }
 
@@ -253,7 +239,7 @@ export default function ScrewCalculator({ onUpdate, sheetData }) {
         </div>
 
         <InfoBox>
-          For {appLabel[application]} at {spacing}" OC with {effectiveSheetSize === 32 ? '4×8' : effectiveSheetSize === 40 ? '4×10' : '4×12'} sheets — {results.perSheet} screws per sheet including edges. ASTM C840-23 compliant. 10% overage already included.
+          For {appLabel[application]} at {spacing}" OC with {effectiveSheetSize === 32 ? '4×8' : effectiveSheetSize === 40 ? '4×10' : '4×12'} sheets — {results.perSheet} screws per sheet including edges. ASTM C840-23: edge studs max 8" OC, wall field max 16" OC, ceiling field max 12" OC. 10% overage already included.
         </InfoBox>
       </div>
     </div>

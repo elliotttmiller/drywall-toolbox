@@ -52,10 +52,11 @@ export default function TapeCalculator({ onUpdate, sheetData }) {
     //   horizontal joints = (sheetsVertical - 1) × wallLength  per wall
     //   vertical joints   = (sheetsAcross - 1)   × wallHeight  per wall
     // When synced, use the exact value from the sheet layout engine.
-    // When manual, fall back to the industry approximation: 1 linear ft of tape per sq ft of drywall.
+    // When manual, use the industry rule of thumb: ~0.38 lf of seam tape per sq ft of drywall
+    // (professional estimating standard: 0.37–0.39 lf/sqft per ASTM C840 / industry guides)
     const baseSeamFt = syncedFromSheets
       ? sheetData.totalJointLinearFeet
-      : Math.round(area * 1.0)
+      : Math.round(area * 0.38)
 
     // Inside corners (wall-to-wall and wall-to-ceiling transitions): each adds height ft of tape
     const insideCornerFt = Math.round(insideCorners * (sheetData?.ceilHeight ?? ceilHeight))
@@ -260,7 +261,7 @@ export default function TapeCalculator({ onUpdate, sheetData }) {
         <p className="text-xs text-gray-400 mt-3">
           {syncedFromSheets
             ? 'Joint footage = Σ[(sheetsVertical−1)×wallLength + (sheetsAcross−1)×wallHeight] per wall (ASTM C840). +5% waste for overlaps and trimming.'
-            : 'Manual mode: approximation 1 ft tape per sq ft drywall. For exact joint footage, complete the Sheets tab first.'}
+            : 'Manual mode: ~0.38 lf of tape per sq ft of drywall (industry rule of thumb, 0.37–0.39 per professional estimating standards). For exact joint footage, complete the Sheets tab first.'}
         </p>
       </div>
 

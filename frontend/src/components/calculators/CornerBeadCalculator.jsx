@@ -40,7 +40,8 @@ export default function CornerBeadCalculator({ onUpdate }) {
 
   const results = useMemo(() => {
     const stdFt = Math.round(corners * height)
-    const archFt = Math.round(arches * archHeight * 2)
+    // Arch bead arc length: for a semicircular arch, arc = π × radius = π × archHeight
+    const archFt = Math.round(arches * Math.PI * archHeight)
     const totalFt = stdFt + archFt
     // 5% splice waste on straight runs per industry standard
     const adjustedFt = Math.round(stdFt * SPLICE_WASTE_FACTOR) + archFt
@@ -70,7 +71,7 @@ export default function CornerBeadCalculator({ onUpdate }) {
     metal:    'Metal bead is industry standard — the most durable option. Fasten every 6–9" alternating sides. 5% splice waste included.',
     bullnose: 'Bullnose gives a rounded profile — popular in modern and contemporary builds. 5% splice waste included.',
     vinyl:    'Use vinyl in bathrooms and high-humidity areas to prevent rust bleed. Use vinyl-specific compound for best adhesion.',
-    flex:     'Flexible bead bends to any radius — required for archways. Score lightly before bending to prevent kinking.',
+    flex:     'Flexible arch bead is designed to bend to any radius without scoring — the factory kerfs allow it to conform to curves. Install with the notched face against the drywall and fasten every 2–3" along the curve.',
   }
 
   return (
@@ -132,7 +133,7 @@ export default function CornerBeadCalculator({ onUpdate }) {
         </div>
         <div>
           <label htmlFor="cb-arch-h" className="block text-xs font-medium text-gray-600 mb-1.5">
-            Arch height (ft)
+            Arch radius / rise (ft)
           </label>
           <input
             id="cb-arch-h"
