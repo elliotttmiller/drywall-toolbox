@@ -71,7 +71,7 @@ export default function CornerBeadCalculator({ onUpdate }) {
     metal:    'Metal bead is industry standard — the most durable option. Fasten every 6–9" alternating sides. 5% splice waste included.',
     bullnose: 'Bullnose gives a rounded profile — popular in modern and contemporary builds. 5% splice waste included.',
     vinyl:    'Use vinyl in bathrooms and high-humidity areas to prevent rust bleed. Use vinyl-specific compound for best adhesion.',
-    flex:     'Flexible arch bead is designed to bend to any radius without scoring — the factory kerfs allow it to conform to curves. Install with the notched face against the drywall and fasten every 2–3" along the curve.',
+    flex:     'Flexible arch bead is designed to bend to any radius without scoring — the factory kerfs allow it to conform to curves. Fasten every 4–6" along the curve (or every 2–3" for tight radii under 12"), alternating sides.',
   }
 
   return (

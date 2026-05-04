@@ -325,14 +325,15 @@ export default function MudCalculator({ onUpdate, sheetData }) {
           {finishLevel === 2 && 'Level 2: tape embedded + one fill coat on joints and fasteners. Surface must be free of excess compound. Used under tile.'}
           {finishLevel === 3 && `Level 3: ${selectedLevel?.description} Apply primer-sealer before texture.`}
           {finishLevel === 4 && 'Level 4 is the industry standard for most residential interiors. Always prime before painting to prevent photographic panning (variation in sheen).'}
-          {finishLevel === 5 && 'Level 5 requires a full-surface skim coat and uses approximately 25% more compound than Level 4. Consider hiring a professional finisher for this level.'}
+          {finishLevel === 5 && 'Level 5 requires a full-surface skim coat and uses approximately 29% more compound than Level 4. Consider hiring a professional finisher for this level.'}
         </InfoBox>
       </div>
 
       {/* Standards reference */}
       <div className="text-xs text-gray-400 border-t border-gray-100 pt-3">
         Coverage rates per GA-214-2021 (Gypsum Association) and USG Sheetrock® official product data.
-        USG per-coat rates: taping 1 gal/182 sq ft · fill 1 gal/250 sq ft · finish 1 gal/300 sq ft. All rates include 10% applicator waste.
+        Raw USG per-coat rates: taping 1 gal/182 sq ft · fill 1 gal/250 sq ft · finish 1 gal/300 sq ft.
+        Displayed rates add 10% applicator waste on top of these base figures.
       </div>
     </div>
   )
