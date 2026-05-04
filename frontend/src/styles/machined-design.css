@@ -486,12 +486,12 @@ aside input[type="range"],
 /* --- SITE FOOTER RESPONSIVE TWEAKS --- */
 /* footer-grid: single column on small screens */
 
-/* Global footer logo styling - allow full sizing without constraints */
+/* Global footer logo styling */
 .site-footer img.footer-logo,
 .site-footer .footer-logo {
-    max-width: none !important;
-    width: auto !important;
-    height: clamp(56px, 5.5vw, 66px) !important;
+    max-width: none;
+    width: auto;
+    height: clamp(56px, 5.5vw, 66px);
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     shape-rendering: geometricPrecision;
@@ -570,9 +570,9 @@ aside input[type="range"],
     }
 
     .site-footer img.footer-logo {
-        max-width: 118px;
-        width: 80%;
-        height: auto !important;
+        max-width: 140px;
+        width: auto;
+        height: clamp(36px, 10vw, 48px);
     }
 
     .site-footer input.machined-input {
