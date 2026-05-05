@@ -24,11 +24,12 @@ import { findMatchingVariation, fetchVariationsBatched } from '../utils/variatio
 
 // products will be loaded from WooCommerce REST API at runtime
 const categories = [
-  { id: 'taping', name: 'Automatic Taping' },
+  { id: 'taping',    name: 'Automatic Taping Tools' },
   { id: 'finishing', name: 'Finishing Tools' },
-  { id: 'corner', name: 'Corner Tools' },
-  { id: 'mudboxes', name: 'Mud Boxes & Pumps' },
-  { id: 'sanding', name: 'Sanding Tools' }
+  { id: 'corner',    name: 'Corner Tools' },
+  { id: 'mudboxes',  name: 'Mud Boxes & Pumps' },
+  { id: 'sanding',   name: 'Sanding Tools' },
+  { id: 'parts',     name: 'Parts' },
 ];
 
 // Allowed brands to display

@@ -34,11 +34,11 @@ import '../styles/tool-selector.css';
 // products will be loaded from WooCommerce REST API at runtime
 // brands list will be derived from loaded products
 const categories = [
-  { id: 'taping', name: 'Automatic Taping' },
+  { id: 'taping',    name: 'Automatic Taping Tools' },
   { id: 'finishing', name: 'Finishing Tools' },
-  { id: 'corner', name: 'Corner Tools' },
-  { id: 'mudboxes', name: 'Mud Boxes & Pumps' },
-  { id: 'sanding', name: 'Sanding Tools' }
+  { id: 'corner',    name: 'Corner Tools' },
+  { id: 'mudboxes',  name: 'Mud Boxes & Pumps' },
+  { id: 'sanding',   name: 'Sanding Tools' },
 ];
 
 // Allowed brands to display
