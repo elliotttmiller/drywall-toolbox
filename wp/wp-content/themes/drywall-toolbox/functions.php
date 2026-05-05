@@ -69,28 +69,6 @@ function dtb_theme_setup(): void {
 	add_image_size( 'product-zoom',    1600, 1600,  false ); // Lightbox / zoom.
 	add_image_size( 'category-banner', 1440,  480,  true  ); // Category page headers.
 
-	// Suppress WooCommerce's default PHP-storefront sizes — this site is headless.
-	// WC registers: woocommerce_thumbnail (600), woocommerce_single (600),
-	// woocommerce_gallery_thumbnail (100), woocommerce_product_full_size (1200).
-	// None of these are requested by the React SPA; removing them saves ~4 files
-	// per product image (≈ 12 000+ files across the full catalogue).
-	add_filter(
-		'woocommerce_image_sizes',
-		static function (): array { return []; }
-	);
-
-	// Suppress WordPress core intermediate sizes not consumed by the SPA.
-	// 'thumbnail' (150×150) and 'medium' (300×300) are kept because WP core and
-	// some plugins hard-reference them. 'medium_large' (768px wide) and 'large'
-	// (1024px) are not used by any component; strip them at generation time.
-	add_filter(
-		'intermediate_image_sizes_advanced',
-		static function ( array $sizes ): array {
-			unset( $sizes['medium_large'], $sizes['large'] );
-			return $sizes;
-		}
-	);
-
 	// Navigation menus exposed via REST API for React dynamic navigation.
 	register_nav_menus(
 		[
@@ -481,6 +459,64 @@ function dtb_security_headers(): void {
 // Prevent file editing via wp-admin (defence-in-depth; also set in wp-config.php).
 if ( ! defined( 'DISALLOW_FILE_EDIT' ) ) {
 	define( 'DISALLOW_FILE_EDIT', true );
+}
+
+
+// =============================================================================
+// 6. CORS — Cross-Origin Resource Sharing
+// Allows the React SPA and local dev servers to call WordPress REST API
+// endpoints. Restricted to an explicit origin allowlist — never a wildcard.
+// =============================================================================
+
+add_action( 'rest_api_init', 'dtb_rest_cors', 15 );
+function dtb_rest_cors(): void {
+	// Remove WordPress's default CORS handler and replace with our own.
+	remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+	add_filter( 'rest_pre_serve_request', 'dtb_send_cors_headers' );
+}
+
+/**
+ * Emit CORS headers for all REST API responses.
+ *
+ * @param mixed $served Passed through unchanged — we only add headers.
+ * @return mixed
+ */
+function dtb_send_cors_headers( mixed $served ): mixed {
+	$allowed_origins = [
+		rtrim( home_url(), '/' ),
+		'https://drywalltoolbox.com',
+		'https://www.drywalltoolbox.com',
+		'https://elliotttmiller.github.io',
+		'http://localhost:3000',   // CRA local dev.
+		'http://localhost:5173',   // Vite local dev.
+		'http://127.0.0.1:5173',
+		// 'https://staging.drywalltoolbox.com', // Uncomment for staging environment.
+	];
+
+	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
+		? rtrim( wp_unslash( $_SERVER['HTTP_ORIGIN'] ), '/' )
+		: '';
+
+	// Echo back the exact origin if it is in the allowlist.
+	// Fall back to the canonical production domain for same-origin / no-origin requests.
+	$emit_origin = in_array( $raw_origin, $allowed_origins, true )
+		? $raw_origin
+		: 'https://drywalltoolbox.com';
+
+	header( 'Access-Control-Allow-Origin: '      . esc_url_raw( $emit_origin ) );
+	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
+	header( 'Access-Control-Allow-Credentials: true' );
+	header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With' );
+	header( 'Access-Control-Max-Age: 600' );
+	header( 'Vary: Origin' );
+
+	// Respond to CORS preflight OPTIONS requests immediately — no further processing needed.
+	if ( 'OPTIONS' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
+		status_header( 204 );
+		exit;
+	}
+
+	return $served;
 }
 
 

@@ -299,33 +299,74 @@ function dtb_unsubscribe_page( string $title, string $message, bool $success ): 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
   <title>' . esc_html( $title ) . ' &mdash; ' . esc_html( $site_name ) . '</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    html{font-size:100%}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-         background:#f4f4f5;display:flex;align-items:center;justify-content:center;
-         min-height:100vh;min-height:100dvh;padding:1rem;}
-    .card{background:#fff;border-radius:10px;border:1px solid #e4e4e7;max-width:480px;width:100%;
-          padding:2rem 1.25rem;text-align:center;}
-    .icon{font-size:3rem;color:' . $icon_color . ';margin-bottom:1.25rem;}
-    h1{font-size:1.25rem;font-weight:700;color:#09090b;margin-bottom:0.75rem;}
-    p{font-size:0.9375rem;color:#52525b;line-height:1.65;}
-    a{display:inline-block;margin-top:1.75rem;font-size:0.875rem;color:#2563eb;text-decoration:none;}
-    a:hover{text-decoration:underline;}
+    html{font-size:100%;height:100%}
+    body{
+      font-family:\'Inter\',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#000;
+      display:flex;align-items:center;justify-content:center;
+      min-height:100vh;min-height:100dvh;padding:1rem;
+      color:rgba(255,255,255,.9);
+      background-image:
+        linear-gradient(rgba(37,99,235,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(37,99,235,.025) 1px,transparent 1px);
+      background-size:56px 56px;
+    }
+    .wrap{
+      background:rgba(11,13,28,.88);
+      backdrop-filter:blur(24px) saturate(160%);
+      -webkit-backdrop-filter:blur(24px) saturate(160%);
+      border:1px solid rgba(37,99,235,.22);
+      border-radius:16px;
+      max-width:460px;width:100%;
+      padding:2.25rem 1.5rem;
+      text-align:center;
+      box-shadow:0 28px 70px rgba(0,0,0,.85),0 0 0 1px rgba(37,99,235,.08),0 0 55px rgba(37,99,235,.05);
+      position:relative;
+    }
+    .wrap::before{
+      content:"";position:absolute;inset:0;border-radius:16px;
+      background:radial-gradient(ellipse 90% 55% at 50% 0%,rgba(37,99,235,.10) 0%,transparent 68%);
+      pointer-events:none;
+    }
+    .icon{
+      font-size:2.5rem;color:' . $icon_color . ';
+      margin-bottom:1.125rem;
+      display:flex;align-items:center;justify-content:center;
+      width:64px;height:64px;border-radius:50%;margin:0 auto 1.25rem;
+      background:rgba(37,99,235,.08);border:1.5px solid rgba(37,99,235,.2);
+    }
+    h1{font-size:1.25rem;font-weight:700;letter-spacing:-.02em;color:#fff;margin-bottom:.625rem;position:relative;}
+    p{font-size:.9375rem;color:rgba(255,255,255,.52);line-height:1.65;position:relative;}
+    a{
+      display:inline-flex;align-items:center;gap:.375rem;
+      margin-top:1.875rem;font-size:.875rem;font-weight:500;
+      color:#3b82f6;text-decoration:none;
+      padding:.55rem 1.25rem;border-radius:8px;
+      border:1px solid rgba(37,99,235,.25);background:rgba(37,99,235,.07);
+      transition:background .25s,border-color .25s,transform .2s;
+      position:relative;
+    }
+    a:hover{background:rgba(37,99,235,.14);border-color:rgba(37,99,235,.45);transform:translateY(-1px);}
     @media(min-width:480px){
-      .card{padding:3rem 2.5rem;}
+      .wrap{padding:3rem 2.5rem;}
       h1{font-size:1.375rem;}
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="icon">' . $icon . '</div>
+  <div class="wrap">
+    <div class="icon" aria-hidden="true">' . $icon . '</div>
     <h1>' . esc_html( $title ) . '</h1>
     <p>' . $message . '</p>
-    <a href="' . esc_url( $site_url ) . '">&larr; Back to ' . esc_html( $site_name ) . '</a>
+    <a href="' . esc_url( $site_url ) . '">&#8592; Back to ' . esc_html( $site_name ) . '</a>
   </div>
 </body>
 </html>';

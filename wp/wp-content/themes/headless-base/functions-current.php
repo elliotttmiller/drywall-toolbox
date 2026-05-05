@@ -239,7 +239,6 @@ function hb_security_headers(): void {
 // =============================================================================
 
 add_action( 'rest_api_init', 'hb_register_cors', 15 );
-add_action( 'send_headers',  'hb_register_cors' );
 
 function hb_register_cors(): void {
 	// Remove WordPress default CORS handler — we replace it entirely.
@@ -266,7 +265,7 @@ function hb_send_cors_headers( mixed $served ): mixed {
 			'http://127.0.0.1:5173',
 			// 'https://staging.drywalltoolbox.com', // Uncomment for staging.
 		],
-		array_fill( 0, 8, '/' )
+		array_fill( 0, 7, '/' )
 	);
 
 	$raw_origin = isset( $_SERVER['HTTP_ORIGIN'] )
