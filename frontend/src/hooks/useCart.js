@@ -13,7 +13,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   initCart,
-  getCart,
   addToCart,
   updateCartItem,
   removeCartItem,

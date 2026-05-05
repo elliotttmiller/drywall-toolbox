@@ -56,7 +56,7 @@ export function CustomCalculatorLayout() {
 
 // OPTION 3: With cost estimation
 export function CalculatorWithPricing() {
-  const [materials, setMaterials] = React.useState({})
+  const [materials] = React.useState({})
   
   // Your pricing data
   const prices = {

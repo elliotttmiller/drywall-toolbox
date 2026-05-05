@@ -20,7 +20,6 @@ export function useCategories() {
     if ( fetchedRef.current ) return;
     fetchedRef.current = true;
 
-    setIsLoading( true );
     fetchCategories()
       .then( ( data ) => setCategories( Array.isArray( data ) ? data : [] ) )
       .catch( ( err ) => setError( err.message || 'Failed to load categories.' ) )

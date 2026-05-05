@@ -80,8 +80,6 @@ export default function OrderConfirmation() {
     if ( ! id ) return;
 
     let cancelled = false;
-    setLoading( true );
-    setError( null );
 
     getOrder( id )
       .then( ( data ) => {

@@ -14,16 +14,20 @@ import { normalizeProduct } from '../services/api.js';
 
 export function useProduct( idOrSlug ) {
   const [ product,   setProduct   ] = useState( null );
-  const [ isLoading, setIsLoading ] = useState( true );
+  // Initialise loading only when there is something to fetch.  Loading is set
+  // to true synchronously from within the effect (line below) when a fetch
+  // actually starts, and set to false in the finally() callback.
+  const [ isLoading, setIsLoading ] = useState( () => !! idOrSlug );
   const [ error,     setError     ] = useState( null );
 
   useEffect( () => {
     if ( ! idOrSlug ) {
-      setIsLoading( false );
       return;
     }
 
     let cancelled = false;
+    // Starting a new async fetch — set loading state before the async boundary.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading( true );
     setError( null );
 

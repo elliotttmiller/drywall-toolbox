@@ -43,7 +43,7 @@ export default function CategoryPage() {
 
   // Depend on the visible variable-product ID set instead of the products
   // array identity so the effect does not re-fire on equivalent renders.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   useEffect(() => {
     let mounted = true;
 

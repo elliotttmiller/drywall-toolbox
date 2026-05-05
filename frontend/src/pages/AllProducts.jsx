@@ -109,7 +109,7 @@ export default function AllProducts() {
   // close on escape
   // Depend on the current page's variable-product ID set instead of the
   // freshly sliced pageProducts array to avoid duplicate fetch bursts.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
     window.addEventListener('keydown', onKey);
@@ -164,8 +164,7 @@ export default function AllProducts() {
   }, [searchQuery, currentPage, navigate, location.search]);
 
   // Reset to page 1 when filters or search change
-  // This is an appropriate use case for setState in effect - reset pagination when filters change
-  // eslint-disable-next-line
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setCurrentPage(1); }, [selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
 
   const filteredProducts = (products || []).filter(product => {

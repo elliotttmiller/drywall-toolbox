@@ -4,19 +4,21 @@
  * Custom hook encapsulating JWT authentication state.
  *
  * Authentication flow (cookie-based):
- *   Login  → POST /dtb/v1/auth/login   — sets HttpOnly SameSite=Strict cookie,
- *                                         returns user profile (no raw JWT in body)
- *   Logout → DELETE /dtb/v1/auth/logout — clears the auth cookie server-side
- *   Restore → POST /dtb/v1/auth/validate — reads the cookie, validates JWT,
- *                                           returns user profile on success
+ *   Login    → POST /dtb/v1/auth/login          — sets HttpOnly SameSite=Strict cookie,
+ *                                                   returns user profile (no raw JWT in body)
+ *   Logout   → DELETE /dtb/v1/auth/logout        — clears the auth cookie server-side
+ *   Restore  → POST /dtb/v1/auth/validate        — reads the cookie, validates JWT,
+ *                                                   returns user profile on success
+ *   Register → POST /dtb/v1/auth/register        — creates a new account and sets
+ *                                                   the auth cookie on success.
  *
  * The raw JWT is never stored in JS memory, localStorage, or sessionStorage.
  * The browser sends it automatically via the HttpOnly cookie on every request
  * to the same origin when `credentials: 'include'` is set (see api/client.js).
- *   Register → POST /dtb/v1/auth/register — creates a new account and sets
- *                                             the auth cookie on success.
- *                                             (endpoint to be implemented when
- *                                              backend registration is wired up)
+ *
+ * Cross-origin (GitHub Pages preview) — the backend issues SameSite=None; Secure
+ * cookies when the request comes from an allowlisted cross-origin, so auth works
+ * identically from the GitHub Pages SPA as it will from the production domain.
  *
  * Exposes: { user, isAuthenticated, isLoading, login, logout, register, error }
  */
