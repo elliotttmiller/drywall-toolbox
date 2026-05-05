@@ -23,7 +23,6 @@ const KNOWN_BRANDS = [
   'Columbia Taping Tools',
   'Asgard',
   'Level 5',
-  'Level5',
   'SurPro',
   'Graco',
   'Platinum Drywall Tools',
@@ -40,12 +39,15 @@ const BRAND_ALIASES = {
   'dura_stilts':               'Dura-Stilts',
   'columbia':                  'Columbia Taping Tools',
   'columbia taping':           'Columbia Taping Tools',
+  'columbia taping tools':     'Columbia Taping Tools',
   'level 5':                   'Level 5',
   'level5':                    'Level 5',
   'tapetech':                  'TapeTech',
   'tape tech':                 'TapeTech',
   'surpro':                    'SurPro',
   'sur pro':                   'SurPro',
+  'asgard':                    'Asgard',
+  'graco':                     'Graco',
 };
 
 // Build-time env vars (REACT_APP_WC_AUTH_USER / REACT_APP_WC_AUTH_PASS) are baked
@@ -74,6 +76,7 @@ const BRAND_ALIASES = {
 // Any category whose decoded name matches one of these is a parts category,
 // regardless of which brand it belongs to.
 const PARTS_LEAF_NAMES = [
+  'parts',
   'parts & accessories',
   'repair kits & parts',
   'pumps & parts',
@@ -232,6 +235,18 @@ function extractUpc(metaData) {
  * @returns {string}
  */
 function extractBrand(wcProduct) {
+  // 0. Product meta_data: _dtb_brand (stored by CSV importer via dtb-woocommerce.php)
+  //    This is the most reliable source — set explicitly from the "Brands" CSV column.
+  if (Array.isArray(wcProduct.meta_data) && wcProduct.meta_data.length) {
+    const dtbEntry = wcProduct.meta_data.find(
+      (m) => m.key === '_dtb_brand' || m.key === 'dtb_brand'
+    );
+    if (dtbEntry && dtbEntry.value) {
+      const raw = String(dtbEntry.value).trim();
+      return BRAND_ALIASES[raw.toLowerCase()] || raw;
+    }
+  }
+
   // 1. Explicit "Brand" attribute (set by the WooCommerce CSV importer)
   if (wcProduct.attributes && wcProduct.attributes.length) {
     const brandAttr = wcProduct.attributes.find(
@@ -258,8 +273,19 @@ function extractBrand(wcProduct) {
     }
   }
 
-  // 3. First product tag (kept for backward compat, less reliable)
-  if (wcProduct.tags && wcProduct.tags.length) return wcProduct.tags[0].name;
+  // 3. Tags: only return a tag that matches a known brand name.
+  //    Do NOT return the first arbitrary tag — tags frequently contain MPNs,
+  //    SKUs, and other non-brand terms (e.g. "03TT", "4-760").
+  if (wcProduct.tags && wcProduct.tags.length) {
+    for (const tag of wcProduct.tags) {
+      const tagName = decodeHtmlEntities(tag.name || '');
+      const match = KNOWN_BRANDS.find(b => b.toLowerCase() === tagName.toLowerCase());
+      if (match) return match;
+      const alias = BRAND_ALIASES[tagName.toLowerCase()];
+      if (alias) return alias;
+    }
+  }
+
   return '';
 }
 

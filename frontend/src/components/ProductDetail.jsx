@@ -15,6 +15,7 @@ import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
 import asgardLogo from '/brands/Asgard/asgard_logo.svg';
 import gracoLogo from '/brands/Graco/graco_logo.svg';
+import level5Logo from '/brands/Level5/Level5.svg';
 import { getSchematicIdForProduct, buildSchematicsUrl } from '../data/schematicMappings';
 
 const BRAND_LOGOS = {
@@ -23,6 +24,7 @@ const BRAND_LOGOS = {
   'SurPro': surproLogo,
   'Asgard': asgardLogo,
   'Graco': gracoLogo,
+  'Level 5': level5Logo,
 };
 
 function buildSeedVariations(initialVariations = [], initialResolvedVariation = null) {
@@ -276,9 +278,9 @@ export default function ProductDetail({
                 )}
               </div>
 
-              {/* Product Title */}
+              {/* Product Title — updates to variation name when a variation is selected */}
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight pr-10">
-                {product.name || product.sku || product.part_number}
+                {(effectiveProduct.name || product.name) || product.sku || product.part_number}
               </h2>
 
               {/* Rating — Placeholder */}

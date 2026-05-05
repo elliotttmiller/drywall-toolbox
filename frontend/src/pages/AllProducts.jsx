@@ -40,7 +40,7 @@ const ALLOWED_BRANDS = [
   'Graco',
   'Platinum Drywall Tools',
   'Dura-Stilts',
-  'Level5'
+  'Level 5'
 ];
 
 const MAX_PRICE = 3000;

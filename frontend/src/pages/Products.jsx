@@ -50,7 +50,7 @@ const ALLOWED_BRANDS = [
   'Graco',
   'Platinum Drywall Tools',
   'Dura-Stilts',
-  'Level5'
+  'Level 5'
 ];
 
 const MAX_PRICE = 3000;
@@ -66,7 +66,7 @@ const BRAND_TO_SLUG = {
   'Graco':                 'graco',
   'Platinum Drywall Tools': 'platinum',
   'Dura-Stilts':           'dura-stilts',
-  'Level5':                'level5',
+  'Level 5':               'level5',
 };
 const SLUG_TO_BRAND = Object.fromEntries(
   Object.entries(BRAND_TO_SLUG).map(([name, slug]) => [slug, name])
@@ -80,7 +80,7 @@ const brandLogos = {
   'Graco': gracoLogo,
   'Platinum Drywall Tools': platinumLogo,
   'Dura-Stilts': duraStiltsLogo,
-  'Level5': level5Logo,
+  'Level 5': level5Logo,
 };
 
 export default function Products() {

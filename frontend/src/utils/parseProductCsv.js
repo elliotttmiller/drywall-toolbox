@@ -107,8 +107,11 @@ export function parseCsvText(csvText) {
 
 export const CATEGORY_MAP = {
   // Taping
-  'automatic tapers':      'taping',
-  'tool sets & bundles':   'taping',
+  'automatic tapers':            'taping',
+  'automatic taping tools':      'taping',
+  'semi-automatic taping tools': 'taping',
+  'taping & finishing tools':    'taping',
+  'tool sets & bundles':         'taping',
   // Finishing
   'finishing boxes':       'finishing',
   'flat boxes':            'finishing',
@@ -139,6 +142,7 @@ export const CATEGORY_MAP = {
   'hoses & fittings':      'texture',
   'cleaning accessories':  'texture',
   // Parts — all "repair / replacement" leaf categories, brand-agnostic
+  'parts':                 'parts',
   'parts & accessories':   'parts',
   'repair kits & parts':   'parts',
   'pumps & parts':         'parts',
@@ -192,7 +196,8 @@ export function isPartsRow(categoriesCell) {
   if (!categoriesCell) return false;
   const first = categoriesCell.split('|')[0].trim();
   const leaf  = first.split('>').pop().trim().toLowerCase();
-  return leaf === 'parts & accessories' ||
+  return leaf === 'parts'              ||
+         leaf === 'parts & accessories' ||
          leaf === 'repair kits & parts' ||
          leaf === 'pumps & parts'       ||
          leaf === 'replacement parts'   ||
