@@ -18,4 +18,4 @@
  */
 
 export const FREE_SHIP_THRESHOLD  = 150;
-export const ESTIMATED_SHIP_RATE  = 15.00;
+export const ESTIMATED_SHIP_RATE  = 15;

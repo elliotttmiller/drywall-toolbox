@@ -1388,9 +1388,13 @@ function dtb_contact_form_handler( WP_REST_Request $request ): WP_REST_Response 
 	$body .= "Submitted: " . gmdate( 'Y-m-d H:i:s T' ) . "\n";
 	$body .= "IP: " . dtb_anonymise_ip( $ip ) . "\n";
 
+	// Strip CR/LF from user-supplied name before using it in a header value to
+	// prevent email header injection attacks.
+	$safe_name = str_replace( [ "\r", "\n" ], ' ', $name );
+
 	$headers = [
 		'Content-Type: text/plain; charset=UTF-8',
-		'Reply-To: ' . sanitize_text_field( $name ) . ' <' . $email . '>',
+		'Reply-To: ' . $safe_name . ' <' . $email . '>',
 	];
 
 	$sent = wp_mail( $to, $subject, $body, $headers );
