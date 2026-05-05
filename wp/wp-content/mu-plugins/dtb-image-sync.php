@@ -261,8 +261,25 @@ function dtb_image_sync_register_routes(): void {
 // ============================================================================
 
 /**
+ * Return true when the current user may manage the DTB image sync.
+ *
+ * Accepts manage_woocommerce (WooCommerce shop managers / admins) OR
+ * manage_options (standard WordPress administrator capability). The fallback
+ * to manage_options prevents 403 errors when WooCommerce capabilities have not
+ * yet been flushed onto the administrator role — e.g. after a fresh WC install,
+ * a capability reset, or a WC version upgrade that regenerates role data.
+ */
+function dtb_image_sync_can_manage(): bool {
+	return current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
+}
+
+/**
  * Accepts either:
- *   A) A WP Application Password session with manage_woocommerce capability.
+ *   A) A WP session with manage_woocommerce OR manage_options capability.
+ *      manage_options is the standard WP administrator cap and is checked as a
+ *      fallback so that admin access works even when WooCommerce capabilities
+ *      have not yet been flushed onto the administrator role (e.g. after a
+ *      fresh WC install or a capability reset).
  *   B) A valid DTB JWT cookie/header via dtb_jwt_permission() (dtb-auth.php).
  *
  * WP REST passes the current WP_REST_Request object as the first argument to
@@ -270,7 +287,8 @@ function dtb_image_sync_register_routes(): void {
  */
 function dtb_image_sync_permission( WP_REST_Request $request ): bool {
 	// Fast path: WP session already authenticated (e.g. wp-admin browser request).
-	if ( is_user_logged_in() && current_user_can( 'manage_woocommerce' ) ) {
+	// Accept manage_woocommerce (shop managers) OR manage_options (administrators).
+	if ( is_user_logged_in() && dtb_image_sync_can_manage() ) {
 		return true;
 	}
 
@@ -2135,7 +2153,7 @@ function dtb_image_sync_add_management_page(): void {
  * Render the wp-admin DTB Tools → DTB Image Sync page.
  */
 function dtb_render_image_sync_admin_page(): void {
-	if ( ! current_user_can( 'manage_woocommerce' ) ) {
+	if ( ! dtb_image_sync_can_manage() ) {
 		wp_die( esc_html__( 'Unauthorized', 'drywall-toolbox' ) );
 	}
 

@@ -58,6 +58,19 @@ function dtb_allowed_origins(): array {
 		'http://127.0.0.1:5173',
 	];
 
+	// Dynamically include the WordPress home and site URLs so that wp-admin
+	// requests are never rejected by the origin guard, regardless of how the
+	// site URL is configured in wp-config.php or the WordPress options table.
+	// array_unique() in the return handles any overlap between the two values.
+	foreach ( [ 'home_url', 'site_url' ] as $fn ) {
+		if ( function_exists( $fn ) ) {
+			$url = rtrim( $fn(), '/' );
+			if ( $url ) {
+				$origins[] = $url;
+			}
+		}
+	}
+
 	if ( defined( 'DRYWALL_ALLOWED_ORIGIN' ) && DRYWALL_ALLOWED_ORIGIN ) {
 		$origins[] = rtrim( (string) DRYWALL_ALLOWED_ORIGIN, '/' );
 	}
