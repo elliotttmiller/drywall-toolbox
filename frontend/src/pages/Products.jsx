@@ -162,7 +162,7 @@ export default function Products() {
   // close on escape
   // Depend on the current page's variable-product ID set instead of the
   // freshly sliced pageProducts array to avoid duplicate fetch bursts.
-   
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
     window.addEventListener('keydown', onKey);
