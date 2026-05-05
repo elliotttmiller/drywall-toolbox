@@ -306,6 +306,36 @@ function dtb_register_config_routes(): void {
 		'callback'            => 'dtb_route_wc_admin_profile',
 		'permission_callback' => '__return_true',
 	] );
+
+	// ── POST /dtb/v1/contact — public contact form submission ─────────────────
+	register_rest_route( $ns, '/contact', [
+		'methods'             => 'POST',
+		'callback'            => 'dtb_contact_form_handler',
+		'permission_callback' => '__return_true',
+		'args'                => [
+			'name'         => [
+				'required'          => true,
+				'sanitize_callback' => 'sanitize_text_field',
+				'description'       => 'Sender full name.',
+			],
+			'email'        => [
+				'required'          => true,
+				'sanitize_callback' => 'sanitize_email',
+				'description'       => 'Sender e-mail address.',
+			],
+			'inquiry_type' => [
+				'required'          => false,
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => 'General Question',
+				'description'       => 'Category of inquiry.',
+			],
+			'message'      => [
+				'required'          => true,
+				'sanitize_callback' => 'sanitize_textarea_field',
+				'description'       => 'Message body.',
+			],
+		],
+	] );
 }
 
 // =============================================================================
@@ -445,18 +475,8 @@ function dtb_emit_cors_headers( string $raw_origin ): void {
 		? array_unique( array_merge( $local_allowlist, dtb_allowed_origins() ) )
 		: $local_allowlist;
 
-	// Debug: Log what we're checking
 	$trimmed_origin = rtrim( $raw_origin, '/' );
 	$is_allowed = $raw_origin && in_array( $trimmed_origin, $allowed, true );
-	
-	// Always log CORS decisions to debug.log for troubleshooting
-	error_log( sprintf(
-		'[CORS] raw_origin=%s, trimmed=%s, is_allowed=%s, allowed_list=%s',
-		$raw_origin,
-		$trimmed_origin,
-		$is_allowed ? 'true' : 'false',
-		json_encode( $allowed )
-	) );
 
 	if ( $is_allowed ) {
 		// Ensure no existing Access-Control-Allow-Origin header is present
@@ -474,9 +494,6 @@ function dtb_emit_cors_headers( string $raw_origin ): void {
 	header( 'Access-Control-Expose-Headers: X-WC-Store-API-Nonce' );
 	header( 'Access-Control-Max-Age: 86400' );
 	header( 'Vary: Origin' );
-
-	// Log the final headers for debugging
-	error_log('[CORS] Final headers: ' . json_encode(headers_list()));
 }
 
 // =============================================================================
@@ -1291,4 +1308,105 @@ function dtb_run_catalog_import_sync( string $file_path ) {
 		'skipped'  => (int) ( $results['skipped']  ?? 0 ),
 		'failed'   => (int) ( $results['failed']   ?? 0 ),
 	] );
+}
+
+// =============================================================================
+// CONTACT FORM
+// =============================================================================
+
+/**
+ * POST /dtb/v1/contact
+ *
+ * Accepts a public contact form submission and delivers it to the support
+ * inbox via wp_mail().  Rate-limited to 5 submissions per 60 s per IP to
+ * prevent abuse.
+ *
+ * Expected JSON body:
+ *   { name, email, inquiry_type, message }
+ *
+ * Success: HTTP 200  { success: true, message: '...' }
+ * Errors:
+ *   422 — validation failure (invalid email, empty message)
+ *   429 — rate limit exceeded
+ *
+ * @param WP_REST_Request $request Incoming request.
+ * @return WP_REST_Response
+ */
+function dtb_contact_form_handler( WP_REST_Request $request ): WP_REST_Response {
+	// ── Rate limit: 5 submissions per 60 s per IP ────────────────────────────
+	$ip  = dtb_get_client_ip();
+	$key = 'dtb_contact_' . md5( $ip );
+	$count = (int) get_transient( $key );
+	if ( $count >= 5 ) {
+		$resp = new WP_REST_Response(
+			dtb_error_envelope( 'rate_limited', 'Too many submissions. Please wait a moment and try again.', 429 ),
+			429
+		);
+		$resp->header( 'Retry-After', '60' );
+		return $resp;
+	}
+	set_transient( $key, $count + 1, 60 );
+
+	// ── Input retrieval ───────────────────────────────────────────────────────
+	$name         = sanitize_text_field( (string) $request->get_param( 'name' ) );
+	$email        = sanitize_email( (string) $request->get_param( 'email' ) );
+	$inquiry_type = sanitize_text_field( (string) ( $request->get_param( 'inquiry_type' ) ?: 'General Question' ) );
+	$message      = sanitize_textarea_field( (string) $request->get_param( 'message' ) );
+
+	// ── Validation ────────────────────────────────────────────────────────────
+	if ( empty( $name ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'missing_name', 'Please provide your name.', 422 ),
+			422
+		);
+	}
+
+	if ( ! is_email( $email ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'invalid_email', 'Please provide a valid email address.', 422 ),
+			422
+		);
+	}
+
+	if ( empty( $message ) ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'missing_message', 'Please provide a message.', 422 ),
+			422
+		);
+	}
+
+	// ── Build and send email ──────────────────────────────────────────────────
+	$site_name = get_bloginfo( 'name' ) ?: 'Drywall Toolbox';
+	$to        = 'support@drywalltoolbox.com';
+	$subject   = sprintf( '[%s Contact] %s — %s', $site_name, $inquiry_type, $name );
+
+	$body  = "New contact form submission from {$name} <{$email}>.\n\n";
+	$body .= "Inquiry type: {$inquiry_type}\n";
+	$body .= "---------------------------------------\n\n";
+	$body .= $message . "\n\n";
+	$body .= "---------------------------------------\n";
+	$body .= "Submitted: " . gmdate( 'Y-m-d H:i:s T' ) . "\n";
+	$body .= "IP: " . dtb_anonymise_ip( $ip ) . "\n";
+
+	$headers = [
+		'Content-Type: text/plain; charset=UTF-8',
+		'Reply-To: ' . sanitize_text_field( $name ) . ' <' . $email . '>',
+	];
+
+	$sent = wp_mail( $to, $subject, $body, $headers );
+
+	if ( ! $sent ) {
+		error_log( '[DTB Contact] wp_mail() failed for submission from ' . dtb_anonymise_ip( $ip ) );
+		return new WP_REST_Response(
+			dtb_error_envelope( 'mail_failed', 'Unable to send your message. Please email us directly at support@drywalltoolbox.com.', 500 ),
+			500
+		);
+	}
+
+	$response = new WP_REST_Response( [
+		'success' => true,
+		'message' => 'Your message has been sent. We\'ll get back to you within one business day.',
+	], 200 );
+	$response->header( 'Cache-Control', 'private, no-store' );
+	return $response;
 }

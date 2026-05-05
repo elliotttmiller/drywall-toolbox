@@ -127,9 +127,6 @@ export function useAuth() {
   }, [] );
 
   // ── register ─────────────────────────────────────────────────────────────────
-  // NOTE: The /dtb/v1/auth/register backend endpoint is planned but not yet
-  // implemented. This function is wired up so the UI is ready — it will return
-  // a descriptive error until the PHP handler is added.
   const register = useCallback( async ( { firstName, lastName, email, password } ) => {
     setError( null );
     setIsLoading( true );

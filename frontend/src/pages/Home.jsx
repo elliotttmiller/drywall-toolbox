@@ -160,7 +160,7 @@ export default function Home() {
       <div className="dtb-desktop-shipping-bar">
         <ShippingTicker
           items={[
-            { icon: <Truck size={14} />, text: 'FREE SHIPPING ON ALL ORDERS $50+ (CONTIGUOUS USA ONLY)' },
+            { icon: <Truck size={14} />, text: 'FREE SHIPPING ON ORDERS $150+ (CONTIGUOUS USA ONLY)' },
             { icon: <Phone size={14} />, text: 'Expert Support — Real Pros' },
             { icon: <Wrench size={14} />, text: 'Professional Repair Services' },
           ]}

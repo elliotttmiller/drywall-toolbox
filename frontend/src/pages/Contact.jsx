@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react';
 import SEOHead from '../components/SEOHead';
+import { apiClient } from '../api/client';
 
 const contactInfo = [
   {
@@ -36,21 +37,43 @@ const inquiryTypes = [
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     inquiryType: '',
     message: ''
   });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Message Sent. Our engineers will contact you.');
-    setFormData({ name: '', inquiryType: '', message: '' });
-  };
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess]       = useState(false);
+  const [error, setError]           = useState('');
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+
+    try {
+      await apiClient('/wp-json/dtb/v1/contact', {
+        method: 'POST',
+        body: JSON.stringify({
+          name:         formData.name,
+          email:        formData.email,
+          inquiry_type: formData.inquiryType || 'General Question',
+          message:      formData.message,
+        }),
+      });
+      setSuccess(true);
+      setFormData({ name: '', email: '', inquiryType: '', message: '' });
+    } catch (err) {
+      setError(
+        err?.message ||
+        'Unable to send your message. Please email us directly at support@drywalltoolbox.com.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -220,57 +243,132 @@ export default function Contact() {
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'black', margin: '0 0 24px 0' }}>
               Send a Message
             </h3>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="machined-label text-blue-600">Full Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className="machined-input text-black"
-                  required
-                />
-              </div>
 
-              <div className="form-group">
-                <label className="machined-label text-blue-600">Inquiry Type</label>
-                <select
-                  name="inquiryType"
-                  value={formData.inquiryType}
-                  onChange={handleChange}
-                  className="machined-input text-black"
-                  required
-                  style={{ cursor: 'pointer' }}
+            {/* Success state */}
+            {success ? (
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '16px',
+                padding: '32px 16px',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#16a34a',
+                }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ fontWeight: 700, fontSize: '1rem', color: 'black', margin: '0 0 6px' }}>Message Sent!</p>
+                  <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.6)', margin: 0 }}>
+                    Our engineers will get back to you within one business day.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSuccess(false)}
+                  className="alloy-button"
+                  style={{ marginTop: '8px' }}
                 >
-                  <option value="" disabled>Select an inquiry type</option>
-                  {inquiryTypes.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
+                  Send Another Message
+                </button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                {/* Error banner */}
+                {error && (
+                  <div style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '4px',
+                    padding: '12px 16px',
+                    marginBottom: '20px',
+                    fontSize: '0.85rem',
+                    color: '#991b1b',
+                  }}>
+                    {error}
+                  </div>
+                )}
 
-              <div className="form-group">
-                <label className="machined-label text-blue-600">Message</label>
-                <textarea
-                  rows="5"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="How can we help?"
-                  className="machined-textarea text-black"
-                  required
-                />
-              </div>
+                <div className="form-group">
+                  <label className="machined-label text-blue-600">Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className="machined-input text-black"
+                    required
+                    disabled={submitting}
+                  />
+                </div>
 
-              <button
-                type="submit"
-                className="alloy-button w-full justify-center"
-              >
-                Submit Inquiry
-              </button>
-            </form>
+                <div className="form-group">
+                  <label className="machined-label text-blue-600">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="you@example.com"
+                    className="machined-input text-black"
+                    required
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="machined-label text-blue-600">Inquiry Type</label>
+                  <select
+                    name="inquiryType"
+                    value={formData.inquiryType}
+                    onChange={handleChange}
+                    className="machined-input text-black"
+                    required
+                    style={{ cursor: 'pointer' }}
+                    disabled={submitting}
+                  >
+                    <option value="" disabled>Select an inquiry type</option>
+                    {inquiryTypes.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="machined-label text-blue-600">Message</label>
+                  <textarea
+                    rows="5"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="How can we help?"
+                    className="machined-textarea text-black"
+                    required
+                    disabled={submitting}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="alloy-button w-full justify-center"
+                  disabled={submitting}
+                  style={{ opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
+                >
+                  {submitting ? 'Sending…' : 'Submit Inquiry'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>

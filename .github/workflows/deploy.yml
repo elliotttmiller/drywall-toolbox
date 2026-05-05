@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm ci --prefer-offline --no-audit --no-fund
 
+      - name: Lint frontend
+        run: cd frontend && npm run lint --if-present || true
+
       - name: Build frontend (webpack → ../dist/)
         run: cd frontend && npm run build
         env:
@@ -57,9 +60,9 @@ jobs:
           # Use the /wp-json/ canonical alias — the root .htaccess rewrites this
           # to /wp/wp-json/ so the DTB CORS handler intercepts correctly.
           REACT_APP_STORE_API_BASE: '/wp-json/wc/store/v1'
-          REACT_APP_SITE_URL: 'https://elliotttmiller.github.io/drywall-toolbox'
-          REACT_APP_APP_ENV: development
-          REACT_APP_ENV: development
+          REACT_APP_SITE_URL: 'https://drywalltoolbox.com'
+          REACT_APP_APP_ENV: production
+          REACT_APP_ENV: production
           # Founding-member promo window — ISO-8601 date; leave blank to disable
           REACT_APP_STORE_LAUNCH_DATE: ''
 

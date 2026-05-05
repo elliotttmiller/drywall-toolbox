@@ -10,14 +10,18 @@ import {
   Truck
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
+import { FREE_SHIP_THRESHOLD, ESTIMATED_SHIP_RATE } from '../constants/shipping';
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal >= 500 ? 0 : 25;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const subtotal  = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  // Shipping is estimated; final rate and free-shipping eligibility are
+  // confirmed at checkout using live WooCommerce shipping zone rules.
+  const shipping  = subtotal >= FREE_SHIP_THRESHOLD ? 0 : ESTIMATED_SHIP_RATE;
+  // Tax is calculated server-side at checkout based on the shipping address.
+  // We do NOT show a pre-calculated tax amount here to avoid misleading the customer.
+  const total     = subtotal + shipping;
 
   if (cartItems.length === 0) {
     return (
@@ -152,7 +156,7 @@ export default function Cart() {
                   <span className="font-semibold">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
-                  <span>Shipping:</span>
+                  <span>Shipping (est.):</span>
                   <span className="font-semibold">
                     {shipping === 0 ? (
                       <span className="text-green-600">FREE</span>
@@ -161,23 +165,24 @@ export default function Cart() {
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between text-gray-700">
-                  <span>Tax (8%):</span>
-                  <span className="font-semibold">${tax.toFixed(2)}</span>
+                <div className="flex justify-between text-gray-500 text-sm">
+                  <span>Tax:</span>
+                  <span className="italic">Calculated at checkout</span>
                 </div>
               </div>
 
               <div className="border-t border-gray-200 pt-4 mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-xl font-bold text-gray-900">Total:</span>
+                  <span className="text-xl font-bold text-gray-900">Est. Total:</span>
                   <span className="text-2xl font-bold text-primary-600">
                     ${total.toFixed(2)}
                   </span>
                 </div>
+                <p className="text-xs text-gray-400 mt-1">+ tax calculated at checkout</p>
               </div>
 
               {/* Free Shipping Notice */}
-              {subtotal < 500 && (
+              {subtotal < FREE_SHIP_THRESHOLD && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                   <div className="flex items-start gap-3">
                     <Truck className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -186,14 +191,14 @@ export default function Cart() {
                         Almost there!
                       </p>
                       <p className="text-amber-700">
-                        Add ${(500 - subtotal).toFixed(2)} more to qualify for free shipping
+                        Add ${(FREE_SHIP_THRESHOLD - subtotal).toFixed(2)} more to qualify for free shipping
                       </p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {subtotal >= 500 && (
+              {subtotal >= FREE_SHIP_THRESHOLD && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-3">
                     <Truck className="h-5 w-5 text-green-600" />

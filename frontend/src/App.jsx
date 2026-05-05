@@ -108,7 +108,7 @@ function AppRoutes() {
           <Route path="/checkout"              element={<Checkout />} />
           <Route path="/order/:id"             element={<OrderConfirmation />} />
           <Route path="/contact"               element={<Contact />} />
-          <Route path="/settings/woocommerce"  element={<WooCommerceSettings />} />
+          <Route path="/settings/woocommerce"  element={<ProtectedRoute><WooCommerceSettings /></ProtectedRoute>} />
           {/* Auth + account pages — dev-only, standalone, no WP admin changes */}
           <Route path="/login"                 element={<Login />} />
           <Route path="/register"              element={<Register />} />
