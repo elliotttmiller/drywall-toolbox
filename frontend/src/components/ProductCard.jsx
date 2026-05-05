@@ -6,20 +6,16 @@
  *
  * Props
  * ─────
- *   product           Source product. For variable products, this is the parent.
- *   cardProduct       Resolved product to display (selected variation or product itself).
+ *   product       Source product. For variable products, this is the parent.
+ *   cardProduct   Resolved product to display (may equal product for variable cards).
  *   hasSelectedVariation  True when cardProduct is a different object from product.
- *   cardVariants      { [attrName]: value } — current chip selections for this card.
- *   onVariantSelect   (attrName, value) => void — chip change handler.
- *   onOpenModal       () => void — opens the full product detail modal.
- *   onAddToCart       () => void — direct add-to-cart (simple products).
- *   isVariationLoading boolean — disables variant selection while options load.
- *   index             Integer card index — used for staggered fade-in animation.
+ *   onOpenModal   () => void — opens the full product detail modal.
+ *   onAddToCart   () => void — direct add-to-cart (simple products).
+ *   index         Integer card index — used for staggered fade-in animation.
  */
 
 import { ShoppingCart, Heart, ChevronRight } from 'lucide-react';
 import ProductCardImage from './ProductCardImage';
-import VariantChips from './VariantChips';
 
 const STOCK_STATUS_OUT_OF_STOCK = 'outofstock';
 
@@ -27,11 +23,8 @@ export default function ProductCard({
   product,
   cardProduct,
   hasSelectedVariation = false,
-  cardVariants = {},
-  onVariantSelect,
   onOpenModal,
   onAddToCart,
-  isVariationLoading = false,
   index = 0,
 }) {
   // ── Derived display values ────────────────────────────────────────────────
@@ -46,11 +39,6 @@ export default function ProductCard({
         ? effectiveProduct.price.toFixed(2)
         : parseFloat(effectiveProduct.price || 0).toFixed(2)
       }`;
-
-  const hasVariationAttrs =
-    product.is_variable &&
-    Array.isArray(product.variation_attributes) &&
-    product.variation_attributes.length > 0;
 
   return (
     <div
@@ -129,20 +117,6 @@ export default function ProductCard({
           <p className="dtb-plp-card__sku">
               SKU:&nbsp;{effectiveProduct.sku || product.sku || effectiveProduct.part_number}
           </p>
-        )}
-
-        {/* Variant chips — for variable products */}
-        {hasVariationAttrs && (
-          <div className="dtb-plp-card__variants">
-            <VariantChips
-              attributes={product.variation_attributes}
-              selected={cardVariants}
-              onSelect={onVariantSelect}
-              disabled={isVariationLoading}
-              loading={isVariationLoading}
-              compact
-            />
-          </div>
         )}
 
         {/* ── Footer: price + CTA ─────────────────────────────────────────── */}

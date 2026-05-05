@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
-import { findMatchingVariation, fetchVariationsBatched } from '../utils/variationSelection';
+import { fetchVariationsBatched } from '../utils/variationSelection';
 
 // products will be loaded from WooCommerce REST API at runtime
 const categories = [
@@ -64,16 +64,12 @@ export default function AllProducts() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
-  const [loadingVariationIds, setLoadingVariationIds] = useState({});
   const [sortBy, setSortBy] = useState('popular');
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [showFilters, setShowFilters] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
-  const [modalSelectedAttrs, setModalSelectedAttrs] = useState({});
-  const [modalResolvedVariation, setModalResolvedVariation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
-  const [cardVariants, setCardVariants] = useState({});
   const [cardVariationMap, setCardVariationMap] = useState({});
   const cardVariationMapRef = useRef({});
 
@@ -86,25 +82,14 @@ export default function AllProducts() {
     showToast(`${product.name} added to cart!`, 'cart');
   };
 
-  const handleVariantSelect = useCallback((productId, attrName, value) => {
-    setCardVariants(prev => ({
-      ...prev,
-      [productId]: { ...(prev[productId] || {}), [attrName]: value },
-    }));
-  }, []);
-
-  const openModal = (product, resolvedVariation = null) => {
+  const openModal = (product) => {
     setModalProduct(product);
-    setModalSelectedAttrs(cardVariants[product.id] || {});
-    setModalResolvedVariation(resolvedVariation?.id && resolvedVariation.id !== product.id ? resolvedVariation : null);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setModalProduct(null);
-    setModalSelectedAttrs({});
-    setModalResolvedVariation(null);
   };
 
   // close on escape
@@ -253,12 +238,6 @@ export default function AllProducts() {
       .map((p) => p.id);
     if (variableIds.length === 0) return;
 
-    setLoadingVariationIds((prev) => {
-      const next = { ...prev };
-      variableIds.forEach((id) => { next[id] = true; });
-      return next;
-    });
-
     let mounted = true;
     fetchVariationsBatched(variableIds, getProductVariations).then((pairs) => {
       if (!mounted) return;
@@ -267,30 +246,12 @@ export default function AllProducts() {
         next[id] = vars;
       });
       setCardVariationMap((prev) => ({ ...prev, ...next }));
-      setLoadingVariationIds((prev) => {
-        const next = { ...prev };
-        variableIds.forEach((id) => { delete next[id]; });
-        return next;
-      });
-    }).catch(() => {
-      if (mounted) {
-        setLoadingVariationIds((prev) => {
-          const next = { ...prev };
-          variableIds.forEach((id) => { delete next[id]; });
-          return next;
-        });
-      }
-    });
+    }).catch(() => { /* variations are non-critical */ });
 
     return () => { mounted = false; };
   }, [pageVariableIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getCardDisplayProduct = useCallback((product) => {
-    if (!product?.is_variable) return product;
-    const selectedAttrs = cardVariants[product.id] || {};
-    const selectedVariation = findMatchingVariation(cardVariationMap[product.id] || [], selectedAttrs);
-    return selectedVariation || product;
-  }, [cardVariationMap, cardVariants]);
+  const getCardDisplayProduct = useCallback((product) => product, []);
 
   const goToPage = (n) => {
     setCurrentPage(n);
@@ -376,10 +337,7 @@ export default function AllProducts() {
                       product={product}
                       cardProduct={cardProduct}
                       hasSelectedVariation={hasSelectedVariation}
-                      cardVariants={cardVariants[product.id] || {}}
-                      onVariantSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
-                      isVariationLoading={Boolean(loadingVariationIds[product.id])}
-                      onOpenModal={() => openModal(product, hasSelectedVariation ? cardProduct : null)}
+                      onOpenModal={() => openModal(product)}
                       onAddToCart={() => handleAddToCart(cardProduct, 1)}
                       index={index}
                     />
@@ -440,12 +398,10 @@ export default function AllProducts() {
       <ProductModal isOpen={isModalOpen && !!modalProduct} product={modalProduct} onClose={closeModal}>
         {modalProduct && (
           <ProductDetail
-            key={`${modalProduct.id}:${modalResolvedVariation?.id || 0}`}
+            key={modalProduct.id}
             product={modalProduct}
             onAddToCart={handleAddToCart}
             onClose={closeModal}
-            initialSelectedAttrs={modalSelectedAttrs}
-            initialResolvedVariation={modalResolvedVariation}
             initialVariations={cardVariationMap[modalProduct.id] || []}
           />
         )}

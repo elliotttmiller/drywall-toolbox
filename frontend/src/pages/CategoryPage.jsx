@@ -9,7 +9,7 @@ import Toast from '../components/Toast';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
 import { getProductVariations } from '../services/api';
-import { findMatchingVariation, fetchVariationsBatched } from '../utils/variationSelection';
+import { fetchVariationsBatched } from '../utils/variationSelection';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -19,8 +19,6 @@ export default function CategoryPage() {
   // inside useEffect (react-hooks/set-state-in-effect rule).
   const [pageState, setPageState] = useState({ loading: true, products: [], category: null, error: null });
   const [modalProduct, setModalProduct] = useState(null);
-  const [modalSelectedAttrs, setModalSelectedAttrs] = useState({});
-  const [modalResolvedVariation, setModalResolvedVariation] = useState(null);
   const [toast, setToast]         = useState(null);
 
   const showToast = (message, type = 'cart') => setToast({ message, type });
@@ -30,16 +28,8 @@ export default function CategoryPage() {
     showToast(`${product.name} added to cart!`, 'cart');
   };
 
-  const [cardVariants, setCardVariants] = useState({});
   const [cardVariationMap, setCardVariationMap] = useState({});
-  const [loadingVariationIds, setLoadingVariationIds] = useState({});
   const cardVariationMapRef = useRef({});
-  const handleVariantSelect = useCallback((productId, attrName, value) => {
-    setCardVariants(prev => ({
-      ...prev,
-      [productId]: { ...(prev[productId] || {}), [attrName]: value },
-    }));
-  }, []);
 
   // Depend on the visible variable-product ID set instead of the products
   // array identity so the effect does not re-fire on equivalent renders.
@@ -79,12 +69,6 @@ export default function CategoryPage() {
       .map((p) => p.id);
     if (variableIds.length === 0) return;
 
-    setLoadingVariationIds((prev) => {
-      const next = { ...prev };
-      variableIds.forEach((id) => { next[id] = true; });
-      return next;
-    });
-
     let mounted = true;
     fetchVariationsBatched(variableIds, getProductVariations).then((pairs) => {
       if (!mounted) return;
@@ -93,30 +77,12 @@ export default function CategoryPage() {
         next[id] = vars;
       });
       setCardVariationMap((prev) => ({ ...prev, ...next }));
-      setLoadingVariationIds((prev) => {
-        const next = { ...prev };
-        variableIds.forEach((id) => { delete next[id]; });
-        return next;
-      });
-    }).catch(() => {
-      if (mounted) {
-        setLoadingVariationIds((prev) => {
-          const next = { ...prev };
-          variableIds.forEach((id) => { delete next[id]; });
-          return next;
-        });
-      }
-    });
+    }).catch(() => { /* variations are non-critical */ });
 
     return () => { mounted = false; };
   }, [pageVariableIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getCardDisplayProduct = useCallback((product) => {
-    if (!product?.is_variable) return product;
-    const selectedAttrs = cardVariants[product.id] || {};
-    const selectedVariation = findMatchingVariation(cardVariationMap[product.id] || [], selectedAttrs);
-    return selectedVariation || product;
-  }, [cardVariationMap, cardVariants]);
+  const getCardDisplayProduct = useCallback((product) => product, []);
 
   if (loading) {
     return (
@@ -170,12 +136,7 @@ export default function CategoryPage() {
                     product={product}
                     cardProduct={cardProduct}
                     hasSelectedVariation={hasSelectedVariation}
-                    cardVariants={cardVariants[product.id] || {}}
-                    onVariantSelect={(attrName, value) => handleVariantSelect(product.id, attrName, value)}
-                    isVariationLoading={Boolean(loadingVariationIds[product.id])}
                     onOpenModal={() => {
-                      setModalSelectedAttrs(cardVariants[product.id] || {});
-                      setModalResolvedVariation(hasSelectedVariation ? cardProduct : null);
                       setModalProduct(product);
                     }}
                       onAddToCart={() => handleAddToCart(cardProduct, 1)}
@@ -193,22 +154,16 @@ export default function CategoryPage() {
         product={modalProduct}
         onClose={() => {
           setModalProduct(null);
-          setModalSelectedAttrs({});
-          setModalResolvedVariation(null);
         }}
       >
         {modalProduct && (
           <ProductDetail
-            key={`${modalProduct.id}:${modalResolvedVariation?.id || 0}`}
+            key={modalProduct.id}
             product={modalProduct}
             onAddToCart={handleAddToCart}
             onClose={() => {
               setModalProduct(null);
-              setModalSelectedAttrs({});
-              setModalResolvedVariation(null);
             }}
-            initialSelectedAttrs={modalSelectedAttrs}
-            initialResolvedVariation={modalResolvedVariation}
             initialVariations={cardVariationMap[modalProduct.id] || []}
           />
         )}
