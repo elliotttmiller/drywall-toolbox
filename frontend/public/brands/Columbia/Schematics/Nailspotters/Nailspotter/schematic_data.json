@@ -10,22 +10,19 @@
       "id": "FA371",
       "name": "10-24 x 7/8 Hex Bolt (FA371)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA371"
+      "sku": "FA371"
     },
     {
       "id": "FA375",
       "name": "10-32 x 3/8 Flat Head Screw (FA375)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA375"
+      "sku": "FA375"
     },
     {
       "id": "HNS14A",
       "name": "Handle Link New Style (HNS14A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS14A"
+      "sku": "HNS14A"
     },
     {
       "id": "FA280",
@@ -43,8 +40,7 @@
       "id": "HNS14-PR",
       "name": "Nail Spotter 14 in Pad and Rod Assembly (HNS14PR)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS14PR"
+      "sku": "HNS14-PR"
     },
     {
       "id": "HNS10A",
@@ -62,8 +58,7 @@
       "id": "HNS19-3'",
       "name": "Triangle Shoe 3 in (HNS19-3”)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS19-3”"
+      "sku": "HNS19-3"
     },
     {
       "id": "HNS18",
@@ -75,8 +70,7 @@
       "id": "FA314",
       "name": "10-24 X 1-1/2 Pan Slot (FA314)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA314"
+      "sku": "FA314"
     },
     {
       "id": "HNS 13",
@@ -112,8 +106,7 @@
       "id": "HNS4-3'",
       "name": "Door 3 in (HNS43”)",
       "quantity": 1,
-      "sku": "HNS4-3",
-      "source_sku": "HNS43”"
+      "sku": "HNS4-3"
     },
     {
       "id": "FA231",
@@ -125,8 +118,7 @@
       "id": "FFB4C",
       "name": "Flat Box Corner Blade Assembly 4 in (FFB4C)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FFB4C"
+      "sku": "FFB4C"
     },
     {
       "id": "FFB16",
@@ -186,8 +178,7 @@
       "id": "HNS15-3'",
       "name": "Door Gasket 3 in (HNS15-3”)",
       "quantity": 1,
-      "sku": "HNS15-3",
-      "source_sku": "HNS15-3”"
+      "sku": "HNS15-3"
     },
     {
       "id": "FA280",
@@ -223,8 +214,7 @@
       "id": "HNS8-3'",
       "name": "Blade Holder 3 in (HNS8-3”)",
       "quantity": 1,
-      "sku": "HNS8-3",
-      "source_sku": "HNS8-3”"
+      "sku": "HNS8-3"
     },
     {
       "id": "FA254",
@@ -254,8 +244,7 @@
       "id": "FFB1A",
       "name": "Nail Spotter Flat Plate 1A (FFB1A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FFB1A"
+      "sku": "FFB1A"
     },
     {
       "id": "FA247",
@@ -267,22 +256,19 @@
       "id": "HNS 3",
       "name": "Nail Spotter Front Plate (HNS3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS3"
+      "sku": "HNS-3"
     },
     {
       "id": "HNS2-3'",
       "name": "Nail Spotter Front Plate (HNS3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS3"
+      "sku": "HNS2-3"
     },
     {
       "id": "HNS9-3'",
       "name": "Face Plate 3 in (HNS9-3”)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS9-3”"
+      "sku": "HNS9-3"
     },
     {
       "id": "FA214",
@@ -294,8 +280,7 @@
       "id": "HNS2A",
       "name": "Rollface Post (HNS2A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HNS2A"
+      "sku": "HNS2A"
     }
   ],
   "coordinates": {

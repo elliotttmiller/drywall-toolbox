@@ -81,6 +81,7 @@ def build_candidate_codes(part: dict[str, object]) -> list[str]:
     raw_values = [
         clean_text(str(part.get("sku", "") or "")),
         clean_text(str(part.get("id", "") or "")),
+        clean_text(str(part.get("source_sku", "") or "")),
         clean_text(str(part.get("name", "") or "")),
     ]
     values: list[str] = []
@@ -103,12 +104,15 @@ def build_candidate_codes(part: dict[str, object]) -> list[str]:
         cleaned = value.upper()
         cleaned = cleaned.replace("”", "").replace("“", "").replace('"', "").replace("'", "")
         cleaned = cleaned.replace("/", "-")
+        no_spaces = re.sub(r"\s+", "", cleaned)
         variants = [
             cleaned,
-            re.sub(r"\s+", "", cleaned),
+            no_spaces,
             re.sub(r"\s+", "-", cleaned),
-            re.sub(r"\s+", "", cleaned).replace("--", "-"),
-            re.sub(r"^([A-Z]+)0+([1-9].*)$", r"\1\2", re.sub(r"\s+", "", cleaned)),
+            no_spaces.replace("--", "-"),
+            re.sub(r"^([A-Z]+)0+([1-9].*)$", r"\1\2", no_spaces),
+            # Also try with "IN" suffix for WC SKUs generated from inch-mark (") conversion
+            no_spaces + "IN",
         ]
         for variant in variants:
             variant = clean_text(variant).strip("-")

@@ -10,43 +10,37 @@
       "id": "MP 9A",
       "name": "Connecting Chain (MP9A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP9A"
+      "sku": "MP-9A"
     },
     {
       "id": "MP 9C",
       "name": "Connecting Link (MP9C)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP9C"
+      "sku": "MP9C"
     },
     {
       "id": "MP 34",
       "name": "Adaptor (MP34)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP34"
+      "sku": "MP-34"
     },
     {
       "id": "MP 23A",
       "name": "Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": "MP23",
-      "source_sku": "MP-23"
+      "sku": "MP23"
     },
     {
       "id": "MP 9",
       "name": "Standard Fitting (MP9)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP9"
+      "sku": "MP-9"
     },
     {
       "id": "MP 33A",
       "name": "Mud Pump Spring Assembly (MP33A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP33A"
+      "sku": "MP33A"
     }
   ],
   "coordinates": {

@@ -10,15 +10,13 @@
       "id": "CF4L",
       "name": "Ball Spring Long Flusher (CF4L)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF4L"
+      "sku": "CF4L"
     },
     {
       "id": "CF1B",
       "name": "Direct Plate - Flusher (CF1B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF1B"
+      "sku": "CF1B"
     },
     {
       "id": "FA256",
@@ -30,15 +28,13 @@
       "id": "CF5-3.5\"",
       "name": "Tension Spring 3.5\" - Flusher (CF5-3.5)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF5-3.5"
+      "sku": "CF5-3.5in"
     },
     {
       "id": "FA324",
       "name": "10-24 x 1/4 Set Screw (FA324)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA324"
+      "sku": "FA324"
     },
     {
       "id": "FA236",
@@ -50,22 +46,19 @@
       "id": "CF3A",
       "name": "Screw for Corner Flusher Wheel (CF3A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF3A"
+      "sku": "CF3A"
     },
     {
       "id": "CF3B",
       "name": "Wheel for Corner Flusher (CF-3B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF-3B"
+      "sku": "CF3B"
     },
     {
       "id": "FA377",
       "name": "6-32 x 1/4 Flat Head Screw (FA377)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA377"
+      "sku": "FA377"
     },
     {
       "id": "FA237",
@@ -77,15 +70,13 @@
       "id": "CF3",
       "name": "Skid - Flusher (CF3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF3"
+      "sku": "CF3"
     },
     {
       "id": "CF1A",
       "name": "Direct Plate - Flusher (CF1B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF1B"
+      "sku": "CF1A"
     },
     {
       "id": "FA271",
@@ -97,8 +88,7 @@
       "id": "CF2",
       "name": "Corner Flusher Wheel Retainer (CF2)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF2"
+      "sku": "CF2"
     }
   ],
   "coordinates": {

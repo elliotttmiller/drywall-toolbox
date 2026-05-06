@@ -22,15 +22,13 @@
       "id": "3",
       "name": "Level5 Screw (#3) (7912)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7912"
+      "sku": "7912"
     },
     {
       "id": "4",
       "name": "Level5 Flat box Screw (#4) (9219)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "9219"
+      "sku": "9219"
     },
     {
       "id": "5",
@@ -42,8 +40,7 @@
       "id": "6",
       "name": "Level5 Screw (#6) (7915)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7915"
+      "sku": "7915"
     },
     {
       "id": "7",
@@ -127,15 +124,13 @@
       "id": "19",
       "name": "Level5 Screw (#19) (7927)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7927"
+      "sku": "7927"
     },
     {
       "id": "19",
       "name": "Level5 Screw (#19) (7927)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7927"
+      "sku": "7927"
     },
     {
       "id": "20",
@@ -207,15 +202,13 @@
       "id": "3",
       "name": "Level5 Screw (#3) (7912)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7912"
+      "sku": "7912"
     },
     {
       "id": "4",
       "name": "Level5 Flat box Screw (#4) (9219)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "9219"
+      "sku": "9219"
     },
     {
       "id": "1",
@@ -227,8 +220,7 @@
       "id": "6",
       "name": "Level5 Screw (#6) (7915)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7915"
+      "sku": "7915"
     },
     {
       "id": "12",

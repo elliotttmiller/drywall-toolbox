@@ -12,111 +12,97 @@
       "id": "1",
       "name": "1/4-20x1-1/4in HH Screw",
       "quantity": 1,
-      "sku": "",
-      "price": 4.49,
-      "source_sku": "7203"
+      "sku": "7203",
+      "price": 4.49
     },
     {
       "id": "2",
       "name": "#14 Brass Washer",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7178"
+      "sku": "7178",
+      "price": 1.79
     },
     {
       "id": "3",
       "name": "Roller Wheel",
       "quantity": 1,
-      "sku": "",
-      "price": 13.94,
-      "source_sku": "7225"
+      "sku": "7225",
+      "price": 13.94
     },
     {
       "id": "4",
       "name": "Bearing, 5L7D-642",
       "quantity": 1,
-      "sku": "",
-      "price": 3.14,
-      "source_sku": "7409"
+      "sku": "7409",
+      "price": 3.14
     },
     {
       "id": "5",
       "name": "Roller Bushing",
       "quantity": 1,
-      "sku": "",
-      "price": 3.14,
-      "source_sku": "7202"
+      "sku": "7202",
+      "price": 3.14
     },
     {
       "id": "6",
       "name": "Washer",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7221"
+      "sku": "7221"
     },
     {
       "id": "7",
       "name": "Trust Washer",
       "quantity": 1,
-      "sku": "",
-      "price": 4.49,
-      "source_sku": "7200"
+      "sku": "7200",
+      "price": 4.49
     },
     {
       "id": "8",
       "name": "8-32 x 5/16 Setscrew",
       "quantity": 1,
-      "sku": "",
-      "price": 3.59,
-      "source_sku": "7069"
+      "sku": "7069",
+      "price": 3.59
     },
     {
       "id": "9",
       "name": "Corner Roller Body",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7421"
+      "sku": "7421"
     },
     {
       "id": "10",
       "name": "Swivel Coupling Pin",
       "quantity": 1,
-      "sku": "",
-      "price": 8.0,
-      "source_sku": "7199"
+      "sku": "7199",
+      "price": 8.0
     },
     {
       "id": "11",
       "name": "Swivel Axle",
       "quantity": 1,
-      "sku": "",
-      "price": 11.24,
-      "source_sku": "7206"
+      "sku": "7206",
+      "price": 11.24
     },
     {
       "id": "12",
       "name": "Swivel Assembly",
       "quantity": 1,
-      "sku": "",
-      "price": 30.0,
-      "source_sku": "7204"
+      "sku": "7204",
+      "price": 30.0
     },
     {
       "id": "13",
       "name": "Coupling",
       "quantity": 1,
-      "sku": "",
-      "price": 45.0,
-      "source_sku": "7205"
+      "sku": "7205",
+      "price": 45.0
     },
     {
       "id": "14",
       "name": "1/16 x 1/2in Cotter Pin Fastenal 74268",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7116"
+      "sku": "7116",
+      "price": 1.79
     }
   ],
   "coordinates": {

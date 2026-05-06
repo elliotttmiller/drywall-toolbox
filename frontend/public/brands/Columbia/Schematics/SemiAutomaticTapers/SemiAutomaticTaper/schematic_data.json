@@ -16,8 +16,7 @@
       "id": "SAT4",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT4)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT4"
+      "sku": "SAT4"
     },
     {
       "id": "FA234",
@@ -35,15 +34,13 @@
       "id": "SAT5",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT5)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT5"
+      "sku": "SAT5"
     },
     {
       "id": "FA337",
       "name": "1/4-20 x 5/8 Flat Socket Head (FA337)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA337"
+      "sku": "FA337"
     },
     {
       "id": "FA258",
@@ -55,36 +52,31 @@
       "id": "FA341",
       "name": "1/4-20 x 1-3/4 Hex Bolt (FA341)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA341"
+      "sku": "FA341"
     },
     {
       "id": "SAT18",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT18)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT18"
+      "sku": "SAT18"
     },
     {
       "id": "SAT17",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT17)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT17"
+      "sku": "SAT17"
     },
     {
       "id": "SAT15",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT15)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT15"
+      "sku": "SAT15"
     },
     {
       "id": "FA324",
       "name": "10-24 x 1/4 Set Screw (FA324)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA324"
+      "sku": "FA324"
     },
     {
       "id": "FA238",
@@ -96,113 +88,97 @@
       "id": "FA340",
       "name": "1/4-20 x 1-1/4 Socket Head (FA340)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA340"
+      "sku": "FA340"
     },
     {
       "id": "FA324",
       "name": "10-24 x 1/4 Set Screw (FA324)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA324"
+      "sku": "FA324"
     },
     {
       "id": "FA285",
       "name": "1/4\" Plastic Washer (FA285)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA285"
+      "sku": "FA285"
     },
     {
       "id": "SAT17",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT17)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT17"
+      "sku": "SAT17"
     },
     {
       "id": "SAT16",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT16)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT16"
+      "sku": "SAT16"
     },
     {
       "id": "CT120",
       "name": "Taper Tape Spool (CT-120)",
       "quantity": 1,
-      "sku": "CT120",
-      "source_sku": "CT-120"
+      "sku": "CT120"
     },
     {
       "id": "SAT13",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT13)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT13"
+      "sku": "SAT13"
     },
     {
       "id": "SAT11",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT11)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT11"
+      "sku": "SAT11"
     },
     {
       "id": "SAT7",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT7)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT7"
+      "sku": "SAT7"
     },
     {
       "id": "FA391",
       "name": "6-32 x 1 Pan Head Screw (FA391)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA391"
+      "sku": "FA391"
     },
     {
       "id": "SAT22",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT22)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT22"
+      "sku": "SAT22"
     },
     {
       "id": "SAT20",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT20)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT20"
+      "sku": "SAT20"
     },
     {
       "id": "SAT19",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT19)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT19"
+      "sku": "SAT19"
     },
     {
       "id": "SAT10",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT10)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT10"
+      "sku": "SAT10"
     },
     {
       "id": "SAT21",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT21)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT21"
+      "sku": "SAT21"
     },
     {
       "id": "FA390",
       "name": "6-32 x 7/8 Pan Head Screw (FA390)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA390"
+      "sku": "FA390"
     },
     {
       "id": "FA224",
@@ -214,92 +190,79 @@
       "id": "SAT9",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT9)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT9"
+      "sku": "SAT9"
     },
     {
       "id": "SAT15",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT15)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT15"
+      "sku": "SAT15"
     },
     {
       "id": "SAT17",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT17)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT17"
+      "sku": "SAT17"
     },
     {
       "id": "SAT6",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT6)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT6"
+      "sku": "SAT6"
     },
     {
       "id": "SAT8",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT8)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT8"
+      "sku": "SAT8"
     },
     {
       "id": "FA392",
       "name": "6-32 x 1-1/4 Pan Head Screw (FA392)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA392"
+      "sku": "FA392"
     },
     {
       "id": "SAT12",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT12)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT12"
+      "sku": "SAT12"
     },
     {
       "id": "FA345",
       "name": "1/4 x 1/4 Roll Pin (FA345)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA345"
+      "sku": "FA345"
     },
     {
       "id": "SAT1",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT1)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT1"
+      "sku": "SAT1"
     },
     {
       "id": "SAT2",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT2)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT2"
+      "sku": "SAT2"
     },
     {
       "id": "SAT3",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT3"
+      "sku": "SAT3"
     },
     {
       "id": "CT120",
       "name": "Taper Tape Spool (CT-120)",
       "quantity": 1,
-      "sku": "CT120",
-      "source_sku": "CT-120"
+      "sku": "CT120"
     },
     {
       "id": "SAT13",
       "name": "Semi Auto Taper Drywall Taping Tool (SAT13)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "SAT13"
+      "sku": "SAT13"
     }
   ],
   "coordinates": {

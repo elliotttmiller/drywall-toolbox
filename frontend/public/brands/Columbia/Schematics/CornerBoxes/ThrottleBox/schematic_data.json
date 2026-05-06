@@ -16,15 +16,13 @@
       "id": "CFB5A",
       "name": "Corner Box Cone Ball End (Large)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB5A"
+      "sku": "CFB5A"
     },
     {
       "id": "CFB5C",
       "name": "Corner Box Cone Ball End (Standard)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB5C"
+      "sku": "CFB5C"
     },
     {
       "id": "FA219",
@@ -36,8 +34,7 @@
       "id": "CFB1 8\"",
       "name": "Rear Plate 8 in (CFB1-8)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB1-8"
+      "sku": "CFB1-8in"
     },
     {
       "id": "FA247",
@@ -49,8 +46,7 @@
       "id": "CFB2 8\"",
       "name": "8\" Roll Face (CFB28)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB28"
+      "sku": "CFB2-8in"
     },
     {
       "id": "FA234",
@@ -104,36 +100,31 @@
       "id": "AB45",
       "name": "Automatic Box Throttle Set Screw (AB45)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AB45"
+      "sku": "AB45"
     },
     {
       "id": "AB49",
       "name": "Automatic Box Handle Mount (AB49)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AB49"
+      "sku": "AB49"
     },
     {
       "id": "CFB7 8\"",
       "name": "8\" Door Gasket for Angle Box (CFB78)",
       "quantity": 1,
-      "sku": "CFB7-8",
-      "source_sku": "CFB78"
+      "sku": "CFB7-8"
     },
     {
       "id": "CFB4 8\"",
       "name": "8\" Pressure Door (CFB48)",
       "quantity": 1,
-      "sku": "CFB4-8",
-      "source_sku": "CFB48"
+      "sku": "CFB4-8"
     },
     {
       "id": "CFB8A",
       "name": "ONE Angle Box Door Adaptor #14499 (CFB8A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB8A"
+      "sku": "CFB8A"
     },
     {
       "id": "FA296",
@@ -157,8 +148,7 @@
       "id": "CFB19",
       "name": "Angle Box Nylatron Bushing (CFB-19)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB-19"
+      "sku": "CFB19"
     },
     {
       "id": "CFB16",
@@ -170,8 +160,7 @@
       "id": "FA242",
       "name": "6-32 x 3/8 Pan Head Screw (FA242)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA242"
+      "sku": "FA242"
     },
     {
       "id": "FA253",
@@ -189,8 +178,7 @@
       "id": "CFB1A",
       "name": "Angle Box Hinge Seal (CFB-1A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CFB-1A"
+      "sku": "CFB1A"
     },
     {
       "id": "FA258",
@@ -202,15 +190,13 @@
       "id": "CT98",
       "name": "Taper Mud Supply Seal Plate (CT-98)",
       "quantity": 1,
-      "sku": "CT98",
-      "source_sku": "CT-98"
+      "sku": "CT98"
     },
     {
       "id": "CT101",
       "name": "Filler Valve Return Spring (CT-101)",
       "quantity": 1,
-      "sku": "CT101",
-      "source_sku": "CT-101"
+      "sku": "CT101"
     },
     {
       "id": "CFB6",
@@ -228,15 +214,13 @@
       "id": "CFB15A",
       "name": "Angle Box Hinge Bushing (CFB-15A)",
       "quantity": 1,
-      "sku": "CFB15A",
-      "source_sku": "CFB-15A"
+      "sku": "CFB15A"
     },
     {
       "id": "CFB15",
       "name": "Angle Box Door Hinge (CFB-15)",
       "quantity": 1,
-      "sku": "CFB15",
-      "source_sku": "CFB-15"
+      "sku": "CFB15"
     },
     {
       "id": "FA238",
@@ -248,43 +232,37 @@
       "id": "AB44",
       "name": "Automatic Box Clutch Spring (AB44)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AB44"
+      "sku": "AB44"
     },
     {
       "id": "AB44A",
       "name": "Automatic Box Clutch Spring Short (AB44A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AB44A"
+      "sku": "AB44A"
     },
     {
       "id": "AB44B",
       "name": "Automatic Box Clutch Spring Long (AB44B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AB44B"
+      "sku": "AB44B"
     },
     {
       "id": "FA263",
       "name": "8-32 x 5/8 Flat Head Screw (FA263)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA263"
+      "sku": "FA263"
     },
     {
       "id": "CT39",
       "name": "Taper Knife Return Spring (CT39)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CT39"
+      "sku": "CT39"
     },
     {
       "id": "FA309",
       "name": "5/16-18 x 1/2 Socket Head Screw (FA309)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA309"
+      "sku": "FA309"
     }
   ],
   "coordinates": {

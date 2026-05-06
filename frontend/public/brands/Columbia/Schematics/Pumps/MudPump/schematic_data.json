@@ -16,15 +16,13 @@
       "id": "MP23",
       "name": "Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": "MP23",
-      "source_sku": "MP-23"
+      "sku": "MP23"
     },
     {
       "id": "FA290",
       "name": "1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA290"
+      "sku": "FA290"
     },
     {
       "id": "FA301",
@@ -36,36 +34,31 @@
       "id": "MP7A",
       "name": "Mud Pump Foot Valve A (MP7A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP7A"
+      "sku": "MP7A"
     },
     {
       "id": "MP7D",
       "name": "Special Nut for Pump Handle (MP7D)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP7D"
+      "sku": "MP7D"
     },
     {
       "id": "MP7C",
       "name": "Mud Pump O-Ring Retainer C (replaces MP7D)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP7C"
+      "sku": "MP7C"
     },
     {
       "id": "FA287",
       "name": "1/4 x 5/8 Split Pin (FA287)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA287"
+      "sku": "FA287"
     },
     {
       "id": "MP7B",
       "name": "Mud Pump O-Ring Retainer B (MP7B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP7B"
+      "sku": "MP7B"
     },
     {
       "id": "MP6",
@@ -89,15 +82,13 @@
       "id": "FFH14",
       "name": "Handle Grip (FFH14)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FFH14"
+      "sku": "FFH14"
     },
     {
       "id": "MP7E",
       "name": "Mud Pump Foot Valve E (MP7E)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP7E"
+      "sku": "MP7E"
     },
     {
       "id": "FA313",
@@ -121,22 +112,19 @@
       "id": "MP8A",
       "name": "Mud Pump Valve Spring A (MP8A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP8A"
+      "sku": "MP8A"
     },
     {
       "id": "MP8B",
       "name": "Mud Pump Valve Spring B (MP8B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP8B"
+      "sku": "MP8B"
     },
     {
       "id": "HP47",
       "name": "Draw Latch Assembly (HP-47)",
       "quantity": 1,
-      "sku": "HP47",
-      "source_sku": "HP-47"
+      "sku": "HP47"
     },
     {
       "id": "FA256",
@@ -154,8 +142,7 @@
       "id": "MP36",
       "name": "Mud Pump Nylatron Bushing (MP-36)",
       "quantity": 1,
-      "sku": "MP36",
-      "source_sku": "MP-36"
+      "sku": "MP36"
     },
     {
       "id": "FA294",
@@ -167,15 +154,13 @@
       "id": "MP23A",
       "name": "Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": "MP23",
-      "source_sku": "MP-23"
+      "sku": "MP23"
     },
     {
       "id": "HP4",
       "name": "Hot Mud Pump Piston Assembly (HP4)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HP4"
+      "sku": "HP4"
     },
     {
       "id": "FA307",
@@ -199,22 +184,19 @@
       "id": "HP48",
       "name": "Handle Pin (HP48)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HP48"
+      "sku": "HP48"
     },
     {
       "id": "HP48B",
       "name": "Hot Mud Pump HP48 Body B (HP48B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HP48B"
+      "sku": "HP48B"
     },
     {
       "id": "HP48A",
       "name": "Hot Mud Pump HP48 Body A (HP48A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HP48A"
+      "sku": "HP48A"
     },
     {
       "id": "MP28",
@@ -226,8 +208,7 @@
       "id": "MP33A",
       "name": "Mud Pump Spring Assembly (MP33A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP33A"
+      "sku": "MP33A"
     },
     {
       "id": "HP1",
@@ -239,15 +220,13 @@
       "id": "MP11",
       "name": "Mud Pump Piston Shaft (MP-11)",
       "quantity": 1,
-      "sku": "MP11",
-      "source_sku": "MP-11"
+      "sku": "MP11"
     },
     {
       "id": "FA308",
       "name": "33/64 X 7/8in Flat Washer (FA-308)",
       "quantity": 1,
-      "sku": "FA308",
-      "source_sku": "FA-308"
+      "sku": "FA308"
     },
     {
       "id": "MP39",
@@ -277,8 +256,7 @@
       "id": "MP13A",
       "name": "Mud Pump Piston Backing Washer (Small)",
       "quantity": 1,
-      "sku": "MP13A",
-      "source_sku": "MP-13A"
+      "sku": "MP13A"
     },
     {
       "id": "MP2",
@@ -296,15 +274,13 @@
       "id": "MP32",
       "name": "Mud Pump Flapper Valve (MP-32)",
       "quantity": 1,
-      "sku": "MP32",
-      "source_sku": "MP-32"
+      "sku": "MP32"
     },
     {
       "id": "MP13",
       "name": "Mud Pump Piston Backing Washer (Large)",
       "quantity": 1,
-      "sku": "MP13",
-      "source_sku": "MP-13"
+      "sku": "MP13"
     },
     {
       "id": "FA274",
@@ -316,8 +292,7 @@
       "id": "MP13",
       "name": "Mud Pump Piston Backing Washer (Large)",
       "quantity": 1,
-      "sku": "MP13",
-      "source_sku": "MP-13"
+      "sku": "MP13"
     },
     {
       "id": "FA271",
@@ -341,8 +316,7 @@
       "id": "FA306",
       "name": "5/16-18 x 1 1/4\" Hex Bolt (FA-306)",
       "quantity": 1,
-      "sku": "FA306",
-      "source_sku": "FA-306"
+      "sku": "FA306"
     },
     {
       "id": "FA271",

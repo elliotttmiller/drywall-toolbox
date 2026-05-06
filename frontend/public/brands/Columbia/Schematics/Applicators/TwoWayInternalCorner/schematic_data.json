@@ -10,43 +10,37 @@
       "id": "CF 4L",
       "name": "Ball Spring Long Flusher (CF4L)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF4L"
+      "sku": "CF4L"
     },
     {
       "id": "ICATW 2",
       "name": "Inside 90 Applicator with Wheels (ICATW)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICATW"
+      "sku": "ICATW-2"
     },
     {
       "id": "CEXT 3",
       "name": "Wheel for ICATW (CEXT3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CEXT3"
+      "sku": "CEXT-3"
     },
     {
       "id": "CEXT 3",
       "name": "Wheel for ICATW (CEXT3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CEXT3"
+      "sku": "CEXT-3"
     },
     {
       "id": "ICATW 2",
       "name": "Inside 90 Applicator with Wheels (ICATW)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICATW"
+      "sku": "ICATW-2"
     },
     {
       "id": "ICATW 1",
       "name": "Inside 90 Applicator with Wheels (ICATW)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICATW"
+      "sku": "ICATW-1"
     }
   ],
   "coordinates": {

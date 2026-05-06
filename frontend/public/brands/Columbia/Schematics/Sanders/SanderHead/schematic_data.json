@@ -10,36 +10,31 @@
       "id": "FA366",
       "name": "8-32 x 3/8 Pan Head Screw (FA366)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA366"
+      "sku": "FA366"
     },
     {
       "id": "S5",
       "name": "Sander Head Retainer Clip (S5)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S5"
+      "sku": "S5"
     },
     {
       "id": "FA364",
       "name": "8-32 x 5/8 Hex Bolt (FA364)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA364"
+      "sku": "FA364"
     },
     {
       "id": "S4",
       "name": "Sander Head Pivot Washer (S4)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S4"
+      "sku": "S4"
     },
     {
       "id": "S6",
       "name": "Sander Head Swivel Bearing (S6)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S6"
+      "sku": "S6"
     },
     {
       "id": "FA365",
@@ -51,36 +46,31 @@
       "id": "S1",
       "name": "Sander Head Main Body (S1)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S1"
+      "sku": "S1"
     },
     {
       "id": "S2",
       "name": "Sander Head Pivot Pin (S2)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S2"
+      "sku": "S2"
     },
     {
       "id": "S4",
       "name": "Sander Head Pivot Washer (S4)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S4"
+      "sku": "S4"
     },
     {
       "id": "S2",
       "name": "Sander Head Pivot Pin (S2)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S2"
+      "sku": "S2"
     },
     {
       "id": "S3",
       "name": "Sander Head Return Spring (S3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "S3"
+      "sku": "S3"
     }
   ],
   "coordinates": {

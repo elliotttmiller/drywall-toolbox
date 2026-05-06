@@ -10,15 +10,13 @@
       "id": "FG4 45",
       "name": "Flat Box 45 Degree Corner Guide 4 in (FG4-45)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FG4-45"
+      "sku": "FG4-45"
     },
     {
       "id": "FA 284",
       "name": "3/16 x 3/8 SS Pop Rivet (FA284)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA284"
+      "sku": "FA284"
     },
     {
       "id": "H 1",
@@ -30,8 +28,7 @@
       "id": "EXT 35",
       "name": "Extension Tube 35 in (EXT35)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "EXT35"
+      "sku": "EXT35"
     }
   ],
   "coordinates": {

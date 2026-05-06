@@ -16,29 +16,25 @@
       "id": "CR 1",
       "name": "Corner Roller (CR)",
       "quantity": 1,
-      "sku": "CR1",
-      "source_sku": "CR"
+      "sku": "CR1"
     },
     {
       "id": "CR 4",
       "name": "Corner Roller (CR)",
       "quantity": 1,
-      "sku": "CR4",
-      "source_sku": "CR"
+      "sku": "CR4"
     },
     {
       "id": "FA 288",
       "name": "1/4in X 1/2in Split Pin - FA288 (FA-288)",
       "quantity": 1,
-      "sku": "FA288",
-      "source_sku": "FA-288"
+      "sku": "FA288"
     },
     {
       "id": "CR 11",
       "name": "Corner Roller Handle Connecting Link - CR11 (CR-11)",
       "quantity": 1,
-      "sku": "CR11",
-      "source_sku": "CR-11"
+      "sku": "CR11"
     },
     {
       "id": "CR 6",
@@ -56,22 +52,19 @@
       "id": "CR 2A",
       "name": "Corner Roller (CR)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CR"
+      "sku": "CR-2A"
     },
     {
       "id": "CR 2B",
       "name": "Corner Roller (CR)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CR"
+      "sku": "CR-2B"
     },
     {
       "id": "CR 3",
       "name": "Corner Roller (CR)",
       "quantity": 1,
-      "sku": "CR-3",
-      "source_sku": "CR"
+      "sku": "CR-3"
     },
     {
       "id": "FA 299",

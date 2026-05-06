@@ -10,57 +10,49 @@
       "id": "ICA 1",
       "name": "Inside Corner Applicator Body (ICA1)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICA1"
+      "sku": "ICA-1"
     },
     {
       "id": "ICA 3",
       "name": "Inside Corner Applicator Wheel (ICA3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICA3"
+      "sku": "ICA-3"
     },
     {
       "id": "ICA 2",
       "name": "Inside Corner Applicator Axle (ICA2)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICA2"
+      "sku": "ICA-2"
     },
     {
       "id": "FA 377",
       "name": "6-32 x 1/4 Flat Head Screw (FA377)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA377"
+      "sku": "FA377"
     },
     {
       "id": "ICA 3",
       "name": "Inside Corner Applicator Wheel (ICA3)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICA3"
+      "sku": "ICA-3"
     },
     {
       "id": "ICA 2",
       "name": "Inside Corner Applicator Axle (ICA2)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "ICA2"
+      "sku": "ICA-2"
     },
     {
       "id": "FA 377",
       "name": "6-32 x 1/4 Flat Head Screw (FA377)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA377"
+      "sku": "FA377"
     },
     {
       "id": "CF 4S",
       "name": "Corner Flusher Ball Spring Short (CF4S)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CF4S"
+      "sku": "CF-4S"
     }
   ],
   "coordinates": {

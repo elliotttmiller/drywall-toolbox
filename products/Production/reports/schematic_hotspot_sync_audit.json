@@ -2,8 +2,8 @@
   "woocommerce_catalog": "products/Production/catalogs/official/woocommerce_catalog.csv",
   "schematic_files": 127,
   "hotspot_rows_total": 4338,
-  "active_hotspot_rows_with_sku": 516,
-  "unique_hotspot_skus": 236,
+  "active_hotspot_rows_with_sku": 1486,
+  "unique_hotspot_skus": 807,
   "brands": {
     "Asgard": {
       "hotspot_rows_total": 932,
@@ -17,9 +17,9 @@
     },
     "Columbia": {
       "hotspot_rows_total": 1024,
-      "active_hotspot_rows_with_sku": 516,
-      "unique_hotspot_skus": 236,
-      "cleared_unresolved_rows": 503,
+      "active_hotspot_rows_with_sku": 1024,
+      "unique_hotspot_skus": 600,
+      "cleared_unresolved_rows": 0,
       "exact_missing_skus_in_wc": 0,
       "recoverable_by_simple_normalization": 0,
       "true_missing_after_simple_normalization": 0,
@@ -37,9 +37,9 @@
     },
     "Level5": {
       "hotspot_rows_total": 496,
-      "active_hotspot_rows_with_sku": 0,
-      "unique_hotspot_skus": 0,
-      "cleared_unresolved_rows": 464,
+      "active_hotspot_rows_with_sku": 462,
+      "unique_hotspot_skus": 207,
+      "cleared_unresolved_rows": 2,
       "exact_missing_skus_in_wc": 0,
       "recoverable_by_simple_normalization": 0,
       "true_missing_after_simple_normalization": 0,

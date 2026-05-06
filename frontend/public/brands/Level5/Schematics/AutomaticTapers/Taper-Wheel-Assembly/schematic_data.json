@@ -12,41 +12,36 @@
       "id": "1",
       "name": "4-40 x3/16 Bind Head Screw",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7047"
+      "sku": "7047",
+      "price": 1.79
     },
     {
       "id": "2",
       "name": "Taper Wheel",
       "quantity": 1,
-      "sku": "",
-      "price": 19.34,
-      "source_sku": "7077"
+      "sku": "7077",
+      "price": 19.34
     },
     {
       "id": "3",
       "name": "Drive hub",
       "quantity": 1,
-      "sku": "",
-      "price": 20.69,
-      "source_sku": "7090"
+      "sku": "7090",
+      "price": 20.69
     },
     {
       "id": "4",
       "name": "Taper Wheel Spool",
       "quantity": 1,
-      "sku": "",
-      "price": 38.69,
-      "source_sku": "7078"
+      "sku": "7078",
+      "price": 38.69
     },
     {
       "id": "5",
       "name": "8-32 x 1/4 FH Screw",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7070"
+      "sku": "7070",
+      "price": 1.79
     }
   ],
   "coordinates": {

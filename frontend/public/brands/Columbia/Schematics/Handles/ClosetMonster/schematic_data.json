@@ -40,43 +40,37 @@
       "id": "CMH 8",
       "name": "Closet Monster 18\" Flat Box Handle (CMH)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CMH"
+      "sku": "CMH-8"
     },
     {
       "id": "AH 15",
       "name": "Handle Ball (AH15)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AH15"
+      "sku": "AH-15"
     },
     {
       "id": "AH Ball",
       "name": "Angle Head Ball Adapter (AHA)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "AHA"
+      "sku": "AH-Ball"
     },
     {
       "id": "BH 5",
       "name": "Box Handle Upper Mounting Bracket - BH5 (BH-5)",
       "quantity": 1,
-      "sku": "BH5",
-      "source_sku": "BH-5"
+      "sku": "BH5"
     },
     {
       "id": "CMH 2",
       "name": "Closet Monster 18\" Flat Box Handle (CMH)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CMH"
+      "sku": "CMH-2"
     },
     {
       "id": "FA 325",
       "name": "3/8-16 x 1-1/2 Socket Head Screw (FA325)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA325"
+      "sku": "FA-325"
     },
     {
       "id": "FA 312",
@@ -88,8 +82,7 @@
       "id": "BH 1",
       "name": "Box Handle Mounting Plate (BH01)",
       "quantity": 1,
-      "sku": "BH1",
-      "source_sku": "BH01"
+      "sku": "BH1"
     }
   ],
   "coordinates": {

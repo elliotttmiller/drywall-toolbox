@@ -12,81 +12,71 @@
       "id": "1",
       "name": "1/16 x 1/2in Cotter Pin Fastenal  74268",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7116"
+      "sku": "7116",
+      "price": 1.79
     },
     {
       "id": "2",
       "name": "Cutter Chain without Spring",
       "quantity": 1,
-      "sku": "",
-      "price": 88.19,
-      "source_sku": "7332"
+      "sku": "7332",
+      "price": 88.19
     },
     {
       "id": "3",
       "name": "4-40 x 6.3MM FLH Screw, Phillips",
       "quantity": 1,
-      "sku": "",
-      "price": 4.49,
-      "source_sku": "7136"
+      "sku": "7136",
+      "price": 4.49
     },
     {
       "id": "4",
       "name": "Pyramid Blade",
       "quantity": 1,
-      "sku": "",
-      "price": 3.14,
-      "source_sku": "7111"
+      "sku": "7111",
+      "price": 3.14
     },
     {
       "id": "5",
       "name": "Cutter Block Clamp",
       "quantity": 1,
-      "sku": "",
-      "price": 15.29,
-      "source_sku": "7112"
+      "sku": "7112",
+      "price": 15.29
     },
     {
       "id": "6",
       "name": "Cutter Chain Spring",
       "quantity": 1,
-      "sku": "",
-      "price": 16.64,
-      "source_sku": "9108"
+      "sku": "9108",
+      "price": 16.64
     },
     {
       "id": "7",
       "name": "Key Ring",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7054"
+      "sku": "7054",
+      "price": 1.79
     },
     {
       "id": "8",
       "name": "AT Key Ring Holder",
       "quantity": 1,
-      "sku": "",
-      "price": 22.04,
-      "source_sku": "9917"
+      "sku": "9917",
+      "price": 22.04
     },
     {
       "id": "9",
       "name": "#10 Brass Washer",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7177"
+      "sku": "7177",
+      "price": 1.79
     },
     {
       "id": "10",
       "name": "AT Wing Nut",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "9916"
+      "sku": "9916",
+      "price": 1.79
     }
   ],
   "coordinates": {

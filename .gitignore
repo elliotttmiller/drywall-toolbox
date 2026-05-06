@@ -127,3 +127,5 @@ Desktop.ini
 __pycache__/
 *.pyc
 *.zip
+*.pre-enrich-parts-*
+*.pre-enrich-*

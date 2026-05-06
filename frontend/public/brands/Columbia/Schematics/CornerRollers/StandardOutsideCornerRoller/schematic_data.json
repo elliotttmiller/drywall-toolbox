@@ -10,8 +10,7 @@
       "id": "FA 290",
       "name": "1/4-20 Nyloc Nut (FA290)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA290"
+      "sku": "FA290"
     },
     {
       "id": "OCR 2B",
@@ -23,8 +22,7 @@
       "id": "OCR 3",
       "name": "Corner Roller Bearing Sleeve CR3 (CR3)",
       "quantity": 1,
-      "sku": "CR-3",
-      "source_sku": "CR3"
+      "sku": "CR-3"
     },
     {
       "id": "OCR 6",
@@ -54,8 +52,7 @@
       "id": "OCR 3A",
       "name": "Corner Roller Bearing Sleeve CR3 (CR3)",
       "quantity": 1,
-      "sku": "CR-3",
-      "source_sku": "CR3"
+      "sku": "CR-3"
     },
     {
       "id": "FA 299",
@@ -73,8 +70,7 @@
       "id": "OCR 5",
       "name": "Corner Roller Wheel CR5 (CR5)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "CR5"
+      "sku": "OCR-5"
     },
     {
       "id": "FA 312",
@@ -98,15 +94,13 @@
       "id": "CR 11",
       "name": "Corner Roller Handle Connecting Link - CR11 (CR-11)",
       "quantity": 1,
-      "sku": "CR11",
-      "source_sku": "CR-11"
+      "sku": "CR11"
     },
     {
       "id": "FA 288",
       "name": "1/4in X 1/2in Split Pin - FA288 (FA-288)",
       "quantity": 1,
-      "sku": "FA288",
-      "source_sku": "FA-288"
+      "sku": "FA288"
     },
     {
       "id": "FA 301",

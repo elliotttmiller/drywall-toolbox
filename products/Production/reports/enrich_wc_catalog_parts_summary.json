@@ -1,0 +1,15 @@
+{
+  "wc_catalog": "products/Production/catalogs/official/woocommerce_catalog.csv",
+  "existing_sku_count": 2064,
+  "columbia": {
+    "new_parts_to_add": 0,
+    "with_live_raw_enrichment": 0,
+    "with_price": 0
+  },
+  "level5": {
+    "new_parts_to_add": 0,
+    "with_price": 0
+  },
+  "total_new_rows": 0,
+  "applied": false
+}

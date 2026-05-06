@@ -12,112 +12,98 @@
       "id": "1",
       "name": "Disengaging Rod Bearing",
       "quantity": 1,
-      "sku": "",
-      "price": 12.14,
-      "source_sku": "7034"
+      "sku": "7034",
+      "price": 12.14
     },
     {
       "id": "2",
       "name": "O'Ring",
       "quantity": 1,
-      "sku": "",
-      "price": 0.89,
-      "source_sku": "7033"
+      "sku": "7033",
+      "price": 0.89
     },
     {
       "id": "3",
       "name": "O'Ring Housing",
       "quantity": 1,
-      "sku": "",
-      "price": 19.79,
-      "source_sku": "7032"
+      "sku": "7032",
+      "price": 19.79
     },
     {
       "id": "4",
       "name": "6-32X3/16 Fillister Head Screw",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7042"
+      "sku": "7042",
+      "price": 1.79
     },
     {
       "id": "5",
       "name": "#6 Lockwasher Medium",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7013"
+      "sku": "7013",
+      "price": 1.79
     },
     {
       "id": "6",
       "name": "Cover Plate",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "7045"
+      "sku": "7045"
     },
     {
       "id": "7",
       "name": "4-40 x 5/16 BH Screw- Fastenal 70657",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7126"
+      "sku": "7126",
+      "price": 1.79
     },
     {
       "id": "8",
       "name": "6-32 x 3/8 Bind Head Screw",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7017"
+      "sku": "7017",
+      "price": 1.79
     },
     {
       "id": "9",
       "name": "Bracket Base",
       "quantity": 1,
-      "sku": "",
-      "price": 7.19,
-      "source_sku": "7029"
+      "sku": "7029",
+      "price": 7.19
     },
     {
       "id": "10",
       "name": "Collar Bushing",
       "quantity": 1,
-      "sku": "",
-      "price": 3.25,
-      "source_sku": "7014"
+      "sku": "7014",
+      "price": 3.25
     },
     {
       "id": "11",
       "name": "Disengaging Cam",
       "quantity": 1,
-      "sku": "",
-      "price": 8.54,
-      "source_sku": "7016"
+      "sku": "7016",
+      "price": 8.54
     },
     {
       "id": "12",
       "name": "#6-32 Thin Pattern Locknut",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7015"
+      "sku": "7015",
+      "price": 1.79
     },
     {
       "id": "13",
       "name": "Disengaging Rod (shaft)",
       "quantity": 1,
-      "sku": "",
-      "price": 13.04,
-      "source_sku": "7028"
+      "sku": "7028",
+      "price": 13.04
     },
     {
       "id": "14",
       "name": "4-40 Lock Nut",
       "quantity": 1,
-      "sku": "",
-      "price": 1.79,
-      "source_sku": "7248"
+      "sku": "7248",
+      "price": 1.79
     }
   ],
   "image_natural_width": 896,

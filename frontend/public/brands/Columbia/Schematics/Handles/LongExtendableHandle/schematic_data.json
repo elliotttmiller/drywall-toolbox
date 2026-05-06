@@ -10,8 +10,7 @@
       "id": "FG 4-45",
       "name": "Flat Box 45 Degree Corner Guide 4 in (FG4-45)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FG4-45"
+      "sku": "FG4-45"
     },
     {
       "id": "HH 31",
@@ -65,22 +64,19 @@
       "id": "FA 321",
       "name": "3/8-16 x 3/4 Socket Head Screw (FA321)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FA321"
+      "sku": "FA-321"
     },
     {
       "id": "FG 3A",
       "name": "Flat Box Angle Guide 3A (FG3A)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "FG3A"
+      "sku": "FG-3A"
     },
     {
       "id": "EXT 35",
       "name": "Extension Tube 35 in (EXT35)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "EXT35"
+      "sku": "EXT35"
     },
     {
       "id": "HH 10A",
@@ -98,8 +94,7 @@
       "id": "HH10 EXTLONG",
       "name": "Octogon Tube for Hydro Handle for COL88 (HH10)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "HH10"
+      "sku": "HH10-EXTLONG"
     }
   ],
   "coordinates": {

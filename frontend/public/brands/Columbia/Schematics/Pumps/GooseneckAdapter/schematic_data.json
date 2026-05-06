@@ -10,29 +10,25 @@
       "id": "MP 27B",
       "name": "Mud Pump O-Ring Retainer B (MP27B)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP27B"
+      "sku": "MP-27B"
     },
     {
       "id": "MP 23A",
       "name": "Mud Pump Mud Pump Seal (MP-23)",
       "quantity": 1,
-      "sku": "MP23",
-      "source_sku": "MP-23"
+      "sku": "MP23"
     },
     {
       "id": "MP 27C",
       "name": "Mud Pump O Ring Retainer - MP27C (MP-27C)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP-27C"
+      "sku": "MP-27C"
     },
     {
       "id": "MP 27",
       "name": "Mud Pump O-Ring Retainer (MP27)",
       "quantity": 1,
-      "sku": "",
-      "source_sku": "MP27"
+      "sku": "MP-27"
     }
   ],
   "coordinates": {
