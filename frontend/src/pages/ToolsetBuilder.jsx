@@ -1,17 +1,26 @@
 /**
- * ToolsetBuilder — Build Your Own Toolset
+ * ToolsetBuilder — Build Your Own Drywall Toolset
  *
- * Multi-step workflow:
- *   1. Choose a Brand
- *   2. Pick Tools (category-filtered product grid)
- *   3. Review & Add All to Cart
+ * Three-stage workflow modeled on Great Lakes Taping Tools'
+ * "Build Your Own Set" but completely redesigned:
  *
- * Inspired by greatlakestapingtools.com/tools/build-your-own-set,
- * fully redesigned with the DTB Machined Precision design system.
+ *   Stage 1 — SET TYPE SELECTION
+ *     Pick a brand + set scope (Full Set / Finishing Set / Taping Set / Flat Box Set)
+ *     Each card shows scope badge, included slots count, always-included accessories
+ *
+ *   Stage 2 — SLOT CONFIGURATOR
+ *     For each slot in the chosen set template, pick ONE product from a visual card grid
+ *     (no dropdowns — full images, SKUs, prices, descriptions)
+ *     Slot progress sidebar tracks completion
+ *     Always-included accessories shown in an info panel
+ *
+ *   Stage 3 — REVIEW & CART
+ *     Clean review of all selected slot products + always-included list
+ *     Running total + "Add All to Cart" CTA
  */
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Check,
   ChevronRight,
@@ -23,86 +32,52 @@ import {
   X,
   Trash2,
   Plus,
-  Minus,
   CheckCircle2,
   Layers,
-  BookmarkPlus,
+  Tag,
+  Truck,
+  AlertCircle,
+  Info,
+  ArrowRight,
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import Toast from '../components/Toast';
 import { getProducts } from '../services/catalog';
 import { useCart } from '../context/CartContext';
+import {
+  SET_TEMPLATES,
+  SCOPE_LABELS,
+  SCOPE_COLORS,
+  BUILDER_BRANDS,
+  getTemplatesForBrand,
+  getSlotProducts,
+} from '../data/toolsetTemplates';
 
-import tapeTechLogo  from '/brands/TapeTech/tapetech_logo.svg';
-import columbiaLogo  from '/brands/Columbia/columbia_taping_tools_logo.svg';
-import surproLogo    from '/brands/SurPro/surpro_logo.svg';
-import asgardLogo    from '/brands/Asgard/asgard_logo.svg';
-import gracoLogo     from '/brands/Graco/graco_logo.svg';
-import platinumLogo  from '/brands/Platinum/platinum_logo.svg';
-import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
-import level5Logo    from '/brands/Level5/Level5.svg';
+import tapeTechLogo   from '/brands/TapeTech/tapetech_logo.svg';
+import columbiaLogo   from '/brands/Columbia/columbia_taping_tools_logo.svg';
+import level5Logo     from '/brands/Level5/Level5.svg';
+import asgardLogo     from '/brands/Asgard/asgard_logo.svg';
 
 import '../styles/toolset-builder.css';
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ── Constants ──────────────────────────────────────────────────────────────────
+const PLACEHOLDER_IMG =
+  'https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/05/no-image-placeholder.webp';
 
-const PLACEHOLDER_IMG = 'https://www.drywalltoolbox.com/wp/wp-content/uploads/2026/05/no-image-placeholder.webp';
-
-const STEPS = [
-  { id: 1, label: 'Choose Brand' },
-  { id: 2, label: 'Pick Tools'   },
-  { id: 3, label: 'Review & Buy' },
-];
-
-const BRANDS = [
-  { name: 'TapeTech',              logo: tapeTechLogo,    slug: 'tapetech'               },
-  { name: 'Columbia Taping Tools', logo: columbiaLogo,    slug: 'columbia-taping-tools'  },
-  { name: 'Level 5',               logo: level5Logo,      slug: 'level5'                 },
-  { name: 'SurPro',                logo: surproLogo,      slug: 'surpro'                 },
-  { name: 'Asgard',                logo: asgardLogo,      slug: 'asgard'                 },
-  { name: 'Graco',                 logo: gracoLogo,       slug: 'graco'                  },
-  { name: 'Platinum Drywall Tools',logo: platinumLogo,    slug: 'platinum'               },
-  { name: 'Dura-Stilts',           logo: duraStiltsLogo,  slug: 'dura-stilts'            },
-];
-
-// Category order + friendly names
-const CATEGORY_ORDER = [
-  'taping',
-  'finishing',
-  'corner',
-  'mudboxes',
-  'sanding',
-  'other',
-];
-
-const CATEGORY_LABELS = {
-  taping:    'Automatic Taping',
-  finishing: 'Finishing Tools',
-  corner:    'Corner Tools',
-  mudboxes:  'Mud Boxes & Pumps',
-  sanding:   'Sanding',
-  other:     'Other',
+const BRAND_LOGOS = {
+  'TapeTech':             tapeTechLogo,
+  'Columbia Taping Tools':columbiaLogo,
+  'Level 5':              level5Logo,
+  'Asgard':               asgardLogo,
 };
 
+const STAGES = [
+  { id: 1, label: 'Choose Set Type' },
+  { id: 2, label: 'Configure Tools'  },
+  { id: 3, label: 'Review & Buy'     },
+];
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
-
-function displayPrice(product) {
-  if (!product) return '';
-  if (product.is_variable && product.min_price != null) {
-    return `From $${Number(product.min_price).toFixed(2)}`;
-  }
-  const p = typeof product.price === 'number'
-    ? product.price
-    : parseFloat(product.price || 0);
-  return `$${p.toFixed(2)}`;
-}
-
-function numericPrice(product) {
-  if (!product) return 0;
-  if (product.is_variable && product.min_price != null) return Number(product.min_price);
-  return typeof product.price === 'number' ? product.price : parseFloat(product.price || 0);
-}
-
 function resolveImage(product) {
   return (
     product?.image ||
@@ -113,57 +88,63 @@ function resolveImage(product) {
   );
 }
 
-function normCategory(product) {
-  // Map product categories to our canonical keys
-  const cats = (product.categories || []).map((c) => {
-    if (typeof c === 'string') return c.toLowerCase();
-    return (c.name || c.slug || '').toLowerCase();
-  });
-  const name = (product.name || '').toLowerCase();
-  const cat  = (product.category || '').toLowerCase();
-
-  if (cats.some(c => /taping|tape/i.test(c)) || /taping|tape/i.test(cat)) return 'taping';
-  if (cats.some(c => /finish/i.test(c)) || /finish/i.test(cat)) return 'finishing';
-  if (cats.some(c => /corner/i.test(c)) || /corner/i.test(cat)) return 'corner';
-  if (cats.some(c => /mud|pump/i.test(c)) || /mud|pump/i.test(cat)) return 'mudboxes';
-  if (cats.some(c => /sand/i.test(c)) || /sand/i.test(cat)) return 'sanding';
-
-  // Fall back to name heuristics
-  if (/taping|auto tape/i.test(name)) return 'taping';
-  if (/finish/i.test(name)) return 'finishing';
-  if (/corner/i.test(name)) return 'corner';
-  if (/mud|pump/i.test(name)) return 'mudboxes';
-  if (/sand/i.test(name)) return 'sanding';
-
-  return 'other';
+function displayPrice(product) {
+  if (!product) return '';
+  if (product.is_variable && product.min_price != null) {
+    return `From $${Number(product.min_price).toFixed(2)}`;
+  }
+  const p =
+    typeof product.price === 'number'
+      ? product.price
+      : parseFloat(product.price || 0);
+  return `$${p.toFixed(2)}`;
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+function numericPrice(product) {
+  if (!product) return 0;
+  if (product.is_variable && product.min_price != null)
+    return Number(product.min_price);
+  return typeof product.price === 'number'
+    ? product.price
+    : parseFloat(product.price || 0);
+}
 
-function StepIndicator({ currentStep, onStepClick }) {
+// Count required slots that have been filled
+function countFilledRequired(template, slotSelections) {
+  if (!template) return { filled: 0, total: 0 };
+  const required = template.slots.filter((s) => s.required);
+  const filled   = required.filter((s) => slotSelections[s.id]).length;
+  return { filled, total: required.length };
+}
+
+// ── Sub-components ──────────────────────────────────────────────────────────────
+
+// Progress stepper
+function StageBar({ stage, onStageClick }) {
   return (
-    <div className="tsb-stepper" role="navigation" aria-label="Build steps">
+    <div className="tsb-stepper" role="navigation" aria-label="Build stages">
       <div className="tsb-stepper-inner">
-        {STEPS.map((step) => {
-          const done   = currentStep > step.id;
-          const active = currentStep === step.id;
+        {STAGES.map((s) => {
+          const done   = stage > s.id;
+          const active = stage === s.id;
           return (
             <button
-              key={step.id}
+              key={s.id}
               className={[
                 'tsb-step',
                 active ? 'tsb-step--active' : '',
                 done   ? 'tsb-step--done'   : '',
-              ].filter(Boolean).join(' ')}
-              onClick={() => done && onStepClick(step.id)}
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => done && onStageClick(s.id)}
               aria-current={active ? 'step' : undefined}
-              title={done ? `Go back to step ${step.id}` : step.label}
               style={{ cursor: done ? 'pointer' : active ? 'default' : 'not-allowed' }}
             >
               <span className="tsb-step-num" aria-hidden="true">
-                {done ? <Check size={12} strokeWidth={3} /> : step.id}
+                {done ? <Check size={12} strokeWidth={3} /> : s.id}
               </span>
-              <span className="tsb-step-label">{step.label}</span>
+              <span className="tsb-step-label">{s.label}</span>
             </button>
           );
         })}
@@ -172,70 +153,730 @@ function StepIndicator({ currentStep, onStepClick }) {
   );
 }
 
-function BrandCard({ brand, selected, onClick }) {
-  return (
-    <button
-      type="button"
-      className={`tsb-brand-card${selected ? ' tsb-brand-card--selected' : ''}`}
-      onClick={onClick}
-      aria-pressed={selected}
-    >
-      <span className="tsb-brand-check" aria-hidden="true">
-        <Check size={11} strokeWidth={3} color="#fff" />
-      </span>
-      <div className="tsb-brand-logo-wrap">
-        <img
-          src={brand.logo}
-          alt={brand.name}
-          className="tsb-brand-logo"
-          loading="lazy"
-          onError={(e) => { e.currentTarget.style.display = 'none'; }}
-        />
-      </div>
-      <span className="tsb-brand-name">{brand.name}</span>
-    </button>
-  );
+// Slot icon renderer
+function SlotIcon({ icon, size = 18 }) {
+  const style = { color: '#2563eb', flexShrink: 0 };
+  switch (icon) {
+    case 'taper':     return <Wrench size={size} style={style} />;
+    case 'flatbox':   return <Package size={size} style={style} />;
+    case 'cornerbox': return <Layers size={size} style={style} />;
+    case 'anglehead': return <ArrowRight size={size} style={style} />;
+    case 'handle':    return <Wrench size={size} style={{ ...style, color: '#64748b' }} />;
+    case 'roller':    return <Layers size={size} style={{ ...style, color: '#0891b2' }} />;
+    default:          return <Package size={size} style={style} />;
+  }
 }
 
-function QtyControl({ qty, onInc, onDec, small = false }) {
-  if (small) {
-    return (
-      <div className="tsb-summary-item-qty">
-        <button className="tsb-summary-qty-btn" onClick={onDec} aria-label="Decrease quantity">−</button>
-        <span className="tsb-summary-qty-val">{qty}</span>
-        <button className="tsb-summary-qty-btn" onClick={onInc} aria-label="Increase quantity">+</button>
-      </div>
-    );
-  }
+// ── Stage 1: Set Type Selection ────────────────────────────────────────────────
+
+function Stage1SetSelection({
+  allProducts,
+  loading,
+  onSelectTemplate,
+  selectedBrandFilter,
+  setSelectedBrandFilter,
+}) {
+  // Count products per brand to know which brands are populated
+  const brandProductCounts = useMemo(() => {
+    const counts = {};
+    allProducts.forEach((p) => {
+      const b = (p.brand || p.dtb_brand || '').trim();
+      if (b) counts[b] = (counts[b] || 0) + 1;
+    });
+    return counts;
+  }, [allProducts]);
+
+  const visibleTemplates = useMemo(() => {
+    if (selectedBrandFilter === 'all') return SET_TEMPLATES;
+    return SET_TEMPLATES.filter((t) => t.brand === selectedBrandFilter);
+  }, [selectedBrandFilter]);
+
   return (
-    <div className="tsb-qty-stepper">
-      <button className="tsb-qty-btn" onClick={onDec} aria-label="Decrease">−</button>
-      <span className="tsb-qty-val">{qty}</span>
-      <button className="tsb-qty-btn" onClick={onInc} aria-label="Increase">+</button>
+    <div className="tsb-section" style={{ animationDelay: '0.05s' }}>
+      <div className="tsb-section-header">
+        <div>
+          <h2 className="tsb-section-title">Choose Your Set Type</h2>
+          <p className="tsb-section-sub">
+            Pick a brand and set scope — then configure every tool your way
+          </p>
+        </div>
+      </div>
+
+      {/* Brand filter pills */}
+      <div className="tsb-brand-filter-strip">
+        <button
+          className={`tsb-brand-pill${selectedBrandFilter === 'all' ? ' tsb-brand-pill--active' : ''}`}
+          onClick={() => setSelectedBrandFilter('all')}
+        >
+          All Brands
+        </button>
+        {BUILDER_BRANDS.map((brand) => {
+          const count = brandProductCounts[brand] || 0;
+          return (
+            <button
+              key={brand}
+              className={`tsb-brand-pill${selectedBrandFilter === brand ? ' tsb-brand-pill--active' : ''}`}
+              onClick={() => setSelectedBrandFilter(brand)}
+            >
+              {BRAND_LOGOS[brand] && (
+                <img
+                  src={BRAND_LOGOS[brand]}
+                  alt=""
+                  className="tsb-brand-pill-logo"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              )}
+              {brand.replace(' Taping Tools', '').replace(' Drywall Tools', '')}
+              {loading ? null : count === 0 ? (
+                <span className="tsb-brand-pill-badge tsb-brand-pill-badge--empty">0</span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Set template cards grid */}
+      <div className="tsb-section-body">
+        {loading ? (
+          <div className="tsb-set-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="tsb-set-card tsb-set-card--skeleton">
+                <div className="tsb-skeleton" style={{ height: '20px', marginBottom: '8px', width: '40%' }} />
+                <div className="tsb-skeleton" style={{ height: '28px', marginBottom: '10px', width: '75%' }} />
+                <div className="tsb-skeleton" style={{ height: '14px', marginBottom: '6px' }} />
+                <div className="tsb-skeleton" style={{ height: '14px', width: '80%' }} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="tsb-set-grid">
+            {visibleTemplates.map((template, idx) => {
+              const scopeColor = SCOPE_COLORS[template.scope] || SCOPE_COLORS.full;
+              const requiredSlots = template.slots.filter((s) => s.required).length;
+              const optionalSlots = template.slots.filter((s) => !s.required).length;
+              const brandHasProducts = (brandProductCounts[template.brand] || 0) > 0;
+
+              return (
+                <button
+                  key={template.id}
+                  className="tsb-set-card"
+                  style={{ animationDelay: `${Math.min(idx, 8) * 0.06}s` }}
+                  onClick={() => onSelectTemplate(template)}
+                  disabled={!brandHasProducts && !loading}
+                >
+                  {/* Free shipping badge */}
+                  <div className="tsb-set-card-badges">
+                    <span className="tsb-badge tsb-badge--shipping">
+                      <Truck size={10} /> Ships FREE
+                    </span>
+                    {template.savingsLabel && (
+                      <span className="tsb-badge tsb-badge--savings">
+                        <Tag size={10} /> {template.savingsLabel}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Brand logo + scope badge */}
+                  <div className="tsb-set-card-brand-row">
+                    {BRAND_LOGOS[template.brand] && (
+                      <img
+                        src={BRAND_LOGOS[template.brand]}
+                        alt={template.brand}
+                        className="tsb-set-card-brand-logo"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                    )}
+                    <span
+                      className="tsb-scope-badge"
+                      style={{ background: scopeColor.bg, color: scopeColor.text }}
+                    >
+                      {SCOPE_LABELS[template.scope]}
+                    </span>
+                  </div>
+
+                  {/* Name */}
+                  <h3 className="tsb-set-card-name">{template.name}</h3>
+
+                  {/* Description */}
+                  <p className="tsb-set-card-desc">{template.description}</p>
+
+                  {/* Slot summary */}
+                  <div className="tsb-set-card-meta">
+                    <span className="tsb-set-meta-item">
+                      <span className="tsb-set-meta-num">{requiredSlots}</span> required tool{requiredSlots !== 1 ? 's' : ''}
+                    </span>
+                    {optionalSlots > 0 && (
+                      <span className="tsb-set-meta-item tsb-set-meta-item--opt">
+                        +{optionalSlots} optional
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Always included teaser */}
+                  {template.alwaysIncluded.length > 0 && (
+                    <div className="tsb-set-card-included">
+                      <span className="tsb-set-included-label">Always included:</span>
+                      <span className="tsb-set-included-count">
+                        {template.alwaysIncluded.length} free accessor{template.alwaysIncluded.length !== 1 ? 'ies' : 'y'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <div className="tsb-set-card-cta">
+                    Configure Set <ChevronRight size={14} />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// ── Stage 2: Slot Configurator ─────────────────────────────────────────────────
+
+function Stage2Configurator({
+  template,
+  allProducts,
+  slotSelections,
+  onSlotSelect,
+  onBack,
+  onNext,
+}) {
+  const [activeSlotIdx, setActiveSlotIdx] = useState(0);
+  const [searchQuery, setSearchQuery]     = useState('');
+  const activeSlot = template.slots[activeSlotIdx];
+
+  // Products for the currently active slot
+  const slotProducts = useMemo(() => {
+    if (!activeSlot) return [];
+    return getSlotProducts(allProducts, template.brand, activeSlot.filter);
+  }, [allProducts, template.brand, activeSlot]);
+
+  // Filtered by search
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return slotProducts;
+    const q = searchQuery.toLowerCase();
+    return slotProducts.filter(
+      (p) =>
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.sku  || '').toLowerCase().includes(q)
+    );
+  }, [slotProducts, searchQuery]);
+
+  // Check completion
+  const { filled, total } = countFilledRequired(template, slotSelections);
+  const allRequiredFilled = filled === total;
+
+  // Navigate slots
+  const goToSlot = useCallback((idx) => {
+    setActiveSlotIdx(idx);
+    setSearchQuery('');
+  }, []);
+
+  const goNextSlot = useCallback(() => {
+    if (activeSlotIdx < template.slots.length - 1) {
+      goToSlot(activeSlotIdx + 1);
+    }
+  }, [activeSlotIdx, template.slots.length, goToSlot]);
+
+  const goPrevSlot = useCallback(() => {
+    if (activeSlotIdx > 0) {
+      goToSlot(activeSlotIdx - 1);
+    }
+  }, [activeSlotIdx, goToSlot]);
+
+  const handleSelectProduct = useCallback((product) => {
+    onSlotSelect(activeSlot.id, product);
+    // Auto-advance to next unfilled required slot
+    const nextUnfilled = template.slots.findIndex(
+      (s, i) => i > activeSlotIdx && s.required && !slotSelections[s.id]
+    );
+    if (nextUnfilled !== -1) {
+      setTimeout(() => goToSlot(nextUnfilled), 300);
+    } else if (activeSlotIdx < template.slots.length - 1) {
+      setTimeout(() => goToSlot(activeSlotIdx + 1), 300);
+    }
+  }, [activeSlot, onSlotSelect, activeSlotIdx, template.slots, slotSelections, goToSlot]);
+
+  const handleClearSlot = useCallback((e) => {
+    e.stopPropagation();
+    onSlotSelect(activeSlot.id, null);
+  }, [activeSlot, onSlotSelect]);
+
+  return (
+    <div className="tsb-configurator">
+      {/* ── Configurator header ─────────────────────────────── */}
+      <div className="tsb-config-header">
+        <div className="tsb-config-header-inner">
+          <div className="tsb-config-brand-row">
+            {BRAND_LOGOS[template.brand] && (
+              <img
+                src={BRAND_LOGOS[template.brand]}
+                alt={template.brand}
+                className="tsb-config-brand-logo"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            )}
+            <div>
+              <h2 className="tsb-config-title">{template.name}</h2>
+              <p className="tsb-config-sub">{template.tagline}</p>
+            </div>
+          </div>
+          {/* Completion indicator */}
+          <div className="tsb-config-progress">
+            <div className="tsb-config-progress-bar">
+              <div
+                className="tsb-config-progress-fill"
+                style={{ width: total > 0 ? `${(filled / total) * 100}%` : '0%' }}
+              />
+            </div>
+            <span className="tsb-config-progress-label">
+              {filled}/{total} required tools selected
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main configurator body: slot list + product grid ── */}
+      <div className="tsb-config-body">
+
+        {/* ── Left: Slot navigation ───────────────────────── */}
+        <div className="tsb-slot-nav">
+          <div className="tsb-slot-nav-inner">
+            <p className="tsb-slot-nav-heading">Tool Slots</p>
+            {template.slots.map((slot, idx) => {
+              const selected = slotSelections[slot.id];
+              const isActive = idx === activeSlotIdx;
+              return (
+                <button
+                  key={slot.id}
+                  className={[
+                    'tsb-slot-nav-item',
+                    isActive   ? 'tsb-slot-nav-item--active'   : '',
+                    selected   ? 'tsb-slot-nav-item--done'     : '',
+                  ].filter(Boolean).join(' ')}
+                  onClick={() => goToSlot(idx)}
+                >
+                  <span className="tsb-slot-nav-dot" aria-hidden="true">
+                    {selected ? <Check size={10} strokeWidth={3} /> : <span>{idx + 1}</span>}
+                  </span>
+                  <div className="tsb-slot-nav-text">
+                    <span className="tsb-slot-nav-label">{slot.label}</span>
+                    {selected ? (
+                      <span className="tsb-slot-nav-product">{selected.name}</span>
+                    ) : (
+                      <span className="tsb-slot-nav-empty">
+                        {slot.required ? 'Required' : 'Optional'}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+
+            {/* Always included accessories */}
+            {template.alwaysIncluded.length > 0 && (
+              <div className="tsb-slot-included-panel">
+                <p className="tsb-slot-nav-heading" style={{ marginTop: '1rem' }}>Always Included</p>
+                {template.alwaysIncluded.map((item) => (
+                  <div key={item} className="tsb-included-item">
+                    <Check size={11} strokeWidth={3} style={{ color: '#16a34a', flexShrink: 0 }} />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Right: Active slot product picker ─────────────── */}
+        <div className="tsb-slot-picker">
+          {/* Slot header */}
+          <div className="tsb-slot-picker-header">
+            <div className="tsb-slot-picker-title-row">
+              <div className="tsb-slot-icon-wrap">
+                <SlotIcon icon={activeSlot?.icon} size={18} />
+              </div>
+              <div>
+                <div className="tsb-slot-picker-title">
+                  {activeSlot?.label}
+                  <span className={`tsb-required-pill${activeSlot?.required ? '' : ' tsb-required-pill--opt'}`}>
+                    {activeSlot?.required ? 'Required' : 'Optional'}
+                  </span>
+                </div>
+                {activeSlot?.hint && (
+                  <p className="tsb-slot-picker-hint">{activeSlot.hint}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Slot prev / next arrows */}
+            <div className="tsb-slot-arrows">
+              <button
+                className="tsb-slot-arrow"
+                disabled={activeSlotIdx === 0}
+                onClick={goPrevSlot}
+                aria-label="Previous slot"
+              >
+                <ChevronLeft size={15} />
+              </button>
+              <span className="tsb-slot-arrow-label">
+                {activeSlotIdx + 1} / {template.slots.length}
+              </span>
+              <button
+                className="tsb-slot-arrow"
+                disabled={activeSlotIdx === template.slots.length - 1}
+                onClick={goNextSlot}
+                aria-label="Next slot"
+              >
+                <ChevronRight size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* Currently selected display */}
+          {slotSelections[activeSlot?.id] && (
+            <div className="tsb-slot-selected-bar">
+              <Check size={14} style={{ color: '#16a34a', flexShrink: 0 }} />
+              <span className="tsb-slot-selected-name">
+                {slotSelections[activeSlot.id].name}
+              </span>
+              <span className="tsb-slot-selected-price">
+                {displayPrice(slotSelections[activeSlot.id])}
+              </span>
+              <button className="tsb-slot-clear-btn" onClick={handleClearSlot}>
+                <X size={13} />
+              </button>
+            </div>
+          )}
+
+          {/* Search */}
+          <div className="tsb-search-wrap" style={{ paddingTop: '0.75rem' }}>
+            <Search size={13} className="tsb-search-icon" />
+            <input
+              type="text"
+              className="tsb-search-input"
+              placeholder={`Search ${activeSlot?.label || 'tools'}…`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position:  'absolute',
+                  right:     'calc(1.75rem + 10px)',
+                  top:       '50%',
+                  transform: 'translateY(-50%)',
+                  background:'none',
+                  border:    'none',
+                  cursor:    'pointer',
+                  color:     '#94a3b8',
+                  display:   'flex',
+                  padding:   '4px',
+                  marginTop: '2px',
+                }}
+                aria-label="Clear search"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Product cards */}
+          {filteredProducts.length === 0 ? (
+            <div className="tsb-slot-empty">
+              {searchQuery ? (
+                <p>
+                  No results for "<strong>{searchQuery}</strong>" —{' '}
+                  <button
+                    style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                    onClick={() => setSearchQuery('')}
+                  >
+                    clear search
+                  </button>
+                </p>
+              ) : (
+                <p>
+                  No {template.brand} products found for this slot. This slot may be populated once the catalog is fully synced.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="tsb-slot-product-grid">
+              {filteredProducts.map((product, idx) => {
+                const isSelected = slotSelections[activeSlot.id]?.id === product.id;
+                return (
+                  <button
+                    key={product.id}
+                    className={`tsb-slot-product-card${isSelected ? ' tsb-slot-product-card--selected' : ''}`}
+                    onClick={() => handleSelectProduct(product)}
+                    style={{ animationDelay: `${Math.min(idx, 12) * 0.04}s` }}
+                  >
+                    {/* Image */}
+                    <div className="tsb-slot-product-img">
+                      <img
+                        src={resolveImage(product)}
+                        alt={product.name}
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMG; }}
+                      />
+                      {isSelected && (
+                        <div className="tsb-slot-product-check">
+                          <Check size={15} color="#fff" strokeWidth={3} />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="tsb-slot-product-body">
+                      <p className="tsb-slot-product-name">{product.name}</p>
+                      {product.sku && (
+                        <p className="tsb-slot-product-sku">{product.sku}</p>
+                      )}
+                      <div className="tsb-slot-product-bottom">
+                        <span className="tsb-slot-product-price">
+                          {displayPrice(product)}
+                        </span>
+                        <span className={`tsb-slot-select-btn${isSelected ? ' tsb-slot-select-btn--selected' : ''}`}>
+                          {isSelected ? (
+                            <><Check size={11} strokeWidth={3} /> Selected</>
+                          ) : (
+                            <>Select <ChevronRight size={11} /></>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Slot navigation footer */}
+          <div className="tsb-nav-bar">
+            <button className="tsb-nav-back" onClick={onBack}>
+              <ChevronLeft size={14} /> Change Set
+            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              {activeSlotIdx < template.slots.length - 1 && (
+                <button className="tsb-nav-next" style={{ background: '#f1f5f9', color: '#1e293b', border: '1.5px solid rgba(15,23,42,0.1)' }} onClick={goNextSlot}>
+                  Next Slot <ChevronRight size={14} />
+                </button>
+              )}
+              <button
+                className="tsb-nav-next"
+                disabled={!allRequiredFilled}
+                onClick={onNext}
+              >
+                <ShoppingCart size={14} />
+                Review Set {allRequiredFilled && `(${filled})`}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Stage 3: Review & Cart ─────────────────────────────────────────────────────
+
+function Stage3Review({
+  template,
+  slotSelections,
+  onSlotRemove,
+  onBack,
+  onAddToCart,
+  showSuccess,
+  onStartOver,
+}) {
+  // Compute total price from selected slots
+  const selectedItems = useMemo(
+    () => template.slots.map((slot) => ({
+      slot,
+      product: slotSelections[slot.id] || null,
+    })).filter((item) => item.product !== null),
+    [template, slotSelections]
+  );
+
+  const totalPrice = selectedItems.reduce(
+    (sum, { product }) => sum + numericPrice(product),
+    0
+  );
+
+  if (showSuccess) {
+    return (
+      <div className="tsb-section">
+        <div className="tsb-success">
+          <div className="tsb-success-icon">
+            <CheckCircle2 size={36} color="#fff" />
+          </div>
+          <h2>Added to Cart!</h2>
+          <p>
+            {selectedItems.length} tool{selectedItems.length !== 1 ? 's' : ''} from your{' '}
+            <strong>{template.name}</strong> have been added to your cart.
+          </p>
+          <div className="tsb-success-actions">
+            <Link to="/cart" className="tsb-success-btn-primary">
+              <ShoppingCart size={15} /> View Cart
+            </Link>
+            <button className="tsb-success-btn-secondary" onClick={onStartOver}>
+              <Layers size={15} /> Build Another Set
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="tsb-section" style={{ animationDelay: '0.05s' }}>
+      <div className="tsb-section-header">
+        <div>
+          <h2 className="tsb-section-title">Review Your Toolset</h2>
+          <p className="tsb-section-sub">
+            {selectedItems.length} tool{selectedItems.length !== 1 ? 's' : ''} configured · $
+            {totalPrice.toFixed(2)} estimated total
+          </p>
+        </div>
+        <button
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2563eb', fontSize: '0.78rem', fontWeight: 600, padding: '4px 8px', borderRadius: '6px' }}
+          onClick={onBack}
+        >
+          ← Edit Configuration
+        </button>
+      </div>
+
+      <div className="tsb-section-body">
+        {/* Configured tools */}
+        <h3 className="tsb-review-section-label">Configured Tools</h3>
+        <div className="tsb-review-grid">
+          {template.slots.map((slot) => {
+            const product = slotSelections[slot.id];
+            return (
+              <div
+                key={slot.id}
+                className={`tsb-review-item${!product ? ' tsb-review-item--empty' : ''}`}
+              >
+                {product ? (
+                  <>
+                    <div className="tsb-review-item-img">
+                      <img
+                        src={resolveImage(product)}
+                        alt={product.name}
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMG; }}
+                      />
+                    </div>
+                    <div className="tsb-review-item-info">
+                      <p className="tsb-review-slot-label">{slot.label}</p>
+                      <p className="tsb-review-item-name">{product.name}</p>
+                      {product.sku && (
+                        <p className="tsb-review-item-sku">{product.sku}</p>
+                      )}
+                      <p className="tsb-review-item-price">{displayPrice(product)}</p>
+                    </div>
+                    <button
+                      className="tsb-review-remove"
+                      onClick={() => onSlotRemove(slot.id)}
+                      aria-label={`Remove ${slot.label}`}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="tsb-review-item-img tsb-review-item-img--empty">
+                      <AlertCircle size={20} style={{ color: '#cbd5e1' }} />
+                    </div>
+                    <div className="tsb-review-item-info">
+                      <p className="tsb-review-slot-label">{slot.label}</p>
+                      <p className="tsb-review-item-name" style={{ color: '#94a3b8', fontWeight: 500 }}>
+                        {slot.required ? 'Not selected (Required)' : 'Not selected (Optional)'}
+                      </p>
+                    </div>
+                    <button
+                      className="tsb-nav-next"
+                      style={{ padding: '7px 12px', fontSize: '0.72rem' }}
+                      onClick={onBack}
+                    >
+                      Select <ChevronRight size={11} />
+                    </button>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Always included accessories */}
+        {template.alwaysIncluded.length > 0 && (
+          <>
+            <h3 className="tsb-review-section-label" style={{ marginTop: '2rem' }}>
+              Always Included <span style={{ fontWeight: 500, color: '#16a34a', fontSize: '0.75rem' }}>— FREE with your set</span>
+            </h3>
+            <div className="tsb-review-included-grid">
+              {template.alwaysIncluded.map((item) => (
+                <div key={item} className="tsb-review-included-item">
+                  <div className="tsb-review-included-icon">
+                    <Check size={14} color="#16a34a" strokeWidth={3} />
+                  </div>
+                  <span className="tsb-review-included-name">{item}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Total + CTA */}
+      <div className="tsb-review-footer">
+        <div className="tsb-review-total-row">
+          <div>
+            <div className="tsb-total-label">Estimated Total</div>
+            <div className="tsb-total-items">{selectedItems.length} configured tool{selectedItems.length !== 1 ? 's' : ''}</div>
+          </div>
+          <div className="tsb-total-price">${totalPrice.toFixed(2)}</div>
+        </div>
+        <div className="tsb-review-cta-row">
+          <button className="tsb-nav-back" onClick={onBack}>
+            <ChevronLeft size={14} /> Edit Configuration
+          </button>
+          <button
+            className="tsb-nav-next"
+            style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)', padding: '13px 24px', fontSize: '0.92rem' }}
+            disabled={selectedItems.length === 0}
+            onClick={onAddToCart}
+          >
+            <ShoppingCart size={16} /> Add All to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ──────────────────────────────────────────────────────────────
 
 export default function ToolsetBuilder() {
-  const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // ── State ────────────────────────────────────────────────────────────────────
-  const [step,         setStep]         = useState(1);
-  const [selectedBrand,setSelectedBrand] = useState(null);   // brand name string
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [searchQuery,  setSearchQuery]  = useState('');
-  // selections: { [productId]: { product, qty } }
-  const [selections,   setSelections]   = useState({});
-  const [allProducts,  setAllProducts]  = useState([]);
-  const [loading,      setLoading]      = useState(false);
-  const [toast,        setToast]        = useState(null);
-  const [showSuccess,  setShowSuccess]  = useState(false);
-  const searchInputRef = useRef(null);
+  // ── State ─────────────────────────────────────────────────────────────────────
+  const [stage,               setStage]               = useState(1);
+  const [selectedTemplate,    setSelectedTemplate]    = useState(null);
+  const [slotSelections,      setSlotSelections]      = useState({});
+  const [allProducts,         setAllProducts]         = useState([]);
+  const [loading,             setLoading]             = useState(true);
+  const [toast,               setToast]               = useState(null);
+  const [showSuccess,         setShowSuccess]         = useState(false);
+  const [selectedBrandFilter, setSelectedBrandFilter] = useState('all');
 
-  // ── Load catalog ─────────────────────────────────────────────────────────────
+  // ── Load catalog ──────────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -252,706 +893,147 @@ export default function ToolsetBuilder() {
     return () => { cancelled = true; };
   }, []);
 
-  // ── Derived brand products ───────────────────────────────────────────────────
-  const brandProducts = useMemo(() => {
-    if (!selectedBrand) return [];
-    return allProducts.filter((p) => {
-      const brand = (p.brand || p.dtb_brand || '').trim();
-      return brand === selectedBrand;
-    });
-  }, [allProducts, selectedBrand]);
+  // ── Callbacks ─────────────────────────────────────────────────────────────────
+  const handleSelectTemplate = useCallback((template) => {
+    setSelectedTemplate(template);
+    setSlotSelections({});
+    setStage(2);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-  // ── Categories available for selected brand ──────────────────────────────────
-  const availableCategories = useMemo(() => {
-    const set = new Set(brandProducts.map(normCategory));
-    return CATEGORY_ORDER.filter((c) => set.has(c));
-  }, [brandProducts]);
-
-  // ── Filtered products (by category + search) ─────────────────────────────────
-  const filteredProducts = useMemo(() => {
-    let list = brandProducts;
-    if (activeCategory !== 'all') {
-      list = list.filter((p) => normCategory(p) === activeCategory);
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (p) =>
-          (p.name         || '').toLowerCase().includes(q) ||
-          (p.sku          || '').toLowerCase().includes(q) ||
-          (p.part_number  || '').toLowerCase().includes(q)
-      );
-    }
-    return list;
-  }, [brandProducts, activeCategory, searchQuery]);
-
-  // ── Summary items ────────────────────────────────────────────────────────────
-  const summaryItems = useMemo(
-    () => Object.values(selections).filter((s) => s.qty > 0),
-    [selections]
-  );
-
-  const totalItems = summaryItems.reduce((sum, s) => sum + s.qty, 0);
-
-  const totalPrice = summaryItems.reduce(
-    (sum, s) => sum + numericPrice(s.product) * s.qty,
-    0
-  );
-
-  // ── Callbacks ────────────────────────────────────────────────────────────────
-  const toggleProduct = useCallback((product) => {
-    setSelections((prev) => {
-      const id = String(product.id);
-      if (prev[id]) {
-        // Already selected — remove
+  const handleSlotSelect = useCallback((slotId, product) => {
+    setSlotSelections((prev) => {
+      if (product === null) {
         const next = { ...prev };
-        delete next[id];
+        delete next[slotId];
         return next;
       }
-      return { ...prev, [id]: { product, qty: 1 } };
+      return { ...prev, [slotId]: product };
     });
   }, []);
 
-  const setQty = useCallback((productId, qty) => {
-    const id = String(productId);
-    if (qty <= 0) {
-      setSelections((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      });
-    } else {
-      setSelections((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], qty },
-      }));
-    }
-  }, []);
-
-  const incQty = useCallback((productId) => {
-    setSelections((prev) => {
-      const id = String(productId);
-      if (!prev[id]) return prev;
-      return { ...prev, [id]: { ...prev[id], qty: prev[id].qty + 1 } };
-    });
-  }, []);
-
-  const decQty = useCallback((productId) => {
-    setSelections((prev) => {
-      const id = String(productId);
-      if (!prev[id]) return prev;
-      const next = prev[id].qty - 1;
-      if (next <= 0) {
-        const updated = { ...prev };
-        delete updated[id];
-        return updated;
-      }
-      return { ...prev, [id]: { ...prev[id], qty: next } };
-    });
-  }, []);
-
-  const removeItem = useCallback((productId) => {
-    setSelections((prev) => {
+  const handleSlotRemove = useCallback((slotId) => {
+    setSlotSelections((prev) => {
       const next = { ...prev };
-      delete next[String(productId)];
+      delete next[slotId];
       return next;
     });
   }, []);
 
-  const handleAddAllToCart = useCallback(() => {
-    if (summaryItems.length === 0) return;
-    summaryItems.forEach(({ product, qty }) => {
-      addToCart(product, qty);
-    });
-    setShowSuccess(true);
-  }, [summaryItems, addToCart]);
-
-  const handleStartOver = useCallback(() => {
-    setStep(1);
-    setSelectedBrand(null);
-    setSelections({});
-    setSearchQuery('');
-    setActiveCategory('all');
-    setShowSuccess(false);
-  }, []);
-
-  const handleSelectBrand = useCallback((brandName) => {
-    if (selectedBrand === brandName) {
-      setSelectedBrand(null);
-    } else {
-      setSelectedBrand(brandName);
-      setActiveCategory('all');
-      setSearchQuery('');
-    }
-  }, [selectedBrand]);
-
-  const handleNextStep = useCallback(() => {
-    setStep((s) => Math.min(s + 1, 3));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  const handlePrevStep = useCallback(() => {
-    setStep((s) => Math.max(s - 1, 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  const handleStepClick = useCallback((stepId) => {
-    if (stepId < step) {
-      setStep(stepId);
+  const handleStageClick = useCallback((s) => {
+    if (s < stage) {
+      setStage(s);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [step]);
+  }, [stage]);
 
-  // Reset active category when brand changes
-  useEffect(() => {
-    setActiveCategory('all');
-  }, [selectedBrand]);
+  const handleBackToSetSelection = useCallback(() => {
+    setStage(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-  // ── Render helpers ────────────────────────────────────────────────────────────
+  const handleGoToReview = useCallback(() => {
+    setStage(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-  function renderSummaryPanel() {
-    return (
-      <div className="tsb-summary-card">
-        <div className="tsb-summary-header">
-          <h3>Your Toolset</h3>
-          <p>{totalItems === 0 ? 'No tools selected yet' : `${totalItems} tool${totalItems !== 1 ? 's' : ''} selected`}</p>
-        </div>
+  const handleAddToCart = useCallback(() => {
+    if (!selectedTemplate) return;
+    const items = selectedTemplate.slots
+      .map((slot) => slotSelections[slot.id])
+      .filter(Boolean);
+    if (items.length === 0) return;
+    items.forEach((product) => addToCart(product, 1));
+    setShowSuccess(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedTemplate, slotSelections, addToCart]);
 
-        {summaryItems.length === 0 ? (
-          <div className="tsb-summary-empty">
-            <Package size={22} style={{ marginBottom: '6px', opacity: 0.35 }} />
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8' }}>
-              Select tools from the grid to build your set.
-            </p>
-          </div>
-        ) : (
-          <div className="tsb-summary-items">
-            {summaryItems.map(({ product, qty }) => (
-              <div key={product.id} className="tsb-summary-item">
-                <div className="tsb-summary-item-img">
-                  <img
-                    src={resolveImage(product)}
-                    alt={product.name}
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMG; }}
-                  />
-                </div>
-                <div className="tsb-summary-item-info">
-                  <p className="tsb-summary-item-name">{product.name}</p>
-                  <p className="tsb-summary-item-price">
-                    {displayPrice(product)}
-                    {qty > 1 && (
-                      <span style={{ fontWeight: 500, color: '#94a3b8', fontSize: '0.68rem' }}>
-                        {' '}× {qty}
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <QtyControl
-                  qty={qty}
-                  onInc={() => incQty(product.id)}
-                  onDec={() => decQty(product.id)}
-                  small
-                />
-                <button
-                  className="tsb-summary-remove"
-                  onClick={() => removeItem(product.id)}
-                  aria-label={`Remove ${product.name}`}
-                >
-                  <X size={13} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+  const handleStartOver = useCallback(() => {
+    setStage(1);
+    setSelectedTemplate(null);
+    setSlotSelections({});
+    setShowSuccess(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-        <div className="tsb-summary-footer">
-          <div className="tsb-total-row">
-            <div>
-              <div className="tsb-total-label">Estimated Total</div>
-              <div className="tsb-total-items">{totalItems} item{totalItems !== 1 ? 's' : ''}</div>
-            </div>
-            <div className="tsb-total-price">${totalPrice.toFixed(2)}</div>
-          </div>
-
-          {step < 3 ? (
-            <button
-              className="tsb-nav-next"
-              style={{ width: '100%', justifyContent: 'center' }}
-              disabled={summaryItems.length === 0}
-              onClick={handleNextStep}
-            >
-              Review Toolset <ChevronRight size={15} />
-            </button>
-          ) : (
-            <button
-              className="tsb-add-all-btn"
-              disabled={summaryItems.length === 0}
-              onClick={handleAddAllToCart}
-            >
-              <ShoppingCart size={16} />
-              Add All to Cart
-            </button>
-          )}
-
-          {summaryItems.length > 0 && (
-            <button className="tsb-save-btn" onClick={() => setToast({ message: 'Toolset saved! (Coming soon)', type: 'info' })}>
-              <BookmarkPlus size={14} />
-              Save Toolset
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // ── Step 1: Choose Brand ─────────────────────────────────────────────────────
-  function renderStep1() {
-    return (
-      <div className="tsb-section" style={{ animationDelay: '0.05s' }}>
-        <div className="tsb-section-header">
-          <div>
-            <h2 className="tsb-section-title">Choose Your Brand</h2>
-            <p className="tsb-section-sub">Select the brand you want to build a toolset from</p>
-          </div>
-        </div>
-        <div className="tsb-section-body">
-          <div className="tsb-brand-grid">
-            {BRANDS.map((brand, idx) => {
-              const count = allProducts.filter((p) => {
-                const b = (p.brand || p.dtb_brand || '').trim();
-                return b === brand.name;
-              }).length;
-              if (count === 0 && !loading) return null;
-              return (
-                <BrandCard
-                  key={brand.name}
-                  brand={brand}
-                  selected={selectedBrand === brand.name}
-                  onClick={() => handleSelectBrand(brand.name)}
-                  style={{ animationDelay: `${idx * 0.06}s` }}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="tsb-nav-bar">
-          <div />
-          <button
-            className="tsb-nav-next"
-            disabled={!selectedBrand}
-            onClick={handleNextStep}
-          >
-            Pick Tools <ChevronRight size={15} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Step 2: Pick Tools ────────────────────────────────────────────────────────
-  function renderStep2() {
-    return (
-      <div className="tsb-section" style={{ animationDelay: '0.05s' }}>
-        <div className="tsb-section-header">
-          <div>
-            <h2 className="tsb-section-title">
-              {selectedBrand ? `${selectedBrand} Tools` : 'Pick Your Tools'}
-            </h2>
-            <p className="tsb-section-sub">
-              {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} · click a tool to add it to your set
-            </p>
-          </div>
-          {selectedBrand && (
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#2563eb',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                padding: '4px 8px',
-                borderRadius: '6px',
-              }}
-              onClick={() => setStep(1)}
-            >
-              Change brand
-            </button>
-          )}
-        </div>
-
-        {/* Category tabs */}
-        {availableCategories.length > 1 && (
-          <div className="tsb-category-tabs" role="tablist">
-            <button
-              className={`tsb-cat-tab${activeCategory === 'all' ? ' tsb-cat-tab--active' : ''}`}
-              onClick={() => setActiveCategory('all')}
-              role="tab"
-              aria-selected={activeCategory === 'all'}
-            >
-              All
-              <span className="tsb-cat-badge">{brandProducts.length}</span>
-            </button>
-            {availableCategories.map((cat) => {
-              const count = brandProducts.filter((p) => normCategory(p) === cat).length;
-              return (
-                <button
-                  key={cat}
-                  className={`tsb-cat-tab${activeCategory === cat ? ' tsb-cat-tab--active' : ''}`}
-                  onClick={() => setActiveCategory(cat)}
-                  role="tab"
-                  aria-selected={activeCategory === cat}
-                >
-                  {CATEGORY_LABELS[cat] || cat}
-                  <span className="tsb-cat-badge">{count}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Search */}
-        <div className="tsb-search-wrap">
-          <Search size={13} className="tsb-search-icon" />
-          <input
-            ref={searchInputRef}
-            type="text"
-            className="tsb-search-input"
-            placeholder={`Search ${selectedBrand || ''} tools…`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              style={{
-                position: 'absolute',
-                right: 'calc(1.75rem + 10px)',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#94a3b8',
-                display: 'flex',
-                padding: '4px',
-                marginTop: '2px',
-              }}
-              aria-label="Clear search"
-            >
-              <X size={13} />
-            </button>
-          )}
-        </div>
-
-        {/* Product grid */}
-        {loading ? (
-          <div className="tsb-product-grid">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} style={{ borderRadius: '14px', overflow: 'hidden', border: '2px solid rgba(15,23,42,0.08)' }}>
-                <div className="tsb-skeleton" style={{ height: '140px' }} />
-                <div style={{ padding: '0.75rem' }}>
-                  <div className="tsb-skeleton" style={{ height: '12px', marginBottom: '6px', width: '80%' }} />
-                  <div className="tsb-skeleton" style={{ height: '10px', width: '45%' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="tsb-no-products">
-            {searchQuery ? (
-              <>No results for "<strong>{searchQuery}</strong>" — <button style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontWeight: 600 }} onClick={() => setSearchQuery('')}>clear search</button></>
-            ) : (
-              'No products found in this category.'
-            )}
-          </div>
-        ) : (
-          <div className="tsb-product-grid">
-            {filteredProducts.map((product, idx) => {
-              const id       = String(product.id);
-              const selected = Boolean(selections[id]);
-              const qty      = selections[id]?.qty || 0;
-              return (
-                <div
-                  key={id}
-                  className={`tsb-product-card${selected ? ' tsb-product-card--selected' : ''}`}
-                  style={{ animationDelay: `${Math.min(idx, 12) * 0.04}s` }}
-                >
-                  {/* Image */}
-                  <div
-                    className="tsb-product-card-img"
-                    onClick={() => toggleProduct(product)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <img
-                      src={resolveImage(product)}
-                      alt={product.name}
-                      loading="lazy"
-                      onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMG; }}
-                    />
-                    <div className="tsb-product-select-overlay">
-                      <div className="tsb-product-check-badge">
-                        <Check size={14} color="#fff" strokeWidth={3} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <div className="tsb-product-card-body">
-                    <p className="tsb-product-card-name">{product.name}</p>
-                    {product.sku && (
-                      <p className="tsb-product-card-sku">{product.sku}</p>
-                    )}
-
-                    <div className="tsb-product-card-footer">
-                      <span className="tsb-product-card-price">{displayPrice(product)}</span>
-
-                      {selected ? (
-                        <QtyControl
-                          qty={qty}
-                          onInc={(e) => { e?.stopPropagation?.(); incQty(product.id); }}
-                          onDec={(e) => { e?.stopPropagation?.(); decQty(product.id); }}
-                        />
-                      ) : (
-                        <button
-                          className="tsb-add-btn"
-                          onClick={() => toggleProduct(product)}
-                          aria-label={`Add ${product.name} to toolset`}
-                        >
-                          <Plus size={13} strokeWidth={2.5} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="tsb-nav-bar">
-          <button className="tsb-nav-back" onClick={handlePrevStep}>
-            <ChevronLeft size={14} /> Brand
-          </button>
-          <button
-            className="tsb-nav-next"
-            disabled={summaryItems.length === 0}
-            onClick={handleNextStep}
-          >
-            Review {summaryItems.length > 0 && `(${totalItems})`} <ChevronRight size={15} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Step 3: Review & Buy ──────────────────────────────────────────────────────
-  function renderStep3() {
-    if (showSuccess) {
-      return (
-        <div className="tsb-section">
-          <div className="tsb-success">
-            <div className="tsb-success-icon">
-              <CheckCircle2 size={36} color="#fff" />
-            </div>
-            <h2>Added to Cart!</h2>
-            <p>
-              {totalItems} tool{totalItems !== 1 ? 's' : ''} have been added to your cart.
-              Ready to check out or keep building.
-            </p>
-            <div className="tsb-success-actions">
-              <Link to="/cart" className="tsb-success-btn-primary">
-                <ShoppingCart size={15} /> View Cart
-              </Link>
-              <button className="tsb-success-btn-secondary" onClick={handleStartOver}>
-                <Layers size={15} /> Build Another Set
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="tsb-section" style={{ animationDelay: '0.05s' }}>
-        <div className="tsb-section-header">
-          <div>
-            <h2 className="tsb-section-title">Review Your Toolset</h2>
-            <p className="tsb-section-sub">
-              {totalItems} item{totalItems !== 1 ? 's' : ''} · ${totalPrice.toFixed(2)} estimated total
-            </p>
-          </div>
-          <button
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#2563eb',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              padding: '4px 8px',
-              borderRadius: '6px',
-            }}
-            onClick={() => setStep(2)}
-          >
-            ← Edit Tools
-          </button>
-        </div>
-
-        <div className="tsb-section-body">
-          {summaryItems.length === 0 ? (
-            <div className="tsb-empty">
-              <div className="tsb-empty-icon">
-                <Package size={24} style={{ color: '#94a3b8' }} />
-              </div>
-              <p className="tsb-empty-title">No tools selected</p>
-              <p className="tsb-empty-sub">Go back to pick tools for your set.</p>
-              <button
-                className="tsb-nav-next"
-                style={{ marginTop: '0.5rem' }}
-                onClick={() => setStep(2)}
-              >
-                Pick Tools <ChevronRight size={15} />
-              </button>
-            </div>
-          ) : (
-            <div className="tsb-review-grid">
-              {summaryItems.map(({ product, qty }) => (
-                <div key={product.id} className="tsb-review-item">
-                  <div className="tsb-review-item-img">
-                    <img
-                      src={resolveImage(product)}
-                      alt={product.name}
-                      loading="lazy"
-                      onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMG; }}
-                    />
-                  </div>
-                  <div className="tsb-review-item-info">
-                    <p className="tsb-review-item-name">{product.name}</p>
-                    {product.sku && (
-                      <p className="tsb-review-item-sku">{product.sku}</p>
-                    )}
-                    <p className="tsb-review-item-price">{displayPrice(product)}</p>
-                    <div className="tsb-review-qty-row">
-                      <span className="tsb-review-qty-label">Qty:</span>
-                      <QtyControl
-                        qty={qty}
-                        onInc={() => incQty(product.id)}
-                        onDec={() => decQty(product.id)}
-                      />
-                      <button
-                        className="tsb-review-remove"
-                        onClick={() => removeItem(product.id)}
-                        aria-label={`Remove ${product.name}`}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="tsb-nav-bar">
-          <button className="tsb-nav-back" onClick={handlePrevStep}>
-            <ChevronLeft size={14} /> Edit Tools
-          </button>
-          <button
-            className="tsb-nav-next"
-            style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)' }}
-            disabled={summaryItems.length === 0}
-            onClick={handleAddAllToCart}
-          >
-            <ShoppingCart size={15} />
-            Add All to Cart
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Main render ───────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────────
   return (
     <>
       <SEOHead
         title="Toolset Builder — Build Your Own Drywall Toolset | Drywall Toolbox"
-        description="Customize and build your perfect drywall toolset. Pick your brand, select tools by category, review your set, and add everything to cart in one click."
+        description="Build your perfect drywall toolset step by step. Choose a set type, pick your tools for each slot, and add everything to cart in one click. TapeTech, Columbia, Level 5, Asgard."
         canonical="https://drywalltoolbox.com/toolset-builder"
       />
 
       <div className="tsb-page">
-        {/* Hero */}
+
+        {/* ── Hero ────────────────────────────────────────────── */}
         <div className="tsb-hero">
           <div className="tsb-hero-inner">
             <span className="tsb-hero-eyebrow">
-              <Wrench size={10} />
-              Toolset Builder
+              <Wrench size={10} /> Toolset Builder
             </span>
-            <h1>Build Your Perfect Toolset</h1>
+            <h1>Build Your Perfect Drywall Toolset</h1>
             <p className="tsb-hero-subtitle">
-              Choose a brand, browse the full product lineup, and assemble your custom toolset — then add everything to cart in a single click.
+              Choose a set type, configure every tool slot with real product images and prices,
+              then add your complete set to cart in one click.
             </p>
-          </div>
-        </div>
-
-        {/* Step indicator */}
-        <StepIndicator currentStep={step} onStepClick={handleStepClick} />
-
-        {/* Two-column layout */}
-        <div className="tsb-layout">
-          {/* Main content */}
-          <div>
-            {step === 1 && renderStep1()}
-            {step === 2 && renderStep2()}
-            {step === 3 && renderStep3()}
-          </div>
-
-          {/* Sticky sidebar summary */}
-          <div className="tsb-sidebar">
-            {renderSummaryPanel()}
-          </div>
-        </div>
-
-        {/* Mobile sticky summary bar */}
-        <div className="tsb-mobile-summary-toggle">
-          <div className="tsb-mobile-summary-info">
-            <div className="tsb-mobile-summary-count">
-              {totalItems === 0 ? 'No tools selected' : `${totalItems} tool${totalItems !== 1 ? 's' : ''}`}
+            <div className="tsb-hero-badges">
+              <span className="tsb-hero-badge">
+                <Truck size={12} /> Free Shipping
+              </span>
+              <span className="tsb-hero-badge">
+                <Tag size={12} /> Bundle Savings
+              </span>
+              <span className="tsb-hero-badge">
+                <Check size={12} strokeWidth={3} /> Free Accessories Included
+              </span>
             </div>
-            <div className="tsb-mobile-summary-total">${totalPrice.toFixed(2)}</div>
           </div>
-          {step < 3 ? (
-            <button
-              className="tsb-nav-next"
-              disabled={summaryItems.length === 0}
-              onClick={handleNextStep}
-              style={{ flexShrink: 0 }}
-            >
-              {step === 1 ? 'Pick Tools' : 'Review'} <ChevronRight size={14} />
-            </button>
-          ) : (
-            <button
-              className="tsb-add-all-btn"
-              disabled={summaryItems.length === 0}
-              onClick={handleAddAllToCart}
-              style={{ width: 'auto', flexShrink: 0 }}
-            >
-              <ShoppingCart size={15} /> Add All
-            </button>
+        </div>
+
+        {/* ── Stage indicator ─────────────────────────────────── */}
+        <StageBar stage={stage} onStageClick={handleStageClick} />
+
+        {/* ── Content ─────────────────────────────────────────── */}
+        <div className="tsb-content">
+          {stage === 1 && (
+            <Stage1SetSelection
+              allProducts={allProducts}
+              loading={loading}
+              onSelectTemplate={handleSelectTemplate}
+              selectedBrandFilter={selectedBrandFilter}
+              setSelectedBrandFilter={setSelectedBrandFilter}
+            />
+          )}
+
+          {stage === 2 && selectedTemplate && (
+            <Stage2Configurator
+              template={selectedTemplate}
+              allProducts={allProducts}
+              slotSelections={slotSelections}
+              onSlotSelect={handleSlotSelect}
+              onBack={handleBackToSetSelection}
+              onNext={handleGoToReview}
+            />
+          )}
+
+          {stage === 3 && selectedTemplate && (
+            <Stage3Review
+              template={selectedTemplate}
+              slotSelections={slotSelections}
+              onSlotRemove={handleSlotRemove}
+              onBack={() => setStage(2)}
+              onAddToCart={handleAddToCart}
+              showSuccess={showSuccess}
+              onStartOver={handleStartOver}
+            />
           )}
         </div>
       </div>
 
       {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
     </>
   );
