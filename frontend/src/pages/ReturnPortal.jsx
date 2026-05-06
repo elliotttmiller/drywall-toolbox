@@ -78,15 +78,14 @@ export default function ReturnPortal() {
   /* ── Step 1 state ─────────────────────────────────────────────────────────── */
   const [orderNumber, setOrderNumber] = useState('');
   const [lookupEmail, setLookupEmail] = useState('');
+  const [lookupName,  setLookupName ] = useState('');
   const [lookupError, setLookupError] = useState('');
-  const [lookupLoading, setLookupLoading] = useState(false);
 
   /* ── Step 2 state ─────────────────────────────────────────────────────────── */
   const [returnReason, setReturnReason] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError]   = useState('');
-
   /* ─────────────────────────────────────────────────────────────────────────── */
   /* Step 1 — look up the order                                                  */
   /* We validate the input and then advance to the form. In the absence of a     */
@@ -99,7 +98,12 @@ export default function ReturnPortal() {
 
     const trimmedOrder = orderNumber.trim();
     const trimmedEmail = lookupEmail.trim().toLowerCase();
+    const trimmedName  = lookupName.trim();
 
+    if (!trimmedName) {
+      setLookupError('Please enter your full name.');
+      return;
+    }
     if (!trimmedOrder) {
       setLookupError('Please enter your order number.');
       return;
@@ -109,12 +113,7 @@ export default function ReturnPortal() {
       return;
     }
 
-    setLookupLoading(true);
-    // Brief simulated validation delay for UX feedback, then proceed to Step 2.
-    setTimeout(() => {
-      setLookupLoading(false);
-      setStep(2);
-    }, 600);
+    setStep(2);
   };
 
   /* ─────────────────────────────────────────────────────────────────────────── */
@@ -143,7 +142,7 @@ export default function ReturnPortal() {
       await apiClient('/wp-json/dtb/v1/contact', {
         method: 'POST',
         body:   JSON.stringify({
-          name:         lookupEmail.trim(),
+          name:         lookupName.trim(),
           email:        lookupEmail.trim(),
           inquiry_type: 'Returns & Warranty',
           message:      messageBody,
@@ -166,6 +165,7 @@ export default function ReturnPortal() {
     setStep(1);
     setOrderNumber('');
     setLookupEmail('');
+    setLookupName('');
     setLookupError('');
     setReturnReason('');
     setAdditionalNotes('');
@@ -409,6 +409,18 @@ export default function ReturnPortal() {
 
                 <form onSubmit={handleLookup}>
                   <div className="form-group">
+                    <label className="machined-label text-blue-600">Full Name</label>
+                    <input
+                      type="text"
+                      value={lookupName}
+                      onChange={(e) => setLookupName(e.target.value)}
+                      placeholder="John Doe"
+                      className="machined-input text-black"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
                     <label className="machined-label text-blue-600">Order Number</label>
                     <input
                       type="text"
@@ -417,7 +429,6 @@ export default function ReturnPortal() {
                       placeholder="e.g. 10042"
                       className="machined-input text-black"
                       required
-                      disabled={lookupLoading}
                     />
                   </div>
 
@@ -430,27 +441,19 @@ export default function ReturnPortal() {
                       placeholder="you@example.com"
                       className="machined-input text-black"
                       required
-                      disabled={lookupLoading}
                     />
                   </div>
 
                   <button
                     type="submit"
                     className="alloy-button w-full justify-center"
-                    disabled={lookupLoading}
                     style={{
-                      opacity: lookupLoading ? 0.7 : 1,
-                      cursor:  lookupLoading ? 'not-allowed' : 'pointer',
-                      display: 'flex',
+                      display:    'flex',
                       alignItems: 'center',
-                      gap: '8px',
+                      gap:        '8px',
                     }}
                   >
-                    {lookupLoading ? (
-                      <><Loader size={15} className="animate-spin" /> Looking up order…</>
-                    ) : (
-                      <>Continue <ArrowRight size={15} /></>
-                    )}
+                    Continue <ArrowRight size={15} />
                   </button>
                 </form>
 
