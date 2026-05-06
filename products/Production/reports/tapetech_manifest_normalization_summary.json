@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-05-06T23:58:40.797241+00:00",
+  "manifest_csv": "products/Production/catalogs/official/tapetech_product_catalog_manifest.csv",
+  "manifest_json": "products/Production/catalogs/official/tapetech_product_catalog_manifest.json",
+  "woo_output_csv": "products/Production/catalogs/official/tapetech_woocommerce_catalog.csv",
+  "images": {
+    "products": 224,
+    "source_image_urls": 429,
+    "downloaded": 0,
+    "reused": 429,
+    "failed": 0
+  },
+  "woo": {
+    "variable_families": 33,
+    "simple_products": 107,
+    "variable_parent_rows": 33,
+    "variation_rows": 117,
+    "total_woo_rows": 257
+  }
+}
