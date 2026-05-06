@@ -113,10 +113,12 @@ export default function ProductDetail({
       .then(() => {
         if (!mounted) return;
         // Bypass the shared variation cache for modal-triggered fetches.
-        // Background card-prefetch may have cached an empty result due to a
-        // transient API error; calling the API directly here ensures the modal
-        // always gets a fresh response.  If the call succeeds we populate the
-        // cache so any subsequent card-display refresh benefits from the data.
+        // The background card-prefetch caches only successful (non-empty)
+        // results now, but calling the API directly here guarantees the modal
+        // always gets a fresh response — critical if the user opens a product
+        // before the prefetch has completed or if WooCommerce has since updated
+        // the variation data.  A successful response is written back to the
+        // cache so card display and future prefetches benefit from the data.
         return getProductVariations(product.id);
       })
       .then((vars) => {
