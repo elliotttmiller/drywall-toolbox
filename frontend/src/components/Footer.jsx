@@ -184,10 +184,10 @@ export default function Footer() {
             alignItems: 'center'
           }} className="footer-list-support">
             {[
-              { to: '/contact', label: 'Contact Us' },
-              { to: '/repairs', label: 'Repair Services' },
-              { to: '#', label: 'Shipping Policy' },
-              { to: '#', label: 'Return Portal' }
+              { to: '/contact',         label: 'Contact Us'      },
+              { to: '/repairs',         label: 'Repair Services' },
+              { to: '/shipping-policy', label: 'Shipping Policy' },
+              { to: '/returns',         label: 'Return Portal'   }
             ].map(({ to, label }) => (
               <li key={label}>
                 <Link

@@ -44,6 +44,8 @@ const SavedAddresses     = lazy(() => import('./pages/SavedAddresses'));
 const Notifications      = lazy(() => import('./pages/Notifications'));
 const Calculators        = lazy(() => import('./pages/Calculators'));
 const FAQ                = lazy(() => import('./pages/FAQ'));
+const ShippingPolicy     = lazy(() => import('./pages/ShippingPolicy'));
+const ReturnPortal       = lazy(() => import('./pages/ReturnPortal'));
 
 // ─── 404 Not Found page ───────────────────────────────────────────────────────
 // Rendered for any URL that doesn't match a defined route.
@@ -104,6 +106,8 @@ function AppRoutes() {
           <Route path="/repairs"               element={<Repairs />} />
           <Route path="/faq"                   element={<FAQ />} />
           <Route path="/calculators"           element={<Calculators />} />
+          <Route path="/shipping-policy"       element={<ShippingPolicy />} />
+          <Route path="/returns"               element={<ReturnPortal />} />
           <Route path="/cart"                  element={<Cart />} />
           <Route path="/checkout"              element={<Checkout />} />
           <Route path="/order/:id"             element={<OrderConfirmation />} />
