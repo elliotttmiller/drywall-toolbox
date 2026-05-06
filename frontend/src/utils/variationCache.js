@@ -39,7 +39,8 @@ export async function fetchCachedVariations(parentId, fetchFn) {
       return normalized;
     })
     .catch(() => {
-      variationCache.set(key, []);
+      // Do not cache on error — allow the next request to retry rather than
+      // permanently serving a stale-empty result for the session.
       return [];
     })
     .finally(() => {
