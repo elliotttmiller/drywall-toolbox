@@ -92,26 +92,10 @@ CSV_FIELDNAMES = [
 
 EXCLUDED_MPN_PREFIXES = ("PWW-", "PWT")
 EXCLUDED_PRODUCT_RE = re.compile(
-    r"\b("
-    r"apparel|"
-    r"beanie|"
-    r"clothing|"
-    r"gloves?|"
-    r"hat|"
-    r"hi[- ]vis|"
-    r"hood(?:ed)?\s+sweatshirt|"
-    r"hoodie|"
-    r"jacket|"
-    r"long\s+sleeve\s+t(?:-shirt)?|"
-    r"pants|"
-    r"shirt|"
-    r"short\s+sleeve\s+t(?:-shirt)?|"
-    r"soft[- ]shell|"
-    r"sweatshirt|"
-    r"vest|"
-    r"work\s*pants|"
-    r"workwear"
-    r")\b",
+    r"\b(apparel|beanie|clothing|gloves?|hat|hi[- ]vis|hood(?:ed)?\s+sweatshirt|"
+    r"hoodie|jacket|long\s+sleeve\s+t(?:-shirt)?|pants|shirt|"
+    r"short\s+sleeve\s+t(?:-shirt)?|soft[- ]shell|sweatshirt|vest|"
+    r"work\s*pants|workwear)\b",
     re.IGNORECASE,
 )
 
