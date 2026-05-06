@@ -48,7 +48,14 @@ async function fetchFromApi() {
     try {
       const result = await proxyFetchProducts({ per_page: PER, page, status: 'publish' });
       batch = Array.isArray(result) ? result : result?.products || [];
-      batch = batch.map(normalizeProduct).filter(Boolean);
+      batch = batch
+        .map(normalizeProduct)
+        .filter(Boolean)
+        // WooCommerce /wc/v3/products should never return 'variation' type
+        // products in the main list, but guard against misconfigured imports
+        // that might leak them through (they would show as confusing duplicates
+        // alongside their parent variable product).
+        .filter((p) => p.type !== 'variation');
     } catch (pageErr) {
       if (all.length > 0) break;
       throw pageErr;
@@ -58,7 +65,14 @@ async function fetchFromApi() {
     page++;
   }
 
-  return all;
+  // Deduplicate by product ID — guards against products being imported multiple
+  // times into WooCommerce (e.g. repeated CSV imports that create duplicate rows).
+  const seenIds = new Set();
+  return all.filter((p) => {
+    if (!p.id || seenIds.has(p.id)) return false;
+    seenIds.add(p.id);
+    return true;
+  });
 }
 
 /**

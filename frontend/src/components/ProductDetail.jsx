@@ -82,6 +82,13 @@ export default function ProductDetail({
   // selectedAttrs: { [attrName]: value } — tracks the user's chip selections
   const [selectedAttrs, setSelectedAttrs]       = useState(initialVariationSelection);
 
+  // Stable boolean dep: false until the parent has prefetched variations, then
+  // true forever for this product.  Using the raw array as a dep would create a
+  // new reference every render ([] !== []) and trigger an infinite re-render
+  // loop via setSelectedAttrs/setVariations → re-render → new {} default for
+  // initialSelectedAttrs → effect re-fires → repeat.
+  const hasInitialVariations = Array.isArray(initialVariations) && initialVariations.length > 0;
+
   // When a variable product is opened, fetch its variations from the API.
   // All state updates run asynchronously (via Promise chain) to satisfy the
   // react-hooks/set-state-in-effect rule from eslint-plugin-react-hooks v7.
@@ -90,22 +97,25 @@ export default function ProductDetail({
 
     let mounted = true;
 
-    const hasFullInitialVariations = Array.isArray(initialVariations) && initialVariations.length > 0;
+    // Capture the current seed values at the time this effect fires so the
+    // closure is consistent even if the parent re-renders before it completes.
+    const currentSeeded = seededVariations;
+    const currentInitialAttrs = initialSelectedAttrs;
 
     Promise.resolve().then(() => {
       if (!mounted) return;
-      setVariations(seededVariations);
+      setVariations(currentSeeded);
       setSelectedAttrs(
-        Object.keys(initialSelectedAttrs || {}).length > 0
-          ? initialSelectedAttrs
+        Object.keys(currentInitialAttrs || {}).length > 0
+          ? currentInitialAttrs
           : getVariationSelectionMap(
-              seededVariations.find((v) => v.stock_status !== 'outofstock') || seededVariations[0] || {}
+              currentSeeded.find((v) => v.stock_status !== 'outofstock') || currentSeeded[0] || {}
             )
       );
-      setVariationsLoading(!hasFullInitialVariations);
+      setVariationsLoading(!hasInitialVariations);
     });
 
-    if (hasFullInitialVariations) {
+    if (hasInitialVariations) {
       return () => { mounted = false; };
     }
 
@@ -132,8 +142,8 @@ export default function ProductDetail({
         // Use card-selected attributes when available; otherwise default to the
         // first in-stock variation.  setVariationsLoading(false) is always
         // called by the .finally() handler below regardless of this branch.
-        if (Object.keys(initialSelectedAttrs || {}).length > 0) {
-          setSelectedAttrs(initialSelectedAttrs);
+        if (Object.keys(currentInitialAttrs || {}).length > 0) {
+          setSelectedAttrs(currentInitialAttrs);
         } else {
           const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
           setSelectedAttrs(getVariationSelectionMap(firstInStock));
@@ -143,7 +153,7 @@ export default function ProductDetail({
       .finally(() => { if (mounted) setVariationsLoading(false); });
 
     return () => { mounted = false; };
-  }, [product?.id, product?.is_variable, initialResolvedVariation, initialSelectedAttrs, initialVariations]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [product?.id, product?.is_variable, hasInitialVariations]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Find the variation that matches the current chip selections
   const selectedVariation = useMemo(
