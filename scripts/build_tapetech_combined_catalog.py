@@ -44,6 +44,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 TT_JSON = (
     REPO_ROOT / "products" / "scraped_results" / "TapeTech" / "tapetech_drywall_scraped.json"
 )
+TT_CSV = (
+    REPO_ROOT / "products" / "scraped_results" / "TapeTech" / "tapetech_drywall_scraped.csv"
+)
 AMES_JSON = (
     REPO_ROOT
     / "products"
@@ -57,6 +60,20 @@ OUT_CSV = OUT_DIR / "tapetech_product_catalog_manifest.csv"
 OUT_JSON = OUT_DIR / "tapetech_product_catalog_manifest.json"
 
 # ── CSV column order ───────────────────────────────────────────────────────────
+
+TT_CSV_FIELDNAMES = [
+    "source",
+    "name",
+    "mpn",
+    "description",
+    "additional_information",
+    "weight_lbs",
+    "length_in",
+    "width_in",
+    "height_in",
+    "image_urls",
+    "url",
+]
 
 CSV_FIELDNAMES = [
     "source",
@@ -72,6 +89,31 @@ CSV_FIELDNAMES = [
     "tapetech_url",
     "shopamestools_url",
 ]
+
+EXCLUDED_MPN_PREFIXES = ("PWW-", "PWT")
+EXCLUDED_PRODUCT_RE = re.compile(
+    r"\b("
+    r"apparel|"
+    r"beanie|"
+    r"clothing|"
+    r"gloves?|"
+    r"hat|"
+    r"hi[- ]vis|"
+    r"hood(?:ed)?\s+sweatshirt|"
+    r"hoodie|"
+    r"jacket|"
+    r"long\s+sleeve\s+t(?:-shirt)?|"
+    r"pants|"
+    r"shirt|"
+    r"short\s+sleeve\s+t(?:-shirt)?|"
+    r"soft[- ]shell|"
+    r"sweatshirt|"
+    r"vest|"
+    r"work\s*pants|"
+    r"workwear"
+    r")\b",
+    re.IGNORECASE,
+)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -92,6 +134,61 @@ def load_json(path: Path) -> list[dict]:
     return data.get("products", [])
 
 
+def is_excluded_product(product: dict) -> bool:
+    """Return True when a product is clothing or workwear rather than a tool."""
+    mpn = str(product.get("mpn", "")).strip().upper()
+    if any(mpn.startswith(prefix) for prefix in EXCLUDED_MPN_PREFIXES):
+        return True
+
+    text = " ".join(
+        str(product.get(field, "")).strip()
+        for field in ("name", "description", "additional_information", "url")
+    )
+    return bool(EXCLUDED_PRODUCT_RE.search(text))
+
+
+def split_products(products: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Separate kept products from excluded clothing/workwear products."""
+    kept: list[dict] = []
+    excluded: list[dict] = []
+    for product in products:
+        (excluded if is_excluded_product(product) else kept).append(product)
+    return kept, excluded
+
+
+def image_urls_to_string(image_urls: object) -> str:
+    """Serialise one-or-many image URLs into the CSV pipe-delimited format."""
+    if isinstance(image_urls, list):
+        return " | ".join(str(url).strip() for url in image_urls if str(url).strip())
+    return str(image_urls or "").strip()
+
+
+def write_tapetech_source_csv(products: list[dict]) -> None:
+    """Rewrite the cleaned TapeTech scraped CSV from the JSON source records."""
+    with TT_CSV.open("w", encoding="utf-8", newline="") as fh:
+        writer = csv.DictWriter(fh, fieldnames=TT_CSV_FIELDNAMES, extrasaction="ignore")
+        writer.writeheader()
+        for product in products:
+            row = dict(product)
+            row["image_urls"] = image_urls_to_string(product.get("image_urls"))
+            writer.writerow(row)
+
+
+def write_tapetech_source_json(products: list[dict]) -> None:
+    """Rewrite the cleaned TapeTech scraped JSON payload."""
+    payload = {
+        "catalog": "TapeTech Drywall Products",
+        "source_url": "https://tapetech.com/product-category/drywall/",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "product_count": len(products),
+        "products": products,
+    }
+    TT_JSON.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -105,6 +202,20 @@ def main() -> None:
     print(f"Loading ShopAmesTools data from {AMES_JSON.name} …")
     ames_products = load_json(AMES_JSON)
     print(f"  {len(ames_products)} products\n")
+
+    tt_products, tt_excluded = split_products(tt_products)
+    ames_products, ames_excluded = split_products(ames_products)
+
+    print("Removing clothing/workwear products …")
+    print(f"  TapeTech excluded:      {len(tt_excluded)}")
+    print(f"  ShopAmesTools excluded: {len(ames_excluded)}")
+    print(f"  TapeTech retained:      {len(tt_products)}")
+    print(f"  ShopAmesTools retained: {len(ames_products)}\n")
+
+    write_tapetech_source_csv(tt_products)
+    write_tapetech_source_json(tt_products)
+    print(f"Wrote cleaned {TT_CSV}")
+    print(f"Wrote cleaned {TT_JSON}\n")
 
     # ── Index ShopAmesTools by normalised MPN ──────────────────────────────────
     ames_index: dict[str, dict] = {}
@@ -126,8 +237,7 @@ def main() -> None:
         # Description: prefer TapeTech, fall back to ShopAmesTools
         description = p.get("description") or ames.get("description", "")
 
-        images = p.get("image_urls") or []
-        image_str = " | ".join(images) if isinstance(images, list) else str(images or "")
+        image_str = image_urls_to_string(p.get("image_urls"))
 
         merged.append({
             "source": "tapetech.com" + ("; shopamestools.com" if ames else ""),
