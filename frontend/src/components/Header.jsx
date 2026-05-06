@@ -303,6 +303,7 @@ export default function Header({ onCartToggle }) {
                     { to: '/all-products', label: 'All Products', sub: 'Browse our full catalog' },
                     { to: '/products', label: 'Shop by Brand', sub: 'TapeTech, Columbia, SurPro…' },
                     { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits & schematics' },
+                    { to: '/toolset-builder', label: 'Toolset Builder', sub: 'Configure your perfect kit' },
                   ].map(({ to, label, sub }) => (
                     <Link
                       key={to}
@@ -583,6 +584,13 @@ export default function Header({ onCartToggle }) {
                     className="nav-link-mobile block py-2 text-sm"
                   >
                     Replacement Parts
+                  </Link>
+                  <Link 
+                    to="/toolset-builder" 
+                    onClick={() => { setShopDropdownOpen(false); closeMobileMenu(); }}
+                    className="nav-link-mobile block py-2 text-sm"
+                  >
+                    Toolset Builder
                   </Link>
                 </div>
               )}
