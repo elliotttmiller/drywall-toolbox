@@ -695,15 +695,6 @@
   text-align: center;
   overflow-wrap: break-word;
 }
-.category-card-chevron {
-  color: rgba(255,255,255,0.6);
-  flex-shrink: 0;
-  transition: transform 180ms, color 180ms;
-}
-.category-card:hover .category-card-chevron {
-  transform: translateX(4px);
-  color: rgba(255,255,255,0.95);
-}
 @media (min-width: 640px) {
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
