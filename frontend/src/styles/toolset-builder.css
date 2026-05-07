@@ -695,7 +695,7 @@
   line-height: 1.2;
   text-align: center;
   text-wrap: balance;
-  max-width: 12ch;
+  overflow-wrap: anywhere;
 }
 .category-card-chevron {
   color: rgba(255,255,255,0.6);
