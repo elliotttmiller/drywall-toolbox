@@ -632,7 +632,6 @@
   position: relative;
   display: block;
   min-height: 140px;
-  aspect-ratio: 1 / 1;
   padding: 0;
   border: none;
   border-radius: 12px;
@@ -694,8 +693,7 @@
   letter-spacing: -0.015em;
   line-height: 1.2;
   text-align: center;
-  text-wrap: balance;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .category-card-chevron {
   color: rgba(255,255,255,0.6);
