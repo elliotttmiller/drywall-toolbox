@@ -354,7 +354,6 @@ function Stage1({ allProducts, loading, onConfigure }) {
                       <div className="category-card-content">
                         <div className="category-card-text">
                           <h3 className="category-name">{template.name.replace(/^(TapeTech|Columbia|Level 5|Asgard)\s+(Custom\s+)?/i, '')}</h3>
-                          <span className="category-count">{template.description}</span>
                         </div>
                       </div>
                     </button>

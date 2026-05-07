@@ -630,9 +630,9 @@
 }
 .category-card {
   position: relative;
-  display: flex;
-  align-items: flex-end;
-  min-height: 120px;
+  display: block;
+  min-height: 140px;
+  aspect-ratio: 1 / 1;
   padding: 0;
   border: none;
   border-radius: 12px;
@@ -667,36 +667,35 @@
   pointer-events: none;
 }
 .category-card-content {
-  position: relative;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center;
   width: 100%;
-  padding: 1rem 1.125rem;
+  height: 100%;
+  padding: 1rem;
   z-index: 1;
 }
 .category-card-text {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   min-width: 0;
+  width: 100%;
+  height: 100%;
 }
 .category-name {
-  font-size: 1.05rem;
+  font-size: clamp(1.05rem, 2.8vw, 1.75rem);
   font-weight: 800;
   color: #fff;
-  margin: 0 0 4px;
+  margin: 0;
   letter-spacing: -0.015em;
-  line-height: 1.3;
-}
-.category-count {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.75);
-  font-weight: 500;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+  max-width: 12ch;
 }
 .category-card-chevron {
   color: rgba(255,255,255,0.6);
