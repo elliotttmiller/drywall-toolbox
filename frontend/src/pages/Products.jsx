@@ -6,6 +6,7 @@ import ProductShoppingCard from '../components/ui/ProductShoppingCard';
 import BackButton from '../components/BackButton';
 import SearchBar from '../components/SearchBar';
 import Dropdown from '../components/ui/Dropdown';
+import { SORT_OPTIONS } from '../constants/sortOptions';
 import FilterPanel from '../components/FilterPanel';
 import Toast from '../components/ui/Toast';
 import Pagination from '../components/Pagination';
@@ -56,12 +57,6 @@ const ALLOWED_BRANDS = [
 const MAX_PRICE = 3000;
 const ITEMS_PER_PAGE = 24;
 
-const SORT_OPTIONS = [
-  { value: 'popular',    label: 'Most Popular',       description: 'Trending now' },
-  { value: 'price-low',  label: 'Price: Low to High', description: 'Budget friendly' },
-  { value: 'price-high', label: 'Price: High to Low', description: 'Premium first' },
-  { value: 'rating',     label: 'Highest Rated',      description: 'Customer favorites' },
-];
 
 // Brand name ↔ URL slug maps so navigation produces readable URLs like
 // /products?brand=columbia-taping-tools

@@ -7,6 +7,7 @@ import BackButton from '../components/BackButton';
 import SearchBar from '../components/SearchBar';
 import Toast from '../components/ui/Toast';
 import Dropdown from '../components/ui/Dropdown';
+import { SORT_OPTIONS } from '../constants/sortOptions';
 import FilterPanel from '../components/FilterPanel';
 import Pagination from '../components/Pagination';
 import { ProductSkeletonGrid } from '../components/ProductSkeletonCard';
@@ -47,12 +48,6 @@ const ALLOWED_BRANDS = [
 const MAX_PRICE = 3000;
 const ITEMS_PER_PAGE = 24;
 
-const SORT_OPTIONS = [
-  { value: 'popular',    label: 'Most Popular',       description: 'Trending now' },
-  { value: 'price-low',  label: 'Price: Low to High', description: 'Budget friendly' },
-  { value: 'price-high', label: 'Price: High to Low', description: 'Premium first' },
-  { value: 'rating',     label: 'Highest Rated',      description: 'Customer favorites' },
-];
 
 export default function AllProducts() {
   const location = useLocation();

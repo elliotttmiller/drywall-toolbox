@@ -20,6 +20,7 @@ import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
 import SearchBar from '../components/SearchBar';
 import Dropdown from '../components/ui/Dropdown';
+import { SORT_OPTIONS } from '../constants/sortOptions';
 import Toast from '../components/ui/Toast';
 import Pagination from '../components/Pagination';
 import { Filter, Wrench } from 'lucide-react';
@@ -62,12 +63,6 @@ const SLUG_TO_BRAND = Object.fromEntries(
 
 const ITEMS_PER_PAGE = 24;
 
-const SORT_OPTIONS = [
-  { value: 'popular',    label: 'Most Popular',       description: 'Trending now' },
-  { value: 'price-low',  label: 'Price: Low to High', description: 'Budget friendly' },
-  { value: 'price-high', label: 'Price: High to Low', description: 'Premium first' },
-  { value: 'rating',     label: 'Highest Rated',      description: 'Customer favorites' },
-];
 
 // Strict production-catalog parts taxonomy guard:
 // only include products whose canonical leaf category is "Parts".
