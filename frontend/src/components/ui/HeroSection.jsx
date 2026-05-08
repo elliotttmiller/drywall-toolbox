@@ -11,7 +11,7 @@
  *   className    string
  */
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import Button from './Button.jsx';
@@ -140,7 +140,7 @@ export default function HeroSection({
             variants={itemVariants}
             style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: stats.length > 0 || brands.length > 0 ? '40px' : '0' }}
           >
-            {ctaLinks.map(({ to, label, variant = 'primary' }, i) => (
+            {ctaLinks.map(({ to, label }, i) => (
               <Link key={to} to={to} style={{ textDecoration: 'none' }}>
                 <Button
                   variant={i === 0 ? 'primary' : 'outline'}
