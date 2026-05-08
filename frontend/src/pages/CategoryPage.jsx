@@ -4,8 +4,8 @@ import { getProductsByCategory } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
-import ProductCard from '../components/ProductCard';
-import Toast from '../components/Toast';
+import ProductShoppingCard from '../components/ui/ProductShoppingCard';
+import Toast from '../components/ui/Toast';
 import SEOHead from '../components/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
 import { getProductVariations } from '../services/api';
@@ -137,7 +137,7 @@ export default function CategoryPage() {
                 const cardProduct = getCardDisplayProduct(product);
                 const hasSelectedVariation = cardProduct.id !== product.id;
                 return (
-                  <ProductCard
+                  <ProductShoppingCard
                     key={product.id}
                     product={product}
                     cardProduct={cardProduct}

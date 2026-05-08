@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import Toast from '../components/Toast';
+import Toast from '../components/ui/Toast';
 import BrandSelector from '../components/BrandSelector';
 import ToolSelector from '../components/ToolSelector';
 import { getProductBySku } from '../api/products';

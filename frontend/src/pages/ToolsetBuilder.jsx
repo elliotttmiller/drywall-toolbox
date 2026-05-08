@@ -36,7 +36,7 @@ import {
   SplitSquareHorizontal, Star, Zap, Box,
 } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
-import Toast from '../components/Toast';
+import Toast from '../components/ui/Toast';
 import { getProducts } from '../services/catalog';
 import { getProductVariations } from '../services/api';
 import { useCart } from '../context/CartContext';

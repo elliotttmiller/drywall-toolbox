@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getProductById } from '../services/catalog';
 import { useCart } from '../context/CartContext';
 import ProductDetail from '../components/ProductDetail';
-import Toast from '../components/Toast';
+import Toast from '../components/ui/Toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SEOHead from '../components/SEOHead';
 import { buildProductSchema, buildBreadcrumbSchema, stripHtml } from '../utils/schema';

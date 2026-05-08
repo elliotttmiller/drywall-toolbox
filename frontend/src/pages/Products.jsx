@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProductDetail from '../components/ProductDetail';
 import ProductModal from '../components/ProductModal';
-import ProductCard from '../components/ProductCard';
+import ProductShoppingCard from '../components/ui/ProductShoppingCard';
 import BackButton from '../components/BackButton';
 import SearchBar from '../components/SearchBar';
-import SortDropdown from '../components/SortDropdown';
+import Dropdown from '../components/ui/Dropdown';
 import FilterPanel from '../components/FilterPanel';
-import Toast from '../components/Toast';
+import Toast from '../components/ui/Toast';
 import Pagination from '../components/Pagination';
 import { ProductSkeletonGrid } from '../components/ProductSkeletonCard';
 import { ChevronRight } from 'lucide-react';
@@ -55,6 +55,13 @@ const ALLOWED_BRANDS = [
 
 const MAX_PRICE = 3000;
 const ITEMS_PER_PAGE = 24;
+
+const SORT_OPTIONS = [
+  { value: 'popular',    label: 'Most Popular',       description: 'Trending now' },
+  { value: 'price-low',  label: 'Price: Low to High', description: 'Budget friendly' },
+  { value: 'price-high', label: 'Price: High to Low', description: 'Premium first' },
+  { value: 'rating',     label: 'Highest Rated',      description: 'Customer favorites' },
+];
 
 // Brand name ↔ URL slug maps so navigation produces readable URLs like
 // /products?brand=columbia-taping-tools
@@ -544,9 +551,10 @@ export default function Products() {
           <div className="flex-1">
             {/* Sort and Results */}
             <div className="flex flex-row justify-between items-center gap-4 mb-6">
-              <SortDropdown
+              <Dropdown
                 value={sortBy}
                 onChange={(value) => setSortBy(value)}
+                options={SORT_OPTIONS}
               />
               {/* Mobile Filter Button */}
               <button
@@ -570,7 +578,7 @@ export default function Products() {
                   const cardProduct = getCardDisplayProduct(product);
                   const hasSelectedVariation = cardProduct.id !== product.id;
                   return (
-                    <ProductCard
+                    <ProductShoppingCard
                       key={product.id}
                       product={product}
                       cardProduct={cardProduct}
