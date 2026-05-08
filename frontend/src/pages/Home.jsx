@@ -70,8 +70,8 @@ export default function Home() {
 
       {/* --- HERO (all breakpoints) --- */}
       <HeroSection
-        titleLines={["Pro-Grade Drywall Tools", "Built for Faster Finishes."]}
-        subtitle="Shop trusted taping, finishing, and sanding tools from top brands—with competitive pricing and fast shipping."
+        titleLines={["The Pro Standard", "in Drywall."]}
+        subtitle="Premium tools for every drywall job — unbeatable prices, lightning-fast shipping."
         brands={brandLogos}
       />
 
