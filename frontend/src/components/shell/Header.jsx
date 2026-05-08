@@ -617,24 +617,22 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
       </header>
 
       {/* Floating cart button — mobile only */}
-      <AnimatePresence>
-        <Motion.button
-          key="mobile-cart-fab"
-          className="mobile-cart-fab"
-          onClick={onCartToggle}
-          aria-label="Open cart"
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.7, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 340, damping: 24 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ShoppingCart size={22} />
+      <Motion.button
+        className="mobile-cart-fab"
+        onClick={onCartToggle}
+        aria-label="Open cart"
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 340, damping: 24 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        <ShoppingCart size={22} />
+        <span aria-live="polite" aria-atomic="true">
           {getCartCount() > 0 && (
-            <span className="mobile-cart-fab-badge">{getCartCount()}</span>
+            <span className="mobile-cart-fab-badge" aria-label={`${getCartCount()} items in cart`}>{getCartCount()}</span>
           )}
-        </Motion.button>
-      </AnimatePresence>
+        </span>
+      </Motion.button>
     </>
   );
 }
