@@ -129,7 +129,7 @@ export default function Home() {
             </h1>
 
             <p className="dtb-hero-subtitle">
-              Production-grade taping, finishing, and sanding equipment from the industry&apos;s most trusted brands — at unbeatable prices with lightning-fast shipping.
+              Production-grade taping, finishing, and sanding equipment from the industry&apos;s most trusted brands ï¿½ at unbeatable prices with lightning-fast shipping.
             </p>
           </div>
 
@@ -160,8 +160,8 @@ export default function Home() {
       <div className="dtb-desktop-shipping-bar">
         <ShippingTicker
           items={[
-            { icon: <Truck size={14} />, text: 'FREE SHIPPING ON ORDERS $150+ (CONTIGUOUS USA ONLY)' },
-            { icon: <Phone size={14} />, text: 'Expert Support — Real Pros' },
+            { icon: <Truck size={14} />, text: 'FREE SHIPPING ON ORDERS $75+ (CONTIGUOUS USA ONLY)' },
+            { icon: <Phone size={14} />, text: 'Expert Support ï¿½ Real Pros' },
             { icon: <Wrench size={14} />, text: 'Professional Repair Services' },
           ]}
           duration={28}

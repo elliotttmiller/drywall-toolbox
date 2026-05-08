@@ -33,6 +33,7 @@ import { syncAndPlace } from '../api/cart.js';
 import veeqoService from '../services/veeqo';
 import SEOHead from '../components/SEOHead';
 import { useAuthContext } from '../auth/AuthContext.js';
+import { FREE_SHIP_THRESHOLD } from '../constants/shipping';
 import {
   getUserPoints,
   redeemPoints,
@@ -486,7 +487,7 @@ export default function Checkout() {
   // to a provisional estimate matching the server-side tiered logic.
   const shipping = selectedRate
     ? selectedRate.price
-    : ( subtotal >= 500 ? 0 : 25 );
+    : ( subtotal >= FREE_SHIP_THRESHOLD ? 0 : 25 );
   const tax   = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
@@ -904,10 +905,10 @@ export default function Checkout() {
                     ) ) }
                   </div>
 
-                  { subtotal > 0 && subtotal < 500 && (
+                  { subtotal > 0 && subtotal < FREE_SHIP_THRESHOLD && (
                     <p className="text-xs text-primary-600 bg-primary-50 rounded-xl px-4 py-2.5">
                       <span aria-hidden="true">💡</span> Spend{ ' ' }
-                      <strong>${ ( 500 - subtotal ).toFixed( 2 ) }</strong> more to unlock free shipping!
+                      <strong>${ ( FREE_SHIP_THRESHOLD - subtotal ).toFixed( 2 ) }</strong> more to unlock free shipping!
                     </p>
                   ) }
                 </div>

@@ -21,11 +21,11 @@ const FAQ_CATEGORIES = [
       },
       {
         q: 'What shipping carriers and service levels do you offer?',
-        a: 'We ship via UPS and USPS. Available service levels at checkout include Standard Ground (3–5 business days), Expedited 2-Day, and Overnight. Carrier and cost are calculated at checkout based on package weight, dimensions, and destination.',
+        a: 'We ship via UPS, FedEx, and USPS. Available service levels at checkout include Standard Ground (3–7 business days), Expedited 2-Day, Overnight, and Saturday Delivery (select ZIP codes). Carrier and cost are calculated at checkout based on package weight, dimensions, and destination.',
       },
       {
         q: 'Do you offer free shipping?',
-        a: 'Yes — orders over $150 qualify for free Standard Ground shipping to the contiguous 48 states. Alaska, Hawaii, and Canada are excluded from the free shipping threshold and calculated at actual carrier rate.',
+        a: 'Yes — orders over $75 qualify for free Standard Ground shipping to the contiguous 48 states. Alaska, Hawaii, and Canada are excluded from the free shipping threshold and calculated at actual carrier rate.',
       },
       {
         q: 'How do I track my shipment?',
@@ -55,7 +55,7 @@ const FAQ_CATEGORIES = [
     questions: [
       {
         q: 'What is your standard return policy for tools and parts?',
-        a: 'New, unused products in original, unaltered packaging may be returned within 30 days of delivery for a full refund to the original payment method. Items must be in resalable condition — free of installation marks, compound residue, or field use. Return shipping is the customer\'s responsibility unless the item is defective or we made a fulfillment error.',
+        a: 'New, unused products in original, unaltered packaging may be returned within 45 days of delivery for a full refund to the original payment method — with no restocking fee, ever. Items must be in resalable condition — free of installation marks, compound residue, or field use. Return shipping is the customer\'s responsibility unless the item is defective or we made a fulfillment error.',
       },
       {
         q: 'Which items are non-returnable?',
@@ -67,11 +67,11 @@ const FAQ_CATEGORIES = [
       },
       {
         q: 'What if my order arrives damaged or incorrect?',
-        a: 'All outbound shipments are insured and photographed before sealing. If your order arrives damaged or contains the wrong item, photograph the outer packaging and contents immediately and contact us within 48 hours of delivery. We will file the carrier claim on your behalf and dispatch a replacement at no additional charge — you will not be asked to return a damaged item.',
+        a: 'All outbound shipments are insured and photographed before sealing. If your order arrives damaged or contains the wrong item, photograph the outer packaging and contents immediately and contact us within 72 hours of delivery. We will file the carrier claim on your behalf and dispatch a replacement at no additional charge — you will not be asked to return a damaged item.',
       },
       {
         q: 'Do new tools carry a manufacturer warranty?',
-        a: 'Yes. All new tools sold by Drywall Toolbox are covered by the full manufacturer warranty. Warranty terms vary by brand: TapeTech and Columbia typically carry a 1-year limited warranty on defects in materials and workmanship; other brands may vary. Warranty claims are processed directly through us — you do not need to contact the manufacturer separately.',
+        a: 'Yes. All new tools sold by Drywall Toolbox are covered by the full manufacturer warranty. Common terms: Columbia Taping Tools — 5 years; TapeTech — per manufacturer terms; Platinum Drywall Tools — 5 years; DeWalt — 3 years; FLEX — 3 years; Festool — 3 years (registered). Warranty claims are processed through us — you do not need to contact the manufacturer separately.',
       },
       {
         q: 'What does the manufacturer warranty cover?',

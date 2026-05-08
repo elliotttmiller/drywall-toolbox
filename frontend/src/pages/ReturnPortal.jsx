@@ -37,22 +37,22 @@ const POLICY_POINTS = [
     Icon:  CheckCircle,
     color: '#16a34a',
     bg:    'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-    title: '30-Day Return Window',
-    body:  'New, unused products in original packaging may be returned within 30 days of delivery for a full refund.',
+    title: '45-Day Return Window',
+    body:  'New, unused products in original packaging may be returned within 45 days of purchase — 50% longer than the industry-standard 30 days.',
   },
   {
     Icon:  Package,
     color: '#2563eb',
     bg:    'linear-gradient(135deg, #eff6ff, #dbeafe)',
-    title: 'Resalable Condition',
-    body:  'Items must be free of installation marks, compound residue, and field use. Original packaging must be unaltered.',
+    title: 'No Restocking Fee — Ever',
+    body:  'Standard returns carry zero restocking fees. Used tool returns may be evaluated case-by-case, but we never penalise honest mistakes.',
   },
   {
     Icon:  AlertCircle,
     color: '#d97706',
     bg:    'linear-gradient(135deg, #fffbeb, #fef3c7)',
     title: 'Non-Returnable Items',
-    body:  'Electrical components, special-order parts, Final Sale items, and any product that has been installed or modified.',
+    body:  'Used tools with wear/residue, final-sale or outlet items, special-order items, direct-ship items marked non-returnable, and partially used consumables.',
   },
 ];
 
@@ -176,7 +176,7 @@ export default function ReturnPortal() {
     <div style={{ minHeight: '100vh' }} className="page-wrapper">
       <SEOHead
         title="Return Portal"
-        description="Start a return or exchange with Drywall Toolbox. Enter your order number and email to begin. 30-day return window on new, unused products."
+        description="Start a return or exchange with Drywall Toolbox. Enter your order number and email to begin. 45-day return window, no restocking fee."
         canonical="https://drywalltoolbox.com/returns"
       />
 
@@ -260,7 +260,8 @@ export default function ReturnPortal() {
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 28px', lineHeight: 1.6 }}>
               New, unused products in original packaging may be returned within
-              30 days for a full refund to the original payment method.
+              45 days for a full refund to the original payment method — with
+              no restocking fee, ever.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '28px' }}>
@@ -300,22 +301,40 @@ export default function ReturnPortal() {
             </div>
 
             {/* Shipping policy link */}
-            <Link
-              to="/shipping-policy"
-              style={{
-                display:        'inline-flex',
-                alignItems:     'center',
-                gap:            '6px',
-                fontSize:       '0.825rem',
-                color:          'var(--primary-600)',
-                textDecoration: 'none',
-                fontWeight:     600,
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              View full Shipping Policy <ArrowRight size={14} />
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Link
+                to="/shipping-policy"
+                style={{
+                  display:        'inline-flex',
+                  alignItems:     'center',
+                  gap:            '6px',
+                  fontSize:       '0.825rem',
+                  color:          'var(--primary-600)',
+                  textDecoration: 'none',
+                  fontWeight:     600,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+                onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+              >
+                View full Shipping Policy <ArrowRight size={14} />
+              </Link>
+              <Link
+                to="/policies"
+                style={{
+                  display:        'inline-flex',
+                  alignItems:     'center',
+                  gap:            '6px',
+                  fontSize:       '0.825rem',
+                  color:          'var(--primary-600)',
+                  textDecoration: 'none',
+                  fontWeight:     600,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+                onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
+              >
+                View full Store Policies <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
 
           {/* ── Right: multi-step form ─────────────────────────────────────── */}

@@ -46,6 +46,7 @@ const Calculators        = lazy(() => import('./pages/Calculators'));
 const FAQ                = lazy(() => import('./pages/FAQ'));
 const ShippingPolicy     = lazy(() => import('./pages/ShippingPolicy'));
 const ReturnPortal       = lazy(() => import('./pages/ReturnPortal'));
+const StorePolicies      = lazy(() => import('./pages/StorePolicies'));
 const ToolsetBuilder     = lazy(() => import('./pages/ToolsetBuilder'));
 
 // ─── 404 Not Found page ───────────────────────────────────────────────────────
@@ -109,6 +110,7 @@ function AppRoutes() {
           <Route path="/calculators"           element={<Calculators />} />
           <Route path="/shipping-policy"       element={<ShippingPolicy />} />
           <Route path="/returns"               element={<ReturnPortal />} />
+          <Route path="/policies"              element={<StorePolicies />} />
           <Route path="/toolset-builder"       element={<ToolsetBuilder />} />
           <Route path="/cart"                  element={<Cart />} />
           <Route path="/checkout"              element={<Checkout />} />

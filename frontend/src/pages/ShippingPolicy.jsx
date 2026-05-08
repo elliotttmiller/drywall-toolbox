@@ -16,30 +16,51 @@ import SEOHead from '../components/SEOHead';
 const SHIPPING_RATES = [
   {
     service:    'Standard Ground',
-    carrier:    'UPS / USPS',
-    transit:    '3–5 business days',
+    carrier:    'UPS / FedEx',
+    transit:    '3–7 business days',
+    price:      'Free on orders $75+',
+    highlight:  true,
+  },
+  {
+    service:    'USPS Priority Mail',
+    carrier:    'USPS',
+    transit:    '2–4 business days',
     price:      'Calculated at checkout',
     highlight:  false,
   },
   {
     service:    'Expedited 2-Day',
-    carrier:    'UPS',
+    carrier:    'UPS / FedEx',
     transit:    '2 business days',
     price:      'Calculated at checkout',
     highlight:  false,
   },
   {
-    service:    'Overnight',
-    carrier:    'UPS',
+    service:    'Overnight / Next Day Air',
+    carrier:    'UPS / FedEx',
     transit:    '1 business day',
     price:      'Calculated at checkout',
     highlight:  false,
   },
   {
-    service:    'Local Pickup',
-    carrier:    'In-person',
-    transit:    'By appointment',
-    price:      'Free',
+    service:    'Saturday Delivery',
+    carrier:    'UPS / FedEx',
+    transit:    'Saturday arrival',
+    price:      'Calculated at checkout',
+    highlight:  false,
+  },
+  {
+    service:    'LTL Freight',
+    carrier:    'Regional freight carriers',
+    transit:    'Coordinated with customer',
+    price:      'Calculated at checkout',
+    highlight:  false,
+  },
+  {
+    service:    'Canada / International',
+    carrier:    'FedEx / Canada Post',
+    transit:    '2–21 days (by method)',
+    price:      'Calculated at checkout',
     highlight:  false,
   },
 ];
@@ -50,15 +71,15 @@ const HIGHLIGHTS = [
     Icon:  Truck,
     color: '#2563eb',
     bg:    'linear-gradient(135deg, #eff6ff, #dbeafe)',
-    title: 'Free Shipping ≥ $150',
-    body:  'All orders over $150 ship free via Standard Ground to the contiguous 48 states. AK, HI, and Canada are calculated at carrier rate.',
+    title: 'Free Shipping ≥ $75',
+    body:  'All orders over $75 ship free via Standard Ground to the contiguous 48 states. AK, HI, and Canada are calculated at carrier rate.',
   },
   {
     Icon:  Clock,
     color: '#16a34a',
     bg:    'linear-gradient(135deg, #f0fdf4, #dcfce7)',
     title: 'Same-Day Processing',
-    body:  'In-stock orders placed before 12:00 PM CT on business days are prioritized for same-day pick, pack, and handoff to carrier.',
+    body:  'In-stock orders placed before 12:00 PM CST on business days are processed and shipped the same day — later than most competitors.',
   },
   {
     Icon:  Package,
@@ -71,8 +92,8 @@ const HIGHLIGHTS = [
     Icon:  Globe,
     color: '#7c3aed',
     bg:    'linear-gradient(135deg, #f5f3ff, #ede9fe)',
-    title: 'US & Canada Shipping',
-    body:  'We ship to all 50 US states and Canada. International orders outside North America are handled case-by-case — contact us first.',
+    title: 'US, Canada & Worldwide',
+    body:  'We ship to all 50 US states, Canada (Canada Post & FedEx Air), and worldwide via FedEx International Priority or Economy.',
   },
 ];
 
@@ -80,23 +101,31 @@ const HIGHLIGHTS = [
 const SHIPPING_FAQS = [
   {
     q: 'How do I track my shipment?',
-    a: 'A tracking number is emailed automatically the moment your order ships. You can also find live tracking and your full order history in your Account Dashboard under Order History.',
+    a: 'A tracking number is emailed automatically the moment your order ships. You can also find live tracking and your full order history in your Account Dashboard under Order History, or visit drywalltoolbox.com/track.',
   },
   {
     q: 'Can I modify or cancel my order after it\'s placed?',
-    a: 'Modifications and cancellations can be made within 2 hours of placement, provided the order has not yet been picked. Contact us immediately via the order confirmation page. Once a shipping label is generated, a return must be initiated after delivery.',
+    a: 'You may cancel any order before it has been fulfilled and shipped. Once a shipment has left our facility, the standard return process applies. Direct-ship (drop-shipped) orders and special-order items cannot be cancelled once placed with the manufacturer.',
   },
   {
     q: 'What if an item is backordered?',
     a: 'We will notify you by email with an estimated restock date and offer to hold, substitute, or refund the line item. Backordered parts never delay in-stock items — they ship separately at no extra shipping charge.',
   },
   {
-    q: 'Do you offer local pickup?',
-    a: 'Yes — local pickup is available by appointment at our facility. Select "Local Pickup" at checkout and we\'ll send a ready-for-pickup notification. Bring your order confirmation and a valid ID.',
+    q: 'Do you offer Saturday delivery?',
+    a: 'Yes — Saturday Delivery is available at checkout for select ZIP codes. Order by 12:00 PM CST Friday. Contact us to confirm availability for your area.',
+  },
+  {
+    q: 'Are there signature requirements for high-value shipments?',
+    a: 'Yes. Orders over $300 require indirect signature at apartment complexes; orders over $500 require indirect signature at all residential addresses; orders over $1,000 require a direct signature at the time of delivery. We recommend using UPS My Choice or FedEx Delivery Manager to manage delivery windows.',
   },
   {
     q: 'How are large or heavy tools packaged?',
-    a: 'Larger tools and complete sets are double-boxed with industrial foam inserts and corner protection. If an item requires freight (LTL), we\'ll contact you to coordinate before shipping.',
+    a: 'Larger tools and complete sets are double-boxed with industrial foam inserts and corner protection. Items that are oversized or too heavy for standard parcel carriers ship via LTL (Less than Truckload) freight — clearly marked on the product page.',
+  },
+  {
+    q: 'How does LTL freight delivery work?',
+    a: 'LTL shipments require a physical address accessible to a full-size truck and trailer. Someone must be present to receive, inspect, and sign the Bill of Lading. Inspect the shipment BEFORE signing — note any damage on the BOL. Lift gate service is available for an additional fee if you don\'t have a loading dock.',
   },
 ];
 
@@ -105,7 +134,7 @@ export default function ShippingPolicy() {
     <div style={{ minHeight: '100vh' }} className="page-wrapper">
       <SEOHead
         title="Shipping Policy"
-        description="Drywall Toolbox shipping policy: free shipping on orders over $150, same-day processing, UPS & USPS service levels, international shipping, and tracking information."
+        description="Drywall Toolbox shipping policy: free shipping on orders over $75, same-day processing by 12 PM CST, UPS, FedEx &amp; USPS service levels, international shipping, and tracking information."
         canonical="https://drywalltoolbox.com/shipping-policy"
       />
 
@@ -201,11 +230,12 @@ export default function ShippingPolicy() {
           </div>
           <div>
             <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1e3a8a', marginBottom: '2px' }}>
-              Free Standard Ground Shipping on Orders Over $150
+              Free Standard Ground Shipping on Orders Over $75
             </div>
             <div style={{ fontSize: '0.85rem', color: 'rgba(30,58,138,0.7)' }}>
               Applies to orders shipping within the contiguous 48 states. Alaska, Hawaii, and Canada
-              are calculated at actual carrier rate.
+              are calculated at actual carrier rate. Same-day shipping on in-stock orders placed
+              before 12:00 PM CST.
             </div>
           </div>
         </div>
@@ -259,7 +289,7 @@ export default function ShippingPolicy() {
             Service Levels &amp; Carriers
           </h2>
           <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.55)', margin: '0 0 20px', lineHeight: 1.6 }}>
-            Carrier and cost are calculated at checkout based on package weight, dimensions, and destination.
+            Carrier is selected automatically based on package size, weight, and destination. UPS, FedEx, USPS, and LTL freight carriers are used.
           </p>
 
           <div style={{
@@ -305,8 +335,8 @@ export default function ShippingPolicy() {
                 <div style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.6)' }}>{row.transit}</div>
                 <div style={{
                   fontSize:   '0.825rem',
-                  color:      row.price === 'Free' ? '#16a34a' : 'rgba(15,23,42,0.6)',
-                  fontWeight: row.price === 'Free' ? 700 : 400,
+                  color:      row.highlight ? '#16a34a' : 'rgba(15,23,42,0.6)',
+                  fontWeight: row.highlight ? 700 : 400,
                 }}>
                   {row.price}
                 </div>
@@ -350,8 +380,8 @@ export default function ShippingPolicy() {
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
-                'In-stock items are processed within 1 business day of order placement.',
-                'Orders before 12:00 PM CT are prioritized for same-day processing.',
+                'In-stock orders placed before 12:00 PM CST on business days ship the same day.',
+                'Orders after 12:00 PM CST or on weekends/holidays ship the next business day.',
                 'You\'ll receive a shipment confirmation email with tracking once your order is picked up by the carrier.',
                 'Backordered items ship separately at no additional charge — they never delay in-stock items.',
               ].map((text) => (
@@ -390,10 +420,10 @@ export default function ShippingPolicy() {
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
-                'We ship to all 50 US states and Canada at calculated carrier rates.',
-                'Free shipping threshold does not apply to Alaska, Hawaii, or Canada.',
-                'International orders outside North America are handled case-by-case.',
-                'Contact us before placing an international order to confirm eligibility and get a shipping quote.',
+                'Canada: Canada Post (14–21 days), FedEx Air – Duties & Taxes Included (2–3 days, all-in pricing), or FedEx Air – Duties & Taxes Excluded (2–3 days).',
+                'Worldwide: FedEx International Priority (2–3 days) or FedEx International Economy (3–5 days). All orders invoiced in USD.',
+                'Free shipping threshold does not apply to Alaska, Hawaii, Canada, or international orders.',
+                'Buyer is responsible for all import duties, taxes, and brokerage fees outside the US. Refusing delivery and failing to pay duties makes the buyer liable for both the original and return freight costs.',
               ].map((text) => (
                 <li key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                   <CheckCircle size={15} style={{ color: '#7c3aed', marginTop: '2px', flexShrink: 0 }} />
@@ -402,6 +432,50 @@ export default function ShippingPolicy() {
               ))}
             </ul>
           </div>
+        </div>
+
+        {/* ── Signature requirements ────────────────────────────────────── */}
+        <div style={{ marginBottom: 'clamp(2.5rem, 5vw, 4rem)' }}>
+          <h2 style={{
+            fontSize:      'clamp(1.3rem, 2.5vw, 1.75rem)',
+            fontWeight:    800,
+            color:         '#0f172a',
+            margin:        '0 0 6px',
+            letterSpacing: '-0.02em',
+          }}>
+            Signature Requirements
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.55)', margin: '0 0 20px', lineHeight: 1.6 }}>
+            To protect your order, signature confirmation may be required for high-value shipments.
+          </p>
+          <div style={{
+            background:   'white',
+            border:       '1px solid var(--machined-border)',
+            borderRadius: '4px',
+            overflow:     'hidden',
+          }}>
+            {[
+              { threshold: 'Orders over $300',   rule: 'Indirect signature required at apartment complexes.' },
+              { threshold: 'Orders over $500',   rule: 'Indirect signature required at all residential deliveries.' },
+              { threshold: 'Orders over $1,000', rule: 'Direct signature required at time of delivery.' },
+            ].map(({ threshold, rule }, i, arr) => (
+              <div key={threshold} style={{
+                display:          'grid',
+                gridTemplateColumns: '1fr 2fr',
+                padding:          '14px 20px',
+                borderBottom:     i < arr.length - 1 ? '1px solid var(--machined-border)' : 'none',
+                gap:              '12px',
+                alignItems:       'center',
+              }}>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#0f172a' }}>{threshold}</div>
+                <div style={{ fontSize: '0.825rem', color: 'rgba(15,23,42,0.65)', lineHeight: 1.5 }}>{rule}</div>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'rgba(15,23,42,0.5)', margin: '12px 0 0', lineHeight: 1.55 }}>
+            We recommend using UPS My Choice or FedEx Delivery Manager to manage delivery windows and redirect
+            packages as needed. Shipments must go to a valid physical address — no PO Boxes.
+          </p>
         </div>
 
         {/* ── FAQ section ───────────────────────────────────────────────── */}
@@ -458,7 +532,7 @@ export default function ShippingPolicy() {
                 to="/contact"
                 style={{ color: '#b45309', fontWeight: 600, textDecoration: 'underline' }}
               >
-                contact us within 48 hours
+                contact us within 72 hours
               </Link>
               . We will file the carrier claim and dispatch a replacement — you will not be asked to
               return a damaged item.
@@ -569,6 +643,39 @@ export default function ShippingPolicy() {
               </div>
               <div style={{ fontSize: '0.8rem', color: 'rgba(15,23,42,0.5)' }}>
                 Shipping, warranty, repairs &amp; more
+              </div>
+            </div>
+            <ArrowRight size={18} style={{ color: 'var(--primary-600)', flexShrink: 0 }} />
+          </Link>
+          <Link
+            to="/policies"
+            style={{
+              display:         'flex',
+              alignItems:      'center',
+              justifyContent:  'space-between',
+              gap:             '12px',
+              background:      'white',
+              border:          '1px solid var(--machined-border)',
+              borderRadius:    '4px',
+              padding:         '18px 22px',
+              textDecoration:  'none',
+              transition:      'border-color 0.15s, box-shadow 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--primary-600)';
+              e.currentTarget.style.boxShadow   = '0 2px 12px rgba(37,99,235,0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--machined-border)';
+              e.currentTarget.style.boxShadow   = 'none';
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a', marginBottom: '3px' }}>
+                Store Policies
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'rgba(15,23,42,0.5)' }}>
+                Returns, warranty, cancellations &amp; payment
               </div>
             </div>
             <ArrowRight size={18} style={{ color: 'var(--primary-600)', flexShrink: 0 }} />
