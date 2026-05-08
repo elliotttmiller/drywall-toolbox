@@ -96,6 +96,17 @@ def resolve_catalog_entry(
     normalized_body = body.replace("_", "-").replace(".", "-").strip("-")
     body_key = normalized_body.lower()
 
+    normalized_match = re.fullmatch(
+        r"(?P<slug>[a-z0-9]+(?:-[a-z0-9]+)*)-(?P<sku>[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)",
+        normalized_body,
+    )
+    if normalized_match:
+        return (
+            normalized_match.group("sku"),
+            normalize_slug(normalized_match.group("slug")),
+            "already_normalized",
+        )
+
     if not brand_entry:
         fallback_sku = fallback_sku_from_body(normalized_body)
         return fallback_sku, normalize_slug(normalized_body), "fallback_no_brand"
