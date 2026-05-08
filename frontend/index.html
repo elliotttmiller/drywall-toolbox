@@ -103,9 +103,10 @@
           var decoded = l.search.slice(1).split('&').map(function (s) {
             return s.replace(/~and~/g, '&');
           });
+          var pathWithoutTrailingSlash = l.pathname.endsWith('/') ? l.pathname.slice(0, -1) : l.pathname;
           window.history.replaceState(
             null, null,
-            l.pathname.slice(0, -1) + decoded[0] +
+            pathWithoutTrailingSlash + decoded[0] +
             (decoded.slice(1).length ? '?' + decoded.slice(1).join('&') : '') +
             l.hash
           );

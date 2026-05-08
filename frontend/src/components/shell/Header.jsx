@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
-import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Wrench, Layers, Settings, Star } from 'lucide-react';
+import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Wrench, Layers, Settings, Star, Bell } from 'lucide-react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import LogoWhite from '/logo-white.svg';
 import MobileSearch from './MobileSearch';
@@ -257,7 +257,6 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
             </Link>
 
             <div className="header-mobile-slot header-mobile-slot--right">
-              {!isLoading && isAuthenticated && <NotificationsBell />}
               <div ref={mobileAccountDropdownRef} className="mobile-account-wrap">
                 <button
                   onClick={() => { setMobileAccountDropdownOpen((o) => !o); setMobileMenuOpen(false); }}
@@ -300,6 +299,14 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
                             >
                               <User size={14} />
                               My Dashboard
+                            </Link>
+                            <Link
+                              to="/notifications"
+                              onClick={() => setMobileAccountDropdownOpen(false)}
+                              className="header-account-link"
+                            >
+                              <Bell size={14} />
+                              Notifications
                             </Link>
                             <div className="header-account-divider" />
                             <button
@@ -506,6 +513,14 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
                         >
                           <User size={14} />
                           My Dashboard
+                        </Link>
+                        <Link
+                          to="/notifications"
+                          onClick={() => setAccountDropdownOpen(false)}
+                          className="header-account-link"
+                        >
+                          <Bell size={14} />
+                          Notifications
                         </Link>
                         <div className="header-account-divider" />
                         <button

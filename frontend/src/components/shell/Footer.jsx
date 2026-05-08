@@ -83,15 +83,12 @@ export default function Footer() {
       }} className="footer-grid">
 
         {/* Brand column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%' }}>
+        <div className="footer-brand-col" style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', width: '100%' }}>
           <Link to="/" style={{ display: 'inline-block' }}>
             <img src={LogoWhite} alt="Drywall Toolbox" className="footer-logo" style={{ display: 'block' }} />
           </Link>
-          <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.6, textAlign: 'center', maxWidth: '180px', margin: 0 }}>
-            Professional drywall tools &amp; expert support.
-          </p>
           {/* Social links */}
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="footer-social-links" style={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'center' }}>
             {[
               { href: 'https://www.instagram.com/drywalltoolbox', Icon: Instagram, label: 'Instagram' },
               { href: 'https://facebook.com', Icon: Facebook, label: 'Facebook' },
@@ -122,7 +119,7 @@ export default function Footer() {
         </div>
 
         {/* Shop column */}
-        <div className="footer-col" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+        <div className="footer-col footer-col--shop" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
           <h5 style={{ display: 'none', textTransform: 'uppercase', fontSize: '0.67rem', letterSpacing: '0.12em', margin: '0 0 16px 0', fontWeight: 800, color: '#ffffff' }}>
             Shop
           </h5>
@@ -148,7 +145,7 @@ export default function Footer() {
         </div>
 
         {/* Support column */}
-        <div className="footer-col" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+        <div className="footer-col footer-col--support" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
           <h5 style={{ display: 'none', textTransform: 'uppercase', fontSize: '0.67rem', letterSpacing: '0.12em', margin: '0 0 16px 0', fontWeight: 800, color: '#ffffff' }}>
             Support
           </h5>

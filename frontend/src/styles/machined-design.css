@@ -503,29 +503,30 @@ aside input[type="range"],
 
 @media (max-width: 640px) {
     .footer-grid {
-        grid-template-columns: 1fr !important;
-        gap: 28px !important;
-        padding: 32px 20px !important;
+        grid-template-columns: minmax(120px, 1fr) minmax(130px, 1fr) !important;
+        gap: 14px 22px !important;
+        padding: 20px 16px !important;
+        align-items: start !important;
     }
 }
 
 /* Center Navigation and Support columns on small screens */
 @media (max-width: 640px) {
     .site-footer {
-        padding: 40px 20px;
-        grid-template-columns: 1fr !important; /* stack columns */
-        gap: 24px;
+        padding: 18px 0 0;
+        grid-template-columns: 1fr !important;
+        gap: 12px;
     }
 
     /* Reduce padding on main footer content area */
     .site-footer > div:first-child {
-        padding: 20px 0 12px 0 !important;
-        gap: 16px !important;
+        padding: 16px 16px 8px 16px !important;
+        gap: 10px !important;
     }
 
     /* Reduce padding on copyright section */
     .site-footer > div:last-child {
-        padding: 12px 20px !important;
+        padding: 10px 16px 14px !important;
     }
 
     /* Center all footer columns on mobile */
@@ -534,6 +535,28 @@ aside input[type="range"],
         flex-direction: column;
         align-items: center;
         text-align: center;
+    }
+
+    .site-footer .footer-brand-col {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        justify-content: flex-start;
+        gap: 10px !important;
+        align-self: start;
+    }
+
+    .site-footer .footer-col--shop {
+        grid-column: 2;
+        grid-row: 1;
+        justify-content: flex-start;
+        min-height: 0;
+    }
+
+    .site-footer .footer-col--support {
+        grid-column: 2;
+        grid-row: 2;
+        justify-content: flex-start;
+        min-height: 0;
     }
 
     /* Hide contact column on mobile */
@@ -548,10 +571,12 @@ aside input[type="range"],
         justify-content: center !important;
         width: 100% !important;
         margin: 0 auto !important;
+        min-height: 22px;
     }
 
     .site-footer .footer-col {
         text-align: center !important;
+        gap: 6px !important;
     }
 
     /* target columns that should center their content on mobile */
@@ -574,9 +599,19 @@ aside input[type="range"],
     }
 
     .site-footer img.footer-logo {
-        max-width: 140px;
+        max-width: 132px;
         width: auto;
-        height: clamp(36px, 10vw, 48px);
+        height: clamp(34px, 9vw, 42px);
+    }
+
+    .site-footer .footer-social-links {
+        gap: 8px !important;
+    }
+
+    .site-footer .footer-social-links a {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 7px !important;
     }
 
     .site-footer input.machined-input {
@@ -1993,7 +2028,7 @@ aside input[type="range"],
         display: flex;
         align-items: center;
         flex: 0 0 auto;
-        width: 80px; /* accommodates bell + cart on the right; menu on left */
+        width: 62px; /* balanced side slots with menu (left) and account (right) */
     }
 
     .header-mobile-slot--left {
