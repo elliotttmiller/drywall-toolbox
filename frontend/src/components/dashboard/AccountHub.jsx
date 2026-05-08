@@ -34,16 +34,17 @@ import RewardsTab    from './RewardsTab.jsx';
 import ProCareTab    from './ProCareTab.jsx';
 import AddressesTab  from './AddressesTab.jsx';
 import SettingsTab   from './SettingsTab.jsx';
+import NavbarTabs    from '../ui/NavbarTabs.jsx';
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: 'overview',   label: 'Overview',   shortLabel: 'Overview',  Icon: LayoutDashboard },
-  { id: 'orders',     label: 'Orders',     shortLabel: 'Orders',    Icon: Package         },
-  { id: 'rewards',    label: 'Rewards',    shortLabel: 'Rewards',   Icon: Star            },
-  { id: 'procare',    label: 'ProCare',    shortLabel: 'ProCare',   Icon: Shield          },
-  { id: 'addresses',  label: 'Addresses',  shortLabel: 'Addresses', Icon: MapPin          },
-  { id: 'settings',   label: 'Settings',   shortLabel: 'Settings',  Icon: Settings        },
+  { id: 'overview',   label: 'Overview',   shortLabel: 'Overview',  icon: LayoutDashboard },
+  { id: 'orders',     label: 'Orders',     shortLabel: 'Orders',    icon: Package         },
+  { id: 'rewards',    label: 'Rewards',    shortLabel: 'Rewards',   icon: Star            },
+  { id: 'procare',    label: 'ProCare',    shortLabel: 'ProCare',   icon: Shield          },
+  { id: 'addresses',  label: 'Addresses',  shortLabel: 'Addresses', icon: MapPin          },
+  { id: 'settings',   label: 'Settings',   shortLabel: 'Settings',  icon: Settings        },
 ];
 
 // ─── Animation variants ───────────────────────────────────────────────────────
@@ -286,46 +287,14 @@ export default function AccountHub() {
         </div>
       </div>
 
-      {/* ── Floating pill tab nav ── */}
+      {/* ── NavbarTabs ── */}
       <div style={ { width: '100%', padding: 'clamp(1rem, 2.5vw, 1.5rem) clamp(1.25rem, 5vw, 3rem) clamp(0.5rem, 1vw, 0.75rem)' } }>
         <div style={ { maxWidth: '1200px', margin: '0 auto' } }>
-          <div style={ { background: 'white', borderRadius: '14px', boxShadow: '0 2px 12px rgba(15,23,42,0.07)', border: '1px solid rgba(15,23,42,0.07)', padding: '6px' } }>
-            <div
-              style={ { display: 'flex', overflowX: 'auto', gap: '4px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } }
-              className="scrollbar-none"
-            >
-              { TABS.map( ( tab, index ) => {
-                const isActive = activeTab === index;
-                return (
-                  <Motion.button
-                    key={ tab.id }
-                    type="button"
-                    onClick={ () => changeTab( index ) }
-                    whileTap={ { scale: 0.93 } }
-                    style={ {
-                      display:       'flex',
-                      alignItems:    'center',
-                      gap:           '6px',
-                      padding:       '8px 14px',
-                      borderRadius:  '10px',
-                      border:        'none',
-                      fontSize:      '0.83rem',
-                      fontWeight:    isActive ? 700 : 500,
-                      whiteSpace:    'nowrap',
-                      flexShrink:    0,
-                      cursor:        'pointer',
-                      transition:    'background 0.15s, color 0.15s',
-                      background:    isActive ? '#1d4ed8' : 'transparent',
-                      color:         isActive ? 'white' : 'rgba(15,23,42,0.55)',
-                      boxShadow:     isActive ? '0 2px 8px rgba(29,78,216,0.35)' : 'none',
-                    } }
-                  >
-                    <span className="dash-tab-label">{ tab.label }</span>
-                  </Motion.button>
-                );
-              } ) }
-            </div>
-          </div>
+          <NavbarTabs
+            tabs={ TABS }
+            activeIndex={ activeTab }
+            onChange={ changeTab }
+          />
         </div>
       </div>
 

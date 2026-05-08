@@ -1,6 +1,8 @@
 import ShippingTicker from '../components/ShippingTicker';
 import { Link } from 'react-router-dom';
 import TrendingProducts from '../components/TrendingProducts';
+import FeatureSection from '../components/ui/FeatureSection';
+import TrustedBrands from '../components/ui/TrustedBrands';
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
@@ -42,26 +44,17 @@ const trustBadges = [
 ];
 
 const brandLogos = [
-  { name: 'TapeTech', src: tapeTechLogo },
-  { name: 'Columbia', src: columbiaLogo },
-  { name: 'Level5', src: level5Logo },
-  { name: 'Platinum Drywall Tools', src: platinumLogo },
-  { name: 'Asgard', src: asgardLogo },
-  { name: 'SurPro', src: surproLogo },
+  { name: 'TapeTech',              src: tapeTechLogo,  to: '/products?brand=TapeTech' },
+  { name: 'Columbia',              src: columbiaLogo,  to: '/products?brand=Columbia%20Taping%20Tools' },
+  { name: 'Level5',                src: level5Logo,    to: '/products?brand=Level5' },
+  { name: 'Platinum Drywall Tools', src: platinumLogo, to: '/products?brand=Platinum%20Drywall%20Tools' },
+  { name: 'Asgard',                src: asgardLogo,    to: '/products?brand=Asgard' },
+  { name: 'SurPro',                src: surproLogo,    to: '/products?brand=SurPro' },
 ];
 
-const desktopHeroBrands = [
-  { name: 'TapeTech', src: tapeTechLogo },
-  { name: 'Columbia', src: columbiaLogo },
-  { name: 'Level5', src: level5Logo },
-  { name: 'Platinum Drywall Tools', src: platinumLogo },
-  { name: 'Asgard', src: asgardLogo },
-  { name: 'SurPro', src: surproLogo },
-];
+const desktopHeroBrands = brandLogos;
 
 const mobileBrandLogoStyles = {
-  // Slightly reduced TapeTech and Level5 sizes to better match the visual weight
-  // of the other trusted brand logos on small screens.
   TapeTech: { height: 'clamp(26px, 5.2vw, 38px)', maxWidth: '120px' },
   Columbia: { height: 'clamp(56px, 10vw, 86px)', maxWidth: '250px' },
   Level5: { height: 'clamp(18px, 3.5vw, 26px)', maxWidth: '110px' },
@@ -69,6 +62,13 @@ const mobileBrandLogoStyles = {
   Asgard: { height: 'clamp(34px, 6vw, 48px)', maxWidth: '160px' },
   SurPro: { height: 'clamp(34px, 6vw, 50px)', maxWidth: '170px' },
 };
+
+const HOME_FEATURES = [
+  { icon: Truck,   title: 'Free Shipping',    description: 'On all qualifying orders $75+ to the contiguous USA.' },
+  { icon: Shield,  title: 'Warranty Covered', description: 'Full manufacturer coverage. We handle all claims for you.' },
+  { icon: Wrench,  title: 'Repair Services',  description: 'Professional tool repair by industry-trained technicians.' },
+  { icon: Phone,   title: 'Expert Support',   description: 'Real help from real drywall pros — not a call center.' },
+];
 
 export default function Home() {
   return (
@@ -169,42 +169,19 @@ export default function Home() {
         />
       </div>
 
-      {/* --- DESKTOP FEATURE STRIP (hidden on mobile/tablet) --- */}
-      <div className="dtb-feature-strip" aria-hidden="true">
-        <div className="dtb-feature-strip-inner">
-          <div className="dtb-feature-item">
-            <div className="dtb-feature-icon"><Truck size={18} /></div>
-            <div className="dtb-feature-text">
-              <strong>Free Shipping</strong>
-              <span>On qualifying orders</span>
-            </div>
-          </div>
-          <div className="dtb-feature-item">
-            <div className="dtb-feature-icon"><Shield size={18} /></div>
-            <div className="dtb-feature-text">
-              <strong>Warranty Covered</strong>
-              <span>Full manufacturer coverage</span>
-            </div>
-          </div>
-          <div className="dtb-feature-item">
-            <div className="dtb-feature-icon"><Wrench size={18} /></div>
-            <div className="dtb-feature-text">
-              <strong>Repair Services</strong>
-              <span>Professional tool repair</span>
-            </div>
-          </div>
-          <div className="dtb-feature-item">
-            <div className="dtb-feature-icon"><Phone size={18} /></div>
-            <div className="dtb-feature-text">
-              <strong>Expert Support</strong>
-              <span>Real help from real pros</span>
-            </div>
-          </div>
-        </div>
+      {/* --- DESKTOP FEATURE SECTION (hidden on mobile/tablet) --- */}
+      <div className="dtb-feature-strip" aria-label="Key features">
+        <FeatureSection
+          features={HOME_FEATURES}
+          style={{ padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1.5rem, 5vw, 3rem)', background: 'white' }}
+        />
       </div>
 
       {/* --- TRENDING PRODUCTS --- */}
       <TrendingProducts />
+
+      {/* --- TRUSTED BRANDS (all viewports — replaces separate mobile/desktop brand sections) --- */}
+      <TrustedBrands brands={brandLogos} title="Trusted Brands" speed={32} />
 
       {/* --- TRUST BADGES (mobile only) --- */}
       <section className="home-trust-section dtb-mobile-only">

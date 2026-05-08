@@ -2,13 +2,32 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuthContext } from '../auth/AuthContext.js';
-import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Search, Truck, Phone, Wrench } from 'lucide-react';
+import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Search, Truck, Phone, Wrench, Layers, Settings, Star } from 'lucide-react';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import LogoBlack from '/logo-black.svg';
 import LogoWhite from '/logo-white.svg';
 import MobileSearch from './MobileSearch';
 import NotificationsBell from './NotificationsBell';
 import ShippingTicker from './ShippingTicker';
 import { searchProducts } from '../services/catalog';
+
+// Mega menu shop items organized by column
+const MEGA_MENU_ITEMS = [
+  {
+    heading: 'Browse',
+    items: [
+      { to: '/all-products', label: 'All Products', sub: 'Full catalog', icon: Layers },
+      { to: '/products', label: 'Shop by Brand', sub: 'TapeTech, Columbia…', icon: Star },
+    ],
+  },
+  {
+    heading: 'Tools',
+    items: [
+      { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits & schematics', icon: Settings },
+      { to: '/toolset-builder', label: 'Toolset Builder', sub: 'Configure your kit', icon: Wrench },
+    ],
+  },
+];
 
 export default function Header({ onCartToggle }) {
   const location = useLocation();
@@ -280,43 +299,66 @@ export default function Header({ onCartToggle }) {
                 <div
                   style={{
                     position: 'absolute',
-                    top: '100%',
-                    left: 0,
+                    top: 'calc(100% + 8px)',
+                    left: '-12px',
                     backgroundColor: 'white',
                     border: '1px solid var(--machined-border)',
-                    borderRadius: '8px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
-                    minWidth: '210px',
-                    width: 'max-content',
+                    borderRadius: '14px',
+                    boxShadow: '0 20px 50px rgba(15,23,42,0.14), 0 4px 12px rgba(15,23,42,0.06)',
+                    width: '420px',
                     zIndex: 10000,
-                    marginTop: '6px',
+                    padding: '14px',
                     opacity: shopDropdownOpen ? 1 : 0,
                     visibility: shopDropdownOpen ? 'visible' : 'hidden',
                     pointerEvents: shopDropdownOpen ? 'auto' : 'none',
                     transition: 'opacity 150ms ease-out, visibility 150ms ease-out, transform 150ms ease-out',
-                    transform: shopDropdownOpen ? 'translateY(0)' : 'translateY(-4px)',
-                    padding: '6px',
+                    transform: shopDropdownOpen ? 'translateY(0) scale(1)' : 'translateY(-8px) scale(0.98)',
+                    transformOrigin: 'top left',
+                    overflow: 'hidden',
                   }}
                   className="shop-dropdown-menu"
                 >
-                  {[
-                    { to: '/all-products', label: 'All Products', sub: 'Browse our full catalog' },
-                    { to: '/products', label: 'Shop by Brand', sub: 'TapeTech, Columbia, SurPro�' },
-                    { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits & schematics' },
-                    { to: '/toolset-builder', label: 'Toolset Builder', sub: 'Configure your perfect kit' },
-                  ].map(({ to, label, sub }) => (
+                  {/* Accent line */}
+                  <div style={{ height: '3px', background: 'linear-gradient(90deg, var(--primary-600), var(--primary-400))', borderRadius: '3px', marginBottom: '12px' }} />
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                    {MEGA_MENU_ITEMS.map((col) => (
+                      <div key={col.heading}>
+                        <p style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(15,23,42,0.35)', margin: '0 0 6px 8px' }}>
+                          {col.heading}
+                        </p>
+                        {col.items.map(({ to, label, sub, icon: Icon }) => (
+                          <Link
+                            key={to}
+                            to={to}
+                            onClick={() => setShopDropdownOpen(false)}
+                            style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '9px 10px', textDecoration: 'none', borderRadius: '9px', transition: 'background 130ms' }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(37,99,235,0.06)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+                              <Icon size={14} style={{ color: 'var(--primary-600)' }} />
+                            </div>
+                            <span>
+                              <span style={{ display: 'block', fontWeight: 700, fontSize: '0.84rem', color: '#0f172a', lineHeight: 1.3 }}>{label}</span>
+                              <span style={{ display: 'block', fontSize: '0.71rem', color: 'rgba(15,23,42,0.45)', marginTop: '1px' }}>{sub}</span>
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bottom CTA */}
+                  <div style={{ borderTop: '1px solid var(--machined-border)', marginTop: '10px', paddingTop: '10px' }}>
                     <Link
-                      key={to}
-                      to={to}
+                      to="/all-products"
                       onClick={() => setShopDropdownOpen(false)}
-                      style={{ display: 'block', padding: '10px 14px', textDecoration: 'none', borderRadius: '6px', transition: 'background 130ms' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--alloy-base)'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px', borderRadius: '8px', textDecoration: 'none', background: 'linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%)', color: 'white', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.02em' }}
                     >
-                      <span style={{ display: 'block', fontWeight: 700, fontSize: '0.83rem', color: '#0f172a', lineHeight: 1.3 }}>{label}</span>
-                      <span style={{ display: 'block', fontSize: '0.7rem', color: 'rgba(15,23,42,0.45)', marginTop: '1px' }}>{sub}</span>
+                      View All Products →
                     </Link>
-                  ))}
+                  </div>
                 </div>
               </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import SEOHead from '../components/SEOHead';
+import NavbarTabs from '../components/ui/NavbarTabs';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    FAQ data — grouped by category
@@ -357,50 +358,14 @@ export default function FAQ() {
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
           {isMobile ? (
-            /* ── Mobile: horizontal pill tabs + stacked accordion ── */
+            /* ── Mobile: NavbarTabs + stacked accordion ── */
             <>
-              {/* Scrollable pill category row */}
-              <div style={{
-                overflowX: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                marginBottom: '24px',
-                /* hide scrollbar visually */
-                msOverflowStyle: 'none',
-                scrollbarWidth: 'none',
-              }}>
-                <div style={{
-                  display: 'flex',
-                  gap: '8px',
-                  minWidth: 'max-content',
-                  paddingBottom: '4px',
-                }}>
-                  {FAQ_CATEGORIES.map((cat) => {
-                    const active = cat.id === activeCategory;
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => setActiveCategory(cat.id)}
-                        style={{
-                          background: active ? 'var(--primary-600)' : 'rgba(15,23,42,0.05)',
-                          border: active ? 'none' : '1px solid var(--machined-border)',
-                          borderRadius: '99px',
-                          padding: '8px 16px',
-                          fontSize: '0.8rem',
-                          fontWeight: active ? 700 : 500,
-                          color: active ? 'white' : 'rgba(15,23,42,0.65)',
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          transition: 'all 0.15s',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {cat.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <NavbarTabs
+                tabs={FAQ_CATEGORIES.map((cat) => ({ id: cat.id, label: cat.label }))}
+                activeIndex={FAQ_CATEGORIES.findIndex((c) => c.id === activeCategory)}
+                onChange={(idx) => setActiveCategory(FAQ_CATEGORIES[idx].id)}
+                style={{ marginBottom: '24px' }}
+              />
 
               {/* Active category heading */}
               <div style={{ marginBottom: '16px' }}>
