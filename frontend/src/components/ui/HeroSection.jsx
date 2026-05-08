@@ -11,7 +11,7 @@
  *   className    string
  */
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import Button from './Button.jsx';
@@ -169,13 +169,13 @@ export default function HeroSection({
             }}
           >
             {stats.map((stat, i) => (
-              <>
-                {i > 0 && <div key={`div-${i}`} style={{ width: '1px', height: '32px', background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />}
-                <div key={stat.label} style={{ flex: 1, textAlign: 'center' }}>
+              <React.Fragment key={stat.label}>
+                {i > 0 && <div style={{ width: '1px', height: '32px', background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />}
+                <div style={{ flex: 1, textAlign: 'center' }}>
                   <p style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: 'white', letterSpacing: '-0.03em', lineHeight: 1 }}>{stat.value}</p>
                   <p style={{ margin: '3px 0 0', fontSize: '0.7rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{stat.label}</p>
                 </div>
-              </>
+              </React.Fragment>
             ))}
           </Motion.div>
         )}

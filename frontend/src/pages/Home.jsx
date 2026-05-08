@@ -52,8 +52,6 @@ const brandLogos = [
   { name: 'SurPro',                src: surproLogo,    to: '/products?brand=SurPro' },
 ];
 
-const desktopHeroBrands = brandLogos;
-
 const mobileBrandLogoStyles = {
   TapeTech: { height: 'clamp(26px, 5.2vw, 38px)', maxWidth: '120px' },
   Columbia: { height: 'clamp(56px, 10vw, 86px)', maxWidth: '250px' },
@@ -136,7 +134,7 @@ export default function Home() {
           {/* Right: Trusted Brands (desktop only) */}
           <div className="dtb-hero-visual">
             <div className="dtb-hero-brands">
-              {desktopHeroBrands.map((brand) => (
+              {brandLogos.map((brand) => (
                 <Link
                   key={brand.name}
                   to={`/products?brand=${encodeURIComponent(brand.name === 'Columbia' ? 'Columbia Taping Tools' : brand.name)}`}

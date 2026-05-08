@@ -2849,58 +2849,7 @@ aside input[type="range"],
         background: #ffffff;
         border-bottom: 1px solid var(--machined-border);
     }
-
-    .dtb-feature-strip-inner {
-        max-width: 1400px;
-        margin: 0 auto;
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0;
-    }
-
-    .dtb-feature-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 28px 24px;
-        border-right: 1px solid var(--machined-border);
-        text-align: center;
-    }
-
-    .dtb-feature-item:last-child { border-right: none; }
-
-    .dtb-feature-item:hover { background: transparent; }
-
-    .dtb-feature-icon {
-        display: none;
-    }
-
-    .dtb-feature-item:hover .dtb-feature-icon {
-        background: rgba(37,99,235,0.15);
-    }
-
-    .dtb-feature-text {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .dtb-feature-text strong {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.2;
-    }
-
-    .dtb-feature-text span {
-        font-size: 0.75rem;
-        color: rgba(15,23,42,0.55);
-        line-height: 1.3;
-    }
+    /* Inner strip, items, icons and text are now rendered by ui/FeatureSection */
 }
 
 /* ── FOOTER: Desktop 4-column Enhancement ──────────────

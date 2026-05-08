@@ -120,7 +120,7 @@ export default function NavbarTabs({ tabs = [], activeIndex = 0, onChange, class
                 />
               )}
               <span className="dtb-navtab-label">
-                {tab.shortLabel && window.innerWidth < 480 ? tab.shortLabel : tab.label}
+                {tab.label}
               </span>
             </Motion.button>
           );
