@@ -70,7 +70,7 @@ export default function Home() {
 
       {/* --- HERO (all breakpoints) --- */}
       <HeroSection
-        title={<>The Pros&apos; One-Stop Shop<br />for Drywall Tools.</>}
+        titleLines={["The Pros\u2019 One-Stop Shop", "for Drywall Tools."]}
         subtitle="Production-grade taping, finishing, and sanding equipment from the industry's most trusted brands at unbeatable prices with lightning-fast shipping."
         ctaLinks={[
           { to: '/all-products', label: 'Shop All Products' },

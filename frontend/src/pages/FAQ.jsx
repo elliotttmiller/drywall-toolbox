@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import SEOHead from '../components/shared/SEOHead';
 import NavbarTabs from '../components/ui/NavbarTabs';
+import Accordion from '../components/ui/Accordion';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    FAQ data — grouped by category
@@ -189,89 +190,9 @@ const FAQ_CATEGORIES = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Single accordion item
-   ───────────────────────────────────────────────────────────────────────── */
-function AccordionItem({ question, answer, isOpen, onToggle, isMobile }) {
-  return (
-    <div style={{
-      borderBottom: '1px solid var(--machined-border)',
-    }}>
-      <button
-        type="button"
-        onClick={onToggle}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          padding: '20px 0',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          textAlign: 'left',
-        }}
-      >
-        <span style={{
-          fontSize: 'clamp(0.9rem, 2vw, 1rem)',
-          fontWeight: 700,
-          color: isOpen ? 'var(--primary-600)' : '#0f172a',
-          lineHeight: 1.4,
-          transition: 'color 0.18s',
-        }}>
-          {question}
-        </span>
-        <span style={{
-          flexShrink: 0,
-          width: '28px', height: '28px',
-          borderRadius: '50%',
-          background: isOpen ? 'var(--primary-600)' : 'rgba(15,23,42,0.06)',
-          border: isOpen ? 'none' : '1px solid var(--machined-border)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'background 0.18s, border 0.18s',
-        }}>
-          <svg
-            width="12" height="12"
-            viewBox="0 0 24 24" fill="none"
-            stroke={isOpen ? 'white' : '#64748b'}
-            strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            style={{ transition: 'transform 0.22s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </span>
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <Motion.div
-            key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <p style={{
-              margin: '0 0 20px 0',
-              fontSize: 'clamp(0.875rem, 2vw, 0.95rem)',
-              color: 'rgba(15,23,42,0.65)',
-              lineHeight: 1.7,
-              paddingRight: isMobile ? '0' : '44px',
-            }}>
-              {answer}
-            </p>
-          </Motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
    Main FAQ page
    ───────────────────────────────────────────────────────────────────────── */
 export default function FAQ() {
-  const [openItems, setOpenItems] = useState({});
   const [activeCategory, setActiveCategory] = useState('shipping-orders');
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
@@ -284,14 +205,14 @@ export default function FAQ() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const toggle = (catId, qIdx) => {
-    const key = `${catId}-${qIdx}`;
-    setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
   const activeData = FAQ_CATEGORIES.find((c) => c.id === activeCategory);
 
-
+  /* Transform questions into the shape Accordion expects */
+  const accordionItems = (activeData?.questions || []).map((q, i) => ({
+    id: `${activeCategory}-${i}`,
+    question: q.q,
+    answer: q.a,
+  }));
 
   return (
     <div style={{ minHeight: '100vh' }} className="page-wrapper">
@@ -390,18 +311,7 @@ export default function FAQ() {
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.16 }}
                 >
-                  <div style={{ borderTop: '1px solid var(--machined-border)' }}>
-                    {activeData?.questions.map((item, idx) => (
-                      <AccordionItem
-                        key={idx}
-                        question={item.q}
-                        answer={item.a}
-                        isOpen={!!openItems[`${activeCategory}-${idx}`]}
-                        onToggle={() => toggle(activeCategory, idx)}
-                        isMobile
-                      />
-                    ))}
-                  </div>
+                  <Accordion items={accordionItems} isMobile />
                 </Motion.div>
               </AnimatePresence>
             </>
@@ -474,17 +384,7 @@ export default function FAQ() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.18 }}
                   >
-                    <div style={{ borderTop: '1px solid var(--machined-border)' }}>
-                      {activeData?.questions.map((item, idx) => (
-                        <AccordionItem
-                          key={idx}
-                          question={item.q}
-                          answer={item.a}
-                          isOpen={!!openItems[`${activeCategory}-${idx}`]}
-                          onToggle={() => toggle(activeCategory, idx)}
-                        />
-                      ))}
-                    </div>
+                    <Accordion items={accordionItems} />
                   </Motion.div>
                 </AnimatePresence>
               </div>

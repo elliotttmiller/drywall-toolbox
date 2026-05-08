@@ -2,10 +2,13 @@
  * ui/HeroSection.jsx — Full-width dark centered hero
  *
  * Props:
- *   title        string | ReactNode
+ *   title        string | ReactNode  — fallback headline (used when titleLines absent)
+ *   titleLines   string[]            — if provided, each string becomes an animated line
+ *                                      with per-character slide-in stagger
  *   subtitle     string
  *   ctaLinks     [{ to, label }]
- *   brands       [{ name, src, to }]   logo row rendered at bottom
+ *   brands       [{ name, src, to }] — logo marquee rendered at the very bottom
+ *   showCarousel boolean             — render NavigationCarousel above brands (default: true)
  *   className    string
  */
 
@@ -13,7 +16,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import TrustedBrands from './TrustedBrands';
+import NavigationCarousel from './NavigationCarousel';
 
+/* ── Stagger variants for the overall content block ───────────────────────── */
 const container = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.09 } },
@@ -23,12 +28,81 @@ const item = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
 };
 
+/* ── Per-character slide-in variants ──────────────────────────────────────── */
+const charContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.024, delayChildren: 0.08 },
+  },
+};
+const charVariant = {
+  hidden:  { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.40, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+/**
+ * Returns the display value for a single character inside the animated title.
+ * Spaces are replaced with a non-breaking space so that inline-block spans
+ * don't collapse adjacent whitespace.
+ */
+function formatCharForAnimation(char) {
+  return char === ' ' ? '\u00A0' : char;
+}
+
+/**
+ * SlideInTitle — renders each character of every line with a staggered
+ * slide-up animation.  Lines are separated by a block-level <span> so
+ * natural line-breaking is preserved without needing <br> elements.
+ */
+function SlideInTitle({ lines }) {
+  return (
+    <Motion.h1
+      variants={charContainer}
+      /* SlideInTitle manages its own animation; skip the outer `item` variant */
+      initial="hidden"
+      animate="visible"
+      style={{
+        margin: '0 0 24px',
+        fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
+        fontWeight: 800,
+        lineHeight: 1.07,
+        letterSpacing: '-0.03em',
+        color: '#f0f6ff',
+      }}
+    >
+      {lines.map((line, li) => (
+        <span key={li} style={{ display: 'block' }}>
+          {line.split('').map((char, ci) => (
+            <Motion.span
+              key={`${li}-${ci}`}
+              variants={charVariant}
+              style={{
+                display: 'inline-block',
+                /* Replace space with non-breaking space so inline-block doesn't collapse it */
+                whiteSpace: 'pre',
+              }}
+            >
+              {formatCharForAnimation(char)}
+            </Motion.span>
+          ))}
+        </span>
+      ))}
+    </Motion.h1>
+  );
+}
+
 /* ─── Component ───────────────────────────────────────────────────────────── */
 export default function HeroSection({
   title,
+  titleLines,
   subtitle,
   ctaLinks = [],
   brands = [],
+  showCarousel = true,
   className = '',
 }) {
   return (
@@ -95,20 +169,25 @@ export default function HeroSection({
           </span>
         </Motion.div>
 
-        {/* Headline */}
-        <Motion.h1
-          variants={item}
-          style={{
-            margin: '0 0 24px',
-            fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
-            fontWeight: 800,
-            lineHeight: 1.07,
-            letterSpacing: '-0.03em',
-            color: '#f0f6ff',
-          }}
-        >
-          {title}
-        </Motion.h1>
+        {/* Headline — per-character animation when titleLines is provided */}
+        {titleLines && titleLines.length > 0
+          ? <SlideInTitle lines={titleLines} />
+          : (
+            <Motion.h1
+              variants={item}
+              style={{
+                margin: '0 0 24px',
+                fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
+                fontWeight: 800,
+                lineHeight: 1.07,
+                letterSpacing: '-0.03em',
+                color: '#f0f6ff',
+              }}
+            >
+              {title}
+            </Motion.h1>
+          )
+        }
 
         {/* Subtitle */}
         {subtitle && (
@@ -152,6 +231,13 @@ export default function HeroSection({
           </Motion.div>
         )}
       </Motion.div>
+
+      {/* ── Navigation carousel — above Trusted Brands ──────────────────── */}
+      {showCarousel && (
+        <div style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+          <NavigationCarousel />
+        </div>
+      )}
 
       {/* Brand marquee — transparent so the hero background shows through */}
       {brands.length > 0 && (
