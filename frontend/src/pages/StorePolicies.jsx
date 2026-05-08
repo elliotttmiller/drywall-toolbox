@@ -48,6 +48,7 @@ const WARRANTY_ROWS = [
 
 /* ─── Contact channels ───────────────────────────────────────────────────────── */
 const CONTACT_ROWS = [
+  // TODO: replace placeholder with real phone number when available
   { channel: 'Phone',          detail: '(XXX) XXX-XXXX — Mon–Fri 8:00 AM – 6:00 PM CST' },
   { channel: 'General Email',  detail: 'support@drywalltoolbox.com' },
   { channel: 'Returns Email',  detail: 'returns@drywalltoolbox.com' },

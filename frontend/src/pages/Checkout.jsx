@@ -33,7 +33,7 @@ import { syncAndPlace } from '../api/cart.js';
 import veeqoService from '../services/veeqo';
 import SEOHead from '../components/SEOHead';
 import { useAuthContext } from '../auth/AuthContext.js';
-import { FREE_SHIP_THRESHOLD } from '../constants/shipping';
+import { FREE_SHIP_THRESHOLD, ESTIMATED_SHIP_RATE } from '../constants/shipping';
 import {
   getUserPoints,
   redeemPoints,
@@ -487,7 +487,7 @@ export default function Checkout() {
   // to a provisional estimate matching the server-side tiered logic.
   const shipping = selectedRate
     ? selectedRate.price
-    : ( subtotal >= FREE_SHIP_THRESHOLD ? 0 : 25 );
+    : ( subtotal >= FREE_SHIP_THRESHOLD ? 0 : ESTIMATED_SHIP_RATE );
   const tax   = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
