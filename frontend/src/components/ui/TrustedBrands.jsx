@@ -22,8 +22,11 @@ const BRAND_SIZE_MAP = {
   SurPro: { height: 'clamp(28px, 5vw, 44px)', maxWidth: '150px' },
 };
 
-function BrandLogo({ brand, dark = false }) {
+function BrandLogo({ brand, dark = false, transparent = false }) {
   const sizeStyle = BRAND_SIZE_MAP[brand.name] || { height: 'clamp(24px, 4vw, 38px)', maxWidth: '140px' };
+  const baseOpacity = dark ? 0.58 : transparent ? 0.82 : 0.72;
+  const hoverOpacity = dark ? 0.9 : 1;
+
   return (
     <Link
       to={brand.to}
@@ -36,11 +39,17 @@ function BrandLogo({ brand, dark = false }) {
         justifyContent: 'center',
         padding: '0 clamp(16px, 3vw, 28px)',
         flexShrink: 0,
-        opacity: dark ? 0.45 : 0.65,
-        transition: 'opacity 0.22s',
+        opacity: baseOpacity,
+        transition: 'opacity 0.22s ease, transform 0.22s ease',
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.opacity = dark ? '0.85' : '1'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.opacity = dark ? '0.45' : '0.65'; }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.opacity = `${hoverOpacity}`;
+        e.currentTarget.style.transform = 'translateY(-1px)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.opacity = `${baseOpacity}`;
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
     >
       <img
         src={brand.src}
@@ -51,6 +60,7 @@ function BrandLogo({ brand, dark = false }) {
           ...sizeStyle,
           width: 'auto',
           objectFit: 'contain',
+          filter: transparent ? 'drop-shadow(0 2px 10px rgba(255,255,255,0.10))' : 'none',
         }}
       />
     </Link>
@@ -129,7 +139,7 @@ export default function TrustedBrands({ brands = [], title = 'Trusted Brands', s
         >
           {/* Duplicate twice for seamless loop */}
           {[...brands, ...brands].map((brand, i) => (
-            <BrandLogo key={`${brand.name}-${i}`} brand={brand} dark={dark} />
+            <BrandLogo key={`${brand.name}-${i}`} brand={brand} dark={dark} transparent={transparent} />
           ))}
         </div>
       </div>

@@ -61,6 +61,7 @@ function formatCharForAnimation(char) {
 function SlideInTitle({ lines }) {
   return (
     <Motion.h1
+      className="dtb-hero-title-gradient"
       variants={charContainer}
       /* SlideInTitle manages its own animation; skip the outer `item` variant */
       initial="hidden"
@@ -71,7 +72,6 @@ function SlideInTitle({ lines }) {
         fontWeight: 800,
         lineHeight: 1.07,
         letterSpacing: '-0.03em',
-        color: '#f0f6ff',
       }}
     >
       {lines.map((line, li) => (
@@ -174,6 +174,7 @@ export default function HeroSection({
           ? <SlideInTitle lines={titleLines} />
           : (
             <Motion.h1
+              className="dtb-hero-title-gradient"
               variants={item}
               style={{
                 margin: '0 0 24px',
@@ -181,7 +182,6 @@ export default function HeroSection({
                 fontWeight: 800,
                 lineHeight: 1.07,
                 letterSpacing: '-0.03em',
-                color: '#f0f6ff',
               }}
             >
               {title}
@@ -261,6 +261,18 @@ export default function HeroSection({
         }
         .dtb-hero-cta:active { transform: scale(0.96) !important; }
 
+        .dtb-hero-title-gradient {
+          color: transparent;
+          background: linear-gradient(180deg, #ffffff 0%, #dbe3ef 55%, #bcc7d8 100%);
+          background-size: 220% 220%;
+          background-position: 50% 35%;
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 0 22px rgba(226, 236, 251, 0.16);
+          animation: dtb-hero-title-sheen 8s ease-in-out infinite;
+        }
+
         .dtb-hero-cta--primary {
           border: none;
           background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
@@ -286,6 +298,11 @@ export default function HeroSection({
         @keyframes dtb-hero-pulse {
           0%, 100% { opacity: 1;   transform: scale(1);    }
           50%       { opacity: 0.3; transform: scale(0.80); }
+        }
+
+        @keyframes dtb-hero-title-sheen {
+          0%, 100% { background-position: 50% 35%; }
+          50%      { background-position: 50% 65%; }
         }
 
         /* ── Mobile tweaks ───────────────────────────────────────────── */
@@ -318,7 +335,6 @@ export default function HeroSection({
     </section>
   );
 }
-
 
 
 
