@@ -188,7 +188,7 @@ function NavCard({ card, width }) {
         background: hov ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.04)',
         cursor: 'pointer',
         transition: 'background 0.22s, border-color 0.22s, transform 0.32s ease, box-shadow 0.22s, opacity 0.26s',
-        transform: `${hov ? 'translateY(-3px)' : 'translateY(0)'} perspective(1000px) rotateY(${rotateY}deg) translateZ(${translateZ}px) scale(${scale})`,
+        transform: `${hov ? 'translateY(-3px)' : 'translateY(0)'} rotateY(${rotateY}deg) translateZ(${translateZ}px) scale(${scale})`,
         boxShadow: hov ? '0 8px 24px rgba(37,99,235,0.20)' : 'none',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
@@ -309,7 +309,7 @@ export default function NavigationCarousel() {
   };
 
   useEffect(() => {
-    if (paused || maxActive <= 0) return undefined;
+    if (paused || maxActive <= 0) return;
     const id = setInterval(() => {
       next();
     }, AUTO_SLIDE_INTERVAL_MILLISECONDS);

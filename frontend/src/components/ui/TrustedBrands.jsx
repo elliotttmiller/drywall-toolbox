@@ -43,8 +43,7 @@ function BrandLogo({ brand, dark = false, transparent = false }) {
         justifyContent: 'center',
         padding: '0 clamp(16px, 3vw, 28px)',
         flexShrink: 0,
-        opacity: baseOpacity,
-        transition: 'opacity 0.22s ease, transform 0.22s ease',
+        '--dtb-brand-base-opacity': baseOpacity,
       }}
     >
       <img
@@ -148,8 +147,12 @@ export default function TrustedBrands({ brands = [], title = 'Trusted Brands', s
         .dtb-brands-track:hover {
           animation-play-state: paused;
         }
+        .dtb-trusted-brand-link {
+          opacity: var(--dtb-brand-base-opacity, 0.72);
+          transition: opacity 0.22s ease, transform 0.22s ease;
+        }
         .dtb-trusted-brand-link:hover {
-          opacity: 1 !important;
+          opacity: 1;
           transform: translateY(-1px);
         }
 
