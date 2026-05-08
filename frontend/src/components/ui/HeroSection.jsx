@@ -269,7 +269,6 @@ export default function HeroSection({
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          text-shadow: 0 0 22px rgba(226, 236, 251, 0.16);
           animation: dtb-hero-title-sheen 8s ease-in-out infinite;
         }
 

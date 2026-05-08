@@ -25,8 +25,6 @@ const BRAND_SIZE_MAP = {
 function BrandLogo({ brand, dark = false, transparent = false }) {
   const sizeStyle = BRAND_SIZE_MAP[brand.name] || { height: 'clamp(24px, 4vw, 38px)', maxWidth: '140px' };
   const baseOpacity = dark ? 0.58 : transparent ? 0.82 : 0.72;
-  const hoverOpacity = dark ? 0.9 : 1;
-
   return (
     <Link
       to={brand.to}
@@ -41,14 +39,6 @@ function BrandLogo({ brand, dark = false, transparent = false }) {
         flexShrink: 0,
         opacity: baseOpacity,
         transition: 'opacity 0.22s ease, transform 0.22s ease',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.opacity = `${hoverOpacity}`;
-        e.currentTarget.style.transform = 'translateY(-1px)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.opacity = `${baseOpacity}`;
-        e.currentTarget.style.transform = 'translateY(0)';
       }}
     >
       <img
@@ -152,6 +142,11 @@ export default function TrustedBrands({ brands = [], title = 'Trusted Brands', s
         .dtb-brands-track:hover {
           animation-play-state: paused;
         }
+        .dtb-trusted-brand-link:hover {
+          opacity: 1 !important;
+          transform: translateY(-1px);
+        }
+
         @media (min-width: 1025px) {
           .dtb-trusted-brand-link {
             padding: 0 clamp(30px, 5vw, 64px) !important;

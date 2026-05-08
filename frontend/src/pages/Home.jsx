@@ -72,10 +72,6 @@ export default function Home() {
       <HeroSection
         titleLines={["Pro-Grade Drywall Tools", "Built for Faster Finishes."]}
         subtitle="Shop trusted taping, finishing, and sanding tools from top brands—with competitive pricing and fast shipping."
-        ctaLinks={[
-          { to: '/all-products', label: 'Shop All Products' },
-          { to: '/schematics',   label: 'View Schematics'  },
-        ]}
         brands={brandLogos}
       />
 
