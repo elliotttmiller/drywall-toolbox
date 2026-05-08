@@ -4,7 +4,6 @@ import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
 import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Wrench, Layers, Settings, Star } from 'lucide-react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
-import LogoBlack from '/logo-black.svg';
 import LogoWhite from '/logo-white.svg';
 import MobileSearch from './MobileSearch';
 import NotificationsBell from './NotificationsBell';
@@ -51,11 +50,13 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+  const [mobileAccountDropdownOpen, setMobileAccountDropdownOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [desktopSearchQuery, setDesktopSearchQuery] = useState('');
   const [desktopSearchResults, setDesktopSearchResults] = useState([]);
   const [desktopSearchLoading, setDesktopSearchLoading] = useState(false);
   const accountDropdownRef = useRef(null);
+  const mobileAccountDropdownRef = useRef(null);
   const desktopSearchRef = useRef(null);
   const desktopSearchInputRef = useRef(null);
   const desktopSearchRequestIdRef = useRef(0);
@@ -81,6 +82,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     setShopDropdownOpen(false);
     setMobileMenuOpen(false);
     setAccountDropdownOpen(false);
+    setMobileAccountDropdownOpen(false);
     setDesktopSearchOpen(false);
   };
 
@@ -124,6 +126,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
       setShopDropdownOpen(false);
       setMobileMenuOpen(false);
       setAccountDropdownOpen(false);
+      setMobileAccountDropdownOpen(false);
       setDesktopSearchOpen(false);
     }, 0);
     return () => clearTimeout(t);
@@ -173,6 +176,10 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
       // Close account dropdown if clicking outside its container
       if (accountDropdownRef.current && !accountDropdownRef.current.contains(e.target)) {
         setAccountDropdownOpen(false);
+      }
+      // Close mobile account dropdown if clicking outside its container
+      if (mobileAccountDropdownRef.current && !mobileAccountDropdownRef.current.contains(e.target)) {
+        setMobileAccountDropdownOpen(false);
       }
       if (desktopSearchRef.current && !desktopSearchRef.current.contains(e.target)) {
         setDesktopSearchOpen(false);
@@ -251,16 +258,92 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
 
             <div className="header-mobile-slot header-mobile-slot--right">
               {!isLoading && isAuthenticated && <NotificationsBell />}
-              <button
-                onClick={onCartToggle}
-                className="cart-toggle header-icon"
-                aria-label="Toggle cart"
-              >
-                <ShoppingCart size={22} />
-                {getCartCount() > 0 && (
-                  <span className="cart-badge">{getCartCount()}</span>
-                )}
-              </button>
+              <div ref={mobileAccountDropdownRef} className="mobile-account-wrap">
+                <button
+                  onClick={() => { setMobileAccountDropdownOpen((o) => !o); setMobileMenuOpen(false); }}
+                  className="header-mobile-account-toggle header-icon"
+                  aria-label="Account menu"
+                  aria-expanded={mobileAccountDropdownOpen}
+                >
+                  <User size={22} />
+                </button>
+
+                <AnimatePresence>
+                  {mobileAccountDropdownOpen && (
+                    <Motion.div
+                      className="mobile-account-dropdown"
+                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {!isLoading && (
+                        isAuthenticated ? (
+                          <>
+                            <div className="header-account-summary">
+                              <div className="header-account-avatar">
+                                <User size={15} />
+                              </div>
+                              <div className="header-account-copy">
+                                <p className="header-account-name">
+                                  {user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.email || 'My Account'}
+                                </p>
+                                {user?.email && (
+                                  <p className="header-account-email">{user.email}</p>
+                                )}
+                              </div>
+                            </div>
+                            <Link
+                              to="/dashboard"
+                              onClick={() => setMobileAccountDropdownOpen(false)}
+                              className="header-account-link"
+                            >
+                              <User size={14} />
+                              My Dashboard
+                            </Link>
+                            <div className="header-account-divider" />
+                            <button
+                              onClick={async () => { setMobileAccountDropdownOpen(false); await logout(); }}
+                              className="header-account-link header-account-link--danger"
+                            >
+                              <LogOut size={14} />
+                              Sign Out
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <div className="header-account-guest-header">
+                              <p className="header-account-guest-title">My Account</p>
+                            </div>
+                            <Link
+                              to="/login"
+                              onClick={() => setMobileAccountDropdownOpen(false)}
+                              className="header-account-link header-account-link--strong"
+                            >
+                              <LogIn size={14} />
+                              Sign In
+                            </Link>
+                            <div className="header-account-divider header-account-divider--inset" />
+                            <div className="header-account-guest-body">
+                              <Link
+                                to="/register"
+                                onClick={() => setMobileAccountDropdownOpen(false)}
+                                className="header-account-cta"
+                              >
+                                <UserPlus size={13} />
+                                Create Account
+                              </Link>
+                              <p className="header-account-note">
+                                No account needed to browse or checkout.
+                              </p>
+                            </div>
+                          </>
+                        )
+                      )}
+                    </Motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
@@ -527,56 +610,31 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
                     {label}
                   </Link>
                 ))}
-
-                <div className="mobile-nav-account">
-                  {!isLoading && (
-                    isAuthenticated ? (
-                      <Link
-                        to="/dashboard"
-                        onClick={closeMobileMenu}
-                        className="mobile-nav-user-card"
-                      >
-                        <div className="mobile-nav-avatar">
-                          <User size={17} style={{ color: 'white' }} />
-                        </div>
-                        <div className="mobile-nav-user-copy">
-                          <span className="mobile-nav-user-name">
-                            {user?.first_name && user?.last_name
-                              ? `${user.first_name} ${user.last_name}`
-                              : user?.email ? user.email.split('@')[0] : 'My Account'}
-                          </span>
-                          {user?.email && (
-                            <span className="mobile-nav-user-email">{user.email}</span>
-                          )}
-                        </div>
-                      </Link>
-                    ) : (
-                      <div className="mobile-nav-guest">
-                        <Link
-                          to="/login"
-                          onClick={closeMobileMenu}
-                          className="mobile-nav-guest-btn mobile-nav-guest-btn--signin"
-                        >
-                          <LogIn size={15} />
-                          Sign In
-                        </Link>
-                        <Link
-                          to="/register"
-                          onClick={closeMobileMenu}
-                          className="mobile-nav-guest-btn mobile-nav-guest-btn--register"
-                        >
-                          <UserPlus size={15} />
-                          Create Account
-                        </Link>
-                      </div>
-                    )
-                  )}
-                </div>
               </nav>
             </Motion.div>
           )}
         </AnimatePresence>
       </header>
+
+      {/* Floating cart button — mobile only */}
+      <AnimatePresence>
+        <Motion.button
+          key="mobile-cart-fab"
+          className="mobile-cart-fab"
+          onClick={onCartToggle}
+          aria-label="Open cart"
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.7, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 340, damping: 24 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <ShoppingCart size={22} />
+          {getCartCount() > 0 && (
+            <span className="mobile-cart-fab-badge">{getCartCount()}</span>
+          )}
+        </Motion.button>
+      </AnimatePresence>
     </>
   );
 }
