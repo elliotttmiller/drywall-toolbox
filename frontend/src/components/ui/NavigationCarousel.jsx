@@ -81,7 +81,7 @@ const TABLET_BREAKPOINT = 460;
 const DESKTOP_VISIBLE_CARDS = 3;
 const TABLET_VISIBLE_CARDS = 2.2;
 const MOBILE_VISIBLE_CARDS = 1.6;
-const AUTO_SLIDE_INTERVAL_MS = 4600;
+const AUTO_SLIDE_INTERVAL_MILLISECONDS = 4600;
 
 const CARD_3D_ROTATION_FACTOR = -12;
 const CARD_3D_BASE_TRANSLATE_Z = 22;
@@ -311,10 +311,10 @@ export default function NavigationCarousel() {
   useEffect(() => {
     if (paused || maxActive <= 0) return undefined;
     const id = setInterval(() => {
-      setActive((a) => (a >= maxActive ? 0 : a + 1));
-    }, AUTO_SLIDE_INTERVAL_MS);
+      next();
+    }, AUTO_SLIDE_INTERVAL_MILLISECONDS);
     return () => clearInterval(id);
-  }, [paused, maxActive]);
+  }, [paused, maxActive, next]);
 
   /* Horizontal padding for arrow clearance */
   const sidePad = isMobile ? MOBILE_SIDE_PADDING : DESKTOP_SIDE_PADDING;
@@ -354,7 +354,6 @@ export default function NavigationCarousel() {
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onPointerDown={() => setPaused(true)}
-          onPointerUp={() => setPaused(false)}
         >
           <Motion.div
             drag="x"
@@ -373,13 +372,16 @@ export default function NavigationCarousel() {
             }}
             whileDrag={{ cursor: 'grabbing' }}
           >
-            {NAV_CARDS.map((card, index) => (
-              <NavCard
-                key={card.id}
-                card={{ ...card, depth: cardW > 0 ? index - focalIndex : 0 }}
-                width={cardW}
-              />
-            ))}
+            {NAV_CARDS.map((card, index) => {
+              const depth = cardW > 0 ? index - focalIndex : 0;
+              return (
+                <NavCard
+                  key={card.id}
+                  card={{ ...card, depth }}
+                  width={cardW}
+                />
+              );
+            })}
           </Motion.div>
         </div>
 
