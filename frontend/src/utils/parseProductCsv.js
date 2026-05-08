@@ -106,45 +106,50 @@ export function parseCsvText(csvText) {
 // Exported so api.js can reuse the same mapping for REST API products.
 
 export const CATEGORY_MAP = {
-  // Taping
+  // Taping — automatic & semi-automatic tapers, tool sets/kits
   'automatic tapers':            'taping',
   'automatic taping tools':      'taping',
   'semi-automatic taping tools': 'taping',
-  'taping & finishing tools':    'taping',
-  'tool sets & bundles':         'taping',
-  // Finishing
-  'finishing boxes':       'finishing',
-  'flat boxes':            'finishing',
-  'handles & extensions':  'finishing',
-  'blades & knives':       'finishing',
-  'finishing trowels':     'finishing',
-  'rollers & stands':      'finishing',
-  'spotters':              'finishing',
+  'taping & finishing tools':    'taping',  // legacy leaf (pre-remap)
+  'tool sets & bundles':         'taping',  // legacy leaf (pre-remap)
+  'tool sets & kits':            'taping',
+  // Finishing — flat boxes, handles, knives/blades, trowels, spotters
+  'finishing boxes':             'finishing',
+  'flat boxes':                  'finishing',
+  'handles & extensions':        'finishing',
+  'blades & knives':             'finishing',  // legacy leaf
+  'knives & blades':             'finishing',
+  'finishing trowels':           'finishing',
+  'rollers & stands':            'finishing',
+  'spotters':                    'finishing',  // legacy leaf
+  'nail spotters':               'finishing',
+  'accessories & adapters':      'finishing',
   // Corner
-  'corner & angle tools':  'corner',
-  'corner tools':          'corner',
-  'angle tools':           'corner',
+  'corner & angle tools':        'corner',    // legacy leaf (pre-remap)
+  'corner tools':                'corner',
+  'angle tools':                 'corner',
   // Mud boxes / pumps
-  'mud boxes & pumps':     'mudboxes',
-  'mud pans & compound tubes': 'mudboxes',
-  'loading pumps':         'mudboxes',
-  'pumps & accessories':   'mudboxes',
+  'mud boxes & pumps':           'mudboxes',
+  'mud pans & compound tubes':   'mudboxes',
+  'mud pans & pumps':            'mudboxes',
+  'loading pumps':               'mudboxes',
+  'pumps & accessories':         'mudboxes',  // legacy leaf (pre-remap)
   // Sanding
-  'sanding tools':         'sanding',
-  'sanders & poles':       'sanding',
+  'sanding tools':               'sanding',
+  'sanders & poles':             'sanding',
   // Stilts
-  'stilts':                'stilts',
-  'stilt accessories':     'stilts',
+  'stilts':                      'stilts',
+  'stilt accessories':           'stilts',
   // Texture / spray
-  'texture sprayers':      'texture',
-  'applicators & rollers': 'texture',
-  'spray tips & nozzles':  'texture',
-  'hoses & fittings':      'texture',
-  'cleaning accessories':  'texture',
+  'texture sprayers':            'texture',
+  'applicators & rollers':       'texture',
+  'spray tips & nozzles':        'texture',
+  'hoses & fittings':            'texture',
+  'cleaning accessories':        'texture',
   // Parts — production catalog canonical leaf
-  'parts':                 'parts',
+  'parts':                       'parts',
   // Generic tool leaf (box fillers, adapters, misc accessories)
-  'tools':                 'finishing',
+  'tools':                       'finishing',
 };
 
 /**
