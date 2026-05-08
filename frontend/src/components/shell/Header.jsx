@@ -251,7 +251,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
             </div>
 
             <Link to="/" className="header-mobile-logo" onClick={closeMobileMenu}>
-              <img src={LogoBlack} alt="Drywall Toolbox Logo" className="logo-image-mobile" />
+              <img src={LogoWhite} alt="Drywall Toolbox Logo" className="logo-image-mobile" />
             </Link>
 
             <div className="header-mobile-slot header-mobile-slot--right">
