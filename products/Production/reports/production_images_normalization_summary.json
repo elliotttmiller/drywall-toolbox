@@ -1,15 +1,220 @@
 {
   "directory": "products/Production/Images",
-  "catalog": "products/Production/catalogs/official/woocommerce_catalog.csv",
-  "candidate_renames": 0,
-  "files_renamed": 0,
-  "reference_map_entries": 0,
-  "text_files_updated": 0,
-  "reference_replacements": 0,
-  "dup_files_remaining": 0,
-  "unmatched_files": 0,
+  "catalog": "products/Production/catalogs/official/woocommerce_catalog_production.csv",
+  "candidate_renames": 1826,
+  "files_renamed": 1826,
+  "converted_to_webp": 4,
+  "catalog_rows_updated": 889,
+  "catalog_image_references": 1251,
+  "resolution_methods": {
+    "fallback_body": 726,
+    "direct_sku": 946,
+    "suffix_sku": 4,
+    "fallback_no_brand": 150
+  },
+  "unparsed_files": 0,
   "rename_map_csv": "products/Production/reports/production_images_rename_map.csv",
-  "sample_renames": [],
-  "sample_unmatched": [],
-  "sample_dup_remaining": []
+  "sample_renames": [
+    {
+      "old": "asgard-ADTAPINGFIXED-01.webp",
+      "new": "asgard-adtapingfixed-ADTAPINGFIXED-01.webp"
+    },
+    {
+      "old": "asgard-AGFINISHEXT-01.webp",
+      "new": "asgard-agfinishext-AGFINISHEXT-01.webp"
+    },
+    {
+      "old": "asgard-AGFINISHMAXXEXT-01.webp",
+      "new": "asgard-agfinishmaxxext-AGFINISHMAXXEXT-01.webp"
+    },
+    {
+      "old": "asgard-AGFINISHPAEXT-01.webp",
+      "new": "asgard-agfinishpaext-AGFINISHPAEXT-01.webp"
+    },
+    {
+      "old": "asgard-AGFULLEXT-01.webp",
+      "new": "asgard-agfullext-AGFULLEXT-01.webp"
+    },
+    {
+      "old": "asgard-AGFULLMAXEXT-01.webp",
+      "new": "asgard-agfullmaxext-AGFULLMAXEXT-01.webp"
+    },
+    {
+      "old": "asgard-AGFULLPAEXT-01.webp",
+      "new": "asgard-agfullpaext-AGFULLPAEXT-01.webp"
+    },
+    {
+      "old": "asgard-AGTAPINGEXT-01.webp",
+      "new": "asgard-agtapingext-AGTAPINGEXT-01.webp"
+    },
+    {
+      "old": "asgard-AH25-AD-01.webp",
+      "new": "asgard-asgard-angle-head-2-5-AH25-AD-01.webp"
+    },
+    {
+      "old": "asgard-AH30-AD-01.webp",
+      "new": "asgard-asgard-angle-head-3-AH30-AD-01.webp"
+    },
+    {
+      "old": "asgard-AH35-AD-01.webp",
+      "new": "asgard-asgard-angle-head-3-5-AH35-AD-01.webp"
+    },
+    {
+      "old": "asgard-AT01-AD-01.webp",
+      "new": "asgard-asgard-the-hammer-automatic-taper-AT01-AD-01.webp"
+    },
+    {
+      "old": "asgard-BBH-AD-01.webp",
+      "new": "asgard-asgard-brakeless-box-handle-fixed-length-34-BBH-AD-01.webp"
+    },
+    {
+      "old": "asgard-BBHE-AD-01.webp",
+      "new": "asgard-asgard-brakeless-box-extendable-handle-38-60-BBHE-AD-01.webp"
+    },
+    {
+      "old": "asgard-CA08-AD-01.webp",
+      "new": "asgard-asgard-applicator-box-head-only-CA08-AD-01.webp"
+    },
+    {
+      "old": "asgard-CA08-AD-FH-AD-01.webp",
+      "new": "asgard-asgard-fiberglass-handle-43-FH-AD-01.webp"
+    },
+    {
+      "old": "asgard-CA08-AD-XH-AD-01.webp",
+      "new": "asgard-asgard-extension-support-handle-43-to-76-XH-AD-01.webp"
+    },
+    {
+      "old": "asgard-CFA-AD-01.webp",
+      "new": "asgard-asgard-angle-head-adapter-CFA-AD-01.webp"
+    },
+    {
+      "old": "asgard-CR01-AD-01.webp",
+      "new": "asgard-asgard-inside-corner-roller-head-only-CR01-AD-01.webp"
+    },
+    {
+      "old": "asgard-CR01-AD-FH-AD-01.webp",
+      "new": "asgard-asgard-fiberglass-handle-43-FH-AD-02.webp"
+    },
+    {
+      "old": "asgard-CR01-AD-XH-AD-01.webp",
+      "new": "asgard-asgard-extension-support-handle-43-to-76-XH-AD-02.webp"
+    },
+    {
+      "old": "asgard-EHC07-AD-01.webp",
+      "new": "asgard-asgard-maxxbox-finishing-box-7-EHC07-AD-01.webp"
+    },
+    {
+      "old": "asgard-EHC10-AD-01.webp",
+      "new": "asgard-asgard-maxxbox-finishing-box-10-EHC10-AD-01.webp"
+    },
+    {
+      "old": "asgard-EHC12-AD-01.webp",
+      "new": "asgard-asgard-maxxbox-finishing-box-12-EHC12-AD-01.webp"
+    },
+    {
+      "old": "asgard-EZ07-AD-01.webp",
+      "new": "asgard-asgard-finishing-box-7-EZ07-AD-01.webp"
+    },
+    {
+      "old": "asgard-EZ10-AD-01.webp",
+      "new": "asgard-asgard-finishing-box-10-EZ10-AD-01.webp"
+    },
+    {
+      "old": "asgard-EZ12-AD-01.webp",
+      "new": "asgard-asgard-finishing-box-12-EZ12-AD-01.webp"
+    },
+    {
+      "old": "asgard-FA01-AD-01.webp",
+      "new": "asgard-fa01-ad-FA01-AD-01.webp"
+    },
+    {
+      "old": "asgard-FBHE-AD-01.webp",
+      "new": "asgard-asgard-extendable-finishing-box-handle-41-63-FBHE-AD-01.webp"
+    },
+    {
+      "old": "asgard-FH-AD-01.webp",
+      "new": "asgard-asgard-fiberglass-handle-43-FH-AD-03.webp"
+    },
+    {
+      "old": "asgard-GN01-AD-01.webp",
+      "new": "asgard-asgard-gooseneck-adapter-GN01-AD-01.webp"
+    },
+    {
+      "old": "asgard-LP01-AD-01.webp",
+      "new": "asgard-asgard-loading-pump-LP01-AD-01.webp"
+    },
+    {
+      "old": "asgard-NS03-AD-01.webp",
+      "new": "asgard-asgard-nail-spotter-head-only-NS03-AD-01.webp"
+    },
+    {
+      "old": "asgard-PA07-AD-01.webp",
+      "new": "asgard-asgard-power-assist-maxxbox-finishing-box-7-PA07-AD-01.webp"
+    },
+    {
+      "old": "asgard-PA10-AD-01.webp",
+      "new": "asgard-asgard-power-assist-maxxbox-finishing-box-10-PA10-AD-01.webp"
+    },
+    {
+      "old": "asgard-PA12-AD-01.webp",
+      "new": "asgard-asgard-power-assist-maxxbox-finishing-box-12-PA12-AD-01.webp"
+    },
+    {
+      "old": "asgard-XH-AD-01.webp",
+      "new": "asgard-asgard-extension-support-handle-43-to-76-XH-AD-03.webp"
+    },
+    {
+      "old": "columbia-1-01.webp",
+      "new": "columbia-1-1-01.webp"
+    },
+    {
+      "old": "columbia-1-02.webp",
+      "new": "columbia-1-1-02.webp"
+    },
+    {
+      "old": "columbia-1-03.webp",
+      "new": "columbia-1-1-03.webp"
+    },
+    {
+      "old": "columbia-1-04.webp",
+      "new": "columbia-1-1-04.webp"
+    },
+    {
+      "old": "columbia-10-01.webp",
+      "new": "columbia-10-10-01.webp"
+    },
+    {
+      "old": "columbia-12-01.webp",
+      "new": "columbia-12-12-01.webp"
+    },
+    {
+      "old": "columbia-14-01.webp",
+      "new": "columbia-14-14-01.webp"
+    },
+    {
+      "old": "columbia-18-01.webp",
+      "new": "columbia-18-18-01.webp"
+    },
+    {
+      "old": "columbia-2-01.webp",
+      "new": "columbia-2-2-01.webp"
+    },
+    {
+      "old": "columbia-2-02.webp",
+      "new": "columbia-2-2-02.webp"
+    },
+    {
+      "old": "columbia-2-03.webp",
+      "new": "columbia-2-2-03.webp"
+    },
+    {
+      "old": "columbia-2-10-01.webp",
+      "new": "columbia-2-10-2-10-01.webp"
+    },
+    {
+      "old": "columbia-2-12-01.webp",
+      "new": "columbia-2-12-2-12-01.webp"
+    }
+  ],
+  "sample_unparsed": []
 }

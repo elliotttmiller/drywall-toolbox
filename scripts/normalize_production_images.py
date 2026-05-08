@@ -7,206 +7,164 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover - optional runtime dependency
+    Image = None
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_DIR = ROOT / "products/Production"
 IMAGES_DIR = PRODUCTION_DIR / "Images"
-CATALOG_PATH = PRODUCTION_DIR / "catalogs/official/woocommerce_catalog.csv"
+CATALOG_PATH = PRODUCTION_DIR / "catalogs/official/woocommerce_catalog_production.csv"
 REPORTS_DIR = PRODUCTION_DIR / "reports"
 SUMMARY_PATH = REPORTS_DIR / "production_images_normalization_summary.json"
 MAP_PATH = REPORTS_DIR / "production_images_rename_map.csv"
 
-TEXT_EXTENSIONS = {
-    ".csv",
-    ".json",
-    ".md",
-    ".txt",
-    ".sql",
-    ".yaml",
-    ".yml",
-    ".php",
-    ".js",
-    ".ts",
-    ".tsx",
-    ".jsx",
-    ".html",
-    ".htaccess",
-}
+SUPPORTED_IMAGE_EXTENSIONS = {".webp", ".png", ".jpg", ".jpeg"}
 
 
 def brand_to_slug(brand: str) -> str:
-    return re.sub(r"[^a-z0-9]", "", brand.lower())
+    return re.sub(r"[^a-z0-9]", "", (brand or "").lower())
 
 
-def load_catalog_skus() -> dict[str, dict[str, str]]:
-    sku_case_by_brand: dict[str, dict[str, str]] = {}
-    with CATALOG_PATH.open(encoding="utf-8-sig", newline="") as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            brand_slug = brand_to_slug(row.get("Brands", ""))
-            raw_sku = row.get("SKU", "").split("__", 1)[0].strip().replace(".", "-")
-            if brand_slug and raw_sku:
-                sku_case_by_brand.setdefault(brand_slug, {})[raw_sku.lower()] = raw_sku
-    return sku_case_by_brand
+def normalize_slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", (value or "").lower()).strip("-")
 
 
-def split_name(filename: str) -> tuple[str, str, int, int | None] | None:
+def normalize_sku_key(value: str) -> str:
+    return (value or "").split("__", 1)[0].strip().replace(".", "-").lower()
+
+
+def parse_image_name(filename: str) -> tuple[str, str, int, int | None] | None:
     match = re.match(
-        r"^(?P<brand>[a-z0-9]+)-(?P<body>.+)-(?P<seq>\d{2,3})(?:-dup(?P<dup>\d+))?\.webp$",
+        r"^(?P<brand>[a-z0-9]+)-(?P<body>.+?)(?:-|_)(?P<seq>\d{2,3})(?:-dup(?P<dup>\d+))?\.(?P<ext>[a-z0-9]+)$",
         filename,
         re.IGNORECASE,
     )
     if not match:
         return None
-
-    dup_value = match.group("dup")
     return (
         match.group("brand").lower(),
         match.group("body"),
         int(match.group("seq")),
-        int(dup_value) if dup_value else None,
+        int(match.group("dup")) if match.group("dup") else None,
     )
 
 
-def resolve_catalog_sku(brand_slug: str, body: str, sku_case_by_brand: dict[str, dict[str, str]]) -> str | None:
-    candidates = sku_case_by_brand.get(brand_slug, {})
-    body_key = body.lower().replace(".", "-")
-    matches: list[tuple[int, int, str]] = []
-
-    def prefix_is_descriptive(prefix_text: str) -> bool:
-        prefix_text = prefix_text.rstrip("-")
-        if not prefix_text:
-            return True
-
-        for token in prefix_text.split("-"):
-            if re.fullmatch(r"\d+", token):
+def load_catalog_index() -> dict[str, dict[str, object]]:
+    brand_index: dict[str, dict[str, object]] = {}
+    with CATALOG_PATH.open(encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            brand_slug = brand_to_slug(row.get("Brands", ""))
+            sku = (row.get("SKU", "").split("__", 1)[0].strip().replace(".", "-"))
+            slug = normalize_slug(row.get("Slug", ""))
+            if not brand_slug or not sku or not slug:
                 continue
-            if re.fullmatch(r"[a-z]+", token):
-                continue
-            return False
 
-        return True
+            sku_key = sku.lower()
+            brand_entry = brand_index.setdefault(
+                brand_slug,
+                {"by_sku": {}, "by_slug": defaultdict(list), "sorted_sku_keys": []},
+            )
+            brand_entry["by_sku"][sku_key] = {"sku": sku, "slug": slug}
+            brand_entry["by_slug"][slug].append(sku_key)
 
-    for sku_key, sku_value in candidates.items():
-        if not body_key.endswith(sku_key):
-            continue
+    for brand_entry in brand_index.values():
+        brand_entry["sorted_sku_keys"] = sorted(
+            brand_entry["by_sku"].keys(),
+            key=lambda value: (-len(value), -value.count("-"), value),
+        )
 
-        prefix = body_key[: -len(sku_key)]
-        prefix_original = body[: -len(sku_key)]
-        if prefix and not prefix.endswith("-"):
-            continue
-        if not prefix_is_descriptive(prefix_original):
-            continue
-
-        token_count = sku_key.count("-") + 1
-        matches.append((len(sku_key), token_count, sku_value))
-
-    if not matches:
-        return None
-
-    matches.sort(key=lambda item: (-item[0], -item[1], item[2]))
-    return matches[0][2]
+    return brand_index
 
 
-def fallback_sku(body: str) -> str | None:
-    parts = body.split("-")
-    sku_parts: list[str] = []
-    seen_alpha = False
-
-    for part in reversed(parts):
-        is_slug_word = bool(re.fullmatch(r"[a-z]{3,}", part)) and not re.search(r"\d", part)
-        has_alpha = bool(re.search(r"[A-Za-z]", part))
-        is_numeric_only = bool(re.fullmatch(r"\d+", part))
-        is_sku_like = has_alpha or is_numeric_only
-
-        if is_slug_word or not is_sku_like:
-            break
-
-        # Numeric size tokens like `55-CLT55` belong to the slug once a strong alpha SKU token exists.
-        if seen_alpha and is_numeric_only:
-            break
-
-        sku_parts.insert(0, part)
-        if has_alpha:
-            seen_alpha = True
-
-    if not sku_parts:
-        return None
-
-    prefix = body[: -(len("-".join(sku_parts)))] if len("-".join(sku_parts)) < len(body) else ""
-    prefix = prefix.rstrip("-")
-    if prefix:
-        for token in prefix.split("-"):
-            if re.fullmatch(r"\d+", token):
-                continue
-            if re.fullmatch(r"[a-z]+", token):
-                continue
-            return None
-
-    return "-".join(part.upper() for part in sku_parts)
+def fallback_sku_from_body(body: str) -> str:
+    body = body.replace("_", "-").strip("-")
+    if not body:
+        return "UNKNOWN"
+    return re.sub(r"[^A-Za-z0-9-]+", "-", body).strip("-").upper() or "UNKNOWN"
 
 
-def resolve_sku(brand_slug: str, body: str, sku_case_by_brand: dict[str, dict[str, str]]) -> str | None:
-    catalog_sku = resolve_catalog_sku(brand_slug, body, sku_case_by_brand)
-    if catalog_sku:
-        return catalog_sku
-    return fallback_sku(body)
+def resolve_catalog_entry(
+    brand_slug: str,
+    body: str,
+    catalog_index: dict[str, dict[str, object]],
+) -> tuple[str, str, str]:
+    brand_entry = catalog_index.get(brand_slug)
+    normalized_body = body.replace("_", "-").replace(".", "-").strip("-")
+    body_key = normalized_body.lower()
+
+    if not brand_entry:
+        fallback_sku = fallback_sku_from_body(normalized_body)
+        return fallback_sku, normalize_slug(normalized_body), "fallback_no_brand"
+
+    by_sku = brand_entry["by_sku"]
+    by_slug = brand_entry["by_slug"]
+    sorted_sku_keys: list[str] = brand_entry["sorted_sku_keys"]
+
+    exact = by_sku.get(body_key)
+    if exact:
+        return exact["sku"], exact["slug"], "direct_sku"
+
+    for sku_key in sorted_sku_keys:
+        if body_key.endswith(f"-{sku_key}"):
+            matched = by_sku[sku_key]
+            return matched["sku"], matched["slug"], "suffix_sku"
+
+    body_slug = normalize_slug(normalized_body)
+    if body_slug in by_slug and len(by_slug[body_slug]) == 1:
+        matched = by_sku[by_slug[body_slug][0]]
+        return matched["sku"], matched["slug"], "slug_lookup"
+
+    trimmed = re.sub(rf"^{re.escape(brand_slug)}-", "", body_slug)
+    if trimmed in by_slug and len(by_slug[trimmed]) == 1:
+        matched = by_sku[by_slug[trimmed][0]]
+        return matched["sku"], matched["slug"], "slug_lookup_trimmed"
+
+    for prefix in ("the-", "a-", "an-"):
+        if body_slug.startswith(prefix):
+            candidate = body_slug[len(prefix) :]
+            if candidate in by_slug and len(by_slug[candidate]) == 1:
+                matched = by_sku[by_slug[candidate][0]]
+                return matched["sku"], matched["slug"], "slug_lookup_article_trimmed"
+
+    fallback_sku = fallback_sku_from_body(normalized_body)
+    return fallback_sku, normalize_slug(normalized_body), "fallback_body"
 
 
 def choose_seq_width(items: list[dict[str, object]]) -> int:
     max_width = 2
-    has_dup = False
     for item in items:
-        filename = str(item["name"])
-        seq_match = re.search(r"-(\d{2,3})(?:-dup\d+)?\.webp$", filename)
-        if seq_match:
-            max_width = max(max_width, len(seq_match.group(1)))
-        if item["dup"] is not None:
-            has_dup = True
-
-    if max_width >= 3 or has_dup:
-        return 3
-    return 2
+        max_width = max(max_width, len(str(int(item["seq_value"]))))
+    if any(item["dup"] is not None for item in items):
+        return max(3, max_width)
+    return max_width
 
 
-def descriptive_target_name(filename: str) -> str | None:
-    match = re.match(
-        r"^(?P<brand>[a-z0-9]+)-(?P<body>.+)_(?P<seq>\d{2,3})\.webp$",
-        filename,
-        re.IGNORECASE,
-    )
-    if not match:
-        return None
+def build_rename_map(
+    catalog_index: dict[str, dict[str, object]],
+) -> tuple[dict[str, str], list[dict[str, str]], dict[str, int]]:
+    groups: dict[tuple[str, str, str], list[dict[str, object]]] = defaultdict(list)
+    unresolved: list[dict[str, str]] = []
+    resolution_method_counts: dict[str, int] = defaultdict(int)
 
-    brand_slug = match.group("brand").lower()
-    body = match.group("body").replace("_", "-")
-    seq_text = match.group("seq")
-    return f"{brand_slug}-{body}-{seq_text}.webp"
+    for path in sorted(IMAGES_DIR.iterdir(), key=lambda value: value.name.lower()):
+        if not path.is_file() or path.suffix.lower() not in SUPPORTED_IMAGE_EXTENSIONS:
+            continue
 
-
-def is_normalized_descriptive_body(body: str) -> bool:
-    return body == body.lower() and bool(re.fullmatch(r"[a-z0-9-]+", body)) and bool(re.search(r"[a-z]", body))
-
-
-def build_rename_map(sku_case_by_brand: dict[str, dict[str, str]]) -> tuple[dict[str, str], list[dict[str, str]]]:
-    family_groups: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
-    unmatched: list[dict[str, str]] = []
-
-    for path in sorted(IMAGES_DIR.glob("*.webp")):
-        parsed = split_name(path.name)
+        parsed = parse_image_name(path.name)
         if not parsed:
-            unmatched.append({"file_name": path.name, "reason": "unparsed_name"})
+            unresolved.append({"file_name": path.name, "reason": "unparsed_name"})
             continue
 
         brand_slug, body, seq_value, dup_value = parsed
-        canonical_sku = resolve_sku(brand_slug, body, sku_case_by_brand)
-        if not canonical_sku:
-            if is_normalized_descriptive_body(body):
-                continue
-            unmatched.append({"file_name": path.name, "reason": "sku_not_resolved"})
-            continue
-
-        family_groups[(brand_slug, canonical_sku)].append(
+        sku, slug, method = resolve_catalog_entry(brand_slug, body, catalog_index)
+        resolution_method_counts[method] += 1
+        if not slug:
+            slug = normalize_slug(body) or "image"
+        groups[(brand_slug, slug, sku)].append(
             {
                 "name": path.name,
                 "seq_value": seq_value,
@@ -215,31 +173,22 @@ def build_rename_map(sku_case_by_brand: dict[str, dict[str, str]]) -> tuple[dict
         )
 
     rename_map: dict[str, str] = {}
+    occupied_names = {
+        path.name
+        for path in IMAGES_DIR.iterdir()
+        if path.is_file() and path.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
+    }
+    rename_source_names = {
+        str(item["name"])
+        for group_items in groups.values()
+        for item in group_items
+    }
 
-    for (brand_slug, canonical_sku), items in sorted(family_groups.items()):
+    for (brand_slug, slug, sku), items in sorted(groups.items()):
         seq_width = choose_seq_width(items)
         used_sequences: set[int] = set()
-
-        for item in items:
-            source_name = str(item["name"])
-            compact_match = re.fullmatch(
-                rf"{re.escape(brand_slug)}-{re.escape(canonical_sku)}-(\d{{2,3}})\.webp",
-                source_name,
-                re.IGNORECASE,
-            )
-            if item["dup"] is None and compact_match and int(compact_match.group(1)) == int(item["seq_value"]):
-                used_sequences.add(int(item["seq_value"]))
-
+        planned_targets: set[str] = set()
         next_sequence = 1
-
-        def reserve_next_sequence() -> int:
-            nonlocal next_sequence
-            while next_sequence in used_sequences:
-                next_sequence += 1
-            chosen = next_sequence
-            used_sequences.add(chosen)
-            next_sequence += 1
-            return chosen
 
         sorted_items = sorted(
             items,
@@ -253,99 +202,78 @@ def build_rename_map(sku_case_by_brand: dict[str, dict[str, str]]) -> tuple[dict
 
         for item in sorted_items:
             source_name = str(item["name"])
-            desired_sequence = int(item["seq_value"])
-            current_compact_match = re.fullmatch(
-                rf"{re.escape(brand_slug)}-{re.escape(canonical_sku)}-(\d{{2,3}})\.webp",
-                source_name,
-                re.IGNORECASE,
-            )
-            direct_width = len(current_compact_match.group(1)) if current_compact_match else seq_width
-            direct_target = f"{brand_slug}-{canonical_sku}-{str(desired_sequence).zfill(direct_width)}.webp"
-
-            if item["dup"] is None and source_name == direct_target:
-                continue
-
-            if item["dup"] is None and desired_sequence not in used_sequences:
-                used_sequences.add(desired_sequence)
-                target_name = direct_target
+            if item["dup"] is None and int(item["seq_value"]) not in used_sequences:
+                seq_value = int(item["seq_value"])
+                used_sequences.add(seq_value)
             else:
-                target_name = f"{brand_slug}-{canonical_sku}-{str(reserve_next_sequence()).zfill(seq_width)}.webp"
+                while next_sequence in used_sequences:
+                    next_sequence += 1
+                seq_value = next_sequence
+                used_sequences.add(seq_value)
+                next_sequence += 1
 
+            target_name = f"{brand_slug}-{slug}-{sku}-{str(seq_value).zfill(seq_width)}.webp"
+
+            while (
+                target_name in planned_targets
+                or (target_name in occupied_names and target_name not in rename_source_names)
+            ):
+                while next_sequence in used_sequences:
+                    next_sequence += 1
+                seq_value = next_sequence
+                used_sequences.add(seq_value)
+                next_sequence += 1
+                target_name = f"{brand_slug}-{slug}-{sku}-{str(seq_value).zfill(seq_width)}.webp"
+
+            planned_targets.add(target_name)
             if source_name != target_name:
                 rename_map[source_name] = target_name
 
-    remaining_unmatched: list[dict[str, str]] = []
-    for item in unmatched:
-        source_name = item["file_name"]
-        target_name = descriptive_target_name(source_name)
-        if target_name and source_name != target_name:
-            rename_map[source_name] = target_name
-            continue
-        remaining_unmatched.append(item)
-
-    unmatched = remaining_unmatched
-
-    # Clean unresolved `-dup` files by assigning the next sequence within their current stem family.
-    unresolved_dup_groups: dict[tuple[str, str], list[tuple[str, int, int]]] = defaultdict(list)
-    for item in unmatched:
-        parsed = split_name(item["file_name"])
-        if not parsed:
-            continue
-        brand_slug, body, seq_value, dup_value = parsed
-        if dup_value is None:
-            continue
-        unresolved_dup_groups[(brand_slug, body)].append((item["file_name"], seq_value, dup_value))
-
-    for (brand_slug, body), items in sorted(unresolved_dup_groups.items()):
-        current_family_names = sorted(
-            path.name
-            for path in IMAGES_DIR.glob(f"{brand_slug}-{body}-*.webp")
-            if "-dup" not in path.name
-        )
-        used_sequences: set[int] = set()
-        seq_width = 2
-        for name in current_family_names:
-            match = re.search(r"-(\d{2,3})\.webp$", name)
-            if match:
-                used_sequences.add(int(match.group(1)))
-                seq_width = max(seq_width, len(match.group(1)))
-
-        next_sequence = 1
-        for source_name, seq_value, dup_value in sorted(items, key=lambda item: (item[1], item[2], item[0])):
-            while next_sequence in used_sequences:
-                next_sequence += 1
-            target_name = f"{brand_slug}-{body}-{str(next_sequence).zfill(seq_width)}.webp"
-            used_sequences.add(next_sequence)
-            next_sequence += 1
-            rename_map[source_name] = target_name
-
-    return rename_map, unmatched
+    return rename_map, unresolved, dict(resolution_method_counts)
 
 
 def same_content(path_a: Path, path_b: Path) -> bool:
     if path_a.stat().st_size != path_b.stat().st_size:
         return False
-
     hash_a = hashlib.sha256(path_a.read_bytes()).digest()
     hash_b = hashlib.sha256(path_b.read_bytes()).digest()
     return hash_a == hash_b
 
 
-def rename_files(rename_map: dict[str, str]) -> int:
+def convert_image_to_webp(source_path: Path, target_path: Path, original_suffix: str) -> None:
+    if original_suffix.lower() == ".webp":
+        source_path.rename(target_path)
+        return
+
+    if Image is None:
+        raise RuntimeError(
+            f"Pillow is required to convert '{source_path.name}' to WebP. Install with: pip install Pillow"
+        )
+
+    with Image.open(source_path) as image:
+        if image.mode in ("RGBA", "LA", "P"):
+            converted = image.convert("RGBA")
+        else:
+            converted = image.convert("RGB")
+        converted.save(target_path, "WEBP", quality=90, method=6)
+    source_path.unlink()
+
+
+def rename_files(rename_map: dict[str, str]) -> tuple[int, int]:
     renamed = 0
-    staged: list[tuple[Path, Path]] = []
+    converted_to_webp = 0
+    staged: list[tuple[Path, Path, Path, str]] = []
 
     for source_name in rename_map:
         source_path = IMAGES_DIR / source_name
         if not source_path.exists():
             continue
-        temp_path = source_path.with_suffix(source_path.suffix + ".tmp_normalize")
+        temp_path = source_path.with_name(source_path.name + ".tmp_normalize")
         source_path.rename(temp_path)
-        staged.append((temp_path, source_path))
+        target_path = IMAGES_DIR / rename_map[source_name]
+        staged.append((temp_path, source_path, target_path, source_path.suffix))
 
-    for temp_path, original_source_path in staged:
-        target_name = rename_map[original_source_path.name]
-        target_path = IMAGES_DIR / target_name
+    for temp_path, original_source_path, target_path, original_suffix in staged:
         if target_path.exists():
             if same_content(temp_path, target_path):
                 temp_path.unlink()
@@ -353,58 +281,81 @@ def rename_files(rename_map: dict[str, str]) -> int:
                 continue
             temp_path.rename(original_source_path)
             continue
-        temp_path.rename(target_path)
+
+        convert_image_to_webp(temp_path, target_path, original_suffix)
+        if original_suffix.lower() != ".webp":
+            converted_to_webp += 1
         renamed += 1
 
-    return renamed
+    return renamed, converted_to_webp
 
 
-def iter_text_files() -> list[Path]:
-    paths: list[Path] = []
-    for path in PRODUCTION_DIR.rglob("*"):
-        if not path.is_file():
+def update_catalog_images(catalog_index: dict[str, dict[str, object]]) -> tuple[int, int]:
+    with CATALOG_PATH.open(encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        fieldnames = list(reader.fieldnames or [])
+        rows = list(reader)
+
+    images_by_brand_sku: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for path in sorted(IMAGES_DIR.glob("*.webp"), key=lambda value: value.name.lower()):
+        parsed = parse_image_name(path.name)
+        if not parsed:
             continue
-        if IMAGES_DIR in path.parents:
-            continue
-        if path.suffix.lower() in TEXT_EXTENSIONS:
-            paths.append(path)
-    return sorted(paths)
+        brand_slug, body, _, _ = parsed
+        sku, _, _ = resolve_catalog_entry(brand_slug, body, catalog_index)
+        images_by_brand_sku[(brand_slug, normalize_sku_key(sku))].append(path.name)
 
+    children_by_parent: dict[tuple[str, str], list[dict[str, str]]] = defaultdict(list)
+    for row in rows:
+        row_type = (row.get("Type") or "").strip().lower()
+        brand_slug = brand_to_slug(row.get("Brands", ""))
+        parent_key = normalize_sku_key(row.get("Parent", "") or row.get("Parent SKU", ""))
+        if row_type == "variation" and brand_slug and parent_key:
+            children_by_parent[(brand_slug, parent_key)].append(row)
 
-def read_text(path: Path) -> tuple[str | None, str | None]:
-    for encoding in ("utf-8-sig", "utf-8"):
-        try:
-            return path.read_text(encoding=encoding), encoding
-        except UnicodeDecodeError:
-            continue
-    return None, None
+    url_prefix = "https://drywalltoolbox.com/wp-content/uploads/product-images/"
+    rows_updated = 0
+    image_references = 0
 
-
-def build_reference_map_from_text(seed_map: dict[str, str]) -> dict[str, str]:
-    return dict(seed_map)
-
-
-def update_references(reference_map: dict[str, str]) -> tuple[int, int]:
-    files_updated = 0
-    replacements = 0
-
-    for path in iter_text_files():
-        content, encoding = read_text(path)
-        if content is None or encoding is None:
+    for row in rows:
+        row_type = (row.get("Type") or "").strip().lower()
+        brand_slug = brand_to_slug(row.get("Brands", ""))
+        sku_key = normalize_sku_key(row.get("SKU", ""))
+        if not brand_slug or not sku_key:
             continue
 
-        updated = content
-        for source_name, target_name in reference_map.items():
-            if source_name in updated:
-                count = updated.count(source_name)
-                updated = updated.replace(source_name, target_name)
-                replacements += count
+        own_images = list(images_by_brand_sku.get((brand_slug, sku_key), []))
+        new_images: list[str] = []
 
-        if updated != content:
-            path.write_text(updated, encoding=encoding)
-            files_updated += 1
+        if row_type == "variable":
+            for child in children_by_parent.get((brand_slug, sku_key), []):
+                child_key = normalize_sku_key(child.get("SKU", ""))
+                for image_name in images_by_brand_sku.get((brand_slug, child_key), []):
+                    if image_name not in new_images:
+                        new_images.append(image_name)
+        if own_images:
+            for image_name in own_images:
+                if image_name not in new_images:
+                    new_images.append(image_name)
 
-    return files_updated, replacements
+        images_value = " | ".join(f"{url_prefix}{image_name}" for image_name in new_images)
+        variation_image_value = f"{url_prefix}{new_images[0]}" if new_images and row_type == "variation" else ""
+
+        if row.get("Images", "") != images_value:
+            row["Images"] = images_value
+            rows_updated += 1
+        if row.get("Variation image", "") != variation_image_value:
+            row["Variation image"] = variation_image_value
+            rows_updated += 1
+
+        image_references += len(new_images)
+
+    with CATALOG_PATH.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    return rows_updated, image_references
 
 
 def write_rename_map(rename_map: dict[str, str]) -> None:
@@ -417,32 +368,28 @@ def write_rename_map(rename_map: dict[str, str]) -> None:
 
 
 def main() -> None:
-    sku_case_by_brand = load_catalog_skus()
-    rename_map, unmatched = build_rename_map(sku_case_by_brand)
-    renamed = rename_files(rename_map)
-    reference_map = build_reference_map_from_text(rename_map)
-    files_updated, replacements = update_references(reference_map)
+    catalog_index = load_catalog_index()
+    rename_map, unresolved, resolution_method_counts = build_rename_map(catalog_index)
+    renamed, converted_to_webp = rename_files(rename_map)
+    catalog_rows_updated, catalog_image_references = update_catalog_images(catalog_index)
     write_rename_map(rename_map)
-
-    dup_remaining = sorted(path.name for path in IMAGES_DIR.glob("*-dup*.webp"))
 
     summary = {
         "directory": str(IMAGES_DIR.relative_to(ROOT)).replace("\\", "/"),
         "catalog": str(CATALOG_PATH.relative_to(ROOT)).replace("\\", "/"),
         "candidate_renames": len(rename_map),
         "files_renamed": renamed,
-        "reference_map_entries": len(reference_map),
-        "text_files_updated": files_updated,
-        "reference_replacements": replacements,
-        "dup_files_remaining": len(dup_remaining),
-        "unmatched_files": len(unmatched),
+        "converted_to_webp": converted_to_webp,
+        "catalog_rows_updated": catalog_rows_updated,
+        "catalog_image_references": catalog_image_references,
+        "resolution_methods": resolution_method_counts,
+        "unparsed_files": len(unresolved),
         "rename_map_csv": str(MAP_PATH.relative_to(ROOT)).replace("\\", "/"),
         "sample_renames": [
             {"old": source_name, "new": target_name}
             for source_name, target_name in list(sorted(rename_map.items()))[:50]
         ],
-        "sample_unmatched": unmatched[:50],
-        "sample_dup_remaining": dup_remaining[:50],
+        "sample_unparsed": unresolved[:50],
     }
     SUMMARY_PATH.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
