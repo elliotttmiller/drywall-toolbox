@@ -22,9 +22,15 @@ const BRAND_SIZE_MAP = {
   SurPro: { height: 'clamp(28px, 5vw, 44px)', maxWidth: '150px' },
 };
 
+function getBaseOpacity({ dark, transparent }) {
+  if (dark) return 0.58;
+  if (transparent) return 0.82;
+  return 0.72;
+}
+
 function BrandLogo({ brand, dark = false, transparent = false }) {
   const sizeStyle = BRAND_SIZE_MAP[brand.name] || { height: 'clamp(24px, 4vw, 38px)', maxWidth: '140px' };
-  const baseOpacity = dark ? 0.58 : transparent ? 0.82 : 0.72;
+  const baseOpacity = getBaseOpacity({ dark, transparent });
   return (
     <Link
       to={brand.to}

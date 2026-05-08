@@ -81,6 +81,15 @@ const TABLET_BREAKPOINT = 460;
 const DESKTOP_VISIBLE_CARDS = 3;
 const TABLET_VISIBLE_CARDS = 2.2;
 const MOBILE_VISIBLE_CARDS = 1.6;
+const AUTO_SLIDE_INTERVAL_MS = 4600;
+
+const CARD_3D_ROTATION_FACTOR = -12;
+const CARD_3D_BASE_TRANSLATE_Z = 22;
+const CARD_3D_TRANSLATE_Z_STEP = 10;
+const CARD_3D_MIN_SCALE = 0.84;
+const CARD_3D_SCALE_STEP = 0.08;
+const CARD_3D_MIN_OPACITY = 0.58;
+const CARD_3D_OPACITY_STEP = 0.16;
 
 /* Arrow button horizontal clearance */
 const DESKTOP_SIDE_PADDING = 52;
@@ -155,10 +164,10 @@ function NavCard({ card, width }) {
 
   const depth = card.depth ?? 0;
   const absDepth = Math.abs(depth);
-  const rotateY = depth * -12;
-  const translateZ = Math.max(0, 22 - absDepth * 10);
-  const scale = Math.max(0.84, 1 - absDepth * 0.08);
-  const depthOpacity = Math.max(0.58, 1 - absDepth * 0.16);
+  const rotateY = depth * CARD_3D_ROTATION_FACTOR;
+  const translateZ = Math.max(0, CARD_3D_BASE_TRANSLATE_Z - absDepth * CARD_3D_TRANSLATE_Z_STEP);
+  const scale = Math.max(CARD_3D_MIN_SCALE, 1 - absDepth * CARD_3D_SCALE_STEP);
+  const depthOpacity = Math.max(CARD_3D_MIN_OPACITY, 1 - absDepth * CARD_3D_OPACITY_STEP);
 
   return (
     <div
@@ -303,7 +312,7 @@ export default function NavigationCarousel() {
     if (paused || maxActive <= 0) return undefined;
     const id = setInterval(() => {
       setActive((a) => (a >= maxActive ? 0 : a + 1));
-    }, 4600);
+    }, AUTO_SLIDE_INTERVAL_MS);
     return () => clearInterval(id);
   }, [paused, maxActive]);
 
