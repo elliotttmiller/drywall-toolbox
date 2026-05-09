@@ -40,7 +40,7 @@ function shortestOffset(index, activeIndex) {
 function getSizing(w) {
   const viewportW = Math.max(320, w || 390);
   const cardW = Math.round(Math.max(160, Math.min(200, viewportW * 0.48)));
-  const cardH = Math.round(cardW * 0.8);
+  const cardH = Math.round(cardW * 0.9);
   const sideOffset = Math.round(Math.max(cardW * 0.74, Math.min(viewportW * 0.31, cardW * 0.9)));
   const depth = Math.round(cardW * 0.4);
   const persp = Math.round(Math.max(760, viewportW * 2.3));
@@ -164,7 +164,6 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
         lineHeight: 1.08,
         letterSpacing: '0.04em',
         transition: 'color 0.15s',
-        textTransform: 'uppercase',
       }}>
         {card.label}
       </div>
@@ -176,7 +175,6 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
         lineHeight: 1.3,
         letterSpacing: '0.02em',
         transition: 'color 0.15s',
-        textTransform: 'uppercase',
       }}>
         {card.sub}
       </div>
