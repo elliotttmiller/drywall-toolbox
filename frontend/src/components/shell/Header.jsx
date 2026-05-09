@@ -335,9 +335,11 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
           overflow: hidden !important;
           overscroll-behavior: contain !important;
           touch-action: pan-y !important;
-          background: rgba(7, 13, 28, 0.98) !important;
-          backdrop-filter: blur(18px) !important;
-          -webkit-backdrop-filter: blur(18px) !important;
+          background: rgba(255, 255, 255, 0.98) !important;
+          border-top: 1px solid rgba(15, 23, 42, 0.08) !important;
+          box-shadow: 0 14px 30px rgba(15, 23, 42, 0.10) !important;
+          backdrop-filter: blur(10px) !important;
+          -webkit-backdrop-filter: blur(10px) !important;
         }
 
         .header-mobile-menu-scroll {
@@ -363,6 +365,18 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
         .header-mobile-category-grid {
           max-height: none !important;
           overflow: visible !important;
+        }
+
+        .header-mobile-menu .nav-link-mobile,
+        .header-mobile-menu .header-mobile-feature-link-label,
+        .header-mobile-menu .header-mobile-category-toggle,
+        .header-mobile-menu .header-mobile-category-item {
+          color: var(--tension-accent, #2563eb) !important;
+        }
+
+        .header-mobile-menu .header-mobile-feature-link-sub,
+        .header-mobile-menu .header-mobile-shop-section-title {
+          color: rgba(37, 99, 235, 0.68) !important;
         }
 
         @media (max-width: 640px) {
