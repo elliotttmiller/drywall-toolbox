@@ -160,7 +160,7 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
       <div style={{
         fontSize: 'clamp(1rem, 4vw, 1.18rem)',
         fontWeight: 800,
-        color: hov ? '#020617' : '#0f172a',
+        color: isActive ? (hov ? '#020617' : '#0f172a') : 'rgba(248,250,252,0.90)',
         lineHeight: 1.08,
         letterSpacing: '0.04em',
         transition: 'color 0.15s',
@@ -171,7 +171,7 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
       <div style={{
         fontSize: 'clamp(0.62rem, 1.8vw, 0.72rem)',
         fontWeight: 500,
-        color: 'rgba(15,23,42,0.52)',
+        color: isActive ? 'rgba(15,23,42,0.52)' : 'rgba(226,232,240,0.74)',
         lineHeight: 1.3,
         letterSpacing: '0.02em',
         transition: 'color 0.15s',
