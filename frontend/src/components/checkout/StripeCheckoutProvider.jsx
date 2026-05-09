@@ -14,8 +14,12 @@ export default function StripeCheckoutProvider( { clientSecret, children } ) {
     appearance: {
       theme: 'stripe',
       variables: {
-        borderRadius: '14px',
-        fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+        colorPrimary:    '#2563eb',
+        colorBackground: '#ffffff',
+        colorText:       '#0f172a',
+        colorDanger:     '#dc2626',
+        borderRadius:    '16px',
+        fontFamily:      'Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
       },
     },
     loader: 'auto',

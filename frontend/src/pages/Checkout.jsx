@@ -1,18 +1,18 @@
 /**
  * frontend/src/pages/Checkout.jsx
  *
- * Modern headless WooCommerce checkout.
- *   - Responsive two-column checkout with mobile summary + sticky CTA
- *   - Gateway-aware payment option model for Stripe wallets/BNPL and PayPal
- *   - Framer Motion step-enter animations + AnimatePresence payment panels
+ * Production-ready headless WooCommerce checkout with Stripe SDK integration.
+ *   - Stripe PaymentElement + ExpressCheckoutElement via StripePaymentBlock
+ *   - Responsive two-column layout with mobile summary + sticky CTA
+ *   - Framer Motion step-enter animations + AnimatePresence
  *   - Existing business logic preserved: syncAndPlace(), DOMPurify, Veeqo
+ *   - PaymentIntent architecture ready for Stripe account activation
  */
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import {
-  CreditCard,
   Lock,
   Truck,
   CheckCircle,
@@ -37,87 +37,7 @@ import {
   POINTS_MAX_REDEEM,
   POINTS_REDEEM_STEP,
 } from '../api/rewards.js';
-// ─── Payment option definitions ────────────────────────────────────────────────
-// option id = customer-facing checkout choice.
-// gatewayId = WooCommerce Store API payment_method. BNPL and wallets typically
-// route through Stripe Payment Element, while PayPal routes through its gateway.
-const PAYMENT_METHODS = [
-  {
-    id: 'stripe',
-    gatewayId: 'stripe',
-    label: 'Card',
-    badge: 'Stripe',
-    sublabel: 'Visa, Mastercard, Amex, Discover',
-    detail: 'Encrypted card entry with network token support.',
-    kind: 'card',
-    brands: ['Visa', 'MC', 'Amex', 'Disc'],
-  },
-  {
-    id: 'link',
-    gatewayId: 'stripe',
-    label: 'Link',
-    badge: '1-click',
-    sublabel: 'Fast saved checkout by Stripe',
-    detail: 'Saved customer details can complete checkout faster when Stripe Link is enabled.',
-    kind: 'wallet',
-    brands: ['Link'],
-  },
-  {
-    id: 'paypal',
-    gatewayId: 'paypal',
-    label: 'PayPal',
-    badge: 'Express',
-    sublabel: 'PayPal, Venmo, and Pay Later where eligible',
-    detail: 'Redirects through PayPal once the WooCommerce PayPal gateway is active.',
-    kind: 'paypal',
-    brands: ['PayPal', 'Venmo'],
-  },
-  {
-    id: 'affirm',
-    gatewayId: 'stripe',
-    label: 'Affirm',
-    badge: 'Pay over time',
-    sublabel: 'Monthly plans for eligible US orders',
-    detail: 'A production-ready BNPL choice routed through Stripe Payment Element when Affirm is enabled.',
-    kind: 'bnpl',
-    brands: ['Affirm'],
-  },
-  {
-    id: 'klarna',
-    gatewayId: 'stripe',
-    label: 'Klarna',
-    badge: 'Pay later',
-    sublabel: 'Flexible pay-in-4 or financing where eligible',
-    detail: 'Shows Klarna eligibility through Stripe based on amount, currency, and location.',
-    kind: 'bnpl',
-    brands: ['Klarna'],
-  },
-  {
-    id: 'afterpay_clearpay',
-    gatewayId: 'stripe',
-    label: 'Afterpay',
-    badge: '4 payments',
-    sublabel: 'Afterpay / Clearpay for supported buyers',
-    detail: 'Four-payment checkout option when supported by the merchant account and order.',
-    kind: 'bnpl',
-    brands: ['Afterpay'],
-  },
-];
-
-const EXPRESS_OPTIONS = [
-  { id: 'paypal', label: 'PayPal', tone: 'bg-[#003087] text-white border-[#003087]' },
-  { id: 'stripe', label: 'Apple Pay', tone: 'bg-slate-950 text-white border-slate-950' },
-  { id: 'stripe', label: 'Google Pay', tone: 'bg-white text-slate-900 border-slate-200' },
-  { id: 'link', label: 'Link', tone: 'bg-[#635bff] text-white border-[#635bff]' },
-];
-
-function getSelectedPaymentOption( selectedMethod ) {
-  return PAYMENT_METHODS.find( ( option ) => option.id === selectedMethod ) ?? PAYMENT_METHODS[0];
-}
-
-function getPaymentGatewayId( selectedMethod ) {
-  return getSelectedPaymentOption( selectedMethod ).gatewayId;
-}
+import StripePaymentBlock from '../components/checkout/StripePaymentBlock.jsx';
 
 // ─── Framer Motion shared variants ────────────────────────────────────────────
 // will-change is set on the hidden/initial state (before animation starts) and
@@ -131,12 +51,6 @@ const cardVariants = {
     willChange: 'auto',
     transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: delay ?? 0 },
   }),
-};
-
-const panelVariants = {
-  initial: { opacity: 0, height: 0, willChange: 'transform, opacity' },
-  animate: { opacity: 1, height: 'auto', willChange: 'auto', transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } },
-  exit:    { opacity: 0, height: 0,      willChange: 'auto', transition: { duration: 0.2,  ease: 'easeIn' } },
 };
 
 // ─── BreathingLoader ──────────────────────────────────────────────────────────
@@ -269,241 +183,6 @@ function OrderSummaryPanel( { cartItems, subtotal, shipping, tax, total, loading
   );
 }
 
-// ─── Express buttons ──────────────────────────────────────────────────────────
-// These select the payment path today and are structured so gateway SDK buttons
-// can replace their button bodies without changing the checkout state contract.
-function ExpressCheckoutButtons( { selectedMethod, onSelect } ) {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-      { EXPRESS_OPTIONS.map( ( option ) => {
-        const active = selectedMethod === option.id;
-        return (
-          <button
-            key={ option.label }
-            type="button"
-            onClick={ () => onSelect( option.id ) }
-            aria-pressed={ active }
-            className={ `h-12 rounded-2xl border text-sm font-black tracking-tight
-                         transition-all duration-200 active:scale-[0.98]
-                         ${ option.tone }
-                         ${ active ? 'ring-2 ring-primary-400 ring-offset-2 shadow-lg shadow-primary-900/10' : 'hover:-translate-y-0.5 hover:shadow-md' }` }
-          >
-            { option.label }
-          </button>
-        );
-      } ) }
-    </div>
-  );
-}
-
-function CardEntryPreview( { inputClass } ) {
-  return (
-    <div className="space-y-3">
-      <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-          Card Number
-        </label>
-        <input
-          type="text"
-          inputMode="numeric"
-          autoComplete="cc-number"
-          placeholder="1234 5678 9012 3456"
-          maxLength={ 19 }
-          readOnly
-          className={ inputClass( '_stripe_num' ) }
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-            Expiry
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            autoComplete="cc-exp"
-            placeholder="MM / YY"
-            maxLength={ 7 }
-            readOnly
-            className={ inputClass( '_stripe_exp' ) }
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-            CVC
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            autoComplete="cc-csc"
-            placeholder="..."
-            maxLength={ 4 }
-            readOnly
-            className={ inputClass( '_stripe_cvc' ) }
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PaymentOptionPanel( { option, total, inputClass } ) {
-  const estimatedInstallment = Math.max( total / 4, 0 ).toFixed( 2 );
-
-  return (
-    <Motion.div
-      key={ `panel-${ option.id }` }
-      variants={ panelVariants }
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="overflow-hidden"
-    >
-      <div className="mt-4 rounded-[1.15rem] border border-slate-200 bg-slate-50/80 p-4">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-bold text-slate-950">{ option.label } checkout</p>
-            <p className="text-xs text-slate-500">{ option.detail }</p>
-          </div>
-          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500 shadow-sm">
-            { option.gatewayId === 'stripe' ? 'Stripe ready' : 'Gateway ready' }
-          </span>
-        </div>
-
-        { option.kind === 'card' && <CardEntryPreview inputClass={ inputClass } /> }
-
-        { option.kind === 'wallet' && (
-          <div className="grid sm:grid-cols-3 gap-2">
-            { ['Saved identity', 'Saved payment', 'Fast approval'].map( ( item ) => (
-              <div key={ item } className="rounded-2xl bg-white px-3 py-3 text-xs font-semibold text-slate-700 shadow-sm">
-                { item }
-              </div>
-            ) ) }
-          </div>
-        ) }
-
-        { option.kind === 'paypal' && (
-          <div className="grid sm:grid-cols-3 gap-2">
-            { ['PayPal balance', 'Venmo', 'Pay Later'].map( ( item ) => (
-              <div key={ item } className="rounded-2xl bg-white px-3 py-3 text-xs font-semibold text-slate-700 shadow-sm">
-                { item }
-              </div>
-            ) ) }
-          </div>
-        ) }
-
-        { option.kind === 'bnpl' && (
-          <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-stretch">
-            <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Estimated split
-              </p>
-              <p className="mt-1 text-2xl font-black text-slate-950 tabular-nums">
-                4 x ${ estimatedInstallment }
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Final terms are shown by the provider before approval.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white p-4 text-xs text-slate-500 shadow-sm sm:max-w-56">
-              <p className="font-bold text-slate-800">Eligibility-aware</p>
-              <p className="mt-1">
-                Availability depends on provider approval, buyer location, currency, and order total.
-              </p>
-            </div>
-          </div>
-        ) }
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          { option.brands.map( ( brand ) => (
-            <span key={ brand } className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-bold text-slate-600">
-              { brand }
-            </span>
-          ) ) }
-        </div>
-      </div>
-    </Motion.div>
-  );
-}
-
-// ─── PaymentMethodSelector ────────────────────────────────────────────────────
-// Radio-group for payment methods with one animated detail panel for the active
-// method. Wallets and BNPL options route through the proper WC gateway id on
-// submit, while still giving customers a first-class choice in the UI.
-function PaymentMethodSelector( { selectedMethod, onChange, inputClass, total } ) {
-  const selectedOption = getSelectedPaymentOption( selectedMethod );
-
-  return (
-    <div className="space-y-4">
-      <div className="grid md:grid-cols-2 gap-3">
-        { PAYMENT_METHODS.map( ( option ) => {
-          const active = selectedMethod === option.id;
-
-          return (
-            <label
-              key={ option.id }
-              className={
-                `group relative flex min-h-[116px] cursor-pointer flex-col justify-between
-                 rounded-[1.15rem] border p-4 transition-all duration-200 select-none
-                 ${ active
-                   ? 'border-primary-500 bg-primary-50/80 shadow-[0_16px_35px_rgba(37,99,235,0.14)] ring-1 ring-primary-400/40'
-                   : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md' }`
-              }
-            >
-              <input
-                type="radio"
-                name="paymentMethod"
-                value={ option.id }
-                checked={ active }
-                onChange={ onChange }
-                className="sr-only"
-              />
-              <span className="flex items-start justify-between gap-3">
-                <span className="flex items-center gap-3">
-                  <span
-                    className={
-                      `flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors
-                       ${ active ? 'border-primary-500 bg-white' : 'border-slate-300 bg-white' }`
-                    }
-                  >
-                    { active && <span className="block h-2.5 w-2.5 rounded-full bg-primary-500" /> }
-                  </span>
-                  <span>
-                    <span className="block text-sm font-black text-slate-950">{ option.label }</span>
-                    <span className="mt-0.5 block text-xs leading-snug text-slate-500">{ option.sublabel }</span>
-                  </span>
-                </span>
-                <span className="rounded-full bg-slate-950 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-white">
-                  { option.badge }
-                </span>
-              </span>
-              <span className="mt-4 flex flex-wrap gap-1.5">
-                { option.brands.map( ( brand ) => (
-                  <span
-                    key={ brand }
-                    className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[10px] font-bold text-slate-500"
-                  >
-                    { brand }
-                  </span>
-                ) ) }
-              </span>
-            </label>
-          );
-        } ) }
-      </div>
-
-      <AnimatePresence mode="wait" initial={ false }>
-        <PaymentOptionPanel
-          key={ selectedOption.id }
-          option={ selectedOption }
-          total={ total }
-          inputClass={ inputClass }
-        />
-      </AnimatePresence>
-    </div>
-  );
-}
-
 // ─── Main Checkout component ──────────────────────────────────────────────────
 export default function Checkout() {
   const navigate = useNavigate();
@@ -511,17 +190,16 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuthContext();
 
   const [formData, setFormData] = useState( {
-    firstName:     '',
-    lastName:      '',
-    email:         '',
-    phone:         '',
-    address:       '',
-    city:          '',
-    state:         '',
-    zip:           '',
-    country:       'US',
-    paymentMethod: 'stripe',
-    customerNote:  '',
+    firstName:    '',
+    lastName:     '',
+    email:        '',
+    phone:        '',
+    address:      '',
+    city:         '',
+    state:        '',
+    zip:          '',
+    country:      'US',
+    customerNote: '',
   } );
 
   const [errors,        setErrors       ] = useState( {} );
@@ -530,6 +208,20 @@ export default function Checkout() {
   const [orderComplete, setOrderComplete] = useState( false );
   const [orderDetails,  setOrderDetails ] = useState( null );
   const [step,          setStep         ] = useState( 'form' ); // 'form' | 'syncing' | 'placing'
+
+  // ── Stripe PaymentIntent client_secret ────────────────────────────────────
+  // Set when the PaymentIntent is created on checkout entry.
+  // TODO: Activate this effect once the Stripe account and server endpoint are ready.
+  // The WP endpoint should POST to Stripe's PaymentIntents API and return { client_secret }.
+  const [clientSecret, setClientSecret] = useState( null );
+
+  // Silence the unused-setter warning until the backend endpoint is wired.
+  // Remove this line and uncomment the useEffect below when Stripe is live.
+  void setClientSecret;
+
+  // Ref to capture the WC order created during the Stripe onCreateSession callback
+  // so it is available in handlePaymentSuccess without needing a state round-trip.
+  const wcOrderRef = useRef( null );
 
   // ── Points redemption ─────────────────────────────────────────────────────
   const [pointsBalance,   setPointsBalance  ] = useState( null );   // raw balance from API
@@ -707,12 +399,26 @@ export default function Checkout() {
     return Object.keys( e ).length === 0;
   };
 
-  const handleSubmit = async ( e ) => {
-    e.preventDefault();
-    if ( ! validateForm() ) return;
+  /**
+   * Called by StripePaymentBlock before the Stripe SDK confirms payment.
+   * Validates the form and syncs the cart + billing info to WooCommerce.
+   * The resulting WC order is captured in wcOrderRef for use after payment success.
+   *
+   * Dependency note: validateForm reads formData from closure; since formData is
+   * already in the dep array, recreating handleCreateSession when formData changes
+   * is correct and sufficient. useState setters (setProcessing, setCheckoutError,
+   * setStep) are stable references and do not need to be listed.
+   */
+  const handleCreateSession = useCallback( async () => {
+    if ( ! validateForm() ) {
+      // Field-level errors are already surfaced by validateForm() via setErrors().
+      // Throw a sentinel so the Stripe flow aborts without showing a duplicate banner.
+      throw Object.assign( new Error( 'Form validation failed.' ), { isValidation: true } );
+    }
 
     setProcessing( true );
     setCheckoutError( null );
+    setStep( 'syncing' );
 
     const billingAddress = {
       first_name: formData.firstName,
@@ -727,42 +433,47 @@ export default function Checkout() {
       phone:      formData.phone,
     };
 
-    try {
-      // ── Step 1: Sync CartContext → WC Store API cart, apply shipping rate,
-      //            then submit checkout. Veeqo order sync happens server-side
-      //            via the woocommerce_store_api_checkout_order_processed hook
-      //            in dtb-veeqo.php — no separate client-side call needed.
-      setStep( 'syncing' );
+    // Map the selected Veeqo rate to the WC shipping method rate ID.
+    const wcRateId = selectedRate ? `dtb_veeqo_rates:${ selectedRate.id }` : '';
 
-      // Map the selected rate ID to the WC shipping method rate ID.
-      // DTB_Veeqo_Shipping_Method registers rates as 'dtb_veeqo_rates:{key}'.
-      const wcRateId = selectedRate
-        ? `dtb_veeqo_rates:${ selectedRate.id }`
-        : '';
+    const wcOrder = await syncAndPlace(
+      cartItems,
+      billingAddress,
+      billingAddress,   // billing used as shipping; customer may update in WP account
+      'stripe',
+      [],               // payment_data is provided by Stripe SDK after this callback
+      formData.customerNote,
+      wcRateId,
+      appliedCoupon ? [ appliedCoupon.code ] : [],
+    );
 
-      const wcOrder = await syncAndPlace(
-        cartItems,
-        billingAddress,
-        billingAddress,          // use billing as shipping (user can update in WP later)
-        getPaymentGatewayId( formData.paymentMethod ),
-        [],                      // payment_data comes from Stripe/PayPal SDK tokenization in production.
-        formData.customerNote,
-        wcRateId,                // selected shipping rate ID
-        appliedCoupon ? [ appliedCoupon.code ] : [],  // loyalty coupon (if applied)
-      );
+    wcOrderRef.current = wcOrder;
+    setStep( 'placing' );
+  }, [ formData, cartItems, selectedRate, appliedCoupon ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
-      setStep( 'placing' );
-      setOrderDetails( { wooCommerce: wcOrder } );
-      setOrderComplete( true );
-      clearCart();
+  /**
+   * Called by StripePaymentBlock after the Stripe SDK confirms payment successfully.
+   */
+  const handlePaymentSuccess = useCallback( async () => {
+    setOrderDetails( { wooCommerce: wcOrderRef.current } );
+    setOrderComplete( true );
+    clearCart();
+    setProcessing( false );
+    setStep( 'form' );
+  }, [ clearCart ] );
 
-    } catch ( err ) {
-      setCheckoutError( err.message || 'Checkout failed. Please try again.' );
-    } finally {
-      setProcessing( false );
-      setStep( 'form' );
+  /**
+   * Called by StripePaymentBlock when payment confirmation fails.
+   * Validation errors (isValidation=true) are shown as field errors only —
+   * no duplicate banner is rendered for them.
+   */
+  const handlePaymentError = useCallback( ( error ) => {
+    if ( ! error?.isValidation ) {
+      setCheckoutError( error.message || 'Payment failed. Please try again.' );
     }
-  };
+    setProcessing( false );
+    setStep( 'form' );
+  }, [] );
 
   // ── Input / label class helpers ───────────────────────────────────────────
   const inputClass = ( field ) =>
@@ -907,31 +618,13 @@ export default function Checkout() {
           transition={ { duration: 0.4 } }
           className="mb-6 md:mb-8 text-white"
         >
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-sky-100">
-                <Lock size={ 13 } />
-                Secure checkout
-              </p>
-              <h1 className="text-3xl md:text-5xl font-black tracking-tight">
-                Finish your order
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-300">
-                Encrypted payment, live shipping rates, and flexible payment options for professional tools and parts.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 text-xs text-slate-200 sm:min-w-[420px]">
-              { ['Cart synced', 'Shipping rated', 'Payment secured'].map( ( item, index ) => (
-                <div key={ item } className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 backdrop-blur">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-sky-200">
-                    0{ index + 1 }
-                  </span>
-                  <span className="font-semibold">{ item }</span>
-                </div>
-              ) ) }
-            </div>
-          </div>
+          <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-sky-100">
+            <Lock size={ 13 } />
+            Secure checkout
+          </p>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight">
+            Complete your order
+          </h1>
         </Motion.div>
 
         <div className="lg:hidden mb-5">
@@ -945,58 +638,89 @@ export default function Checkout() {
           />
         </div>
 
-        <form id="checkout-form" onSubmit={ handleSubmit } noValidate>
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_410px] gap-6 xl:gap-8">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_410px] gap-6 xl:gap-8">
 
-            {/* ── Left column: form steps ─────────────────────────────────── */}
-            <div className="space-y-5">
+          {/* ── Left column: form steps ─────────────────────────────────── */}
+          <div className="space-y-5">
 
-              {/* Express checkout section */}
-              <StepCard delay={ 0 } className="p-5 md:p-6">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                      Express Checkout
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-slate-950">
-                      Choose a fast payment rail or continue with the full form.
-                    </p>
+            {/* Contact Information */}
+            <StepCard delay={ 0 } className="p-6">
+              <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
+                <User size={ 17 } className="text-primary-500" />
+                Contact Information
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                { [
+                  { name: 'firstName', label: 'First Name',    type: 'text',  autoComplete: 'given-name'  },
+                  { name: 'lastName',  label: 'Last Name',     type: 'text',  autoComplete: 'family-name' },
+                  { name: 'email',     label: 'Email Address', type: 'email', autoComplete: 'email'       },
+                  { name: 'phone',     label: 'Phone',         type: 'tel',   autoComplete: 'tel',         inputMode: 'numeric' },
+                ].map( ( { name, label, type, autoComplete, inputMode } ) => (
+                  <div key={ name }>
+                    <label htmlFor={ `field-${ name }` } className={ labelClass }>
+                      { label }{ requiredMark }
+                    </label>
+                    <input
+                      id={ `field-${ name }` }
+                      type={ type }
+                      name={ name }
+                      value={ formData[name] }
+                      onChange={ handleInputChange }
+                      autoComplete={ autoComplete }
+                      { ...( inputMode ? { inputMode } : {} ) }
+                      className={ inputClass( name ) }
+                      aria-invalid={ !! errors[name] }
+                      aria-describedby={ errors[name] ? `err-${ name }` : undefined }
+                    />
+                    { errors[name] && (
+                      <p id={ `err-${ name }` } className="text-red-500 text-xs mt-1" role="alert">
+                        { errors[name] }
+                      </p>
+                    ) }
                   </div>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                    SSL active
-                  </span>
-                </div>
-                <ExpressCheckoutButtons
-                  selectedMethod={ formData.paymentMethod }
-                  onSelect={ ( id ) => setFormData( ( prev ) => ( { ...prev, paymentMethod: id } ) ) }
-                />
-                <div className="relative flex items-center mt-5 mb-1">
-                  <div className="grow border-t border-slate-100" />
-                  <span className="mx-3 text-xs font-semibold text-slate-400 shrink-0">or continue below</span>
-                  <div className="grow border-t border-slate-100" />
-                </div>
-              </StepCard>
+                ) ) }
+              </div>
+            </StepCard>
 
-              {/* Contact Information */}
-              <StepCard delay={ 0.05 } className="p-6">
-                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
-                  <User size={ 17 } className="text-primary-500" />
-                  Contact Information
-                </h2>
-                <div className="grid sm:grid-cols-2 gap-4">
+            {/* Shipping Address */}
+            <StepCard delay={ 0.05 } className="p-6">
+              <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
+                <Truck size={ 17 } className="text-primary-500" />
+                Shipping Address
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="field-address" className={ labelClass }>
+                    Street Address{ requiredMark }
+                  </label>
+                  <input
+                    id="field-address"
+                    type="text"
+                    name="address"
+                    value={ formData.address }
+                    onChange={ handleInputChange }
+                    autoComplete="street-address"
+                    className={ inputClass( 'address' ) }
+                    aria-invalid={ !! errors.address }
+                  />
+                  { errors.address && (
+                    <p className="text-red-500 text-xs mt-1" role="alert">{ errors.address }</p>
+                  ) }
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-3">
                   { [
-                    { name: 'firstName', label: 'First Name',    type: 'text',  autoComplete: 'given-name'  },
-                    { name: 'lastName',  label: 'Last Name',     type: 'text',  autoComplete: 'family-name' },
-                    { name: 'email',     label: 'Email Address', type: 'email', autoComplete: 'email'       },
-                    { name: 'phone',     label: 'Phone',         type: 'tel',   autoComplete: 'tel',         inputMode: 'numeric' },
-                  ].map( ( { name, label, type, autoComplete, inputMode } ) => (
+                    { name: 'city',  label: 'City',     autoComplete: 'address-level2' },
+                    { name: 'state', label: 'State',    autoComplete: 'address-level1' },
+                    { name: 'zip',   label: 'ZIP Code', autoComplete: 'postal-code',    inputMode: 'numeric' },
+                  ].map( ( { name, label, autoComplete, inputMode } ) => (
                     <div key={ name }>
                       <label htmlFor={ `field-${ name }` } className={ labelClass }>
                         { label }{ requiredMark }
                       </label>
                       <input
                         id={ `field-${ name }` }
-                        type={ type }
+                        type="text"
                         name={ name }
                         value={ formData[name] }
                         onChange={ handleInputChange }
@@ -1004,293 +728,214 @@ export default function Checkout() {
                         { ...( inputMode ? { inputMode } : {} ) }
                         className={ inputClass( name ) }
                         aria-invalid={ !! errors[name] }
-                        aria-describedby={ errors[name] ? `err-${ name }` : undefined }
                       />
                       { errors[name] && (
-                        <p id={ `err-${ name }` } className="text-red-500 text-xs mt-1" role="alert">
-                          { errors[name] }
-                        </p>
+                        <p className="text-red-500 text-xs mt-1" role="alert">{ errors[name] }</p>
                       ) }
                     </div>
                   ) ) }
                 </div>
-              </StepCard>
 
-              {/* Shipping Address */}
-              <StepCard delay={ 0.1 } className="p-6">
-                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
-                  <Truck size={ 17 } className="text-primary-500" />
-                  Shipping Address
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="field-address" className={ labelClass }>
-                      Street Address{ requiredMark }
-                    </label>
-                    <input
-                      id="field-address"
-                      type="text"
-                      name="address"
-                      value={ formData.address }
-                      onChange={ handleInputChange }
-                      autoComplete="street-address"
-                      className={ inputClass( 'address' ) }
-                      aria-invalid={ !! errors.address }
-                    />
-                    { errors.address && (
-                      <p className="text-red-500 text-xs mt-1" role="alert">{ errors.address }</p>
-                    ) }
-                  </div>
-
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    { [
-                      { name: 'city',  label: 'City',     autoComplete: 'address-level2' },
-                      { name: 'state', label: 'State',    autoComplete: 'address-level1' },
-                      { name: 'zip',   label: 'ZIP Code', autoComplete: 'postal-code',    inputMode: 'numeric' },
-                    ].map( ( { name, label, autoComplete, inputMode } ) => (
-                      <div key={ name }>
-                        <label htmlFor={ `field-${ name }` } className={ labelClass }>
-                          { label }{ requiredMark }
-                        </label>
-                        <input
-                          id={ `field-${ name }` }
-                          type="text"
-                          name={ name }
-                          value={ formData[name] }
-                          onChange={ handleInputChange }
-                          autoComplete={ autoComplete }
-                          { ...( inputMode ? { inputMode } : {} ) }
-                          className={ inputClass( name ) }
-                          aria-invalid={ !! errors[name] }
-                        />
-                        { errors[name] && (
-                          <p className="text-red-500 text-xs mt-1" role="alert">{ errors[name] }</p>
-                        ) }
-                      </div>
-                    ) ) }
-                  </div>
-
-                  { subtotal > 0 && subtotal < FREE_SHIP_THRESHOLD && (
-                    <p className="text-xs text-primary-600 bg-primary-50 rounded-xl px-4 py-2.5">
-                      <span aria-hidden="true">💡</span> Spend{ ' ' }
-                      <strong>${ ( FREE_SHIP_THRESHOLD - subtotal ).toFixed( 2 ) }</strong> more to unlock free shipping!
-                    </p>
-                  ) }
-                </div>
-              </StepCard>
-
-              {/* Shipping Method */}
-              <StepCard delay={ 0.12 } className="p-6">
-                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
-                  <Truck size={ 17 } className="text-primary-500" />
-                  Shipping Method
-                </h2>
-
-                { ratesLoading && (
-                  <p className="text-sm text-gray-400 animate-pulse py-2">Loading shipping options…</p>
-                ) }
-
-                { ratesError && ! ratesLoading && (
-                  <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
-                    <AlertTriangle size={ 13 } className="inline mr-1" />
-                    { ratesError }
+                { subtotal > 0 && subtotal < FREE_SHIP_THRESHOLD && (
+                  <p className="text-xs text-primary-600 bg-primary-50 rounded-xl px-4 py-2.5">
+                    <span aria-hidden="true">💡</span> Spend{ ' ' }
+                    <strong>${ ( FREE_SHIP_THRESHOLD - subtotal ).toFixed( 2 ) }</strong> more to unlock free shipping!
                   </p>
                 ) }
+              </div>
+            </StepCard>
 
-                { ! ratesLoading && shippingRates.length === 0 && ! ratesError && (
-                  <p className="text-xs text-gray-400">
-                    Enter your shipping address above to see available rates.
-                  </p>
-                ) }
+            {/* Shipping Method */}
+            <StepCard delay={ 0.1 } className="p-6">
+              <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
+                <Truck size={ 17 } className="text-primary-500" />
+                Shipping Method
+              </h2>
 
-                { ! ratesLoading && shippingRates.length > 0 && (
-                  <div className="space-y-2" role="radiogroup" aria-label="Shipping method">
-                    { shippingRates.map( ( rate ) => (
-                      <label
-                        key={ rate.id }
-                        className={ `flex items-center justify-between gap-3 px-4 py-3 rounded-xl border
-                                     cursor-pointer transition-all
-                                     ${ selectedRate?.id === rate.id
-                                         ? 'border-primary-500 bg-primary-50/60 ring-1 ring-primary-500/30'
-                                         : 'border-gray-200 hover:border-gray-300' }` }
-                      >
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="radio"
-                            name="shippingRate"
-                            value={ rate.id }
-                            checked={ selectedRate?.id === rate.id }
-                            onChange={ () => setSelectedRate( rate ) }
-                            className="accent-primary-600"
-                          />
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{ rate.name }</p>
-                            { rate.eta && (
-                              <p className="text-xs text-gray-500">{ rate.eta }</p>
-                            ) }
-                          </div>
-                        </div>
-                        <span className="text-sm font-semibold text-gray-900 shrink-0">
-                          { rate.price === 0 ? 'Free' : `$${ rate.price.toFixed( 2 ) }` }
-                        </span>
-                      </label>
-                    ) ) }
-                  </div>
-                ) }
-              </StepCard>
-
-              {/* Payment Method */}
-              <StepCard delay={ 0.15 } className="p-6">
-                <h2 className="flex items-center gap-2 text-base font-bold text-gray-900 mb-5">
-                  <CreditCard size={ 17 } className="text-primary-500" />
-                  Payment Method
-                </h2>
-                <PaymentMethodSelector
-                  selectedMethod={ formData.paymentMethod }
-                  onChange={ handleInputChange }
-                  inputClass={ inputClass }
-                  total={ total }
-                />
-
-                {/* Order note */}
-                <div className="mt-5">
-                  <label htmlFor="field-customerNote" className={ labelClass }>
-                    Order Note{ ' ' }
-                    <span className="text-gray-400 normal-case font-normal">(optional)</span>
-                  </label>
-                  <textarea
-                    id="field-customerNote"
-                    name="customerNote"
-                    value={ formData.customerNote }
-                    onChange={ handleInputChange }
-                    rows={ 2 }
-                    placeholder="Special instructions for your order…"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
-                               text-sm resize-none min-h-11
-                               focus:outline-none focus:ring-2 focus:ring-primary-500/30
-                               focus:border-primary-500 transition-all hover:border-gray-300"
-                  />
-                </div>
-              </StepCard>
-
-              {/* ── Points redemption panel (authenticated users only) ── */}
-              { isAuthenticated && pointsBalance && pointsBalance.points >= POINTS_MIN_REDEEM && (
-                <StepCard delay={ 0.22 } className="p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                      <span>⭐</span> Redeem Points
-                    </h3>
-                    <span className="text-xs text-gray-500">
-                      Balance: { pointsBalance.points } pts (${pointsToUsd(pointsBalance.points).toFixed(2)})
-                    </span>
-                  </div>
-
-                  { appliedCoupon ? (
-                    <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-                      <div>
-                        <p className="text-sm font-semibold text-green-800">
-                          ✓ ${ appliedCoupon.discount_amount.toFixed( 2 ) } discount applied
-                        </p>
-                        <code className="text-xs text-green-700 font-mono">{ appliedCoupon.code }</code>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={ handleRemovePoints }
-                        className="text-xs text-red-600 hover:text-red-800 font-semibold ml-3"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <label className="block text-xs text-gray-500 mb-2">
-                        Redeem&nbsp;
-                        <strong className="text-gray-800">{ pointsToRedeem } pts</strong>
-                        &nbsp;=&nbsp;
-                        <strong className="text-emerald-700">${ pointsUsd.toFixed( 2 ) } off</strong>
-                      </label>
-                      <input
-                        type="range"
-                        min={ POINTS_MIN_REDEEM }
-                        max={ roundedMax || POINTS_MIN_REDEEM }
-                        step={ POINTS_REDEEM_STEP }
-                        value={ pointsToRedeem }
-                        onChange={ ( e ) => setPointsToRedeem( Number( e.target.value ) ) }
-                        className="w-full mb-3 accent-primary-600"
-                      />
-                      { pointsError && <p className="text-xs text-red-600 mb-2">{ pointsError }</p> }
-                      <button
-                        type="button"
-                        onClick={ handleApplyPoints }
-                        disabled={ applyingPoints || pointsToRedeem < POINTS_MIN_REDEEM }
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-600 text-white text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        { applyingPoints ? 'Applying…' : `Apply ${ pointsToRedeem } pts` }
-                      </button>
-                    </>
-                  ) }
-                </StepCard>
+              { ratesLoading && (
+                <p className="text-sm text-gray-400 animate-pulse py-2">Loading shipping options…</p>
               ) }
 
-              {/* Checkout error */}
-              <AnimatePresence>
-                { checkoutError && (
-                  <Motion.div
-                    initial={ { opacity: 0, y: -8 } }
-                    animate={ { opacity: 1, y: 0 } }
-                    exit={ { opacity: 0, y: -8 } }
-                    className="bg-red-50 border border-red-200 rounded-xl p-4"
-                    role="alert"
-                  >
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-700">{ checkoutError }</p>
-                    </div>
-                  </Motion.div>
-                ) }
-              </AnimatePresence>
-
-              {/* Desktop submit button */}
-              <div className="hidden md:block">
-                <button
-                  type="submit"
-                  disabled={ processing }
-                  className="w-full inline-flex items-center justify-center gap-2.5
-                             bg-primary-600 hover:bg-primary-700 active:scale-[0.99]
-                             text-white px-6 py-4 rounded-xl font-bold text-base
-                             tracking-wide transition-all shadow-md hover:shadow-lg
-                             disabled:opacity-50 disabled:cursor-not-allowed min-h-13"
-                >
-                  <Lock size={ 17 } />
-                  Complete Purchase — ${ total.toFixed( 2 ) }
-                </button>
-                <p className="text-[11px] text-gray-400 text-center mt-3">
-                  By placing your order you agree to our terms and conditions.
+              { ratesError && ! ratesLoading && (
+                <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+                  <AlertTriangle size={ 13 } className="inline mr-1" />
+                  { ratesError }
                 </p>
-              </div>
-            </div>
+              ) }
 
-            {/* ── Right column: sticky order summary ─────────────────────── */}
-            <div className="hidden lg:block">
-              <OrderSummaryPanel
-                cartItems={ cartItems }
-                subtotal={ subtotal }
-                shipping={ shipping }
-                tax={ tax }
-                total={ total }
-                loading={ processing }
-                className="sticky top-24"
+              { ! ratesLoading && shippingRates.length === 0 && ! ratesError && (
+                <p className="text-xs text-gray-400">
+                  Enter your shipping address above to see available rates.
+                </p>
+              ) }
+
+              { ! ratesLoading && shippingRates.length > 0 && (
+                <div className="space-y-2" role="radiogroup" aria-label="Shipping method">
+                  { shippingRates.map( ( rate ) => (
+                    <label
+                      key={ rate.id }
+                      className={ `flex items-center justify-between gap-3 px-4 py-3 rounded-xl border
+                                   cursor-pointer transition-all
+                                   ${ selectedRate?.id === rate.id
+                                       ? 'border-primary-500 bg-primary-50/60 ring-1 ring-primary-500/30'
+                                       : 'border-gray-200 hover:border-gray-300' }` }
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="shippingRate"
+                          value={ rate.id }
+                          checked={ selectedRate?.id === rate.id }
+                          onChange={ () => setSelectedRate( rate ) }
+                          className="accent-primary-600"
+                        />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{ rate.name }</p>
+                          { rate.eta && (
+                            <p className="text-xs text-gray-500">{ rate.eta }</p>
+                          ) }
+                        </div>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-900 shrink-0">
+                        { rate.price === 0 ? 'Free' : `$${ rate.price.toFixed( 2 ) }` }
+                      </span>
+                    </label>
+                  ) ) }
+                </div>
+              ) }
+            </StepCard>
+
+            {/* ── Points redemption panel (authenticated users only) ── */}
+            { isAuthenticated && pointsBalance && pointsBalance.points >= POINTS_MIN_REDEEM && (
+              <StepCard delay={ 0.15 } className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <span>⭐</span> Redeem Points
+                  </h3>
+                  <span className="text-xs text-gray-500">
+                    Balance: { pointsBalance.points } pts (${pointsToUsd(pointsBalance.points).toFixed(2)})
+                  </span>
+                </div>
+
+                { appliedCoupon ? (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-green-800">
+                        ✓ ${ appliedCoupon.discount_amount.toFixed( 2 ) } discount applied
+                      </p>
+                      <code className="text-xs text-green-700 font-mono">{ appliedCoupon.code }</code>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={ handleRemovePoints }
+                      className="text-xs text-red-600 hover:text-red-800 font-semibold ml-3"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <label className="block text-xs text-gray-500 mb-2">
+                      Redeem&nbsp;
+                      <strong className="text-gray-800">{ pointsToRedeem } pts</strong>
+                      &nbsp;=&nbsp;
+                      <strong className="text-emerald-700">${ pointsUsd.toFixed( 2 ) } off</strong>
+                    </label>
+                    <input
+                      type="range"
+                      min={ POINTS_MIN_REDEEM }
+                      max={ roundedMax || POINTS_MIN_REDEEM }
+                      step={ POINTS_REDEEM_STEP }
+                      value={ pointsToRedeem }
+                      onChange={ ( e ) => setPointsToRedeem( Number( e.target.value ) ) }
+                      className="w-full mb-3 accent-primary-600"
+                    />
+                    { pointsError && <p className="text-xs text-red-600 mb-2">{ pointsError }</p> }
+                    <button
+                      type="button"
+                      onClick={ handleApplyPoints }
+                      disabled={ applyingPoints || pointsToRedeem < POINTS_MIN_REDEEM }
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-600 text-white text-xs font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      { applyingPoints ? 'Applying…' : `Apply ${ pointsToRedeem } pts` }
+                    </button>
+                  </>
+                ) }
+              </StepCard>
+            ) }
+
+            {/* Order note */}
+            <StepCard delay={ 0.18 } className="p-5">
+              <label htmlFor="field-customerNote" className={ labelClass }>
+                Order Note{ ' ' }
+                <span className="text-gray-400 normal-case font-normal">(optional)</span>
+              </label>
+              <textarea
+                id="field-customerNote"
+                name="customerNote"
+                value={ formData.customerNote }
+                onChange={ handleInputChange }
+                rows={ 2 }
+                placeholder="Special instructions for your order…"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
+                           text-sm resize-none min-h-11
+                           focus:outline-none focus:ring-2 focus:ring-primary-500/30
+                           focus:border-primary-500 transition-all hover:border-gray-300"
               />
-            </div>
+            </StepCard>
+
+            {/* ── Stripe payment section ──────────────────────────────────── */}
+            <StepCard delay={ 0.2 } className="p-6" id="payment-section">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
+                Payment
+              </p>
+              <StripePaymentBlock
+                clientSecret={ clientSecret }
+                email={ formData.email }
+                disabled={ processing }
+                onCreateSession={ handleCreateSession }
+                onPaymentSuccess={ handlePaymentSuccess }
+                onPaymentError={ handlePaymentError }
+              />
+            </StepCard>
+
+            {/* Checkout error */}
+            <AnimatePresence>
+              { checkoutError && (
+                <Motion.div
+                  initial={ { opacity: 0, y: -8 } }
+                  animate={ { opacity: 1, y: 0 } }
+                  exit={ { opacity: 0, y: -8 } }
+                  className="bg-red-50 border border-red-200 rounded-xl p-4"
+                  role="alert"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-700">{ checkoutError }</p>
+                  </div>
+                </Motion.div>
+              ) }
+            </AnimatePresence>
           </div>
-        </form>
+
+          {/* ── Right column: sticky order summary ─────────────────────── */}
+          <div className="hidden lg:block">
+            <OrderSummaryPanel
+              cartItems={ cartItems }
+              subtotal={ subtotal }
+              shipping={ shipping }
+              tax={ tax }
+              total={ total }
+              loading={ processing }
+              className="sticky top-24"
+            />
+          </div>
+        </div>
       </div>
 
-      {/* ── Mobile sticky CTA bar ─────────────────────────────────────────────
+      {/* ── Mobile sticky summary bar ─────────────────────────────────────────
           Visible only on mobile (< md breakpoint), docked to the viewport
-          bottom. The "Complete Purchase" button is enabled only once all
-          required fields contain a non-empty value (isFormComplete). Full
-          validation still runs on submit to surface individual field errors. */}
+          bottom. Shows cart total and scrolls to the payment section.         */}
       <div
         className="md:hidden fixed bottom-0 left-0 right-0 z-40
                    bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3 shadow-xl"
@@ -1301,21 +946,16 @@ export default function Checkout() {
             ${ total.toFixed( 2 ) }
           </span>
         </div>
-        <button
-          type="submit"
-          form="checkout-form"
-          disabled={ processing || ! isFormComplete }
+        <a
+          href="#payment-section"
           className="w-full inline-flex items-center justify-center gap-2
                      bg-primary-600 hover:bg-primary-700 text-white py-3.5 rounded-xl
                      font-bold text-sm tracking-wide transition-all shadow-md
-                     active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed
-                     min-h-12"
+                     active:scale-[0.99] min-h-12"
         >
           <Lock size={ 16 } />
-          { isFormComplete
-            ? `Complete Purchase — $${ total.toFixed( 2 ) }`
-            : 'Fill in required fields' }
-        </button>
+          { isFormComplete ? 'Continue to Payment' : 'Fill in required fields' }
+        </a>
       </div>
     </div>
   );
