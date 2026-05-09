@@ -48,7 +48,14 @@ const ALLOWED_BRANDS = [
 const MAX_PRICE = 3000;
 const ITEMS_PER_PAGE = 24;
 
-const slugifyCategory = (value) => (
+/**
+ * Normalizes category labels and slugs into a consistent URL-safe slug.
+ * - Lowercases all characters
+ * - Replaces "&" with "and"
+ * - Converts non-alphanumeric runs to a single hyphen
+ * - Removes leading and trailing hyphens
+ */
+const normalizeCategorySlug = (value) => (
   String(value || '')
     .trim()
     .toLowerCase()
@@ -56,6 +63,26 @@ const slugifyCategory = (value) => (
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 );
+
+const getCategoryParamFromSearch = (search) => (
+  normalizeCategorySlug(new URLSearchParams(search).get('category') || '')
+);
+
+const getProductCategorySlugs = (product) => {
+  const slugs = new Set();
+  const displaySlug = normalizeCategorySlug(product?.display_category);
+  if (displaySlug) slugs.add(displaySlug);
+
+  const categories = Array.isArray(product?.categories) ? product.categories : [];
+  categories.forEach((cat) => {
+    const nameSlug = normalizeCategorySlug(cat?.name);
+    const rawSlug = normalizeCategorySlug(cat?.slug);
+    if (nameSlug) slugs.add(nameSlug);
+    if (rawSlug) slugs.add(rawSlug);
+  });
+
+  return slugs;
+};
 
 
 export default function AllProducts() {
@@ -66,7 +93,7 @@ export default function AllProducts() {
   // Initialize search query from URL param for deep-linking (e.g. from MobileSearch)
   const urlParams = new URLSearchParams(location.search);
   const searchParam = urlParams.get('search');
-  const categoryParam = (urlParams.get('category') || '').trim().toLowerCase();
+  const categoryParam = getCategoryParamFromSearch(location.search);
   const pageParam = parseInt(urlParams.get('page') || '1', 10);
 
   const [products, setProducts] = useState([]);
@@ -148,25 +175,23 @@ export default function AllProducts() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currentSearchParam = params.get('search') || '';
-    const currentCategoryParam = (params.get('category') || '').trim().toLowerCase();
+    const currentCategoryParam = normalizeCategorySlug(params.get('category') || '');
     const currentPageParam   = params.get('page')   || '';
     const expectedSearchParam = searchQuery ? encodeURIComponent(searchQuery) : '';
-    const expectedCategoryParam = categoryParam;
     const expectedPageParam   = currentPage > 1 ? String(currentPage) : '';
 
     if (
       currentSearchParam !== expectedSearchParam
-      || currentCategoryParam !== expectedCategoryParam
       || currentPageParam !== expectedPageParam
     ) {
       const newParams = new URLSearchParams();
       if (searchQuery)    newParams.set('search', searchQuery);
-      if (categoryParam) newParams.set('category', categoryParam);
+      if (currentCategoryParam) newParams.set('category', currentCategoryParam);
       if (currentPage > 1) newParams.set('page', String(currentPage));
       const newSearch = newParams.toString();
       navigate(newSearch ? `/all-products?${newSearch}` : '/all-products', { replace: true });
     }
-  }, [searchQuery, categoryParam, currentPage, navigate, location.search]);
+  }, [searchQuery, currentPage, navigate, location.search]);
 
   // Reset to page 1 when filters or search change
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -175,7 +200,7 @@ export default function AllProducts() {
   const filteredProducts = (products || []).filter(product => {
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
     if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) return false;
-    if (categoryParam && slugifyCategory(product.display_category) !== categoryParam) return false;
+    if (categoryParam && !getProductCategorySlugs(product).has(categoryParam)) return false;
     // price may not be set on all products; ignore if missing
     if (product.price && (product.price < priceRange[0] || product.price > priceRange[1])) return false;
     // Search filter
