@@ -12,6 +12,8 @@
     "preview": "webpack serve --config webpack.config.cjs --mode production"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.3.0",
+    "@stripe/stripe-js": "^9.4.0",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "dompurify": "^3.0.6",
