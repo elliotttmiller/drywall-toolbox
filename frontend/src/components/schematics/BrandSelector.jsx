@@ -31,11 +31,6 @@ export default function BrandSelector({
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Part Schematics</h1>
-        <p className="text-gray-600">Browse tool schematics and order replacement parts</p>
-      </div>
-
       {/* Search Bar — wired up to search across brand, category, and tool name */}
       <SearchBar
         placeholder="Search schematics by brand, category, or tool name..."

@@ -68,6 +68,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
+  const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileAccountDropdownOpen, setMobileAccountDropdownOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
@@ -99,6 +100,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const closeMobileMenu = () => setMobileMenuOpen(false);
   const closeMenus = () => {
     setShopDropdownOpen(false);
+    setMobileCategoryOpen(false);
     setMobileMenuOpen(false);
     setAccountDropdownOpen(false);
     setMobileAccountDropdownOpen(false);
@@ -143,6 +145,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     prevPathnameRef.current = location.pathname;
     const t = setTimeout(() => {
       setShopDropdownOpen(false);
+      setMobileCategoryOpen(false);
       setMobileMenuOpen(false);
       setAccountDropdownOpen(false);
       setMobileAccountDropdownOpen(false);
@@ -640,16 +643,44 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
 
                   {shopDropdownOpen && (
                     <div className="header-mobile-shop-links">
-                      {SHOP_MENU_LINKS.map(({ to, label }) => (
+                      {/* Shop Navigation feature links */}
+                      <p className="header-mobile-shop-section-title">Shop Navigation</p>
+                      {SHOP_FEATURE_LINKS.map(({ to, label, sub }) => (
                         <Link
                           key={to}
                           to={to}
-                          onClick={() => { setShopDropdownOpen(false); closeMobileMenu(); }}
-                          className={`nav-link-mobile header-mobile-sub-link ${isActive(to) ? 'active' : ''}`}
+                          onClick={() => { setShopDropdownOpen(false); setMobileCategoryOpen(false); closeMobileMenu(); }}
+                          className="header-mobile-feature-link"
                         >
-                          {label}
+                          <span className="header-mobile-feature-link-label">{label}</span>
+                          <span className="header-mobile-feature-link-sub">{sub}</span>
                         </Link>
                       ))}
+
+                      {/* Browse by Category sub-accordion */}
+                      <button
+                        className="header-mobile-category-toggle"
+                        onClick={() => setMobileCategoryOpen((o) => !o)}
+                        aria-expanded={mobileCategoryOpen}
+                      >
+                        <span>Browse by Category</span>
+                        <ChevronDown size={14} className={`header-mobile-shop-chevron${mobileCategoryOpen ? ' is-open' : ''}`} />
+                      </button>
+
+                      {mobileCategoryOpen && (
+                        <div className="header-mobile-category-grid">
+                          {SHOP_CATEGORY_LINKS.map(({ to, label }) => (
+                            <Link
+                              key={to}
+                              to={to}
+                              onClick={() => { setShopDropdownOpen(false); setMobileCategoryOpen(false); closeMobileMenu(); }}
+                              className="header-mobile-category-item"
+                            >
+                              {label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

@@ -10,7 +10,6 @@ import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import { useSchematicMedia } from '../hooks/useSchematicMedia';
 import '../styles/mobile-schematic.css';
 import SEOHead from '../components/shared/SEOHead';
-import PageHeroBanner from '../components/shared/PageHeroBanner';
 import { buildBreadcrumbSchema } from '../utils/schema';
 import { PLACEHOLDER_IMAGE } from '../constants/images.js';
 
@@ -2565,16 +2564,6 @@ const ALLOWED_BRANDS = [
           { label: 'Schematics', path: '/schematics'  },
         ])}
       />
-
-      {!selectedSchematic && (
-        <PageHeroBanner
-          eyebrow="Exploded-View Library"
-          title="Tool Schematics"
-          highlight="Find Parts With Confidence."
-          description="Browse brand schematics, drill into tool diagrams, and source exact replacement components from one streamlined parts workflow."
-          align="left"
-        />
-      )}
 
       {/* Container wrapper — full-height flex column when viewer is active */}
       <div style={{

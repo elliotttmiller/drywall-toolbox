@@ -8,15 +8,15 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Package, Wrench, FileSearch, Calculator, Layers, Hammer } from 'lucide-react';
 
 const NAV_CARDS = [
-  { id: 'products', label: 'PRODUCTS', to: '/all-products' },
-  { id: 'parts', label: 'PARTS', to: '/parts' },
-  { id: 'schematics', label: 'SCHEMATICS', to: '/schematics' },
-  { id: 'calculator', label: 'CALCULATOR', to: '/calculators' },
-  { id: 'toolsets', label: 'TOOL SETS', to: '/toolset-builder' },
-  { id: 'repairs', label: 'REPAIRS', to: '/repairs' },
+  { id: 'products',   label: 'Products',   sub: 'Full catalog',       to: '/all-products',     Icon: Package    },
+  { id: 'parts',      label: 'Parts',      sub: 'Replacement parts',  to: '/parts',            Icon: Wrench     },
+  { id: 'schematics', label: 'Schematics', sub: 'Tool diagrams',      to: '/schematics',       Icon: FileSearch },
+  { id: 'calculator', label: 'Calculator', sub: 'Estimate materials',  to: '/calculators',      Icon: Calculator },
+  { id: 'toolsets',   label: 'Tool Sets',  sub: 'Complete kits',      to: '/toolset-builder',  Icon: Layers     },
+  { id: 'repairs',    label: 'Repairs',    sub: 'Expert service',      to: '/repairs',          Icon: Hammer     },
 ];
 
 const TOTAL = NAV_CARDS.length;
@@ -38,8 +38,8 @@ function shortestOffset(index, activeIndex) {
 
 function getSizing(w) {
   const viewportW = Math.max(320, w || 390);
-  const cardW = Math.round(Math.max(154, Math.min(190, viewportW * 0.46)));
-  const cardH = Math.round(cardW * 0.76);
+  const cardW = Math.round(Math.max(160, Math.min(200, viewportW * 0.48)));
+  const cardH = Math.round(cardW * 1.05);
   const sideOffset = Math.round(Math.max(cardW * 0.74, Math.min(viewportW * 0.31, cardW * 0.9)));
   const depth = Math.round(cardW * 0.4);
   const persp = Math.round(Math.max(760, viewportW * 2.3));
@@ -103,6 +103,7 @@ function getSlotTransform(offset, dragOffset, sideOffset, depth) {
 
 function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
   const [hov, setHov] = useState(false);
+  const { Icon } = card;
 
   return (
     <div
@@ -127,37 +128,79 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
         transformStyle: 'preserve-3d',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        padding: '16px',
-        borderRadius: '18px',
-        border: `1px solid ${hov && isActive ? 'rgba(255,255,255,0.68)' : isActive ? 'rgba(226,232,240,0.56)' : 'rgba(226,232,240,0.28)'}`,
+        padding: '18px 14px',
+        borderRadius: '20px',
+        border: isActive
+          ? `1.5px solid ${hov ? 'rgba(37,99,235,0.50)' : 'rgba(37,99,235,0.22)'}`
+          : '1px solid rgba(255,255,255,0.20)',
         background: isActive
-          ? 'linear-gradient(160deg, rgba(255,255,255,0.24) 0%, rgba(232,240,250,0.15) 52%, rgba(203,213,225,0.11) 100%)'
-          : 'linear-gradient(160deg, rgba(255,255,255,0.17) 0%, rgba(232,240,250,0.10) 52%, rgba(203,213,225,0.07) 100%)',
+          ? '#ffffff'
+          : 'rgba(255,255,255,0.10)',
         cursor: isActive ? 'pointer' : 'default',
         transition: 'transform 440ms cubic-bezier(0.16, 1, 0.3, 1), opacity 320ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease',
-        boxShadow: isActive ? '0 18px 34px rgba(15,23,42,0.24), 0 0 20px rgba(248,250,252,0.18)' : '0 10px 22px rgba(15,23,42,0.20)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
+        boxShadow: isActive
+          ? (hov
+              ? '0 16px 40px rgba(15,23,42,0.28), 0 0 0 4px rgba(37,99,235,0.10)'
+              : '0 10px 30px rgba(15,23,42,0.22), 0 0 0 2px rgba(37,99,235,0.06)')
+          : '0 4px 16px rgba(15,23,42,0.18)',
+        backdropFilter: isActive ? 'none' : 'blur(8px)',
+        WebkitBackdropFilter: isActive ? 'none' : 'blur(8px)',
         userSelect: 'none',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
+        gap: '8px',
         outline: 'none',
         overflow: 'hidden',
         willChange: 'transform, opacity',
       }}
     >
+      {/* Icon badge */}
       <div style={{
-        fontSize: 'clamp(1.12rem, 4.6vw, 1.34rem)',
-        fontWeight: 800,
-        color: hov ? '#020617' : '#0f172a',
-        lineHeight: 1.04,
-        letterSpacing: '0.045em',
+        width: '44px',
+        height: '44px',
+        borderRadius: '13px',
+        background: isActive ? 'rgba(37,99,235,0.10)' : 'rgba(255,255,255,0.16)',
+        border: isActive ? '1px solid rgba(37,99,235,0.16)' : '1px solid rgba(255,255,255,0.22)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        transition: 'background 0.18s',
+      }}>
+        <Icon
+          size={20}
+          color={isActive ? (hov ? '#1d4ed8' : '#2563eb') : 'rgba(255,255,255,0.88)'}
+          strokeWidth={2}
+        />
+      </div>
+
+      {/* Label */}
+      <div style={{
+        fontSize: 'clamp(0.88rem, 3.2vw, 1.05rem)',
+        fontWeight: 700,
+        color: isActive ? (hov ? '#1d4ed8' : '#0f172a') : 'rgba(255,255,255,0.92)',
+        lineHeight: 1.15,
+        letterSpacing: '0.01em',
         transition: 'color 0.15s',
-        whiteSpace: 'normal',
+        whiteSpace: 'nowrap',
       }}>
         {card.label}
+      </div>
+
+      {/* Sub-label */}
+      <div style={{
+        fontSize: 'clamp(0.62rem, 2vw, 0.72rem)',
+        fontWeight: 500,
+        color: isActive ? 'rgba(15,23,42,0.48)' : 'rgba(255,255,255,0.52)',
+        lineHeight: 1.25,
+        letterSpacing: '0.005em',
+        transition: 'color 0.15s',
+        whiteSpace: 'nowrap',
+      }}>
+        {card.sub}
       </div>
     </div>
   );
