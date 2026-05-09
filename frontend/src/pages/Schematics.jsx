@@ -2566,7 +2566,7 @@ const ALLOWED_BRANDS = [
         ])}
       />
 
-      {!selectedSchematic && (
+      {!selectedBrand && (
         <PageHeroBanner
           eyebrow="Exploded-View Library"
           title="Tool Schematics"
