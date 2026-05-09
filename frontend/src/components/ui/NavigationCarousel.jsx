@@ -21,9 +21,10 @@ const NAV_CARDS = [
 
 const TOTAL = NAV_CARDS.length;
 const AUTO_SLIDE_MS = 10000;
-const SWIPE_THRESHOLD = 24;
+const SWIPE_THRESHOLD = 30;
 const DRAG_TAP_LIMIT = 8;
-const DRAG_RESISTANCE = 0.62;
+const DRAG_RESISTANCE = 0.42;
+const MAX_DRAG_OFFSET = 0.84;
 
 function wrapIndex(index) {
   return ((index % TOTAL) + TOTAL) % TOTAL;
@@ -252,7 +253,7 @@ export default function NavigationCarousel() {
       const dy = e.clientY - dragStartRef.current.y;
       if (Math.abs(dx) > Math.abs(dy)) {
         e.preventDefault();
-        const nextOffset = Math.max(-0.96, Math.min(0.96, (dx / Math.max(sideOffset, 1)) * DRAG_RESISTANCE));
+        const nextOffset = Math.max(-MAX_DRAG_OFFSET, Math.min(MAX_DRAG_OFFSET, (dx / Math.max(sideOffset, 1)) * DRAG_RESISTANCE));
         setDragOffset(nextOffset);
       }
     };
