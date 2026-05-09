@@ -220,16 +220,6 @@ export default function CalculatorHub() {
       {/* ── Page header + floating tab nav ── */}
       <div className="w-full px-4 pt-6 pb-3 sm:pt-8 sm:pb-4">
         <div className="mx-auto" style={{ maxWidth: 'clamp(320px, 100%, 1200px)' }}>
-          {/* Heading */}
-          <div className="mb-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-              Drywall Calculators
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Estimate sheets, tape, corner bead, and screws — live, on any device.
-            </p>
-          </div>
-
           {/* Floating pill tab nav */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-2 py-2">
             <div

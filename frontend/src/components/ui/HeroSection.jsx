@@ -258,6 +258,20 @@ export default function HeroSection({
         </div>
       )}
 
+      {brands.length > 0 && showCarousel && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            width: 'min(920px, calc(100% - 2.5rem))',
+            height: '1px',
+            margin: '0 auto clamp(0.75rem, 2vw, 1.15rem)',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(226,232,240,0.44) 18%, rgba(248,250,252,0.75) 50%, rgba(226,232,240,0.44) 82%, rgba(255,255,255,0) 100%)',
+          }}
+        />
+      )}
+
       {brands.length > 0 && (
         <TrustedBrands
           brands={brands}

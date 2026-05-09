@@ -1,5 +1,6 @@
 import { CalculatorHub } from '../components/calculators'
 import SEOHead from '../components/shared/SEOHead'
+import PageHeroBanner from '../components/shared/PageHeroBanner'
 
 export default function Calculators() {
   return (
@@ -10,6 +11,13 @@ export default function Calculators() {
         canonical="https://drywalltoolbox.com/calculators"
       />
       <div className="page-wrapper">
+        <PageHeroBanner
+          eyebrow="Pro Estimation Suite"
+          title="Drywall Calculators"
+          highlight="Fast. Accurate. Field-Ready."
+          description="Estimate sheets, tape, compound, corner bead, and screws with trade-ready calculations built for real jobsite planning."
+          align="center"
+        />
         <CalculatorHub />
       </div>
     </>

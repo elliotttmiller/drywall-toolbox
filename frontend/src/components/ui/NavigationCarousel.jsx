@@ -129,13 +129,15 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
         WebkitBackfaceVisibility: 'hidden',
         padding: '16px',
         borderRadius: '18px',
-        border: `1px solid ${hov && isActive ? 'rgba(99,149,255,0.64)' : isActive ? 'rgba(99,149,255,0.42)' : 'rgba(99,149,255,0.20)'}`,
+        border: `1px solid ${hov && isActive ? 'rgba(255,255,255,0.68)' : isActive ? 'rgba(226,232,240,0.56)' : 'rgba(226,232,240,0.28)'}`,
         background: isActive
-          ? 'linear-gradient(180deg, rgba(24,35,58,0.98) 0%, rgba(18,28,48,0.98) 100%)'
-          : 'linear-gradient(180deg, rgba(16,24,42,0.94) 0%, rgba(11,20,36,0.94) 100%)',
+          ? 'linear-gradient(160deg, rgba(255,255,255,0.24) 0%, rgba(232,240,250,0.15) 52%, rgba(203,213,225,0.11) 100%)'
+          : 'linear-gradient(160deg, rgba(255,255,255,0.17) 0%, rgba(232,240,250,0.10) 52%, rgba(203,213,225,0.07) 100%)',
         cursor: isActive ? 'pointer' : 'default',
         transition: 'transform 440ms cubic-bezier(0.16, 1, 0.3, 1), opacity 320ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease',
-        boxShadow: isActive ? '0 0 26px rgba(37,99,235,0.22)' : '0 0 18px rgba(2,6,23,0.18)',
+        boxShadow: isActive ? '0 18px 34px rgba(15,23,42,0.24), 0 0 20px rgba(248,250,252,0.18)' : '0 10px 22px rgba(15,23,42,0.20)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         userSelect: 'none',
         display: 'flex',
         justifyContent: 'center',
@@ -149,7 +151,7 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle, onTap }) {
       <div style={{
         fontSize: 'clamp(1.12rem, 4.6vw, 1.34rem)',
         fontWeight: 800,
-        color: hov ? '#ffffff' : '#f8fbff',
+        color: hov ? '#020617' : '#0f172a',
         lineHeight: 1.04,
         letterSpacing: '0.045em',
         transition: 'color 0.15s',
