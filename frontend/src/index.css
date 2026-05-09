@@ -62,10 +62,12 @@
   }
 
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply text-gray-900 antialiased;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #fafbfc 0%, #ffffff 100%);
+    /* Silver/white radial gradient — light theme page background */
+    background: radial-gradient(ellipse at 30% 42%, #ffffff 0%, #e8ecf4 28%, #d2d6e2 55%, #bfc4d0 80%, #b5bac7 100%);
+    background-attachment: fixed;
   }
 
   main {
@@ -197,9 +199,10 @@ html {
   padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 5vw, 2.5rem);
   max-width: 1400px;
   margin: 0 auto;
-  background: rgba(249, 250, 251, 0.6);
-  border: 1.5px solid rgba(37, 99, 235, 0.2);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.09);
   border-radius: clamp(8px, 2vw, 12px);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
 }
 
 /* Track wrapper: hides overflow so arrows are clipped on desktop,
@@ -359,8 +362,8 @@ html {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     overflow: hidden;
-    border-left: 1.5px solid rgba(37, 99, 235, 0.15);
-    border-right: 1.5px solid rgba(37, 99, 235, 0.15);
+    border-left: 1px solid rgba(15, 23, 42, 0.08);
+    border-right: 1px solid rgba(15, 23, 42, 0.08);
   }
 
   /* Track: break out to full viewport width */
@@ -430,9 +433,10 @@ html {
   padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 5vw, 2.5rem);
   max-width: 1400px;
   margin: 0 auto;
-  background: rgba(248, 250, 252, 0.5);
-  border: 1.5px solid rgba(37, 99, 235, 0.2);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.09);
   border-radius: clamp(8px, 2vw, 12px);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
 }
 
 @media (max-width: 767px) {
