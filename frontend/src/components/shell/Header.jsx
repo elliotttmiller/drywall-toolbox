@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
-import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Wrench, Layers, Settings, Star, Bell } from 'lucide-react';
+import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Bell } from 'lucide-react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import LogoWhite from '/logo-white.svg';
 import MobileSearch from './MobileSearch';
@@ -24,22 +24,41 @@ const SHOP_MENU_LINKS = [
   { to: '/toolset-builder', label: 'Toolset Builder' },
 ];
 
-// Mega menu shop items organized by column
-const MEGA_MENU_ITEMS = [
+const SHOP_FEATURE_LINKS = [
   {
-    heading: 'Browse',
-    items: [
-      { to: '/all-products', label: 'All Products', sub: 'Full catalog', icon: Layers },
-      { to: '/products', label: 'Shop by Brand', sub: 'TapeTech, Columbia…', icon: Star },
-    ],
+    to: '/all-products',
+    label: 'All Products',
+    sub: 'Full drywall catalog',
   },
   {
-    heading: 'Tools',
-    items: [
-      { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits & schematics', icon: Settings },
-      { to: '/toolset-builder', label: 'Toolset Builder', sub: 'Configure your kit', icon: Wrench },
-    ],
+    to: '/products',
+    label: 'Shop by Brand',
+    sub: 'TapeTech, Columbia, Level 5, and more',
   },
+  {
+    to: '/parts',
+    label: 'Replacement Parts',
+    sub: 'Parts, kits, and schematics',
+  },
+  {
+    to: '/toolset-builder',
+    label: 'Toolset Builder',
+    sub: 'Configure a complete kit',
+  },
+];
+
+const SHOP_CATEGORY_LINKS = [
+  { to: '/all-products?category=automatic-taping-tools', label: 'Automatic Taping Tools' },
+  { to: '/all-products?category=semi-automatic-taping-tools', label: 'Semi-Automatic Taping Tools' },
+  { to: '/all-products?category=flat-boxes', label: 'Flat Boxes' },
+  { to: '/all-products?category=corner-tools', label: 'Corner Tools' },
+  { to: '/all-products?category=handles-extensions', label: 'Handles & Extensions' },
+  { to: '/all-products?category=knives-blades', label: 'Knives & Blades' },
+  { to: '/all-products?category=mud-pans-pumps', label: 'Mud Pans & Pumps' },
+  { to: '/all-products?category=nail-spotters', label: 'Nail Spotters' },
+  { to: '/all-products?category=tool-sets-kits', label: 'Tool Sets & Kits' },
+  { to: '/all-products?category=parts', label: 'Parts' },
+  { to: '/all-products?category=accessories-adapters', label: 'Accessories & Adapters' },
 ];
 
 export default function Header({ onCartToggle, hasTopTicker = false }) {
@@ -381,39 +400,59 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
                     <div className="header-mega-accent" />
 
                     <div className="header-mega-grid">
-                      {MEGA_MENU_ITEMS.map((col) => (
-                        <div key={col.heading} className="header-mega-section">
-                          <p className="header-mega-section-title">{col.heading}</p>
-                          <div className="header-mega-links">
-                            {col.items.map(({ to, label, sub, icon: Icon }) => (
-                              <Link
-                                key={to}
-                                to={to}
-                                onClick={() => setShopDropdownOpen(false)}
-                                className="header-mega-link"
-                              >
-                                <div className="header-mega-link-icon">
-                                  <Icon size={14} />
-                                </div>
-                                <span className="header-mega-link-copy">
-                                  <span className="header-mega-link-title">{label}</span>
-                                  <span className="header-mega-link-sub">{sub}</span>
-                                </span>
-                              </Link>
-                            ))}
-                          </div>
+                      <div className="header-mega-section">
+                        <p className="header-mega-section-title">Shop Navigation</p>
+                        <div className="header-mega-links">
+                          {SHOP_FEATURE_LINKS.map(({ to, label, sub }) => (
+                            <Link
+                              key={to}
+                              to={to}
+                              onClick={() => setShopDropdownOpen(false)}
+                              className="header-mega-link"
+                            >
+                              <span className="header-mega-link-copy">
+                                <span className="header-mega-link-title">{label}</span>
+                                <span className="header-mega-link-sub">{sub}</span>
+                              </span>
+                            </Link>
+                          ))}
                         </div>
-                      ))}
+                      </div>
+
+                      <div className="header-mega-section">
+                        <p className="header-mega-section-title">Drywall Industry Categories</p>
+                        <div className="header-mega-category-grid">
+                          {SHOP_CATEGORY_LINKS.map(({ to, label }) => (
+                            <Link
+                              key={to}
+                              to={to}
+                              onClick={() => setShopDropdownOpen(false)}
+                              className="header-mega-category-link"
+                            >
+                              {label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="header-mega-footer">
-                      <Link
-                        to="/all-products"
-                        onClick={() => setShopDropdownOpen(false)}
-                        className="header-mega-footer-link"
-                      >
-                        View All Products
-                      </Link>
+                      <div className="header-mega-footer-actions">
+                        <Link
+                          to="/all-products"
+                          onClick={() => setShopDropdownOpen(false)}
+                          className="header-mega-footer-link"
+                        >
+                          View All Products
+                        </Link>
+                        <Link
+                          to="/products"
+                          onClick={() => setShopDropdownOpen(false)}
+                          className="header-mega-footer-link header-mega-footer-link--secondary"
+                        >
+                          Shop by Brand
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
