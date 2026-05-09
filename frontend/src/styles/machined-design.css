@@ -1,7 +1,7 @@
 /* Machined Precision Design System */
 
 :root {
-    --alloy-base: #c8ccda;
+    --alloy-base: #eaedf4;
     --alloy-mid: var(--color-primary-100, #e2e8f0);
      /* Use the About page primary palette for the deep/navy branding color.
          Map to primary-600 so branding matches the About hero blue. */
@@ -14,6 +14,8 @@
     --font-main: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --ease-tension: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Silver/white radial gradient — light theme background */
+    --dtb-page-bg: radial-gradient(ellipse at 30% 42%, #ffffff 0%, #e8ecf4 28%, #d2d6e2 55%, #bfc4d0 80%, #b5bac7 100%);
     
     /* Legacy primary tokens kept as fallbacks but centralized variables are preferred */
     --primary-600: var(--color-primary-600, #2563eb);
@@ -46,7 +48,7 @@ html, body {
 
 body {
     /* Silver/white radial gradient — light theme page background */
-    background: radial-gradient(ellipse at 30% 42%, #ffffff 0%, #e8ecf4 28%, #d2d6e2 55%, #bfc4d0 80%, #b5bac7 100%);
+    background: var(--dtb-page-bg);
     background-attachment: fixed;
     color: #0f172a;
     font-family: var(--font-main);
