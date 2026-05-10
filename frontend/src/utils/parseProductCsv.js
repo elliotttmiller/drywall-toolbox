@@ -204,7 +204,7 @@ export function isPartsRow(categoriesCell) {
   if (!categoriesCell) return false;
   const first = categoriesCell.split('|')[0].trim();
   const leaf  = first.split('>').pop().trim().toLowerCase();
-  // Recognise both "Parts" (Columbia / Level 5) and "Parts & Accessories" (TapeTech).
+  // Recognize both "Parts" (Columbia / Level 5) and "Parts & Accessories" (TapeTech).
   return leaf === 'parts' || leaf === 'parts & accessories';
 }
 
@@ -523,7 +523,7 @@ function normalizeRow(row, idx, attrIndexes = []) {
   // when Attribute 1 name == "Brand", and finally extract from the category
   // path (e.g. "TapeTech" from
   // "Drywall Finishing Tools > TapeTech > Parts & Accessories").
-  // All raw values are normalised through CSV_BRAND_ALIASES so that shortened
+  // All raw values are normalized through CSV_BRAND_ALIASES so that shortened
   // names like "Columbia" resolve to the canonical "Columbia Taping Tools",
   // matching what normalizeProduct() in api.js returns for the REST API path.
   const brandCol  = (row['Brands']               || '').trim();
