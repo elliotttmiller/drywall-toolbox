@@ -27,7 +27,7 @@ export default function Cart() {
     return (
       <div className="min-h-screen bg-gray-50 py-16">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-md p-12 text-center max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-md p-12 text-center max-w-2xl mx-auto">
             <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Cart is Empty</h2>
             <p className="text-gray-600 mb-8">
@@ -35,7 +35,7 @@ export default function Cart() {
             </p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-md hover:shadow-lg"
             >
               <ShoppingBag size={20} />
               Start Shopping
@@ -58,7 +58,7 @@ export default function Cart() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+            <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200">
               {cartItems.map((item, index) => {
                 const itemKey = item.cartKey || item.id;
                 const optionText = Array.isArray(item.variation_attribute_values)
@@ -103,7 +103,7 @@ export default function Cart() {
                       {/* Quantity Controls */}
                       <div className="flex items-center gap-2">
                         <span className="text-xs sm:text-sm text-gray-600">Qty:</span>
-                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                        <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden">
                           <button
                             onClick={() => updateQuantity(itemKey, item.quantity - 1)}
                             className="p-1.5 sm:p-2 hover:bg-gray-100 transition-colors"
@@ -147,7 +147,7 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-24 border border-gray-200">
+            <div className="bg-white rounded-2xl shadow-md p-6 sticky top-24 border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
 
               <div className="space-y-3 mb-6">
@@ -183,7 +183,7 @@ export default function Cart() {
 
               {/* Free Shipping Notice */}
               {subtotal < FREE_SHIP_THRESHOLD && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
                   <div className="flex items-start gap-3">
                     <Truck className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
                     <div className="text-sm">
@@ -199,7 +199,7 @@ export default function Cart() {
               )}
 
               {subtotal >= FREE_SHIP_THRESHOLD && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                   <div className="flex items-center gap-3">
                     <Truck className="h-5 w-5 text-green-600" />
                     <p className="text-sm text-green-800 font-semibold">
@@ -211,7 +211,7 @@ export default function Cart() {
 
               <Link
                 to="/checkout"
-                className="w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 rounded-lg font-semibold text-lg transition-all shadow-md hover:shadow-lg"
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all shadow-md hover:shadow-lg"
               >
                 Proceed to Checkout
                 <ArrowRight size={20} />

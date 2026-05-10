@@ -427,7 +427,7 @@ function PhotoThumb({ photo, onRemove }) {
         style={{
           width: '40px', height: '40px',
           objectFit: 'cover',
-          borderRadius: '4px',
+          borderRadius: '8px',
           border: '1px solid rgba(15,23,42,0.12)',
           display: 'block',
         }}
@@ -618,7 +618,7 @@ function PricingTabs() {
           padding: '10px 16px',
           background: 'rgba(37,99,235,0.05)',
           border: '1px solid rgba(37,99,235,0.15)',
-          borderRadius: '6px',
+          borderRadius: '12px',
           marginBottom: '20px',
         }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -1155,7 +1155,7 @@ export default function Repairs() {
             style={{
               background: 'white',
               border: '1px solid var(--machined-border)',
-              borderRadius: '8px',
+              borderRadius: '16px',
               padding: 'clamp(1.5rem, 4vw, 2.5rem)',
               boxShadow: '0 4px 24px rgba(15,23,42,0.06)',
             }}
@@ -1194,7 +1194,7 @@ export default function Repairs() {
                 <div style={{
                   background: 'var(--alloy-base)',
                   border: '1px solid var(--machined-border)',
-                  borderRadius: '6px',
+                  borderRadius: '12px',
                   padding: 'clamp(1.25rem, 3vw, 1.75rem)',
                   marginBottom: '28px',
                   textAlign: 'left',
@@ -1495,7 +1495,7 @@ export default function Repairs() {
                               onKeyDown={(e) => e.key === 'Enter' && selectTier(tier)}
                               style={{
                                 border: `2px solid ${selected ? 'var(--primary-600)' : 'rgba(15,23,42,0.1)'}`,
-                                borderRadius: '8px',
+                                borderRadius: '14px',
                                 padding: '16px',
                                 cursor: 'pointer',
                                 position: 'relative',
@@ -1532,7 +1532,7 @@ export default function Repairs() {
                     {/* Trust signal row */}
                     <div style={{
                       display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px',
-                      padding: '14px 16px', background: '#f8fafc', borderRadius: '6px',
+                      padding: '14px 16px', background: '#f8fafc', borderRadius: '12px',
                       borderLeft: '3px solid var(--primary-600)',
                     }}>
                       {[REPAIR_COPY.noCharge, REPAIR_COPY.partsLock, REPAIR_COPY.sustainability].map((copy) => (
@@ -1715,7 +1715,7 @@ export default function Repairs() {
                     <div style={{
                       background: 'rgba(37,99,235,0.04)',
                       border: '1px solid rgba(37,99,235,0.2)',
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       padding: 'clamp(12px, 2vw, 16px) clamp(14px, 2.5vw, 20px)',
                       marginBottom: '24px',
                       display: 'flex',
@@ -1826,7 +1826,7 @@ export default function Repairs() {
                         style={{
                           display: 'inline-flex', alignItems: 'center', gap: '6px',
                           padding: '8px 16px',
-                          borderRadius: '3px',
+                          borderRadius: '10px',
                           border: '1px solid var(--primary-600)',
                           background: 'transparent',
                           color: 'var(--primary-600)',
@@ -1872,7 +1872,7 @@ export default function Repairs() {
                                 style={{
                                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                   padding: '12px 16px',
-                                  borderRadius: '6px',
+                                  borderRadius: '12px',
                                   border: active ? '2px solid var(--primary-600)' : '1.5px solid rgba(15,23,42,0.14)',
                                   background: active ? 'rgba(37,99,235,0.04)' : 'white',
                                   cursor: 'pointer',
@@ -1936,7 +1936,7 @@ export default function Repairs() {
                     <div style={{
                       background: 'var(--alloy-base)',
                       border: '1px solid var(--machined-border)',
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       padding: '16px 20px',
                       marginBottom: '16px',
                     }}>
@@ -1958,7 +1958,7 @@ export default function Repairs() {
                     <div style={{
                       background: 'var(--alloy-base)',
                       border: '1px solid var(--machined-border)',
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       padding: '16px 20px',
                       marginBottom: '16px',
                     }}>
@@ -1980,7 +1980,7 @@ export default function Repairs() {
                     <div style={{
                       background: 'var(--alloy-base)',
                       border: '1px solid var(--machined-border)',
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       padding: '16px 20px',
                       marginBottom: '24px',
                     }}>
@@ -2023,7 +2023,7 @@ export default function Repairs() {
                                 style={{
                                   width: '60px', height: '60px',
                                   objectFit: 'cover',
-                                  borderRadius: '4px',
+                                  borderRadius: '8px',
                                   border: '1px solid rgba(15,23,42,0.12)',
                                 }}
                               />
@@ -2042,7 +2042,7 @@ export default function Repairs() {
                         padding: '12px 16px',
                         background: '#eff6ff',
                         border: '1px solid #bfdbfe',
-                        borderRadius: '6px',
+                        borderRadius: '12px',
                         marginBottom: '16px',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
@@ -2066,7 +2066,7 @@ export default function Repairs() {
                     <div style={{
                       background: 'var(--alloy-base)',
                       border: '1px solid var(--machined-border)',
-                      borderRadius: '6px',
+                      borderRadius: '12px',
                       padding: '16px 20px',
                       marginBottom: '24px',
                     }}>
@@ -2105,7 +2105,7 @@ export default function Repairs() {
                       <div style={{
                         background: '#fef2f2',
                         border: '1px solid #fca5a5',
-                        borderRadius: '6px',
+                        borderRadius: '12px',
                         padding: '12px 16px',
                         marginTop: '12px',
                         fontSize: '0.875rem',
@@ -2134,7 +2134,7 @@ export default function Repairs() {
                         display: 'flex', alignItems: 'center', gap: '6px',
                         background: 'transparent',
                         border: '1px solid var(--machined-border)',
-                        borderRadius: '3px',
+                        borderRadius: '10px',
                         padding: '12px 20px',
                         fontSize: '0.825rem', fontWeight: 700,
                         color: 'rgba(15,23,42,0.6)',

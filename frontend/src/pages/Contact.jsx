@@ -103,7 +103,7 @@ export default function Contact() {
             display: 'inline-block',
             background: 'rgba(255,255,255,0.1)',
             border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '3px',
+            borderRadius: '20px',
             padding: '4px 12px',
             fontSize: '0.7rem',
             fontWeight: 700,
@@ -205,7 +205,7 @@ export default function Contact() {
             <div style={{
               background: 'white',
               border: '1px solid var(--machined-border)',
-              borderRadius: '4px',
+              borderRadius: '14px',
               padding: '20px 24px',
               display: 'flex',
               alignItems: 'center',
@@ -237,7 +237,7 @@ export default function Contact() {
           <div style={{
             background: 'white',
             border: '1px solid var(--machined-border)',
-            borderRadius: '4px',
+            borderRadius: '16px',
             padding: 'clamp(1.5rem, 3vw, 2.5rem)'
           }}>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'black', margin: '0 0 24px 0' }}>
@@ -289,7 +289,7 @@ export default function Contact() {
                   <div style={{
                     background: '#fef2f2',
                     border: '1px solid #fecaca',
-                    borderRadius: '4px',
+                    borderRadius: '10px',
                     padding: '12px 16px',
                     marginBottom: '20px',
                     fontSize: '0.85rem',
