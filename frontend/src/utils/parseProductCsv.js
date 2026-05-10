@@ -137,17 +137,25 @@ export const CATEGORY_MAP = {
   // Sanding
   'sanding tools':               'sanding',
   'sanders & poles':             'sanding',
-  // Stilts
+  // Stilts & stilt accessories — all Dura-Stilts and SurPro stilt-part leaves
   'stilts':                      'stilts',
   'stilt accessories':           'stilts',
+  'extension tubes & clamps':    'stilts',
+  'legs & brackets':             'stilts',
+  'hardware':                    'stilts',
+  'springs & bearings':          'stilts',
+  'straps & buckles':            'stilts',
+  'soles & floor plates':        'stilts',
+  'accessories':                 'stilts',
   // Texture / spray
   'texture sprayers':            'texture',
   'applicators & rollers':       'texture',
   'spray tips & nozzles':        'texture',
   'hoses & fittings':            'texture',
   'cleaning accessories':        'texture',
-  // Parts — production catalog canonical leaf
+  // Parts — production catalog canonical leaves
   'parts':                       'parts',
+  'parts & accessories':         'parts',    // TapeTech canonical parts leaf
   // Generic tool leaf (box fillers, adapters, misc accessories)
   'tools':                       'finishing',
 };
@@ -196,7 +204,8 @@ export function isPartsRow(categoriesCell) {
   if (!categoriesCell) return false;
   const first = categoriesCell.split('|')[0].trim();
   const leaf  = first.split('>').pop().trim().toLowerCase();
-  return leaf === 'parts';
+  // Recognise both "Parts" (Columbia / Level 5) and "Parts & Accessories" (TapeTech).
+  return leaf === 'parts' || leaf === 'parts & accessories';
 }
 
 // ─── HTML → Markdown converter ───────────────────────────────────────────────
@@ -463,6 +472,35 @@ import {
 } from './csvSpecificationMapping.js';
 import { buildIncludesMetaFromContent } from './includesExtraction.js';
 
+// Brand aliases — mirrors BRAND_ALIASES in api.js so the CSV parsing path
+// produces the same canonical brand names as the REST API path.
+// Keys are lowercase; values are the canonical display name.
+const CSV_BRAND_ALIASES = {
+  'columbia':               'Columbia Taping Tools',
+  'columbia taping':        'Columbia Taping Tools',
+  'columbia taping tools':  'Columbia Taping Tools',
+  'level5':                 'Level 5',
+  'level 5':                'Level 5',
+  'tapetech':               'TapeTech',
+  'tape tech':              'TapeTech',
+  'platinum':               'Platinum Drywall Tools',
+  'platinum tools':         'Platinum Drywall Tools',
+  'platinum drywall':       'Platinum Drywall Tools',
+  'platinum drywall tools': 'Platinum Drywall Tools',
+  'dura stilts':            'Dura-Stilts',
+  'dura_stilts':            'Dura-Stilts',
+  'dura-stilts':            'Dura-Stilts',
+  'surpro':                 'SurPro',
+  'sur pro':                'SurPro',
+  'asgard':                 'Asgard',
+  'graco':                  'Graco',
+};
+
+function normalizeBrandName(raw) {
+  if (!raw) return '';
+  return CSV_BRAND_ALIASES[raw.toLowerCase()] || raw;
+}
+
 function hasStructuredIncludes(metaItems = []) {
   return metaItems.some(({ key }) => /^_includes_\d+_(name|sku)$/.test(String(key || '')));
 }
@@ -485,13 +523,15 @@ function normalizeRow(row, idx, attrIndexes = []) {
   // when Attribute 1 name == "Brand", and finally extract from the category
   // path (e.g. "TapeTech" from
   // "Drywall Finishing Tools > TapeTech > Parts & Accessories").
-  // This ensures every product carries its brand even when the CSV rows for
-  // parts / repair kits omit the Brand attribute column entirely.
+  // All raw values are normalised through CSV_BRAND_ALIASES so that shortened
+  // names like "Columbia" resolve to the canonical "Columbia Taping Tools",
+  // matching what normalizeProduct() in api.js returns for the REST API path.
   const brandCol  = (row['Brands']               || '').trim();
   const attrName  = (row['Attribute 1 name']     || '').trim();
   const attrValue = (row['Attribute 1 value(s)'] || '').trim();
   const attrBrand = attrName.toLowerCase() === 'brand' ? attrValue : '';
-  const brand     = brandCol || attrBrand || extractBrandFromCategory(row['Categories'] || '');
+  const rawBrand  = brandCol || attrBrand || extractBrandFromCategory(row['Categories'] || '');
+  const brand     = normalizeBrandName(rawBrand);
 
   // Price — prefer Sale price, then Regular price
   const salePrice    = parseFloat(row['Sale price'])    || 0;

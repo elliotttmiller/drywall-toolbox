@@ -84,16 +84,18 @@ const BRAND_ALIASES = {
 // This avoids touching every component when the data source changes.
 
 // Parts category name stems (decoded, lowercase) — production catalog only.
-// The WooCommerce production catalog uses a single canonical parts leaf: "Parts".
+// Columbia / Level 5 use the leaf "Parts"; TapeTech uses "Parts & Accessories".
 const PARTS_LEAF_NAMES = [
   'parts',
+  'parts & accessories',
 ];
 
 // Parts slug prefixes — production catalog only.
 // Keep a light prefix fallback because WooCommerce may de-duplicate identical
-// leaf slugs across brands (for example "parts-2").
+// leaf slugs across brands (for example "parts-2", "parts-and-accessories-2").
 const PARTS_SLUG_PREFIXES = [
   'parts',
+  'parts-and-accessories',
 ];
 
 // Generic catch-all category labels that should be treated as lowest priority
