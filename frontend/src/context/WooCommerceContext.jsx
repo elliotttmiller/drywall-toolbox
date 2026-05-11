@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import wooCommerceService from '../services/woocommerce';
 
 const WooCommerceContext = createContext();
@@ -48,7 +48,7 @@ export function WooCommerceProvider({ children }) {
     fetchPaymentGateways();
   }, []);
 
-  const updateConfig = (newConfig) => {
+  const updateConfig = useCallback((newConfig) => {
     wooCommerceService.saveConfig(newConfig);
     setConfig(newConfig);
     setIsEnabled(wooCommerceService.isEnabled());
@@ -56,25 +56,25 @@ export function WooCommerceProvider({ children }) {
     if (newConfig.enabled) {
       loadPaymentGateways();
     }
-  };
+  }, [loadPaymentGateways]);
 
-  const testConnection = async () => {
+  const testConnection = useCallback(async () => {
     try {
       return await wooCommerceService.testConnection();
     } catch (error) {
       console.error('Connection test failed:', error);
       return { success: false, message: error.message };
     }
-  };
+  }, []);
 
-  const disconnect = () => {
+  const disconnect = useCallback(() => {
     wooCommerceService.disconnect();
     setIsEnabled(false);
     setConfig(wooCommerceService.config);
     setPaymentGateways([]);
-  };
+  }, []);
 
-  const syncProducts = async () => {
+  const syncProducts = useCallback(async () => {
     if (!isEnabled) {
       throw new Error('WooCommerce integration not enabled');
     }
@@ -97,9 +97,9 @@ export function WooCommerceProvider({ children }) {
       });
       throw error;
     }
-  };
+  }, [isEnabled]);
 
-  const checkInventory = async (cartItems) => {
+  const checkInventory = useCallback(async (cartItems) => {
     if (!isEnabled) {
       return { available: true, items: [] };
     }
@@ -110,9 +110,9 @@ export function WooCommerceProvider({ children }) {
       console.error('Inventory check failed:', error);
       return { available: true, items: [], error: error.message };
     }
-  };
+  }, [isEnabled]);
 
-  const createOrder = async (cartItems, customerInfo, paymentMethod = 'stripe') => {
+  const createOrder = useCallback(async (cartItems, customerInfo, paymentMethod = 'stripe') => {
     if (!isEnabled) {
       return null;
     }
@@ -123,9 +123,9 @@ export function WooCommerceProvider({ children }) {
       console.error('Order creation failed:', error);
       throw error;
     }
-  };
+  }, [isEnabled]);
 
-  const markOrderPaid = async (orderId, transactionId) => {
+  const markOrderPaid = useCallback(async (orderId, transactionId) => {
     if (!isEnabled) {
       return null;
     }
@@ -136,9 +136,9 @@ export function WooCommerceProvider({ children }) {
       console.error('Failed to mark order as paid:', error);
       throw error;
     }
-  };
+  }, [isEnabled]);
 
-  const getOrder = async (orderId) => {
+  const getOrder = useCallback(async (orderId) => {
     if (!isEnabled) {
       return null;
     }
@@ -149,9 +149,9 @@ export function WooCommerceProvider({ children }) {
       console.error('Failed to get order:', error);
       throw error;
     }
-  };
+  }, [isEnabled]);
 
-  const value = {
+  const value = useMemo(() => ({
     isEnabled,
     config,
     syncStatus,
@@ -164,7 +164,8 @@ export function WooCommerceProvider({ children }) {
     createOrder,
     markOrderPaid,
     getOrder
-  };
+  }), [isEnabled, config, syncStatus, paymentGateways, updateConfig, testConnection,
+       disconnect, syncProducts, checkInventory, createOrder, markOrderPaid, getOrder]);
 
   return <WooCommerceContext.Provider value={value}>{children}</WooCommerceContext.Provider>;
 }

@@ -292,6 +292,84 @@ module.exports = (envFlags, argv) => {
           filename:      'assets/css/[name].[contenthash:8].css',
           chunkFilename: 'assets/css/[name].[contenthash:8].chunk.css',
         }),
+
+        // ── Service Worker (Workbox GenerateSW) ─────────────────────────────
+        // Generates a production service worker in dist/service-worker.js.
+        // Precaches all hashed JS/CSS chunks emitted by webpack (safe since
+        // they are content-addressed and never change once deployed).
+        // Runtime caching covers images, fonts, and DTB/WC REST API responses.
+        new GenerateSW({
+          clientsClaim: true,
+          skipWaiting:  true,
+          swDest:       'service-worker.js',
+
+          // Precache all webpack-emitted JS/CSS/HTML — they're content-hashed
+          // so any changed file gets a new URL and is re-fetched automatically.
+          // Images, fonts, and large brand/schematic trees are intentionally
+          // excluded from precache (they'd blow the storage quota at 191 MB).
+          // They are instead served by the runtime caching strategies below.
+          exclude: [
+            /\.map$/,
+            /asset-manifest\.json$/,
+            /\.(?:png|jpe?g|gif|webp|avif|svg|ico)$/i,   // all images → runtime cache
+            /\.(?:woff2?|ttf|eot|otf)$/i,                  // fonts → runtime cache
+            /^brands\//,                                    // brand image trees
+            /^schematics\//,                               // schematic image/PDF trees
+          ],
+
+          // Offline fallback: serve cached index.html for any navigation that
+          // fails while the user is offline so the SPA shell remains usable.
+          navigateFallback: publicPath + 'index.html',
+          navigateFallbackDenylist: [
+            // Never intercept wp-json or admin requests.
+            /\/wp-json\//,
+            /\/wp-admin\//,
+            /\/wp\//,
+          ],
+
+          // Runtime caching strategies
+          runtimeCaching: [
+            // Images — CacheFirst with 1-year expiry; images are immutable once published
+            {
+              urlPattern:  /\.(?:png|jpe?g|gif|webp|avif|svg|ico)$/i,
+              handler:     'CacheFirst',
+              options: {
+                cacheName:  'dtb-images-v1',
+                expiration: { maxEntries: 300, maxAgeSeconds: 365 * 24 * 60 * 60 },
+              },
+            },
+            // Web fonts — CacheFirst; fonts don't change between builds
+            {
+              urlPattern:  /^https:\/\/fonts\.(googleapis|gstatic)\.com\//,
+              handler:     'CacheFirst',
+              options: {
+                cacheName:  'dtb-fonts-v1',
+                expiration: { maxEntries: 20, maxAgeSeconds: 365 * 24 * 60 * 60 },
+              },
+            },
+            // DTB REST API (dtb/v1) — StaleWhileRevalidate: renders instantly from
+            // cache, silently refreshed in background. Auth routes are excluded.
+            {
+              urlPattern:  /\/wp-json\/dtb\/v1\/(?!auth|jwt|login)/,
+              handler:     'StaleWhileRevalidate',
+              options: {
+                cacheName:  'dtb-api-v1',
+                expiration: { maxEntries: 60, maxAgeSeconds: 24 * 60 * 60 },
+              },
+            },
+            // WooCommerce Store API (wc/store/v1) — NetworkFirst so cart/checkout
+            // always get fresh data, but fall back to cache if offline.
+            {
+              urlPattern:  /\/wp-json\/wc\/store\/v1\//,
+              handler:     'NetworkFirst',
+              options: {
+                cacheName:            'dtb-wc-store-v1',
+                networkTimeoutSeconds: 4,
+                expiration:           { maxEntries: 30, maxAgeSeconds: 5 * 60 },
+              },
+            },
+          ],
+        }),
       ] : []),
 
       EmitAssetManifestPlugin,

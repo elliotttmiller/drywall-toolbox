@@ -100,3 +100,18 @@ createRoot(document.getElementById('root')).render(
     </HelmetProvider>
   </StrictMode>,
 )
+
+// ─── Service Worker registration (production only) ────────────────────────────
+// Deferred until after the 'load' event so the SW fetch does not compete with
+// critical resource loading or React hydration.  Only registered in production
+// builds because the GenerateSW plugin only emits service-worker.js then.
+if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swUrl = process.env.PUBLIC_URL + '/service-worker.js';
+    navigator.serviceWorker
+      .register(swUrl)
+      .catch(() => {
+        // SW registration failures are non-fatal; log silently.
+      });
+  });
+}

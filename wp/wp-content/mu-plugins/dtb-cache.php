@@ -31,6 +31,76 @@ if ( ! dtb_is_admin_or_rest_request() ) {
 }
 
 // =============================================================================
+// REST RESPONSE CACHE-CONTROL HEADERS
+// =============================================================================
+
+/**
+ * Attach Cache-Control and Vary headers to DTB and WooCommerce Store API
+ * REST responses so browsers and CDN edges (e.g. Cloudflare) can cache
+ * them natively.
+ *
+ * Strategy:
+ *   dtb/v1/*         → public, fresh for 5 min, stale-while-revalidate 24 h
+ *   wc/store/v1/*    → public, fresh for 1 min, stale-while-revalidate 5 min
+ *                      (shorter window for cart-adjacent data)
+ *
+ * Auth/mutation routes are excluded so that protected or state-changing
+ * endpoints are never cached by a CDN or shared cache.
+ */
+add_action( 'rest_api_init', 'dtb_register_cache_control_headers', 10 );
+
+function dtb_register_cache_control_headers(): void {
+	add_filter( 'rest_pre_send_headers', 'dtb_maybe_add_cache_control_headers' );
+}
+
+/**
+ * Filter callback: add Cache-Control + Vary headers for cacheable routes.
+ *
+ * @param array $headers Outgoing response headers.
+ * @return array Modified headers array (unchanged for excluded routes).
+ */
+function dtb_maybe_add_cache_control_headers( array $headers ): array {
+	$uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+
+	// Never cache auth, mutation, or admin-sensitive routes.
+	$excluded_patterns = [
+		'auth',
+		'jwt',
+		'login',
+		'logout',
+		'register',
+		'password',
+		'token',
+		'cart',
+		'checkout',
+		'order',
+		'customer',
+		'session',
+		'nonce',
+		'user',
+		'payment',
+	];
+
+	foreach ( $excluded_patterns as $pattern ) {
+		if ( false !== strpos( $uri, $pattern ) ) {
+			return $headers;
+		}
+	}
+
+	if ( false !== strpos( $uri, '/wp-json/dtb/v1/' ) ) {
+		// DTB catalog/schematic data: 5-minute freshness, 24-hour SWR.
+		$headers['Cache-Control'] = 'public, max-age=300, stale-while-revalidate=86400';
+		$headers['Vary']          = 'Accept-Encoding';
+	} elseif ( false !== strpos( $uri, '/wp-json/wc/store/v1/' ) ) {
+		// WooCommerce Store API: 1-minute freshness, 5-minute SWR.
+		$headers['Cache-Control'] = 'public, max-age=60, stale-while-revalidate=300';
+		$headers['Vary']          = 'Accept-Encoding';
+	}
+
+	return $headers;
+}
+
+// =============================================================================
 // CACHE PROXY
 // =============================================================================
 
