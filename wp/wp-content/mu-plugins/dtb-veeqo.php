@@ -628,6 +628,8 @@ function dtb_veeqo_route_webhook_order( WP_REST_Request $request ): WP_REST_Resp
 		$wc_order->save_meta_data();
 	}
 
+	dtb_veeqo_log_sync_timestamp( 'order_webhook' );
+
 	return new WP_REST_Response( [
 		'success'     => true,
 		'wc_order_id' => $wc_order->get_id(),
@@ -1254,6 +1256,117 @@ function dtb_veeqo_send_alert( string $subject, string $body ): void {
 		$body,
 		[ 'Content-Type: text/plain; charset=UTF-8' ]
 	);
+}
+
+// =============================================================================
+// OPS DASHBOARD HELPERS
+// =============================================================================
+
+/**
+ * Return the count of Veeqo orders with a "awaiting_fulfillment" or "allocated"
+ * (pending) repair/fulfillment status for the ops KPI panel.
+ *
+ * Results are cached in the dtb_ops transient store (5-min TTL).
+ *
+ * @return int Pending repair/fulfillment count, or 0 when Veeqo is unavailable.
+ */
+function dtb_veeqo_get_pending_repairs_count(): int {
+	if ( ! dtb_veeqo_enabled() ) {
+		return 0;
+	}
+
+	if ( function_exists( 'dtb_ops_cache_get' ) ) {
+		return (int) dtb_ops_cache_get( 'repairs', 'pending_count', DTB_OPS_TTL_REPAIRS ?? 300, static function () {
+			$result = dtb_veeqo_request( 'GET', '/orders', [
+				'status'    => 'awaiting_fulfillment,allocated',
+				'page_size' => 1,
+			] );
+			if ( ! $result['ok'] || ! isset( $result['data']['total_count'] ) ) {
+				return 0;
+			}
+			return (int) $result['data']['total_count'];
+		} );
+	}
+
+	$result = dtb_veeqo_request( 'GET', '/orders', [
+		'status'    => 'awaiting_fulfillment,allocated',
+		'page_size' => 1,
+	] );
+
+	if ( ! $result['ok'] || ! isset( $result['data']['total_count'] ) ) {
+		return 0;
+	}
+
+	return (int) $result['data']['total_count'];
+}
+
+/**
+ * Return a summary of inventory levels across all warehouses.
+ *
+ * @return array { total_skus: int, low_stock: int, out_of_stock: int }
+ */
+function dtb_veeqo_get_inventory_summary(): array {
+	$empty = [ 'total_skus' => 0, 'low_stock' => 0, 'out_of_stock' => 0 ];
+
+	if ( ! dtb_veeqo_enabled() ) {
+		return $empty;
+	}
+
+	if ( function_exists( 'dtb_ops_cache_get' ) ) {
+		return (array) dtb_ops_cache_get( 'inventory', 'summary', DTB_OPS_TTL_INVENTORY ?? 300, static function () use ( $empty ) {
+			return dtb_veeqo_fetch_inventory_summary() ?: $empty;
+		} );
+	}
+
+	return dtb_veeqo_fetch_inventory_summary() ?: $empty;
+}
+
+/**
+ * Internal: fetch and aggregate inventory summary from Veeqo.
+ *
+ * @return array|null Null on API error.
+ */
+function dtb_veeqo_fetch_inventory_summary(): ?array {
+	$result = dtb_veeqo_request( 'GET', '/products', [ 'page_size' => 250 ] );
+
+	if ( ! $result['ok'] || ! is_array( $result['data'] ) ) {
+		return null;
+	}
+
+	$total     = 0;
+	$low_stock = 0;
+	$oos       = 0;
+
+	foreach ( (array) $result['data'] as $product ) {
+		$total++;
+		$qty = isset( $product['sellable_on_hand_count'] )
+			? (int) $product['sellable_on_hand_count']
+			: 0;
+
+		if ( 0 === $qty ) {
+			$oos++;
+		} elseif ( $qty <= 3 ) {
+			$low_stock++;
+		}
+	}
+
+	return [
+		'total_skus'    => $total,
+		'low_stock'     => $low_stock,
+		'out_of_stock'  => $oos,
+	];
+}
+
+/**
+ * Record a sync timestamp for a named Veeqo sync operation.
+ *
+ * Stored in wp_options('dtb_veeqo_sync_{type}') as a Unix timestamp.
+ *
+ * @param string $type Sync type identifier (e.g. 'order_webhook', 'stock_sync').
+ */
+function dtb_veeqo_log_sync_timestamp( string $type ): void {
+	$key = 'dtb_veeqo_sync_' . sanitize_key( $type );
+	update_option( $key, time(), false );
 }
 
 

@@ -27,6 +27,8 @@
  *   dtb-image-sync.php     — media-library sync for uploads/YYYY/MM/ images
  *   dtb-woocommerce.php    — WC configuration and webhook auto-creation
  *   dtb-veeqo.php          — Veeqo API proxy, order/inventory sync, shipping rates
+ *   dtb-ops-dashboard.php  — ops KPI dashboard, audit log, health endpoint
+ *   dtb-quickbooks.php     — QuickBooks Online OAuth2 + accounting sync
  *   dtb-schematics-api.php — schematics media REST route
  *   dtb-coming-soon.php    — e-mail subscriber handler
  *   dtb-seo.php            — WooCommerce product SEO meta fields + REST exposure
@@ -206,6 +208,8 @@ _dtb_require( $_dtb_dir . '/dtb-membership.php' );    // ProCare membership tier
 _dtb_require( $_dtb_dir . '/dtb-image-sync.php' );    // media-library sync for uploads/YYYY/MM/ images
 _dtb_require( $_dtb_dir . '/dtb-woocommerce.php' );
 _dtb_require( $_dtb_dir . '/dtb-veeqo.php' );         // Veeqo API proxy, order/inventory sync, shipping rates
+_dtb_require( $_dtb_dir . '/dtb-ops-dashboard.php' ); // Ops KPI dashboard, audit log, health endpoint
+_dtb_require( $_dtb_dir . '/dtb-quickbooks.php' );    // QuickBooks Online OAuth2 + accounting sync
 _dtb_require( $_dtb_dir . '/dtb-schematics-api.php' );
 _dtb_require( $_dtb_dir . '/dtb-coming-soon.php' );
 _dtb_require( $_dtb_dir . '/dtb-seo.php' );           // WooCommerce product SEO meta fields

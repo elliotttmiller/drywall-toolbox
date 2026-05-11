@@ -58,17 +58,29 @@ function dtb_admin_security_log_rest_denials( $response, WP_REST_Server $server,
 		$status = (int) ( $response->get_error_data()['status'] ?? 0 );
 	}
 
-	if ( ! in_array( $status, [ 401, 403 ], true ) || ! dtb_admin_security_is_admin_route( $request->get_route() ) ) {
-		return $response;
+	$route = $request->get_route();
+
+	// Log 401/403 on admin routes.
+	if ( in_array( $status, [ 401, 403 ], true ) && dtb_admin_security_is_admin_route( $route ) ) {
+		dtb_security_log(
+			'admin_rest_denied',
+			[
+				'route'  => $route,
+				'status' => $status,
+			]
+		);
 	}
 
-	dtb_security_log(
-		'admin_rest_denied',
-		[
-			'route'  => $request->get_route(),
-			'status' => $status,
-		]
-	);
+	// Log 500 errors on dtb/* routes for alerting.
+	if ( 500 === $status && str_starts_with( $route, '/dtb/' ) ) {
+		dtb_security_log(
+			'dtb_rest_server_error',
+			[
+				'route'  => $route,
+				'status' => $status,
+			]
+		);
+	}
 
 	return $response;
 }
@@ -85,6 +97,12 @@ function dtb_admin_security_is_admin_route( string $route ): bool {
 
 function dtb_admin_security_smoke_results(): array {
 	$checks = [
+		[
+			'label'  => 'DTB Health',
+			'method' => 'GET',
+			'route'  => '/dtb/v1/health',
+			'params' => [],
+		],
 		[
 			'label'  => 'WP current user',
 			'method' => 'GET',

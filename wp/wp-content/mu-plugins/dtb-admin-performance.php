@@ -45,6 +45,11 @@ add_action( 'admin_enqueue_scripts', function ( $hook ) {
         }
     }
 
+    // Also allow heartbeat on DTB Ops dashboard pages for polling support.
+    if ( ! $allowed && false !== strpos( $hook, 'dtb-ops' ) ) {
+        $allowed = true;
+    }
+
     if ( ! $allowed ) {
         wp_deregister_script( 'heartbeat' );
         wp_dequeue_script( 'heartbeat' );

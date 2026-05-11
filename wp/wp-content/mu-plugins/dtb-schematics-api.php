@@ -69,18 +69,32 @@ function dtb_register_schematics_endpoint() {
 	);
 }
 
+// Invalidate schematics manifest cache when attachments are saved or deleted.
+add_action( 'save_post_attachment', 'dtb_schematics_invalidate_manifest_cache' );
+add_action( 'delete_attachment',    'dtb_schematics_invalidate_manifest_cache' );
+
+function dtb_schematics_invalidate_manifest_cache(): void {
+	delete_transient( 'dtb_schematics_manifest' );
+}
+
 /**
  * Build and return the schematic image manifest.
  *
- * Queries all attachments that have a non-empty `_dtb_schematic_id` meta field,
- * then groups them into { id -> { pages -> { n -> {url, width, height} }, preview } }.
-
- * Response is cache-friendly (no user-specific data) - set a long Cache-Control
- * header so the CDN / browser can cache it.
+ * Result is cached for 1 hour. Cache is invalidated on attachment save/delete.
+ * Returns an empty manifest with 200 when no attachments are found.
  *
+ * @param WP_REST_Request $request Incoming request (unused but required for consistency).
  * @return WP_REST_Response
  */
-function dtb_get_schematic_media_manifest() {
+function dtb_get_schematic_media_manifest( WP_REST_Request $request ): WP_REST_Response {
+	$cached = get_transient( 'dtb_schematics_manifest' );
+	if ( false !== $cached && is_array( $cached ) ) {
+		$response = new WP_REST_Response( $cached, 200 );
+		$response->header( 'Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400' );
+		$response->header( 'Vary', 'Accept-Encoding' );
+		return $response;
+	}
+
 	$attachments = get_posts(
 		[
 			'post_type'      => 'attachment',
@@ -133,7 +147,6 @@ function dtb_get_schematic_media_manifest() {
 		if ( 'preview' === $type ) {
 			$manifest[ $id ]['preview'] = $url;
 		} else {
-			// Normalise page to string key so JS object access is consistent.
 			$page_key = (string) ( $page ?: '1' );
 			$manifest[ $id ]['pages'][ $page_key ] = $entry;
 		}
@@ -148,12 +161,12 @@ function dtb_get_schematic_media_manifest() {
 	}
 	unset( $data );
 
-	// Sort the manifest keys alphabetically for stable JSON output.
 	ksort( $manifest );
 
-	$response = new WP_REST_Response( $manifest, 200 );
+	// Cache for 1 hour — invalidated on attachment save/delete.
+	set_transient( 'dtb_schematics_manifest', $manifest, HOUR_IN_SECONDS );
 
-	// Cache aggressively - content only changes when new media is uploaded.
+	$response = new WP_REST_Response( $manifest, 200 );
 	$response->header( 'Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400' );
 	$response->header( 'Vary', 'Accept-Encoding' );
 

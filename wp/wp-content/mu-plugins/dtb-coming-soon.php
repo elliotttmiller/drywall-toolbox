@@ -134,7 +134,63 @@ function dtb_register_coming_soon_routes(): void {
 			),
 		)
 	);
+	// ── POST /wp-json/dtb/v1/subscribe/delete ────────────────────────────────
+	// Admin-only: hard-delete a subscriber by email address.
+	register_rest_route(
+		'dtb/v1',
+		'/subscribe/delete',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'dtb_rest_subscribe_delete',
+			'permission_callback' => static function (): bool {
+				return current_user_can( 'manage_options' );
+			},
+			'args'                => array(
+				'email' => array(
+					'required'          => true,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_email',
+					'validate_callback' => static function ( $value ): bool {
+						return is_email( $value );
+					},
+				),
+			),
+		)
+	);
 }
+
+/**
+ * REST callback for POST /dtb/v1/subscribe/delete.
+ *
+ * Hard-deletes a subscriber record by email address.
+ * Requires manage_options capability.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response|WP_Error
+ */
+function dtb_rest_subscribe_delete( WP_REST_Request $request ) {
+	$email = sanitize_email( $request->get_param( 'email' ) );
+
+	if ( ! is_email( $email ) ) {
+		return new WP_Error( 'invalid_email', 'A valid email address is required.', array( 'status' => 400 ) );
+	}
+
+	$subscribers = get_option( DTB_SUBSCRIBERS_OPTION, array() );
+
+	if ( ! isset( $subscribers[ $email ] ) ) {
+		return new WP_Error( 'not_found', 'Subscriber not found.', array( 'status' => 404 ) );
+	}
+
+	unset( $subscribers[ $email ] );
+	update_option( DTB_SUBSCRIBERS_OPTION, $subscribers );
+
+	return rest_ensure_response( array(
+		'deleted' => true,
+		'email'   => $email,
+	) );
+}
+
+// dtb_rest_unsubscribe() and other callbacks below.
 
 /**
  * REST callback for POST /wp-json/dtb/v1/subscribe.
@@ -166,7 +222,7 @@ function dtb_rest_subscribe( WP_REST_Request $request ) {
 
 	// ── IP rate limiting ─────────────────────────────────────────────────────
 	$ip         = dtb_get_client_ip();
-	$rate_key   = 'dtb_sub_rate_' . md5( $ip );
+	$rate_key   = 'dtb_sub_rate_' . md5( dtb_anonymise_ip( $ip ) );
 	$rate_count = (int) get_transient( $rate_key );
 
 	if ( $rate_count >= DTB_RATE_LIMIT ) {
@@ -447,7 +503,7 @@ function dtb_handle_subscribe_post(): void {
 
 	// ── IP rate limiting ─────────────────────────────────────────────────────
 	$ip         = dtb_get_client_ip();
-	$rate_key   = 'dtb_sub_rate_' . md5( $ip );
+	$rate_key   = 'dtb_sub_rate_' . md5( dtb_anonymise_ip( $ip ) );
 	$rate_count = (int) get_transient( $rate_key );
 
 	if ( $rate_count >= DTB_RATE_LIMIT ) {

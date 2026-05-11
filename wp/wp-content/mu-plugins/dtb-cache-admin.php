@@ -51,11 +51,23 @@ function dtb_render_cache_admin_page(): void {
 		wp_die( 'Unauthorized' );
 	}
 
-	// Handle form submission (clear cache button)
+	// Handle form submission (clear cache button or flush module cache)
 	if ( isset( $_POST['dtb_cache_action'] ) && wp_verify_nonce( $_POST['dtb_cache_nonce'] ?? '', 'dtb_cache_admin' ) ) {
 		if ( 'clear_cache' === $_POST['dtb_cache_action'] ) {
 			dtb_invalidate_product_cache();
 			echo '<div class="notice notice-success"><p>✅ Product cache cleared successfully.</p></div>';
+		} elseif ( 'flush_module' === $_POST['dtb_cache_action'] ) {
+			$module = sanitize_key( $_POST['dtb_cache_module'] ?? 'all' );
+			if ( 'all' === $module ) {
+				dtb_invalidate_product_cache();
+				echo '<div class="notice notice-success"><p>✅ All cache cleared successfully.</p></div>';
+			} elseif ( function_exists( 'dtb_ops_cache_flush' ) ) {
+				dtb_ops_cache_flush( $module );
+				echo '<div class="notice notice-success"><p>✅ ' . esc_html( $module ) . ' module cache flushed.</p></div>';
+			} else {
+				dtb_invalidate_product_cache();
+				echo '<div class="notice notice-success"><p>✅ Product cache cleared (ops cache not available).</p></div>';
+			}
 		}
 	}
 
@@ -102,6 +114,27 @@ function dtb_render_cache_admin_page(): void {
 				<input type="hidden" name="dtb_cache_action" value="clear_cache" />
 				<button type="submit" class="button button-primary" onclick="return confirm('Clear all cached data? This will force fresh API calls on next page load.');">
 					🗑️ Clear All Cache
+				</button>
+			</form>
+		</div>
+
+		<!-- Flush Module Cache -->
+		<div class="card" style="max-width: 100%; margin: 20px 0; padding: 20px;">
+			<h2 style="margin-top: 0;">Flush Module Cache</h2>
+			<p>Flush the ops cache for a specific module, or select <em>All</em> to clear everything.</p>
+			<form method="post" action="">
+				<?php wp_nonce_field( 'dtb_cache_admin', 'dtb_cache_nonce' ); ?>
+				<input type="hidden" name="dtb_cache_action" value="flush_module" />
+				<select name="dtb_cache_module" style="margin-right: 8px;">
+					<option value="all">All</option>
+					<option value="veeqo">Veeqo</option>
+					<option value="orders">Orders</option>
+					<option value="inventory">Inventory</option>
+					<option value="repairs">Repairs</option>
+					<option value="kpis">KPIs</option>
+				</select>
+				<button type="submit" class="button button-secondary">
+					♻️ Flush Module Cache
 				</button>
 			</form>
 		</div>

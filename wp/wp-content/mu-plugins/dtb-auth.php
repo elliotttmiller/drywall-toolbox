@@ -82,12 +82,30 @@ function dtb_generate_jwt( WP_User $user ): string {
 	$secret = dtb_get_config()['jwt_secret'];
 
 	$header  = dtb_base64url_encode( (string) wp_json_encode( [ 'alg' => 'HS256', 'typ' => 'JWT' ] ) );
+
+	$dtb_caps = [];
+	$cap_constants = [
+		'DTB_CAP_OPS_ADMIN',
+		'DTB_CAP_ACCOUNTING',
+		'DTB_CAP_SUPPORT',
+		'DTB_CAP_CATALOG',
+	];
+	foreach ( $cap_constants as $const ) {
+		if ( defined( $const ) ) {
+			$cap = constant( $const );
+			if ( $user->has_cap( $cap ) ) {
+				$dtb_caps[] = $cap;
+			}
+		}
+	}
+
 	$payload = dtb_base64url_encode( (string) wp_json_encode( [
-		'sub'   => $user->ID,
-		'email' => $user->user_email,
-		'roles' => array_values( (array) $user->roles ),
-		'iat'   => time(),
-		'exp'   => time() + 7 * DAY_IN_SECONDS,
+		'sub'      => $user->ID,
+		'email'    => $user->user_email,
+		'roles'    => array_values( (array) $user->roles ),
+		'dtb_caps' => $dtb_caps,
+		'iat'      => time(),
+		'exp'      => time() + 7 * DAY_IN_SECONDS,
 	] ) );
 
 	$sig = dtb_base64url_encode(
@@ -191,6 +209,45 @@ function dtb_jwt_permission( WP_REST_Request $request ) {
 	}
 
 	return true;
+}
+
+/**
+ * Extract the WordPress user ID from the current request's JWT.
+ *
+ * Returns 0 when there is no valid token present.
+ *
+ * @return int WordPress user ID, or 0 on failure.
+ */
+function dtb_jwt_get_user_id(): int {
+	$token = null;
+
+	if ( ! empty( $_COOKIE[ DTB_AUTH_COOKIE ] ) ) {
+		$token = sanitize_text_field( wp_unslash( $_COOKIE[ DTB_AUTH_COOKIE ] ) );
+	}
+
+	if ( ! $token ) {
+		$auth = '';
+		if ( ! empty( $_SERVER['HTTP_AUTHORIZATION'] ) ) {
+			$auth = sanitize_text_field( wp_unslash( $_SERVER['HTTP_AUTHORIZATION'] ) );
+		} elseif ( ! empty( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ) {
+			$auth = sanitize_text_field( wp_unslash( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) );
+		}
+
+		if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
+			$token = $m[1];
+		}
+	}
+
+	if ( ! $token ) {
+		return 0;
+	}
+
+	$payload = dtb_verify_jwt( $token );
+	if ( is_wp_error( $payload ) ) {
+		return 0;
+	}
+
+	return isset( $payload->sub ) ? (int) $payload->sub : 0;
 }
 
 // =============================================================================

@@ -124,6 +124,9 @@ function dtb_emit_cors_headers( ?string $raw_origin = null ): void {
 	header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With, X-WC-Store-API-Nonce' );
 	header( 'Access-Control-Expose-Headers: X-WC-Store-API-Nonce' );
 	header( 'Access-Control-Max-Age: 86400' );
+
+	$ops_version = defined( 'DTB_OPS_VERSION' ) ? DTB_OPS_VERSION : '1.0.0';
+	header( 'X-DTB-Version: ' . $ops_version );
 }
 
 function dtb_api_security_restrict_user_endpoints( array $endpoints ): array {
@@ -131,7 +134,13 @@ function dtb_api_security_restrict_user_endpoints( array $endpoints ): array {
 		return $endpoints;
 	}
 
-	foreach ( [ '/wp/v2/users', '/wp/v2/users/(?P<id>[\d]+)' ] as $route ) {
+	$restricted_routes = [
+		'/wp/v2/users',
+		'/wp/v2/users/(?P<id>[\d]+)',
+		'/wp/v2/users/me',
+	];
+
+	foreach ( $restricted_routes as $route ) {
 		if ( ! isset( $endpoints[ $route ] ) || ! is_array( $endpoints[ $route ] ) ) {
 			continue;
 		}

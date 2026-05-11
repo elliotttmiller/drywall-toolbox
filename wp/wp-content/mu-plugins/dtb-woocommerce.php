@@ -852,3 +852,128 @@ add_action( 'admin_notices', function (): void {
 
 	echo '<div class="notice notice-warning"><p><strong>DTB import safe mode is active.</strong> This WooCommerce CSV import will skip image sideloading to avoid shared-hosting timeouts. After the products import, run DTB image linking to attach the registered images by SKU.</p></div>';
 } );
+
+// =============================================================================
+// OPS DASHBOARD ANALYTICS HELPERS
+// =============================================================================
+
+/**
+ * Return the total number of WooCommerce orders placed today (midnight to now).
+ *
+ * Results are cached for 5 minutes via dtb_ops transient store.
+ *
+ * @return int Order count for today.
+ */
+function dtb_woo_get_orders_today(): int {
+if ( function_exists( 'dtb_ops_cache_get' ) ) {
+return (int) dtb_ops_cache_get( 'orders', 'today_count', DTB_OPS_TTL_ORDERS ?? 300, static function () {
+return dtb_woo_query_orders_today();
+} );
+}
+return dtb_woo_query_orders_today();
+}
+
+/**
+ * Internal: run the database query for today's order count.
+ *
+ * @return int
+ */
+function dtb_woo_query_orders_today(): int {
+$today_start = gmdate( 'Y-m-d 00:00:00' );
+$today_end   = gmdate( 'Y-m-d 23:59:59' );
+
+$orders = wc_get_orders( [
+'limit'        => -1,
+'return'       => 'ids',
+'date_created' => $today_start . '...' . $today_end,
+'status'       => array_keys( wc_get_order_statuses() ),
+] );
+
+return is_array( $orders ) ? count( $orders ) : 0;
+}
+
+/**
+ * Return the count of WooCommerce orders grouped by status.
+ *
+ * @param string[] $statuses WC order status slugs (without 'wc-' prefix).
+ *                           Defaults to [ 'pending', 'processing', 'on-hold' ].
+ * @return array { status => count } keyed by status slug.
+ */
+function dtb_woo_get_orders_by_status( array $statuses = [] ): array {
+if ( empty( $statuses ) ) {
+$statuses = [ 'pending', 'processing', 'on-hold' ];
+}
+
+if ( function_exists( 'dtb_ops_cache_get' ) ) {
+$cache_key = md5( implode( ',', $statuses ) );
+return (array) dtb_ops_cache_get( 'orders', 'by_status_' . $cache_key, DTB_OPS_TTL_ORDERS ?? 300, static function () use ( $statuses ) {
+return dtb_woo_query_orders_by_status( $statuses );
+} );
+}
+
+return dtb_woo_query_orders_by_status( $statuses );
+}
+
+/**
+ * Internal: run the query for orders-by-status.
+ *
+ * @param string[] $statuses
+ * @return array
+ */
+function dtb_woo_query_orders_by_status( array $statuses ): array {
+$result = [];
+foreach ( $statuses as $status ) {
+$orders = wc_get_orders( [
+'limit'  => -1,
+'return' => 'ids',
+'status' => 'wc-' . ltrim( $status, 'wc-' ),
+] );
+$result[ $status ] = is_array( $orders ) ? count( $orders ) : 0;
+}
+return $result;
+}
+
+/**
+ * Return the count of WooCommerce products that are at or below their low-stock
+ * threshold, or with zero/negative stock.
+ *
+ * @param int $threshold Stock quantity at or below which a product is "low stock".
+ * @return int Low-stock product count.
+ */
+function dtb_woo_get_low_stock_count( int $threshold = 5 ): int {
+if ( function_exists( 'dtb_ops_cache_get' ) ) {
+return (int) dtb_ops_cache_get( 'inventory', 'woo_low_stock_' . $threshold, DTB_OPS_TTL_INVENTORY ?? 300, static function () use ( $threshold ) {
+return dtb_woo_query_low_stock_count( $threshold );
+} );
+}
+return dtb_woo_query_low_stock_count( $threshold );
+}
+
+/**
+ * Internal: run the low-stock query.
+ *
+ * @param int $threshold
+ * @return int
+ */
+function dtb_woo_query_low_stock_count( int $threshold ): int {
+global $wpdb;
+
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$count = (int) $wpdb->get_var(
+$wpdb->prepare(
+"SELECT COUNT(DISTINCT p.ID)
+ FROM {$wpdb->posts} p
+ INNER JOIN {$wpdb->postmeta} pm_manage ON pm_manage.post_id = p.ID
+     AND pm_manage.meta_key = '_manage_stock'
+     AND pm_manage.meta_value = 'yes'
+ INNER JOIN {$wpdb->postmeta} pm_qty ON pm_qty.post_id = p.ID
+     AND pm_qty.meta_key = '_stock'
+     AND CAST(pm_qty.meta_value AS SIGNED) <= %d
+ WHERE p.post_type IN ('product', 'product_variation')
+   AND p.post_status = 'publish'",
+$threshold
+)
+);
+
+return $count;
+}

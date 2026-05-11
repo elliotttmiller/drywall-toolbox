@@ -212,6 +212,67 @@ function dtb_get_cache_log(): array {
 }
 
 // =============================================================================
+// OPS MODULE CACHE HELPERS
+// =============================================================================
+
+/**
+ * Read-through transient cache with module-namespaced keys for the Ops Dashboard.
+ *
+ * Cache key: dtb_ops_{$module}_{$key}
+ *
+ * @param string   $module   Module name (e.g. 'kpis', 'orders', 'inventory').
+ * @param string   $key      Additional key suffix.
+ * @param int      $ttl      Cache TTL in seconds.
+ * @param callable $callback Zero-argument callable that produces the fresh value.
+ * @return mixed
+ */
+function dtb_ops_cache_get( string $module, string $key, int $ttl, callable $callback ) {
+	$cache_key = 'dtb_ops_' . sanitize_key( $module ) . '_' . sanitize_key( $key );
+	$cached    = get_transient( $cache_key );
+
+	if ( false !== $cached ) {
+		dtb_log_cache_event( 'ops_cache_hit', [ 'module' => $module, 'key' => $key ] );
+		return $cached;
+	}
+
+	$result = $callback();
+
+	if ( null !== $result && ! is_wp_error( $result ) ) {
+		set_transient( $cache_key, $result, $ttl );
+		dtb_log_cache_event( 'ops_cache_miss', [ 'module' => $module, 'key' => $key ] );
+	}
+
+	return $result;
+}
+
+/**
+ * Delete all dtb_ops_{$module}_* transients from the options table.
+ *
+ * @param string $module Module name (e.g. 'kpis', 'orders'). Empty string flushes all ops transients.
+ */
+function dtb_ops_cache_flush( string $module = '' ): void {
+	global $wpdb;
+
+	$prefix = '' !== $module
+		? '_transient_dtb_ops_' . sanitize_key( $module ) . '_'
+		: '_transient_dtb_ops_';
+
+	$timeout_prefix = '' !== $module
+		? '_transient_timeout_dtb_ops_' . sanitize_key( $module ) . '_'
+		: '_transient_timeout_dtb_ops_';
+
+	$wpdb->query(
+		$wpdb->prepare(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+			$wpdb->esc_like( $prefix ) . '%',
+			$wpdb->esc_like( $timeout_prefix ) . '%'
+		)
+	);
+
+	dtb_log_cache_event( 'ops_cache_flushed', [ 'module' => $module ?: 'all' ] );
+}
+
+// =============================================================================
 // DIAGNOSTIC REST ROUTE
 // =============================================================================
 

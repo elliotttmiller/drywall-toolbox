@@ -143,6 +143,14 @@ function dtb_ajax_run_health_checks() {
 			'group'   => 'Store API',
 		],
 		[
+			'label'   => 'DTB Health Check',
+			'method'  => 'GET',
+			'url'     => rest_url( 'dtb/v1/health' ),
+			'auth'    => 'none',
+			'expects' => [ 200 ],
+			'group'   => 'DTB Custom',
+		],
+		[
 			'label'   => 'DTB Schematics Manifest',
 			'method'  => 'GET',
 			'url'     => rest_url( 'dtb/v1/schematics/manifest' ),
@@ -253,6 +261,28 @@ function dtb_ajax_run_health_checks() {
 			];
 		}
 	}
+
+	// DTB Ops version option check.
+	$ops_version_stored  = (string) get_option( 'dtb_ops_version', '' );
+	$ops_version_defined = defined( 'DTB_OPS_VERSION' ) ? DTB_OPS_VERSION : null;
+	$results[] = [
+		'label'        => 'DTB Ops Version Option',
+		'url'          => admin_url( 'options.php#dtb_ops_version' ),
+		'method'       => 'OPTION',
+		'group'        => 'DTB Ops',
+		'status'       => '' !== $ops_version_stored ? 200 : 404,
+		'expects'      => [ 200 ],
+		'time_ms'      => null,
+		'error'        => null,
+		'pass'         => '' !== $ops_version_stored,
+		'cors'         => null,
+		'note'         => sprintf(
+			'Stored: %s | Defined: %s',
+			$ops_version_stored ?: '(not set)',
+			$ops_version_defined ?: '(constant not defined)'
+		),
+		'body_preview' => '',
+	];
 
 	wp_send_json_success( [
 		'results'    => $results,

@@ -835,6 +835,14 @@ function dtb_route_sync_images( WP_REST_Request $request ): WP_REST_Response|WP_
 			: null,
 		'file_based_sync' => ( 'file' === $batch_mode ),
 	] );
+
+	// Record the completed run if not a dry run and we finished this batch.
+	if ( ! $dry_run ) {
+		$final_offset = ( $limit > 0 && ( $offset + $limit ) < $total ) ? $offset + $limit : null;
+		if ( null === $final_offset ) {
+			dtb_image_sync_log_run( $registered + $linked, count( $errors ) );
+		}
+	}
 }
 
 /**
@@ -3774,4 +3782,53 @@ function dtb_render_image_sync_admin_page(): void {
 	} )();
 	</script>
 	<?php
+}
+
+// =============================================================================
+// OPS DASHBOARD ANALYTICS HELPERS
+// =============================================================================
+
+/**
+ * Return status data about the last image sync run for the ops dashboard.
+ *
+ * @return array {
+ *   last_run_at: string|null ISO-8601 timestamp,
+ *   last_synced: int,
+ *   last_errors: int,
+ *   health: string 'ok'|'warning'|'error'|'never'
+ * }
+ */
+function dtb_image_sync_get_status(): array {
+$last_run_at = get_option( 'dtb_image_sync_last_run_at', null );
+$last_synced = (int) get_option( 'dtb_image_sync_last_synced', 0 );
+$last_errors = (int) get_option( 'dtb_image_sync_last_errors', 0 );
+
+if ( ! $last_run_at ) {
+$health = 'never';
+} elseif ( $last_errors > 0 ) {
+$health = 'warning';
+} else {
+$health = 'ok';
+}
+
+return [
+'last_run_at' => $last_run_at,
+'last_synced' => $last_synced,
+'last_errors' => $last_errors,
+'health'      => $health,
+];
+}
+
+/**
+ * Record a completed sync run's metrics in wp_options.
+ *
+ * Called after a non-dry-run sync completes its final batch.
+ *
+ * @param int $synced Number of images successfully synced/registered/linked.
+ * @param int $errors Number of hard failures.
+ */
+function dtb_image_sync_log_run( int $synced, int $errors ): void {
+update_option( 'dtb_image_sync_last_run_at', gmdate( 'c' ), false );
+update_option( 'dtb_image_sync_last_synced', $synced, false );
+update_option( 'dtb_image_sync_last_errors', $errors, false );
 }

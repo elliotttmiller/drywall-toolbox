@@ -244,6 +244,36 @@ function dtb_error_envelope( string $code, string $message, int $status ): array
 	];
 }
 
+// ─── Capability helpers ───────────────────────────────────────────────────────
+
+/**
+ * Return true when the current user has manage_options OR a specific DTB custom capability.
+ *
+ * @param string $cap DTB custom capability slug, e.g. 'dtb_admin_ops'.
+ * @return bool
+ */
+function dtb_ops_can( string $cap ): bool {
+	if ( ! function_exists( 'current_user_can' ) ) {
+		return false;
+	}
+	return current_user_can( 'manage_options' ) || current_user_can( $cap );
+}
+
+/**
+ * Sanitize and clamp pagination inputs.
+ *
+ * @param mixed $page        Raw page input.
+ * @param mixed $per_page    Raw per_page input.
+ * @param int   $max_per_page Maximum allowed per_page value.
+ * @return array{page: int, per_page: int}
+ */
+function dtb_sanitize_pagination( $page, $per_page, int $max_per_page = 100 ): array {
+	return [
+		'page'     => max( 1, absint( $page ) ),
+		'per_page' => min( $max_per_page, max( 1, absint( $per_page ) ) ),
+	];
+}
+
 // ─── IP helpers ───────────────────────────────────────────────────────────────
 
 /**

@@ -179,6 +179,62 @@
  *   What breaks  : Without it orders are created without a channel assignment.
  *
  * =============================================================================
+ * QUICKBOOKS ONLINE CONSTANTS
+ * =============================================================================
+ *
+ * DTB_QBO_CLIENT_ID
+ *   What it does : OAuth2 client ID for the QuickBooks Online integration in
+ *                  dtb-quickbooks.php.  Required to begin the OAuth2
+ *                  authorization flow and to refresh access tokens.
+ *   Where to get : Intuit Developer → My Apps → <your app> → Keys & OAuth →
+ *                  Production keys → Client ID.
+ *   What breaks  : Without it the QuickBooks integration is silently disabled.
+ *                  All QBO syncs, accounting REST routes, and the OAuth2 flow
+ *                  return early without attempting any API call.
+ *
+ * DTB_QBO_CLIENT_SECRET
+ *   What it does : OAuth2 client secret paired with DTB_QBO_CLIENT_ID.  Used
+ *                  to exchange the authorization code for access/refresh tokens
+ *                  and to refresh expired access tokens via the token endpoint.
+ *   Where to get : Intuit Developer → My Apps → <your app> → Keys & OAuth →
+ *                  Production keys → Client Secret.
+ *   What breaks  : Same as DTB_QBO_CLIENT_ID — the entire QBO integration
+ *                  fails to authorize without it.
+ *
+ * DTB_QBO_REALM_ID
+ *   What it does : The QuickBooks company (realm) ID that identifies which QBO
+ *                  company account to sync against.  Included in every API
+ *                  request URL: /v3/company/{realm_id}/...
+ *   Where to get : Displayed in the QBO URL after sign-in:
+ *                  https://app.qbo.intuit.com/app/homepage?companyId=<realm_id>
+ *                  Also returned in the OAuth2 callback query string.
+ *   What breaks  : Without it all QBO REST API calls fail with a 400/404.
+ *
+ * =============================================================================
+ * DTB OPS DASHBOARD CONSTANTS
+ * =============================================================================
+ *
+ * DTB_OPS_VERSION
+ *   What it does : Semantic version string for the DTB Ops Dashboard module.
+ *                  Stored in wp_options('dtb_ops_version') on activation and
+ *                  emitted in the X-DTB-Version response header.
+ *   Default      : '1.0.0' — defined automatically in dtb-ops-dashboard.php.
+ *   Override     : Rarely needed; override only when deploying a specific
+ *                  pinned version string to a staging environment.
+ *
+ * DTB_ENABLE_CSP
+ *   What it does : Boolean flag that enables the Content-Security-Policy header
+ *                  on all non-admin frontend responses (dtb-frontend-security.php).
+ *   Default      : false (CSP is off by default to avoid breaking third-party
+ *                  scripts on initial deployment).
+ *   Override     : Set to true in wp-config.php once you have verified that your
+ *                  theme and all active plugins comply with the policy:
+ *                    default-src 'self'; script-src 'self' 'unsafe-inline'
+ *                    https://js.stripe.com; ...
+ *                  Test in CSP Report-Only mode first if possible.
+ *
+ * =============================================================================
+ * =============================================================================
  * PRODUCT IMAGE SYNC — WORKFLOW
  * =============================================================================
  *

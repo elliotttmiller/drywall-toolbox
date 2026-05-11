@@ -251,6 +251,93 @@ function dtb_membership_enroll( WP_REST_Request $request ) {
 	] );
 }
 
+// ─── OPS Dashboard analytics helpers ─────────────────────────────────────────
+
+/**
+ * Return the count of active (non-expired) paid memberships.
+ *
+ * @return int Number of active professional or fleet members.
+ */
+function dtb_membership_get_active_count(): int {
+	$cached = get_transient( 'dtb_membership_active_count' );
+	if ( false !== $cached ) {
+		return (int) $cached;
+	}
+
+	$now = time();
+
+	$q = new WP_User_Query( [
+		'fields'      => 'ID',
+		'number'      => -1,
+		'meta_query'  => [
+			'relation' => 'AND',
+			[
+				'key'     => '_dtb_membership_tier',
+				'value'   => [ 'professional', 'fleet' ],
+				'compare' => 'IN',
+			],
+			[
+				'key'     => '_dtb_membership_expires',
+				'value'   => $now,
+				'compare' => '>',
+				'type'    => 'NUMERIC',
+			],
+		],
+		'count_total' => true,
+	] );
+
+	$count = (int) $q->get_total();
+
+	set_transient( 'dtb_membership_active_count', $count, 15 * MINUTE_IN_SECONDS );
+
+	return $count;
+}
+
+/**
+ * Return a 30-day renewal forecast: count of memberships expiring in 30 days.
+ *
+ * @return array { professional: int, fleet: int, total: int }
+ */
+function dtb_membership_get_renewal_forecast(): array {
+	$cached = get_transient( 'dtb_membership_renewal_forecast' );
+	if ( false !== $cached && is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$now     = time();
+	$cutoff  = $now + 30 * DAY_IN_SECONDS;
+	$results = [ 'professional' => 0, 'fleet' => 0, 'total' => 0 ];
+
+	foreach ( [ 'professional', 'fleet' ] as $tier ) {
+		$q = new WP_User_Query( [
+			'fields'      => 'ID',
+			'number'      => -1,
+			'meta_query'  => [
+				'relation' => 'AND',
+				[
+					'key'     => '_dtb_membership_tier',
+					'value'   => $tier,
+					'compare' => '=',
+				],
+				[
+					'key'     => '_dtb_membership_expires',
+					'value'   => [ $now, $cutoff ],
+					'compare' => 'BETWEEN',
+					'type'    => 'NUMERIC',
+				],
+			],
+			'count_total' => true,
+		] );
+
+		$results[ $tier ]  = (int) $q->get_total();
+		$results['total'] += $results[ $tier ];
+	}
+
+	set_transient( 'dtb_membership_renewal_forecast', $results, 15 * MINUTE_IN_SECONDS );
+
+	return $results;
+}
+
 // ─── WooCommerce order hook: renewal & counter reset ─────────────────────────
 
 /**

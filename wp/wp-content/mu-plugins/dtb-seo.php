@@ -22,6 +22,7 @@ defined( 'ABSPATH' ) || exit;
 // ─── Register meta for REST API exposure ──────────────────────────────────────
 
 add_action( 'init', 'dtb_seo_register_meta' );
+add_action( 'wp_head', 'dtb_seo_output_head_tags', 1 );
 
 function dtb_seo_register_meta(): void {
 	$shared = [
@@ -73,6 +74,46 @@ function dtb_seo_register_meta(): void {
  */
 function dtb_seo_meta_auth(): bool {
 	return current_user_can( 'manage_woocommerce' ) || current_user_can( 'manage_options' );
+}
+
+// ─── Frontend head tag output ─────────────────────────────────────────────────
+
+/**
+ * Output SEO meta tags into <head> for singular product pages.
+ *
+ * Hooked to wp_head at priority 1 so it fires before theme meta tags.
+ */
+function dtb_seo_output_head_tags(): void {
+	if ( ! function_exists( 'is_singular' ) || ! is_singular( 'product' ) ) {
+		return;
+	}
+
+	$post_id     = get_the_ID();
+	if ( ! $post_id ) {
+		return;
+	}
+
+	$title       = (string) get_post_meta( $post_id, '_dtb_seo_title',       true );
+	$description = (string) get_post_meta( $post_id, '_dtb_seo_description', true );
+	$canonical   = (string) get_post_meta( $post_id, '_dtb_seo_canonical',   true );
+	$noindex     = (bool)   get_post_meta( $post_id, '_dtb_seo_noindex',     true );
+
+	if ( '' !== $title ) {
+		echo '<title>' . esc_html( $title ) . '</title>' . "\n";
+	}
+
+	if ( '' !== $description ) {
+		echo '<meta name="description" content="' . esc_attr( $description ) . '" />' . "\n";
+	}
+
+	$canonical_url = '' !== $canonical ? $canonical : get_permalink( $post_id );
+	if ( $canonical_url ) {
+		echo '<link rel="canonical" href="' . esc_url( $canonical_url ) . '" />' . "\n";
+	}
+
+	if ( $noindex ) {
+		echo '<meta name="robots" content="noindex" />' . "\n";
+	}
 }
 
 // ─── Meta box ─────────────────────────────────────────────────────────────────

@@ -631,3 +631,87 @@ function dtb_wlr_get_user_email( int $user_id ): string {
 	$user = get_user_by( 'id', $user_id );
 	return $user ? $user->user_email : '';
 }
+
+// =============================================================================
+// OPS DASHBOARD ANALYTICS HELPERS
+// =============================================================================
+
+/**
+ * Calculate the total unredeemed rewards liability in USD.
+ *
+ * Returns the monetary value of all unredeemed points across all users
+ * at the platform redemption rate of $0.05 per point (100 pts = $5.00).
+ *
+ * @return float Total liability in USD, rounded to 2 decimal places.
+ */
+function dtb_rewards_get_total_liability(): float {
+	$cached = get_transient( 'dtb_rewards_total_liability' );
+	if ( false !== $cached ) {
+		return (float) $cached;
+	}
+
+	if ( ! class_exists( 'WLR\Plugin\Helpers\App' ) ) {
+		return 0.0;
+	}
+
+	global $wpdb;
+
+	$points_per_dollar = 20; // 100 pts = $5.00 → 20 pts / $1.00
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$total_points = (int) $wpdb->get_var(
+		"SELECT COALESCE(SUM(points), 0) FROM {$wpdb->prefix}wlr_reward_points WHERE points > 0"
+	);
+
+	$liability = round( $total_points / $points_per_dollar, 2 );
+
+	set_transient( 'dtb_rewards_total_liability', $liability, 15 * MINUTE_IN_SECONDS );
+
+	return $liability;
+}
+
+/**
+ * Return recent reward redemptions.
+ *
+ * @param int $limit Maximum number of records to return (default 25).
+ * @return array[] Each element: { user_id, email, points, redeemed_at, coupon_code }
+ */
+function dtb_rewards_get_recent_redemptions( int $limit = 25 ): array {
+	$limit = min( max( 1, $limit ), 100 );
+
+	if ( ! class_exists( 'WLR\Plugin\Helpers\App' ) ) {
+		return [];
+	}
+
+	global $wpdb;
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$rows = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT user_email, points, created_at, action_type, note
+			 FROM {$wpdb->prefix}wlr_reward_points
+			 WHERE action_type IN ('redeem','coupon')
+			 ORDER BY id DESC
+			 LIMIT %d",
+			$limit
+		),
+		ARRAY_A
+	);
+
+	if ( ! is_array( $rows ) ) {
+		return [];
+	}
+
+	$results = [];
+	foreach ( $rows as $row ) {
+		$user      = get_user_by( 'email', $row['user_email'] );
+		$results[] = [
+			'user_id'     => $user ? $user->ID : 0,
+			'email'       => $row['user_email'],
+			'points'      => (int) $row['points'],
+			'redeemed_at' => $row['created_at'],
+			'note'        => $row['note'] ?? '',
+		];
+	}
+
+	return $results;
+}
