@@ -72,7 +72,7 @@ function dtb_admin_security_log_rest_denials( $response, WP_REST_Server $server,
 	}
 
 	// Log 500 errors on dtb/* routes for alerting.
-	if ( 500 === $status && str_starts_with( $route, '/dtb/' ) ) {
+	if ( 500 === $status && 0 === strpos( $route, '/dtb/' ) ) {
 		dtb_security_log(
 			'dtb_rest_server_error',
 			[
@@ -87,7 +87,7 @@ function dtb_admin_security_log_rest_denials( $response, WP_REST_Server $server,
 
 function dtb_admin_security_is_admin_route( string $route ): bool {
 	foreach ( [ '/wp/v2/users/me', '/wc-admin/', '/wc-analytics/', '/wc/v3/', '/newfold-ctb/' ] as $prefix ) {
-		if ( str_starts_with( $route, $prefix ) ) {
+		if ( 0 === strpos( $route, $prefix ) ) {
 			return true;
 		}
 	}

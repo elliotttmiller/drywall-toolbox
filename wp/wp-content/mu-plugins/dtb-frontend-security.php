@@ -72,8 +72,9 @@ function dtb_frontend_security_headers(): void {
 		header( 'Content-Security-Policy: ' . $csp );
 	}
 
-	// Noindex on staging environments.
-	if ( false !== strpos( (string) home_url(), 'staging' ) ) {
+	// Noindex on staging environments (WP_ENVIRONMENT_TYPE preferred; fallback to URL check).
+	$env = function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : '';
+	if ( 'staging' === $env || ( '' === $env && false !== strpos( (string) get_option( 'siteurl', '' ), '.staging.' ) ) ) {
 		header( 'X-Robots-Tag: noindex' );
 	}
 }

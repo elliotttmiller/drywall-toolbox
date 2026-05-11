@@ -3799,24 +3799,24 @@ function dtb_render_image_sync_admin_page(): void {
  * }
  */
 function dtb_image_sync_get_status(): array {
-$last_run_at = get_option( 'dtb_image_sync_last_run_at', null );
-$last_synced = (int) get_option( 'dtb_image_sync_last_synced', 0 );
-$last_errors = (int) get_option( 'dtb_image_sync_last_errors', 0 );
+	$last_run_at = get_option( 'dtb_image_sync_last_run_at', null );
+	$last_synced = (int) get_option( 'dtb_image_sync_last_synced', 0 );
+	$last_errors = (int) get_option( 'dtb_image_sync_last_errors', 0 );
 
-if ( ! $last_run_at ) {
-$health = 'never';
-} elseif ( $last_errors > 0 ) {
-$health = 'warning';
-} else {
-$health = 'ok';
-}
+	if ( ! $last_run_at ) {
+		$health = 'never';
+	} elseif ( $last_errors > 0 ) {
+		$health = 'warning';
+	} else {
+		$health = 'ok';
+	}
 
-return [
-'last_run_at' => $last_run_at,
-'last_synced' => $last_synced,
-'last_errors' => $last_errors,
-'health'      => $health,
-];
+	return [
+		'last_run_at' => $last_run_at,
+		'last_synced' => $last_synced,
+		'last_errors' => $last_errors,
+		'health'      => $health,
+	];
 }
 
 /**
@@ -3828,7 +3828,7 @@ return [
  * @param int $errors Number of hard failures.
  */
 function dtb_image_sync_log_run( int $synced, int $errors ): void {
-update_option( 'dtb_image_sync_last_run_at', gmdate( 'c' ), false );
-update_option( 'dtb_image_sync_last_synced', $synced, false );
-update_option( 'dtb_image_sync_last_errors', $errors, false );
+	update_option( 'dtb_image_sync_last_run_at', gmdate( 'c' ), false );
+	update_option( 'dtb_image_sync_last_synced', $synced, false );
+	update_option( 'dtb_image_sync_last_errors', $errors, false );
 }
