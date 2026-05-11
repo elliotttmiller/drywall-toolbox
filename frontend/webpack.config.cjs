@@ -27,6 +27,7 @@ const MiniCssExtractPlugin  = require('mini-css-extract-plugin');
 const CssMinimizerPlugin    = require('css-minimizer-webpack-plugin');
 const TerserPlugin          = require('terser-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { GenerateSW }            = require('workbox-webpack-plugin');
 // ─── Load environment-specific .env files ──────────────────────────────────
 // This MUST happen inside the module.exports function so we can access argv.mode
 // from webpack. If we do this at the top level, webpack hasn't passed argv yet.
