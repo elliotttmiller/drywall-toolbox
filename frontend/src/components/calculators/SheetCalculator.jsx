@@ -4,6 +4,7 @@ import InfoBox from './shared/InfoBox'
 import WasteSelector from './shared/WasteSelector'
 import RoomPresets from './shared/RoomPresets'
 import CalcDropdown from './shared/CalcDropdown'
+import SheetLayoutVisualizer from './shared/SheetLayoutVisualizer'
 
 // Default to a standard 12×14 bedroom with 4 walls
 const DEFAULT_WALLS = [
@@ -346,6 +347,16 @@ export default function SheetCalculator({ onUpdate }) {
           + Add another wall
         </button>
       </div>
+
+      {/* Sheet layout visualizer */}
+      <SheetLayoutVisualizer
+        wallLayouts={results.wallLayouts}
+        acrossDim={results.acrossDim}
+        verticalDim={results.verticalDim}
+        hangDirection={hangDir}
+        baseSheets={results.baseSheets}
+        totalJointLinearFeet={results.totalJointLinearFeet}
+      />
 
       {/* Openings + ceiling height */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
