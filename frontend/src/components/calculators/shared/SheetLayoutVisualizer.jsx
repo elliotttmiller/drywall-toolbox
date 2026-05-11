@@ -160,13 +160,18 @@ const SheetLayoutVisualizer = memo(function SheetLayoutVisualizer({
   totalJointLinearFeet,
 }) {
   const [expanded, setExpanded] = useState(() => {
-    try { return localStorage.getItem(LS_VIZ_KEY) === 'expanded' } catch { return false }
+    try { return localStorage.getItem(LS_VIZ_KEY) === 'expanded' } catch (e) {
+      console.warn('[SheetLayoutVisualizer] Could not read localStorage:', e)
+      return false
+    }
   })
 
   const toggle = () => {
     setExpanded(prev => {
       const next = !prev
-      try { localStorage.setItem(LS_VIZ_KEY, next ? 'expanded' : 'collapsed') } catch { /* ignore */ }
+      try { localStorage.setItem(LS_VIZ_KEY, next ? 'expanded' : 'collapsed') } catch (e) {
+        console.warn('[SheetLayoutVisualizer] Could not write localStorage:', e)
+      }
       return next
     })
   }
@@ -232,7 +237,7 @@ const SheetLayoutVisualizer = memo(function SheetLayoutVisualizer({
               >
                 {wallLayouts.map((wall, i) => (
                   <WallStrip
-                    key={wall.id}
+                    key={wall.id ?? `wall-${i}`}
                     wall={wall}
                     wallIndex={i}
                     cellWidth={cellWidth}
