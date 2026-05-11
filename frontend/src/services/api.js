@@ -588,8 +588,7 @@ export const getProductVariations = (parentId) =>
     .catch(async (err) => {
       const status = Number(err?.status || 0);
       // 5xx / auth / rate-limit — server can't serve this right now; bail early
-      // so we don't pile on with secondary requests.  The proxy already
-      // returns 200 [] for 500s, so this path mainly handles 401/403/429.
+      // so we don't pile on with secondary requests.
       if (status >= 400) {
         return [];
       }

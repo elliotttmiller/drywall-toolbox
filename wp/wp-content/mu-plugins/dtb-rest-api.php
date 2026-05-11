@@ -550,6 +550,15 @@ function dtb_app_password_rate_limit(): ?WP_REST_Response {
 // ROUTE CALLBACKS — drywall/v1 proxy
 // =============================================================================
 
+/**
+ * Fields returned by the variation endpoints.
+ *
+ * Limits WooCommerce object hydration to fields the SPA actually needs.
+ * Without _fields, WC fully hydrates variations including all meta,
+ * shipping classes, and downloadable data — expensive / OOM on shared hosting.
+ */
+const DTB_VARIATION_FIELDS = 'id,sku,slug,name,type,status,price,regular_price,sale_price,on_sale,stock_status,manage_stock,stock_quantity,images,attributes,meta_data,parent_id,description,short_description';
+
 /** GET /drywall/v1/products */
 function dtb_proxy_products( WP_REST_Request $request ): WP_REST_Response {
 	$allowed = [ 'page', 'per_page', 'category', 'search', 'orderby', 'order', 'min_price', 'max_price', 'stock_status', 'sku' ];
@@ -588,18 +597,28 @@ function dtb_proxy_product_variation_by_id( WP_REST_Request $request ): WP_REST_
 	$variation_id = absint( $request->get_param( 'id' ) );
 	return dtb_cached_wc_get(
 		'wc/v3/products/' . $parent_id . '/variations/' . $variation_id,
-		[
-			'_fields' => 'id,sku,slug,name,type,status,price,regular_price,sale_price,on_sale,stock_status,manage_stock,stock_quantity,images,attributes,meta_data,parent_id,description,short_description',
-		]
+		[ '_fields' => DTB_VARIATION_FIELDS ]
 	);
 }
 
 /** GET /drywall/v1/products/{id}/variations */
 function dtb_proxy_product_variations( WP_REST_Request $request ): WP_REST_Response {
-	// DIAGNOSTIC STUB — returns empty array immediately, no logic.
-	// If this still returns a critical error, the crash is not in this
-	// function but in a WordPress hook or filter firing on this route.
-	return new WP_REST_Response( [], 200 );
+	$parent_id = absint( $request->get_param( 'id' ) );
+	if ( 0 === $parent_id ) {
+		return new WP_REST_Response(
+			dtb_error_envelope( 'invalid_id', 'Invalid product ID.', 400 ),
+			400
+		);
+	}
+
+	$params = [ '_fields' => DTB_VARIATION_FIELDS ];
+
+	$page     = $request->get_param( 'page' );
+	$per_page = $request->get_param( 'per_page' );
+	if ( null !== $page )     $params['page']     = absint( $page );
+	if ( null !== $per_page ) $params['per_page'] = absint( $per_page );
+
+	return dtb_cached_wc_get( 'wc/v3/products/' . $parent_id . '/variations', $params );
 }
 
 /** GET /drywall/v1/categories */

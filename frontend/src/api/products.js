@@ -128,6 +128,18 @@ export async function getProductCategories( params = {} ) {
 }
 
 /**
+ * Fetch all variations for a variable product.
+ *
+ * @param {number|string} parentId  WooCommerce parent product ID
+ * @param {Object}        params    Optional params (e.g. per_page, page)
+ * @returns {Promise<any>}
+ */
+export async function fetchProductVariations( parentId, params = {} ) {
+  const qs = new URLSearchParams( { per_page: 100, ...params } ).toString();
+  return apiClient( `/wp-json/drywall/v1/products/${ encodeURIComponent( parentId ) }/variations?${ qs }` );
+}
+
+/**
  * Fetch a single product by SKU (used by Schematics.jsx hotspot lookup).
  *
  * Routes through the drywall/v1 server-side proxy so no client-side WC
