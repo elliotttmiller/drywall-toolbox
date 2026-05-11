@@ -165,9 +165,9 @@ export default function TrustedBrands({ brands = [], title = 'Trusted Brands', s
 
         @media (max-width: 640px) {
           .dtb-trusted-brand-link {
-            padding-left: clamp(28px, 8vw, 44px) !important;
-            padding-right: clamp(28px, 8vw, 44px) !important;
-            min-width: clamp(142px, 34vw, 184px) !important;
+            padding-left: clamp(42px, 6vw, 80px) !important;
+            padding-right: clamp(42px, 6vw, 80px) !important;
+            min-width: clamp(190px, 17vw, 280px) !important;
           }
         }
       `}</style>
