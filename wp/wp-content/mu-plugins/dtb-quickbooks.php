@@ -761,8 +761,10 @@ function dtb_qbo_get_or_create_customer( WC_Order $order ): string {
 	$display    = trim( $first_name . ' ' . $last_name ) ?: $email;
 
 	// Search for existing customer by email.
-	$search = dtb_qbo_request( 'GET', '/query', [
-		'query' => "SELECT * FROM Customer WHERE PrimaryEmailAddr = '" . esc_sql( $email ) . "' MAXRESULTS 1",
+	// IDS query syntax: escape single quotes by doubling them.
+	$safe_email = str_replace( "'", "''", $email );
+	$search     = dtb_qbo_request( 'GET', '/query', [
+		'query' => "SELECT * FROM Customer WHERE PrimaryEmailAddr = '{$safe_email}' MAXRESULTS 1",
 	] );
 
 	if ( $search['ok'] && ! empty( $search['data']['QueryResponse']['Customer'][0]['Id'] ) ) {

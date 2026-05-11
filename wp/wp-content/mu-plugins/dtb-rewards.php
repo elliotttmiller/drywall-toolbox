@@ -33,6 +33,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Points earned per US dollar spent (100 pts = $5.00 → 20 pts/$1.00). */
+if ( ! defined( 'DTB_REWARDS_POINTS_PER_DOLLAR' ) ) {
+	define( 'DTB_REWARDS_POINTS_PER_DOLLAR', 20 );
+}
+
 // =============================================================================
 // EARN ENGINE — ORDER COMPLETION HOOK
 //
@@ -656,7 +661,7 @@ function dtb_rewards_get_total_liability(): float {
 
 	global $wpdb;
 
-	$points_per_dollar = 20; // 100 pts = $5.00 → 20 pts / $1.00
+	$points_per_dollar = DTB_REWARDS_POINTS_PER_DOLLAR;
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$total_points = (int) $wpdb->get_var(
 		"SELECT COALESCE(SUM(points), 0) FROM {$wpdb->prefix}wlr_reward_points WHERE points > 0"

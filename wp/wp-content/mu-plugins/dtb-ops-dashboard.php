@@ -330,7 +330,15 @@ function dtb_ops_render_audit_page(): void {
 				<?php foreach ( $rows as $row ) : ?>
 				<tr>
 					<td><code><?php echo esc_html( $row->log_timestamp ); ?></code></td>
-					<td><?php echo esc_html( $row->user_id > 0 ? get_userdata( $row->user_id )->user_login ?? $row->user_id : '—' ); ?></td>
+					<?php
+					if ( $row->user_id > 0 ) {
+						$_u      = get_userdata( $row->user_id );
+						$_label  = ( $_u instanceof WP_User ) ? $_u->user_login : (string) $row->user_id;
+					} else {
+						$_label = '—';
+					}
+				?>
+				<td><?php echo esc_html( $_label ); ?></td>
 					<td><code><?php echo esc_html( $row->event ); ?></code></td>
 					<td><code style="font-size:11px;word-break:break-all;"><?php echo esc_html( $row->context ); ?></code></td>
 					<td><?php echo esc_html( $row->ip ); ?></td>
