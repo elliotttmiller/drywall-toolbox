@@ -76,14 +76,11 @@ Confirmed in `frontend/src/auth/*`, protected routes in `frontend/src/App.jsx`, 
 - in-memory token storage rather than browser persistence
 - session-expiry handling via `auth:expired` events on 401s
 
-### 5. Rewards and Pro membership
+### 5. Rewards
 
-Confirmed in `frontend/src/api/rewards.js`, `frontend/src/api/membership.js`, dashboard tabs, and backend mu-plugins:
+Confirmed in `frontend/src/api/rewards.js`, dashboard tabs, and backend mu-plugins:
 
 - rewards balance/history/redemption flows
-- ProCare membership tier/status/enrollment flows
-- membership-aware dashboard UI
-- membership-linked repair benefit messaging in the repair workflow
 
 ### 6. Estimation/calculator tools
 

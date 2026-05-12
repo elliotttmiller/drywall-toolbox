@@ -158,7 +158,6 @@ Neither theme is the main application UI layer; React remains the real frontend.
 - `dtb-cache-admin.php`
 - `dtb-rest-api.php`
 - `dtb-rewards.php`
-- `dtb-membership.php`
 - `dtb-image-sync.php`
 - `dtb-woocommerce.php`
 - `dtb-veeqo.php`
@@ -185,7 +184,6 @@ Because this is WordPress mu-plugin territory, these files still matter structur
 - `dtb-cache-admin.php`: cache-related admin tools
 - `dtb-rest-api.php`: custom REST routes and backend application endpoints
 - `dtb-rewards.php`: rewards bridge/endpoints
-- `dtb-membership.php`: ProCare membership tiers and enrollment logic
 - `dtb-image-sync.php`: media/image sync workflows
 - `dtb-woocommerce.php`: WooCommerce-specific backend behavior
 - `dtb-veeqo.php`: Veeqo proxy, order/inventory sync, shipping, repair request backend

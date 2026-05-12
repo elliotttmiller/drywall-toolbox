@@ -1,11 +1,9 @@
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import SEOHead from '../components/shared/SEOHead';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import veeqoService from '../services/veeqo';
-import { useAuthContext } from '../auth/AuthContext.js';
-import { getMembershipStatus, MEMBERSHIP_TIERS } from '../api/membership.js';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Brands & tools sourced from schematicMappings — the single source of truth
@@ -775,17 +773,6 @@ export default function Repairs() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef(null);
-
-  // Auth + membership state
-  const { user, isAuthenticated } = useAuthContext();
-  const [membershipStatus, setMembershipStatus] = useState(null);
-
-  // Fetch membership status once user is authenticated
-  useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      getMembershipStatus(user.id).then(setMembershipStatus).catch(() => {});
-    }
-  }, [isAuthenticated, user?.id]);
 
   // Derive which REPAIR_PRICING category maps to the selected toolCategory
   const repairCategory = useMemo(() => {
@@ -2035,32 +2022,6 @@ export default function Repairs() {
                         </div>
                       )}
                     </div>
-
-                    {/* ProCare member discount preview — only for pro/fleet members */}
-                    {membershipStatus && membershipStatus.tier !== 'essential' && (
-                      <div style={{
-                        padding: '12px 16px',
-                        background: '#eff6ff',
-                        border: '1px solid #bfdbfe',
-                        borderRadius: '12px',
-                        marginBottom: '16px',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                          </svg>
-                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1d4ed8' }}>
-                            {MEMBERSHIP_TIERS[membershipStatus.tier]?.name} Member Discount
-                          </span>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(15,23,42,0.6)' }}>
-                          Your {((MEMBERSHIP_TIERS[membershipStatus.tier]?.laborDiscount || 0) * 100).toFixed(0)}% labor
-                          {membershipStatus.tier === 'fleet' ? ' + parts' : ''} discount will be automatically applied
-                          to your final invoice. Estimated savings shown after diagnostic.
-                          {membershipStatus.tier === 'professional' ? ' 30-day workmanship warranty.' : ' 60-day workmanship warranty.'}
-                        </p>
-                      </div>
-                    )}
 
                     {/* Shipping section */}
                     <div style={{

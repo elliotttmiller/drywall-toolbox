@@ -92,7 +92,7 @@ function dtb_rewards_award_order_points( int $order_id ): void {
 	// Earn basis: subtotal only. Shipping = 0 pts. Taxes = 0 pts.
 	$earn_basis = (float) $order->get_subtotal();
 
-	// Exclude any items flagged as non-earnable (e.g., membership fee products).
+	// Exclude any items flagged as non-earnable (e.g., service-fee products).
 	foreach ( $order->get_items() as $item ) {
 		$product = $item->get_product();
 		if ( $product && $product->get_meta( '_dtb_exclude_from_points' ) === 'yes' ) {

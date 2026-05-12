@@ -204,7 +204,6 @@ _dtb_require( $_dtb_dir . '/dtb-api-security.php' );
 _dtb_require( $_dtb_dir . '/dtb-frontend-security.php' );
 _dtb_require( $_dtb_dir . '/dtb-admin-security.php' );
 _dtb_require( $_dtb_dir . '/dtb-rewards.php' );       // WPLoyalty REST bridge (loads after dtb-auth)
-_dtb_require( $_dtb_dir . '/dtb-membership.php' );    // ProCare membership tiers & REST endpoints
 _dtb_require( $_dtb_dir . '/dtb-image-sync.php' );    // media-library sync for uploads/YYYY/MM/ images
 _dtb_require( $_dtb_dir . '/dtb-woocommerce.php' );
 _dtb_require( $_dtb_dir . '/dtb-veeqo.php' );         // Veeqo API proxy, order/inventory sync, shipping rates

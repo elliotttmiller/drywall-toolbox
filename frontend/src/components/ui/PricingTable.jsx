@@ -12,7 +12,7 @@
  *   isAuthenticated boolean
  *   tierOrder    string[]
  *
- * Business logic stays in ProMembership.jsx — only the visual shell is here.
+ * Business logic is owned by the parent page — only the visual shell is here.
  */
 
 import { Link } from 'react-router-dom';

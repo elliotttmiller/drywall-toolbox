@@ -29,16 +29,15 @@ Drywall Toolbox additionally uses `00-dtb-loader.php` to enforce explicit depend
 7. `dtb-frontend-security.php`
 8. `dtb-admin-security.php`
 9. `dtb-rewards.php`
-10. `dtb-membership.php`
-11. `dtb-image-sync.php`
-12. `dtb-woocommerce.php`
-13. `dtb-veeqo.php`
-14. `dtb-ops-dashboard.php`
-15. `dtb-quickbooks.php`
-16. `dtb-schematics-api.php`
-17. `dtb-coming-soon.php`
-18. `dtb-seo.php`
-19. `dtb-config-reference.php`
+10. `dtb-image-sync.php`
+11. `dtb-woocommerce.php`
+12. `dtb-veeqo.php`
+13. `dtb-ops-dashboard.php`
+14. `dtb-quickbooks.php`
+15. `dtb-schematics-api.php`
+16. `dtb-coming-soon.php`
+17. `dtb-seo.php`
+18. `dtb-config-reference.php`
 
 ### 1.2 Also auto-loaded by WordPress (outside `_dtb_require` list)
 
@@ -152,11 +151,6 @@ From `dtb-image-sync.php`:
 - `POST /sync-images/purge-unlinked`
 - `POST /sync-images/fix-renamed`
 - `POST /sync-images/release-lock`
-
-From `dtb-membership.php`:
-- `GET /membership/tiers`
-- `GET /membership/status/{id}`
-- `POST /membership/enroll`
 
 From `dtb-rewards.php`:
 - `GET /rewards/balance/{id}`
@@ -345,7 +339,6 @@ These are optional (module or feature flags), and plugin code has fallbacks/defa
 - QBO integration: `dtb-quickbooks.php`
 - Veeqo integration: `dtb-veeqo.php`
 - Rewards + points/coupon bridge: `dtb-rewards.php`
-- Membership tiers/enrollment/status: `dtb-membership.php`
 - Image sync + media linking pipeline: `dtb-image-sync.php`
 - Schematics API + admin manager: `dtb-schematics-api.php`, `dtb-schematics-admin.php`
 - Product mapping admin toolkit: `dtb-product-mapping.php`

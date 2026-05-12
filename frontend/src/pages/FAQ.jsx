@@ -166,20 +166,20 @@ const FAQ_CATEGORIES = [
     ],
   },
   {
-    id: 'account-membership',
-    label: 'Account & Membership',
+    id: 'account-rewards',
+    label: 'Account & Rewards',
     questions: [
       {
         q: 'Do I need an account to place an order?',
-        a: 'No — guest checkout is available. However, creating an account gives you order history, tracking, saved addresses, Pro Membership discounts, and access to the repair request form.',
+        a: 'No — guest checkout is available. However, creating an account gives you order history, tracking, saved addresses, rewards tracking, and access to the repair request form.',
       },
       {
-        q: 'What is Pro Membership?',
-        a: 'Pro Membership is our trade program for working drywall contractors and finishers. Members receive discounts on all tools, parts, and repair labor, plus early access to new inventory and priority repair queue placement.',
+        q: 'How do rewards work?',
+        a: 'Rewards points are earned automatically on eligible purchases and can be redeemed for coupons in your account rewards dashboard.',
       },
       {
-        q: 'How do I sign up for Pro Membership?',
-        a: 'Visit the Pro Membership page, select your tier, and complete the short verification form. Standard membership is open to all trade professionals. Premium tier requires proof of active business.',
+        q: 'Where can I redeem rewards points?',
+        a: 'Log in and visit your Rewards tab in the Account Dashboard. You can view your balance, activity history, and generate coupons from eligible points.',
       },
       {
         q: 'How do I view my past orders?',

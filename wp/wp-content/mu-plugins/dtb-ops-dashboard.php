@@ -3,7 +3,7 @@
  * DTB Ops Dashboard — Must-Use Plugin
  *
  * Centerpiece operations dashboard for Drywall Toolbox site administrators.
- * Provides KPI panels, order/inventory/repair/rewards/membership summaries,
+ * Provides KPI panels, order/inventory/repair/rewards summaries,
  * audit logging, AJAX data endpoints, cron refresh, and a REST health route.
  *
  * Sections:
@@ -443,16 +443,6 @@ function dtb_ops_get_all_kpis(): array {
 		];
 	}
 
-	// Active memberships.
-	if ( function_exists( 'dtb_membership_get_active_count' ) ) {
-		$members = dtb_membership_get_active_count();
-		$kpis['active_members'] = [
-			'label' => 'Active Members',
-			'value' => (string) $members,
-			'warn'  => false,
-		];
-	}
-
 	// Rewards liability.
 	if ( function_exists( 'dtb_rewards_get_total_liability' ) ) {
 		$liability = dtb_rewards_get_total_liability();
@@ -488,7 +478,6 @@ function dtb_ops_kpi_definitions(): array {
 		'orders_on_hold'   => [ 'label' => 'On Hold' ],
 		'low_stock'        => [ 'label' => 'Low Stock SKUs' ],
 		'pending_repairs'  => [ 'label' => 'Pending Repairs' ],
-		'active_members'   => [ 'label' => 'Active Members' ],
 		'rewards_liability' => [ 'label' => 'Rewards Liability' ],
 		'image_sync'       => [ 'label' => 'Image Sync' ],
 	];

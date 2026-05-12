@@ -39,7 +39,6 @@ const ResetPassword      = lazy(() => import('./pages/ResetPassword'));
 const Dashboard          = lazy(() => import('./pages/Dashboard'));
 const Orders             = lazy(() => import('./pages/Orders'));
 const Rewards            = lazy(() => import('./pages/Rewards'));
-const ProMembership      = lazy(() => import('./pages/ProMembership'));
 const AccountSettings    = lazy(() => import('./pages/AccountSettings'));
 const SavedAddresses     = lazy(() => import('./pages/SavedAddresses'));
 const Notifications      = lazy(() => import('./pages/Notifications'));
@@ -128,7 +127,6 @@ function AppRoutes() {
           <Route path="/dashboard"             element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/orders"                element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="/rewards"               element={<ProtectedRoute><Rewards /></ProtectedRoute>} />
-          <Route path="/pro-membership"        element={<ProMembership />} />
           <Route path="/account-settings"      element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
           <Route path="/addresses"             element={<ProtectedRoute><SavedAddresses /></ProtectedRoute>} />
           <Route path="/notifications"         element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

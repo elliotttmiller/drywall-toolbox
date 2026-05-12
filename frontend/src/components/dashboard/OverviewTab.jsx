@@ -1,13 +1,13 @@
 /**
  * frontend/src/components/dashboard/OverviewTab.jsx
  *
- * Dashboard Overview tab — stats, ProCare status, recent orders, account info.
+ * Dashboard Overview tab — stats, recent orders, account info.
  */
 
 import { Link } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import {
-  Package, Clock, CheckCircle, Star, Shield, ShoppingCart,
+  Package, Clock, CheckCircle, Star, ShoppingCart,
   ChevronRight, Loader, CreditCard, Wrench,
 } from 'lucide-react';
 import { pointsToUsd } from '../../api/rewards.js';
@@ -79,11 +79,8 @@ function StatCard( { icon, label, value, color, bg, delay } ) {
   );
 }
 
-export default function OverviewTab( { user, pointsData, membershipData, orders, ordersLoading, onTabChange } ) {
+export default function OverviewTab( { user, pointsData, orders, ordersLoading, onTabChange } ) {
   const displayName = [ user.first_name, user.last_name ].filter( Boolean ).join( ' ' ) || user.email;
-  const tierName    = membershipData?.tier
-    ? membershipData.tier.charAt( 0 ).toUpperCase() + membershipData.tier.slice( 1 )
-    : null;
 
   const pendingCount   = orders.filter( ( o ) => [ 'pending', 'processing', 'on-hold' ].includes( o.status ) ).length;
   const completedCount = orders.filter( ( o ) => o.status === 'completed' ).length;
@@ -98,53 +95,6 @@ export default function OverviewTab( { user, pointsData, membershipData, orders,
         <StatCard icon={ CheckCircle } label="Completed" value={ ordersLoading ? '…' : String( completedCount ) }                                                              color="#16a34a" bg="#f0fdf4" delay={ 0.1 } />
         <StatCard icon={ Star }        label="Rewards"   value={ pointsData ? `$${ pointsToUsd( pointsData.points ).toFixed( 2 ) }` : '—' } color="#d97706" bg="#fffbeb" delay={ 0.15 } />
       </div>
-
-      {/* ProCare card */}
-      <Motion.div custom={ 0.18 } variants={ fadeUp } initial="hidden" animate="visible"
-        style={ { ...CARD, padding: '18px 20px' } }
-      >
-        <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' } }>
-          <div style={ { display: 'flex', alignItems: 'center', gap: '10px' } }>
-            <div style={ { width: '34px', height: '34px', borderRadius: '8px', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
-              <Shield size={ 16 } style={ { color: '#16a34a' } } />
-            </div>
-            <span style={ { fontSize: '0.92rem', fontWeight: 700, color: '#0f172a' } }>ProCare Membership</span>
-          </div>
-          { membershipData?.tier !== 'fleet' && (
-            <button
-              type="button"
-              onClick={ () => onTabChange( 3 ) }
-              style={ { fontSize: '0.76rem', fontWeight: 700, color: '#2563eb', background: '#eff6ff', border: 'none', padding: '5px 11px', borderRadius: '6px', cursor: 'pointer', transition: 'background 0.15s' } }
-              onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#dbeafe'; } }
-              onMouseLeave={ ( e ) => { e.currentTarget.style.background = '#eff6ff'; } }
-            >
-              { membershipData?.tier === 'essential' ? 'Join ProCare →' : 'Upgrade →' }
-            </button>
-          ) }
-        </div>
-
-        { membershipData ? (
-          <div style={ { display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' } }>
-            <span style={ {
-              padding: '3px 10px', borderRadius: '999px', fontSize: '0.73rem', fontWeight: 700,
-              background: membershipData.tier === 'fleet' ? '#f0fdf4' : membershipData.tier === 'professional' ? '#eff6ff' : '#f1f5f9',
-              color:      membershipData.tier === 'fleet' ? '#16a34a' : membershipData.tier === 'professional' ? '#2563eb' : 'rgba(15,23,42,0.45)',
-            } }>{ tierName }</span>
-            { membershipData.tier !== 'essential' && (
-              <span style={ { fontSize: '0.76rem', color: 'rgba(15,23,42,0.5)' } }>
-                { membershipData.labor_discount > 0 && `${ ( membershipData.labor_discount * 100 ).toFixed( 0 ) }% labor off` }
-                { ' · ' }{ membershipData.free_diagnostics_remaining } free diag.
-              </span>
-            ) }
-          </div>
-        ) : (
-          <p style={ { margin: 0, fontSize: '0.8rem', color: 'rgba(15,23,42,0.5)' } }>
-            <button type="button" onClick={ () => onTabChange( 3 ) } style={ { color: '#2563eb', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: 'inherit' } }>
-              Join ProCare
-            </button>{ ' ' }— discounts, extended warranty, and free diagnostics.
-          </p>
-        ) }
-      </Motion.div>
 
       {/* Recent orders */}
       <Motion.div custom={ 0.24 } variants={ fadeUp } initial="hidden" animate="visible"

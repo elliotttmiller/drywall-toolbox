@@ -76,11 +76,11 @@ const NOTIFICATION_GROUPS = [
     color: '#7c3aed',
     bg:    '#faf5ff',
     title: 'Promotions & News',
-    desc:  'Sales, new arrivals, and exclusive member offers.',
+    desc:  'Sales, new arrivals, and exclusive offers.',
     items: [
       { id: 'promo_sale',      label: 'Site-wide sales and promotions' },
       { id: 'promo_new',       label: 'New product arrivals' },
-      { id: 'promo_member',    label: 'Exclusive ProCare member offers' },
+      { id: 'promo_member',    label: 'Exclusive customer offers' },
     ],
   },
 ];

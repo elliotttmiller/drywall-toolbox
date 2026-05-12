@@ -32,7 +32,7 @@ const CARD = {
 
 const EVENT_LABELS = {
   purchase: 'Purchase', redeem: 'Redemption', refund: 'Refund',
-  membership: 'Membership Bonus', admin: 'Manual Adjustment', referral: 'Referral Bonus',
+  admin: 'Manual Adjustment', referral: 'Referral Bonus',
 };
 
 export default function RewardsTab( { userId } ) {
@@ -149,7 +149,7 @@ export default function RewardsTab( { userId } ) {
         <div style={ { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '10px' } }>
           { [
             { label: 'Every order',    desc: `1 pt per $2 spent (${ POINTS_EARN_RATE } pts/$1)` },
-            { label: 'ProCare enroll', desc: 'Up to 200 bonus pts on tier upgrade' },
+            { label: 'Referral bonus', desc: 'Earn bonus points for successful referrals' },
             { label: 'First purchase', desc: 'Double pts on your first order (promo)' },
           ].map( ( item ) => (
             <div key={ item.label } style={ { background: '#f8fafc', borderRadius: '8px', padding: '10px 12px' } }>

@@ -6,32 +6,30 @@
  * Layout:
  *   Gradient hero strip  →  floating pill tab nav  →  animated tab panel
  *
- * Tabs: Overview · Orders · Rewards · ProCare · Addresses · Settings
+ * Tabs: Overview · Orders · Rewards · Addresses · Settings
  *
  * Features:
- *   - Deep-linkable via ?tab= query param (overview | orders | rewards | procare | addresses | settings)
+ *   - Deep-linkable via ?tab= query param (overview | orders | rewards | addresses | settings)
  *   - Tab persisted to localStorage
  *   - AnimatePresence tab transitions (opacity + scale, 0.22 s)
  *   - Touch swipe support for mobile
- *   - Shared data (points, membership, recent orders) fetched once and passed to tabs
+ *   - Shared data (points, recent orders) fetched once and passed to tabs
  */
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, Package, Star, Shield, MapPin, Settings, LogOut, User,
+  LayoutDashboard, Package, Star, MapPin, Settings, LogOut, User,
 } from 'lucide-react';
 
 import { useAuthContext }             from '../../auth/AuthContext.js';
 import { getUserPoints }              from '../../api/rewards.js';
-import { getMembershipStatus }        from '../../api/membership.js';
 import { getCustomerOrders }          from '../../api/orders.js';
 
 import OverviewTab   from './OverviewTab.jsx';
 import OrdersTab     from './OrdersTab.jsx';
 import RewardsTab    from './RewardsTab.jsx';
-import ProCareTab    from './ProCareTab.jsx';
 import AddressesTab  from './AddressesTab.jsx';
 import SettingsTab   from './SettingsTab.jsx';
 import NavbarTabs    from '../ui/NavbarTabs.jsx';
@@ -42,7 +40,6 @@ const TABS = [
   { id: 'overview',   label: 'Overview',   shortLabel: 'Overview',  icon: LayoutDashboard },
   { id: 'orders',     label: 'Orders',     shortLabel: 'Orders',    icon: Package         },
   { id: 'rewards',    label: 'Rewards',    shortLabel: 'Rewards',   icon: Star            },
-  { id: 'procare',    label: 'ProCare',    shortLabel: 'ProCare',   icon: Shield          },
   { id: 'addresses',  label: 'Addresses',  shortLabel: 'Addresses', icon: MapPin          },
   { id: 'settings',   label: 'Settings',   shortLabel: 'Settings',  icon: Settings        },
 ];
@@ -86,7 +83,6 @@ export default function AccountHub() {
 
   const [ activeTab,      setActiveTab      ] = useState( resolveInitialTab );
   const [ pointsData,     setPointsData     ] = useState( null );
-  const [ membershipData, setMembershipData ] = useState( null );
   const [ recentOrders,   setRecentOrders   ] = useState( [] );
   const [ ordersLoading,  setOrdersLoading  ] = useState( true );
 
@@ -123,8 +119,6 @@ export default function AccountHub() {
     let cancelled = false;
 
     getUserPoints( user.id ).then( ( d ) => { if ( ! cancelled ) setPointsData( d ); } ).catch( () => {} );
-    getMembershipStatus( user.id ).then( ( d ) => { if ( ! cancelled ) setMembershipData( d ); } ).catch( () => {} );
-
     getCustomerOrders( user.id, 1, 5 )
       .then( ( data ) => {
         if ( cancelled ) return;
@@ -270,7 +264,7 @@ export default function AccountHub() {
               <div className="dash-hero-stat-divider" />
               <div className="dash-hero-stat">
                 <span className="dash-hero-stat-val">
-                  { membershipData?.tier ? membershipData.tier : 'Free' }
+                  { user.role || 'Customer' }
                 </span>
                 <span className="dash-hero-stat-lbl">Plan</span>
               </div>
@@ -324,7 +318,6 @@ export default function AccountHub() {
                 <OverviewTab
                   user={ user }
                   pointsData={ pointsData }
-                  membershipData={ membershipData }
                   orders={ recentOrders }
                   ordersLoading={ ordersLoading }
                   onTabChange={ changeTab }
@@ -332,15 +325,8 @@ export default function AccountHub() {
               ) }
               { activeTab === 1 && <OrdersTab userId={ user.id } /> }
               { activeTab === 2 && <RewardsTab userId={ user.id } /> }
-              { activeTab === 3 && (
-                <ProCareTab
-                  userId={ user.id }
-                  membershipData={ membershipData }
-                  onMembershipUpdate={ setMembershipData }
-                />
-              ) }
-              { activeTab === 4 && <AddressesTab user={ user } /> }
-              { activeTab === 5 && <SettingsTab /> }
+              { activeTab === 3 && <AddressesTab user={ user } /> }
+              { activeTab === 4 && <SettingsTab /> }
             </Motion.div>
           </AnimatePresence>
         </div>

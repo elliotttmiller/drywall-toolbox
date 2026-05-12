@@ -124,7 +124,6 @@ Credentials live in GitHub Actions secrets only — never committed.
 | `orders.js` | Order history and detail |
 | `customers.js` | Customer profile management |
 | `rewards.js` | Rewards/points system |
-| `membership.js` | Pro membership tier |
 | `coupons.js` | Coupon validation |
 | `wordpress.js` | Generic WP REST API calls |
 
