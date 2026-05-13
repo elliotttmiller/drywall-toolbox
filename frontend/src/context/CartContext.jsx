@@ -7,6 +7,7 @@ import {
   removeCartItem,
   clearStoreCart,
 } from '../api/cart.js';
+import { trackAddToCart, trackRemoveFromCart } from '../analytics/ecommerceEvents.js';
 
 const CART_SNAPSHOT_KEY = 'drywall-cart-snapshot';
 const CartContext = createContext();
@@ -151,7 +152,9 @@ export function CartProvider({ children }) {
     try {
       const variation = buildStoreApiVariation(product.variation_attribute_values);
       const nextCart = await storeAddToCart(product.id, quantity, variation);
-      applyServerCart(nextCart);
+      const normalizedItems = applyServerCart(nextCart);
+      const addedItem = normalizedItems.find((item) => String(item.id) === String(product.id)) || { ...product, quantity };
+      trackAddToCart({ ...addedItem, quantity });
       return nextCart;
     } catch (err) {
       setCartItems(previousItems);
@@ -173,6 +176,7 @@ export function CartProvider({ children }) {
     try {
       const nextCart = await removeCartItem(target.cartKey || target.key);
       applyServerCart(nextCart);
+      trackRemoveFromCart(target);
       return nextCart;
     } catch (err) {
       setCartItems(previousItems);
