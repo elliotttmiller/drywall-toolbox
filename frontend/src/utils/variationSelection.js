@@ -7,6 +7,7 @@
 function hasSelectedValue([, value]) {
   return value != null && `${value}`.trim() !== '';
 }
+
 const normalizeAttributeKey = (value) => {
   return `${value || ''}`
     .trim()
@@ -16,13 +17,51 @@ const normalizeAttributeKey = (value) => {
     .replace(/\s+/g, ' ');
 };
 
-function normalizeAttributeValue(value) {
+function decodeAttributeEntity(value) {
   return `${value || ''}`
+    .replace(/&quot;/g, '"')
+    .replace(/&#034;/g, '"')
+    .replace(/&#34;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#039;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ');
+}
+
+function normalizeAttributeValue(value) {
+  return decodeAttributeEntity(value)
     .replace(/[‘’]/g, "'")
     .replace(/[“”]/g, '"')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+/**
+ * Canonicalize option values across WooCommerce labels, slugs, and imported CSV
+ * formatting. Woo frequently returns parent attribute labels like `7"` while
+ * variation records can return slugs such as `7-inch` or `7-in`. Matching only
+ * the raw normalized strings makes valid options look unavailable/disabled.
+ *
+ * @param {any} value
+ * @returns {string}
+ */
+function canonicalizeAttributeValue(value) {
+  return normalizeAttributeValue(value)
+    .replace(/\b(inches|inch|in)\b/g, '"')
+    .replace(/\b(feet|foot|ft)\b/g, "'")
+    .replace(/\s*"\s*/g, '"')
+    .replace(/\s*'\s*/g, "'")
+    .replace(/[^a-z0-9"']+/g, '')
+    .trim();
+}
+
+function attributeValuesEqual(left, right) {
+  const normalizedLeft = normalizeAttributeValue(left);
+  const normalizedRight = normalizeAttributeValue(right);
+  if (normalizedLeft === normalizedRight) return true;
+  return canonicalizeAttributeValue(left) === canonicalizeAttributeValue(right);
 }
 
 /**
@@ -82,7 +121,7 @@ export function findMatchingVariation(variations, selectedAttrs) {
   const normalizedTarget = Object.fromEntries(
     targetEntries.map(([name, value]) => [
       normalizeAttributeKey(name),
-      normalizeAttributeValue(value),
+      value,
     ])
   );
 
@@ -91,11 +130,11 @@ export function findMatchingVariation(variations, selectedAttrs) {
     const normalizedSelected = Object.fromEntries(
       Object.entries(selected).map(([name, value]) => [
         normalizeAttributeKey(name),
-        normalizeAttributeValue(value),
+        value,
       ])
     );
     return Object.entries(normalizedTarget).every(
-      ([key, value]) => normalizedSelected[key] === value
+      ([key, value]) => normalizedSelected[key] != null && attributeValuesEqual(normalizedSelected[key], value)
     );
   }) || null;
 }
