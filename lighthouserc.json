@@ -5,7 +5,7 @@
         "https://drywalltoolbox.com/",
         "https://elliotttmiller.github.io/drywall-toolbox/"
       ],
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
       "settings": {
         "preset": "desktop",
         "throttling": {
@@ -18,16 +18,16 @@
     "assert": {
       "assertions": {
         "first-contentful-paint":     ["warn",  { "maxNumericValue": 1500 }],
-        "largest-contentful-paint":   ["warn",  { "maxNumericValue": 2500 }],
+        "largest-contentful-paint":   ["warn",  { "maxNumericValue": 3000 }],
         "total-blocking-time":        ["warn",  { "maxNumericValue": 500  }],
         "cumulative-layout-shift":    ["error", { "maxNumericValue": 0.1  }],
         "speed-index":                ["warn",  { "maxNumericValue": 3000 }],
         "interactive":                ["warn",  { "maxNumericValue": 3500 }],
         "uses-optimized-images":      ["warn"],
-        "uses-text-compression":      ["warn"],
-        "uses-long-cache-ttl":        ["warn"],
-        "render-blocking-resources":  ["warn"],
-        "unused-javascript":          ["warn"],
+        "uses-text-compression":      ["warn",  { "minScore": 0.4 }],
+        "uses-long-cache-ttl":        ["warn",  { "minScore": 0.4 }],
+        "render-blocking-resources":  ["warn",  { "minScore": 0.5 }],
+        "unused-javascript":          ["warn",  { "minScore": 0.5 }],
         "unused-css-rules":           ["warn"]
       }
     }

@@ -51,14 +51,19 @@
     <!-- Early connection to the production API / WP backend -->
     <link rel="preconnect" href="https://drywalltoolbox.com" crossorigin>
     <!--
+      Non-render-blocking Google Fonts load (preload + onload swap).
       font-display=swap: browser immediately renders text in a fallback font and
       swaps in Inter/JetBrains Mono once downloaded — eliminates FOIT (invisible
       text) and prevents layout-blocking on slow mobile connections.
       Loading only the weights actually used (400,600,700,800 for Inter;
       400,700 for JetBrains Mono) cuts the font payload significantly vs the
       previous 6-weight Inter request with no JetBrains Mono at all.
+      The preload/onload pattern prevents the stylesheet from blocking the
+      initial render; the <noscript> fallback ensures fonts still load when
+      JavaScript is disabled.
     -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"></noscript>
 
     <!-- Static Organization JSON-LD (supplements per-page dynamic schemas) -->
     <script type="application/ld+json">
