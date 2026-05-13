@@ -774,18 +774,62 @@ function dtb_veeqo_build_order_payload( WC_Order $order ): ?array {
 		return null;
 	}
 
-	$line_items = [];
+	$line_items         = [];
+	$missing_sku_items  = [];
+
 	foreach ( $items as $item ) {
 		/** @var WC_Order_Item_Product $item */
-		$product    = $item->get_product();
+		$product     = $item->get_product();
 		$sellable_id = $product ? (int) $product->get_meta( '_veeqo_sellable_id' ) : 0;
+
+		// SKU enforcement for variable products:
+		// A variation must have its own SKU for Veeqo to identify the correct
+		// sellable record.  A missing variation SKU means Veeqo cannot fulfil
+		// the correct product variant — flag it for logging and block the sync.
+		$sku             = $product ? $product->get_sku() : '';
+		$variation_id    = $item->get_variation_id();
+		$is_variation    = $variation_id > 0;
+
+		if ( $is_variation && '' === $sku ) {
+			$missing_sku_items[] = [
+				'item_name'    => $item->get_name(),
+				'variation_id' => $variation_id,
+				'order_id'     => $order->get_id(),
+			];
+			dtb_veeqo_log( 'warn', 'variation_missing_sku', 'Variation line item has no SKU — Veeqo sync blocked for this item.', [
+				'order_id'     => $order->get_id(),
+				'item_name'    => $item->get_name(),
+				'variation_id' => $variation_id,
+			] );
+		}
 
 		$line_items[] = [
 			'sellable_id'    => $sellable_id ?: null,
 			'sellable_title' => $item->get_name(),
 			'quantity'       => $item->get_quantity(),
 			'price_per_unit' => (float) $item->get_subtotal() / max( 1, $item->get_quantity() ),
+			// Include SKU so Veeqo can fall back to SKU-based lookup if
+			// sellable_id is absent (e.g. newly imported products).
+			'sku'            => $sku ?: null,
 		];
+	}
+
+	// If any variation line items lack a SKU, log an audit event and return
+	// null to block the Veeqo order creation — partial fulfilment of the wrong
+	// variant is worse than no fulfilment at all.
+	if ( ! empty( $missing_sku_items ) ) {
+		dtb_veeqo_log( 'error', 'order_sync_blocked_missing_sku', 'Veeqo order sync blocked: one or more variation line items have no SKU.', [
+			'order_id'           => $order->get_id(),
+			'missing_sku_items'  => $missing_sku_items,
+		] );
+
+		// Mark the WC order with a note so admins can identify and fix it.
+		$order->add_order_note(
+			'⚠️ Veeqo sync blocked: variation line item(s) have no SKU. Assign variation SKUs and retry sync via the Veeqo admin panel.',
+			false,
+			false
+		);
+		return null;
 	}
 
 	$billing = $order->get_address( 'billing' );

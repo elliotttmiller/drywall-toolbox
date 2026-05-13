@@ -67,6 +67,16 @@ function dtb_register_proxy_routes(): void {
 		'permission_callback' => '__return_true',
 	] );
 
+	// Product detail endpoint — returns parent + all variations + computed state
+	// in a single normalized response optimised for the React product-detail page.
+	// Must be registered BEFORE /products/slug/{slug} but is differentiated by
+	// the '/detail' suffix so there is no ambiguity.
+	register_rest_route( $ns, '/products/slug/(?P<slug>[a-zA-Z0-9_-]+)/detail', [
+		'methods'             => 'GET',
+		'callback'            => 'dtb_proxy_product_detail',
+		'permission_callback' => '__return_true',
+	] );
+
 	register_rest_route( $ns, '/products/(?P<id>\d+)', [
 		'methods'             => 'GET',
 		'callback'            => 'dtb_proxy_product_by_id',
@@ -236,6 +246,13 @@ function dtb_register_config_routes(): void {
 				'description'       => 'Optional webhook secret for non-cookie auth.',
 			],
 		],
+	] );
+
+	// ── POST /dtb/v1/admin/cache/products/flush — admin cache flush ───────────
+	register_rest_route( $ns, '/admin/cache/products/flush', [
+		'methods'             => 'POST',
+		'callback'            => 'dtb_route_admin_cache_flush',
+		'permission_callback' => 'dtb_admin_cache_flush_permission',
 	] );
 
 	// ── Diagnostic: GET /dtb/v1/cors-test — CORS debugging endpoint ──────────
@@ -1237,6 +1254,548 @@ function dtb_contact_form_handler( WP_REST_Request $request ): WP_REST_Response 
 	$response = new WP_REST_Response( [
 		'success' => true,
 		'message' => 'Your message has been sent. We\'ll get back to you within one business day.',
+	], 200 );
+	$response->header( 'Cache-Control', 'private, no-store' );
+	return $response;
+}
+
+// =============================================================================
+// PRODUCT DETAIL ENDPOINT — /drywall/v1/products/slug/{slug}/detail
+//
+// Returns a normalized envelope:
+//   { product, variations, computed }
+//
+// Parent product owns: content, SEO, media, attributes, price range.
+// Variations own: price, SKU, stock, image, purchasability, cart identity.
+// Computed state: default/first-purchasable variation IDs, price range,
+//                 stock summary, available option matrix.
+// =============================================================================
+
+/**
+ * GET /drywall/v1/products/slug/{slug}/detail
+ *
+ * Fetches the parent product by slug and all its child variations in two
+ * server-side WC REST calls, normalises both into frontend-safe objects,
+ * computes derived state, and returns them in a single response.
+ *
+ * The response is cached at the same TTL as other product proxy routes
+ * (600 s default) via dtb_cached_proxy(), with the same webhook-triggered
+ * invalidation path that clears all drywall_cache_* transients.
+ */
+function dtb_proxy_product_detail( WP_REST_Request $request ): WP_REST_Response {
+	if ( ! dtb_check_origin() ) {
+		return new WP_REST_Response( dtb_error_envelope( 'forbidden_origin', 'Origin not allowed.', 403 ), 403 );
+	}
+
+	$rl = dtb_rate_limit_get( 'wc/v3/products' );
+	if ( $rl ) {
+		return $rl;
+	}
+
+	$slug = sanitize_title( $request->get_param( 'slug' ) );
+	if ( '' === $slug ) {
+		return new WP_REST_Response( dtb_error_envelope( 'invalid_slug', 'Product slug is required.', 400 ), 400 );
+	}
+
+	// ── Step 1: Fetch parent product by slug ──────────────────────────────────
+
+	$parent_fields = 'id,name,slug,permalink,type,status,featured,catalog_visibility,description,short_description,sku,price,regular_price,sale_price,on_sale,purchasable,manage_stock,stock_quantity,backorders,backorders_allowed,backordered,sold_individually,weight,dimensions,shipping_required,shipping_class,shipping_class_id,reviews_allowed,average_rating,rating_count,upsell_ids,cross_sell_ids,parent_id,categories,brands,tags,images,attributes,default_attributes,variations,menu_order,price_html,related_ids,stock_status,has_options,meta_data';
+
+	$cache_key_parent = 'wc/v3/products_slug_' . $slug;
+
+	$product_data = dtb_cached_proxy( $cache_key_parent, [ 'slug' => $slug, '_fields' => $parent_fields ], function () use ( $slug, $parent_fields ) {
+		$wc_url = add_query_arg(
+			[ 'slug' => $slug, '_fields' => $parent_fields ],
+			dtb_wc_url( 'wc/v3/products' )
+		);
+		$raw = wp_remote_get( $wc_url, [
+			'headers' => [ 'Authorization' => dtb_wc_auth_header() ],
+			'timeout' => 15,
+		] );
+		if ( is_wp_error( $raw ) ) {
+			return new WP_Error( 'upstream_error', 'Could not reach the product catalog.', [ 'status' => 502 ] );
+		}
+		$code = wp_remote_retrieve_response_code( $raw );
+		$body = json_decode( wp_remote_retrieve_body( $raw ), true );
+		if ( $code < 200 || $code >= 300 ) {
+			return new WP_Error( 'upstream_error', 'Product catalog returned an error.', [ 'status' => (int) $code ] );
+		}
+		return $body;
+	} );
+
+	if ( is_wp_error( $product_data ) ) {
+		$status = (int) ( $product_data->get_error_data()['status'] ?? 502 );
+		return new WP_REST_Response( dtb_error_envelope( $product_data->get_error_code(), $product_data->get_error_message(), $status ), $status );
+	}
+
+	if ( ! is_array( $product_data ) || empty( $product_data ) ) {
+		return new WP_REST_Response( dtb_error_envelope( 'not_found', 'Product not found.', 404 ), 404 );
+	}
+
+	// WC ?slug= returns an array; take the first match.
+	$product = is_array( $product_data[0] ?? null ) ? $product_data[0] : ( is_array( $product_data ) && isset( $product_data['id'] ) ? $product_data : null );
+	if ( ! $product ) {
+		return new WP_REST_Response( dtb_error_envelope( 'not_found', 'Product not found.', 404 ), 404 );
+	}
+
+	$product_id   = absint( $product['id'] ?? 0 );
+	$product_type = strtolower( $product['type'] ?? 'simple' );
+
+	// ── Step 2: Fetch child variations (only for variable products) ───────────
+
+	$variations = [];
+
+	if ( 'variable' === $product_type && $product_id > 0 ) {
+		$var_cache_key = 'wc/v3/products/' . $product_id . '/variations';
+
+		$variations_raw = dtb_cached_proxy( $var_cache_key, [ '_fields' => DTB_VARIATION_FIELDS, 'per_page' => 100 ], function () use ( $product_id ) {
+			$wc_url = add_query_arg(
+				[ '_fields' => DTB_VARIATION_FIELDS, 'per_page' => 100 ],
+				dtb_wc_url( 'wc/v3/products/' . $product_id . '/variations' )
+			);
+			$raw = wp_remote_get( $wc_url, [
+				'headers' => [ 'Authorization' => dtb_wc_auth_header() ],
+				'timeout' => 15,
+			] );
+			if ( is_wp_error( $raw ) ) {
+				dtb_log_cache_event( 'detail_variations_upstream_error', [ 'product_id' => $product_id ] );
+				return [];
+			}
+			$code = wp_remote_retrieve_response_code( $raw );
+			$body = json_decode( wp_remote_retrieve_body( $raw ), true );
+			if ( $code >= 500 ) {
+				dtb_log_cache_event( 'detail_variations_upstream_error', [ 'product_id' => $product_id, 'status' => $code ] );
+				return [];
+			}
+			return is_array( $body ) ? $body : [];
+		} );
+
+		$variations = is_array( $variations_raw ) ? array_values( $variations_raw ) : [];
+	}
+
+	// ── Step 3: Normalize product ─────────────────────────────────────────────
+
+	$normalized_product = dtb_normalize_detail_product( $product, $variations );
+
+	// ── Step 4: Normalize variations ──────────────────────────────────────────
+
+	$normalized_variations = array_map( 'dtb_normalize_detail_variation', $variations );
+
+	// ── Step 5: Compute derived state ─────────────────────────────────────────
+
+	$computed = dtb_compute_variation_state( $normalized_product, $normalized_variations );
+
+	$envelope = [
+		'product'    => $normalized_product,
+		'variations' => $normalized_variations,
+		'computed'   => $computed,
+	];
+
+	return new WP_REST_Response( $envelope, 200 );
+}
+
+/**
+ * Normalize a raw WooCommerce product object for the detail endpoint.
+ *
+ * @param array $p    Raw WC product array.
+ * @param array $vars Raw WC variation arrays (used to compute price range).
+ * @return array      Normalized product shape.
+ */
+function dtb_normalize_detail_product( array $p, array $vars ): array {
+	// Extract brand from brands array (Brands for WooCommerce plugin) or meta_data.
+	$brand = '';
+	$brands_raw = $p['brands'] ?? [];
+	if ( ! empty( $brands_raw ) && is_array( $brands_raw ) ) {
+		$brand = $brands_raw[0]['name'] ?? '';
+	}
+	if ( ! $brand ) {
+		foreach ( (array) ( $p['meta_data'] ?? [] ) as $meta ) {
+			if ( in_array( $meta['key'] ?? '', [ '_brand', 'pa_brand', 'brand' ], true ) ) {
+				$brand = (string) ( $meta['value'] ?? '' );
+				break;
+			}
+		}
+	}
+
+	// Price range from variations.
+	$prices = [];
+	foreach ( $vars as $v ) {
+		$price = (string) ( $v['price'] ?? '' );
+		if ( '' !== $price && is_numeric( $price ) ) {
+			$prices[] = (float) $price;
+		}
+	}
+	// Fall back to product price fields when no variation prices.
+	if ( empty( $prices ) ) {
+		foreach ( [ 'price', 'regular_price', 'sale_price' ] as $field ) {
+			$val = (string) ( $p[ $field ] ?? '' );
+			if ( '' !== $val && is_numeric( $val ) ) {
+				$prices[] = (float) $val;
+			}
+		}
+	}
+
+	$price_min = ! empty( $prices ) ? (string) number_format( min( $prices ), 2, '.', '' ) : '';
+	$price_max = ! empty( $prices ) ? (string) number_format( max( $prices ), 2, '.', '' ) : '';
+
+	// Extract MPN and barcode from meta_data.
+	$mpn = '';
+	$barcode = '';
+	foreach ( (array) ( $p['meta_data'] ?? [] ) as $meta ) {
+		switch ( $meta['key'] ?? '' ) {
+			case '_mpn':
+			case 'mpn':
+			case 'schema_mpn':
+			case 'meta:schema_mpn':
+				if ( ! $mpn ) $mpn = (string) ( $meta['value'] ?? '' );
+				break;
+			case '_barcode':
+			case 'barcode':
+			case '_upc':
+			case 'upc':
+				if ( ! $barcode ) $barcode = (string) ( $meta['value'] ?? '' );
+				break;
+		}
+	}
+
+	// Build stock summary.
+	$has_instock    = false;
+	$has_backorder  = false;
+	$has_outofstock = false;
+	foreach ( $vars as $v ) {
+		$status = $v['stock_status'] ?? 'outofstock';
+		if ( 'instock' === $status )      $has_instock    = true;
+		if ( 'onbackorder' === $status )  $has_backorder  = true;
+		if ( 'outofstock' === $status )   $has_outofstock = true;
+	}
+
+	return [
+		'id'                 => (int) ( $p['id'] ?? 0 ),
+		'type'               => (string) ( $p['type'] ?? 'simple' ),
+		'slug'               => (string) ( $p['slug'] ?? '' ),
+		'name'               => (string) ( $p['name'] ?? '' ),
+		'brand'              => $brand,
+		'sku'                => (string) ( $p['sku'] ?? '' ),
+		'mpn'                => $mpn,
+		'barcode'            => $barcode,
+		'description'        => (string) ( $p['description'] ?? '' ),
+		'short_description'  => (string) ( $p['short_description'] ?? '' ),
+		'categories'         => (array) ( $p['categories'] ?? [] ),
+		'tags'               => (array) ( $p['tags'] ?? [] ),
+		'images'             => (array) ( $p['images'] ?? [] ),
+		'attributes'         => (array) ( $p['attributes'] ?? [] ),
+		'default_attributes' => (array) ( $p['default_attributes'] ?? [] ),
+		'price'              => (string) ( $p['price'] ?? '' ),
+		'regular_price'      => (string) ( $p['regular_price'] ?? '' ),
+		'sale_price'         => (string) ( $p['sale_price'] ?? '' ),
+		'on_sale'            => (bool) ( $p['on_sale'] ?? false ),
+		'price_min'          => $price_min,
+		'price_max'          => $price_max,
+		'stock_status'       => (string) ( $p['stock_status'] ?? 'instock' ),
+		'stock_quantity'     => isset( $p['stock_quantity'] ) ? (int) $p['stock_quantity'] : null,
+		'manage_stock'       => (bool) ( $p['manage_stock'] ?? false ),
+		'backorders_allowed' => (bool) ( $p['backorders_allowed'] ?? false ),
+		'purchasable'        => (bool) ( $p['purchasable'] ?? true ),
+		'related_ids'        => (array) ( $p['related_ids'] ?? [] ),
+		'upsell_ids'         => (array) ( $p['upsell_ids'] ?? [] ),
+		'cross_sell_ids'     => (array) ( $p['cross_sell_ids'] ?? [] ),
+		'average_rating'     => (string) ( $p['average_rating'] ?? '0' ),
+		'rating_count'       => (int) ( $p['rating_count'] ?? 0 ),
+		'permalink'          => (string) ( $p['permalink'] ?? '' ),
+		'meta_data'          => (array) ( $p['meta_data'] ?? [] ),
+		'stock_summary'      => [
+			'has_instock'    => $has_instock,
+			'has_backorder'  => $has_backorder,
+			'has_outofstock' => $has_outofstock,
+		],
+	];
+}
+
+/**
+ * Normalize a raw WooCommerce variation object for the detail endpoint.
+ *
+ * @param array $v Raw WC variation array.
+ * @return array   Normalized variation shape.
+ */
+function dtb_normalize_detail_variation( array $v ): array {
+	// Extract MPN and barcode from meta_data.
+	$mpn = '';
+	$barcode = '';
+	foreach ( (array) ( $v['meta_data'] ?? [] ) as $meta ) {
+		switch ( $meta['key'] ?? '' ) {
+			case '_mpn':
+			case 'mpn':
+			case 'schema_mpn':
+				if ( ! $mpn ) $mpn = (string) ( $meta['value'] ?? '' );
+				break;
+			case '_barcode':
+			case 'barcode':
+			case '_upc':
+			case 'upc':
+				if ( ! $barcode ) $barcode = (string) ( $meta['value'] ?? '' );
+				break;
+		}
+	}
+
+	// Build variation_attribute_values for frontend compatibility.
+	$attrs     = (array) ( $v['attributes'] ?? [] );
+	$attr_vals = array_map( function ( $attr ) {
+		return [
+			'id'     => (int) ( $attr['id'] ?? 0 ),
+			'name'   => (string) ( $attr['name'] ?? '' ),
+			'slug'   => (string) ( $attr['slug'] ?? '' ),
+			'option' => (string) ( $attr['option'] ?? '' ),
+		];
+	}, $attrs );
+
+	return [
+		'id'                      => (int) ( $v['id'] ?? 0 ),
+		'parent_id'               => (int) ( $v['parent_id'] ?? 0 ),
+		'sku'                     => (string) ( $v['sku'] ?? '' ),
+		'mpn'                     => $mpn,
+		'barcode'                 => $barcode,
+		'price'                   => (string) ( $v['price'] ?? '' ),
+		'regular_price'           => (string) ( $v['regular_price'] ?? '' ),
+		'sale_price'              => (string) ( $v['sale_price'] ?? '' ),
+		'on_sale'                 => (bool) ( $v['on_sale'] ?? false ),
+		'stock_status'            => (string) ( $v['stock_status'] ?? 'outofstock' ),
+		'stock_quantity'          => isset( $v['stock_quantity'] ) ? (int) $v['stock_quantity'] : null,
+		'manage_stock'            => (bool) ( $v['manage_stock'] ?? false ),
+		'backorders_allowed'      => (bool) ( $v['backorders_allowed'] ?? false ),
+		'backordered'             => (bool) ( $v['backordered'] ?? false ),
+		'purchasable'             => (bool) ( $v['purchasable'] ?? false ),
+		'image'                   => $v['image'] ?? null,
+		'attributes'              => $attrs,
+		'variation_attribute_values' => $attr_vals,
+		'description'             => (string) ( $v['description'] ?? '' ),
+		'weight'                  => (string) ( $v['weight'] ?? '' ),
+		'dimensions'              => (array) ( $v['dimensions'] ?? [] ),
+		'shipping_class'          => (string) ( $v['shipping_class'] ?? '' ),
+		'status'                  => (string) ( $v['status'] ?? 'publish' ),
+	];
+}
+
+/**
+ * Compute derived variation state for the frontend state machine.
+ *
+ * @param array $product    Normalized parent product.
+ * @param array $variations Normalized variation array.
+ * @return array            Computed state shape.
+ */
+function dtb_compute_variation_state( array $product, array $variations ): array {
+	if ( empty( $variations ) ) {
+		return [
+			'default_variation_id'          => null,
+			'first_purchasable_variation_id' => null,
+			'price_range'                   => [ 'min' => $product['price_min'], 'max' => $product['price_max'] ],
+			'has_in_stock_variations'       => false,
+			'has_backorder_variations'      => false,
+			'has_out_of_stock_variations'   => false,
+			'available_option_matrix'       => [],
+			'disabled_options'              => [],
+		];
+	}
+
+	// Resolve default variation from product default_attributes.
+	$default_id  = null;
+	$default_attrs = (array) ( $product['default_attributes'] ?? [] );
+	if ( ! empty( $default_attrs ) ) {
+		$default_map = [];
+		foreach ( $default_attrs as $da ) {
+			$name  = strtolower( (string) ( $da['name'] ?? '' ) );
+			$val   = strtolower( (string) ( $da['option'] ?? '' ) );
+			if ( $name && $val ) {
+				$default_map[ $name ] = $val;
+			}
+		}
+		foreach ( $variations as $var ) {
+			$var_map = [];
+			foreach ( (array) ( $var['variation_attribute_values'] ?? [] ) as $av ) {
+				$n = strtolower( (string) ( $av['name'] ?? '' ) );
+				$o = strtolower( (string) ( $av['option'] ?? '' ) );
+				if ( $n ) $var_map[ $n ] = $o;
+			}
+			$match = true;
+			foreach ( $default_map as $k => $v ) {
+				if ( ( $var_map[ $k ] ?? '' ) !== $v ) {
+					$match = false;
+					break;
+				}
+			}
+			if ( $match ) {
+				$default_id = (int) $var['id'];
+				break;
+			}
+		}
+	}
+
+	// First purchasable (in-stock) variation.
+	$first_purchasable_id = null;
+	foreach ( $variations as $var ) {
+		if ( ( $var['purchasable'] ?? false ) && ( $var['stock_status'] ?? '' ) === 'instock' ) {
+			$first_purchasable_id = (int) $var['id'];
+			break;
+		}
+	}
+	// Fall back: first purchasable regardless of stock (e.g. backorder)
+	if ( ! $first_purchasable_id ) {
+		foreach ( $variations as $var ) {
+			if ( $var['purchasable'] ?? false ) {
+				$first_purchasable_id = (int) $var['id'];
+				break;
+			}
+		}
+	}
+
+	// Stock summary.
+	$has_instock    = false;
+	$has_backorder  = false;
+	$has_outofstock = false;
+	$prices         = [];
+	foreach ( $variations as $var ) {
+		$status = $var['stock_status'] ?? '';
+		if ( 'instock' === $status )      $has_instock    = true;
+		if ( 'onbackorder' === $status )  $has_backorder  = true;
+		if ( 'outofstock' === $status )   $has_outofstock = true;
+		$price = $var['price'] ?? '';
+		if ( '' !== $price && is_numeric( $price ) ) {
+			$prices[] = (float) $price;
+		}
+	}
+
+	$price_min = ! empty( $prices ) ? (string) number_format( min( $prices ), 2, '.', '' ) : ( $product['price_min'] ?? '' );
+	$price_max = ! empty( $prices ) ? (string) number_format( max( $prices ), 2, '.', '' ) : ( $product['price_max'] ?? '' );
+
+	// Build available option matrix: attr_name -> [ option -> { variation_id, stock_status, purchasable } ]
+	$option_matrix = [];
+	foreach ( $variations as $var ) {
+		foreach ( (array) ( $var['variation_attribute_values'] ?? [] ) as $av ) {
+			$name   = (string) ( $av['name'] ?? '' );
+			$option = (string) ( $av['option'] ?? '' );
+			if ( ! $name || ! $option ) continue;
+			if ( ! isset( $option_matrix[ $name ] ) ) {
+				$option_matrix[ $name ] = [];
+			}
+			$status      = $var['stock_status'] ?? 'outofstock';
+			$purchasable = (bool) ( $var['purchasable'] ?? false );
+			// Track best status for this option (instock > onbackorder > outofstock)
+			$existing = $option_matrix[ $name ][ $option ] ?? null;
+			$rank      = [ 'instock' => 2, 'onbackorder' => 1, 'outofstock' => 0 ];
+			if (
+				! $existing ||
+				( $rank[ $status ] ?? 0 ) > ( $rank[ $existing['stock_status'] ] ?? 0 ) ||
+				( ! $existing['purchasable'] && $purchasable )
+			) {
+				$option_matrix[ $name ][ $option ] = [
+					'variation_id' => (int) $var['id'],
+					'stock_status' => $status,
+					'purchasable'  => $purchasable,
+				];
+			}
+		}
+	}
+
+	// Build disabled options: options that appear on the parent attributes but
+	// have no purchasable variation.
+	$disabled_options = [];
+	foreach ( $option_matrix as $attr_name => $option_map ) {
+		foreach ( $option_map as $option => $meta ) {
+			if ( ! $meta['purchasable'] ) {
+				$disabled_options[] = [
+					'attribute' => $attr_name,
+					'option'    => $option,
+				];
+			}
+		}
+	}
+
+	return [
+		'default_variation_id'           => $default_id,
+		'first_purchasable_variation_id' => $first_purchasable_id,
+		'price_range'                    => [ 'min' => $price_min, 'max' => $price_max ],
+		'has_in_stock_variations'        => $has_instock,
+		'has_backorder_variations'       => $has_backorder,
+		'has_out_of_stock_variations'    => $has_outofstock,
+		'available_option_matrix'        => $option_matrix,
+		'disabled_options'               => $disabled_options,
+	];
+}
+
+// =============================================================================
+// ADMIN CACHE FLUSH ENDPOINT — POST /dtb/v1/admin/cache/products/flush
+// =============================================================================
+
+/**
+ * Permission callback for the admin cache flush endpoint.
+ * Requires administrator JWT or logged-in WP admin.
+ */
+function dtb_admin_cache_flush_permission( WP_REST_Request $request ) {
+	// Check WordPress logged-in administrator first.
+	if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+		// Validate nonce if provided (admin-ajax style callers will supply it).
+		$nonce = $request->get_header( 'x_dtb_nonce' ) ?: $request->get_param( '_nonce' );
+		if ( $nonce && ! wp_verify_nonce( $nonce, 'dtb_admin_cache_flush' ) ) {
+			return new WP_Error( 'invalid_nonce', 'Nonce verification failed.', [ 'status' => 403 ] );
+		}
+		return true;
+	}
+
+	// Fall back to JWT administrator check.
+	$token = null;
+	if ( ! empty( $_COOKIE[ DTB_AUTH_COOKIE ] ) ) {
+		$token = sanitize_text_field( wp_unslash( $_COOKIE[ DTB_AUTH_COOKIE ] ) );
+	}
+	if ( ! $token ) {
+		$auth = $request->get_header( 'authorization' );
+		if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
+			$token = $m[1];
+		}
+	}
+	if ( ! $token ) {
+		return new WP_Error( 'missing_token', 'Authentication required.', [ 'status' => 401 ] );
+	}
+
+	$payload = dtb_verify_jwt( $token );
+	if ( is_wp_error( $payload ) ) {
+		return $payload;
+	}
+
+	$roles = isset( $payload->roles ) ? (array) $payload->roles : [];
+	if ( ! in_array( 'administrator', $roles, true ) ) {
+		return new WP_Error( 'forbidden', 'Administrator access required.', [ 'status' => 403 ] );
+	}
+
+	return true;
+}
+
+/**
+ * POST /dtb/v1/admin/cache/products/flush
+ *
+ * Clears all drywall_cache_* transients, logs the flush event, and returns
+ * the number of transients deleted.  Requires administrator authentication.
+ */
+function dtb_route_admin_cache_flush( WP_REST_Request $request ): WP_REST_Response {
+	global $wpdb;
+
+	// Count before deletion for the audit log.
+	$count = (int) $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE %s",
+			$wpdb->esc_like( '_transient_drywall_cache_' ) . '%'
+		)
+	);
+
+	dtb_invalidate_product_cache();
+
+	dtb_log_cache_event( 'admin_cache_flush', [
+		'user_id'          => get_current_user_id(),
+		'transients_cleared' => $count,
+	] );
+
+	$response = new WP_REST_Response( [
+		'success'            => true,
+		'transients_cleared' => $count,
+		'message'            => sprintf( 'Product cache flushed. %d transient(s) cleared.', $count ),
 	], 200 );
 	$response->header( 'Cache-Control', 'private, no-store' );
 	return $response;

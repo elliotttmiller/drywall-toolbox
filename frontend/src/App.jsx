@@ -22,6 +22,7 @@ const Products           = lazy(() => import('./pages/Products'));
 const AllProducts        = lazy(() => import('./pages/AllProducts'));
 const Parts              = lazy(() => import('./pages/Parts'));
 const Product            = lazy(() => import('./pages/Product'));
+const ProductDetailPage  = lazy(() => import('./pages/ProductDetailPage'));
 const CategoryPage       = lazy(() => import('./pages/CategoryPage'));
 const Schematics         = lazy(() => import('./pages/Schematics'));
 const Repairs            = lazy(() => import('./pages/Repairs'));
@@ -100,9 +101,11 @@ function AppRoutes() {
         <Routes>
           <Route path="/"                      element={<Home />} />
           <Route path="/products"              element={<Products />} />
-          <Route path="/products/:slug"        element={<Product />} />
+          {/* Slug-based product detail with URL variant state machine */}
+          <Route path="/products/:slug"        element={<ProductDetailPage />} />
           <Route path="/all-products"          element={<AllProducts />} />
           <Route path="/parts"                 element={<Parts />} />
+          {/* Legacy part-number route — kept for backward compatibility */}
           <Route path="/product/:partNumber"   element={<Product />} />
           <Route path="/category/:slug"        element={<CategoryPage />} />
           <Route path="/schematics"            element={<Schematics />} />
