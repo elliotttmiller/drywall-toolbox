@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ProductDetail from '../components/product/ProductDetail';
+import ProductModal from '../components/product/ProductModal';
 import ProductShoppingCard from '../components/ui/ProductShoppingCard';
 import BackButton from '../components/shared/BackButton';
 import SearchBar from '../components/catalog/SearchBar';
@@ -12,6 +14,7 @@ import { ProductSkeletonGrid } from '../components/catalog/ProductShoppingCardSk
 import { ChevronRight } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { getProductVariations } from '../services/api';
+import { useCart } from '../context/CartContext';
 import {
   ShoppingCart,
   Filter,
@@ -26,7 +29,7 @@ import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
 import level5Logo from '/brands/Level5/Level5.svg';
 import SEOHead from '../components/shared/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
-import { fetchVariationsBatched } from '../utils/variationSelection';
+import { fetchVariationsBatched, getVariationSelectionMap } from '../utils/variationSelection';
 import { PLACEHOLDER_IMAGE } from '../constants/images.js';
 import '../styles/tool-selector.css';
 
@@ -40,7 +43,6 @@ const categories = [
   { id: 'sanding',   name: 'Sanding Tools' },
 ];
 
-// Allowed brands to display
 const ALLOWED_BRANDS = [
   'TapeTech',
   'Columbia Taping Tools',
@@ -55,9 +57,6 @@ const ALLOWED_BRANDS = [
 const MAX_PRICE = 3000;
 const ITEMS_PER_PAGE = 24;
 
-
-// Brand name ↔ URL slug maps so navigation produces readable URLs like
-// /products?brand=columbia-taping-tools
 const BRAND_TO_SLUG = {
   'TapeTech':              'tapetech',
   'Columbia Taping Tools': 'columbia-taping-tools',
@@ -83,20 +82,11 @@ const brandLogos = {
   'Level 5': level5Logo,
 };
 
-function buildProductDetailUrl(product, cardProduct = null) {
-  const slug = product?.slug || product?.part_number || product?.sku || product?.id;
-  if (!slug) return '/products';
-  const variantId = product?.is_variable && cardProduct?.parent_id && cardProduct?.id
-    ? `?variant=${encodeURIComponent(cardProduct.id)}`
-    : '';
-  return `/products/${encodeURIComponent(slug)}${variantId}`;
-}
-
 export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
-  // initialize selected brands from ?brand= param (supports comma-separated)
   const params = new URLSearchParams(location.search);
   const brandParam = params.get('brand');
   const searchParam = params.get('search');
@@ -105,7 +95,7 @@ export default function Products() {
     ? brandParam
         .split(',')
         .map(b => b.trim())
-        .map(b => SLUG_TO_BRAND[b] || b)  // Convert slug to full name, keep unknown names as-is for backward-compat
+        .map(b => SLUG_TO_BRAND[b] || b)
         .filter(Boolean)
         .filter(brand => ALLOWED_BRANDS.includes(brand))
     : [];
@@ -115,30 +105,49 @@ export default function Products() {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  // selectedDisplayCategory: WC leaf category name used for the brand→category drill-down.
-  // null  → show category cards for the selected brand
-  // string → show product grid filtered to that WC leaf category (e.g. "Finishing Boxes")
   const [selectedDisplayCategory, setSelectedDisplayCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [showFilters, setShowFilters] = useState(false);
+  const [modalProduct, setModalProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
-  // Cached variations per variable parent product ID
   const [cardVariationMap, setCardVariationMap] = useState({});
   const cardVariationMapRef = useRef({});
 
-  const openProductDetail = useCallback((product, cardProduct = null) => {
-    navigate(buildProductDetailUrl(product, cardProduct), {
-      state: {
-        from: `${location.pathname}${location.search}`,
-        workflow: 'products',
-        brand: selectedBrands[0] || product?.brand || '',
-        category: selectedDisplayCategory || product?.display_category || '',
-      },
+  const showToast = (message, type = 'cart') => {
+    setToast({ message, type });
+  };
+
+  const handleAddToCart = (product, quantity = 1) => {
+    addToCart(product, quantity);
+    showToast(`${product.name} added to cart!`, 'cart');
+  };
+
+  const openModal = (product, cardProduct = null) => {
+    const initialResolvedVariation = cardProduct?.parent_id ? cardProduct : null;
+    setModalProduct({
+      product,
+      initialResolvedVariation,
+      initialSelectedAttrs: initialResolvedVariation
+        ? getVariationSelectionMap(initialResolvedVariation)
+        : {},
     });
-  }, [location.pathname, location.search, navigate, selectedBrands, selectedDisplayCategory]);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalProduct(null);
+  };
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const toggleBrand = (brand) => {
     const newBrands = selectedBrands.includes(brand)
@@ -161,16 +170,11 @@ export default function Products() {
     navigate(`/products?brand=${encodeURIComponent(BRAND_TO_SLUG[selectedBrands[0]] || selectedBrands[0])}`);
   };
 
-  // load products once — catalog service fetches from WC REST API
   useEffect(() => {
     let mounted = true;
     getProducts().then(list => {
       if (!mounted) return;
       setProducts(list);
-      // Always show every ALLOWED_BRAND in the selector regardless of whether
-      // the catalog has products for it yet (e.g. Platinum has no products yet).
-      // Brands that DO appear in the catalog are sorted alphabetically first;
-      // any catalog-absent brands are appended in ALLOWED_BRANDS order.
       const fromCatalog = Array.from(new Set(list.map(p => p.brand).filter(Boolean))).sort();
       const inCatalog = fromCatalog.filter(b => ALLOWED_BRANDS.includes(b));
       const notInCatalog = ALLOWED_BRANDS.filter(b => !inCatalog.includes(b));
@@ -180,7 +184,6 @@ export default function Products() {
     return () => { mounted = false; };
   }, []);
 
-  // Watch for URL changes to update state (brands and search)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const brandParam = params.get('brand');
@@ -188,20 +191,15 @@ export default function Products() {
       ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
       : [];
 
-    // Compare as sorted sets to avoid order issues (create copies to avoid mutation)
     const urlBrandsSet = [...brandsFromUrl].sort().join(',');
     const currentBrandsSet = [...selectedBrands].sort().join(',');
 
     if (urlBrandsSet !== currentBrandsSet) {
-      // Defer the state update to avoid synchronous setState inside an effect
-      // which can cause cascading renders. Scheduling the update asynchronously
-      // ensures the effect completes before the state change occurs.
       const t = setTimeout(() => setSelectedBrands(brandsFromUrl), 0);
       return () => clearTimeout(t);
     }
   }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync state (brands + search + page) to URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currentBrandParam  = params.get('brand')  || '';
@@ -209,12 +207,11 @@ export default function Products() {
     const currentPageParam   = params.get('page')   || '';
 
     const expectedBrandParam  = selectedBrands.length > 0
-      ? selectedBrands.map(b => encodeURIComponent(b)).join(',')
+      ? selectedBrands.map(b => encodeURIComponent(BRAND_TO_SLUG[b] || b)).join(',')
       : '';
     const expectedSearchParam = searchQuery ? encodeURIComponent(searchQuery) : '';
     const expectedPageParam   = currentPage > 1 ? String(currentPage) : '';
 
-    // Only navigate if URL needs to change
     if (
       currentBrandParam  !== expectedBrandParam  ||
       currentSearchParam !== expectedSearchParam ||
@@ -229,8 +226,6 @@ export default function Products() {
     }
   }, [selectedBrands, searchQuery, currentPage, navigate, location.search]);
 
-  // Reset to page 1 when filters / search change
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setCurrentPage(1); }, [selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
 
   const toggleCategory = (category) => {
@@ -244,11 +239,8 @@ export default function Products() {
   const filteredProducts = nonPartsProducts.filter(product => {
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
     if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) return false;
-    // WC leaf-category drill-down (category cards layer)
     if (selectedDisplayCategory && product.display_category !== selectedDisplayCategory) return false;
-    // price may not be set on all products; ignore if missing
     if (product.price && (product.price < priceRange[0] || product.price > priceRange[1])) return false;
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchesName = product.name && product.name.toLowerCase().includes(query);
@@ -260,8 +252,6 @@ export default function Products() {
     return true;
   });
 
-  // Unique WC leaf category cards for the currently selected brand(s).
-  // Only computed when we're in the brand→category intermediate view.
   const brandCategoryCards = (() => {
     if (selectedBrands.length === 0) return [];
     const brandProducts = nonPartsProducts.filter(p => selectedBrands.includes(p.brand));
@@ -279,48 +269,24 @@ export default function Products() {
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
-      case 'price-low': {
-        return a.price - b.price;
-      }
-      case 'price-high': {
-        return b.price - a.price;
-      }
-      case 'rating': {
-        return b.rating - a.rating;
-      }
+      case 'price-low': return a.price - b.price;
+      case 'price-high': return b.price - a.price;
+      case 'rating': return b.rating - a.rating;
       case 'popular':
       default: {
-        // Popular sorting: prioritize main products over small parts
-        // 1. Sort by badge priority (Best Seller > Popular > New > no badge)
         const badgePriority = { 'Best Seller': 0, 'Popular': 1, 'New': 2 };
         const aBadgePriority = badgePriority[a.badge] ?? 3;
         const bBadgePriority = badgePriority[b.badge] ?? 3;
-        if (aBadgePriority !== bBadgePriority) {
-          return aBadgePriority - bBadgePriority;
-        }
-
-        // 2. Sort by number of reviews (more reviews = more popular)
+        if (aBadgePriority !== bBadgePriority) return aBadgePriority - bBadgePriority;
         const aReviews = a.reviews || 0;
         const bReviews = b.reviews || 0;
-        if (aReviews !== bReviews) {
-          return bReviews - aReviews;
-        }
-
-        // 3. Sort by rating (higher rating = more popular)
+        if (aReviews !== bReviews) return bReviews - aReviews;
         const aRating = a.rating || 0;
         const bRating = b.rating || 0;
-        if (aRating !== bRating) {
-          return bRating - aRating;
-        }
-
-        // 4. Prioritize main products over parts (products with price > $50 are likely main tools)
+        if (aRating !== bRating) return bRating - aRating;
         const aIsMainTool = (a.price || 0) > 50;
         const bIsMainTool = (b.price || 0) > 50;
-        if (aIsMainTool !== bIsMainTool) {
-          return aIsMainTool ? -1 : 1;
-        }
-
-        // 5. Sort by price (higher price main products first, lower price parts)
+        if (aIsMainTool !== bIsMainTool) return aIsMainTool ? -1 : 1;
         return (b.price || 0) - (a.price || 0);
       }
     }
@@ -353,7 +319,7 @@ export default function Products() {
         next[id] = vars;
       });
       setCardVariationMap((prev) => ({ ...prev, ...next }));
-    }).catch(() => { /* variations are non-critical */ });
+    }).catch(() => {});
 
     return () => { mounted = false; };
   }, [pageVariableIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -362,12 +328,8 @@ export default function Products() {
     if (!product.is_variable) return product;
     const vars = cardVariationMap[product.id];
     if (!Array.isArray(vars) || vars.length === 0) return product;
-    // Prefer first in-stock variation; fall back to first variation overall.
     const best = vars.find(v => v.stock_status !== 'outofstock') || vars[0];
     if (!best) return product;
-    // WC variations with no custom image return images:[] which normalizeProduct()
-    // resolves to PLACEHOLDER_IMAGE. Inherit the parent's image fields so the
-    // card always shows the real product photo rather than the blank placeholder.
     if (!best.image || best.image === PLACEHOLDER_IMAGE) {
       return {
         ...best,
@@ -395,10 +357,6 @@ export default function Products() {
         schema={buildSiteLinksSearchBoxSchema()}
       />
       <div className="container mx-auto px-4 py-4 pt-6">
-        {/* Back to Brands button - shows when brand is selected (moved above header) */}
-        {/* Back button — context-aware:
-              • Showing product grid with category drill-down → back to category cards
-              • Showing category cards → back to brand grid               */}
         {selectedBrands.length > 0 && (
           <div className="mb-6">
             <BackButton
@@ -408,13 +366,11 @@ export default function Products() {
           </div>
         )}
 
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Products</h1>
           <p className="text-gray-600">Browse our extensive collection of professional drywall tools</p>
         </div>
 
-        {/* Search Bar - Only shown when brand is selected */}
         {selectedBrands.length > 0 && (
           <SearchBar
             placeholder="Search products by name, SKU, or brand..."
@@ -424,7 +380,6 @@ export default function Products() {
         )}
 
         {selectedBrands.length === 0 ? (
-          /* ── Brand grid ───────────────────────────────────────────────── */
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {brands.map(brand => (
               <button
@@ -466,16 +421,13 @@ export default function Products() {
             ))}
           </div>
         ) : !selectedDisplayCategory && brandCategoryCards.length > 1 ? (
-          /* ── Category cards (brand → category drill-down) ─────────────── */
           <div>
-            {/* Brand logo / header */}
             <div className="flex items-center justify-center mb-8">
               {brandLogos[selectedBrands[0]] && (
                 <img
                   src={brandLogos[selectedBrands[0]]}
                   alt={`${selectedBrands[0]} logo`}
                   style={{
-                    // Columbia and Graco logos are wide/horizontal so need more height to remain visible
                     height: ['Columbia Taping Tools', 'Graco'].includes(selectedBrands[0])
                       ? 'clamp(4.5rem, 15vw, 7rem)'
                       : 'clamp(3.75rem, 13vw, 6rem)',
@@ -487,7 +439,6 @@ export default function Products() {
             </div>
             <div className="categories-grid">
               {brandCategoryCards.map((cat, index) => {
-                // Count products for this category
                 const count = nonPartsProducts.filter(
                   p => selectedBrands.includes(p.brand) && p.display_category === cat.name
                 ).length;
@@ -502,9 +453,7 @@ export default function Products() {
                     }}
                     aria-label={`Browse ${cat.name}`}
                   >
-                    {cat.image && (
-                      <img src={cat.image} alt={cat.name} className="category-card-img" />
-                    )}
+                    {cat.image && <img src={cat.image} alt={cat.name} className="category-card-img" />}
                     <div className="category-card-scrim" />
                     <div className="category-card-content">
                       <div className="category-card-text">
@@ -520,7 +469,6 @@ export default function Products() {
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filter Panel - Modern Mobile-First Design */}
             <FilterPanel
               isOpen={showFilters}
               onClose={() => setShowFilters(false)}
@@ -542,16 +490,13 @@ export default function Products() {
               resultsCount={sortedProducts.length}
             />
 
-          {/* Products Grid */}
           <div className="flex-1">
-            {/* Sort and Results */}
             <div className="flex flex-row justify-between items-center gap-4 mb-6">
               <Dropdown
                 value={sortBy}
                 onChange={(value) => setSortBy(value)}
                 options={SORT_OPTIONS}
               />
-              {/* Mobile Filter Button */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors"
@@ -562,12 +507,10 @@ export default function Products() {
               </button>
             </div>
 
-            {/* Loading State — skeleton grid matches real card layout exactly */}
             {loading ? (
               <ProductSkeletonGrid count={24} />
             ) : (
             <>
-            {/* Products Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {pageProducts.map((product, index) => {
                   const cardProduct = getCardDisplayProduct(product);
@@ -577,15 +520,14 @@ export default function Products() {
                       product={product}
                       cardProduct={cardProduct}
                       hasSelectedVariation={Boolean(product.is_variable && cardProduct?.parent_id)}
-                      onOpenModal={() => openProductDetail(product, cardProduct)}
-                      onAddToCart={() => openProductDetail(product, cardProduct)}
+                      onOpenModal={() => openModal(product, cardProduct)}
+                      onAddToCart={() => openModal(product, cardProduct)}
                       index={index}
                     />
                   );
               })}
             </div>
 
-            {/* Pagination + results summary */}
             {sortedProducts.length > 0 && (
               <>
                 <Pagination
@@ -601,7 +543,6 @@ export default function Products() {
               </>
             )}
 
-            {/* Empty State */}
             {sortedProducts.length === 0 && (
               <div className="text-center py-16">
                 <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
@@ -627,7 +568,6 @@ export default function Products() {
         )}
       </div>
 
-      {/* Toast Notification */}
       {toast && (
         <Toast
           message={toast.message}
@@ -635,6 +575,20 @@ export default function Products() {
           onClose={() => setToast(null)}
         />
       )}
+
+      <ProductModal isOpen={isModalOpen && !!modalProduct} product={modalProduct?.product || modalProduct} onClose={closeModal}>
+        {modalProduct && (
+          <ProductDetail
+            key={`${modalProduct.product?.id || modalProduct.id}:${modalProduct.initialResolvedVariation?.id || 'parent'}`}
+            product={modalProduct.product || modalProduct}
+            onAddToCart={handleAddToCart}
+            onClose={closeModal}
+            initialVariations={cardVariationMap[modalProduct.product?.id || modalProduct.id] || []}
+            initialResolvedVariation={modalProduct.initialResolvedVariation}
+            initialSelectedAttrs={modalProduct.initialSelectedAttrs}
+          />
+        )}
+      </ProductModal>
     </div>
   );
 }
