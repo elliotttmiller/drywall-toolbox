@@ -226,7 +226,11 @@ export default function Products() {
     }
   }, [selectedBrands, searchQuery, currentPage, navigate, location.search]);
 
-  useEffect(() => { setCurrentPage(1); }, [selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
+  useEffect(() => {
+    if (currentPage === 1) return undefined;
+    const timeoutId = setTimeout(() => setCurrentPage(1), 0);
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
