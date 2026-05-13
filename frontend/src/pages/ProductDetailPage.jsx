@@ -52,6 +52,15 @@ const BRAND_LOGOS = {
   'Level 5': level5Logo,
 };
 
+function getVariationDisplayName(product, selectedVariation, effectiveVariationName) {
+  const variationName = `${selectedVariation?.name || ''}`.trim();
+  const parentName = `${product?.name || ''}`.trim();
+  if (variationName && variationName.toLowerCase() !== parentName.toLowerCase()) {
+    return variationName;
+  }
+  return [parentName, effectiveVariationName].filter(Boolean).join(' — ');
+}
+
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const navigate  = useNavigate();
@@ -126,33 +135,41 @@ export default function ProductDetailPage() {
     );
   }
 
-  // ── SEO ────────────────────────────────────────────────────────────────────
-  const metaMap = {};
-  if (Array.isArray(product.meta_data)) {
-    product.meta_data.forEach(({ key: k, value: v }) => { metaMap[k] = v; });
-  }
-  const seoTitle   = metaMap['_dtb_seo_title'] || product.name || '';
-  const seoDesc    = metaMap['_dtb_seo_description'] || stripHtml(product.short_description || product.description || '');
-  const seoCanon   = metaMap['_dtb_seo_canonical'] || '';
-  const seoNoindex = !!metaMap['_dtb_seo_noindex'];
-
-  const heroImage = product.images?.[0]?.src || product.image || '';
-
-  const productSchema    = buildProductSchema(product);
-  const breadcrumbSchema = buildBreadcrumbSchema([
-    { label: 'Home',       path: '/' },
-    { label: 'Products',   path: '/products' },
-    { label: product.name, path: `/products/${product.slug || slug}` },
-  ]);
-
-  const brandLogo = BRAND_LOGOS[product.brand] ?? null;
-
   const effectiveVariationName = selectedVariation
     ? (selectedVariation.variation_attribute_values || [])
         .filter((a) => a.option)
         .map((a) => a.option)
         .join(' / ')
     : '';
+  const effectiveProduct = selectedVariation || product;
+  const effectiveProductName = selectedVariation
+    ? getVariationDisplayName(product, selectedVariation, effectiveVariationName)
+    : product.name;
+
+  // ── SEO ────────────────────────────────────────────────────────────────────
+  const metaMap = {};
+  if (Array.isArray(product.meta_data)) {
+    product.meta_data.forEach(({ key: k, value: v }) => { metaMap[k] = v; });
+  }
+  const seoTitle   = selectedVariation
+    ? effectiveProductName
+    : (metaMap['_dtb_seo_title'] || product.name || '');
+  const seoDesc    = metaMap['_dtb_seo_description'] || stripHtml(
+    selectedVariation?.short_description || selectedVariation?.description_full || product.short_description || product.description || ''
+  );
+  const seoCanon   = metaMap['_dtb_seo_canonical'] || '';
+  const seoNoindex = !!metaMap['_dtb_seo_noindex'];
+
+  const heroImage = selectedVariation?.images?.[0] || selectedVariation?.image || product.images?.[0]?.src || product.image || '';
+
+  const productSchema    = buildProductSchema({ ...product, ...effectiveProduct, name: effectiveProductName });
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { label: 'Home',       path: '/' },
+    { label: 'Products',   path: '/products' },
+    { label: effectiveProductName, path: `/products/${product.slug || slug}` },
+  ]);
+
+  const brandLogo = BRAND_LOGOS[product.brand] ?? null;
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
@@ -160,9 +177,9 @@ export default function ProductDetailPage() {
         title={seoTitle}
         description={seoDesc}
         canonical={seoCanon}
-        noSuffix={!!metaMap['_dtb_seo_title']}
+        noSuffix={!!metaMap['_dtb_seo_title'] && !selectedVariation}
         noindex={seoNoindex}
-        og={{ type: 'product', image: heroImage, imageAlt: product.name }}
+        og={{ type: 'product', image: heroImage, imageAlt: effectiveProductName }}
         schema={[productSchema, breadcrumbSchema].filter(Boolean)}
         links={heroImage ? [{ rel: 'preload', href: heroImage, as: 'image' }] : []}
       />
@@ -174,7 +191,7 @@ export default function ProductDetailPage() {
           <span style={{ margin: '0 8px' }}>›</span>
           <Link to="/products" style={{ color: '#64748b', textDecoration: 'none' }}>Products</Link>
           <span style={{ margin: '0 8px' }}>›</span>
-          <span style={{ color: '#0f172a', fontWeight: 600 }}>{product.name}</span>
+          <span style={{ color: '#0f172a', fontWeight: 600 }}>{effectiveProductName}</span>
         </nav>
 
         {/* Main grid: image left, details right */}
@@ -214,8 +231,8 @@ export default function ProductDetailPage() {
 
             {/* Product name */}
             <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.2, margin: 0 }}>
-              {product.name}
-              {effectiveVariationName && (
+              {effectiveProductName}
+              {selectedVariation && effectiveVariationName && !`${effectiveProductName}`.toLowerCase().includes(`${effectiveVariationName}`.toLowerCase()) && (
                 <span style={{ display: 'block', fontSize: '1rem', fontWeight: 500, color: '#64748b', marginTop: '4px' }}>
                   {effectiveVariationName}
                 </span>
