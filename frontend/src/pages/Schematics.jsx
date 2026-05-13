@@ -29,7 +29,7 @@ const brandLogos = {
   'Asgard': asgardLogo,
   'Platinum Drywall Tools': platinumLogo,
   'Dura-Stilts': duraStiltsLogo,
-  'Level5': level5Logo,
+  'Level 5': level5Logo,
 };
 
 // ---------------------------------------------------------------------------
@@ -580,7 +580,7 @@ const BRAND_TO_SLUG = {
   'SurPro':                'surpro',
   'Platinum Drywall Tools': 'platinum',
   'Dura-Stilts':           'dura-stilts',
-  'Level5':                'level5',
+  'Level 5':                'level5',
 };
 const SLUG_TO_BRAND = Object.fromEntries(
   Object.entries(BRAND_TO_SLUG).map(([name, slug]) => [slug, name])
@@ -603,7 +603,7 @@ const ALLOWED_BRANDS = [
   'SurPro',
   'Platinum Drywall Tools',
   'Dura-Stilts',
-  'Level5',
+  'Level 5',
 ];  const location = useLocation();
   const navigate = useNavigate();
 

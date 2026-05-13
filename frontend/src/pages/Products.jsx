@@ -191,7 +191,7 @@ export default function Products() {
     const params = new URLSearchParams(location.search);
     const brandParam = params.get('brand');
     const brandsFromUrl = brandParam
-      ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
+      ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).map(b => SLUG_TO_BRAND[b] || b).filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
       : [];
 
     const urlBrandsSet = [...brandsFromUrl].sort().join(',');

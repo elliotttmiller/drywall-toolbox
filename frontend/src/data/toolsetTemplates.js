@@ -31,13 +31,43 @@ function nameContainsButNot(must, ...nots) {
   return (name) => must.every((m) => name.includes(m)) && !nots.some((n) => name.includes(n));
 }
 
+// ── Shared exclusion keyword sets ────────────────────────────────────────────
+// Extracted here so all brand filters stay in sync when the catalog grows.
+
+// Words that disqualify a product from the "automatic taper" slot:
+// banjo tapers, repair tools, accessories, extensions, and cable kits all
+// contain the word "taper" but are distinct from the automatic taper itself.
+const TAPER_EXCLUDES = ['angle', 'corner', 'roller', 'handle', 'pump', 'filler', 'gooseneck', 'adapter', 'part', 'repair', 'kit', 'extension', 'cable', 'banjo'];
+
+// Words that disqualify a product from the "angle head" slot:
+// blades, sockets, inserts, and carbide accessories are replacement parts,
+// not the angle head tool itself. 'applicator' avoids cross-slot contamination.
+const ANGLE_HEAD_EXCLUDES = ['handle', 'adapter', 'part', 'blade', 'socket', 'insert', 'repair', 'kit', 'carbide', 'applicator'];
+
+// Subset of ANGLE_HEAD_EXCLUDES used by brands that don't have a separate
+// 'part' term in their canonical product names (L5, ASG).
+const ANGLE_HEAD_EXCLUDES_BASE = ['handle', 'blade', 'socket', 'insert', 'repair', 'kit', 'carbide'];
+
+// Matches the "angle head" slot: includes named angle heads and corner
+// finishers (same tool family in most brand lineups).
+function isAngleHead(name, extraExcludes = []) {
+  const excludes = [...ANGLE_HEAD_EXCLUDES_BASE, ...extraExcludes];
+  return (
+    (name.includes('angle head') || (name.includes('corner') && name.includes('finisher'))) &&
+    !excludes.some(w => name.includes(w))
+  );
+}
+
 // ── TapeTech slot filters ─────────────────────────────────────────────────────
 const TT = {
-  taper:           nameContainsButNot(['taper'], 'angle', 'corner', 'roller', 'handle', 'pump', 'filler', 'gooseneck', 'adapter', 'part'),
+  // Automatic tapers only — exclude repair tools, kits, extensions, cables, and
+  // banjo tapers which contain the word "taper" but are distinct products.
+  taper:           nameContainsButNot(['taper'], ...TAPER_EXCLUDES),
   flatBox:         nameContainsAny('flat box', 'finishing box', '7" box', '8" box', '10" box', '12" box', '14" box', '7-inch box', '10-inch box', '12-inch box'),
   boxHandle:       (name) => (name.includes('box handle') || (name.includes('handle') && name.includes('box'))) && !name.includes('corner') && !name.includes('angle'),
-  angleHead:       (name) => name.includes('angle head') && !name.includes('handle') && !name.includes('adapter') && !name.includes('part'),
-  cornerApplicator:(name) => (name.includes('corner applicator') || (name.includes('corner box') && !name.includes('handle'))) && !name.includes('part'),
+  // Angle heads / corner finishers — exclude parts like blades, sockets, and inserts.
+  angleHead:       (name) => isAngleHead(name, ['adapter', 'part', 'applicator']),
+  cornerApplicator:(name) => (name.includes('corner applicator') || (name.includes('corner box') && !name.includes('handle'))) && !name.includes('part') && !name.includes('repair') && !name.includes('kit'),
   angleHeadHandle: nameContainsAllOf('angle head', 'handle'),
   rollerHandle:    (name) => name.includes('roller') && name.includes('handle') && !name.includes('corner'),
   cornerHandle:    (name) => (name.includes('corner') && name.includes('handle')) && (name.includes('applicator') || name.includes('box') || name.includes('roller')),
@@ -45,10 +75,10 @@ const TT = {
 
 // ── Columbia slot filters ─────────────────────────────────────────────────────
 const COL = {
-  taper:         nameContainsButNot(['taper'], 'angle', 'corner', 'roller', 'handle', 'pump', 'filler', 'gooseneck', 'adapter', 'part'),
+  taper:         nameContainsButNot(['taper'], ...TAPER_EXCLUDES),
   flatBox:       nameContainsAny('flat box', 'finishing box', '7"', '8"', '10"', '12"', '14"'),
   boxHandle:     (name) => (name.includes('box handle') || (name.includes('handle') && name.includes('box'))) && !name.includes('corner') && !name.includes('angle'),
-  angleHead:     (name) => name.includes('angle head') && !name.includes('handle') && !name.includes('adapter'),
+  angleHead:     (name) => isAngleHead(name, ['adapter', 'applicator']),
   cornerBox:     (name) => name.includes('corner box') && !name.includes('handle'),
   angleHeadHandle: nameContainsAllOf('angle head', 'handle'),
   rollerHandle:  (name) => name.includes('roller') && name.includes('handle') && !name.includes('corner'),
@@ -59,17 +89,17 @@ const COL = {
 const L5 = {
   flatBox:    nameContainsAny('flat box', 'finishing box', 'skimming box'),
   boxHandle:  (name) => name.includes('handle') && (name.includes('box') || name.includes('flat')),
-  angleHead:  (name) => name.includes('angle head') && !name.includes('handle'),
+  angleHead:  (name) => isAngleHead(name),
   cornerBox:  (name) => name.includes('corner') && !name.includes('handle'),
   handle:     (name) => name.includes('handle'),
 };
 
 // ── Asgard slot filters ───────────────────────────────────────────────────────
 const ASG = {
-  taper:      nameContainsButNot(['taper'], 'handle', 'part'),
+  taper:      nameContainsButNot(['taper'], 'handle', 'part', 'repair', 'kit', 'extension', 'cable', 'banjo'),
   flatBox:    nameContainsAny('flat box', 'finishing box'),
   boxHandle:  (name) => name.includes('handle') && name.includes('box'),
-  angleHead:  (name) => name.includes('angle head') && !name.includes('handle'),
+  angleHead:  (name) => isAngleHead(name),
   cornerBox:  (name) => name.includes('corner') && !name.includes('handle'),
 };
 
@@ -479,7 +509,10 @@ export function getSlotProducts(products, brand, filterFn) {
   return products.filter((p) => {
     const b = (p.brand || p.dtb_brand || '').trim();
     if (b !== brand) return false;
-    // Exclude parts
+    // Exclude parts — check the normalised is_parts flag first (fast path),
+    // then fall back to inspecting category names/slugs for products that may
+    // be miscategorised in WooCommerce and lack the flag.
+    if (p.is_parts) return false;
     const cats = (p.categories || []).map((c) =>
       typeof c === 'string' ? c.toLowerCase() : (c.name || c.slug || '').toLowerCase()
     );

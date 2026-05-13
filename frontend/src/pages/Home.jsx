@@ -10,12 +10,12 @@ import SEOHead from '../components/shared/SEOHead';
 import { buildOrganizationSchema, buildSiteLinksSearchBoxSchema } from '../utils/schema';
 
 const brandLogos = [
-  { name: 'TapeTech', src: tapeTechLogo, to: '/products?brand=TapeTech' },
-  { name: 'Columbia', src: columbiaLogo, to: '/products?brand=Columbia%20Taping%20Tools' },
-  { name: 'Level5', src: level5Logo, to: '/products?brand=Level5' },
-  { name: 'Platinum Drywall Tools', src: platinumLogo, to: '/products?brand=Platinum%20Drywall%20Tools' },
-  { name: 'Asgard', src: asgardLogo, to: '/products?brand=Asgard' },
-  { name: 'SurPro', src: surproLogo, to: '/products?brand=SurPro' },
+  { name: 'TapeTech', src: tapeTechLogo, to: '/products?brand=tapetech' },
+  { name: 'Columbia', src: columbiaLogo, to: '/products?brand=columbia-taping-tools' },
+  { name: 'Level 5', src: level5Logo, to: '/products?brand=level5' },
+  { name: 'Platinum Drywall Tools', src: platinumLogo, to: '/products?brand=platinum' },
+  { name: 'Asgard', src: asgardLogo, to: '/products?brand=asgard' },
+  { name: 'SurPro', src: surproLogo, to: '/products?brand=surpro' },
 ];
 
 export default function Home() {

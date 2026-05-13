@@ -89,12 +89,14 @@ const PARTS_LEAF_NAMES = [
   'parts',
 ];
 
-// Parts slug prefixes — production catalog only.
-// Keep a light prefix fallback because WooCommerce may de-duplicate identical
-// leaf slugs across brands (for example "parts-2").
-const PARTS_SLUG_PREFIXES = [
-  'parts',
-];
+// Parts slug matcher — production catalog only.
+// Matches the exact "parts" slug and WooCommerce de-duplication variants
+// ("parts-2", "parts-3", etc.) but intentionally excludes compound slugs
+// such as "parts-accessories" or "parts-and-accessories" that refer to
+// accessory/tool categories and should NOT appear on the Replacement Parts page.
+function isPartsSlug(slug) {
+  return slug === 'parts' || /^parts-\d+$/.test(slug);
+}
 
 // Generic catch-all category labels that should be treated as lowest priority
 // when a more specific mapped category is also present on the same product.
@@ -167,7 +169,7 @@ function isPartsFromApi(wcCategories) {
     const slug = (cat.slug || '').toLowerCase();
     return (
       PARTS_LEAF_NAMES.includes(name) ||
-      PARTS_SLUG_PREFIXES.some(prefix => slug.startsWith(prefix))
+      isPartsSlug(slug)
     );
   });
 }
