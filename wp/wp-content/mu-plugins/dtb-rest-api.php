@@ -579,7 +579,7 @@ const DTB_PRODUCT_DETAIL_FIELDS = 'id,name,slug,permalink,type,status,featured,c
  * Without _fields, WC fully hydrates variations including all meta,
  * shipping classes, and downloadable data — expensive / OOM on shared hosting.
  */
-const DTB_VARIATION_FIELDS = 'id,sku,slug,name,type,status,price,regular_price,sale_price,on_sale,stock_status,manage_stock,stock_quantity,images,attributes,meta_data,parent_id,description,short_description';
+const DTB_VARIATION_FIELDS = 'id,sku,slug,name,type,status,price,regular_price,sale_price,on_sale,purchasable,stock_status,manage_stock,stock_quantity,backorders_allowed,backordered,images,attributes,meta_data,parent_id,description,short_description';
 
 /** GET /drywall/v1/products */
 function dtb_proxy_products( WP_REST_Request $request ): WP_REST_Response {
