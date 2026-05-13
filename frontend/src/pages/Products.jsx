@@ -154,6 +154,7 @@ export default function Products() {
       ? selectedBrands.filter(b => b !== brand)
       : [...selectedBrands, brand];
     setSelectedBrands(newBrands);
+    setCurrentPage(1);
   };
 
   const resetToBrandList = () => {
@@ -161,12 +162,14 @@ export default function Products() {
     setSelectedCategories([]);
     setSelectedDisplayCategory(null);
     setPriceRange([0, MAX_PRICE]);
+    setCurrentPage(1);
     navigate('/products');
   };
 
   const resetToCategoryCards = () => {
     setSelectedDisplayCategory(null);
     setSelectedCategories([]);
+    setCurrentPage(1);
     navigate(`/products?brand=${encodeURIComponent(BRAND_TO_SLUG[selectedBrands[0]] || selectedBrands[0])}`);
   };
 
@@ -226,16 +229,11 @@ export default function Products() {
     }
   }, [selectedBrands, searchQuery, currentPage, navigate, location.search]);
 
-  useEffect(() => {
-    if (currentPage === 1) return undefined;
-    const timeoutId = setTimeout(() => setCurrentPage(1), 0);
-    return () => clearTimeout(timeoutId);
-  }, [currentPage, selectedBrands, selectedCategories, priceRange, searchQuery, sortBy]);
-
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
       prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
     );
+    setCurrentPage(1);
   };
 
   const nonPartsProducts = (products || []).filter(product => !product.is_parts);
@@ -376,11 +374,14 @@ export default function Products() {
         </div>
 
         {selectedBrands.length > 0 && (
-          <SearchBar
-            placeholder="Search products by name, SKU, or brand..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+            <SearchBar
+              placeholder="Search products by name, SKU, or brand..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
         )}
 
         {selectedBrands.length === 0 ? (
@@ -393,6 +394,7 @@ export default function Products() {
                   navigate(`/products?brand=${encodeURIComponent(brandSlug)}`);
                   setSelectedBrands([brand]);
                   setSelectedDisplayCategory(null);
+                  setCurrentPage(1);
                 }}
                 className="dtb-brand-card"
                 aria-label={`Shop ${brand}`}
@@ -484,11 +486,15 @@ export default function Products() {
               priceRange={priceRange}
               onBrandChange={toggleBrand}
               onCategoryChange={toggleCategory}
-              onPriceChange={setPriceRange}
+              onPriceChange={(nextPriceRange) => {
+                setPriceRange(nextPriceRange);
+                setCurrentPage(1);
+              }}
               onClearFilters={() => {
                 setSelectedBrands([]);
                 setSelectedCategories([]);
                 setPriceRange([0, MAX_PRICE]);
+                setCurrentPage(1);
                 navigate('/products');
               }}
               resultsCount={sortedProducts.length}
@@ -498,7 +504,10 @@ export default function Products() {
             <div className="flex flex-row justify-between items-center gap-4 mb-6">
               <Dropdown
                 value={sortBy}
-                onChange={(value) => setSortBy(value)}
+                onChange={(value) => {
+                  setSortBy(value);
+                  setCurrentPage(1);
+                }}
                 options={SORT_OPTIONS}
               />
               <button
@@ -557,6 +566,7 @@ export default function Products() {
                     setSelectedBrands([]);
                     setSelectedCategories([]);
                     setPriceRange([0, MAX_PRICE]);
+                    setCurrentPage(1);
                     navigate('/products');
                   }}
                   className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
