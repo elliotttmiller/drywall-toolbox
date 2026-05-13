@@ -101,6 +101,9 @@ function AppRoutes() {
         <Routes>
           <Route path="/"                      element={<Home />} />
           <Route path="/products"              element={<Products />} />
+          <Route path="/products/brands"       element={<Products />} />
+          <Route path="/products/brands/:brandSlug" element={<Products />} />
+          <Route path="/products/brands/:brandSlug/categories/:categorySlug" element={<Products />} />
           {/* Slug-based product detail with URL variant state machine */}
           <Route path="/products/:slug"        element={<ProductDetailPage />} />
           <Route path="/all-products"          element={<AllProducts />} />
