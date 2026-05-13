@@ -6,6 +6,7 @@ import ShippingTicker from './components/shell/ShippingTicker';
 import { CartProvider } from './context/CartContext';
 import { WooCommerceProvider } from './context/WooCommerceContext';
 import { AuthProvider } from './auth/AuthContext.js';
+import AppErrorBoundary from './components/system/AppErrorBoundary.jsx';
 
 // Layout components load eagerly — they're on every page so there's no benefit
 // to lazy loading them. Keeping them in the main bundle is correct.
@@ -159,19 +160,21 @@ function App() {
   const basename = (process.env.PUBLIC_URL || '').replace(/\/+$/, '') || '/';
 
   return (
-    <AuthProvider>
-      <WooCommerceProvider>
-          <CartProvider>
-          <Router basename={basename}>
-            <AppShell
-              cartOpen={cartOpen}
-              toggleCart={toggleCart}
-              closeCart={closeCart}
-            />
-          </Router>
-          </CartProvider>
-        </WooCommerceProvider>
-    </AuthProvider>
+    <AppErrorBoundary>
+      <AuthProvider>
+        <WooCommerceProvider>
+            <CartProvider>
+            <Router basename={basename}>
+              <AppShell
+                cartOpen={cartOpen}
+                toggleCart={toggleCart}
+                closeCart={closeCart}
+              />
+            </Router>
+            </CartProvider>
+          </WooCommerceProvider>
+      </AuthProvider>
+    </AppErrorBoundary>
   );
 }
 
