@@ -11,6 +11,7 @@ import { getProductSpecifications } from '../../utils/productSpecifications';
 import { getProductVariations } from '../../services/api';
 import { findMatchingVariation, getVariationSelectionMap } from '../../utils/variationSelection';
 import { setCachedVariations } from '../../utils/variationCache';
+import { apiClient } from '../../api/client.js';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
@@ -81,6 +82,8 @@ export default function ProductDetail({
   const [variationsLoading, setVariationsLoading] = useState(false);
   // selectedAttrs: { [attrName]: value } — tracks the user's chip selections
   const [selectedAttrs, setSelectedAttrs]       = useState(initialVariationSelection);
+  // computedData: server-side computed state from the detail endpoint, including available_option_matrix
+  const [computedData, setComputedData]         = useState(null);
 
   // Stable boolean dep: false until the parent has prefetched variations, then
   // true forever for this product.  Using the raw array as a dep would create a
@@ -115,41 +118,64 @@ export default function ProductDetail({
       setVariationsLoading(!hasInitialVariations);
     });
 
+    // Primary: use the slug-based detail endpoint which returns server-computed
+    // available_option_matrix alongside properly-normalised variations.  This
+    // avoids client-side slug/label mismatches that cause all chips to render as
+    // "Unavailable".  Fall back to getProductVariations when the detail endpoint
+    // is unavailable or the product has no slug.
+    const applyVariations = (vars) => {
+      if (!mounted || !vars) return;
+      setVariations(vars);
+      if (Object.keys(currentInitialAttrs || {}).length > 0) {
+        setSelectedAttrs(currentInitialAttrs);
+      } else {
+        const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
+        setSelectedAttrs(getVariationSelectionMap(firstInStock));
+      }
+    };
+
     Promise.resolve()
-      .then(() => {
+      .then(async () => {
         if (!mounted) return;
-        // Bypass the shared variation cache for modal-triggered fetches.
-        // The background card-prefetch caches only successful (non-empty)
-        // results now, but calling the API directly here guarantees the modal
-        // always gets a fresh response — critical if the user opens a product
-        // before the prefetch has completed or if WooCommerce has since updated
-        // the variation data.  A successful response is written back to the
-        // cache so card display and future prefetches benefit from the data.
-        return getProductVariations(product.id);
-      })
-      .then((vars) => {
-        if (!mounted || !vars) return;
-        // Update the shared cache so card display and future prefetches stay
-        // in sync with the authoritative result from this modal fetch.
-        if (Array.isArray(vars) && vars.length > 0) {
-          setCachedVariations(product.id, vars);
+
+        // Try the detail endpoint first (proven path used by ProductDetailPage).
+        if (product.slug) {
+          try {
+            const data = await apiClient(
+              `/wp-json/drywall/v1/products/slug/${encodeURIComponent(product.slug)}/detail`
+            );
+            if (!mounted) return;
+            if (data?.computed) setComputedData(data.computed);
+            const detailVars = Array.isArray(data?.variations) && data.variations.length > 0
+              ? data.variations
+              : null;
+            if (detailVars) {
+              applyVariations(detailVars);
+              return;
+            }
+          } catch {
+            // fall through to getProductVariations
+            if (!mounted) return;
+          }
         }
-        setVariations(vars);
-        // Use card-selected attributes when available; otherwise default to the
-        // first in-stock variation.  setVariationsLoading(false) is always
-        // called by the .finally() handler below regardless of this branch.
-        if (Object.keys(currentInitialAttrs || {}).length > 0) {
-          setSelectedAttrs(currentInitialAttrs);
-        } else {
-          const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
-          setSelectedAttrs(getVariationSelectionMap(firstInStock));
+
+        // Fallback: fetch variations directly and write to the shared cache so
+        // card display and future prefetches stay in sync.
+        try {
+          const vars = await getProductVariations(product.id);
+          if (!mounted || !vars) return;
+          if (Array.isArray(vars) && vars.length > 0) {
+            setCachedVariations(product.id, vars);
+          }
+          applyVariations(vars);
+        } catch {
+          /* variations not critical — fail silently */
         }
       })
-      .catch(() => { /* variations not critical — fail silently */ })
       .finally(() => { if (mounted) setVariationsLoading(false); });
 
     return () => { mounted = false; };
-  }, [product?.id, product?.is_variable, hasInitialVariations]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [product?.id, product?.slug, product?.is_variable, hasInitialVariations]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Find the variation that matches the current chip selections
   const selectedVariation = useMemo(
@@ -168,10 +194,36 @@ export default function ProductDetail({
 
   const variantOptionMeta = useMemo(() => {
     const meta = {};
+    const matrix = computedData?.available_option_matrix ?? {};
+
     variationAttributes.forEach((attr) => {
       const name = attr.name;
       const options = Array.isArray(attr.options) ? attr.options : [];
+      const attrMatrix = matrix[name] ?? {};
+
       meta[name] = options.map((option) => {
+        // Prefer the server-computed option matrix — it's keyed by the exact
+        // WooCommerce option value so no slug/label normalisation is needed.
+        const matrixEntry = attrMatrix[option]
+          // Case-insensitive fallback in case of minor casing differences.
+          ?? Object.entries(attrMatrix).find(([k]) => k.toLowerCase() === option.toLowerCase())?.[1];
+
+        if (matrixEntry) {
+          const matchedVariation = variations.find((v) => v.id === matrixEntry.variation_id) || null;
+          const status = !matrixEntry.purchasable
+            ? 'unavailable'
+            : matrixEntry.stock_status === 'outofstock' ? 'sold-out'
+            : 'available';
+          return {
+            value: option,
+            variation: matchedVariation,
+            status,
+            price: matchedVariation?.price ?? null,
+          };
+        }
+
+        // Fallback: client-side matching (used when computedData is not yet
+        // available or when the detail endpoint did not return a matrix entry).
         const candidateSelection = { ...selectedAttrs, [name]: option };
         const exact = findMatchingVariation(variations, candidateSelection);
         const fallback = exact || variations.find((variation) => {
@@ -189,7 +241,7 @@ export default function ProductDetail({
       });
     });
     return meta;
-  }, [variationAttributes, variations, selectedAttrs]);
+  }, [variationAttributes, variations, selectedAttrs, computedData]);
 
   // Lock body scroll while this detail panel is mounted
   useEffect(() => {
@@ -229,7 +281,11 @@ export default function ProductDetail({
 
   const handleAddToCart = () => {
     if (!canAddToCart) return;
-    const productToAdd = selectedVariation || product;
+    // Merge parent product name as a fallback: detail-endpoint variations do not
+    // carry a `name` field, but the cart toast and CartContext need it.
+    const productToAdd = selectedVariation
+      ? { ...selectedVariation, name: selectedVariation.name || product.name }
+      : product;
     if (onAddToCart) {
       onAddToCart(productToAdd, quantity);
     } else {
@@ -314,6 +370,22 @@ export default function ProductDetail({
                 </div>
                 <span className="text-gray-500">No reviews yet</span>
                 <button className="text-blue-600 hover:underline">Write a Review</button>
+              </div>
+
+              {/* SKU & UPC — reflects selected variation when applicable */}
+              <div className="mb-3 sm:mb-4 space-y-1 text-xs sm:text-sm text-gray-600">
+                {effectiveSku && (
+                  <div>
+                    <span className="font-medium">SKU:</span>{' '}
+                    <span className="font-mono">{effectiveSku}</span>
+                  </div>
+                )}
+                {product.upc && (
+                  <div>
+                    <span className="font-medium">UPC:</span>{' '}
+                    <span className="font-mono">{product.upc}</span>
+                  </div>
+                )}
               </div>
 
               {/* Price */}
@@ -401,22 +473,6 @@ export default function ProductDetail({
                   )}
                 </div>
               )}
-
-              {/* SKU & UPC — reflects selected variation when applicable */}
-              <div className="mb-4 sm:mb-6 space-y-1 text-xs sm:text-sm text-gray-600">
-                {effectiveSku && (
-                  <div>
-                    <span className="font-medium">SKU:</span>{' '}
-                    <span className="font-mono">{effectiveSku}</span>
-                  </div>
-                )}
-                {product.upc && (
-                  <div>
-                    <span className="font-medium">UPC:</span>{' '}
-                    <span className="font-mono">{product.upc}</span>
-                  </div>
-                )}
-              </div>
 
               {/* Quantity + Wishlist row */}
               <div className="flex items-center gap-3 mb-4">
