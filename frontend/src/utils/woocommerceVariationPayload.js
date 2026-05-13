@@ -14,6 +14,8 @@
  *   https://developer.woocommerce.com/2021/11/15/how-to-add-to-cart-using-the-store-api/
  */
 
+const GLOBAL_ATTRIBUTE_PREFIX = 'pa_';
+
 /**
  * Derive the correct Store API attribute slug from a WooCommerce attribute object.
  *
@@ -29,7 +31,7 @@ function resolveAttributeSlug(attr) {
   const name = String(attr?.name || '').trim();
 
   // If the slug is already prefixed with pa_ (global attribute), use it.
-  if (slug.startsWith('pa_')) return slug;
+  if (slug.startsWith(GLOBAL_ATTRIBUTE_PREFIX)) return slug;
 
   // If the attribute slug has content, use it (WC normalises slugs).
   if (slug) return slug;

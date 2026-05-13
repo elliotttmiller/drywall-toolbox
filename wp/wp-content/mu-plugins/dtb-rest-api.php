@@ -568,6 +568,11 @@ function dtb_app_password_rate_limit(): ?WP_REST_Response {
 // =============================================================================
 
 /**
+ * Fields to request from the WC REST API for the /detail endpoint response.
+ * Extracted as a constant to avoid the 500-character inline string and allow
+ * reuse if a similar full-product fetch is needed elsewhere.
+ */
+const DTB_PRODUCT_DETAIL_FIELDS = 'id,name,slug,permalink,type,status,featured,catalog_visibility,description,short_description,sku,price,regular_price,sale_price,on_sale,purchasable,manage_stock,stock_quantity,backorders,backorders_allowed,backordered,sold_individually,weight,dimensions,shipping_required,shipping_class,shipping_class_id,reviews_allowed,average_rating,rating_count,upsell_ids,cross_sell_ids,parent_id,categories,brands,tags,images,attributes,default_attributes,variations,menu_order,price_html,related_ids,stock_status,has_options,meta_data';
  * Fields returned by the variation endpoints.
  *
  * Limits WooCommerce object hydration to fields the SPA actually needs.
@@ -1299,7 +1304,7 @@ function dtb_proxy_product_detail( WP_REST_Request $request ): WP_REST_Response 
 
 	// ── Step 1: Fetch parent product by slug ──────────────────────────────────
 
-	$parent_fields = 'id,name,slug,permalink,type,status,featured,catalog_visibility,description,short_description,sku,price,regular_price,sale_price,on_sale,purchasable,manage_stock,stock_quantity,backorders,backorders_allowed,backordered,sold_individually,weight,dimensions,shipping_required,shipping_class,shipping_class_id,reviews_allowed,average_rating,rating_count,upsell_ids,cross_sell_ids,parent_id,categories,brands,tags,images,attributes,default_attributes,variations,menu_order,price_html,related_ids,stock_status,has_options,meta_data';
+	$parent_fields = DTB_PRODUCT_DETAIL_FIELDS;
 
 	$cache_key_parent = 'wc/v3/products_slug_' . $slug;
 

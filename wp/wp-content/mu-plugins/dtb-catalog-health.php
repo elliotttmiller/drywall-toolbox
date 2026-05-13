@@ -202,7 +202,7 @@ function dtb_catalog_health_ajax_export_csv(): void {
 	$issues = dtb_catalog_health_run_scan( 1, 100 );
 
 	header( 'Content-Type: text/csv; charset=utf-8' );
-	header( 'Content-Disposition: attachment; filename="dtb-catalog-health-' . date( 'Y-m-d' ) . '.csv"' ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+	header( 'Content-Disposition: attachment; filename="dtb-catalog-health-' . gmdate( 'Y-m-d' ) . '.csv"' );
 	header( 'Pragma: no-cache' );
 
 	$out = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen

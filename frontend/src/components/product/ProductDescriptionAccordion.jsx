@@ -41,7 +41,7 @@ export default function ProductDescriptionAccordion({ product }) {
           <div key={tab.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
             <button
               type="button"
-              onClick={() => setOpenTab(isOpen ? null : tab.id)}
+              onClick={() => setOpenTab(isOpen ? '' : tab.id)}
               aria-expanded={isOpen}
               aria-controls={`accordion-${tab.id}`}
               style={{
