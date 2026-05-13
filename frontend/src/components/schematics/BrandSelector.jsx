@@ -16,7 +16,7 @@ const brandLogos = {
   'Graco': gracoLogo,
   'Platinum Drywall Tools': platinumLogo,
   'Dura-Stilts': duraStiltsLogo,
-  'Level5': level5Logo,
+  'Level 5': level5Logo,
 };
 
 export default function BrandSelector({

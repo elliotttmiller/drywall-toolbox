@@ -70,9 +70,12 @@ const PARTS_LEAF_NAMES = new Set([
   'parts',
 ]);
 
-const PARTS_SLUG_PREFIXES = [
-  'parts',
-];
+// Matches the exact "parts" slug and WooCommerce de-duplication variants
+// ("parts-2", "parts-3", etc.) but intentionally excludes compound slugs
+// such as "parts-accessories" that refer to accessory/tool categories.
+function isPartsSlug(slug) {
+  return slug === 'parts' || /^parts-\d+$/.test(slug);
+}
 
 function isStrictPartProduct(product) {
   if (!product?.is_parts) return false;
@@ -85,7 +88,7 @@ function isStrictPartProduct(product) {
   return categories.some((cat) => {
     const name = String(cat?.name || '').toLowerCase().trim();
     const slug = String(cat?.slug || '').toLowerCase().trim();
-    return PARTS_LEAF_NAMES.has(name) || PARTS_SLUG_PREFIXES.some((prefix) => slug.startsWith(prefix));
+    return PARTS_LEAF_NAMES.has(name) || isPartsSlug(slug);
   });
 }
 

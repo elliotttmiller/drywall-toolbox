@@ -88,7 +88,7 @@ export const SCHEMATIC_DEFINITIONS = {
   'Dura-Stilts': [
     { id: 'dura-stilts-model-iv', title: 'Model IV Drywall Stilts', mpn: 'DS-M4', category: 'Stilts' },
   ],
-  'Level5': [
+  'Level 5': [
     { id: 'level5-7377-cover-plate-assembly-old-style', title: 'Cover Plate Assembly (Old Style)', mpn: '7377', category: 'Automatic Tapers' },
     { id: 'level5-9333-cutter-chain-assembly',          title: 'Cutter Chain Assembly',            mpn: '9333', category: 'Automatic Tapers' },
     { id: 'level5-7097-drive-dog-assembly',             title: 'Drive Dog Assembly',               mpn: '7097', category: 'Automatic Tapers' },
@@ -475,7 +475,7 @@ const BRAND_TO_SLUG = {
   'TapeTech': 'tapetech',
   'Asgard': 'asgard',
   'Dura-Stilts': 'dura-stilts',
-  'Level5': 'level5',
+  'Level 5': 'level5',
 };
 
 // Reverse-lookup: schematic ID → brand name (built once from SCHEMATIC_DEFINITIONS)
