@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ProductDetail from '../components/product/ProductDetail';
-import ProductModal from '../components/product/ProductModal';
 import ProductShoppingCard from '../components/ui/ProductShoppingCard';
 import BackButton from '../components/shared/BackButton';
 import SearchBar from '../components/catalog/SearchBar';
@@ -14,7 +12,6 @@ import { ProductSkeletonGrid } from '../components/catalog/ProductShoppingCardSk
 import { ChevronRight } from 'lucide-react';
 import { getProducts } from '../services/catalog';
 import { getProductVariations } from '../services/api';
-import { useCart } from '../context/CartContext';
 import {
   ShoppingCart,
   Filter,
@@ -29,7 +26,7 @@ import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
 import level5Logo from '/brands/Level5/Level5.svg';
 import SEOHead from '../components/shared/SEOHead';
 import { buildSiteLinksSearchBoxSchema } from '../utils/schema';
-import { fetchVariationsBatched, getVariationSelectionMap } from '../utils/variationSelection';
+import { fetchVariationsBatched } from '../utils/variationSelection';
 import { PLACEHOLDER_IMAGE } from '../constants/images.js';
 import '../styles/tool-selector.css';
 
@@ -86,10 +83,18 @@ const brandLogos = {
   'Level 5': level5Logo,
 };
 
+function buildProductDetailUrl(product, cardProduct = null) {
+  const slug = product?.slug || product?.part_number || product?.sku || product?.id;
+  if (!slug) return '/products';
+  const variantId = product?.is_variable && cardProduct?.parent_id && cardProduct?.id
+    ? `?variant=${encodeURIComponent(cardProduct.id)}`
+    : '';
+  return `/products/${encodeURIComponent(slug)}${variantId}`;
+}
+
 export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
 
   // initialize selected brands from ?brand= param (supports comma-separated)
   const params = new URLSearchParams(location.search);
@@ -119,50 +124,21 @@ export default function Products() {
   const [sortBy, setSortBy] = useState('popular');
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [showFilters, setShowFilters] = useState(false);
-  const [modalProduct, setModalProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState(null);
   // Cached variations per variable parent product ID
   const [cardVariationMap, setCardVariationMap] = useState({});
   const cardVariationMapRef = useRef({});
 
-  const showToast = (message, type = 'cart') => {
-    setToast({ message, type });
-  };
-
-  const handleAddToCart = (product, quantity = 1) => {
-    addToCart(product, quantity);
-    showToast(`${product.name} added to cart!`, 'cart');
-  };
-
-  const openModal = (product, cardProduct = null) => {
-    const initialResolvedVariation = cardProduct?.parent_id ? cardProduct : null;
-    
-    setModalProduct({
-      product,
-      initialResolvedVariation,
-      initialSelectedAttrs: initialResolvedVariation
-        ? getVariationSelectionMap(initialResolvedVariation)
-        : {},
+  const openProductDetail = useCallback((product, cardProduct = null) => {
+    navigate(buildProductDetailUrl(product, cardProduct), {
+      state: {
+        from: `${location.pathname}${location.search}`,
+        workflow: 'products',
+        brand: selectedBrands[0] || product?.brand || '',
+        category: selectedDisplayCategory || product?.display_category || '',
+      },
     });
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalProduct(null);
-  };
-
-  // close on escape
-  // Depend on the current page's variable-product ID set instead of the
-  // freshly sliced pageProducts array to avoid duplicate fetch bursts.
-
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
+  }, [location.pathname, location.search, navigate, selectedBrands, selectedDisplayCategory]);
 
   const toggleBrand = (brand) => {
     const newBrands = selectedBrands.includes(brand)
@@ -600,9 +576,9 @@ export default function Products() {
                       key={product.id}
                       product={product}
                       cardProduct={cardProduct}
-                      hasSelectedVariation={false}
-                      onOpenModal={() => openModal(product, cardProduct)}
-                      onAddToCart={() => openModal(product, cardProduct)}
+                      hasSelectedVariation={Boolean(product.is_variable && cardProduct?.parent_id)}
+                      onOpenModal={() => openProductDetail(product, cardProduct)}
+                      onAddToCart={() => openProductDetail(product, cardProduct)}
                       index={index}
                     />
                   );
@@ -659,21 +635,6 @@ export default function Products() {
           onClose={() => setToast(null)}
         />
       )}
-
-      {/* Product Detail Modal */}
-      <ProductModal isOpen={isModalOpen && !!modalProduct} product={modalProduct?.product || modalProduct} onClose={closeModal}>
-        {modalProduct && (
-          <ProductDetail
-            key={`${modalProduct.product?.id || modalProduct.id}:${modalProduct.initialResolvedVariation?.id || 'parent'}`}
-            product={modalProduct.product || modalProduct}
-            onAddToCart={handleAddToCart}
-            onClose={closeModal}
-            initialVariations={cardVariationMap[modalProduct.product?.id || modalProduct.id] || []}
-            initialResolvedVariation={modalProduct.initialResolvedVariation}
-            initialSelectedAttrs={modalProduct.initialSelectedAttrs}
-          />
-        )}
-      </ProductModal>
     </div>
   );
 }
