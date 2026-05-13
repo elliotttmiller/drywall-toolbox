@@ -4,13 +4,13 @@ This checklist defines the end-to-end implementation path required to turn the c
 
 ## Phase 0 — Current High-Risk Gaps
 
-- [ ] Make WooCommerce Store API cart state authoritative instead of localStorage-only cart state.
+- [x] Make WooCommerce Store API cart state authoritative instead of localStorage-only cart state.
 - [ ] Remove any production dependency on frontend-exposed WooCommerce credentials.
-- [ ] Make checkout totals, tax, discounts, and shipping server-authoritative.
+- [~] Make checkout totals, tax, discounts, and shipping server-authoritative.
 - [ ] Finalize Stripe/payment intent lifecycle against authoritative server totals.
-- [ ] Finish route-param-driven product browse workflow.
+- [~] Finish route-param-driven product browse workflow.
 - [ ] Consolidate product/catalog API ownership under `frontend/src/api/*`.
-- [ ] Add observability, error boundaries, and ecommerce event instrumentation.
+- [~] Add observability, error boundaries, and ecommerce event instrumentation.
 
 ## Phase 1 — Cart Authority
 
@@ -20,25 +20,25 @@ The frontend cart must be a projection of WooCommerce Store API state. LocalStor
 
 ### Tasks
 
-- [ ] Refactor `frontend/src/context/CartContext.jsx` to initialize from `initCart()` / `getCart()`.
-- [ ] Normalize WooCommerce Store API cart items into the existing UI item shape.
-- [ ] Route all add-to-cart actions through Store API `addToCart()`.
-- [ ] Route all quantity updates through Store API `updateCartItem()`.
-- [ ] Route all removals through Store API `removeCartItem()`.
-- [ ] Persist only a fallback snapshot locally after successful server reconciliation.
-- [ ] Add mutation status flags: `isLoading`, `isMutating`, `error`, `lastSyncedAt`.
-- [ ] Add optimistic update rollback for failed mutations.
+- [x] Refactor `frontend/src/context/CartContext.jsx` to initialize from `initCart()` / `getCart()`.
+- [x] Normalize WooCommerce Store API cart items into the existing UI item shape.
+- [x] Route all add-to-cart actions through Store API `addToCart()`.
+- [x] Route all quantity updates through Store API `updateCartItem()`.
+- [x] Route all removals through Store API `removeCartItem()`.
+- [x] Persist only a fallback snapshot locally after successful server reconciliation.
+- [x] Add mutation status flags: `isLoading`, `isMutating`, `error`, `lastSyncedAt`.
+- [x] Add optimistic update rollback for failed mutations.
 - [ ] Add guest-cart-to-account-cart merge workflow on login.
-- [ ] Ensure cart item keys use WooCommerce Store API item keys, not only local IDs.
-- [ ] Ensure variation items use the selected variation ID plus exact attributes.
+- [x] Ensure cart item keys use WooCommerce Store API item keys, not only local IDs.
+- [x] Ensure variation items use the selected variation ID plus exact attributes.
 
 ### Acceptance Criteria
 
-- [ ] Refreshing the page restores cart from WooCommerce Store API session.
-- [ ] Cart totals shown in header/sidebar/cart page match WooCommerce totals.
-- [ ] Stale localStorage data cannot override server cart state.
-- [ ] Failed cart mutations show recoverable UI errors.
-- [ ] Variant items remain distinct and update/remove correctly.
+- [x] Refreshing the page restores cart from WooCommerce Store API session.
+- [~] Cart totals shown in header/sidebar/cart page match WooCommerce totals.
+- [x] Stale localStorage data cannot override server cart state.
+- [x] Failed cart mutations show recoverable UI errors.
+- [x] Variant items remain distinct and update/remove correctly.
 
 ## Phase 2 — Checkout Authority
 
@@ -48,8 +48,8 @@ Checkout must use server-authoritative totals and an explicit payment/order stat
 
 ### Tasks
 
-- [ ] Stop using `subtotal * 0.08` as production tax authority.
-- [ ] Pull subtotal, tax, discounts, shipping, and total from Store API cart totals.
+- [~] Stop using `subtotal * 0.08` as production tax authority.
+- [~] Pull subtotal, tax, discounts, shipping, and total from Store API cart totals.
 - [ ] Convert `syncAndPlace()` into a fallback/recovery path only.
 - [ ] Add server endpoint for creating Stripe PaymentIntents from authoritative cart totals.
 - [ ] Confirm selected shipping rate still exists before creating payment intent.
@@ -74,13 +74,13 @@ The product browse workflow must be fully URL-derived and refresh-safe.
 
 ### Tasks
 
-- [ ] Derive selected brand from `/products/brands/:brandSlug` route params.
+- [~] Derive selected brand from `/products/brands/:brandSlug` route params.
 - [ ] Derive selected category from `/products/brands/:brandSlug/categories/:categorySlug` route params.
 - [ ] Replace local-only `selectedDisplayCategory` with route-derived state.
-- [ ] Replace `/products?brand=...` as canonical navigation with route paths.
+- [~] Replace `/products?brand=...` as canonical navigation with route paths.
 - [ ] Preserve legacy query URLs as redirects or compatibility fallbacks.
 - [ ] Add `frontend/src/utils/catalogRoutes.js`.
-- [ ] Add `resolveProductBackTarget()` for PDP return navigation.
+- [x] Add `resolveProductBackTarget()` for PDP return navigation.
 - [ ] Add breadcrumbs generated from route params and workflow state.
 
 ### Acceptance Criteria
@@ -142,16 +142,16 @@ Every indexable ecommerce page should have deliberate canonical, metadata, and s
 
 - [ ] Define index/noindex rules for brand/category/search/filter URLs.
 - [ ] Add self-canonical URLs for indexable brand and category pages.
-- [ ] Add parent/variant canonical policy for `/products/:slug?variant=...`.
-- [ ] Add AggregateOffer for variable parent products.
-- [ ] Add concrete Offer schema for selected variants.
+- [~] Add parent/variant canonical policy for `/products/:slug?variant=...`.
+- [~] Add AggregateOffer for variable parent products.
+- [~] Add concrete Offer schema for selected variants.
 - [ ] Add breadcrumb schema for brand/category/PDP flows.
-- [ ] Generate variation-aware OG images where variation media exists.
+- [~] Generate variation-aware OG images where variation media exists.
 
 ### Acceptance Criteria
 
-- [ ] Parent product schema is valid for variable products.
-- [ ] Selected variant schema is valid for concrete offers.
+- [~] Parent product schema is valid for variable products.
+- [~] Selected variant schema is valid for concrete offers.
 - [ ] Filter/search URLs do not create duplicate-index bloat.
 
 ## Phase 7 — Observability and Analytics
@@ -162,19 +162,19 @@ The storefront must expose production telemetry for failures, performance, and e
 
 ### Tasks
 
-- [ ] Add a global React error boundary.
+- [x] Add a global React error boundary.
 - [ ] Add route-level error fallbacks.
-- [ ] Add API error logging hook.
+- [~] Add API error logging hook.
 - [ ] Add checkout failure logging.
 - [ ] Add product 404 tracking.
-- [ ] Add ecommerce events: `view_item_list`, `select_item`, `view_item`, `select_variant`, `add_to_cart`, `remove_from_cart`, `begin_checkout`, `add_shipping_info`, `add_payment_info`, `purchase`, `search`, `view_category`.
-- [ ] Normalize event item payloads across catalog/PDP/cart/checkout.
+- [~] Add ecommerce events: `view_item_list`, `select_item`, `view_item`, `select_variant`, `add_to_cart`, `remove_from_cart`, `begin_checkout`, `add_shipping_info`, `add_payment_info`, `purchase`, `search`, `view_category`.
+- [x] Normalize event item payloads across catalog/PDP/cart/checkout.
 
 ### Acceptance Criteria
 
-- [ ] Critical frontend exceptions are captured with route/user/cart context.
+- [~] Critical frontend exceptions are captured with route/user/cart context.
 - [ ] Checkout failures are measurable.
-- [ ] Conversion funnel events are consistently emitted.
+- [~] Conversion funnel events are consistently emitted.
 
 ## Phase 8 — Accessibility and UX
 
