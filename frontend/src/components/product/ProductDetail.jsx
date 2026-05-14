@@ -299,22 +299,30 @@ export default function ProductDetail({
               </div>
 
               {/* Product Title — updates to variation name when a variation is selected */}
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight pr-10">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 leading-tight pr-10">
                 {(effectiveProduct.name || product.name) || product.sku || product.part_number}
               </h2>
 
-              {/* Rating — Placeholder */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-4 sm:mb-6 text-xs sm:text-sm">
-                <div className="flex" aria-label="0 out of 5 stars">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
+              {/* SKU — displayed directly below the title */}
+              {effectiveSku && (
+                <div className="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500 font-mono">
+                  <span className="font-sans font-medium text-gray-400 mr-1">SKU:</span>{effectiveSku}
                 </div>
-                <span className="text-gray-500">No reviews yet</span>
-                <button className="text-blue-600 hover:underline">Write a Review</button>
-              </div>
+              )}
+
+              {/* Rating — clickable stars open reviews tab */}
+              <button
+                type="button"
+                onClick={() => setActiveTab('reviews')}
+                className="flex items-center gap-0.5 mb-4 sm:mb-6"
+                aria-label="View reviews"
+              >
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 hover:text-yellow-400 transition-colors" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </button>
 
               {/* Price */}
               <div className="mb-4 sm:mb-6">
@@ -328,9 +336,9 @@ export default function ProductDetail({
                     </span>
                   )}
                 </div>
-                {needsVariation && (
+                {needsVariation && selectedVariationName && (
                   <p className="mt-1 text-xs sm:text-sm text-gray-500">
-                    {selectedVariationName ? selectedVariationName : 'Select an option for live price, SKU, and stock.'}
+                    {selectedVariationName}
                   </p>
                 )}
               </div>
@@ -401,22 +409,6 @@ export default function ProductDetail({
                   )}
                 </div>
               )}
-
-              {/* SKU & UPC — reflects selected variation when applicable */}
-              <div className="mb-4 sm:mb-6 space-y-1 text-xs sm:text-sm text-gray-600">
-                {effectiveSku && (
-                  <div>
-                    <span className="font-medium">SKU:</span>{' '}
-                    <span className="font-mono">{effectiveSku}</span>
-                  </div>
-                )}
-                {product.upc && (
-                  <div>
-                    <span className="font-medium">UPC:</span>{' '}
-                    <span className="font-mono">{product.upc}</span>
-                  </div>
-                )}
-              </div>
 
               {/* Quantity + Wishlist row */}
               <div className="flex items-center gap-3 mb-4">
