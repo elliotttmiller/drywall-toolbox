@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import Reviews from './Reviews';
 import TechnicalSpecifications from './TechnicalSpecifications';
 import { useCart } from '../../context/CartContext';
-import { Heart, Plus, Minus, X, ShoppingCart, CheckCircle2, PackageCheck } from 'lucide-react';
+import { Heart, Plus, Minus, X, ShoppingCart, CheckCircle2, PackageCheck, Truck, RotateCcw, PhoneCall } from 'lucide-react';
 import ProductImageGallery from './ProductImageGallery';
 import { getProductSpecifications } from '../../utils/productSpecifications';
 import { getProductVariations } from '../../services/api';
@@ -293,9 +293,15 @@ export default function ProductDetail({
                   {isOutOfStock ? <PackageCheck size={13} aria-hidden="true" /> : <CheckCircle2 size={13} aria-hidden="true" />}
                   {isOutOfStock ? 'Out of Stock' : 'In Stock'}
                 </span>
-                {product.brand && (
+                {product.brand && BRAND_LOGOS[product.brand] ? (
+                  <img
+                    src={BRAND_LOGOS[product.brand]}
+                    alt={product.brand}
+                    className="h-5 sm:h-6 w-auto object-contain"
+                  />
+                ) : product.brand ? (
                   <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-gray-500">{product.brand}</span>
-                )}
+                ) : null}
               </div>
 
               {/* Product Title — updates to variation name when a variation is selected */}
@@ -314,7 +320,7 @@ export default function ProductDetail({
               <button
                 type="button"
                 onClick={() => setActiveTab('reviews')}
-                className="flex items-center gap-0.5 mb-4 sm:mb-6 group"
+                className="flex items-center gap-0.5 mb-5 sm:mb-6 group"
                 aria-label="View reviews — 0 out of 5 stars, no reviews yet"
               >
                 {[...Array(5)].map((_, i) => (
@@ -324,7 +330,8 @@ export default function ProductDetail({
                 ))}
               </button>
 
-              {/* Price */}
+              {/* Price — separated from descriptive info by a hairline rule */}
+              <hr className="border-gray-100 mb-4 sm:mb-5" />
               <div className="mb-4 sm:mb-6">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <span className="text-3xl sm:text-4xl font-bold text-gray-900">
@@ -370,11 +377,11 @@ export default function ProductDetail({
                               type="button"
                               onClick={() => setSelectedAttrs(prev => ({ ...prev, [attr.name]: option.value }))}
                               disabled={disabled}
-                              className={`min-h-14 rounded-lg border px-3 py-2 text-left transition-all ${
+                              className={`min-h-14 rounded-2xl border-2 px-3 py-2 text-left transition-all ${
                                 selected
-                                  ? 'border-blue-600 bg-blue-50 shadow-sm ring-2 ring-blue-100'
-                                  : 'border-gray-200 bg-white hover:border-gray-400 hover:bg-gray-50'
-                              } ${disabled ? 'cursor-not-allowed opacity-45 hover:border-gray-200 hover:bg-white' : ''}`}
+                                  ? 'border-gray-900 bg-gray-50 shadow-sm'
+                                  : 'border-gray-200 bg-white hover:border-gray-500 hover:bg-gray-50'
+                              } ${disabled ? 'cursor-not-allowed opacity-40 hover:border-gray-200 hover:bg-white' : ''}`}
                               aria-pressed={selected}
                             >
                               <span className="block text-sm font-bold text-gray-900 leading-tight">
@@ -455,7 +462,7 @@ export default function ProductDetail({
               <button
                 onClick={handleAddToCart}
                 disabled={!canAddToCart}
-                className="w-full flex items-center justify-center gap-2.5 h-12 px-6 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm tracking-wide rounded-xl transition-all mb-4 sm:mb-6 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                className="w-full flex items-center justify-center gap-2.5 h-12 px-6 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm tracking-wide rounded-xl transition-all mb-4 sm:mb-5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 <ShoppingCart size={17} aria-hidden="true" />
                 {isOutOfStock
@@ -464,6 +471,22 @@ export default function ProductDetail({
                     ? 'SELECT OPTIONS'
                     : 'ADD TO CART'}
               </button>
+
+              {/* Trust signals */}
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100">
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <Truck size={14} className="text-gray-400" aria-hidden="true" />
+                  <span className="text-[10px] sm:text-xs text-gray-500 font-medium leading-tight">Free Shipping<br />$199+</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <RotateCcw size={14} className="text-gray-400" aria-hidden="true" />
+                  <span className="text-[10px] sm:text-xs text-gray-500 font-medium leading-tight">Easy<br />Returns</span>
+                </div>
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <PhoneCall size={14} className="text-gray-400" aria-hidden="true" />
+                  <span className="text-[10px] sm:text-xs text-gray-500 font-medium leading-tight">Expert<br />Support</span>
+                </div>
+              </div>
             </div>
           </div>
 
