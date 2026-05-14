@@ -137,9 +137,17 @@ export const CATEGORY_MAP = {
   // Sanding
   'sanding tools':               'sanding',
   'sanders & poles':             'sanding',
-  // Stilts
+  'sanders':                     'sanding',
+  // Stilts — top-level + all production subcategory leaves
   'stilts':                      'stilts',
   'stilt accessories':           'stilts',
+  'extension tubes & clamps':    'stilts',
+  'legs & brackets':             'stilts',
+  'hardware':                    'stilts',
+  'springs & bearings':          'stilts',
+  'straps & buckles':            'stilts',
+  'soles & floor plates':        'stilts',
+  'accessories':                 'stilts',
   // Texture / spray
   'texture sprayers':            'texture',
   'applicators & rollers':       'texture',
@@ -148,6 +156,9 @@ export const CATEGORY_MAP = {
   'cleaning accessories':        'texture',
   // Parts — production catalog canonical leaf
   'parts':                       'parts',
+  // Tool sets / cases — Columbia uses both 'Tool Sets' and 'Tool Cases' as leaf names
+  'tool cases':                  'taping',
+  'tool sets':                   'taping',
   // Generic tool leaf (box fillers, adapters, misc accessories)
   'tools':                       'finishing',
 };
