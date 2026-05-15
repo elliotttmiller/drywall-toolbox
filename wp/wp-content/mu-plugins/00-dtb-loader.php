@@ -34,6 +34,8 @@
  *   dtb-coming-soon.php    — e-mail subscriber handler
  *   dtb-seo.php            — WooCommerce product SEO meta fields + REST exposure
  *   dtb-config-reference.php — comment-only constant reference (no exec code)
+ *   dtb-catalog-platform/  — canonical product architecture, catalog read model,
+ *                             toolset templates/options/validation REST endpoints
  *
  * @package drywall-toolbox
  */
@@ -215,5 +217,8 @@ _dtb_require( $_dtb_dir . '/dtb-schematics-api.php' );
 _dtb_require( $_dtb_dir . '/dtb-coming-soon.php' );
 _dtb_require( $_dtb_dir . '/dtb-seo.php' );           // WooCommerce product SEO meta fields
 _dtb_require( $_dtb_dir . '/dtb-config-reference.php' );
+// Catalog platform: canonical product architecture, metadata, and catalog endpoints.
+// Must load after dtb-rest-api.php (dtb_cached_wc_get, DTB_PRODUCT_DETAIL_FIELDS).
+_dtb_require( $_dtb_dir . '/dtb-catalog-platform/bootstrap.php' );
 
 unset( $_dtb_dir );

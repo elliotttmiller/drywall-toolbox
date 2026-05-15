@@ -573,6 +573,8 @@ function dtb_app_password_rate_limit(): ?WP_REST_Response {
  * reuse if a similar full-product fetch is needed elsewhere.
  */
 const DTB_PRODUCT_DETAIL_FIELDS = 'id,name,slug,permalink,type,status,featured,catalog_visibility,description,short_description,sku,price,regular_price,sale_price,on_sale,purchasable,manage_stock,stock_quantity,backorders,backorders_allowed,backordered,sold_individually,weight,dimensions,shipping_required,shipping_class,shipping_class_id,reviews_allowed,average_rating,rating_count,upsell_ids,cross_sell_ids,parent_id,categories,brands,tags,images,attributes,default_attributes,variations,menu_order,price_html,related_ids,stock_status,has_options,meta_data';
+
+/**
  * Fields returned by the variation endpoints.
  *
  * Limits WooCommerce object hydration to fields the SPA actually needs.

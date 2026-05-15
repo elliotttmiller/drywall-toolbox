@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ProductDetail from '../components/product/ProductDetail';
 import ProductModal from '../components/product/ProductModal';
 import ProductShoppingCard from '../components/ui/ProductShoppingCard';
@@ -85,27 +85,35 @@ const brandLogos = {
 export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { brandSlug: pathBrandSlug, categorySlug: pathCategorySlug } = useParams();
   const { addToCart } = useCart();
 
   const params = new URLSearchParams(location.search);
   const brandParam = params.get('brand');
   const searchParam = params.get('search');
   const pageParam = parseInt(params.get('page') || '1', 10);
-  const initialSelectedBrands = brandParam
-    ? brandParam
-        .split(',')
-        .map(b => b.trim())
-        .map(b => SLUG_TO_BRAND[b] || b)
-        .filter(Boolean)
-        .filter(brand => ALLOWED_BRANDS.includes(brand))
-    : [];
+
+  // Path brand param takes precedence over query param.
+  // Apply SLUG_TO_BRAND normalization so raw slugs like "tapetech" map to
+  // canonical label "TapeTech" before the ALLOWED_BRANDS filter runs.
+  const initialSelectedBrands = pathBrandSlug
+    ? [SLUG_TO_BRAND[pathBrandSlug]].filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
+    : brandParam
+      ? brandParam
+          .split(',')
+          .map(b => b.trim())
+          .map(b => SLUG_TO_BRAND[b] || b)
+          .filter(Boolean)
+          .filter(brand => ALLOWED_BRANDS.includes(brand))
+      : [];
 
   const [selectedBrands, setSelectedBrands] = useState(initialSelectedBrands);
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedDisplayCategory, setSelectedDisplayCategory] = useState(null);
+  // Path category slug (e.g. "finishing-boxes") seeds display category on mount.
+  const [selectedDisplayCategory, setSelectedDisplayCategory] = useState(pathCategorySlug || null);
   const [searchQuery, setSearchQuery] = useState(searchParam ? decodeURIComponent(searchParam) : '');
   const [priceRange, setPriceRange] = useState([0, MAX_PRICE]);
   const [sortBy, setSortBy] = useState('popular');
@@ -190,9 +198,20 @@ export default function Products() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const brandParam = params.get('brand');
-    const brandsFromUrl = brandParam
-      ? brandParam.split(',').map(b => decodeURIComponent(b.trim())).filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
-      : [];
+
+    // Path brand param takes precedence over query param.
+    // Apply SLUG_TO_BRAND so raw slugs become canonical brand labels before
+    // the ALLOWED_BRANDS membership check runs.
+    const brandsFromUrl = pathBrandSlug
+      ? [SLUG_TO_BRAND[pathBrandSlug]].filter(Boolean).filter(brand => ALLOWED_BRANDS.includes(brand))
+      : brandParam
+        ? brandParam
+            .split(',')
+            .map(b => decodeURIComponent(b.trim()))
+            .map(b => SLUG_TO_BRAND[b] || b)
+            .filter(Boolean)
+            .filter(brand => ALLOWED_BRANDS.includes(brand))
+        : [];
 
     const urlBrandsSet = [...brandsFromUrl].sort().join(',');
     const currentBrandsSet = [...selectedBrands].sort().join(',');
@@ -201,10 +220,29 @@ export default function Products() {
       const t = setTimeout(() => setSelectedBrands(brandsFromUrl), 0);
       return () => clearTimeout(t);
     }
-  }, [location.search]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location.search, pathBrandSlug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+
+    // When on a path-based brand route (e.g. /products/brands/tapetech),
+    // the brand is encoded in the pathname — only sync secondary query params
+    // (search, page) so we don't redirect away from the canonical URL.
+    if (pathBrandSlug) {
+      const currentSearchParam = params.get('search') || '';
+      const currentPageParam   = params.get('page')   || '';
+      const expectedSearchParam = searchQuery ? encodeURIComponent(searchQuery) : '';
+      const expectedPageParam   = currentPage > 1 ? String(currentPage) : '';
+      if (currentSearchParam !== expectedSearchParam || currentPageParam !== expectedPageParam) {
+        const newParams = new URLSearchParams();
+        if (searchQuery)   newParams.set('search', expectedSearchParam);
+        if (currentPage > 1) newParams.set('page', expectedPageParam);
+        const newSearch = newParams.toString();
+        navigate(location.pathname + (newSearch ? `?${newSearch}` : ''), { replace: true });
+      }
+      return;
+    }
+
     const currentBrandParam  = params.get('brand')  || '';
     const currentSearchParam = params.get('search') || '';
     const currentPageParam   = params.get('page')   || '';
@@ -227,7 +265,7 @@ export default function Products() {
       const newSearch = newParams.toString();
       navigate(newSearch ? `/products?${newSearch}` : '/products', { replace: true });
     }
-  }, [selectedBrands, searchQuery, currentPage, navigate, location.search]);
+  }, [selectedBrands, searchQuery, currentPage, navigate, location.search, location.pathname, pathBrandSlug]);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev =>
