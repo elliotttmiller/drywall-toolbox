@@ -102,11 +102,17 @@
  * OPTIONAL CONSTANTS (not shown in the ready-to-copy block above)
  * -----------------------------------------------------------------------------
  *
- * define('DTB_WC_CSV_FILENAME', 'product-wc-catalog-abc123.csv');
+ * define('DTB_WC_CSV_FILENAME', 'woocommerce_catalog_production_remapped.csv');
  *   Override the catalog CSV filename used by the /dtb/v1/products-csv and
  *   /dtb/v1/import-catalog endpoints (set in dtb-utils.php).
  *   When omitted, dtb-utils.php auto-discovers the newest product-wc-*.csv
  *   file in wp-content/uploads/wc-imports/ via glob.
+ *
+ * define('DTB_CATALOG_PLATFORM_ENABLED', false);
+ *   Feature gate for dtb-catalog-platform/bootstrap.php.
+ *   false = module stays loaded in code but runtime routes/services do not
+ *   bootstrap. Use false for staged catalog imports/backfills, then set true
+ *   only after catalog facet/product/toolset endpoint smoke checks pass.
  *
  * define('DTB_WEBHOOK_DELIVERY_URL', 'https://drywalltoolbox.com/wp-json/drywall/v1/webhooks/products');
  *   Override the WooCommerce webhook delivery URL (drywall_ensure_webhooks).

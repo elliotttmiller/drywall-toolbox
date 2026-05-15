@@ -2,7 +2,7 @@
 """
 DTB Catalog Pre-Import Validator
 =================================
-Validates woocommerce_catalog_production.csv for parent/child invariants
+Validates woocommerce_catalog_production_remapped.csv for parent/child invariants
 before any WooCommerce import is triggered.
 
 Exit codes:
@@ -11,7 +11,7 @@ Exit codes:
 
 Usage:
   python3 scripts/validate_catalog.py
-  python3 scripts/validate_catalog.py --csv products/Production/catalogs/official/woocommerce_catalog_production.csv
+  python3 scripts/validate_catalog.py --csv products/Production/catalogs/official/woocommerce_catalog_production_remapped.csv
   python3 scripts/validate_catalog.py --json  # machine-readable JSON output
 """
 
@@ -19,23 +19,28 @@ import csv
 import json
 import sys
 import argparse
+import re
 from collections import defaultdict
 from pathlib import Path
 
 # ── Default CSV path ──────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).parent.parent
-DEFAULT_CSV = REPO_ROOT / "products" / "Production" / "catalogs" / "official" / "woocommerce_catalog_production.csv"
+DEFAULT_CSV = REPO_ROOT / "products" / "Production" / "catalogs" / "official" / "woocommerce_catalog_production_remapped.csv"
 
 # ── Column aliases ─────────────────────────────────────────────────────────────
 COL_TYPE       = "Type"
 COL_SKU        = "SKU"
 COL_PARENT_SKU = "Parent SKU"
+COL_SLUG       = "Slug"
+COL_NAME       = "Name"
 COL_PRICE      = "Regular price"
 COL_IN_STOCK   = "In stock?"
 COL_PUBLISHED  = "Published"
 COL_VISIBILITY = "Visibility in catalog"
+COL_IMAGES     = "Images"
 
 MAX_VARIATION_ATTRS = 6  # WooCommerce supports up to 3; be generous here
+MAX_BOOLEAN_ATTRS = 10
 
 
 # =============================================================================
@@ -50,6 +55,23 @@ def normalize(val):
 def parse_pipe_list(val):
     """Split a WooCommerce pipe-separated value list into cleaned parts."""
     return [p.strip() for p in str(val or "").split("|") if p.strip()]
+
+
+def get_boolean_columns():
+    """Return all known boolean-like columns that must be normalized to 1/0."""
+    cols = [
+        COL_PUBLISHED,
+        COL_IN_STOCK,
+        "Backorders allowed?",
+        "Sold individually?",
+    ]
+    for n in range(1, MAX_BOOLEAN_ATTRS + 1):
+        cols.extend([
+            f"Attribute {n} visible",
+            f"Attribute {n} global",
+            f"Attribute {n} used for variations",
+        ])
+    return cols
 
 
 def get_variation_attrs(row):
@@ -76,6 +98,18 @@ def is_purchasable(row):
     return published in ("1", "yes", "true") and visibility not in ("hidden", "not visible", "")
 
 
+def is_visible(row):
+    """Row is visible in the storefront if published and not hidden."""
+    published = normalize(row.get(COL_PUBLISHED, "1"))
+    visibility = normalize(row.get(COL_VISIBILITY, "visible"))
+    return published in ("1", "yes", "true") and visibility not in ("hidden", "not visible", "")
+
+
+def has_invalid_percent_encoding(value):
+    """Detect malformed %-encoding like '%' or '%2' instead of '%2F'."""
+    return bool(re.search(r"%(?![0-9A-Fa-f]{2})", str(value or "")))
+
+
 # =============================================================================
 # MAIN VALIDATOR
 # =============================================================================
@@ -97,7 +131,9 @@ def validate(csv_path: Path):
     parents    = {}   # sku -> row   (type == variable)
     variations = []   # list of rows with type == variation
 
-    seen_skus = defaultdict(list)  # sku -> list of row line numbers
+    seen_skus = defaultdict(list)   # sku -> list of row line numbers
+    seen_slugs = defaultdict(list)  # slug -> list of row line numbers
+    bool_columns = get_boolean_columns()
 
     with open(csv_path, newline="", encoding="utf-8-sig") as fh:
         reader = csv.DictReader(fh)
@@ -108,6 +144,37 @@ def validate(csv_path: Path):
             if sku:
                 seen_skus[sku].append(line_num)
                 row_index.setdefault(sku, []).append(row)
+
+            slug = str(row.get(COL_SLUG, "") or "").strip()
+            if slug:
+                seen_slugs[slug].append(line_num)
+
+            name = str(row.get(COL_NAME, "") or "").strip()
+            if has_invalid_percent_encoding(slug):
+                errors.append({
+                    "rule": "malformed_slug_encoding",
+                    "slug": slug,
+                    "line": line_num,
+                    "message": f"Slug '{slug}' (line {line_num}) contains malformed percent encoding.",
+                })
+            if has_invalid_percent_encoding(name):
+                errors.append({
+                    "rule": "malformed_name_encoding",
+                    "name": name,
+                    "line": line_num,
+                    "message": f"Name '{name}' (line {line_num}) contains malformed percent encoding.",
+                })
+
+            for col in bool_columns:
+                val = str(row.get(col, "") or "").strip()
+                if val in ("1.0", "0.0"):
+                    errors.append({
+                        "rule": "boolean_not_normalized",
+                        "column": col,
+                        "line": line_num,
+                        "value": val,
+                        "message": f"Column '{col}' (line {line_num}) uses '{val}'. Use '1' or '0'.",
+                    })
 
             row_type = normalize(row.get(COL_TYPE, ""))
             if row_type == "variable":
@@ -123,6 +190,16 @@ def validate(csv_path: Path):
                 "sku":     sku,
                 "lines":   lines,
                 "message": f"Duplicate SKU '{sku}' appears on lines {lines}.",
+            })
+
+    # ── Rule: Duplicate Slugs ─────────────────────────────────────────────────
+    for slug, lines in seen_slugs.items():
+        if len(lines) > 1:
+            errors.append({
+                "rule": "duplicate_slug",
+                "slug": slug,
+                "lines": lines,
+                "message": f"Duplicate Slug '{slug}' appears on lines {lines}.",
             })
 
     # ── Build parent → children map ───────────────────────────────────────────
@@ -163,6 +240,35 @@ def validate(csv_path: Path):
                     "message":    f"Parent '{parent_sku}' attribute '{attr_name}' options {missing} have no matching child variation.",
                 })
 
+    # ── Rule: Visible variable parents should have at least one image ─────────
+    for parent_sku, parent_row in parents.items():
+        if not is_visible(parent_row):
+            continue
+        images = str(parent_row.get(COL_IMAGES, "") or "").strip()
+        if not images:
+            errors.append({
+                "rule": "visible_parent_missing_images",
+                "sku": parent_sku,
+                "line": parent_row["__line__"],
+                "message": f"Visible variable parent '{parent_sku}' (line {parent_row['__line__']}) has no Images value.",
+            })
+
+    # ── Rule: Visible purchasable simple products must have prices ────────────
+    for row in all_rows:
+        row_type = normalize(row.get(COL_TYPE, ""))
+        if row_type != "simple":
+            continue
+        if not is_purchasable(row):
+            continue
+        price = str(row.get(COL_PRICE, "") or "").strip()
+        if not price:
+            errors.append({
+                "rule": "simple_missing_price",
+                "sku": str(row.get(COL_SKU, "") or "").strip(),
+                "line": row["__line__"],
+                "message": f"Simple product '{row.get(COL_SKU, '').strip()}' (line {row['__line__']}) is purchasable but has no Regular price.",
+            })
+
     # ── Variation-level rules ─────────────────────────────────────────────────
     for var in variations:
         sku        = str(var.get(COL_SKU, "") or "").strip()
@@ -190,9 +296,21 @@ def validate(csv_path: Path):
             })
             continue
 
+        parent_row = parents[parent_sku]
+        parent_type = normalize(parent_row.get(COL_TYPE, ""))
+        if parent_type != "variable":
+            errors.append({
+                "rule": "variation_parent_not_variable",
+                "sku": sku,
+                "parent_sku": parent_sku,
+                "line": line,
+                "message": f"Variation '{sku}' (line {line}) references parent '{parent_sku}' that is not type=variable.",
+            })
+            continue
+
         # Rule: variation missing its own attribute values
         child_attrs  = get_variation_attrs(var)
-        parent_attrs = get_variation_attrs(parents[parent_sku])
+        parent_attrs = get_variation_attrs(parent_row)
 
         if not child_attrs:
             errors.append({
@@ -309,7 +427,7 @@ def main():
         "--csv",
         type=Path,
         default=DEFAULT_CSV,
-        help="Path to woocommerce_catalog_production.csv",
+        help="Path to woocommerce_catalog_production_remapped.csv",
     )
     parser.add_argument(
         "--json",

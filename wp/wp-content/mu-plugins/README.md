@@ -313,6 +313,7 @@ These are optional (module or feature flags), and plugin code has fallbacks/defa
 
 - Optional overrides/feature flags:
   - `DTB_WC_CSV_FILENAME`
+  - `DTB_CATALOG_PLATFORM_ENABLED`
   - `DTB_WEBHOOK_DELIVERY_URL`
   - `DTB_ENABLE_CSP`
   - `DTB_ADMIN_EMAIL`

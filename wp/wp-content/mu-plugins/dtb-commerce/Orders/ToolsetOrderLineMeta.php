@@ -8,6 +8,17 @@
 defined( 'ABSPATH' ) || exit;
 
 final class DTB_ToolsetOrderLineMeta {
+	/** @var string[] */
+	private const ALLOWLIST_KEYS = [
+		'_dtb_toolset_id',
+		'_dtb_toolset_instance_id',
+		'_dtb_toolset_slot',
+		'_dtb_toolset_slot_label',
+		'_dtb_toolset_brand',
+		'_dtb_toolset_scope',
+		'_dtb_included_item',
+	];
+
 	public static function register(): void {
 		add_action( 'woocommerce_checkout_create_order_line_item', [ self::class, 'persist_order_line_meta' ], 20, 4 );
 	}
@@ -29,7 +40,7 @@ final class DTB_ToolsetOrderLineMeta {
 
 		foreach ( $meta as $key => $value ) {
 			$key = sanitize_key( (string) $key );
-			if ( '' === $key ) {
+			if ( '' === $key || ! in_array( $key, self::ALLOWLIST_KEYS, true ) ) {
 				continue;
 			}
 			$val = sanitize_text_field( (string) $value );

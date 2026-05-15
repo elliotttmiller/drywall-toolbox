@@ -219,19 +219,26 @@ define( 'DTB_IMPORT_SECRET', 'change_me_to_a_secure_import_secret' );
 // ─────────────────────────────────────────────────────────────────────────────
 define( 'DRYWALL_JWT_SECRET', 'change_me_to_a_long_random_string_min_32_chars' );
 
-// ── 9f. Product catalog CSV ───────────────────────────────────────────────────
-//    No constants needed — dtb-utils.php resolves the catalog automatically.
+// ── 9f. Product catalog CSV + catalog platform rollout ───────────────────────
+//    DTB_WC_CSV_FILENAME:
+//      Explicitly pins the CSV basename in wp-content/uploads/wc-imports/.
+//      Recommended for controlled production imports.
 //
-//    AUTO-DISCOVERY (always active):
+//    DTB_CATALOG_PLATFORM_ENABLED:
+//      Runtime switch for the dtb-catalog-platform bootstrap.
+//      Keep false during data migration/import validation; enable only after
+//      catalog metadata and endpoint smoke checks pass.
+//
+//    AUTO-DISCOVERY (fallback when DTB_WC_CSV_FILENAME is omitted):
 //      Scans wp-content/uploads/wc-imports/ for all product-wc-*.csv files
 //      and selects the single most-recently modified one (Last Modified).
-//      Upload a new product-wc-*.csv via cPanel or WooCommerce → Products →
-//      Import and it is picked up immediately — no wp-config.php change needed.
 //
 //    FALLBACK:
 //      If no product-wc-*.csv file is found, dtb-utils.php falls back to
 //      wp-content/uploads/wc-imports/wp-catalog.csv automatically.
 // ─────────────────────────────────────────────────────────────────────────────
+define( 'DTB_WC_CSV_FILENAME', 'woocommerce_catalog_production_remapped.csv' );
+define( 'DTB_CATALOG_PLATFORM_ENABLED', false );
 
 // ── 9g. Webhook delivery URL (optional override) ──────────────────────────────
 //    Default hardcoded in dtb-utils.php:
