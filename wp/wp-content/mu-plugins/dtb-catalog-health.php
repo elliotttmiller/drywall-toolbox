@@ -83,10 +83,31 @@ function dtb_catalog_health_enqueue( string $hook ): void {
 					} else {
 						$("#dtb-ch-results").html("<p class=\'error\'>Scan failed: " + (res.data || "unknown error") + "</p>");
 					}
-					$btn.prop("disabled", false).text("Scan Now");
+					$btn.prop("disabled", false).text("Scan Variable Products");
 				}).fail(function() {
 					$("#dtb-ch-results").html("<p class=\'error\'>Request failed.</p>");
-					$btn.prop("disabled", false).text("Scan Now");
+					$btn.prop("disabled", false).text("Scan Variable Products");
+				});
+			});
+
+			$(document).on("click", "#dtb-ch-meta-scan-btn", function() {
+				var $btn = $(this);
+				$btn.prop("disabled", true).text("Scanning DTB Meta\u2026");
+				$.post(ajaxurl, {
+					action: "dtb_catalog_health_meta_scan",
+					nonce:  dtbCH.nonce,
+					page:   1,
+					per_page: 50
+				}, function(res) {
+					if (res.success) {
+						$("#dtb-ch-results").html("<h3>DTB Meta Scan Results</h3>" + res.data.html);
+					} else {
+						$("#dtb-ch-results").html("<p class=\'error\'>Meta scan failed: " + (res.data || "unknown error") + "</p>");
+					}
+					$btn.prop("disabled", false).text("Scan DTB Meta");
+				}).fail(function() {
+					$("#dtb-ch-results").html("<p class=\'error\'>Request failed.</p>");
+					$btn.prop("disabled", false).text("Scan DTB Meta");
 				});
 			});
 
@@ -127,7 +148,8 @@ function dtb_catalog_health_render_page(): void {
 		<p class="description">Scans WooCommerce variable products for parent/child integrity issues, missing variation SKUs, and stock anomalies.</p>
 
 		<div style="display:flex;gap:10px;margin:16px 0;">
-			<button id="dtb-ch-scan-btn" class="button button-primary">Scan Now</button>
+			<button id="dtb-ch-scan-btn" class="button button-primary">Scan Variable Products</button>
+			<button id="dtb-ch-meta-scan-btn" class="button button-primary" style="background:#2563eb;border-color:#1d4ed8;">Scan DTB Meta</button>
 			<button id="dtb-ch-flush-btn" class="button">Flush Product Cache</button>
 			<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=dtb_catalog_health_export_csv&nonce=' . wp_create_nonce( 'dtb_catalog_health' ) ) ); ?>"
 			   class="button" download="dtb-catalog-health.csv">Export CSV</a>
@@ -433,3 +455,173 @@ function dtb_catalog_health_render_results( array $issues ): string {
 	<?php
 	return ob_get_clean();
 }
+
+// =============================================================================
+// SECTION 9 — DTB META SCAN
+// =============================================================================
+// Checks that every published product carries the canonical _dtb_* meta fields
+// required by the catalog platform read model.
+// =============================================================================
+
+add_action( 'wp_ajax_dtb_catalog_health_meta_scan', 'dtb_catalog_health_ajax_meta_scan' );
+
+function dtb_catalog_health_ajax_meta_scan(): void {
+	check_ajax_referer( 'dtb_catalog_health', 'nonce' );
+
+	if ( ! current_user_can( DTB_CAP_CATALOG ) ) {
+		wp_send_json_error( 'Permission denied.' );
+	}
+
+	$page     = max( 1, (int) ( $_POST['page']     ?? 1 ) );
+	$per_page = max( 1, min( 50, (int) ( $_POST['per_page'] ?? 20 ) ) );
+
+	$issues = dtb_catalog_health_run_dtb_meta_scan( $page, $per_page );
+	$html   = dtb_catalog_health_render_results( $issues );
+
+	wp_send_json_success( [
+		'html'       => $html,
+		'page'       => $page,
+		'issueCount' => count( $issues ),
+	] );
+}
+
+/**
+ * Scan all published products for missing or incomplete DTB catalog meta.
+ *
+ * Error-level issues (blocking for catalog read model):
+ *   dtb_missing_brand_key      — _dtb_brand_key is absent
+ *   dtb_missing_category_key   — _dtb_category_key is absent
+ *
+ * Warning-level issues:
+ *   dtb_builder_missing_family — builder_eligible=1 but _dtb_tool_family absent
+ *   dtb_builder_missing_slots  — builder_eligible=1 but _dtb_builder_slots absent
+ *   dtb_missing_default_var    — variable parent missing _dtb_default_variation_id
+ *   dtb_missing_product_kind   — _dtb_product_kind is absent
+ *
+ * @param  int $page
+ * @param  int $per_page
+ * @return array[]
+ */
+function dtb_catalog_health_run_dtb_meta_scan( int $page, int $per_page ): array {
+	$issues = [];
+
+	$query = new WP_Query( [
+		'post_type'      => 'product',
+		'post_status'    => 'publish',
+		'posts_per_page' => $per_page,
+		'paged'          => $page,
+		'fields'         => 'ids',
+		'no_found_rows'  => false,
+	] );
+
+	foreach ( $query->posts as $product_id ) {
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			continue;
+		}
+
+		$name = $product->get_name();
+		$sku  = $product->get_sku();
+
+		$brand_key       = (string) get_post_meta( $product_id, '_dtb_brand_key',            true );
+		$category_key    = (string) get_post_meta( $product_id, '_dtb_category_key',         true );
+		$product_kind    = (string) get_post_meta( $product_id, '_dtb_product_kind',         true );
+		$tool_family     = (string) get_post_meta( $product_id, '_dtb_tool_family',          true );
+		$builder_eligible= (string) get_post_meta( $product_id, '_dtb_builder_eligible',    true );
+		$builder_slots   = (string) get_post_meta( $product_id, '_dtb_builder_slots',        true );
+		$default_var_id  = (string) get_post_meta( $product_id, '_dtb_default_variation_id', true );
+
+		// Error: missing brand key.
+		if ( '' === $brand_key ) {
+			$issues[] = [
+				'product_id'   => $product_id,
+				'product_name' => $name,
+				'sku'          => $sku ?: '(none)',
+				'severity'     => 'error',
+				'code'         => 'dtb_missing_brand_key',
+				'message'      => 'Product is published but has no _dtb_brand_key. Catalog facets and filters will not include this product.',
+			];
+		}
+
+		// Error: missing category key.
+		if ( '' === $category_key ) {
+			$issues[] = [
+				'product_id'   => $product_id,
+				'product_name' => $name,
+				'sku'          => $sku ?: '(none)',
+				'severity'     => 'error',
+				'code'         => 'dtb_missing_category_key',
+				'message'      => 'Product is published but has no _dtb_category_key. Category filters and display routing will not work.',
+			];
+		}
+
+		// Warning: missing product kind.
+		if ( '' === $product_kind ) {
+			$issues[] = [
+				'product_id'   => $product_id,
+				'product_name' => $name,
+				'sku'          => $sku ?: '(none)',
+				'severity'     => 'warning',
+				'code'         => 'dtb_missing_product_kind',
+				'message'      => 'Product is missing _dtb_product_kind (tool/part/accessory/service/kit). Toolset Builder eligibility may be inaccurate.',
+			];
+		}
+
+		// Warning: builder eligible but missing tool family.
+		if ( '1' === $builder_eligible && '' === $tool_family ) {
+			$issues[] = [
+				'product_id'   => $product_id,
+				'product_name' => $name,
+				'sku'          => $sku ?: '(none)',
+				'severity'     => 'warning',
+				'code'         => 'dtb_builder_missing_family',
+				'message'      => 'Product is marked builder-eligible (_dtb_builder_eligible=1) but has no _dtb_tool_family. Toolset slot matching will fall back to keyword inference.',
+			];
+		}
+
+		// Warning: builder eligible but missing slots.
+		if ( '1' === $builder_eligible && '' === $builder_slots ) {
+			$issues[] = [
+				'product_id'   => $product_id,
+				'product_name' => $name,
+				'sku'          => $sku ?: '(none)',
+				'severity'     => 'warning',
+				'code'         => 'dtb_builder_missing_slots',
+				'message'      => 'Product is marked builder-eligible but has no _dtb_builder_slots. It will not appear in any Toolset Builder slot.',
+			];
+		}
+
+		// Warning: variable parent missing default variation ID.
+		if ( $product->is_type( 'variable' ) && '' === $default_var_id ) {
+			$issues[] = [
+				'product_id'   => $product_id,
+				'product_name' => $name,
+				'sku'          => $sku ?: '(none)',
+				'severity'     => 'warning',
+				'code'         => 'dtb_missing_default_var',
+				'message'      => 'Variable parent product has no _dtb_default_variation_id. Product cards will fall back to automatic default variation resolution.',
+			];
+		}
+
+		// Warning: variable parent — default variation ID invalid.
+		if ( $product->is_type( 'variable' ) && '' !== $default_var_id ) {
+			$var_product = wc_get_product( (int) $default_var_id );
+			if ( ! $var_product || ! in_array( (int) $default_var_id, $product->get_children(), true ) ) {
+				$issues[] = [
+					'product_id'   => $product_id,
+					'product_name' => $name,
+					'sku'          => $sku ?: '(none)',
+					'severity'     => 'warning',
+					'code'         => 'dtb_invalid_default_var',
+					'message'      => sprintf(
+						'_dtb_default_variation_id (%s) does not belong to this product.',
+						esc_html( $default_var_id )
+					),
+				];
+			}
+		}
+	}
+
+	return $issues;
+}
+

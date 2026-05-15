@@ -28,6 +28,8 @@ final class DTB_ToolsetValidationService {
 		$warnings = [];
 		$slot_map = [];
 
+		$template_brand = $template['brandKey'] ?? '';
+
 		// Build slot ID → slot definition lookup.
 		foreach ( $template['slots'] ?? [] as $slot ) {
 			$slot_map[ $slot['id'] ] = $slot;
@@ -60,6 +62,15 @@ final class DTB_ToolsetValidationService {
 
 			$product_id   = absint( $selection['productId'] ?? 0 );
 			$variation_id = absint( $selection['variationId'] ?? 0 );
+			$quantity     = absint( $selection['quantity'] ?? 1 );
+
+			if ( $quantity < 1 || $quantity > 99 ) {
+				$errors[] = [
+					'code'    => 'invalid_quantity',
+					'slot'    => $slot_id,
+					'message' => sprintf( 'Slot "%s" has an invalid quantity (%d). Must be 1–99.', $slot_id, $quantity ),
+				];
+			}
 
 			if ( $product_id <= 0 ) {
 				$errors[] = [
@@ -89,7 +100,25 @@ final class DTB_ToolsetValidationService {
 				];
 			}
 
-			// 2b. Variation must belong to the correct parent.
+			// 2b. Brand must match the template brand (tamper check).
+			if ( '' !== $template_brand ) {
+				$product_post_id = $variation_id > 0 ? $product_id : $wc_product->get_id();
+				$product_brand   = (string) get_post_meta( $product_post_id, DTB_ProductMeta::BRAND_KEY, true );
+				if ( '' !== $product_brand && $product_brand !== $template_brand ) {
+					$errors[] = [
+						'code'    => 'brand_mismatch',
+						'slot'    => $slot_id,
+						'message' => sprintf(
+							'"%s" belongs to brand "%s" but template requires "%s".',
+							$wc_product->get_name(),
+							$product_brand,
+							$template_brand
+						),
+					];
+				}
+			}
+
+			// 2d. Variation must belong to the correct parent.
 			if ( $variation_id > 0 ) {
 				$parent_id = method_exists( $wc_product, 'get_parent_id' ) ? $wc_product->get_parent_id() : 0;
 				if ( $parent_id !== $product_id ) {
@@ -105,7 +134,7 @@ final class DTB_ToolsetValidationService {
 				}
 			}
 
-			// 2c. Builder eligibility check.
+			// 2e. Builder eligibility check.
 			// Batch-fetch all post meta for the purchasable ID in one DB call.
 			$purchasable_id   = $variation_id ?: $product_id;
 			$all_meta         = get_post_meta( $purchasable_id );
@@ -130,7 +159,7 @@ final class DTB_ToolsetValidationService {
 				];
 			}
 
-			// 2d. Stock warning (not a blocker).
+			// 2f. Stock warning (not a blocker).
 			if ( 'outofstock' === $wc_product->get_stock_status() ) {
 				$warnings[] = [
 					'code'    => 'out_of_stock',

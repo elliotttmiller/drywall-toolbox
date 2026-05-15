@@ -69,7 +69,6 @@ export function useToolsetBuilder( { brandKey = '' } = {} ) {
         setError( err );
         setLoadingTemplates( false );
       } );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ brandKey ] );
 
   // ── Load options when template changes ─────────────────────────────────────

@@ -16,6 +16,9 @@ final class DTB_ToolsetEligibilityService {
 	/** Cache TTL for slot options in seconds. */
 	const CACHE_TTL = 300; // 5 minutes
 
+	/** WP option key for the slot options cache generation counter. */
+	const CACHE_VERSION_OPTION = 'dtb_slot_opts_cache_version';
+
 	/**
 	 * Return eligible products for every slot in a template, keyed by slot ID.
 	 *
@@ -40,12 +43,17 @@ final class DTB_ToolsetEligibilityService {
 	/**
 	 * Return eligible products for one slot of a specific brand.
 	 *
+	 * Cache key includes the current cache generation so that bumping the
+	 * version via invalidate_slot_options_cache() effectively discards all
+	 * existing transients without needing to enumerate them individually.
+	 *
 	 * @param  string $slot_id   Toolset Builder slot ID (e.g. 'flatBox').
 	 * @param  string $brand_key DTB brand slug key (e.g. 'tapetech').
-	 * @return array[]           Array of normalized DTB product DTOs.
+	 * @return array[]           Array of ToolsetOption DTOs.
 	 */
 	public static function get_slot_options( string $slot_id, string $brand_key ): array {
-		$cache_key = 'dtb_slot_opts_' . md5( $slot_id . '|' . $brand_key );
+		$version   = (int) get_option( self::CACHE_VERSION_OPTION, 1 );
+		$cache_key = 'dtb_slot_v' . $version . '_' . md5( $slot_id . '|' . $brand_key );
 		$cached    = get_transient( $cache_key );
 		if ( is_array( $cached ) ) {
 			return $cached;
@@ -54,6 +62,15 @@ final class DTB_ToolsetEligibilityService {
 		$options = self::query_slot_options( $slot_id, $brand_key );
 		set_transient( $cache_key, $options, self::CACHE_TTL );
 		return $options;
+	}
+
+	/**
+	 * Invalidate all slot option caches by bumping the cache version number.
+	 * Called whenever any product is saved, updated, deleted, or imported.
+	 */
+	public static function invalidate_slot_options_cache(): void {
+		$version = (int) get_option( self::CACHE_VERSION_OPTION, 1 );
+		update_option( self::CACHE_VERSION_OPTION, $version + 1, false );
 	}
 
 	// ── Private ────────────────────────────────────────────────────────────────

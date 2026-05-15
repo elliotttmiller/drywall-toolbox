@@ -22,6 +22,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Respect the DTB_CATALOG_PLATFORM_ENABLED constant for staged rollouts.
+// Default: true (enabled unless explicitly disabled via wp-config.php).
+if ( defined( 'DTB_CATALOG_PLATFORM_ENABLED' ) && ! DTB_CATALOG_PLATFORM_ENABLED ) {
+	return;
+}
+
 // Only run on admin or REST API requests (mirrors dtb-cache.php guard).
 if ( ! dtb_is_admin_or_rest_request() ) {
 	return;
@@ -52,6 +58,11 @@ require_once $_dtb_cp . '/Rest/ProductDetailController.php';
 require_once $_dtb_cp . '/Rest/ToolsetTemplatesController.php';
 require_once $_dtb_cp . '/Rest/ToolsetOptionsController.php';
 require_once $_dtb_cp . '/Rest/ToolsetValidationController.php';
+
+// ── Admin / CLI tools ─────────────────────────────────────────────────────────
+if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+	require_once $_dtb_cp . '/Admin/MetaBackfillTool.php';
+}
 
 unset( $_dtb_cp );
 
@@ -141,3 +152,49 @@ function dtb_catalog_platform_register_routes(): void {
 add_action( 'dtb_product_cache_invalidated', static function (): void {
 	DTB_CatalogFacetService::invalidate();
 } );
+
+// ── Catalog cache invalidation on WooCommerce product events ─────────────────
+// These hooks fire on every product save, delete, or import event that could
+// change the facets or toolset options results.  All run at priority 20 to let
+// WooCommerce finish its own saves first.
+
+/**
+ * Helper: invalidate facets + toolset slot option caches.
+ * Accepts a post ID, WC product ID, or WC_Product object.
+ *
+ * @param  int|WC_Product|object $subject
+ */
+function dtb_catalog_invalidate_all_caches( mixed $subject = 0 ): void {
+	DTB_CatalogFacetService::invalidate();
+	DTB_ToolsetEligibilityService::invalidate_slot_options_cache();
+	do_action( 'dtb_catalog_caches_invalidated', $subject );
+}
+
+// save_post — fires on every product publish/update (includes variation saves).
+add_action( 'save_post_product', 'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'save_post_product_variation', 'dtb_catalog_invalidate_all_caches', 20 );
+
+// deleted_post — fires when any product post is permanently deleted.
+add_action( 'deleted_post', static function ( int $post_id ): void {
+	$post_type = get_post_type( $post_id );
+	if ( 'product' === $post_type || 'product_variation' === $post_type ) {
+		dtb_catalog_invalidate_all_caches( $post_id );
+	}
+}, 20 );
+
+// WooCommerce-specific product hooks (cover programmatic creates/updates that
+// may not trigger save_post in all contexts).
+add_action( 'woocommerce_new_product',              'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_update_product',           'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_delete_product',           'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_new_product_variation',    'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_update_product_variation', 'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_delete_product_variation', 'dtb_catalog_invalidate_all_caches', 20 );
+
+// Product CSV import hooks.
+add_action( 'woocommerce_product_import_inserted_product_object', 'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_product_import_updated_product_object',  'dtb_catalog_invalidate_all_caches', 20 );
+
+// Product trash/untrash.
+add_action( 'woocommerce_trash_product',   'dtb_catalog_invalidate_all_caches', 20 );
+add_action( 'woocommerce_untrash_product', 'dtb_catalog_invalidate_all_caches', 20 );
