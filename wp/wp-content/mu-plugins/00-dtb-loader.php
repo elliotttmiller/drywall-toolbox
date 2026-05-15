@@ -210,6 +210,9 @@ _dtb_require( $_dtb_dir . '/dtb-rewards.php' );       // WPLoyalty REST bridge (
 _dtb_require( $_dtb_dir . '/dtb-image-sync.php' );    // media-library sync for uploads/YYYY/MM/ images
 _dtb_require( $_dtb_dir . '/dtb-woocommerce.php' );
 _dtb_require( $_dtb_dir . '/dtb-veeqo.php' );         // Veeqo API proxy, order/inventory sync, shipping rates
+// Catalog platform: canonical product architecture, metadata, and catalog endpoints.
+// Must load after dtb-rest-api.php (dtb_cached_wc_get, DTB_PRODUCT_DETAIL_FIELDS).
+_dtb_require( $_dtb_dir . '/dtb-catalog-platform/bootstrap.php' );
 _dtb_require( $_dtb_dir . '/dtb-ops-dashboard.php' ); // Ops KPI dashboard, audit log, health endpoint
 _dtb_require( $_dtb_dir . '/dtb-catalog-health.php' ); // Variable product diagnostics + catalog health admin
 _dtb_require( $_dtb_dir . '/dtb-quickbooks.php' );    // QuickBooks Online OAuth2 + accounting sync
@@ -217,8 +220,5 @@ _dtb_require( $_dtb_dir . '/dtb-schematics-api.php' );
 _dtb_require( $_dtb_dir . '/dtb-coming-soon.php' );
 _dtb_require( $_dtb_dir . '/dtb-seo.php' );           // WooCommerce product SEO meta fields
 _dtb_require( $_dtb_dir . '/dtb-config-reference.php' );
-// Catalog platform: canonical product architecture, metadata, and catalog endpoints.
-// Must load after dtb-rest-api.php (dtb_cached_wc_get, DTB_PRODUCT_DETAIL_FIELDS).
-_dtb_require( $_dtb_dir . '/dtb-catalog-platform/bootstrap.php' );
 
 unset( $_dtb_dir );
