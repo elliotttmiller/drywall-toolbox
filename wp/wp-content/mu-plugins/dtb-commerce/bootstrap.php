@@ -10,13 +10,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if (
-	! dtb_is_admin_or_rest_request()
-	&& ! ( defined( 'WP_CLI' ) && WP_CLI )
-) {
-	return;
-}
-
 require_once __DIR__ . '/Cart/ToolsetCartItemData.php';
 require_once __DIR__ . '/Orders/ToolsetOrderLineMeta.php';
 

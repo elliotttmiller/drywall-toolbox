@@ -54,9 +54,11 @@ final class DTB_ToolsetCartItemData {
 	 * Ensure cart item data carries sanitized metadata in non-Store-API flows too.
 	 *
 	 * @param array $cart_item_data
+	 * @param int   $_product_id
+	 * @param int   $_variation_id
 	 * @return array
 	 */
-	public static function filter_add_cart_item_data( array $cart_item_data ): array {
+	public static function filter_add_cart_item_data( array $cart_item_data, int $_product_id, int $_variation_id ): array {
 		$incoming = $cart_item_data['dtb_toolset_meta'] ?? null;
 		$meta     = self::sanitize_metadata_assoc( $incoming );
 

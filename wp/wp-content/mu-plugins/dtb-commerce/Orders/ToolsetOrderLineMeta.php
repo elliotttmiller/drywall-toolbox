@@ -16,12 +16,12 @@ final class DTB_ToolsetOrderLineMeta {
 	 * Persist allowed DTB toolset metadata onto order line items.
 	 *
 	 * @param WC_Order_Item_Product $item
+	 * @param string                $_cart_item_key
 	 * @param array                 $values
+	 * @param WC_Order              $_order
 	 * @return void
 	 */
-	public static function persist_order_line_meta( WC_Order_Item_Product $item, string $cart_item_key, array $values, WC_Order $order ): void {
-		unset( $cart_item_key, $order );
-
+	public static function persist_order_line_meta( WC_Order_Item_Product $item, string $_cart_item_key, array $values, WC_Order $_order ): void {
 		$meta = $values['dtb_toolset_meta'] ?? null;
 		if ( ! is_array( $meta ) || [] === $meta ) {
 			return;

@@ -125,7 +125,7 @@ export default function ProductsCatalogPlatform() {
   }, [facets, selectedBrandFacet]);
 
   const mappedProducts = useMemo(
-    () => (Array.isArray(items) ? items.map(toCardProduct).filter((p) => !p.is_parts) : []),
+    () => (Array.isArray(items) ? items.map(toCardProduct) : []),
     [items]
   );
 
