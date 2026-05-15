@@ -69,6 +69,12 @@ function dtb_catalog_health_enqueue( string $hook ): void {
 
 	wp_add_inline_script( 'jquery', '
 		jQuery(function($) {
+			var LABELS = {
+				scan:     "Scan Variable Products",
+				metaScan: "Scan DTB Meta",
+				flush:    "Flush Product Cache"
+			};
+
 			$(document).on("click", "#dtb-ch-scan-btn", function() {
 				var $btn = $(this);
 				$btn.prop("disabled", true).text("Scanning\u2026");
@@ -83,10 +89,10 @@ function dtb_catalog_health_enqueue( string $hook ): void {
 					} else {
 						$("#dtb-ch-results").html("<p class=\'error\'>Scan failed: " + (res.data || "unknown error") + "</p>");
 					}
-					$btn.prop("disabled", false).text("Scan Variable Products");
+					$btn.prop("disabled", false).text(LABELS.scan);
 				}).fail(function() {
 					$("#dtb-ch-results").html("<p class=\'error\'>Request failed.</p>");
-					$btn.prop("disabled", false).text("Scan Variable Products");
+					$btn.prop("disabled", false).text(LABELS.scan);
 				});
 			});
 
@@ -104,10 +110,10 @@ function dtb_catalog_health_enqueue( string $hook ): void {
 					} else {
 						$("#dtb-ch-results").html("<p class=\'error\'>Meta scan failed: " + (res.data || "unknown error") + "</p>");
 					}
-					$btn.prop("disabled", false).text("Scan DTB Meta");
+					$btn.prop("disabled", false).text(LABELS.metaScan);
 				}).fail(function() {
 					$("#dtb-ch-results").html("<p class=\'error\'>Request failed.</p>");
-					$btn.prop("disabled", false).text("Scan DTB Meta");
+					$btn.prop("disabled", false).text(LABELS.metaScan);
 				});
 			});
 
@@ -123,7 +129,7 @@ function dtb_catalog_health_enqueue( string $hook ): void {
 					} else {
 						alert("Flush failed: " + (res.data || "unknown error"));
 					}
-					$btn.prop("disabled", false).text("Flush Product Cache");
+					$btn.prop("disabled", false).text(LABELS.flush);
 				});
 			});
 		});

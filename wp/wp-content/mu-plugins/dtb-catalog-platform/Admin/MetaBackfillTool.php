@@ -43,7 +43,10 @@ add_action( 'wp_ajax_dtb_catalog_meta_backfill_page', 'dtb_catalog_meta_backfill
 function dtb_catalog_meta_backfill_ajax(): void {
 	check_ajax_referer( 'dtb_catalog_meta_backfill', 'nonce' );
 
-	if ( ! current_user_can( DTB_CAP_CATALOG ) ) {
+	// DTB_CAP_CATALOG is defined in dtb-ops-dashboard.php, which loads before
+	// this file via 00-dtb-loader.php.  The fallback covers edge-case load orders.
+	$cap = defined( 'DTB_CAP_CATALOG' ) ? DTB_CAP_CATALOG : 'manage_woocommerce';
+	if ( ! current_user_can( $cap ) ) {
 		wp_send_json_error( [ 'message' => 'Insufficient permissions.' ], 403 );
 	}
 

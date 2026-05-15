@@ -203,7 +203,9 @@ export default function Products() {
     // Apply SLUG_TO_BRAND so raw slugs become canonical brand labels before
     // the ALLOWED_BRANDS membership check runs.
     const brandsFromUrl = pathBrandSlug
-      ? [SLUG_TO_BRAND[pathBrandSlug]].filter(brand => brand && ALLOWED_BRANDS.includes(brand))
+      ? ( SLUG_TO_BRAND[pathBrandSlug] && ALLOWED_BRANDS.includes(SLUG_TO_BRAND[pathBrandSlug])
+          ? [SLUG_TO_BRAND[pathBrandSlug]]
+          : [] )
       : brandParam
         ? brandParam
             .split(',')

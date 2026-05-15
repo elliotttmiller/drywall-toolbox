@@ -164,7 +164,7 @@ add_action( 'dtb_product_cache_invalidated', static function (): void {
  *
  * @param  int|WC_Product|object $subject
  */
-function dtb_catalog_invalidate_all_caches( mixed $subject = 0 ): void {
+function dtb_catalog_invalidate_all_caches( object|int $subject = 0 ): void {
 	DTB_CatalogFacetService::invalidate();
 	DTB_ToolsetEligibilityService::invalidate_slot_options_cache();
 	do_action( 'dtb_catalog_caches_invalidated', $subject );
