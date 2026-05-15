@@ -70,6 +70,20 @@ function buildStoreApiVariation(variationAttributeValues) {
   );
 }
 
+function buildStoreApiExtensions(product) {
+  const metadata = Array.isArray(product?.metadata) ? product.metadata : [];
+  if (!product?.extensions && metadata.length === 0) return {};
+  if (product?.extensions && metadata.length === 0) return product.extensions;
+
+  return {
+    ...(product?.extensions || {}),
+    dtb: {
+      ...((product?.extensions && product.extensions.dtb) || {}),
+      metadata,
+    },
+  };
+}
+
 function readSnapshot() {
   try {
     const saved = localStorage.getItem(CART_SNAPSHOT_KEY);
@@ -151,7 +165,8 @@ export function CartProvider({ children }) {
     const previousItems = cartItems;
     try {
       const variation = buildStoreApiVariation(product.variation_attribute_values);
-      const nextCart = await storeAddToCart(product.id, quantity, variation);
+      const extensions = buildStoreApiExtensions(product);
+      const nextCart = await storeAddToCart(product.id, quantity, variation, extensions);
       const normalizedItems = applyServerCart(nextCart);
       const addedItem = normalizedItems.find((item) => String(item.id) === String(product.id)) || { ...product, quantity };
       trackAddToCart({ ...addedItem, quantity });

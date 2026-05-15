@@ -85,6 +85,7 @@ function buildParams( query ) {
   if ( query.productKind     ) p.product_kind      = query.productKind;
   if ( query.builderSlot     ) p.builder_slot      = query.builderSlot;
   if ( query.workflowScope   ) p.workflow_scope    = query.workflowScope;
+  if ( typeof query.isParts === 'number' ) p.is_parts = query.isParts;
   if ( query.search          ) p.search            = query.search;
   if ( query.page && query.page > 1 ) p.page       = query.page;
   if ( query.perPage         ) p.per_page          = query.perPage;
