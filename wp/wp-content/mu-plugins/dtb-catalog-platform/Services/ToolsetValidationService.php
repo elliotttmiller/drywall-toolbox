@@ -106,15 +106,16 @@ final class DTB_ToolsetValidationService {
 			}
 
 			// 2c. Builder eligibility check.
-			$purchasable_id = $variation_id ?: $product_id;
-			$builder_slots  = DTB_CatalogProductNormalizer::decode_csv_or_array(
-				(string) get_post_meta( $purchasable_id, DTB_ProductMeta::BUILDER_SLOTS, true )
-			);
-			// Also check parent for variations when slot meta may be on parent only.
+			// Batch-fetch all post meta for the purchasable ID in one DB call.
+			$purchasable_id   = $variation_id ?: $product_id;
+			$all_meta         = get_post_meta( $purchasable_id );
+			$builder_slots_raw = $all_meta[ DTB_ProductMeta::BUILDER_SLOTS ][0] ?? '';
+			$builder_slots     = DTB_CatalogProductNormalizer::decode_csv_or_array( $builder_slots_raw );
+
+			// Fallback: check parent meta for variations when slot meta lives on parent.
 			if ( empty( $builder_slots ) && $variation_id > 0 ) {
-				$builder_slots = DTB_CatalogProductNormalizer::decode_csv_or_array(
-					(string) get_post_meta( $product_id, DTB_ProductMeta::BUILDER_SLOTS, true )
-				);
+				$parent_meta      = get_post_meta( $product_id, DTB_ProductMeta::BUILDER_SLOTS, true );
+				$builder_slots    = DTB_CatalogProductNormalizer::decode_csv_or_array( (string) $parent_meta );
 			}
 
 			if ( ! empty( $builder_slots ) && ! in_array( $slot_id, $builder_slots, true ) ) {

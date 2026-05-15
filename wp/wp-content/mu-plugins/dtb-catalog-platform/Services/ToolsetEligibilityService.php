@@ -89,9 +89,12 @@ final class DTB_ToolsetEligibilityService {
 				continue;
 			}
 
-			$option = self::build_toolset_option( $wc_product, $slot_id );
-			if ( null !== $option ) {
-				$options[] = $option;
+			// build_toolset_options always returns an array of 0..N option DTOs.
+			// Variable products produce one entry per eligible variation; simple
+			// products produce one entry.  Merge all into the flat $options array.
+			$product_options = self::build_toolset_options( $wc_product, $slot_id );
+			foreach ( $product_options as $opt ) {
+				$options[] = $opt;
 			}
 		}
 
@@ -105,8 +108,7 @@ final class DTB_ToolsetEligibilityService {
 			return strcmp( $a['name'] ?? '', $b['name'] ?? '' );
 		} );
 
-		return $options;
-	}
+		return $options;	}
 
 	/**
 	 * Query published products with a matching builder slot and brand.
@@ -149,34 +151,35 @@ final class DTB_ToolsetEligibilityService {
 	/**
 	 * Build a ToolsetOption DTO from a WC_Product object.
 	 *
-	 * For simple products, the option references the product itself.
-	 * For variable products, the option is the best available variation.
+	 * For simple products, returns a single-item array containing the option.
+	 * For variable products, returns one item per eligible variation.
+	 * Returns an empty array when the product is not usable (null guard removed
+	 * in favour of the empty-array contract so callers can always array_merge).
 	 *
 	 * @param  WC_Product $wc_product
 	 * @param  string     $slot_id
-	 * @return array|null
+	 * @return array[]    Zero or more option DTOs.
 	 */
-	private static function build_toolset_option( WC_Product $wc_product, string $slot_id ): ?array {
-		$post_id    = $wc_product->get_id();
-		$brand_key  = (string) get_post_meta( $post_id, DTB_ProductMeta::BRAND_KEY, true );
-		$brand_label= (string) get_post_meta( $post_id, DTB_ProductMeta::BRAND_LABEL, true );
-		$tool_fam   = (string) get_post_meta( $post_id, DTB_ProductMeta::TOOL_FAMILY, true );
-		$rank       = (int)    get_post_meta( $post_id, DTB_ProductMeta::BUILDER_RANK, true );
-		$slots_raw  = (string) get_post_meta( $post_id, DTB_ProductMeta::BUILDER_SLOTS, true );
-		$slots      = DTB_CatalogProductNormalizer::decode_csv_or_array( $slots_raw );
+	private static function build_toolset_options( WC_Product $wc_product, string $slot_id ): array {
+		$post_id     = $wc_product->get_id();
+		$brand_key   = (string) get_post_meta( $post_id, DTB_ProductMeta::BRAND_KEY,   true );
+		$brand_label = (string) get_post_meta( $post_id, DTB_ProductMeta::BRAND_LABEL, true );
+		$tool_fam    = (string) get_post_meta( $post_id, DTB_ProductMeta::TOOL_FAMILY,  true );
+		$rank        = (int)    get_post_meta( $post_id, DTB_ProductMeta::BUILDER_RANK, true );
+		$slots_raw   = (string) get_post_meta( $post_id, DTB_ProductMeta::BUILDER_SLOTS, true );
+		$slots       = DTB_CatalogProductNormalizer::decode_csv_or_array( $slots_raw );
 
-		// Image
 		$thumb_id  = $wc_product->get_image_id();
-		$image_url = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'woocommerce_thumbnail' ) : '';
+		$image_url = $thumb_id ? (string) wp_get_attachment_image_url( $thumb_id, 'woocommerce_thumbnail' ) : '';
 
-		// For variable products, resolve the default eligible variation.
+		// Variable products produce one option per eligible purchasable variation.
 		if ( $wc_product->is_type( 'variable' ) ) {
-			return self::build_variable_option( $wc_product, $slot_id, $brand_key, $brand_label, $tool_fam, $rank, $slots, (string) $image_url );
+			return self::build_variable_options( $wc_product, $slot_id, $brand_key, $brand_label, $tool_fam, $rank, $slots, $image_url );
 		}
 
-		// Simple product option.
+		// Simple product — single option.
 		$price = $wc_product->get_price();
-		return [
+		return [ [
 			'productId'      => $post_id,
 			'variationId'    => null,
 			'sku'            => $wc_product->get_sku(),
@@ -185,17 +188,20 @@ final class DTB_ToolsetEligibilityService {
 			'variationLabel' => '',
 			'price'          => $price ? (float) $price : null,
 			'stockStatus'    => $wc_product->get_stock_status(),
-			'image'          => $image_url ?: '',
+			'image'          => $image_url,
 			'brandKey'       => $brand_key,
 			'brandLabel'     => $brand_label,
 			'toolFamily'     => $tool_fam,
 			'builderRank'    => $rank,
 			'eligibleSlots'  => $slots,
-		];
+		] ];
 	}
 
-	/** Build options from the eligible variations of a variable parent. */
-	private static function build_variable_option(
+	/**
+	 * Build option DTOs from the eligible variations of a variable parent.
+	 * Returns one ToolsetOption per purchasable variation.
+	 */
+	private static function build_variable_options(
 		WC_Product $parent,
 		string $slot_id,
 		string $brand_key,
@@ -204,13 +210,13 @@ final class DTB_ToolsetEligibilityService {
 		int $rank,
 		array $eligible_slots,
 		string $parent_image
-	): ?array {
+	): array {
 		$parent_id     = $parent->get_id();
 		$parent_sku    = $parent->get_sku();
 		$variations    = $parent->get_available_variations( 'objects' );
 
 		if ( empty( $variations ) ) {
-			return null;
+			return [];
 		}
 
 		$options = [];
@@ -225,7 +231,7 @@ final class DTB_ToolsetEligibilityService {
 			$var_id     = $var->get_id();
 			$thumb_id   = $var->get_image_id();
 			$image_url  = $thumb_id
-				? wp_get_attachment_image_url( $thumb_id, 'woocommerce_thumbnail' )
+				? (string) wp_get_attachment_image_url( $thumb_id, 'woocommerce_thumbnail' )
 				: $parent_image;
 
 			$sort_raw   = (int) get_post_meta( $var_id, DTB_ProductMeta::VARIATION_SORT, true );
@@ -244,7 +250,7 @@ final class DTB_ToolsetEligibilityService {
 				'variationLabel' => $var_label,
 				'price'          => $var->get_price() ? (float) $var->get_price() : null,
 				'stockStatus'    => $var->get_stock_status(),
-				'image'          => $image_url ?: '',
+				'image'          => $image_url,
 				'brandKey'       => $brand_key,
 				'brandLabel'     => $brand_label,
 				'toolFamily'     => $tool_family,
@@ -255,18 +261,19 @@ final class DTB_ToolsetEligibilityService {
 		}
 
 		if ( empty( $options ) ) {
-			return null;
+			return [];
 		}
 
 		// Sort variations by sort key, then by SKU.
 		usort( $options, static fn( $a, $b ) => ( $a['_sortKey'] <=> $b['_sortKey'] ) ?: strcmp( $a['sku'], $b['sku'] ) );
 
-		// Remove internal sort key.
+		// Remove internal sort key before returning.
 		foreach ( $options as &$opt ) {
 			unset( $opt['_sortKey'] );
 		}
+		unset( $opt );
 
-		// Return array of individual variation options (not a grouped parent).
-		return count( $options ) === 1 ? $options[0] : $options;
+		// Return one option DTO per variation — caller merges into flat list.
+		return $options;
 	}
 }

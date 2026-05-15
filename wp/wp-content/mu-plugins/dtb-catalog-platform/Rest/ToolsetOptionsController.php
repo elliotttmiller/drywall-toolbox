@@ -37,24 +37,6 @@ final class DTB_ToolsetOptionsController {
 
 		$options_by_slot = DTB_ToolsetEligibilityService::get_options_for_template( $template );
 
-		// Flatten variable-product options arrays (service may return nested arrays
-		// for multi-option variable parents).
-		foreach ( $options_by_slot as $slot_id => &$opts ) {
-			$flat = [];
-			foreach ( $opts as $item ) {
-				if ( isset( $item[0] ) && is_array( $item[0] ) ) {
-					// Nested array from a multi-variation parent.
-					foreach ( $item as $var_opt ) {
-						$flat[] = $var_opt;
-					}
-				} else {
-					$flat[] = $item;
-				}
-			}
-			$opts = $flat;
-		}
-		unset( $opts );
-
 		return new WP_REST_Response( [
 			'templateId'   => $id,
 			'optionsBySlot'=> $options_by_slot,

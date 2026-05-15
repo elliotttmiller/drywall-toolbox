@@ -60,13 +60,28 @@ final class DTB_CatalogProductsController {
 		}
 
 		// Map DTB sort to WC orderby.
-		match ( $sort ) {
-			'price-low'  => ( $wc_params['orderby'] = 'price' )  && ( $wc_params['order'] = 'asc' ),
-			'price-high' => ( $wc_params['orderby'] = 'price' )  && ( $wc_params['order'] = 'desc' ),
-			'newest'     => ( $wc_params['orderby'] = 'date' )   && ( $wc_params['order'] = 'desc' ),
-			'az'         => ( $wc_params['orderby'] = 'title' )  && ( $wc_params['order'] = 'asc' ),
-			default      => ( $wc_params['orderby'] = 'menu_order' ) && ( $wc_params['order'] = 'asc' ),
-		};
+		switch ( $sort ) {
+			case 'price-low':
+				$wc_params['orderby'] = 'price';
+				$wc_params['order']   = 'asc';
+				break;
+			case 'price-high':
+				$wc_params['orderby'] = 'price';
+				$wc_params['order']   = 'desc';
+				break;
+			case 'newest':
+				$wc_params['orderby'] = 'date';
+				$wc_params['order']   = 'desc';
+				break;
+			case 'az':
+				$wc_params['orderby'] = 'title';
+				$wc_params['order']   = 'asc';
+				break;
+			default:
+				$wc_params['orderby'] = 'menu_order';
+				$wc_params['order']   = 'asc';
+				break;
+		}
 
 		$response = dtb_cached_wc_get( 'wc/v3/products', $wc_params );
 		if ( $response->get_status() !== 200 ) {

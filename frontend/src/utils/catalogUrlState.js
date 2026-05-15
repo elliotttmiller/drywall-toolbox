@@ -92,7 +92,7 @@ export function parseCatalogQuery( searchParams, pathParams = {} ) {
       brands = brandParam
         .split( ',' )
         .map( b => decodeURIComponent( b.trim() ) )
-        .map( b => SLUG_TO_BRAND[ b ] || b )
+        .map( b => SLUG_TO_BRAND[ b ] )
         .filter( Boolean );
     }
   }

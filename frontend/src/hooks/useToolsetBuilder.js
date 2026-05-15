@@ -56,10 +56,12 @@ export function useToolsetBuilder( { brandKey = '' } = {} ) {
         if ( ! mountedRef.current ) return;
         const list = data?.templates ?? [];
         setTemplates( list );
-        // Auto-select first template.
-        if ( list.length > 0 && ! activeTemplateId ) {
-          setActiveTemplateId( list[ 0 ].id );
-        }
+        // If the current activeTemplateId exists in the new list, keep it.
+        // Otherwise auto-select the first available template.
+        setActiveTemplateId( prev => {
+          const stillValid = list.some( t => t.id === prev );
+          return stillValid ? prev : ( list.length > 0 ? list[ 0 ].id : null );
+        } );
         setLoadingTemplates( false );
       } )
       .catch( err => {
