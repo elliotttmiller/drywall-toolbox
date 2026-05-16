@@ -2,23 +2,191 @@
   position: fixed;
   inset: 0;
   z-index: 10002;
-  display: flex;
+  display: block;
 }
 
 .storefront-mobile-drawer__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(2, 6, 23, 0.62);
+  background: rgba(2, 6, 23, 0.52);
+  border: 0;
 }
 
 .storefront-mobile-drawer__panel {
   position: relative;
-  width: min(88vw, 380px);
-  max-width: 100%;
-  height: 100%;
+  width: 100%;
+  min-height: 100dvh;
   background: var(--dtb-shell);
   color: white;
-  overflow: auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.storefront-mobile-drawer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px 12px;
+}
+
+.storefront-mobile-drawer__logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.storefront-mobile-drawer__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.storefront-mobile-drawer__search {
+  padding: 0 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.storefront-mobile-drawer__search-button {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.88);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+
+.storefront-mobile-drawer__nav {
+  display: grid;
+  width: 100%;
+}
+
+.storefront-mobile-drawer__row-wrap,
+.storefront-mobile-drawer__row-link {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.storefront-mobile-drawer__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 16px;
+}
+
+.storefront-mobile-drawer__row-label {
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0;
+}
+
+.storefront-mobile-drawer__row-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  transition: transform 140ms ease;
+}
+
+.storefront-mobile-drawer__row-toggle.is-expanded {
+  transform: rotate(180deg);
+}
+
+.storefront-mobile-drawer__brands {
+  display: grid;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 200ms ease;
+}
+
+.storefront-mobile-drawer__brands.is-expanded {
+  max-height: 480px;
+}
+
+.storefront-mobile-drawer__brand-link {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: left;
+  padding: 11px 16px 11px 34px;
+  font-size: 0.94rem;
+}
+
+.storefront-mobile-drawer__row-link {
+  min-height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.94);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.storefront-mobile-drawer__row-link.is-active {
+  color: #93c5fd;
+}
+
+.storefront-mobile-drawer__account {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.storefront-mobile-drawer__account-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.84);
+  text-decoration: none;
+  padding: 8px 0;
+}
+
+.storefront-mobile-drawer__account-link--danger {
+  color: #fca5a5;
+}
+
+.storefront-mobile-drawer__account-cta {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.storefront-mobile-drawer__account-cta--ghost {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.storefront-mobile-drawer__account-cta--primary {
+  background: #2563eb;
+  color: #fff;
 }
 
 .storefront-search-overlay {

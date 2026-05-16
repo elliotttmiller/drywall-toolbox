@@ -266,23 +266,27 @@
   color: #2563eb;
 }
 
-.dtb-variant-pill.is-selected {
+.dtb-variant-pill.is-selected,
+.dtb-variant-pill--selected {
   border-color: rgba(15, 23, 42, 0.92);
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.82), 0 7px 18px rgba(15, 23, 42, 0.08);
 }
 
-.dtb-variant-pill.is-selected .dtb-variant-pill__status {
+.dtb-variant-pill.is-selected .dtb-variant-pill__status,
+.dtb-variant-pill--selected .dtb-variant-pill__status {
   color: #2563eb;
 }
 
 .dtb-variant-pill.is-disabled,
-.dtb-variant-pill.is-sold-out {
+.dtb-variant-pill.is-sold-out,
+.dtb-variant-pill--disabled {
   color: #94a3b8;
   background: #f8fafc;
 }
 
 .dtb-variant-pill.is-disabled::after,
-.dtb-variant-pill.is-sold-out::after {
+.dtb-variant-pill.is-sold-out::after,
+.dtb-variant-pill--disabled::after {
   content: '';
   position: absolute;
   inset: 8px;

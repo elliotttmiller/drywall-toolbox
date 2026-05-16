@@ -1,0 +1,106 @@
+.account-hub {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+}
+
+.account-hub__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(2, 6, 23, 0.55);
+}
+
+.account-hub__sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: min(92dvh, 760px);
+  border-radius: 22px 22px 0 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.account-hub__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-hub__content {
+  flex: 1;
+  overflow: auto;
+  padding: 56px 16px 90px;
+}
+
+.account-hub__panel,
+.account-hub__section {
+  display: grid;
+  gap: 12px;
+}
+
+.account-hub__card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.account-hub__card a,
+.account-hub__link-button {
+  color: #1d4ed8;
+  font-weight: 700;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  text-align: left;
+  padding: 0;
+}
+
+.account-hub__link-button--danger {
+  color: #dc2626;
+}
+
+.account-hub__empty {
+  color: #64748b;
+}
+
+.account-hub-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+  padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+}
+
+.account-hub-nav__button {
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.account-hub-nav__button--active {
+  color: #0f172a;
+}

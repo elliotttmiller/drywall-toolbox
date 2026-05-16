@@ -133,7 +133,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 128px;
+  min-height: 136px;
   padding: 16px 12px;
   border-radius: var(--dtb-radius-md);
   border: 1.5px solid var(--dtb-border);
@@ -153,12 +153,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  min-height: 56px;
   width: 100%;
 }
 
 .storefront-brand-tile__logo {
-  max-height: 40px;
+  max-height: 52px;
   max-width: 100%;
   width: auto;
   object-fit: contain;
@@ -171,6 +171,10 @@
   color: var(--dtb-text);
   letter-spacing: -0.01em;
   line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 /* ── CTA block ── */
@@ -275,7 +279,7 @@
 
   .dtb-listing-heading__title {
     margin: 0;
-    font-size: 1.45rem;
+    font-size: clamp(2rem, 8vw, 3.25rem);
     line-height: 1.08;
     font-weight: 800;
     letter-spacing: -0.03em;
@@ -328,8 +332,13 @@
   }
 
   .dtb-product-grid--single {
-    grid-template-columns: minmax(0, min(220px, 52vw));
-    justify-content: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dtb-product-grid--single > * {
+    grid-column: 1 / -1;
+    max-width: min(420px, 100%);
+    justify-self: center;
   }
 
   .storefront-trust-bar {

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
 import { ArrowRight, X } from 'lucide-react';
 import StorefrontSearchDock from './StorefrontSearchDock';
 import { brandToSlug } from '../../utils/catalogUrlState.js';
@@ -26,6 +27,17 @@ export default function StorefrontSearchOverlay({
   categories = [],
   suggestions = [],
 }) {
+  const hasQuery = useMemo(() => query.trim().length > 0, [query]);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') onClose?.();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -40,7 +52,7 @@ export default function StorefrontSearchOverlay({
         </div>
 
         <div className="storefront-search-overlay__body">
-          {!query ? (
+          {!hasQuery ? (
             <section className="storefront-search-overlay__empty-state">
               <div className="storefront-search-overlay__section">
                 <h3 className="storefront-search-overlay__section-title">Quick links</h3>
@@ -111,7 +123,7 @@ export default function StorefrontSearchOverlay({
             </section>
           ) : null}
 
-          {query ? (
+          {hasQuery ? (
             loading ? (
               <section className="storefront-search-overlay__results">
                 {Array.from({ length: 4 }).map((_, index) => (

@@ -1,13 +1,16 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
 import { ShoppingCart, Menu, X, ChevronDown, ChevronRight, User, LogIn, UserPlus, LogOut, Bell, Search } from 'lucide-react';
-import { motion as Motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import LogoWhite from '/logo-white.svg';
 import NotificationsBell from '../shell/NotificationsBell';
 import StorefrontSearchOverlay from './StorefrontSearchOverlay';
+import StorefrontMobileDrawer from './StorefrontMobileDrawer';
+import AccountHubSheet from '../account/AccountHubSheet.jsx';
 import { searchProducts } from '../../services/catalog';
+import { BRAND_TO_SLUG } from '../../utils/catalogUrlState.js';
 
 const PRIMARY_NAV_LINKS = [
   { to: '/schematics', label: 'Schematics' },
@@ -39,7 +42,6 @@ const SHOP_CATEGORY_LINKS = [
 ];
 
 const DRAWER_NAV_ROWS = [
-  { to: '/products/brands', label: 'Brands' },
   { to: '/products', label: 'All Products' },
   { to: '/parts', label: 'Parts' },
   { to: '/products?sort=newest', label: 'New Arrivals' },
@@ -50,15 +52,22 @@ const DRAWER_NAV_ROWS = [
   { to: '/contact', label: 'Contact' },
 ];
 
+function getSortedDrawerBrands(brands) {
+  return brands
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+}
+
 export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = false }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { getCartCount } = useCart();
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [brandsExpanded, setBrandsExpanded] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
-  const [mobileAccountDropdownOpen, setMobileAccountDropdownOpen] = useState(false);
+  const [accountHubOpen, setAccountHubOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [desktopSearchQuery, setDesktopSearchQuery] = useState('');
   const [desktopSearchResults, setDesktopSearchResults] = useState([]);
@@ -68,7 +77,6 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const accountDropdownRef = useRef(null);
-  const mobileAccountDropdownRef = useRef(null);
   const desktopSearchRef = useRef(null);
   const desktopSearchInputRef = useRef(null);
   const desktopSearchRequestIdRef = useRef(0);
@@ -83,7 +91,11 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
   const isActive = (path) => location.pathname === path;
   const shopActive = location.pathname.startsWith('/products') || isActive('/parts') || isActive('/toolset-builder');
   const isProductDetailRoute = /^\/products\/(?!brands(?:\/|$))/.test(location.pathname);
-  const hideMobileCartFab = mobileMenuOpen || searchOverlayOpen || cartOpen || isProductDetailRoute;
+  const hideMobileCartFab = mobileMenuOpen || searchOverlayOpen || cartOpen || accountHubOpen || isProductDetailRoute;
+  const drawerBrands = useMemo(
+    () => getSortedDrawerBrands(Object.entries(BRAND_TO_SLUG).map(([name, slug]) => ({ name, slug }))),
+    []
+  );
 
   const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -91,7 +103,6 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
     setShopDropdownOpen(false);
     setMobileMenuOpen(false);
     setAccountDropdownOpen(false);
-    setMobileAccountDropdownOpen(false);
     setDesktopSearchOpen(false);
   };
 
@@ -119,15 +130,7 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
   }, []);
 
   useEffect(() => {
-    if (!mobileMenuOpen) return undefined;
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousHtmlOverscroll = document.documentElement.style.overscrollBehavior;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overscrollBehavior = 'none';
-    return () => {
-      document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overscrollBehavior = previousHtmlOverscroll;
-    };
+    if (!mobileMenuOpen) setBrandsExpanded(false);
   }, [mobileMenuOpen]);
 
   useEffect(() => {
@@ -162,7 +165,6 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
         setDesktopSearchOpen(false);
       }
       if (accountDropdownRef.current && !accountDropdownRef.current.contains(e.target)) setAccountDropdownOpen(false);
-      if (mobileAccountDropdownRef.current && !mobileAccountDropdownRef.current.contains(e.target)) setMobileAccountDropdownOpen(false);
       if (desktopSearchRef.current && !desktopSearchRef.current.contains(e.target)) setDesktopSearchOpen(false);
     };
     document.addEventListener('click', handleClickOutside);
@@ -228,6 +230,27 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
     setDesktopSearchOpen(false);
   };
 
+  const handleMobileAccountClick = () => {
+    setMobileMenuOpen(false);
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    setAccountHubOpen(true);
+  };
+
+  const handleDrawerBrandNavigate = (slug) => {
+    setBrandsExpanded(false);
+    setMobileMenuOpen(false);
+    navigate(`/products/brands/${slug}`);
+  };
+
+  const handleDrawerBrandsLanding = () => {
+    setBrandsExpanded(false);
+    setMobileMenuOpen(false);
+    navigate('/products/brands');
+  };
+
   return (
     <>
       <header className={`site-header${hasTopTicker ? ' site-header--with-top-ticker' : ' site-header--no-ticker'}`} role="banner">
@@ -244,38 +267,13 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
             </Link>
 
             <div className="header-mobile-slot header-mobile-slot--right">
-              <div ref={mobileAccountDropdownRef} className="mobile-account-wrap">
-                <button
-                  onClick={() => { setMobileAccountDropdownOpen((o) => !o); setMobileMenuOpen(false); }}
-                  className="header-mobile-account-toggle header-icon"
-                  aria-label="Account menu"
-                  aria-expanded={mobileAccountDropdownOpen}
-                >
-                  <User size={22} />
-                </button>
-                <AnimatePresence>
-                  {mobileAccountDropdownOpen && (
-                    <Motion.div className="mobile-account-dropdown" initial={{ opacity: 0, y: -8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.97 }} transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}>
-                      {!isLoading && (isAuthenticated ? (
-                        <>
-                          <div className="header-account-summary"><div className="header-account-avatar"><User size={15} /></div><div className="header-account-copy"><p className="header-account-name">{user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.email || 'My Account'}</p>{user?.email && <p className="header-account-email">{user.email}</p>}</div></div>
-                          <Link to="/dashboard" onClick={() => setMobileAccountDropdownOpen(false)} className="header-account-link"><User size={14} />My Dashboard</Link>
-                          <Link to="/notifications" onClick={() => setMobileAccountDropdownOpen(false)} className="header-account-link"><Bell size={14} />Notifications</Link>
-                          <div className="header-account-divider" />
-                          <button onClick={async () => { setMobileAccountDropdownOpen(false); await logout(); }} className="header-account-link header-account-link--danger"><LogOut size={14} />Sign Out</button>
-                        </>
-                      ) : (
-                        <>
-                          <div className="header-account-guest-header"><p className="header-account-guest-title">My Account</p></div>
-                          <Link to="/login" onClick={() => setMobileAccountDropdownOpen(false)} className="header-account-link header-account-link--strong"><LogIn size={14} />Sign In</Link>
-                          <div className="header-account-divider header-account-divider--inset" />
-                          <div className="header-account-guest-body"><Link to="/register" onClick={() => setMobileAccountDropdownOpen(false)} className="header-account-cta"><UserPlus size={13} />Create Account</Link><p className="header-account-note">No account needed to browse or checkout.</p></div>
-                        </>
-                      ))}
-                    </Motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              <button
+                onClick={handleMobileAccountClick}
+                className="header-mobile-account-toggle header-icon"
+                aria-label={isAuthenticated ? 'Open account hub' : 'Sign in'}
+              >
+                <User size={22} />
+              </button>
             </div>
           </div>
 
@@ -326,67 +324,87 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
           </button>
         </div>
 
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <Motion.div
-              className="header-mobile-menu"
-              style={{ display: isTablet ? 'flex' : undefined }}
-              initial={{ opacity: 0, x: '-100%' }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: '-100%' }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Mobile navigation"
-              onWheel={(e) => e.stopPropagation()}
-              onTouchMove={(e) => e.stopPropagation()}
+        <StorefrontMobileDrawer isOpen={mobileMenuOpen} onClose={closeMobileMenu}>
+          <div className="storefront-mobile-drawer__top">
+            <Link to="/" className="storefront-mobile-drawer__logo" onClick={closeMobileMenu}>
+              <img src={LogoWhite} alt="Drywall Toolbox Logo" style={{ height: 28, width: 'auto' }} />
+            </Link>
+            <button type="button" onClick={closeMobileMenu} className="storefront-mobile-drawer__close" aria-label="Close menu">
+              <X size={20} />
+            </button>
+          </div>
+          <div className="storefront-mobile-drawer__search">
+            <button
+              type="button"
+              className="storefront-mobile-drawer__search-button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setSearchOverlayOpen(true);
+              }}
             >
-              {/* Backdrop */}
-              <button
-                type="button"
-                className="header-mobile-menu-backdrop"
-                onClick={closeMobileMenu}
-                aria-label="Close navigation"
-              />
-              <div className="header-mobile-menu-panel">
-                <div className="header-mobile-menu-top">
-                  <Link to="/" className="header-drawer-logo" onClick={closeMobileMenu}>
-                    <img src={LogoWhite} alt="Drywall Toolbox Logo" style={{ height: 28, width: 'auto' }} />
-                  </Link>
-                  <button type="button" onClick={closeMobileMenu} className="header-drawer-close" aria-label="Close menu">
-                    <X size={20} />
-                  </button>
-                </div>
-                <nav className="header-drawer-nav" aria-label="Mobile navigation">
-                  {DRAWER_NAV_ROWS.map(({ to, label }) => (
-                    <Link
-                      key={to}
-                      to={to}
-                      className={`header-drawer-row${isActive(to) ? ' active' : ''}`}
-                      onClick={closeMobileMenu}
-                    >
-                      <span className="header-drawer-row__label">{label}</span>
-                      <ChevronRight size={16} className="header-drawer-row__chevron" aria-hidden="true" />
-                    </Link>
-                  ))}
-                </nav>
-                <div className="header-drawer-account">
-                  {!isLoading && (isAuthenticated ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <Link to="/dashboard" onClick={closeMobileMenu} className="header-drawer-account-link"><User size={14} />My Dashboard</Link>
-                      <button onClick={async () => { closeMobileMenu(); await logout(); }} className="header-drawer-account-link header-drawer-account-link--danger"><LogOut size={14} />Sign Out</button>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <Link to="/login" onClick={closeMobileMenu} className="header-drawer-cta-btn header-drawer-cta-btn--ghost"><LogIn size={14} />Sign In</Link>
-                      <Link to="/register" onClick={closeMobileMenu} className="header-drawer-cta-btn header-drawer-cta-btn--primary"><UserPlus size={14} />Register</Link>
-                    </div>
-                  ))}
-                </div>
+              <Search size={16} />
+              <span>Search products, brands, SKU…</span>
+            </button>
+          </div>
+          <nav className="storefront-mobile-drawer__nav" aria-label="Mobile navigation">
+            <div className="storefront-mobile-drawer__row-wrap">
+              <div className="storefront-mobile-drawer__row">
+                <button type="button" className="storefront-mobile-drawer__row-label" onClick={handleDrawerBrandsLanding}>
+                  Brands
+                </button>
+                <button
+                  type="button"
+                  className={`storefront-mobile-drawer__row-toggle${brandsExpanded ? ' is-expanded' : ''}`}
+                  onClick={() => setBrandsExpanded((open) => !open)}
+                  aria-label={`${brandsExpanded ? 'Collapse' : 'Expand'} brands`}
+                  aria-expanded={brandsExpanded}
+                  aria-controls="storefront-mobile-drawer-brands"
+                >
+                  <ChevronDown size={18} />
+                </button>
               </div>
-            </Motion.div>
-          )}
-        </AnimatePresence>
+              <div
+                id="storefront-mobile-drawer-brands"
+                className={`storefront-mobile-drawer__brands${brandsExpanded ? ' is-expanded' : ''}`}
+              >
+                {drawerBrands.map((brand) => (
+                  <button
+                    key={brand.slug}
+                    type="button"
+                    className="storefront-mobile-drawer__brand-link"
+                    onClick={() => handleDrawerBrandNavigate(brand.slug)}
+                  >
+                    {brand.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {DRAWER_NAV_ROWS.map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className={`storefront-mobile-drawer__row-link${isActive(to) ? ' is-active' : ''}`}
+                onClick={closeMobileMenu}
+              >
+                <span>{label}</span>
+                <ChevronRight size={16} aria-hidden="true" />
+              </Link>
+            ))}
+          </nav>
+          <div className="storefront-mobile-drawer__account">
+            {!isLoading && (isAuthenticated ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <Link to="/dashboard" onClick={closeMobileMenu} className="storefront-mobile-drawer__account-link"><User size={14} />My Dashboard</Link>
+                <button onClick={async () => { closeMobileMenu(); await logout(); }} className="storefront-mobile-drawer__account-link storefront-mobile-drawer__account-link--danger"><LogOut size={14} />Sign Out</button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Link to="/login" onClick={closeMobileMenu} className="storefront-mobile-drawer__account-cta storefront-mobile-drawer__account-cta--ghost"><LogIn size={14} />Sign In</Link>
+                <Link to="/register" onClick={closeMobileMenu} className="storefront-mobile-drawer__account-cta storefront-mobile-drawer__account-cta--primary"><UserPlus size={14} />Register</Link>
+              </div>
+            ))}
+          </div>
+        </StorefrontMobileDrawer>
       </header>
 
       <Motion.button className={`mobile-cart-fab${hideMobileCartFab ? ' mobile-cart-fab--hidden' : ''}`} onClick={onCartToggle} aria-label="Open cart" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: hideMobileCartFab ? 0 : 1 }} transition={{ type: 'spring', stiffness: 340, damping: 24 }} whileTap={{ scale: 0.9 }}>
@@ -401,9 +419,16 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
         setQuery={setMobileSearchQuery}
         onClose={closeSearchOverlay}
         loading={searchLoading}
-        brands={['TapeTech', 'Columbia Taping Tools', 'Level 5', 'Asgard']}
+        brands={drawerBrands.map((brand) => brand.name)}
         categories={['Automatic Taping Tools', 'Finishing Boxes', 'Corner Tools', 'Parts']}
         suggestions={searchSuggestions}
+      />
+
+      <AccountHubSheet
+        isOpen={accountHubOpen}
+        onClose={() => setAccountHubOpen(false)}
+        user={user}
+        onLogout={logout}
       />
 
       <style>{`
@@ -449,155 +474,6 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
           }
         }
 
-        /* ── Dark mobile drawer ── */
-        .header-mobile-menu {
-          position: fixed !important;
-          inset: 0 !important;
-          z-index: 9998 !important;
-          display: flex !important;
-          pointer-events: auto !important;
-        }
-
-        .header-mobile-menu-backdrop {
-          position: absolute !important;
-          inset: 0 !important;
-          background: rgba(2, 6, 23, 0.60) !important;
-          border: none !important;
-          cursor: pointer !important;
-          width: 100% !important;
-          height: 100% !important;
-        }
-
-        .header-mobile-menu-panel {
-          position: relative !important;
-          width: min(85vw, 360px) !important;
-          height: 100% !important;
-          background: var(--dtb-shell, #0a1020) !important;
-          color: white !important;
-          display: flex !important;
-          flex-direction: column !important;
-          overflow-y: auto !important;
-          overflow-x: hidden !important;
-          overscroll-behavior: contain !important;
-          -webkit-overflow-scrolling: touch !important;
-          z-index: 1 !important;
-          flex-shrink: 0 !important;
-        }
-
-        .header-mobile-menu-top {
-          display: flex !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px 16px !important;
-          border-bottom: 1px solid rgba(255,255,255,0.10) !important;
-          flex-shrink: 0 !important;
-        }
-
-        .header-drawer-logo {
-          display: flex;
-          align-items: center;
-        }
-
-        .header-drawer-close {
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          width: 36px !important;
-          height: 36px !important;
-          border-radius: 50% !important;
-          border: none !important;
-          background: rgba(255,255,255,0.10) !important;
-          color: rgba(255,255,255,0.80) !important;
-          cursor: pointer !important;
-          padding: 0 !important;
-          flex-shrink: 0 !important;
-        }
-
-        .header-drawer-nav {
-          flex: 1 1 auto !important;
-          display: flex !important;
-          flex-direction: column !important;
-          padding: 8px 0 !important;
-        }
-
-        .header-drawer-row {
-          display: flex !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          padding: 0 20px !important;
-          height: 56px !important;
-          color: rgba(255,255,255,0.88) !important;
-          text-decoration: none !important;
-          font-size: 1.05rem !important;
-          font-weight: 600 !important;
-          letter-spacing: -0.01em !important;
-          border-bottom: 1px solid rgba(255,255,255,0.07) !important;
-          transition: background 120ms ease, color 120ms ease !important;
-        }
-
-        .header-drawer-row:active,
-        .header-drawer-row.active {
-          background: rgba(37, 99, 235, 0.18) !important;
-          color: #93c5fd !important;
-        }
-
-        .header-drawer-row__chevron {
-          color: rgba(255,255,255,0.38) !important;
-          flex-shrink: 0 !important;
-        }
-
-        .header-drawer-account {
-          padding: 16px 20px calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
-          border-top: 1px solid rgba(255,255,255,0.10) !important;
-          flex-shrink: 0 !important;
-        }
-
-        .header-drawer-account-link {
-          display: flex !important;
-          align-items: center !important;
-          gap: 8px !important;
-          padding: 10px 0 !important;
-          color: rgba(255,255,255,0.72) !important;
-          text-decoration: none !important;
-          font-size: 0.9rem !important;
-          font-weight: 500 !important;
-          background: none !important;
-          border: none !important;
-          cursor: pointer !important;
-          font-family: inherit !important;
-          width: 100% !important;
-          text-align: left !important;
-        }
-
-        .header-drawer-account-link--danger {
-          color: #f87171 !important;
-        }
-
-        .header-drawer-cta-btn {
-          display: flex !important;
-          align-items: center !important;
-          gap: 6px !important;
-          padding: 10px 16px !important;
-          border-radius: 10px !important;
-          font-size: 0.88rem !important;
-          font-weight: 600 !important;
-          text-decoration: none !important;
-          cursor: pointer !important;
-          border: none !important;
-          font-family: inherit !important;
-          flex: 1 !important;
-          justify-content: center !important;
-        }
-
-        .header-drawer-cta-btn--ghost {
-          background: rgba(255,255,255,0.10) !important;
-          color: rgba(255,255,255,0.80) !important;
-        }
-
-        .header-drawer-cta-btn--primary {
-          background: #2563eb !important;
-          color: white !important;
-        }
       `}</style>
     </>
   );

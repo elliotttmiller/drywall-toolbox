@@ -11,6 +11,7 @@ import './styles/storefront-shell.css'
 import './styles/storefront-sections.css'
 import './styles/storefront-product-card.css'
 import './styles/storefront-drawer.css'
+import './styles/account-hub.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
 

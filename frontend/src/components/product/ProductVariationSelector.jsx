@@ -58,7 +58,7 @@ export default function ProductVariationSelector({
                     aria-pressed={selected}
                     aria-disabled={disabled || soldOut}
                     aria-label={`${option.value}${soldOut ? ' - sold out' : unavailable ? ' - unavailable' : ''}`}
-                    className={`dtb-variant-pill${selected ? ' is-selected' : ''}${soldOut ? ' is-sold-out' : ''}${disabled ? ' is-disabled' : ''}`}
+                    className={`dtb-variant-pill${selected ? ' is-selected dtb-variant-pill--selected' : ''}${soldOut ? ' is-sold-out dtb-variant-pill--disabled' : ''}${disabled ? ' is-disabled dtb-variant-pill--disabled' : ''}`}
                     whileTap={disabled ? undefined : { scale: 0.985 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                   >

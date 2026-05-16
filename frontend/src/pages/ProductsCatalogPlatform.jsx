@@ -321,8 +321,6 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
           facetsLoading ? <SelectorSkeleton mode="brands" /> : (
             <ProductsBrandSelector
               brands={brandFacets}
-              searchQuery={query.search || ''}
-              onSearchChange={(e) => setQuery({ search: e.target.value }, { replace: true })}
               onSelectBrand={(brand) => navigate(`/products/brands/${brand.slug || brandToSlug(brand.label)}`)}
             />
           )
