@@ -1648,11 +1648,11 @@ aside input[type="range"],
 .mobile-cart-fab {
     display: none; /* hidden by default; shown via media query below */
     position: fixed;
-    bottom: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
     right: 20px;
     z-index: 9990;
-    width: 54px;
-    height: 54px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: linear-gradient(135deg, #1e3a5f, #2563eb);
     border: none;
@@ -1661,12 +1661,18 @@ aside input[type="range"],
     justify-content: center;
     color: #ffffff;
     box-shadow: 0 6px 24px rgba(37,99,235,0.38), 0 2px 8px rgba(15,23,42,0.18);
-    transition: box-shadow 180ms ease;
+    transition: box-shadow 180ms ease, opacity 180ms ease, transform 180ms ease;
     -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-cart-fab:active {
     box-shadow: 0 3px 12px rgba(37,99,235,0.28), 0 1px 4px rgba(15,23,42,0.14);
+}
+
+.mobile-cart-fab--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.94);
 }
 
 .mobile-cart-fab-badge {
@@ -1691,6 +1697,12 @@ aside input[type="range"],
 @media (max-width: 767px) {
     .mobile-cart-fab {
         display: flex;
+    }
+
+    body.dtb-product-modal-open .mobile-cart-fab {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px) scale(0.94);
     }
 }
 

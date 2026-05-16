@@ -186,6 +186,7 @@ export default function TrendingProducts() {
                   <ProductShoppingCard
                     product={product}
                     cardProduct={cardProduct}
+                    variant="rail"
                     hasSelectedVariation={false}
                     onOpenModal={() => openModal(product)}
                     onAddToCart={() => handleAddToCart(product)}
@@ -220,21 +221,21 @@ export default function TrendingProducts() {
       </ProductModal>
 
       <style>{`
-        .dtb-trending-scroll {
-          scroll-snap-type: x mandatory;
-          scroll-padding-inline: clamp(16px, 4vw, 32px);
-        }
+         .dtb-trending-scroll {
+           scroll-snap-type: x mandatory;
+           scroll-padding-inline: clamp(16px, 4vw, 32px);
+         }
 
-        .dtb-trending-card-wrap {
-          flex: 0 0 clamp(248px, 23vw, 312px);
-          max-width: clamp(248px, 23vw, 312px);
-          scroll-snap-align: start;
-        }
+         .dtb-trending-card-wrap {
+           flex: 0 0 clamp(162px, 21vw, 188px);
+           max-width: clamp(162px, 21vw, 188px);
+           scroll-snap-align: start;
+         }
 
-        .dtb-trending-card-wrap .dtb-plp-card {
-          width: 100%;
-          min-width: 0;
-        }
+         .dtb-trending-card-wrap .dtb-product-card {
+           width: 100%;
+           min-width: 0;
+         }
 
         @media (max-width: 767px) {
           .dtb-trending-section {
@@ -246,18 +247,18 @@ export default function TrendingProducts() {
             overflow: hidden;
           }
 
-          .dtb-trending-scroll {
-            gap: 14px;
-            padding-left: 16px;
-            padding-right: 16px;
-            scroll-padding-inline: 16px;
-          }
+           .dtb-trending-scroll {
+             gap: 12px;
+             padding-left: 16px;
+             padding-right: 16px;
+             scroll-padding-inline: 16px;
+           }
 
-          .dtb-trending-card-wrap {
-            flex-basis: clamp(236px, 74vw, 286px);
-            max-width: clamp(236px, 74vw, 286px);
-            scroll-snap-align: start;
-          }
+           .dtb-trending-card-wrap {
+             flex-basis: clamp(162px, 44vw, 188px);
+             max-width: clamp(162px, 44vw, 188px);
+             scroll-snap-align: start;
+           }
 
           .dtb-trending-card-wrap .dtb-plp-card__img-wrap,
           .dtb-trending-card-wrap .dtb-plp-card__img-btn {

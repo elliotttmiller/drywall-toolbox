@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Filter, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Filter, ShoppingCart } from 'lucide-react';
 import SEOHead from '../components/shared/SEOHead';
 import BackButton from '../components/shared/BackButton';
 import SearchBar from '../components/catalog/SearchBar';
@@ -215,6 +215,18 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
   const pageSubheading = selectedBrand && selectedCategoryLabel
     ? `Browse ${selectedCategoryLabel.toLowerCase()} from ${selectedBrandFacet?.label || selectedBrand}.`
     : 'Browse our extensive collection of professional drywall tools';
+  const isCategoryProductRoute = Boolean(selectedBrand && selectedCategoryLabel);
+  const isPartsPage = isPartsFilter === 1;
+  const desktopHeading = isCategoryProductRoute ? pageHeading : title;
+  const desktopSubheading = isCategoryProductRoute
+    ? pageSubheading
+    : (isPartsPage
+      ? 'Genuine replacement parts, kits, and service components from trusted drywall brands.'
+      : pageSubheading);
+  const canonicalUrl = isPartsPage ? 'https://drywalltoolbox.com/parts' : 'https://drywalltoolbox.com/products';
+  const seoDescription = isPartsPage
+    ? 'Shop professional drywall replacement parts, service kits, and repair components from leading brands.'
+    : 'Shop professional drywall tools, parts, accessories, and replacement components from leading drywall brands.';
 
   const setQuery = useCallback((patch, options = {}) => {
     const next = { ...query, ...patch };
@@ -261,18 +273,39 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
-      <SEOHead title={pageHeading} description="Shop professional drywall tools, parts, accessories, and replacement components from leading drywall brands." canonical="https://drywalltoolbox.com/products" schema={buildSiteLinksSearchBoxSchema()} />
+      <SEOHead title={pageHeading} description={seoDescription} canonical={canonicalUrl} schema={buildSiteLinksSearchBoxSchema()} />
       <div className="container mx-auto px-4 py-4 pt-6">
         {!showCategoryLanding && selectedBrand && (
-          <div className="mb-6">
+          <div className="mb-4 hidden sm:block">
             <BackButton onClick={query.displayCategory ? resetToCategoryCards : resetToBrandList} label={query.displayCategory ? selectedBrand : 'Brands'} />
           </div>
         )}
 
         {!showCategoryLanding && (
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">{pageHeading}</h1>
-            <p className="text-gray-600">{pageSubheading}</p>
+          <div className="mb-5 sm:mb-8">
+            {isCategoryProductRoute ? (
+              <div className="dtb-listing-heading dtb-listing-heading--category">
+                <button
+                  type="button"
+                  onClick={query.displayCategory ? resetToCategoryCards : resetToBrandList}
+                  className="dtb-listing-heading__back-pill sm:hidden"
+                >
+                  <ArrowLeft size={14} aria-hidden="true" />
+                  <span>{selectedBrandFacet?.label || selectedBrand}</span>
+                </button>
+                <span className="dtb-listing-heading__eyebrow">Products</span>
+                <h1 className="dtb-listing-heading__title">{selectedCategoryLabel}</h1>
+                <p className="dtb-listing-heading__meta">
+                  {(selectedBrandFacet?.label || selectedBrand)}
+                  {total > 0 ? ` · ${total.toLocaleString()} product${total === 1 ? '' : 's'}` : ''}
+                </p>
+              </div>
+            ) : (
+              <div className="dtb-listing-heading dtb-listing-heading--standard">
+                <h1 className="dtb-listing-heading__desktop-title">{desktopHeading}</h1>
+                <p className="dtb-listing-heading__desktop-subtitle">{desktopSubheading}</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -305,7 +338,9 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
           )
         ) : (
           <>
-            <SearchBar placeholder="Search products by name, SKU, or brand..." value={query.search || ''} onChange={(e) => setQuery({ search: e.target.value }, { replace: true })} />
+            <div className="dtb-listing-search">
+              <SearchBar placeholder={isPartsPage ? 'Search parts by name, SKU, or brand...' : 'Search products by name, SKU, or brand...'} value={query.search || ''} onChange={(e) => setQuery({ search: e.target.value }, { replace: true })} />
+            </div>
             <div className="flex flex-col lg:flex-row gap-8">
               <FilterPanel
                 isOpen={showFilters}
@@ -319,14 +354,23 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
                 onBrandChange={toggleBrand}
                 onCategoryChange={toggleDisplayCategory}
                 onPriceChange={() => {}}
-                onClearFilters={() => selectedBrand ? setQuery({ category: '', displayCategory: '', search: '', sort: 'popular' }) : navigate('/products')}
+                onClearFilters={() => selectedBrand ? setQuery({ category: '', displayCategory: '', search: '', sort: 'popular' }) : navigate(isPartsPage ? '/parts' : '/products')}
                 resultsCount={total}
               />
 
               <div className="flex-1">
-                <div className="flex flex-row justify-between items-center gap-4 mb-6">
-                  <Dropdown value={query.sort} onChange={(value) => setQuery({ sort: value })} options={SORT_OPTIONS} />
-                  <button onClick={() => setShowFilters(!showFilters)} className="lg:hidden flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors" aria-label="Toggle Filters">
+                <div className="dtb-listing-toolbar mb-5 sm:mb-6">
+                  <button onClick={() => setShowFilters(!showFilters)} className="dtb-listing-toolbar__pill lg:hidden" aria-label="Toggle filters and sort">
+                    <Filter size={18} />
+                    <span>Filter &amp; Sort</span>
+                  </button>
+                  <div className="dtb-listing-toolbar__sort">
+                    <Dropdown value={query.sort} onChange={(value) => setQuery({ sort: value })} options={SORT_OPTIONS} />
+                  </div>
+                  <div className="dtb-listing-toolbar__count" aria-live="polite">
+                    {itemsLoading ? 'Loading…' : `${total.toLocaleString()} result${total === 1 ? '' : 's'}`}
+                  </div>
+                  <button onClick={() => setShowFilters(!showFilters)} className="dtb-listing-toolbar__pill hidden lg:inline-flex" aria-label="Toggle filters">
                     <Filter size={18} />
                     <span>Filters</span>
                   </button>
@@ -334,10 +378,10 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
 
                 {itemsLoading ? <ProductSkeletonGrid count={24} /> : (
                   <>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+                    <div className={`dtb-product-grid${mappedProducts.length === 1 ? ' dtb-product-grid--single' : ''}`}>
                       {mappedProducts.map((product, index) => {
                         const cardProduct = getCardDisplayProduct(product);
-                        return <ProductShoppingCard key={product.id} product={product} cardProduct={cardProduct} hasSelectedVariation={Boolean(product.is_variable && cardProduct?.parent_id)} onOpenModal={() => openModal(product, cardProduct)} onAddToCart={() => openModal(product, cardProduct)} index={index} />;
+                        return <ProductShoppingCard key={product.id} product={product} cardProduct={cardProduct} variant="grid" hasSelectedVariation={Boolean(product.is_variable && cardProduct?.parent_id)} onOpenModal={() => openModal(product, cardProduct)} onAddToCart={() => openModal(product, cardProduct)} index={index} />;
                       })}
                     </div>
 
@@ -353,7 +397,7 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
                         <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
                         <p className="text-gray-600 mb-6">Try adjusting your filters to see more products.</p>
-                        <button onClick={() => navigate('/products')} className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Clear Filters</button>
+                        <button onClick={() => navigate(isPartsPage ? '/parts' : '/products')} className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Clear Filters</button>
                       </div>
                     )}
                   </>

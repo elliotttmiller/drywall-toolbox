@@ -50,7 +50,7 @@ const DRAWER_NAV_ROWS = [
   { to: '/contact', label: 'Contact' },
 ];
 
-export default function Header({ onCartToggle, hasTopTicker = false }) {
+export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = false }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { getCartCount } = useCart();
@@ -82,6 +82,8 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
 
   const isActive = (path) => location.pathname === path;
   const shopActive = location.pathname.startsWith('/products') || isActive('/parts') || isActive('/toolset-builder');
+  const isProductDetailRoute = /^\/products\/(?!brands(?:\/|$))/.test(location.pathname);
+  const hideMobileCartFab = mobileMenuOpen || searchOverlayOpen || cartOpen || isProductDetailRoute;
 
   const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -387,7 +389,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
         </AnimatePresence>
       </header>
 
-      <Motion.button className="mobile-cart-fab" onClick={onCartToggle} aria-label="Open cart" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 340, damping: 24 }} whileTap={{ scale: 0.9 }}>
+      <Motion.button className={`mobile-cart-fab${hideMobileCartFab ? ' mobile-cart-fab--hidden' : ''}`} onClick={onCartToggle} aria-label="Open cart" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: hideMobileCartFab ? 0 : 1 }} transition={{ type: 'spring', stiffness: 340, damping: 24 }} whileTap={{ scale: 0.9 }}>
         <ShoppingCart size={22} />
         <span aria-live="polite" aria-atomic="true">{getCartCount() > 0 && <span className="mobile-cart-fab-badge" aria-label={`${getCartCount()} items in cart`}>{getCartCount()}</span>}</span>
       </Motion.button>
@@ -399,6 +401,8 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
         setQuery={setMobileSearchQuery}
         onClose={closeSearchOverlay}
         loading={searchLoading}
+        brands={['TapeTech', 'Columbia Taping Tools', 'Level 5', 'Asgard']}
+        categories={['Automatic Taping Tools', 'Finishing Boxes', 'Corner Tools', 'Parts']}
         suggestions={searchSuggestions}
       />
 

@@ -87,10 +87,12 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
     const previousTouchAction = document.body.style.touchAction;
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
+    document.body.classList.add('dtb-product-modal-open');
 
     return () => {
       document.body.style.overflow = previousOverflow;
       document.body.style.touchAction = previousTouchAction;
+      document.body.classList.remove('dtb-product-modal-open');
     };
   }, [isOpen]);
 

@@ -390,9 +390,14 @@ export default function ProductDetail({
       {stripSpecsFromHtml(effectiveProduct.description_full || effectiveProduct.description || effectiveProduct.short_description || 'No description available.')}
     </ReactMarkdown>
   );
+  const stockLine = isOutOfStock
+    ? 'Currently unavailable'
+    : (selectedVariation
+      ? `${selectedVariationLabel || 'Selected option'} is ready to ship`
+      : 'Ready to ship while supplies last');
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-6xl mx-auto flex flex-col relative">
+    <div className="dtb-pdp bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-6xl mx-auto flex flex-col relative">
       {onClose ? (
         <button
           onClick={onClose}
@@ -405,9 +410,16 @@ export default function ProductDetail({
       ) : null}
 
       <div className="overflow-x-hidden">
-        <div className="p-4 sm:p-6 md:p-8 lg:p-12 max-w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
-            <ProductImageGallery product={effectiveProduct} />
+        <div className="dtb-pdp__inner p-4 sm:p-6 md:p-8 lg:p-12 max-w-full">
+          <div className="dtb-pdp__topbar">
+            <span className="dtb-pdp__topbar-label">{product.brand || 'Drywall Toolbox'}</span>
+            {effectiveSku ? <span className="dtb-pdp__topbar-meta">SKU {effectiveSku}</span> : null}
+          </div>
+
+          <div className="dtb-pdp__hero grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
+            <div className="dtb-pdp-gallery">
+              <ProductImageGallery product={effectiveProduct} />
+            </div>
 
             <div className="flex flex-col">
               <ProductDetailHeader
@@ -439,6 +451,10 @@ export default function ProductDetail({
                   hasCompleteSelection={hasCompleteSelection}
                 />
               ) : null}
+
+              <p className={`dtb-pdp__stock-line${isOutOfStock ? ' is-out' : ''}`}>
+                {stockLine}
+              </p>
 
               <ProductPurchasePanel
                 quantity={quantity}

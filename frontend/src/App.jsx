@@ -151,7 +151,7 @@ function AppShell({ cartOpen, toggleCart, closeCart }) {
             <ShippingTicker items={[{ text: 'FREE SHIPPING ON ALL ORDERS $75+ (CONTIGUOUS USA ONLY)' }, { text: 'Expert Support - Real Pros' }, { text: 'Professional Repair Services' }]} duration={33} className="dtb-desktop-shipping-bar dtb-top-shipping-bar" />
           </div>
         )}
-        <Header onCartToggle={toggleCart} hasTopTicker={isHomePage} />
+        <Header onCartToggle={toggleCart} cartOpen={cartOpen} hasTopTicker={isHomePage} />
         <main style={{ flexGrow: 1 }} className="main-content"><AppRoutes /></main>
         <Footer />
       </div>

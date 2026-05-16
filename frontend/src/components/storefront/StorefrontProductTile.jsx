@@ -13,6 +13,7 @@ export default function StorefrontProductTile({
   onOpenModal,
   onAddToCart,
   index = 0,
+  variant = 'grid',
 }) {
   const resolved = cardProduct || product || {};
   const isVariable = Boolean(product?.is_variable);
@@ -26,62 +27,65 @@ export default function StorefrontProductTile({
 
   const onSale = !isVariable && resolved.sale_price && resolved.regular_price
     && parseFloat(resolved.sale_price) < parseFloat(resolved.regular_price);
+  const cardClassName = `dtb-product-card dtb-product-card--${variant} storefront-motion-card`;
 
   return (
     <Motion.article
-      className="storefront-product-tile storefront-motion-card"
+      className={cardClassName}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, delay: Math.min(index, 8) * 0.03 }}
     >
-      <button type="button" className="storefront-product-tile__image" onClick={onOpenModal} aria-label={`View ${name}`}>
+      <button type="button" className="dtb-product-card__image" onClick={onOpenModal} aria-label={`View ${name}`}>
         {outOfStock && (
-          <span className="storefront-product-tile__badge storefront-product-tile__badge--out">Out of Stock</span>
+          <span className="dtb-product-card__badge dtb-product-card__badge--out">Out of Stock</span>
         )}
         {onSale && !outOfStock && (
-          <span className="storefront-product-tile__badge storefront-product-tile__badge--sale">Sale</span>
+          <span className="dtb-product-card__badge dtb-product-card__badge--sale">Sale</span>
         )}
         <ProductCardImage
           product={resolved}
           src={resolved.image_thumbnail || resolved.image}
           srcSet={resolved.image_srcset}
-          sizes="(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 240px"
+          sizes={variant === 'rail' ? '(max-width: 767px) 44vw, 188px' : '(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 240px'}
           alt={name}
           padding="0"
-          fit="cover"
+          fit="contain"
           preferThumbnail
           eager={index < 4}
         />
       </button>
 
-      <div className="storefront-product-tile__meta">
-        {resolved.brand ? <span className="storefront-product-tile__brand">{resolved.brand}</span> : null}
+      <div className="dtb-product-card__meta">
+        {resolved.brand ? <span className="dtb-product-card__brand">{resolved.brand}</span> : null}
         <button
           type="button"
           onClick={onOpenModal}
-          className="storefront-product-tile__name-button"
+          className="dtb-product-card__name"
           aria-label={`View product details for ${name}`}
         >
           {name}
         </button>
-        {sku ? <span className="storefront-product-tile__sku">SKU: {sku}</span> : null}
+        {sku ? <span className="dtb-product-card__sku">SKU: {sku}</span> : null}
 
-        <div className="storefront-product-tile__divider" />
+        <div className="dtb-product-card__divider" />
 
-        <div className="storefront-product-tile__footer">
+        <div className="dtb-product-card__footer">
           <strong
-            className="storefront-product-tile__price"
+            className="dtb-product-card__price"
             style={{ color: outOfStock ? 'var(--dtb-muted)' : 'var(--dtb-text)' }}
           >
             {priceStr}
           </strong>
           {isVariable ? (
-            <button type="button" onClick={onOpenModal} className="alloy-button" style={{ minHeight: '34px', fontSize: '0.8rem' }}>
-              Options <ChevronRight size={13} />
+            <button type="button" onClick={onOpenModal} className="dtb-product-card__action dtb-product-card__action--options">
+              <span>Options</span>
+              <ChevronRight size={13} />
             </button>
           ) : (
-            <button type="button" onClick={onAddToCart} disabled={outOfStock} className="alloy-button" style={{ minHeight: '34px' }} aria-label={`Add ${name} to cart`}>
+            <button type="button" onClick={onAddToCart} disabled={outOfStock} className="dtb-product-card__action" aria-label={`Add ${name} to cart`}>
               <ShoppingCart size={14} />
+              <span>Add</span>
             </button>
           )}
         </div>

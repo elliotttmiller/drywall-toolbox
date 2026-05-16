@@ -1,11 +1,6 @@
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2 } from 'lucide-react';
 
-function money(value) {
-  const parsed = typeof value === 'number' ? value : parseFloat(value || 0);
-  return Number.isFinite(parsed) ? parsed.toFixed(2) : '0.00';
-}
-
 function attributeLabel(attr) {
   return (attr?.name || '').replace(/^pa_/i, '').replace(/[_-]+/g, ' ').trim();
 }
@@ -47,7 +42,7 @@ export default function ProductVariationSelector({
               </AnimatePresence>
             </div>
 
-            <div className="product-variation-grid">
+            <div className="dtb-variant-rail">
               {options.map((option) => {
                 const selected = `${selectedValue}` === `${option.value}`;
                 const soldOut = option.status === 'sold-out';
@@ -61,37 +56,31 @@ export default function ProductVariationSelector({
                     onClick={() => setSelectedAttrs((prev) => ({ ...prev, [attr.name]: option.value }))}
                     disabled={disabled}
                     aria-pressed={selected}
-                    className={`product-variation-option${selected ? ' is-selected' : ''}${soldOut ? ' is-sold-out' : ''}${disabled ? ' is-disabled' : ''}`}
+                    className={`dtb-variant-pill${selected ? ' is-selected' : ''}${soldOut ? ' is-sold-out' : ''}${disabled ? ' is-disabled' : ''}`}
                     whileTap={disabled ? undefined : { scale: 0.985 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <span className="product-variation-option__main">
-                      <span className="product-variation-option__value">{option.value}</span>
+                    <span className="dtb-variant-pill__label">{option.value}</span>
+                    {!variationsLoading && selected ? (
                       <AnimatePresence>
-                        {selected && (
-                          <Motion.span
-                            className="product-variation-option__check"
-                            initial={{ scale: 0.4, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.4, opacity: 0 }}
-                            transition={{ duration: 0.16 }}
-                          >
-                            <Check size={13} strokeWidth={3} />
-                          </Motion.span>
-                        )}
+                        <Motion.span
+                          className="dtb-variant-pill__check"
+                          initial={{ scale: 0.4, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.4, opacity: 0 }}
+                          transition={{ duration: 0.16 }}
+                        >
+                          <Check size={13} strokeWidth={3} />
+                        </Motion.span>
                       </AnimatePresence>
-                    </span>
-                    <span className="product-variation-option__meta">
-                      {variationsLoading ? (
-                        <span className="product-variation-option__loading"><Loader2 size={12} /> Loading</span>
-                      ) : soldOut ? (
-                        'Sold out'
-                      ) : option.price != null ? (
-                        `$${money(option.price)}`
-                      ) : (
-                        'Unavailable'
-                      )}
-                    </span>
+                    ) : null}
+                    {variationsLoading ? (
+                      <span className="dtb-variant-pill__status"><Loader2 size={12} /> Loading</span>
+                    ) : soldOut ? (
+                      <span className="dtb-variant-pill__status">Sold out</span>
+                    ) : unavailable ? (
+                      <span className="sr-only">Unavailable</span>
+                    ) : null}
                   </Motion.button>
                 );
               })}

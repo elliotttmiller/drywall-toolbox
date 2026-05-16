@@ -1,6 +1,26 @@
 import { Link } from 'react-router-dom';
+import { ArrowRight, X } from 'lucide-react';
 import StorefrontSearchDock from './StorefrontSearchDock';
-import StorefrontSkeletons from './StorefrontSkeletons';
+
+const QUICK_LINKS = [
+  { to: '/products', label: 'All Products' },
+  { to: '/parts', label: 'Parts' },
+  { to: '/products/brands', label: 'Brands' },
+  { to: '/schematics', label: 'Schematics' },
+];
+
+function toSlug(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function formatPrice(value) {
+  const numeric = Number(value || 0);
+  return Number.isFinite(numeric) && numeric > 0 ? `$${numeric.toFixed(2)}` : 'View product';
+}
 
 export default function StorefrontSearchOverlay({
   isOpen,
@@ -19,53 +39,119 @@ export default function StorefrontSearchOverlay({
     <div className="storefront-search-overlay" role="dialog" aria-modal="true" aria-label="Search products">
       <button type="button" className="storefront-mobile-drawer__backdrop" onClick={onClose} aria-label="Close search" />
       <div className="storefront-search-overlay__sheet">
-        <div style={{ padding: '16px', borderBottom: '1px solid var(--dtb-border)' }}>
+        <div className="storefront-search-overlay__topbar">
           <StorefrontSearchDock value={query} onChange={(event) => setQuery(event.target.value)} />
+          <button type="button" className="storefront-search-overlay__close" onClick={onClose} aria-label="Close search">
+            <X size={18} />
+          </button>
         </div>
 
-        <div style={{ padding: '16px', display: 'grid', gap: '16px' }}>
-          {!query && recent.length > 0 ? (
-            <section>
-              <h3 style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '8px' }}>Recent</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {recent.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setQuery(item)}
-                    className="storefront-surface"
-                    style={{ padding: '6px 10px' }}
-                    aria-label={`Search for ${item}`}
-                  >
-                    {item}
-                  </button>
-                ))}
+        <div className="storefront-search-overlay__body">
+          {!query ? (
+            <section className="storefront-search-overlay__empty-state">
+              <div className="storefront-search-overlay__section">
+                <h3 className="storefront-search-overlay__section-title">Quick links</h3>
+                <div className="storefront-search-overlay__quick-links">
+                  {QUICK_LINKS.map((item) => (
+                    <Link key={item.to} to={item.to} onClick={onClose} className="storefront-search-overlay__quick-link">
+                      <span>{item.label}</span>
+                      <ArrowRight size={14} />
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </section>
-          ) : null}
 
-          {!query && (brands.length > 0 || categories.length > 0) ? (
-            <section style={{ display: 'grid', gap: '10px' }}>
-              {brands.length > 0 ? <p style={{ margin: 0, color: 'var(--dtb-muted)' }}>Popular brands: {brands.join(', ')}</p> : null}
-              {categories.length > 0 ? <p style={{ margin: 0, color: 'var(--dtb-muted)' }}>Popular categories: {categories.join(', ')}</p> : null}
-            </section>
-          ) : null}
+              {categories.length > 0 ? (
+                <div className="storefront-search-overlay__section">
+                  <h3 className="storefront-search-overlay__section-title">Popular categories</h3>
+                  <div className="storefront-search-overlay__chip-list">
+                    {categories.map((category) => (
+                      <Link
+                        key={category}
+                        to={`/products?display_category=${encodeURIComponent(category.toLowerCase().replace(/[^\w]+/g, '_'))}`}
+                        onClick={onClose}
+                        className="storefront-search-overlay__chip"
+                      >
+                        {category}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
-          {loading ? <StorefrontSkeletons count={3} /> : (
-            <section style={{ display: 'grid', gap: '8px' }}>
-              {suggestions.map((product) => (
-                <Link key={product.id} to={`/products/${product.slug || product.id}`} onClick={onClose} className="storefront-surface" style={{ padding: '10px 12px', textDecoration: 'none' }}>
-                  <strong>{product.name}</strong>
-                  <div style={{ color: 'var(--dtb-muted)', fontSize: '0.85rem' }}>{product.brand || 'Product'}</div>
-                </Link>
-              ))}
-              {query ? (
-                <Link to={`/products?search=${encodeURIComponent(query.trim())}`} onClick={onClose} className="storefront-surface" style={{ padding: '10px 12px', textAlign: 'center', textDecoration: 'none' }}>
-                  View all results
-                </Link>
+              {brands.length > 0 ? (
+                <div className="storefront-search-overlay__section">
+                  <h3 className="storefront-search-overlay__section-title">Popular brands</h3>
+                  <div className="storefront-search-overlay__chip-list">
+                    {brands.map((brand) => (
+                      <Link
+                        key={brand}
+                        to={`/products/brands/${toSlug(brand)}`}
+                        onClick={onClose}
+                        className="storefront-search-overlay__chip"
+                      >
+                        {brand}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {recent.length > 0 ? (
+                <div className="storefront-search-overlay__section">
+                  <h3 className="storefront-search-overlay__section-title">Recent searches</h3>
+                  <div className="storefront-search-overlay__chip-list">
+                    {recent.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => setQuery(item)}
+                        className="storefront-search-overlay__chip"
+                        aria-label={`Search for ${item}`}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ) : null}
             </section>
-          )}
+          ) : null}
+
+          {query ? (
+            loading ? (
+              <section className="storefront-search-overlay__results">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="storefront-search-overlay__skeleton-row">
+                    <div className="storefront-search-overlay__skeleton-thumb storefront-skeleton" />
+                    <div className="storefront-search-overlay__skeleton-copy">
+                      <div className="storefront-skeleton" style={{ height: 10, width: '42%', borderRadius: 999 }} />
+                      <div className="storefront-skeleton" style={{ height: 12, width: '78%', borderRadius: 999 }} />
+                      <div className="storefront-skeleton" style={{ height: 11, width: '30%', borderRadius: 999 }} />
+                    </div>
+                  </div>
+                ))}
+              </section>
+            ) : (
+              <section className="storefront-search-overlay__results">
+                {suggestions.map((product) => (
+                  <Link key={product.id} to={`/products/${product.slug || product.id}`} onClick={onClose} className="storefront-search-overlay__result">
+                    <div className="storefront-search-overlay__result-thumb">
+                      {product.image ? <img src={product.image} alt={product.name} loading="lazy" /> : null}
+                    </div>
+                    <div className="storefront-search-overlay__result-copy">
+                      <span className="storefront-search-overlay__result-brand">{product.brand || 'Product'}</span>
+                      <strong className="storefront-search-overlay__result-name">{product.name}</strong>
+                      <span className="storefront-search-overlay__result-price">{formatPrice(product.price)}</span>
+                    </div>
+                  </Link>
+                ))}
+                <Link to={`/products?search=${encodeURIComponent(query.trim())}`} onClick={onClose} className="storefront-search-overlay__view-all">
+                  View all results
+                </Link>
+              </section>
+            )
+          ) : null}
         </div>
       </div>
     </div>
