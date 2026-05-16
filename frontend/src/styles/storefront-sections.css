@@ -415,3 +415,91 @@
     gap: 20px;
   }
 }
+
+/* ── DTB Legacy Hero ── */
+.dtb-hero {
+  position: relative;
+  border-radius: var(--dtb-radius-lg);
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a1020 0%, #0f1e3a 55%, #0d2a50 100%);
+  color: #fff;
+  padding: clamp(2rem, 6vw, 3.5rem) clamp(1.25rem, 4vw, 2.5rem);
+  margin-bottom: 0;
+}
+
+.dtb-hero__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.055;
+  background-image: radial-gradient(circle at 2px 2px, #fff 1px, transparent 0);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+
+.dtb-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 52ch;
+}
+
+.dtb-hero__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.88);
+}
+
+.dtb-hero__title {
+  margin: 0 0 0.65rem;
+  font-size: clamp(2rem, 7vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: #fff;
+}
+
+.dtb-hero__sub {
+  margin: 0 0 1.25rem;
+  font-size: clamp(0.88rem, 2vw, 1.05rem);
+  color: rgba(255, 255, 255, 0.62);
+  max-width: 46ch;
+  line-height: 1.5;
+}
+
+.dtb-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dtb-hero__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: opacity 140ms var(--dtb-ease), transform 140ms var(--dtb-ease);
+}
+
+.dtb-hero__btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.dtb-hero__btn--primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.dtb-hero__btn--ghost {
+  background: rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+}

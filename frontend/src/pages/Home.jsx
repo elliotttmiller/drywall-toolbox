@@ -70,13 +70,8 @@ export default function Home() {
             </StorefrontRail>
           </StorefrontSection>
 
-          {/* ── Featured Products (brand-balanced) ── */}
-          <StorefrontSection
-            title="Featured Products"
-            viewAllHref="/products"
-          >
-            <TrendingProducts />
-          </StorefrontSection>
+          {/* ── Trending / Featured Products (brand-balanced) ── */}
+          <TrendingProducts />
 
           {/* ── New Arrivals ── */}
           <StorefrontSection

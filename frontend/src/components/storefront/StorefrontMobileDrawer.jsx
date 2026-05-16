@@ -4,27 +4,53 @@ export default function StorefrontMobileDrawer({ isOpen, onClose, labelledBy = '
   const closeRef = useRef(null);
 
   useEffect(() => {
-    if (!isOpen) return undefined;
+    if (isOpen) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      // Defer focus so the CSS transition has begun
+      const t = setTimeout(() => closeRef.current?.focus(), 20);
+      return () => {
+        clearTimeout(t);
+        document.body.style.overflow = previousOverflow;
+      };
+    }
+    return undefined;
+  }, [isOpen]);
+
+  useEffect(() => {
     const onKeyDown = (event) => {
-      if (event.key === 'Escape') onClose?.();
+      if (event.key === 'Escape' && isOpen) onClose?.();
     };
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    closeRef.current?.focus();
     window.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', onKeyDown);
-    };
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="storefront-mobile-drawer" role="dialog" aria-modal="true" aria-labelledby={labelledBy}>
-      <button type="button" className="storefront-mobile-drawer__backdrop" onClick={onClose} aria-label="Close menu" />
+    <div
+      className="storefront-mobile-drawer"
+      data-open={isOpen ? 'true' : 'false'}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={labelledBy}
+      aria-label="Mobile navigation"
+    >
+      <button
+        type="button"
+        className="storefront-mobile-drawer__backdrop"
+        onClick={onClose}
+        aria-label="Close menu"
+        tabIndex={isOpen ? 0 : -1}
+      />
       <div className="storefront-mobile-drawer__panel">
-        <button ref={closeRef} type="button" onClick={onClose} className="sr-only">Close</button>
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          className="sr-only"
+          tabIndex={isOpen ? 0 : -1}
+        >
+          Close
+        </button>
         {children}
       </div>
     </div>

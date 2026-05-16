@@ -2,13 +2,25 @@
   position: fixed;
   inset: 0;
   z-index: 10002;
-  display: block;
+  /* Hidden state */
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition:
+    opacity 180ms var(--dtb-ease),
+    transform 220ms var(--dtb-ease);
+}
+
+.storefront-mobile-drawer[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .storefront-mobile-drawer__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(2, 6, 23, 0.52);
+  background: #020617;
   border: 0;
 }
 
@@ -16,7 +28,7 @@
   position: relative;
   width: 100%;
   min-height: 100dvh;
-  background: var(--dtb-shell);
+  background: #020617;
   color: white;
   overflow-y: auto;
   display: flex;
