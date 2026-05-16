@@ -347,6 +347,7 @@ export default function ProductDetail({
   const effectiveProduct = selectedVariation
     ? composeEffectiveVariationProduct(product, selectedVariation, selectedVariationLabel)
     : product;
+  const brandLabel = product?.brand?.label || effectiveProduct?.brand?.label || product?.brandLabel || effectiveProduct?.brandLabel || product?.brand || effectiveProduct?.brand || '';
   const effectiveSku = effectiveProduct.sku || product.sku || '';
   const effectiveStock = effectiveProduct.stock_status || product.stock_status || 'instock';
   const isOutOfStock = effectiveStock === 'outofstock';
@@ -382,7 +383,7 @@ export default function ProductDetail({
 
   const brandLogoClassName = [
     'product-detail-brand-logo',
-    product.brand === 'Columbia Taping Tools' ? 'product-detail-brand-logo--columbia' : '',
+    brandLabel === 'Columbia Taping Tools' ? 'product-detail-brand-logo--columbia' : '',
   ].filter(Boolean).join(' ');
 
   const descriptionNode = (
@@ -412,7 +413,7 @@ export default function ProductDetail({
       <div className="overflow-x-hidden">
         <div className="dtb-pdp__inner p-4 sm:p-6 md:p-8 lg:p-12 max-w-full">
           <div className="dtb-pdp__topbar">
-            <span className="dtb-pdp__topbar-label">{product.brand || 'Drywall Toolbox'}</span>
+            <span className="dtb-pdp__topbar-label">{brandLabel || 'Drywall Toolbox'}</span>
             {effectiveSku ? <span className="dtb-pdp__topbar-meta">SKU {effectiveSku}</span> : null}
           </div>
 
@@ -427,7 +428,8 @@ export default function ProductDetail({
                 effectiveName={(effectiveProduct.name || product.name)}
                 effectiveSku={effectiveSku}
                 isOutOfStock={isOutOfStock}
-                brandLogoSrc={product.brand ? BRAND_LOGOS[product.brand] : null}
+                brandLabel={brandLabel}
+                brandLogoSrc={brandLabel ? BRAND_LOGOS[brandLabel] : null}
                 brandLogoClassName={brandLogoClassName}
                 displayPrice={displayPrice}
                 pricePrefix={pricePrefix}

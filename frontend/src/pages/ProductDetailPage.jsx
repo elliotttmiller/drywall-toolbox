@@ -25,32 +25,13 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import useProductDetail from '../hooks/useProductDetail';
 import { useSelectedVariation } from '../hooks/useSelectedVariation';
-import { buildCartItem } from '../utils/woocommerceVariationPayload';
+import { getVariationSelectionMap } from '../utils/variationSelection';
 import { buildBreadcrumbSchema, buildProductSchema, stripHtml } from '../utils/schema';
-import ProductMediaGallery from '../components/product/ProductMediaGallery';
-import ProductPrice from '../components/product/ProductPrice';
-import ProductSkuBlock from '../components/product/ProductSkuBlock';
-import ProductPurchasePanel from '../components/product/ProductPurchasePanel';
-import ProductDescriptionAccordion from '../components/product/ProductDescriptionAccordion';
+import ProductDetail from '../components/product/ProductDetail';
 import SEOHead from '../components/shared/SEOHead';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import Toast from '../components/ui/Toast';
 import { useState } from 'react';
-import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
-import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
-import surproLogo from '/brands/SurPro/surpro_logo.svg';
-import asgardLogo from '/brands/Asgard/asgard_logo.svg';
-import gracoLogo from '/brands/Graco/graco_logo.svg';
-import level5Logo from '/brands/Level5/Level5.svg';
-
-const BRAND_LOGOS = {
-  'Columbia Taping Tools': columbiaLogo,
-  'TapeTech': tapeTechLogo,
-  'SurPro': surproLogo,
-  'Asgard': asgardLogo,
-  'Graco': gracoLogo,
-  'Level 5': level5Logo,
-};
 
 function getVariationDisplayName(product, selectedVariation, effectiveVariationName) {
   const variationName = `${selectedVariation?.name || ''}`.trim();
@@ -72,23 +53,13 @@ export default function ProductDetailPage() {
   const { product, variations, computed, status, error } = useProductDetail(slug);
 
   // ── Variation state machine ────────────────────────────────────────────────
-  const {
-    selectedVariation,
-    variationState,
-    selectVariation,
-  } = useSelectedVariation(variations, computed);
+  const { selectedVariation } = useSelectedVariation(variations, computed);
 
   // ── Add to cart ────────────────────────────────────────────────────────────
-  const handleAddToCart = (prod, variation, qty) => {
+  const handleAddToCart = (prod, qty = 1) => {
     try {
-      const item = buildCartItem(prod, variation, qty);
-      addToCart(item, item.quantity);
-      const name = variation
-        ? [prod.name, Object.values(
-            variation.variation_attribute_values?.reduce((acc, a) => { acc[a.name] = a.option; return acc; }, {}) || {}
-          ).join(' / ')].filter(Boolean).join(' — ')
-        : prod.name;
-      setToast({ message: `${name} added to cart!`, type: 'cart' });
+      addToCart(prod, qty);
+      setToast({ message: `${prod.name} added to cart!`, type: 'cart' });
     } catch (err) {
       setToast({ message: err.message || 'Failed to add to cart.', type: 'error' });
     }
@@ -169,8 +140,6 @@ export default function ProductDetailPage() {
     { label: effectiveProductName, path: `/products/${product.slug || slug}` },
   ]);
 
-  const brandLogo = BRAND_LOGOS[product.brand] ?? null;
-
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
       <SEOHead
@@ -184,7 +153,7 @@ export default function ProductDetailPage() {
         links={heroImage ? [{ rel: 'preload', href: heroImage, as: 'image' }] : []}
       />
 
-      <div className="container mx-auto px-4 py-10 max-w-6xl">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ marginBottom: '24px', fontSize: '0.8rem', color: '#64748b' }}>
           <Link to="/" style={{ color: '#64748b', textDecoration: 'none' }}>Home</Link>
@@ -193,85 +162,14 @@ export default function ProductDetailPage() {
           <span style={{ margin: '0 8px' }}>›</span>
           <span style={{ color: '#0f172a', fontWeight: 600 }}>{effectiveProductName}</span>
         </nav>
-
-        {/* Main grid: image left, details right */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
-            gap: '48px',
-            alignItems: 'start',
-          }}
-          className="product-detail-grid"
-        >
-          {/* ── Left: Media ──────────────────────────────────────────────────── */}
-          <ProductMediaGallery
-            product={product}
-            selectedVariation={selectedVariation}
-          />
-
-          {/* ── Right: Info + Purchase ───────────────────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Brand + badges */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              {brandLogo ? (
-                <img
-                  src={brandLogo}
-                  alt={product.brand}
-                  style={{ height: '22px', objectFit: 'contain' }}
-                />
-              ) : (
-                product.brand && (
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--primary-600)' }}>
-                    {product.brand}
-                  </span>
-                )
-              )}
-            </div>
-
-            {/* Product name */}
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.2, margin: 0 }}>
-              {effectiveProductName}
-              {selectedVariation && effectiveVariationName && !`${effectiveProductName}`.toLowerCase().includes(`${effectiveVariationName}`.toLowerCase()) && (
-                <span style={{ display: 'block', fontSize: '1rem', fontWeight: 500, color: '#64748b', marginTop: '4px' }}>
-                  {effectiveVariationName}
-                </span>
-              )}
-            </h1>
-
-            {/* Short description */}
-            {product.short_description && (
-              <div
-                style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.65 }}
-                dangerouslySetInnerHTML={{
-                  __html: product.short_description,
-                }}
-              />
-            )}
-
-            {/* Price */}
-            <ProductPrice product={product} selectedVariation={selectedVariation} />
-
-            {/* SKU */}
-            <ProductSkuBlock product={product} selectedVariation={selectedVariation} />
-
-            {/* Purchase panel */}
-            <ProductPurchasePanel
-              product={product}
-              variations={variations}
-              computed={computed}
-              selectedVariation={selectedVariation}
-              variationState={variationState}
-              onVariationSelect={selectVariation}
-              onAddToCart={handleAddToCart}
-            />
-          </div>
-        </div>
-
-        {/* Description accordion — full width below the grid */}
-        <ProductDescriptionAccordion
+        <ProductDetail
           product={product}
-          selectedVariation={selectedVariation}
+          onAddToCart={handleAddToCart}
+          initialVariations={variations}
+          initialResolvedVariation={selectedVariation}
+          initialSelectedAttrs={selectedVariation ? getVariationSelectionMap(selectedVariation) : {}}
+          initialComputedData={computed}
+          disableLegacyDetailFetch
         />
       </div>
 

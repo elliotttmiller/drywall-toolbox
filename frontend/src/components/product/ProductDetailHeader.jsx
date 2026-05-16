@@ -5,6 +5,7 @@ export default function ProductDetailHeader({
   effectiveName,
   effectiveSku,
   isOutOfStock,
+  brandLabel,
   brandLogoSrc,
   brandLogoClassName,
   displayPrice,
@@ -21,10 +22,10 @@ export default function ProductDetailHeader({
       </h2>
 
       <div className="dtb-pdp-header__meta">
-        {product.brand && brandLogoSrc ? (
-          <img src={brandLogoSrc} alt={product.brand} className={brandLogoClassName} />
-        ) : product.brand ? (
-          <span className="dtb-pdp-header__brand-text">{product.brand}</span>
+        {brandLabel && brandLogoSrc ? (
+          <img src={brandLogoSrc} alt={brandLabel} className={brandLogoClassName} />
+        ) : brandLabel ? (
+          <span className="dtb-pdp-header__brand-text">{brandLabel}</span>
         ) : null}
         {effectiveSku ? (
           <span className="dtb-pdp-header__meta-item">
