@@ -20,7 +20,12 @@ export default function StorefrontProductTile({
   const outOfStock = stockStatus === 'outofstock';
   const name = resolved.name || product?.name || resolved.part_number || 'Product';
   const sku = resolved.sku || product?.sku || '';
-  const price = isVariable && product?.min_price != null ? `From $${money(product.min_price)}` : `$${money(resolved.price ?? product?.price ?? 0)}`;
+  const priceStr = isVariable && product?.min_price != null
+    ? `From $${money(product.min_price)}`
+    : `$${money(resolved.price ?? product?.price ?? 0)}`;
+
+  const onSale = !isVariable && resolved.sale_price && resolved.regular_price
+    && parseFloat(resolved.sale_price) < parseFloat(resolved.regular_price);
 
   return (
     <Motion.article
@@ -30,6 +35,12 @@ export default function StorefrontProductTile({
       transition={{ duration: 0.22, delay: Math.min(index, 8) * 0.03 }}
     >
       <button type="button" className="storefront-product-tile__image" onClick={onOpenModal} aria-label={`View ${name}`}>
+        {outOfStock && (
+          <span className="storefront-product-tile__badge storefront-product-tile__badge--out">Out of Stock</span>
+        )}
+        {onSale && !outOfStock && (
+          <span className="storefront-product-tile__badge storefront-product-tile__badge--sale">Sale</span>
+        )}
         <ProductCardImage
           product={resolved}
           src={resolved.image_thumbnail || resolved.image}
@@ -55,14 +66,21 @@ export default function StorefrontProductTile({
         </button>
         {sku ? <span className="storefront-product-tile__sku">SKU: {sku}</span> : null}
 
+        <div className="storefront-product-tile__divider" />
+
         <div className="storefront-product-tile__footer">
-          <strong style={{ color: outOfStock ? 'var(--dtb-muted)' : 'var(--dtb-primary)' }}>{price}</strong>
+          <strong
+            className="storefront-product-tile__price"
+            style={{ color: outOfStock ? 'var(--dtb-muted)' : 'var(--dtb-text)' }}
+          >
+            {priceStr}
+          </strong>
           {isVariable ? (
-            <button type="button" onClick={onOpenModal} className="alloy-button" style={{ minHeight: '34px' }}>
-              Options <ChevronRight size={14} />
+            <button type="button" onClick={onOpenModal} className="alloy-button" style={{ minHeight: '34px', fontSize: '0.8rem' }}>
+              Options <ChevronRight size={13} />
             </button>
           ) : (
-            <button type="button" onClick={onAddToCart} disabled={outOfStock} className="alloy-button" style={{ minHeight: '34px' }}>
+            <button type="button" onClick={onAddToCart} disabled={outOfStock} className="alloy-button" style={{ minHeight: '34px' }} aria-label={`Add ${name} to cart`}>
               <ShoppingCart size={14} />
             </button>
           )}

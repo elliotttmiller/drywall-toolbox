@@ -13,12 +13,15 @@ import StorefrontHero from '../components/storefront/StorefrontHero';
 import StorefrontCategoryTile from '../components/storefront/StorefrontCategoryTile';
 import StorefrontBrandTile from '../components/storefront/StorefrontBrandTile';
 import StorefrontCTA from '../components/storefront/StorefrontCTA';
+import StorefrontProductRail from '../components/storefront/StorefrontProductRail';
 
 const categories = [
   { title: 'Automatic Taping Tools', to: '/products?display_category=automatic_taping_tools' },
   { title: 'Finishing Boxes', to: '/products?display_category=finishing_boxes' },
+  { title: 'Corner Tools', to: '/products?display_category=corner_tools' },
   { title: 'Parts', to: '/products?display_category=parts' },
-  { title: 'All Products', to: '/products' },
+  { title: 'Handles & Extensions', to: '/products?display_category=handles_and_extensions' },
+  { title: 'New Arrivals', to: '/products?sort=newest' },
 ];
 
 const brands = [
@@ -28,6 +31,13 @@ const brands = [
   { name: 'Platinum Drywall Tools', logo: platinumLogo, to: '/products/brands/platinum-drywall-tools' },
   { name: 'Asgard', logo: asgardLogo, to: '/products/brands/asgard' },
   { name: 'SurPro', logo: surproLogo, to: '/products/brands/surpro' },
+];
+
+const trustItems = [
+  { icon: '🚚', title: 'Free Shipping $75+', desc: 'Contiguous USA only. Same-day processing on in-stock orders.' },
+  { icon: '🔧', title: 'Expert Support', desc: 'Real pros answer your questions — no bots, no runaround.' },
+  { icon: '🔄', title: 'Easy Returns', desc: '30-day hassle-free return on most stocked items.' },
+  { icon: '🛡️', title: 'Secure Checkout', desc: 'SSL encrypted checkout with multiple payment options.' },
 ];
 
 export default function Home() {
@@ -42,68 +52,92 @@ export default function Home() {
 
       <div className="page-wrapper dtb-home-page storefront-shell">
         <div className="container mx-auto px-4 py-4">
+
+          {/* ── Commerce Hero ── */}
           <StorefrontHero />
 
+          {/* ── Popular Categories ── */}
           <StorefrontSection
             eyebrow="Shop"
             title="Popular Categories"
-            subtitle="Jump directly into the most-shopped product groups."
             viewAllHref="/products"
+            viewAllLabel="All categories"
           >
-            <StorefrontRail label="Popular categories">
+            <StorefrontRail label="Popular categories" className="storefront-rail--category">
               {categories.map((category) => (
                 <StorefrontCategoryTile key={category.to} {...category} />
               ))}
             </StorefrontRail>
           </StorefrontSection>
 
+          {/* ── Featured Products (brand-balanced) ── */}
+          <StorefrontSection
+            title="Featured Products"
+            viewAllHref="/products"
+          >
+            <TrendingProducts />
+          </StorefrontSection>
+
+          {/* ── New Arrivals ── */}
+          <StorefrontSection
+            eyebrow="Just In"
+            title="New Arrivals"
+            viewAllHref="/products?sort=newest"
+          >
+            <StorefrontProductRail sort="newest" maxItems={10} label="New arrivals" />
+          </StorefrontSection>
+
+          {/* ── Replacement Parts ── */}
+          <StorefrontSection
+            eyebrow="Parts"
+            title="Replacement Parts"
+            viewAllHref="/parts"
+            viewAllLabel="Browse all parts"
+          >
+            <StorefrontProductRail category="parts" maxItems={10} label="Parts" />
+          </StorefrontSection>
+
+          {/* ── Shop by Brand ── */}
           <StorefrontSection
             eyebrow="Brands"
             title="Shop by Brand"
-            subtitle="Browse the top drywall tool manufacturers."
             viewAllHref="/products/brands"
+            viewAllLabel="All brands"
           >
-            <StorefrontRail label="Brands">
+            <StorefrontRail label="Brands" className="storefront-rail--brand">
               {brands.map((brand) => (
                 <StorefrontBrandTile key={brand.name} {...brand} />
               ))}
             </StorefrontRail>
           </StorefrontSection>
 
-          <StorefrontSection title="Automatic Taping Tools" viewAllHref="/products?display_category=automatic_taping_tools">
-            <TrendingProducts />
-          </StorefrontSection>
-
-          <StorefrontSection title="Finishing Boxes" viewAllHref="/products?display_category=finishing_boxes">
+          {/* ── Repair & Schematics CTAs ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
             <StorefrontCTA
-              title="Shop Finishing Boxes"
-              copy="Browse pro finishing box options and accessories."
-              to="/products?display_category=finishing_boxes"
-            />
-          </StorefrontSection>
-
-          <StorefrontSection title="Parts" viewAllHref="/products?display_category=parts">
-            <StorefrontCTA
-              title="Find Exact-Fit Parts"
-              copy="Get replacement parts by brand and category with fast checkout."
-              to="/parts"
-            />
-          </StorefrontSection>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
-            <StorefrontCTA
-              title="Repair Services"
-              copy="Submit repair requests for pro tool maintenance and turnaround."
+              title="Professional Repair Services"
+              copy="Submit repair requests for your drywall tools. Fast turnaround from certified technicians."
               to="/repairs"
               action="Start repair request"
             />
             <StorefrontCTA
-              title="Schematics"
-              copy="Find exploded diagrams and part references for core tool lines."
+              title="Parts & Schematics"
+              copy="Exploded diagrams and part references for TapeTech, Columbia, and more."
               to="/schematics"
               action="Browse schematics"
             />
           </div>
+
+          {/* ── Trust / Support blocks ── */}
+          <div className="storefront-trust-bar">
+            {trustItems.map((item) => (
+              <div key={item.title} className="storefront-trust-item">
+                <span className="storefront-trust-item__icon" aria-hidden="true">{item.icon}</span>
+                <strong className="storefront-trust-item__title">{item.title}</strong>
+                <p className="storefront-trust-item__desc">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
       </div>
     </>

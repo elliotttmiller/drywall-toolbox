@@ -2,11 +2,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
-import { ShoppingCart, Menu, X, ChevronDown, User, LogIn, UserPlus, LogOut, Bell } from 'lucide-react';
+import { ShoppingCart, Menu, X, ChevronDown, ChevronRight, User, LogIn, UserPlus, LogOut, Bell, Search } from 'lucide-react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import LogoWhite from '/logo-white.svg';
-import MobileSearch from '../shell/MobileSearch';
 import NotificationsBell from '../shell/NotificationsBell';
+import StorefrontSearchOverlay from './StorefrontSearchOverlay';
 import { searchProducts } from '../../services/catalog';
 
 const PRIMARY_NAV_LINKS = [
@@ -38,6 +38,18 @@ const SHOP_CATEGORY_LINKS = [
   { to: '/products?display_category=accessories', label: 'Accessories & Adapters' },
 ];
 
+const DRAWER_NAV_ROWS = [
+  { to: '/products/brands', label: 'Brands' },
+  { to: '/products', label: 'All Products' },
+  { to: '/parts', label: 'Parts' },
+  { to: '/products?sort=newest', label: 'New Arrivals' },
+  { to: '/schematics', label: 'Schematics' },
+  { to: '/repairs', label: 'Repairs' },
+  { to: '/calculators', label: 'Calculators' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/contact', label: 'Contact' },
+];
+
 export default function Header({ onCartToggle, hasTopTicker = false }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,18 +57,22 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const { user, isAuthenticated, isLoading, logout } = useAuthContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
-  const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileAccountDropdownOpen, setMobileAccountDropdownOpen] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [desktopSearchQuery, setDesktopSearchQuery] = useState('');
   const [desktopSearchResults, setDesktopSearchResults] = useState([]);
   const [desktopSearchLoading, setDesktopSearchLoading] = useState(false);
+  const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const accountDropdownRef = useRef(null);
   const mobileAccountDropdownRef = useRef(null);
   const desktopSearchRef = useRef(null);
   const desktopSearchInputRef = useRef(null);
   const desktopSearchRequestIdRef = useRef(0);
+  const searchOverlayRequestIdRef = useRef(0);
   const dropdownCloseTimerRef = useRef(null);
   const prevPathnameRef = useRef(location.pathname);
   const [isTablet, setIsTablet] = useState(() => {
@@ -71,11 +87,16 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const closeMobileMenu = () => setMobileMenuOpen(false);
   const closeMenus = () => {
     setShopDropdownOpen(false);
-    setMobileCategoryOpen(false);
     setMobileMenuOpen(false);
     setAccountDropdownOpen(false);
     setMobileAccountDropdownOpen(false);
     setDesktopSearchOpen(false);
+  };
+
+  const closeSearchOverlay = () => {
+    setSearchOverlayOpen(false);
+    setMobileSearchQuery('');
+    setSearchSuggestions([]);
   };
 
   const handleDropdownMouseLeave = () => {
@@ -110,12 +131,12 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   useEffect(() => {
     if (prevPathnameRef.current === location.pathname) return;
     prevPathnameRef.current = location.pathname;
-    const t = setTimeout(closeMenus, 0);
+    const t = setTimeout(() => { closeMenus(); closeSearchOverlay(); }, 0);
     return () => clearTimeout(t);
   }, [location.pathname]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => { if (e.key === 'Escape') closeMenus(); };
+    const handleKeyDown = (e) => { if (e.key === 'Escape') { closeMenus(); closeSearchOverlay(); } };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
@@ -169,6 +190,29 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     return () => clearTimeout(t);
   }, [desktopSearchQuery]);
 
+  useEffect(() => {
+    const query = mobileSearchQuery.trim();
+    const requestId = searchOverlayRequestIdRef.current + 1;
+    searchOverlayRequestIdRef.current = requestId;
+    if (!query) {
+      setSearchSuggestions([]);
+      setSearchLoading(false);
+      return undefined;
+    }
+    const t = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const found = (await searchProducts(query)).slice(0, 6);
+        if (searchOverlayRequestIdRef.current === requestId) setSearchSuggestions(found);
+      } catch (err) {
+        if (searchOverlayRequestIdRef.current === requestId) console.error('Search overlay error:', err);
+      } finally {
+        if (searchOverlayRequestIdRef.current === requestId) setSearchLoading(false);
+      }
+    }, 220);
+    return () => clearTimeout(t);
+  }, [mobileSearchQuery]);
+
   const handleDesktopResultClick = (productId) => {
     navigate(`/product/${productId}`);
     setDesktopSearchOpen(false);
@@ -180,12 +224,6 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     const q = desktopSearchQuery.trim();
     navigate(`/products${q ? `?search=${encodeURIComponent(q)}` : ''}`);
     setDesktopSearchOpen(false);
-  };
-
-  const closeMobileNav = () => {
-    setShopDropdownOpen(false);
-    setMobileCategoryOpen(false);
-    closeMobileMenu();
   };
 
   return (
@@ -273,40 +311,76 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
           </div>
         </div>
 
+        {/* Mobile search dock — always visible below the nav bar on mobile */}
+        <div className="header-mobile-search-dock">
+          <button
+            type="button"
+            className="header-search-dock-btn"
+            onClick={() => setSearchOverlayOpen(true)}
+            aria-label="Open search"
+          >
+            <Search size={15} aria-hidden="true" />
+            <span>Search products, brands, SKU…</span>
+          </button>
+        </div>
+
         <AnimatePresence>
           {mobileMenuOpen && (
             <Motion.div
               className="header-mobile-menu"
               style={{ display: isTablet ? 'flex' : undefined }}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: '-100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '-100%' }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
               role="dialog"
               aria-modal="true"
               aria-label="Mobile navigation"
               onWheel={(e) => e.stopPropagation()}
               onTouchMove={(e) => e.stopPropagation()}
             >
-              <div className="header-mobile-menu-scroll">
-                <MobileSearch onClose={closeMobileMenu} />
-                <nav className="header-mobile-nav" aria-label="Mobile primary navigation">
-                  <div className="header-mobile-nav-group">
-                    <button onClick={() => setShopDropdownOpen(!shopDropdownOpen)} className={`nav-link-mobile header-mobile-shop-toggle ${shopActive ? 'active' : ''}`} aria-expanded={shopDropdownOpen}>
-                      <span>Shop</span>
-                      <ChevronDown size={16} className={`header-mobile-shop-chevron${shopDropdownOpen ? ' is-open' : ''}`} />
-                    </button>
-                    {shopDropdownOpen && (
-                      <div className="header-mobile-shop-links">
-                        <p className="header-mobile-shop-section-title">Shop Navigation</p>
-                        {SHOP_FEATURE_LINKS.map(({ to, label, sub }) => <Link key={to} to={to} onClick={closeMobileNav} className="header-mobile-feature-link"><span className="header-mobile-feature-link-label">{label}</span><span className="header-mobile-feature-link-sub">{sub}</span></Link>)}
-                        <button className="header-mobile-category-toggle" onClick={() => setMobileCategoryOpen((o) => !o)} aria-expanded={mobileCategoryOpen}><span>Browse by Category</span><ChevronDown size={14} className={`header-mobile-shop-chevron${mobileCategoryOpen ? ' is-open' : ''}`} /></button>
-                        {mobileCategoryOpen && <div className="header-mobile-category-grid">{SHOP_CATEGORY_LINKS.map(({ to, label }) => <Link key={to} to={to} onClick={closeMobileNav} className="header-mobile-category-item">{label}</Link>)}</div>}
-                      </div>
-                    )}
-                  </div>
-                  {PRIMARY_NAV_LINKS.map(({ to, label }) => <Link key={to} to={to} className={`nav-link-mobile ${isActive(to) ? 'active' : ''}`} onClick={closeMobileMenu}>{label}</Link>)}
+              {/* Backdrop */}
+              <button
+                type="button"
+                className="header-mobile-menu-backdrop"
+                onClick={closeMobileMenu}
+                aria-label="Close navigation"
+              />
+              <div className="header-mobile-menu-panel">
+                <div className="header-mobile-menu-top">
+                  <Link to="/" className="header-drawer-logo" onClick={closeMobileMenu}>
+                    <img src={LogoWhite} alt="Drywall Toolbox Logo" style={{ height: 28, width: 'auto' }} />
+                  </Link>
+                  <button type="button" onClick={closeMobileMenu} className="header-drawer-close" aria-label="Close menu">
+                    <X size={20} />
+                  </button>
+                </div>
+                <nav className="header-drawer-nav" aria-label="Mobile navigation">
+                  {DRAWER_NAV_ROWS.map(({ to, label }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      className={`header-drawer-row${isActive(to) ? ' active' : ''}`}
+                      onClick={closeMobileMenu}
+                    >
+                      <span className="header-drawer-row__label">{label}</span>
+                      <ChevronRight size={16} className="header-drawer-row__chevron" aria-hidden="true" />
+                    </Link>
+                  ))}
                 </nav>
+                <div className="header-drawer-account">
+                  {!isLoading && (isAuthenticated ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <Link to="/dashboard" onClick={closeMobileMenu} className="header-drawer-account-link"><User size={14} />My Dashboard</Link>
+                      <button onClick={async () => { closeMobileMenu(); await logout(); }} className="header-drawer-account-link header-drawer-account-link--danger"><LogOut size={14} />Sign Out</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <Link to="/login" onClick={closeMobileMenu} className="header-drawer-cta-btn header-drawer-cta-btn--ghost"><LogIn size={14} />Sign In</Link>
+                      <Link to="/register" onClick={closeMobileMenu} className="header-drawer-cta-btn header-drawer-cta-btn--primary"><UserPlus size={14} />Register</Link>
+                    </div>
+                  ))}
+                </div>
               </div>
             </Motion.div>
           )}
@@ -318,72 +392,207 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
         <span aria-live="polite" aria-atomic="true">{getCartCount() > 0 && <span className="mobile-cart-fab-badge" aria-label={`${getCartCount()} items in cart`}>{getCartCount()}</span>}</span>
       </Motion.button>
 
+      {/* Full-screen search overlay */}
+      <StorefrontSearchOverlay
+        isOpen={searchOverlayOpen}
+        query={mobileSearchQuery}
+        setQuery={setMobileSearchQuery}
+        onClose={closeSearchOverlay}
+        loading={searchLoading}
+        suggestions={searchSuggestions}
+      />
+
       <style>{`
+        /* ── Mobile search dock ── */
+        .header-mobile-search-dock {
+          display: none;
+          padding: 8px 12px 10px;
+          background: var(--dtb-shell);
+        }
+
+        .header-search-dock-btn {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          width: 100%;
+          padding: 0 14px;
+          height: 40px;
+          border-radius: 20px;
+          border: none;
+          background: rgba(255,255,255,0.10);
+          color: rgba(255,255,255,0.62);
+          font-size: 14px;
+          font-family: inherit;
+          cursor: pointer;
+          text-align: left;
+          transition: background 140ms ease;
+        }
+
+        .header-search-dock-btn:active {
+          background: rgba(255,255,255,0.16);
+        }
+
+        @media (max-width: 767px) {
+          .header-mobile-search-dock {
+            display: block;
+          }
+        }
+
+        /* On tablet, also show the search dock */
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .header-mobile-search-dock {
+            display: block;
+          }
+        }
+
+        /* ── Dark mobile drawer ── */
         .header-mobile-menu {
           position: fixed !important;
-          left: 0 !important;
-          right: 0 !important;
-          top: var(--header-height, 72px) !important;
-          bottom: 0 !important;
+          inset: 0 !important;
           z-index: 9998 !important;
           display: flex !important;
-          flex-direction: column !important;
-          width: 100vw !important;
-          max-width: 100vw !important;
-          height: calc(100dvh - var(--header-height, 72px)) !important;
-          max-height: calc(100dvh - var(--header-height, 72px)) !important;
-          overflow: hidden !important;
-          overscroll-behavior: contain !important;
-          touch-action: pan-y !important;
-          background: rgba(255, 255, 255, 0.98) !important;
-          border-top: 1px solid rgba(15, 23, 42, 0.08) !important;
-          box-shadow: 0 14px 30px rgba(15, 23, 42, 0.10) !important;
-          backdrop-filter: blur(10px) !important;
-          -webkit-backdrop-filter: blur(10px) !important;
+          pointer-events: auto !important;
         }
 
-        .header-mobile-menu-scroll {
-          flex: 1 1 auto !important;
-          min-height: 0 !important;
+        .header-mobile-menu-backdrop {
+          position: absolute !important;
+          inset: 0 !important;
+          background: rgba(2, 6, 23, 0.60) !important;
+          border: none !important;
+          cursor: pointer !important;
           width: 100% !important;
-          overflow-y: auto !important;
-          overflow-x: hidden !important;
-          overscroll-behavior-y: contain !important;
-          -webkit-overflow-scrolling: touch !important;
-          touch-action: pan-y !important;
-          padding: 14px 16px calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+          height: 100% !important;
         }
 
-        .header-mobile-nav {
+        .header-mobile-menu-panel {
+          position: relative !important;
+          width: min(85vw, 360px) !important;
+          height: 100% !important;
+          background: var(--dtb-shell, #0a1020) !important;
+          color: white !important;
           display: flex !important;
           flex-direction: column !important;
-          gap: 10px !important;
-          padding-bottom: 28px !important;
+          overflow-y: auto !important;
+          overflow-x: hidden !important;
+          overscroll-behavior: contain !important;
+          -webkit-overflow-scrolling: touch !important;
+          z-index: 1 !important;
+          flex-shrink: 0 !important;
         }
 
-        .header-mobile-shop-links,
-        .header-mobile-category-grid {
-          max-height: none !important;
-          overflow: visible !important;
+        .header-mobile-menu-top {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px 16px !important;
+          border-bottom: 1px solid rgba(255,255,255,0.10) !important;
+          flex-shrink: 0 !important;
         }
 
-        .header-mobile-menu .nav-link-mobile,
-        .header-mobile-menu .header-mobile-feature-link-label,
-        .header-mobile-menu .header-mobile-category-toggle,
-        .header-mobile-menu .header-mobile-category-item {
-          color: var(--tension-accent, #2563eb) !important;
+        .header-drawer-logo {
+          display: flex;
+          align-items: center;
         }
 
-        .header-mobile-menu .header-mobile-feature-link-sub,
-        .header-mobile-menu .header-mobile-shop-section-title {
-          color: rgba(37, 99, 235, 0.68) !important;
+        .header-drawer-close {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 36px !important;
+          height: 36px !important;
+          border-radius: 50% !important;
+          border: none !important;
+          background: rgba(255,255,255,0.10) !important;
+          color: rgba(255,255,255,0.80) !important;
+          cursor: pointer !important;
+          padding: 0 !important;
+          flex-shrink: 0 !important;
         }
 
-        @media (max-width: 640px) {
-          .header-mobile-menu-scroll {
-            padding-left: 14px !important;
-            padding-right: 14px !important;
-          }
+        .header-drawer-nav {
+          flex: 1 1 auto !important;
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 8px 0 !important;
+        }
+
+        .header-drawer-row {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          padding: 0 20px !important;
+          height: 56px !important;
+          color: rgba(255,255,255,0.88) !important;
+          text-decoration: none !important;
+          font-size: 1.05rem !important;
+          font-weight: 600 !important;
+          letter-spacing: -0.01em !important;
+          border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+          transition: background 120ms ease, color 120ms ease !important;
+        }
+
+        .header-drawer-row:active,
+        .header-drawer-row.active {
+          background: rgba(37, 99, 235, 0.18) !important;
+          color: #93c5fd !important;
+        }
+
+        .header-drawer-row__chevron {
+          color: rgba(255,255,255,0.38) !important;
+          flex-shrink: 0 !important;
+        }
+
+        .header-drawer-account {
+          padding: 16px 20px calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+          border-top: 1px solid rgba(255,255,255,0.10) !important;
+          flex-shrink: 0 !important;
+        }
+
+        .header-drawer-account-link {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          padding: 10px 0 !important;
+          color: rgba(255,255,255,0.72) !important;
+          text-decoration: none !important;
+          font-size: 0.9rem !important;
+          font-weight: 500 !important;
+          background: none !important;
+          border: none !important;
+          cursor: pointer !important;
+          font-family: inherit !important;
+          width: 100% !important;
+          text-align: left !important;
+        }
+
+        .header-drawer-account-link--danger {
+          color: #f87171 !important;
+        }
+
+        .header-drawer-cta-btn {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          padding: 10px 16px !important;
+          border-radius: 10px !important;
+          font-size: 0.88rem !important;
+          font-weight: 600 !important;
+          text-decoration: none !important;
+          cursor: pointer !important;
+          border: none !important;
+          font-family: inherit !important;
+          flex: 1 !important;
+          justify-content: center !important;
+        }
+
+        .header-drawer-cta-btn--ghost {
+          background: rgba(255,255,255,0.10) !important;
+          color: rgba(255,255,255,0.80) !important;
+        }
+
+        .header-drawer-cta-btn--primary {
+          background: #2563eb !important;
+          color: white !important;
         }
       `}</style>
     </>

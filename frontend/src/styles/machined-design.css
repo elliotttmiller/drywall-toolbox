@@ -2119,20 +2119,20 @@ aside input[type="range"],
 /* Mobile Layout - Flexbox with centered branding */
 @media (max-width: 767px) {
     :root {
-        /* 28px shipping bar + 76px nav + safe area */
-        --header-height: calc(28px + 76px + env(safe-area-inset-top, 0px));
+        /* 28px shipping bar + 76px nav + 58px search dock + safe area */
+        --header-height: calc(28px + 76px + 58px + env(safe-area-inset-top, 0px));
     }
 
-    /* No homepage top ticker on non-home pages — header is nav bar only (76px) */
+    /* No homepage top ticker on non-home pages — header is nav bar + search dock only */
     :root:has(.site-header--no-ticker) {
-        --header-height: calc(76px + env(safe-area-inset-top, 0px));
+        --header-height: calc(76px + 58px + env(safe-area-inset-top, 0px));
     }
 
     .site-header {
-        /* Keep the fixed header sized to the actual nav row only.
+        /* Keep the fixed header sized to nav row + search dock.
            --header-height remains the page offset and includes the top ticker
            on the home page. */
-        min-height: calc(76px + env(safe-area-inset-top, 0px));
+        min-height: calc(76px + 58px + env(safe-area-inset-top, 0px));
         padding: env(safe-area-inset-top, 0px) 0 0;
         display: flex;
         flex-direction: column;
@@ -2257,21 +2257,21 @@ aside input[type="range"],
        behind the fixed header on 641-1024px viewports.
        Also reset top/bottom padding so actual header height == --header-height. */
     :root {
-        /* 28px shipping bar + fluid nav bar + safe area */
-        --header-height: calc(28px + clamp(56px, 8vw, 80px) + env(safe-area-inset-top, 0px));
+        /* 28px shipping bar + fluid nav bar + 58px search dock + safe area */
+        --header-height: calc(28px + clamp(56px, 8vw, 80px) + 58px + env(safe-area-inset-top, 0px));
     }
 
     /* No homepage top ticker on non-home pages */
     :root:has(.site-header--no-ticker) {
-        --header-height: calc(clamp(56px, 8vw, 80px) + env(safe-area-inset-top, 0px));
+        --header-height: calc(clamp(56px, 8vw, 80px) + 58px + env(safe-area-inset-top, 0px));
     }
 
     .site-header {
         padding: env(safe-area-inset-top, 0px) 0 0;
-        /* Same rule as mobile: actual header height is only the nav row.
+        /* Same rule as mobile: actual header height is nav row + search dock.
            The top ticker is a separate fixed strip and stays accounted for in
            --header-height for page spacing. */
-        min-height: calc(clamp(56px, 8vw, 80px) + env(safe-area-inset-top, 0px));
+        min-height: calc(clamp(56px, 8vw, 80px) + 58px + env(safe-area-inset-top, 0px));
         display: flex;
         flex-direction: column;
         align-items: stretch;
