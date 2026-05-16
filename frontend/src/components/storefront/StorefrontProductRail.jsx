@@ -65,9 +65,9 @@ export default function StorefrontProductRail({
 
       if (sort === 'newest') {
         filtered = filtered.slice().sort((a, b) => {
-          const da = new Date(b.date_created || 0);
-          const db = new Date(a.date_created || 0);
-          return da - db;
+          const dateA = new Date(a.date_created || 0);
+          const dateB = new Date(b.date_created || 0);
+          return dateB - dateA; // newest first
         });
       } else if (sort === 'price_asc') {
         filtered = filtered.slice().sort((a, b) => {
