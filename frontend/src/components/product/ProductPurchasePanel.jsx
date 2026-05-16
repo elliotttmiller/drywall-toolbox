@@ -1,141 +1,59 @@
-/**
- * frontend/src/components/product/ProductPurchasePanel.jsx
- *
- * Combines: variant selector + availability notice + quantity stepper + add-to-cart.
- * This is the unified purchase UI block for the product detail page.
- *
- * Props:
- *   product           — parent product
- *   variations        — all child variations
- *   computed          — computed state from detail endpoint
- *   selectedVariation — currently selected variation
- *   variationState    — string from useSelectedVariation
- *   onVariationSelect — (variation: Object|null) => void
- *   onAddToCart       — (product, selectedVariation, quantity) => void
- */
-
-import { useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
-import ProductVariantSelector from './ProductVariantSelector';
-import ProductAvailabilityNotice from './ProductAvailabilityNotice';
-import ProductQuantityStepper from './ProductQuantityStepper';
+import { Heart, Minus, Plus, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function ProductPurchasePanel({
-  product,
-  variations,
-  computed,
-  selectedVariation,
-  variationState,
-  onVariationSelect,
+  quantity,
+  onDecrease,
+  onIncrease,
   onAddToCart,
+  canAddToCart,
+  isOutOfStock,
+  needsVariation,
+  hasCompleteSelection,
+  isWishlisted,
+  onToggleWishlist,
+  partsUrl,
 }) {
-  const [quantity, setQuantity] = useState(1);
-  const [addedFeedback, setAddedFeedback] = useState(false);
-
-  const isVariable = product?.type === 'variable' || product?.is_variable;
-  const hasVariations = Array.isArray(variations) && variations.length > 0;
-
-  // Determine if add-to-cart is possible.
-  const canAdd =
-    variationState === 'variation_ready' ||
-    variationState === 'variation_backorder' ||
-    (!isVariable && (product?.stock_status === 'instock' || product?.stock_status === 'onbackorder'));
-
-  const handleAddToCart = () => {
-    if (!canAdd) return;
-    onAddToCart(product, selectedVariation, quantity);
-    setAddedFeedback(true);
-    setTimeout(() => setAddedFeedback(false), 2000);
-  };
-
   return (
-    <div className="product-purchase-panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Variation selector */}
-      {isVariable && hasVariations && (
-        <ProductVariantSelector
-          product={product}
-          variations={variations}
-          computed={computed}
-          selectedVariation={selectedVariation}
-          onSelect={onVariationSelect}
-        />
-      )}
-
-      {/* Availability notice */}
-      <ProductAvailabilityNotice
-        product={product}
-        selectedVariation={selectedVariation}
-        variationState={variationState}
-      />
-
-      {/* Quantity + add-to-cart row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <ProductQuantityStepper
-          quantity={quantity}
-          onChange={setQuantity}
-          disabled={!canAdd}
-          max={
-            (selectedVariation?.stock_quantity ?? product?.stock_quantity) || 999
-          }
-        />
+    <div className="product-detail-purchase-panel space-y-3">
+      <div className="flex items-center gap-3">
+        <div className="inline-flex items-center rounded-xl border border-gray-200 overflow-hidden">
+          <button type="button" onClick={onDecrease} className="p-2" aria-label="Decrease quantity">
+            <Minus size={16} />
+          </button>
+          <span className="px-3 py-2 min-w-10 text-center font-semibold">{quantity}</span>
+          <button type="button" onClick={onIncrease} className="p-2" aria-label="Increase quantity">
+            <Plus size={16} />
+          </button>
+        </div>
 
         <button
           type="button"
-          onClick={handleAddToCart}
-          disabled={!canAdd}
-          aria-label={isVariable && !selectedVariation ? 'Select options to add to cart' : 'Add to cart'}
-          style={addBtnStyle(!canAdd, addedFeedback)}
+          onClick={onToggleWishlist}
+          className={`inline-flex items-center gap-1 rounded-xl border px-3 py-2 ${isWishlisted ? 'border-red-300 text-red-500' : 'border-gray-200 text-gray-500'}`}
+          aria-pressed={isWishlisted}
         >
-          <ShoppingCart size={16} aria-hidden="true" />
-          <span>
-            {addedFeedback
-              ? 'Added!'
-              : isVariable && !selectedVariation
-                ? 'Select Options'
-                : 'Add to Cart'}
-          </span>
+          <Heart size={16} />
+          Save
         </button>
       </div>
 
-      {/* Guidance prompt for variable without selection */}
-      {isVariable && !selectedVariation && variationState !== 'no_variations' && (
-        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
-          ↑ Choose an option above to add to cart.
-        </p>
-      )}
+      <button
+        type="button"
+        onClick={onAddToCart}
+        disabled={!canAddToCart}
+        className="alloy-button w-full justify-center"
+        style={{ display: 'flex' }}
+      >
+        <ShoppingCart size={16} />
+        {isOutOfStock ? 'Out of Stock' : (needsVariation && !hasCompleteSelection ? 'Select Options' : 'Add to Cart')}
+      </button>
 
-      {/* Backorder notice */}
-      {(variationState === 'variation_backorder' ||
-        (!isVariable && product?.stock_status === 'onbackorder')) && (
-        <p style={{ fontSize: '0.78rem', color: '#d97706', margin: 0 }}>
-          Available on backorder — orders will ship when stock arrives.
-        </p>
-      )}
+      {partsUrl ? (
+        <Link to={partsUrl} className="inline-flex text-sm text-blue-600 hover:text-blue-700" style={{ textDecoration: 'underline' }}>
+          View compatible schematics and parts
+        </Link>
+      ) : null}
     </div>
   );
-}
-
-function addBtnStyle(disabled, success) {
-  return {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '11px 24px',
-    borderRadius: '10px',
-    border: 'none',
-    background: disabled
-      ? '#e2e8f0'
-      : success
-        ? '#16a34a'
-        : 'linear-gradient(135deg, var(--primary-600, #2563eb) 0%, var(--primary-700, #1d4ed8) 100%)',
-    color: disabled ? '#94a3b8' : '#fff',
-    fontSize: '0.9rem',
-    fontWeight: 700,
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    boxShadow: !disabled ? '0 4px 14px rgba(37,99,235,0.25)' : 'none',
-    transition: 'background 0.2s, box-shadow 0.2s, transform 0.1s',
-    flexGrow: 1,
-    justifyContent: 'center',
-    maxWidth: '280px',
-  };
 }

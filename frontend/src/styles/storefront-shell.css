@@ -1,0 +1,32 @@
+.storefront-shell {
+  background: var(--dtb-bg);
+  color: var(--dtb-text);
+}
+
+.storefront-surface {
+  background: var(--dtb-surface);
+  border: 1px solid var(--dtb-border);
+  border-radius: var(--dtb-radius-lg);
+  box-shadow: var(--dtb-shadow-card);
+}
+
+.storefront-sheet {
+  background: var(--dtb-surface);
+  box-shadow: var(--dtb-shadow-sheet);
+}
+
+.storefront-motion-card {
+  transition: transform var(--dtb-fast) var(--dtb-ease), box-shadow var(--dtb-fast) var(--dtb-ease);
+}
+
+.storefront-motion-card:hover {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storefront-motion-card,
+  .storefront-motion-card:hover {
+    transition: none;
+    transform: none;
+  }
+}
