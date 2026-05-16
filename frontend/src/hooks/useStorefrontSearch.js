@@ -46,8 +46,6 @@ export function useStorefrontSearch({ popularBrands = [], popularCategories = []
         const found = await searchProducts(trimmed);
         if (requestIdRef.current === requestId) {
           setSuggestions(Array.isArray(found) ? found.slice(0, 8) : []);
-          saveRecentSearch(trimmed);
-          setRecentSearches(getRecentSearches());
         }
       } catch {
         if (requestIdRef.current === requestId) {
@@ -72,6 +70,10 @@ export function useStorefrontSearch({ popularBrands = [], popularCategories = []
     loading,
     suggestions,
     recentSearches,
+    rememberSearch: (value) => {
+      saveRecentSearch(value);
+      setRecentSearches(getRecentSearches());
+    },
     popularBrands: popular.brands,
     popularCategories: popular.categories,
   };

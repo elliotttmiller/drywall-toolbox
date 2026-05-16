@@ -46,11 +46,13 @@ export default function ProductPurchasePanel({
         style={{ display: 'flex' }}
       >
         <ShoppingCart size={16} />
-        {isOutOfStock ? 'Out of Stock' : (needsVariation && !hasCompleteSelection ? 'Select Options' : 'Add to Cart')}
+        <span aria-live="polite">
+          {isOutOfStock ? 'Out of Stock' : (needsVariation && !hasCompleteSelection ? 'Select Options' : 'Add to Cart')}
+        </span>
       </button>
 
       {partsUrl ? (
-        <Link to={partsUrl} className="inline-flex text-sm text-blue-600 hover:text-blue-700" style={{ textDecoration: 'underline' }}>
+        <Link to={partsUrl} className="inline-flex text-sm text-blue-600 hover:text-blue-700 underline">
           View compatible schematics and parts
         </Link>
       ) : null}

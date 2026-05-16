@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { X } from 'lucide-react';
 import Reviews from './Reviews';
 import { useCart } from '../../context/CartContext';
 import ProductImageGallery from './ProductImageGallery';
@@ -149,6 +149,7 @@ export default function ProductDetail({
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
+  const [addToCartError, setAddToCartError] = useState('');
 
   const seededVariations = buildSeedVariations(initialVariations, initialResolvedVariation);
   const initialVariationSelection = buildInitialVariationSelection({
@@ -356,11 +357,19 @@ export default function ProductDetail({
   const handleAddToCart = () => {
     if (!canAddToCart) return;
     const productToAdd = selectedVariation ? effectiveProduct : product;
-    if (onAddToCart) onAddToCart(productToAdd, quantity);
-    else addToCart(productToAdd, quantity);
-    if (typeof onClose === 'function') {
-      setTimeout(() => onClose(), 220);
+    try {
+      setAddToCartError('');
+      if (onAddToCart) onAddToCart(productToAdd, quantity);
+      else addToCart(productToAdd, quantity);
+      if (typeof onClose === 'function') {
+        setTimeout(() => onClose(), 220);
+      }
+    } catch {
+      setAddToCartError('Unable to add this item to cart. Please check your selection and try again. If this continues, contact support.');
     }
+  };
+  const clearAddToCartError = () => {
+    if (addToCartError) setAddToCartError('');
   };
 
   const rawPrice = selectedVariation
@@ -391,7 +400,7 @@ export default function ProductDetail({
           aria-label="Close product detail"
           title="Close"
         >
-          ×
+          <X size={20} className="text-gray-600 hover:text-gray-900" />
         </button>
       ) : null}
 
@@ -421,7 +430,10 @@ export default function ProductDetail({
                   variationAttributes={variationAttributes}
                   variantOptionMeta={variantOptionMeta}
                   selectedAttrs={selectedAttrs}
-                  setSelectedAttrs={setSelectedAttrs}
+                  setSelectedAttrs={(next) => {
+                    clearAddToCartError();
+                    setSelectedAttrs(next);
+                  }}
                   variationsLoading={variationsLoading}
                   selectedVariation={selectedVariation}
                   hasCompleteSelection={hasCompleteSelection}
@@ -430,8 +442,14 @@ export default function ProductDetail({
 
               <ProductPurchasePanel
                 quantity={quantity}
-                onDecrease={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                onIncrease={() => setQuantity((prev) => prev + 1)}
+                onDecrease={() => {
+                  clearAddToCartError();
+                  setQuantity((prev) => Math.max(1, prev - 1));
+                }}
+                onIncrease={() => {
+                  clearAddToCartError();
+                  setQuantity((prev) => prev + 1);
+                }}
                 onAddToCart={handleAddToCart}
                 canAddToCart={canAddToCart}
                 isOutOfStock={isOutOfStock}
@@ -441,6 +459,9 @@ export default function ProductDetail({
                 onToggleWishlist={() => setIsWishlisted((prev) => !prev)}
                 partsUrl={partsUrl}
               />
+              {addToCartError ? (
+                <p className="text-sm text-red-600 mt-2" role="alert" aria-live="assertive">{addToCartError}</p>
+              ) : null}
             </div>
           </div>
 
@@ -452,13 +473,6 @@ export default function ProductDetail({
             reviewsNode={<Reviews />}
           />
 
-          {partsUrl ? (
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <Link to={partsUrl} className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700">
-                View schematic and compatible parts
-              </Link>
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

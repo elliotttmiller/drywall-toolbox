@@ -53,7 +53,7 @@ export default function ProductDetailHeader({
         type="button"
         onClick={onReviewsClick}
         className="flex items-center gap-0.5 mb-5 sm:mb-6 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded"
-        aria-label="View reviews"
+        aria-label="View reviews, 0 out of 5 stars, no reviews yet"
       >
         {[...Array(5)].map((_, i) => (
           <svg key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 group-hover:text-yellow-400 transition-colors" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">

@@ -45,7 +45,12 @@ export default function StorefrontProductTile({
 
       <div className="storefront-product-tile__meta">
         {resolved.brand ? <span className="storefront-product-tile__brand">{resolved.brand}</span> : null}
-        <button type="button" onClick={onOpenModal} style={{ textAlign: 'left', border: 0, background: 'none', padding: 0, fontWeight: 700 }}>
+        <button
+          type="button"
+          onClick={onOpenModal}
+          className="storefront-product-tile__name-button"
+          aria-label={`View product details for ${name}`}
+        >
           {name}
         </button>
         {sku ? <span className="storefront-product-tile__sku">SKU: {sku}</span> : null}

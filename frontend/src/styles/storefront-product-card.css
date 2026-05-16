@@ -33,6 +33,21 @@
   font-size: 0.7rem;
 }
 
+.storefront-product-tile__name-button {
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-weight: 700;
+  color: var(--dtb-text);
+}
+
+.storefront-product-tile__name-button:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.45);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 .storefront-product-tile__footer {
   display: flex;
   align-items: center;

@@ -29,7 +29,16 @@ export default function StorefrontSearchOverlay({
               <h3 style={{ fontWeight: 700, fontSize: '0.85rem', marginBottom: '8px' }}>Recent</h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {recent.map((item) => (
-                  <button key={item} type="button" onClick={() => setQuery(item)} className="storefront-surface" style={{ padding: '6px 10px' }}>{item}</button>
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setQuery(item)}
+                    className="storefront-surface"
+                    style={{ padding: '6px 10px' }}
+                    aria-label={`Search for ${item}`}
+                  >
+                    {item}
+                  </button>
                 ))}
               </div>
             </section>
