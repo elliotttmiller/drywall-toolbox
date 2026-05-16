@@ -62,21 +62,7 @@ export default function Home() {
 
         <div className="container mx-auto px-5 pb-4 md:px-4">
 
-          {/* ── Popular Categories ── */}
-          <StorefrontSection
-            eyebrow="Shop"
-            title="Popular Categories"
-            viewAllHref="/products"
-            viewAllLabel="All categories"
-          >
-            <StorefrontRail label="Popular categories" className="storefront-rail--category">
-              {categories.map((category) => (
-                <StorefrontCategoryTile key={category.to} {...category} />
-              ))}
-            </StorefrontRail>
-          </StorefrontSection>
-
-          {/* ── Trending / Featured Products (brand-balanced) ── */}
+            {/* ── Trending / Featured Products (brand-balanced) ── */}
           <TrendingProducts />
 
           {/* ── New Arrivals ── */}
@@ -108,6 +94,20 @@ export default function Home() {
             <StorefrontRail label="Brands" className="storefront-rail--brand">
               {brands.map((brand) => (
                 <StorefrontBrandTile key={brand.name} {...brand} />
+              ))}
+            </StorefrontRail>
+          </StorefrontSection>
+
+          {/* ── Popular Categories ── */}
+          <StorefrontSection
+            eyebrow="Shop"
+            title="Popular Categories"
+            viewAllHref="/products"
+            viewAllLabel="All categories"
+          >
+            <StorefrontRail label="Popular categories" className="storefront-rail--category">
+              {categories.map((category) => (
+                <StorefrontCategoryTile key={category.to} {...category} />
               ))}
             </StorefrontRail>
           </StorefrontSection>

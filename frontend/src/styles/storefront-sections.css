@@ -102,11 +102,11 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-end;
-  min-height: 100px;
-  padding: 12px 14px;
+  justify-content: space-between;
+  min-height: 130px;
+  padding: 14px;
   border-radius: var(--dtb-radius-md);
-  background: var(--dtb-shell);
+  background: var(--tile-bg, var(--dtb-shell));
   color: white;
   text-decoration: none;
   overflow: hidden;
@@ -114,13 +114,55 @@
   box-shadow: var(--dtb-shadow-card);
 }
 
+/* Dot-grid texture */
+.storefront-category-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 14px 14px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Per-category accent glow (top-right) */
+.storefront-category-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 85% 15%, var(--tile-accent, #3b82f6) 0%, transparent 58%);
+  opacity: 0.28;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 180ms ease;
+}
+
 .storefront-category-tile:hover {
   transform: translateY(-2px);
   box-shadow: var(--dtb-shadow-elevated);
 }
 
+.storefront-category-tile:hover::after {
+  opacity: 0.44;
+}
+
+.storefront-category-tile__icon {
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.88);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.storefront-category-tile__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .storefront-category-tile__label {
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.25;
   position: relative;
