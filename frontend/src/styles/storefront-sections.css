@@ -66,6 +66,8 @@
   grid-auto-columns: minmax(0, 1fr);
   gap: 12px;
   overflow-x: auto;
+  /* Prevent horizontal rail scroll from propagating to the page body */
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;

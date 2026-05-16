@@ -42,8 +42,15 @@
 }
 
 html, body {
-    overflow-x: hidden;
-    max-width: 100vw;
+    overflow-x: clip;
+    max-width: 100%;
+}
+
+/* Defensive root overflow guard — clips any child overflow without creating
+   a scroll container (clip ≠ hidden; does not affect scroll restoration). */
+#root {
+    max-width: 100%;
+    overflow-x: clip;
 }
 
 body {
@@ -2227,10 +2234,11 @@ aside input[type="range"],
         font-size: 16px; /* Ensure consistent 1rem = 16px on tablets */
     }
 
+    /* Do NOT add padding to #root on tablet — fixed/absolute elements
+       (header, drawers, sheets) are viewport-relative and would misalign
+       against flow content that respects #root padding. */
     #root {
         max-width: 100%;
-        margin: 0 auto;
-        padding: 1.5rem;
     }
 
     /* === TYPOGRAPHY: Fluid scaling for readability === */
@@ -2425,10 +2433,11 @@ aside input[type="range"],
     }
 
     /* === GRID LAYOUTS: Fluid product/content grids === */
-    /* Product grid: 2 columns on tablets for optimal reading/scrolling */
+    /* Scoped only to explicit grid class names — do NOT use a broad
+       [role="main"] > div > div selector which breaks catalog filter/product
+       layout and many other nested-div components. */
     .product-grid,
-    .products-grid,
-    [role="main"] > div > div {
+    .products-grid {
         display: grid !important;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
         gap: 1.5rem !important;
@@ -2547,21 +2556,14 @@ aside input[type="range"],
         border-radius: 8px;
     }
 
-    /* === TOUCH TARGETS: Ensure min 44x44px for all interactive elements === */
-    button,
-    a[role="button"],
-    .btn-add-to-cart,
-    .btn-wishlist {
+    /* === TOUCH TARGETS: Ensure min 44x44px for actionable icon buttons only.
+       Avoid applying to ALL buttons — that breaks styled product card actions,
+       variant pills, filter chips, and other compact interactive elements. === */
+    .header-icon,
+    .cart-toggle,
+    .header-mobile-slot button {
         min-width: 44px;
         min-height: 44px;
-        padding: 10px 16px;
-        border-radius: 8px;
-        transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
-    }
-
-    button:active,
-    a[role="button"]:active {
-        transform: scale(0.98);
     }
 
     /* === SCHEMATIC/PARTS: Tablet viewing === */
@@ -2570,27 +2572,12 @@ aside input[type="range"],
         margin-bottom: 1.5rem;
     }
 
-    /* === SPACING: Consistent padding throughout === */
-    section {
-        padding: 2.5rem 1.5rem;
-    }
-
+    /* === SPACING: Consistent padding for utility class only, not all sections === */
     .section-padding {
         padding: 2rem 1.5rem;
     }
 
-    /* === ANIMATIONS: Smooth transitions across tablet sizes === */
-    * {
-        scroll-behavior: smooth;
-    }
-
-    /* Reduce motion if user prefers */
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation: none !important;
-            transition: none !important;
-        }
-    }
+    /* === ANIMATIONS: Smooth transitions across tablet sizes (opt-in only) === */
 }
 
 /* --- HOME PAGE DESKTOP OPTIMIZATION --- */
@@ -3859,6 +3846,8 @@ aside input[type="range"],
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
+    /* Prevent horizontal scroll from propagating to page body */
+    overscroll-behavior-x: contain;
     padding-bottom: 6px;
     scrollbar-width: thin;
     scrollbar-color: rgba(37, 99, 235, 0.25) transparent;

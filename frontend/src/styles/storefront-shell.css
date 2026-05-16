@@ -3,6 +3,20 @@
   color: var(--dtb-text);
 }
 
+/* Contain any child overflow (e.g. negative-margin rails) so it never
+   creates a body-level horizontal scrollbar. clip ≠ hidden — it does not
+   create a scroll container and does not affect scroll restoration. */
+.page-wrapper {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Same guard on the main content wrapper rendered by AppShell */
+main.main-content {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 .storefront-surface {
   background: var(--dtb-surface);
   border: 1px solid var(--dtb-border);
