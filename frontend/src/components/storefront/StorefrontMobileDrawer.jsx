@@ -8,9 +8,9 @@ export default function StorefrontMobileDrawer({ isOpen, onClose, labelledBy = '
       const previousOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       // Defer focus so the CSS transition has begun
-      const t = setTimeout(() => closeRef.current?.focus(), 20);
+      const focusTimeout = setTimeout(() => closeRef.current?.focus(), 20);
       return () => {
-        clearTimeout(t);
+        clearTimeout(focusTimeout);
         document.body.style.overflow = previousOverflow;
       };
     }

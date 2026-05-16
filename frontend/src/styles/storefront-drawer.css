@@ -20,7 +20,7 @@
 .storefront-mobile-drawer__backdrop {
   position: absolute;
   inset: 0;
-  background: #020617;
+  background: var(--dtb-drawer-bg);
   border: 0;
 }
 
@@ -28,7 +28,7 @@
   position: relative;
   width: 100%;
   min-height: 100dvh;
-  background: #020617;
+  background: var(--dtb-drawer-bg);
   color: white;
   overflow-y: auto;
   display: flex;
