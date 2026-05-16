@@ -390,8 +390,8 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
           <div className="storefront-mobile-drawer__account">
             {!isLoading && (isAuthenticated ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <Link to="/dashboard" onClick={closeMobileMenu} className="storefront-mobile-drawer__account-link"><User size={14} />My Dashboard</Link>
-                <button onClick={async () => { closeMobileMenu(); await logout(); }} className="storefront-mobile-drawer__account-link storefront-mobile-drawer__account-link--danger"><LogOut size={14} />Sign Out</button>
+                <button type="button" onClick={handleMobileAccountClick} className="storefront-mobile-drawer__account-link"><User size={14} />My Account</button>
+                <button type="button" onClick={async () => { closeMobileMenu(); await logout(); }} className="storefront-mobile-drawer__account-link storefront-mobile-drawer__account-link--danger"><LogOut size={14} />Sign Out</button>
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 8 }}>
