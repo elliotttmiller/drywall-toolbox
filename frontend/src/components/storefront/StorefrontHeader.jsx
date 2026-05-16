@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
 import { ShoppingCart, Menu, X, ChevronDown, ChevronRight, User, LogIn, UserPlus, LogOut, Bell, Search } from 'lucide-react';
@@ -10,7 +10,7 @@ import StorefrontSearchOverlay from './StorefrontSearchOverlay';
 import StorefrontMobileDrawer from './StorefrontMobileDrawer';
 import AccountHubSheet from '../account/AccountHubSheet.jsx';
 import { searchProducts } from '../../services/catalog';
-import { BRAND_TO_SLUG } from '../../utils/catalogUrlState.js';
+import { BRAND_TO_SLUG, sortBrandsBy } from '../../utils/catalogUrlState.js';
 
 const PRIMARY_NAV_LINKS = [
   { to: '/schematics', label: 'Schematics' },
@@ -52,12 +52,6 @@ const DRAWER_NAV_ROWS = [
   { to: '/contact', label: 'Contact' },
 ];
 
-function getSortedDrawerBrands(brands) {
-  return brands
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-}
-
 export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = false }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -93,7 +87,7 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
   const isProductDetailRoute = /^\/products\/(?!brands(?:\/|$))/.test(location.pathname);
   const hideMobileCartFab = mobileMenuOpen || searchOverlayOpen || cartOpen || accountHubOpen || isProductDetailRoute;
   const drawerBrands = useMemo(
-    () => getSortedDrawerBrands(Object.entries(BRAND_TO_SLUG).map(([name, slug]) => ({ name, slug }))),
+    () => sortBrandsBy(Object.entries(BRAND_TO_SLUG).map(([name, slug]) => ({ name, slug }))),
     []
   );
 
@@ -106,11 +100,11 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
     setDesktopSearchOpen(false);
   };
 
-  const closeSearchOverlay = () => {
+  const closeSearchOverlay = useCallback(() => {
     setSearchOverlayOpen(false);
     setMobileSearchQuery('');
     setSearchSuggestions([]);
-  };
+  }, []);
 
   const handleDropdownMouseLeave = () => {
     if (dropdownCloseTimerRef.current) clearTimeout(dropdownCloseTimerRef.current);
@@ -130,7 +124,9 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
   }, []);
 
   useEffect(() => {
-    if (!mobileMenuOpen) setBrandsExpanded(false);
+    if (mobileMenuOpen) return;
+    // Keep the Brands accordion reset between drawer sessions.
+    setBrandsExpanded(false);
   }, [mobileMenuOpen]);
 
   useEffect(() => {
@@ -138,13 +134,13 @@ export default function Header({ onCartToggle, cartOpen = false, hasTopTicker = 
     prevPathnameRef.current = location.pathname;
     const t = setTimeout(() => { closeMenus(); closeSearchOverlay(); }, 0);
     return () => clearTimeout(t);
-  }, [location.pathname]);
+  }, [location.pathname, closeSearchOverlay]);
 
   useEffect(() => {
     const handleKeyDown = (e) => { if (e.key === 'Escape') { closeMenus(); closeSearchOverlay(); } };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [closeSearchOverlay]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 641px) and (max-width: 1024px)');

@@ -219,3 +219,9 @@ export function brandToSlug(value) {
   if (SLUG_TO_BRAND[decoded]) return decoded;
   return decoded.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
+
+export function sortBrandsBy(brands = [], field = 'name') {
+  return brands
+    .slice()
+    .sort((a, b) => String(a?.[field] || '').localeCompare(String(b?.[field] || ''), undefined, { sensitivity: 'base' }));
+}

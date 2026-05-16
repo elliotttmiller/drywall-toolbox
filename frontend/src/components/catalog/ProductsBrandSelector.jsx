@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import tapeTechLogo from '/brands/TapeTech/tapetech_logo.svg';
 import columbiaLogo from '/brands/Columbia/columbia_taping_tools_logo.svg';
 import surproLogo from '/brands/SurPro/surpro_logo.svg';
@@ -7,6 +8,7 @@ import platinumLogo from '/brands/Platinum/platinum_logo.svg';
 import duraStiltsLogo from '/brands/Dura-Stilts/dura-stilts-logo.svg';
 import level5Logo from '/brands/Level5/Level5.svg';
 import { ArrowUpRight } from 'lucide-react';
+import { sortBrandsBy } from '../../utils/catalogUrlState.js';
 import './products-selector.css';
 
 const PRODUCT_BRAND_LOGOS = {
@@ -28,7 +30,7 @@ function resolveLogo(brand) {
 }
 
 export default function ProductsBrandSelector({ brands, onSelectBrand }) {
-  const sortedBrands = [...brands].sort((a, b) => (a.label || '').localeCompare(b.label || '', undefined, { sensitivity: 'base' }));
+  const sortedBrands = useMemo(() => sortBrandsBy(brands, 'label'), [brands]);
 
   return (
     <div className="products-brand-selector">
@@ -52,7 +54,7 @@ export default function ProductsBrandSelector({ brands, onSelectBrand }) {
                     className="products-brand-card__logo"
                   />
                 ) : (
-                  <span className="product-brand-selector-card__fallback-label">{label}</span>
+                  <span className="products-brand-card__fallback-label">{label}</span>
                 )}
               </span>
               <span className="products-brand-card__name">{label}</span>

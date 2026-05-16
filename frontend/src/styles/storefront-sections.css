@@ -175,6 +175,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── CTA block ── */
@@ -332,11 +333,10 @@
   }
 
   .dtb-product-grid--single {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .dtb-product-grid--single > * {
-    grid-column: 1 / -1;
     max-width: min(420px, 100%);
     justify-self: center;
   }

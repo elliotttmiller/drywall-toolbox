@@ -85,7 +85,7 @@
   justify-content: center;
 }
 
-.product-brand-selector-card__fallback-label {
+.products-brand-card__fallback-label {
   color: #0f172a;
   font-weight: 800;
   font-size: clamp(0.88rem, 3vw, 1rem);

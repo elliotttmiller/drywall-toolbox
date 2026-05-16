@@ -35,6 +35,10 @@ export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
     () => user?.first_name || user?.name?.split(' ')?.[0] || 'there',
     [user]
   );
+  const displayName = useMemo(
+    () => [user?.first_name, user?.last_name].filter(Boolean).join(' ') || user?.name || 'My Account',
+    [user]
+  );
 
   if (!isOpen) return null;
 
@@ -76,10 +80,9 @@ export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
                     type="button"
                     className="account-hub__link-button"
                     onClick={() => {
-                    onClose?.();
-                    setActiveTab('home');
-                    navigate('/products');
-                  }}
+                      closeSheet();
+                      navigate('/products');
+                    }}
                   >
                     Start shopping
                   </button>
@@ -105,7 +108,7 @@ export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
             <div className="account-hub__panel">
               <section className="account-hub__section">
                 <div className="account-hub__card">
-                  <strong>{[user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'My Account'}</strong>
+                  <strong>{displayName}</strong>
                   <p>{user?.email || 'No email on file'}</p>
                   <Link to="/dashboard" onClick={closeSheet}>View account</Link>
                   <Link to="/dashboard" onClick={closeSheet}>Edit account</Link>
