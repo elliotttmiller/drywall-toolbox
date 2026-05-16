@@ -56,6 +56,8 @@ export default function ProductVariationSelector({
                     onClick={() => setSelectedAttrs((prev) => ({ ...prev, [attr.name]: option.value }))}
                     disabled={disabled}
                     aria-pressed={selected}
+                    aria-disabled={disabled || soldOut}
+                    aria-label={`${option.value}${soldOut ? ' - sold out' : unavailable ? ' - unavailable' : ''}`}
                     className={`dtb-variant-pill${selected ? ' is-selected' : ''}${soldOut ? ' is-sold-out' : ''}${disabled ? ' is-disabled' : ''}`}
                     whileTap={disabled ? undefined : { scale: 0.985 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}

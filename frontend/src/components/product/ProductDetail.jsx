@@ -134,6 +134,18 @@ function composeEffectiveVariationProduct(parentProduct, selectedVariation, sele
   };
 }
 
+function getBrandLabel(product, effectiveProduct = null) {
+  return (
+    product?.brand?.label ||
+    effectiveProduct?.brand?.label ||
+    product?.brandLabel ||
+    effectiveProduct?.brandLabel ||
+    product?.brand ||
+    effectiveProduct?.brand ||
+    ''
+  );
+}
+
 export default function ProductDetail({
   product,
   onAddToCart,
@@ -347,7 +359,7 @@ export default function ProductDetail({
   const effectiveProduct = selectedVariation
     ? composeEffectiveVariationProduct(product, selectedVariation, selectedVariationLabel)
     : product;
-  const brandLabel = product?.brand?.label || effectiveProduct?.brand?.label || product?.brandLabel || effectiveProduct?.brandLabel || product?.brand || effectiveProduct?.brand || '';
+  const brandLabel = getBrandLabel(product, effectiveProduct);
   const effectiveSku = effectiveProduct.sku || product.sku || '';
   const effectiveStock = effectiveProduct.stock_status || product.stock_status || 'instock';
   const isOutOfStock = effectiveStock === 'outofstock';

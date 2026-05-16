@@ -258,8 +258,8 @@
     padding: 0.45rem 0.8rem;
     border: 1px solid rgba(148, 163, 184, 0.45);
     border-radius: 999px;
-    background: #fff;
-    color: #0f172a;
+    background: var(--dtb-surface);
+    color: var(--dtb-text);
     font-size: 0.8rem;
     font-weight: 700;
     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
@@ -269,7 +269,7 @@
     font-size: 0.72rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #2563eb;
+    color: var(--dtb-primary);
     font-weight: 800;
   }
 

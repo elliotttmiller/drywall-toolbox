@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, X } from 'lucide-react';
 import StorefrontSearchDock from './StorefrontSearchDock';
+import { brandToSlug } from '../../utils/catalogUrlState.js';
 
 const QUICK_LINKS = [
   { to: '/products', label: 'All Products' },
@@ -8,14 +9,6 @@ const QUICK_LINKS = [
   { to: '/products/brands', label: 'Brands' },
   { to: '/schematics', label: 'Schematics' },
 ];
-
-function toSlug(value) {
-  return String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
 function formatPrice(value) {
   const numeric = Number(value || 0);
@@ -86,7 +79,7 @@ export default function StorefrontSearchOverlay({
                     {brands.map((brand) => (
                       <Link
                         key={brand}
-                        to={`/products/brands/${toSlug(brand)}`}
+                        to={`/products/brands/${brandToSlug(brand)}`}
                         onClick={onClose}
                         className="storefront-search-overlay__chip"
                       >

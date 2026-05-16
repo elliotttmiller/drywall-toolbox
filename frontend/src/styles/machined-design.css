@@ -1646,9 +1646,10 @@ aside input[type="range"],
    Fixed bottom-right cart button that opens the cart sidebar on mobile.      */
 
 .mobile-cart-fab {
+    --mobile-cart-fab-offset: 96px;
     display: none; /* hidden by default; shown via media query below */
     position: fixed;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--mobile-cart-fab-offset));
     right: 20px;
     z-index: 9990;
     width: 60px;

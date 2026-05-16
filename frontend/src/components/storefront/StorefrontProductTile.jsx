@@ -49,6 +49,7 @@ export default function StorefrontProductTile({
           srcSet={resolved.image_srcset}
           sizes={variant === 'rail' ? '(max-width: 767px) 44vw, 188px' : '(max-width: 767px) 50vw, (max-width: 1024px) 33vw, 240px'}
           alt={name}
+          className="dtb-product-card__img"
           padding="0"
           fit="contain"
           preferThumbnail
