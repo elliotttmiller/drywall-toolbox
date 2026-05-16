@@ -229,7 +229,7 @@ export default function MobileProductCard({
             <button
               type="button"
               className="dtb-mobile-card__btn dtb-mobile-card__btn--options"
-              onClick={isMobile ? handleOpenModal : handleOpenModal}
+              onClick={handleOpenModal}
               aria-label={`Configure ${name}`}
             >
               <SlidersHorizontal size={13} strokeWidth={2.2} />
