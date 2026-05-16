@@ -394,3 +394,289 @@
 .dtb-product-card__qv-btn:active {
   transform: scale(0.96);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MobileProductCard — CSR-inspired mobile-first product card
+   BEM namespace: .dtb-mobile-card
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.dtb-mobile-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: var(--dtb-radius-lg, 14px);
+  border: 1px solid var(--dtb-border, #dbe3f1);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+}
+
+.dtb-mobile-card:hover {
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.13);
+  transform: translateY(-2px);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+/* ── Image area ────────────────────────────────────────────────────────────── */
+
+.dtb-mobile-card__image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  /* Minimal inner padding so the product image breathes without wasting space */
+  padding: 6px;
+  background: linear-gradient(170deg, #f8fafc 0%, #f1f5f9 100%);
+  overflow: hidden;
+}
+
+/* ── Discount / status badge ── */
+
+.dtb-mobile-card__badge {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  /* Left-padded extra to clear the notch */
+  padding: 4px 9px 4px 11px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+  /* Price-tag / flag shape: right side is straight, left side has a V-notch */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 8% 50%);
+  border-radius: 0 4px 4px 0;
+}
+
+.dtb-mobile-card__badge--sale {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.dtb-mobile-card__badge--out {
+  background: #e2e8f0;
+  color: #475569;
+  /* No notch for the out-of-stock variant */
+  clip-path: none;
+  padding-left: 9px;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── Meta area ─────────────────────────────────────────────────────────────── */
+
+.dtb-mobile-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 11px 12px;
+  flex: 1;
+}
+
+.dtb-mobile-card__brand {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dtb-primary, #2563eb);
+  line-height: 1.2;
+}
+
+.dtb-mobile-card__name {
+  border: 0;
+  background: none;
+  padding: 0;
+  text-align: left;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  cursor: pointer;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dtb-mobile-card__name:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.dtb-mobile-card__sku {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: #64748b;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Price row ──────────────────────────────────────────────────────────────── */
+
+.dtb-mobile-card__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+
+.dtb-mobile-card__price {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.dtb-mobile-card__price--sale {
+  color: #dc2626;
+}
+
+.dtb-mobile-card__price--muted {
+  color: var(--dtb-muted, #64748b);
+}
+
+.dtb-mobile-card__price-original {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-decoration: line-through;
+  text-decoration-color: rgba(148, 163, 184, 0.7);
+  line-height: 1;
+}
+
+/* ── CTA area ──────────────────────────────────────────────────────────────── */
+
+.dtb-mobile-card__actions {
+  margin-top: auto;
+  padding-top: 9px;
+}
+
+.dtb-mobile-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--dtb-radius, 10px);
+  background: linear-gradient(135deg, #17365d, #2563eb);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dtb-mobile-card__btn:hover {
+  opacity: 0.88;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+
+.dtb-mobile-card__btn:active {
+  transform: scale(0.97);
+}
+
+.dtb-mobile-card__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.dtb-mobile-card__btn--options {
+  /* same style — no override needed */
+}
+
+/* ── Variant overrides ─────────────────────────────────────────────────────── */
+
+/* Rail: fixed narrow width */
+.dtb-mobile-card--rail {
+  width: clamp(148px, 44vw, 190px);
+}
+
+.dtb-mobile-card--rail .dtb-mobile-card__name {
+  font-size: 0.82rem;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* List: horizontal layout */
+.dtb-mobile-card--list {
+  flex-direction: row;
+  cursor: default;
+}
+
+.dtb-mobile-card--list .dtb-mobile-card__image {
+  width: clamp(108px, 28vw, 160px);
+  aspect-ratio: auto;
+  min-height: 100%;
+  flex-shrink: 0;
+  padding: 10px;
+  border-right: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.dtb-mobile-card--list .dtb-mobile-card__meta {
+  padding: 12px 14px 14px;
+  gap: 4px;
+}
+
+.dtb-mobile-card--list .dtb-mobile-card__name {
+  font-size: 0.94rem;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .dtb-mobile-card,
+  .dtb-mobile-card__btn {
+    animation: none;
+    transition: none;
+  }
+  .dtb-mobile-card:hover {
+    transform: none;
+  }
+}
+
+/* ── Mobile density adjustments ────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .dtb-mobile-card__meta {
+    padding: 8px 9px 10px;
+  }
+
+  .dtb-mobile-card__btn {
+    min-height: 32px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* On large screens, the card can afford a bit more breathing room */
+  .dtb-mobile-card__image {
+    padding: 8px;
+  }
+
+  .dtb-mobile-card__name {
+    font-size: 0.9rem;
+  }
+}

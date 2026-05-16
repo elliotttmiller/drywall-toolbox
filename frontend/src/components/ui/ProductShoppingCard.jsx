@@ -1,5 +1,5 @@
-import StorefrontProductTile from '../storefront/StorefrontProductTile';
+import MobileProductCard from '../catalog/MobileProductCard';
 
 export default function ProductShoppingCard(props) {
-  return <StorefrontProductTile {...props} />;
+  return <MobileProductCard {...props} />;
 }
