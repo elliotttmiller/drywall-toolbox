@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import Toast from '../components/ui/Toast';
 import BrandSelector from '../components/schematics/BrandSelector';
 import ToolSelector from '../components/schematics/ToolSelector';
+import SchematicHotspotCard from '../components/schematics/SchematicHotspotCard';
 import { getProductBySku } from '../api/products';
 import { SCHEMATIC_DEFINITIONS } from '../data/schematicMappings';
 import { useSchematicMedia } from '../hooks/useSchematicMedia';
@@ -2113,19 +2114,6 @@ const ALLOWED_BRANDS = [
     setHotspotLightbox(false);
   };
 
-  const getHotspotDisplayCode = (part) => part?.sku || part?.source_sku || '';
-  const getHotspotCodeLabel = (part) => (part?.sku ? 'SKU' : part?.source_sku ? 'Ref' : 'SKU');
-  const getHotspotPriceLabel = (part) => {
-    const livePrice = parseFloat(hotspotProduct?.price);
-    if (Number.isFinite(livePrice) && livePrice > 0) {
-      return `$${livePrice.toFixed(2)}`;
-    }
-    if (part?.sku && hotspotStockStatus === null) {
-      return '...';
-    }
-    return 'Unavailable';
-  };
-
   // Close hotspot image lightbox on Escape
   useEffect(() => {
     if (!hotspotLightbox) return;
@@ -3010,87 +2998,7 @@ const ALLOWED_BRANDS = [
                     onClick={(e) => e.stopPropagation()}
                     title={`${part.name} (${part.sku})`}
                   >
-                    {/* Desktop inline modal (hidden on mobile via CSS) */}
-                    <div className="part-modal" onClick={(e) => e.stopPropagation()}>
-                    {activeHotspot === hotspotKey && hotspotProduct?.images?.[0] && (
-                      <button
-                        className="hotspot-modal-image-btn"
-                        onClick={(e) => { e.stopPropagation(); setHotspotLightbox(true); }}
-                        aria-label="View full-size image"
-                        title="View full-size image"
-                      >
-                        <img
-                          src={hotspotProduct.images[0]}
-                          alt={part.name}
-                          className="hotspot-modal-image"
-                        />
-                      </button>
-                    )}
-                    <h4 style={{
-                      textTransform: 'uppercase',
-                      fontSize: '0.75rem',
-                      letterSpacing: '0.1em',
-                      marginBottom: '8px'
-                    }}>
-                      {hotspotProduct?.slug ? (
-                        <Link
-                          to={`/products/${hotspotProduct.slug}`}
-                          onClick={(e) => e.stopPropagation()}
-                          style={{ color: 'inherit', textDecoration: 'none' }}
-                          className="hotspot-modal-title-link"
-                        >
-                          {part.name}
-                        </Link>
-                      ) : (
-                        part.name
-                      )}
-                    </h4>
-                    <div className="part-meta">
-                      {getHotspotCodeLabel(part)}: {getHotspotDisplayCode(part)}
-                      {part.quantity > 1 && ` | Qty: ${part.quantity}`}
-                      {activeHotspot === hotspotKey && (
-                        <span style={{
-                          marginLeft: '6px',
-                          fontWeight: 700,
-                          color: hotspotStockStatus === 'instock' ? '#16a34a'
-                               : hotspotStockStatus === 'outofstock' ? '#dc2626'
-                               : '#6b7280',
-                        }}>
-                          {hotspotStockStatus === 'instock' ? '● In Stock'
-                         : hotspotStockStatus === 'outofstock' ? '● Out of Stock'
-                         : hotspotStockStatus === 'unknown' ? '● Unavailable'
-                         : '…'}
-                        </span>
-                      )}
-                    </div>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <span style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontWeight: 800
-                      }}>
-                        {getHotspotPriceLabel(part)}
-                      </span>
-                      <button
-                        className="alloy-button"
-                        style={{
-                          padding: '8px 16px',
-                          fontSize: '0.6rem'
-                        }}
-                        disabled={!hotspotProduct?.id || hotspotStockStatus === null || addingToCart === part.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(part);
-                        }}
-                      >
-                        {addingToCart === part.id ? '…' : hotspotStockStatus === null && part.sku ? 'Resolving…' : hotspotProduct?.id ? 'Add' : 'Unavailable'}
-                      </button>
-                    </div>
                   </div>
-                </div>
                 );
               })}
 
@@ -3154,83 +3062,15 @@ const ALLOWED_BRANDS = [
                   left: `${modalPosition.left}px`,
                 }}
               >
-                {hotspotProduct?.images?.[0] ? (
-                  <button
-                    className="hotspot-modal-image-btn"
-                    onClick={(e) => { e.stopPropagation(); setHotspotLightbox(true); }}
-                    aria-label="View full-size image"
-                    title="View full-size image"
-                  >
-                    <img
-                      src={hotspotProduct.images[0]}
-                      alt={activeHotspotPart.name}
-                      className="hotspot-modal-image"
-                    />
-                  </button>
-                ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
-                  <div className="hotspot-modal-image-skeleton hotspot-modal-image-skeleton--desktop" aria-hidden="true" />
-                ) : null}
-                <h4 style={{
-                  textTransform: 'uppercase',
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.1em',
-                  marginBottom: '8px'
-                }}>
-                  {hotspotProduct?.slug ? (
-                    <Link
-                      to={`/products/${hotspotProduct.slug}`}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ color: 'inherit', textDecoration: 'none' }}
-                      className="hotspot-modal-title-link"
-                    >
-                      {activeHotspotPart.name}
-                    </Link>
-                  ) : (
-                    activeHotspotPart.name
-                  )}
-                </h4>
-                <div className="part-meta">
-                  {getHotspotCodeLabel(activeHotspotPart)}: {getHotspotDisplayCode(activeHotspotPart)}
-                  {activeHotspotPart.quantity > 1 && ` | Qty: ${activeHotspotPart.quantity}`}
-                  <span style={{
-                    marginLeft: '6px',
-                    fontWeight: 700,
-                    color: hotspotStockStatus === 'instock' ? '#16a34a'
-                         : hotspotStockStatus === 'outofstock' ? '#dc2626'
-                         : '#6b7280',
-                  }}>
-                    {hotspotStockStatus === 'instock' ? '● In Stock'
-                   : hotspotStockStatus === 'outofstock' ? '● Out of Stock'
-                   : hotspotStockStatus === 'unknown' ? '● Unavailable'
-                   : '…'}
-                  </span>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontWeight: 800
-                  }}>
-                    {getHotspotPriceLabel(activeHotspotPart)}
-                  </span>
-                  <button
-                    className="alloy-button"
-                    style={{
-                      padding: '8px 16px',
-                      fontSize: '0.6rem'
-                    }}
-                    disabled={!hotspotProduct?.id || hotspotStockStatus === null || addingToCart === activeHotspotPart.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(activeHotspotPart);
-                    }}
-                  >
-                    {addingToCart === activeHotspotPart.id ? '…' : hotspotStockStatus === null && activeHotspotPart.sku ? 'Resolving…' : hotspotProduct?.id ? 'Add' : 'Unavailable'}
-                  </button>
-                </div>
+                <SchematicHotspotCard
+                  variant="desktop"
+                  part={activeHotspotPart}
+                  product={hotspotProduct}
+                  stockStatus={hotspotStockStatus}
+                  addingToCart={addingToCart}
+                  onAddToCart={() => handleAddToCart(activeHotspotPart)}
+                  onLightboxOpen={() => setHotspotLightbox(true)}
+                />
               </div>
             )}
           </div>
@@ -3251,127 +3091,16 @@ const ALLOWED_BRANDS = [
             className="mobile-part-modal-overlay"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
-            <button
-              className="mobile-modal-close-btn"
-              onClick={closeModal}
-              aria-label="Close"
-              style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                width: '34px',
-                height: '34px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(15,23,42,0.06)',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                color: '#0f172a',
-                WebkitTapHighlightColor: 'transparent',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-            <div className="mobile-modal-top-row">
-              <div className="mobile-modal-thumb">
-                {hotspotProduct?.images?.[0] ? (
-                  <button
-                    className="hotspot-modal-image-btn hotspot-modal-image-btn--mobile"
-                    onClick={(e) => { e.stopPropagation(); setHotspotLightbox(true); }}
-                    aria-label="View full-size image"
-                    title="View full-size image"
-                  >
-                    <img
-                      src={hotspotProduct.images[0]}
-                      alt={activeHotspotPart.name}
-                      className="hotspot-modal-image hotspot-modal-image--mobile"
-                    />
-                  </button>
-                ) : activeHotspotPart?.sku && hotspotStockStatus === null ? (
-                  <div className="hotspot-modal-image-skeleton" aria-hidden="true" />
-                ) : null}
-              </div>
-              <div className="mobile-modal-info">
-                <h4 style={{
-                  textTransform: 'uppercase',
-                  fontSize: '0.8rem',
-                  fontWeight: '700',
-                  letterSpacing: '0.08em',
-                  marginBottom: '6px',
-                  lineHeight: '1.35',
-                  wordBreak: 'break-word',
-                  color: '#0f172a'
-                }}>
-                  {hotspotProduct?.slug ? (
-                    <Link
-                      to={`/products/${hotspotProduct.slug}`}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ color: 'inherit', textDecoration: 'none' }}
-                      className="hotspot-modal-title-link"
-                    >
-                      {activeHotspotPart.name}
-                    </Link>
-                  ) : (
-                    activeHotspotPart.name
-                  )}
-                </h4>
-                <div className="part-meta" style={{ fontSize: '0.75rem' }}>
-                  {getHotspotCodeLabel(activeHotspotPart)}: {getHotspotDisplayCode(activeHotspotPart)}
-                  {activeHotspotPart.quantity > 1 && ` | Qty: ${activeHotspotPart.quantity}`}
-                  <span style={{
-                    marginLeft: '6px',
-                    fontWeight: 700,
-                    color: hotspotStockStatus === 'instock' ? '#16a34a'
-                         : hotspotStockStatus === 'outofstock' ? '#dc2626'
-                         : '#6b7280',
-                  }}>
-                    {hotspotStockStatus === 'instock' ? '● In Stock'
-                   : hotspotStockStatus === 'outofstock' ? '● Out of Stock'
-                   : hotspotStockStatus === 'unknown' ? '● Unavailable'
-                   : '…'}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingTop: '14px',
-              borderTop: '1px solid rgba(15,23,42,0.08)',
-              gap: '12px'
-            }}>
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 800,
-                fontSize: '1.3rem',
-                color: 'var(--tension-accent)'
-              }}>
-                {getHotspotPriceLabel(activeHotspotPart)}
-              </span>
-              <button
-                className="alloy-button"
-                style={{
-                  padding: '10px 20px',
-                  fontSize: '0.75rem',
-                  borderRadius: '8px',
-                  clipPath: 'none',
-                  fontWeight: '700'
-                }}
-                disabled={!hotspotProduct?.id || hotspotStockStatus === null || addingToCart === activeHotspotPart?.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(activeHotspotPart);
-                }}
-              >
-                {addingToCart === activeHotspotPart?.id ? 'Adding…' : hotspotStockStatus === null && activeHotspotPart?.sku ? 'Resolving…' : hotspotProduct?.id ? 'Add to Cart' : 'Unavailable'}
-              </button>
-            </div>
+            <SchematicHotspotCard
+              variant="mobile"
+              part={activeHotspotPart}
+              product={hotspotProduct}
+              stockStatus={hotspotStockStatus}
+              addingToCart={addingToCart}
+              onAddToCart={() => handleAddToCart(activeHotspotPart)}
+              onClose={closeModal}
+              onLightboxOpen={() => setHotspotLightbox(true)}
+            />
           </div>
         </>
       )}
