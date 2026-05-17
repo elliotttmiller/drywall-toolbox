@@ -11,7 +11,6 @@
  */
 
 import { Link } from 'react-router-dom';
-import { motion as Motion } from 'framer-motion';
 
 const BRAND_SIZE_MAP = {
   TapeTech: { height: 'clamp(22px, 3.8vw, 34px)', maxWidth: '130px' },
@@ -89,11 +88,7 @@ export default function TrustedBrands({ brands = [], title = 'Trusted Brands', s
       }}
     >
       {title && (
-        <Motion.p
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.4 }}
+        <p
           style={{
             textAlign: 'center',
             fontSize: '0.65rem',
@@ -106,7 +101,7 @@ export default function TrustedBrands({ brands = [], title = 'Trusted Brands', s
           }}
         >
           {title}
-        </Motion.p>
+        </p>
       )}
 
       <div style={{ position: 'relative', overflow: 'hidden' }}>

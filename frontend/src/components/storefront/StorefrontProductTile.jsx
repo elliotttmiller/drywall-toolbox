@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Eye, Heart } from 'lucide-react';
 import ProductCardImage from '../product/ProductCardImage';
 
@@ -125,14 +124,12 @@ export default function StorefrontProductTile({
   const cardClassName = `dtb-product-card dtb-product-card--${variant} storefront-motion-card`;
 
   return (
-    <Motion.article
+    <article
       ref={cardRef}
       className={cardClassName}
+      style={{ '--dtb-card-delay': `${Math.min(index, 8) * 30}ms` }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22, delay: Math.min(index, 8) * 0.03 }}
     >
       <button
         type="button"
@@ -169,75 +166,63 @@ export default function StorefrontProductTile({
           eager={index < 4}
         />
 
-        {/* Quick-view / action overlay — hover (desktop) or tap (mobile) */}
-        <AnimatePresence>
-          {overlayActive && variant !== 'list' && (
-            <Motion.div
-              key="qv-overlay"
-              className="dtb-product-card__qv-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-              onClick={(e) => {
-                // Tap on dim layer (not a button) → navigate
-                e.stopPropagation();
-                setOverlayActive(false);
-                if (productUrl) navigate(productUrl);
-              }}
-            >
-              <Motion.div
-                className="dtb-product-card__qv-actions"
-                initial={{ opacity: 0, scale: 0.88, y: 8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.92, y: 4 }}
-                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {/* Heart / Save — desktop only */}
-                {!isMobile && (
-                  <button
-                    type="button"
-                    className="dtb-product-card__qv-icon-btn"
-                    onClick={(e) => e.stopPropagation()}
-                    aria-label={`Save ${name} for later`}
-                  >
-                    <Heart size={15} strokeWidth={2.2} />
-                  </button>
-                )}
-
-                {/* Quick View pill */}
+        {/* Quick-view / action overlay — always rendered, visibility driven by CSS transitions */}
+        {variant !== 'list' && (
+          <div
+            aria-hidden={!overlayActive}
+            className={`dtb-product-card__qv-overlay${overlayActive ? ' dtb-product-card__qv-overlay--active' : ''}`}
+            onClick={(e) => {
+              // Tap on dim layer (not a button) → navigate
+              e.stopPropagation();
+              setOverlayActive(false);
+              if (productUrl) navigate(productUrl);
+            }}
+          >
+            <div className={`dtb-product-card__qv-actions${overlayActive ? ' dtb-product-card__qv-actions--active' : ''}`}>
+              {/* Heart / Save — desktop only */}
+              {!isMobile && (
                 <button
                   type="button"
-                  className="dtb-product-card__qv-btn"
-                  onClick={handleQuickView}
-                  aria-label={`Quick view ${name}`}
+                  className="dtb-product-card__qv-icon-btn"
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={`Save ${name} for later`}
                 >
-                  <Eye size={14} strokeWidth={2.2} />
-                  <span>Quick View</span>
+                  <Heart size={15} strokeWidth={2.2} />
                 </button>
+              )}
 
-                {/* Add to Cart — simple products only; variable opens via Quick View.
-                    Mobile: always visible, greyed + disabled when out of stock.
-                    Desktop: hidden when out of stock (icon-only pill). */}
-                {!isVariable && (isMobile || !outOfStock) && (
-                  <button
-                    type="button"
-                    disabled={outOfStock}
-                    className={isMobile
-                      ? `dtb-product-card__qv-btn${outOfStock ? ' dtb-product-card__qv-btn--disabled' : ''}`
-                      : 'dtb-product-card__qv-icon-btn'
-                    }
-                    onClick={outOfStock ? (e) => e.stopPropagation() : handleOverlayAddToCart}
-                    aria-label={outOfStock ? `${name} is out of stock` : `Add ${name} to cart`}
-                  >
-                    <ShoppingCart size={isMobile ? 14 : 15} strokeWidth={2.2} />
-                    {isMobile && <span>{outOfStock ? 'Out of Stock' : 'Add to Cart'}</span>}
-                  </button>
-                )}
-              </Motion.div>
-            </Motion.div>
-          )}
-        </AnimatePresence>
+              {/* Quick View pill */}
+              <button
+                type="button"
+                className="dtb-product-card__qv-btn"
+                onClick={handleQuickView}
+                aria-label={`Quick view ${name}`}
+              >
+                <Eye size={14} strokeWidth={2.2} />
+                <span>Quick View</span>
+              </button>
+
+              {/* Add to Cart — simple products only; variable opens via Quick View.
+                  Mobile: always visible, greyed + disabled when out of stock.
+                  Desktop: hidden when out of stock (icon-only pill). */}
+              {!isVariable && (isMobile || !outOfStock) && (
+                <button
+                  type="button"
+                  disabled={outOfStock}
+                  className={isMobile
+                    ? `dtb-product-card__qv-btn${outOfStock ? ' dtb-product-card__qv-btn--disabled' : ''}`
+                    : 'dtb-product-card__qv-icon-btn'
+                  }
+                  onClick={outOfStock ? (e) => e.stopPropagation() : handleOverlayAddToCart}
+                  aria-label={outOfStock ? `${name} is out of stock` : `Add ${name} to cart`}
+                >
+                  <ShoppingCart size={isMobile ? 14 : 15} strokeWidth={2.2} />
+                  {isMobile && <span>{outOfStock ? 'Out of Stock' : 'Add to Cart'}</span>}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </button>
 
       {/* ── Meta area ─────────────────────────────────────────────── */}
@@ -300,7 +285,7 @@ export default function StorefrontProductTile({
           )}
         </div>
       </div>
-    </Motion.article>
+    </article>
   );
 }
 

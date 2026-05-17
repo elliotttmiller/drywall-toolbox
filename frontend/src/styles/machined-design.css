@@ -1019,26 +1019,6 @@ aside input[type="range"],
 
 /* --- SITE HEADER --- */
 
-/* Keyframe: animated blue mesh wave effect */
-@keyframes dtb-mesh-wave {
-    0% {
-        background-position: 0% 0%, 0% 0%;
-    }
-    50% {
-        background-position: 100% 100%, -100% -100%;
-    }
-    100% {
-        background-position: 0% 0%, 0% 0%;
-    }
-}
-
-/* Keyframe: slow gradient flow for the header shimmer effect */
-@keyframes dtb-header-flow {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 .site-header {
     position: fixed;
     top: 0;
@@ -2129,7 +2109,7 @@ aside input[type="range"],
     font-weight: 600;
     font-size: 0.875rem;
     text-decoration: none;
-    transition: all 120ms;
+    transition: background 120ms, border-color 120ms, opacity 120ms;
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap;
 }
@@ -4028,7 +4008,7 @@ aside input[type="range"],
     border: 1.5px solid rgba(37, 99, 235, 0.25);
     border-radius: var(--dtb-radius-card);
     padding: 15px 18px;
-    transition: all 180ms;
+    transition: box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease;
     box-shadow: 0 2px 4px rgba(37, 99, 235, 0.08);
     text-align: center;
 }

@@ -19,19 +19,13 @@ const HERO_TITLE_AURORA_COLORS = [
   '#ffffff',
 ];
 
-const AuroraText = memo(function AuroraText({
-  children,
-  className = '',
-  colors = HERO_TITLE_AURORA_COLORS,
-  speed = 0.62,
-}) {
+// Static gradient text — chrome/silver shimmer without a continuous animation loop
+const AuroraText = memo(function AuroraText({ children, className = '' }) {
   const gradientStyle = {
-    backgroundImage: `linear-gradient(110deg, ${colors.join(', ')}, ${colors[0]})`,
+    backgroundImage: `linear-gradient(110deg, ${HERO_TITLE_AURORA_COLORS.join(', ')}, ${HERO_TITLE_AURORA_COLORS[0]})`,
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
-    animationDuration: `${10 / speed}s`,
   };
-
   return (
     <span className={`dtb-aurora-text ${className}`}>
       <span className="dtb-sr-only">{children}</span>
@@ -47,41 +41,14 @@ const item = {
   hidden: { opacity: 0, y: 22 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
 };
-const charContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.024, delayChildren: 0.08 } } };
-const charVariant = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.40, ease: [0.16, 1, 0.3, 1] } },
-};
 
-function formatCharForAnimation(char) {
-  return char === ' ' ? '\u00A0' : char;
-}
-
-function AnimatedAuroraLine({ line, lineIndex }) {
-  return (
-    <span style={{ display: 'block' }}>
-      <AuroraText>
-        {line.split('').map((char, charIndex) => (
-          <Motion.span
-            key={`${lineIndex}-${charIndex}`}
-            variants={charVariant}
-            style={{ display: 'inline-block', whiteSpace: 'pre' }}
-          >
-            {formatCharForAnimation(char)}
-          </Motion.span>
-        ))}
-      </AuroraText>
-    </span>
-  );
-}
-
-function SlideInTitle({ lines }) {
+// Animate the whole title as one unit — visually identical to per-char but with
+// a single Motion element instead of 30+, saving significant render overhead.
+function GradientTitle({ lines }) {
   return (
     <Motion.h1
       className="dtb-hero-title-gradient"
-      variants={charContainer}
-      initial="hidden"
-      animate="visible"
+      variants={item}
       style={{
         margin: '0 0 24px',
         fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
@@ -91,7 +58,9 @@ function SlideInTitle({ lines }) {
       }}
     >
       {lines.map((line, li) => (
-        <AnimatedAuroraLine key={li} line={line} lineIndex={li} />
+        <span key={li} style={{ display: 'block' }}>
+          <AuroraText>{line}</AuroraText>
+        </span>
       ))}
     </Motion.h1>
   );
@@ -159,13 +128,14 @@ export default function HeroSection({
             letterSpacing: '0.04em',
             boxShadow: '0 0 18px rgba(37,99,235,0.18)',
           }}>
-            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#60a5fa', flexShrink: 0, animation: 'dtb-hero-pulse 2.2s ease-in-out infinite' }} />
+            {/* Static glowing dot — replaces the continuous scale/opacity pulse loop */}
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#60a5fa', flexShrink: 0, boxShadow: '0 0 6px rgba(96,165,250,0.8)' }} />
             Top Brands. One Place.
           </span>
         </Motion.div>
 
         {titleLines && titleLines.length > 0 ? (
-          <SlideInTitle lines={titleLines} />
+          <GradientTitle lines={titleLines} />
         ) : (
           <Motion.h1
             className="dtb-hero-title-gradient"
@@ -226,30 +196,15 @@ export default function HeroSection({
       <style>{`
         .dtb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         .dtb-aurora-text { position: relative; display: inline-block; }
-        .dtb-aurora-text::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.34) 13%, rgba(72,80,96,0.10) 36%, rgba(255,255,255,0.72) 52%, rgba(70,79,94,0.18) 68%, rgba(255,255,255,0.90) 100%);
-          background-clip: text;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          mix-blend-mode: screen;
-          opacity: 0.74;
-        }
         .dtb-aurora-text__visible {
           position: relative;
           display: inline-block;
           color: transparent;
           background-size: 360% auto;
-          background-position: 0% 50%;
+          background-position: 50% 50%;
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          animation-name: dtb-hero-aurora;
-          animation-timing-function: ease-in-out;
-          animation-iteration-count: infinite;
           text-shadow: 0 1px 0 rgba(255,255,255,0.62), 0 -1px 0 rgba(15,23,42,0.48), 0 18px 42px rgba(226,232,240,0.18);
         }
         .dtb-hero-title-gradient {
@@ -263,9 +218,6 @@ export default function HeroSection({
         .dtb-hero-cta--primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(37,99,235,0.60); }
         .dtb-hero-cta--ghost { border: 1px solid rgba(148,163,184,0.22); background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.82); backdrop-filter: blur(8px); }
         .dtb-hero-cta--ghost:hover { background: rgba(255,255,255,0.09); border-color: rgba(148,163,184,0.38); }
-        @keyframes dtb-hero-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.80); } }
-        @keyframes dtb-hero-aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @media (prefers-reduced-motion: reduce) { .dtb-aurora-text__visible { animation: none; } }
         @media (max-width: 767px) {
           .dtb-ui-hero { min-height: unset !important; }
           .dtb-hero-cta { padding: 12px 24px; font-size: 0.84rem; width: 100%; max-width: 320px; }

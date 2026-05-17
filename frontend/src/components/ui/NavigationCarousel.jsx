@@ -68,15 +68,13 @@ function ArrowBtn({ direction, onClick, isMobile }) {
         height: `${sz}px`,
         borderRadius: '50%',
         border: `1px solid ${hov ? 'rgba(226,232,240,0.48)' : 'rgba(148,163,184,0.28)'}`,
-        background: hov ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.30)',
+        background: hov ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.55)',
         color: hov ? '#ffffff' : 'rgba(226,232,240,0.78)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
         transition: 'background 0.18s, color 0.18s, border-color 0.18s',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
         padding: 0,
       }}
     >
@@ -99,6 +97,7 @@ function getSlotTransform(offset, dragOffset, sideOffset, depth) {
     opacity: abs > 2.15 ? 0 : abs > 1.65 ? 0.36 : abs > 0.65 ? 0.64 : 1,
     zIndex: Math.round(100 - abs * 20),
     pointerEvents: abs < 0.42 ? 'auto' : 'none',
+    willChange: abs < 1.5 ? 'transform, opacity' : 'auto',
   };
 }
 
@@ -148,17 +147,21 @@ function NavCard({ card, cardW, cardH, isActive, slotStyle }) {
         gap: '10px',
         outline: 'none',
         overflow: 'hidden',
-        willChange: 'transform, opacity',
+        willChange: slotStyle.willChange,
       }}
     >
+      {/* Static top-edge highlight — replaces the continuous shimmer animation */}
       <div style={{
         position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.10) 44%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.08) 56%, transparent 100%)',
-        backgroundSize: '220% 100%',
-        opacity: isActive ? 0.7 : 0.32,
-        animation: 'dtb-nav-metallic-shift 7s ease-in-out infinite',
+        top: 0,
+        left: '12%',
+        right: '12%',
+        height: '1px',
+        background: isActive
+          ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)'
+          : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)',
         pointerEvents: 'none',
+        borderRadius: '1px',
       }} />
 
       <div style={{ position: 'relative', zIndex: 1, minWidth: 0 }}>
@@ -349,13 +352,6 @@ export default function NavigationCarousel() {
         </div>
         <ArrowBtn direction="right" onClick={goNext} isMobile={isMobile} />
       </div>
-      <style>{`
-        @keyframes dtb-nav-metallic-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
     </div>
   );
 }
