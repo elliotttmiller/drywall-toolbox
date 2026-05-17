@@ -118,7 +118,7 @@ export default function SchematicHotspotCard({
         {/* Column 2 — title */}
         <h4 style={{
           textTransform: 'uppercase',
-          fontSize: '0.72rem',
+          fontSize: '0.75rem',
           letterSpacing: '0.1em',
           marginBottom: '4px',
           lineHeight: '1.3',
@@ -141,12 +141,12 @@ export default function SchematicHotspotCard({
 
         {/* Column 2 — price + CTA */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: '0.8rem' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 800 }}>
             {priceLabel}
           </span>
           <button
             className="alloy-button"
-            style={{ padding: '8px 14px', fontSize: '0.6rem' }}
+            style={{ padding: '8px 16px', fontSize: '0.6rem' }}
             disabled={!canAdd || isAdding}
             onClick={(e) => { e.stopPropagation(); onAddToCart?.(); }}
           >
@@ -218,7 +218,7 @@ export default function SchematicHotspotCard({
             fontSize: '0.8rem',
             fontWeight: '700',
             letterSpacing: '0.08em',
-            marginBottom: '5px',
+            marginBottom: '6px',
             lineHeight: '1.35',
             wordBreak: 'break-word',
             color: '#0f172a',
