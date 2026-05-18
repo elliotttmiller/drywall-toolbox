@@ -9,8 +9,9 @@ import StorefrontSearchOverlay from './StorefrontSearchOverlay';
 import StorefrontMobileDrawer from './StorefrontMobileDrawer';
 import AccountHubSheet from '../account/AccountHubSheet.jsx';
 import { searchProducts } from '../../services/catalog';
-import { BRAND_TO_SLUG, sortBrandsBy } from '../../utils/catalogUrlState.js';
+import { brandToSlug, canonicalBrandLabel, sortBrandsBy } from '../../utils/catalogUrlState.js';
 import StorefrontSearchDock from './StorefrontSearchDock';
+import { useCatalogFacets } from '../../hooks/useCatalogFacets.js';
 
 const PRIMARY_NAV_LINKS = [
   { to: '/schematics', label: 'Schematics' },
@@ -27,19 +28,7 @@ const SHOP_FEATURE_LINKS = [
   { to: '/toolset-builder', label: 'Toolset Builder', sub: 'Configure a complete kit' },
 ];
 
-const SHOP_CATEGORY_LINKS = [
-  { to: '/products?display_category=automatic_taping_tools', label: 'Automatic Taping Tools' },
-  { to: '/products?display_category=semi_automatic_taping_tools', label: 'Semi-Automatic Taping Tools' },
-  { to: '/products?display_category=finishing_boxes', label: 'Flat Boxes' },
-  { to: '/products?display_category=corner_tools', label: 'Corner Tools' },
-  { to: '/products?display_category=handles_and_extensions', label: 'Handles & Extensions' },
-  { to: '/products?display_category=knives_and_blades', label: 'Knives & Blades' },
-  { to: '/products?display_category=mud_pans_and_pumps', label: 'Mud Pans & Pumps' },
-  { to: '/products?display_category=nail_spotters', label: 'Nail Spotters' },
-  { to: '/products?display_category=tool_sets_and_kits', label: 'Tool Sets & Kits' },
-  { to: '/products?display_category=parts', label: 'Parts' },
-  { to: '/products?display_category=accessories', label: 'Accessories & Adapters' },
-];
+const MAX_DRAWER_CATEGORIES = 12;
 
 const DRAWER_NAV_ROWS = [
   { to: '/products?sort=newest', label: 'New Arrivals' },
@@ -59,6 +48,40 @@ function MobileDrawerChevron({ expanded = false, className = '' }) {
       aria-hidden="true"
     />
   );
+}
+
+function toCatalogBrand(rawBrand = {}) {
+  const label = canonicalBrandLabel(rawBrand.label || rawBrand.name || rawBrand.key || rawBrand.slug || '');
+  if (!label) return null;
+  const slug = rawBrand.slug || rawBrand.key || brandToSlug(label);
+  if (!slug) return null;
+  return {
+    name: label,
+    slug,
+    count: rawBrand.productCount || rawBrand.count || 0,
+  };
+}
+
+function mergeCatalogDisplayCategories(displayCategoriesByBrand = {}) {
+  const merged = new Map();
+  Object.values(displayCategoriesByBrand || {}).forEach((items) => {
+    if (!Array.isArray(items)) return;
+    items.forEach((cat) => {
+      const slug = cat?.slug || cat?.key;
+      if (!slug) return;
+      const productCount = Number(cat?.productCount || cat?.count || 0);
+      const existing = merged.get(slug);
+      merged.set(slug, {
+        slug,
+        label: cat?.label || cat?.name || cat?.key || slug,
+        count: (existing?.count || 0) + productCount,
+      });
+    });
+  });
+
+  return Array.from(merged.values())
+    .filter((category) => category.count > 0)
+    .sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label));
 }
 
 export default function Header({ onCartToggle, hasTopTicker = false }) {
@@ -82,6 +105,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const [mobileSearchQuery, setMobileSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const { facets } = useCatalogFacets();
   const accountDropdownRef = useRef(null);
   const desktopSearchRef = useRef(null);
   const desktopSearchInputRef = useRef(null);
@@ -97,10 +121,19 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
 
   const isActive = (path) => location.pathname === path;
   const shopActive = location.pathname.startsWith('/products') || isActive('/parts') || isActive('/toolset-builder');
-  const drawerBrands = useMemo(
-    () => sortBrandsBy(Object.entries(BRAND_TO_SLUG).map(([name, slug]) => ({ name, slug }))),
-    []
-  );
+  const drawerBrands = useMemo(() => {
+    if (!Array.isArray(facets?.brands)) return [];
+    const mapped = facets.brands
+      .map(toCatalogBrand)
+      .filter((brand) => brand && brand.name && brand.slug);
+    return sortBrandsBy(mapped, 'name');
+  }, [facets]);
+  const drawerCategoryLinks = useMemo(() => mergeCatalogDisplayCategories(facets?.displayCategoriesByBrand || {})
+    .slice(0, MAX_DRAWER_CATEGORIES)
+    .map((category) => ({
+      ...category,
+      to: `/products?display_category=${encodeURIComponent(category.slug)}`,
+    })), [facets]);
 
   const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -396,7 +429,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
                     <div className="header-mega-accent" />
                     <div className="header-mega-grid">
                       <div className="header-mega-section"><p className="header-mega-section-title">Shop Navigation</p><div className="header-mega-links">{SHOP_FEATURE_LINKS.map(({ to, label, sub }) => <Link key={to} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-link"><span className="header-mega-link-copy"><span className="header-mega-link-title">{label}</span><span className="header-mega-link-sub">{sub}</span></span></Link>)}</div></div>
-                      <div className="header-mega-section"><p className="header-mega-section-title">Drywall Industry Categories</p><div className="header-mega-category-grid">{SHOP_CATEGORY_LINKS.map(({ to, label }) => <Link key={to} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-category-link">{label}</Link>)}</div></div>
+                      <div className="header-mega-section"><p className="header-mega-section-title">Drywall Industry Categories</p><div className="header-mega-category-grid">{drawerCategoryLinks.map(({ to, label }) => <Link key={to} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-category-link">{label}</Link>)}</div></div>
                     </div>
                     <div className="header-mega-footer"><div className="header-mega-footer-actions"><Link to="/products" onClick={() => setShopDropdownOpen(false)} className="header-mega-footer-link">View All Products</Link><Link to="/products/brands" onClick={() => setShopDropdownOpen(false)} className="header-mega-footer-link header-mega-footer-link--secondary">Shop by Brand</Link></div></div>
                   </div>
@@ -466,7 +499,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
             expanded: productsExpanded,
             onToggle: () => setProductsExpanded((open) => !open),
             onLanding: handleDrawerProductsLanding,
-            items: SHOP_CATEGORY_LINKS,
+            items: drawerCategoryLinks,
             onItemNavigate: (category) => handleDrawerProductCategoryNavigate(category.to),
           })}
           {renderDrawerBrandSection({
@@ -528,7 +561,7 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
         onViewAll={handleMobileViewAll}
         loading={searchLoading}
         brands={drawerBrands.map((brand) => brand.name)}
-        categories={['Automatic Taping Tools', 'Finishing Boxes', 'Corner Tools', 'Parts']}
+        categories={drawerCategoryLinks}
         suggestions={searchSuggestions}
       />
 
