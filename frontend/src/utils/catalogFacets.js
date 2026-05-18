@@ -1,7 +1,11 @@
 import { brandToSlug, canonicalBrandLabel, sortBrandsBy } from './catalogUrlState.js';
 
 export function normalizeDisplayCategorySlug(value) {
-  return String(value || '').toLowerCase().replace(/[^\w]+/g, '_');
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^\w]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '');
 }
 
 export function buildDisplayCategoryUrl(slug) {
@@ -41,4 +45,16 @@ export function mergeCatalogDisplayCategories(displayCategoriesByBrand = {}) {
   return Array.from(merged.values())
     .filter((item) => item.count > 0)
     .sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label));
+}
+
+export function normalizeCatalogCategoryEntry(category) {
+  if (typeof category === 'string') {
+    return {
+      label: category,
+      slug: normalizeDisplayCategorySlug(category),
+    };
+  }
+  const label = category?.label || category?.name || '';
+  const slug = category?.slug || category?.key || normalizeDisplayCategorySlug(label);
+  return { label, slug };
 }

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { brandToSlug } from '../../utils/catalogUrlState.js';
-import { buildDisplayCategoryUrl, normalizeDisplayCategorySlug } from '../../utils/catalogFacets.js';
+import { buildDisplayCategoryUrl, normalizeCatalogCategoryEntry } from '../../utils/catalogFacets.js';
 import ProductCardImage from '../product/ProductCardImage.jsx';
 import ProductModal from '../product/ProductModal.jsx';
 import ProductDetail from '../product/ProductDetail.jsx';
@@ -30,17 +30,7 @@ export default function StorefrontSearchOverlay({
   const hasQuery = useMemo(() => query.trim().length > 0, [query]);
   const normalizedCategories = useMemo(
     () => categories
-      .map((category) => {
-        if (typeof category === 'string') {
-          return {
-            label: category,
-            slug: normalizeDisplayCategorySlug(category),
-          };
-        }
-        const label = category?.label || category?.name || '';
-        const slug = category?.slug || category?.key || normalizeDisplayCategorySlug(label);
-        return { label, slug };
-      })
+      .map((category) => normalizeCatalogCategoryEntry(category))
       .filter((category) => category.label && category.slug),
     [categories]
   );
