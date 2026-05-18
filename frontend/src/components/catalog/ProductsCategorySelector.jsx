@@ -20,7 +20,7 @@ export default function ProductsCategorySelector({
             <img
               src={brandLogo}
               alt={`${brand} logo`}
-              className={`product-brand-header-logo ${['Columbia Taping Tools', 'Columbia'].includes(brand) ? 'product-brand-header-logo--large' : ''}`}
+              className="product-brand-header-logo"
             />
           )}
         </div>

@@ -1,12 +1,6 @@
 import { Link } from 'react-router-dom';
 
 export default function StorefrontBrandTile({ name, logo, to }) {
-  const logoClassName = [
-    'storefront-brand-tile__logo',
-    ['Columbia Taping Tools', 'Columbia'].includes(name) ? 'storefront-brand-tile__logo--columbia' : '',
-    ['Platinum Drywall Tools', 'Platinum'].includes(name) ? 'storefront-brand-tile__logo--platinum' : '',
-  ].filter(Boolean).join(' ');
-
   return (
     <Link to={to} className="storefront-brand-tile" aria-label={`Shop ${name}`}>
       {logo ? (
@@ -14,7 +8,7 @@ export default function StorefrontBrandTile({ name, logo, to }) {
           <img
             src={logo}
             alt={name}
-            className={logoClassName}
+            className="storefront-brand-tile__logo"
             loading="lazy"
           />
         </span>

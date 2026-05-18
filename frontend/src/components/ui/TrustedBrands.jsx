@@ -12,15 +12,6 @@
 
 import { Link } from 'react-router-dom';
 
-const BRAND_SIZE_MAP = {
-  TapeTech: { height: 'clamp(22px, 3.8vw, 34px)', maxWidth: '130px' },
-  Columbia: { height: 'clamp(44px, 8vw, 70px)', maxWidth: '220px' },
-  Level5: { height: 'clamp(16px, 2.8vw, 24px)', maxWidth: '100px' },
-  'Platinum Drywall Tools': { height: 'clamp(24px, 4vw, 38px)', maxWidth: '170px' },
-  Asgard: { height: 'clamp(28px, 5vw, 44px)', maxWidth: '150px' },
-  SurPro: { height: 'clamp(28px, 5vw, 44px)', maxWidth: '150px' },
-};
-
 function getBaseOpacity({ dark, transparent }) {
   if (dark) return 0.58;
   if (transparent) return 0.82;
@@ -28,7 +19,6 @@ function getBaseOpacity({ dark, transparent }) {
 }
 
 function BrandLogo({ brand, dark = false, transparent = false }) {
-  const sizeStyle = BRAND_SIZE_MAP[brand.name] || { height: 'clamp(24px, 4vw, 38px)', maxWidth: '140px' };
   const baseOpacity = getBaseOpacity({ dark, transparent });
   return (
     <Link
@@ -52,7 +42,8 @@ function BrandLogo({ brand, dark = false, transparent = false }) {
         loading="lazy"
         decoding="async"
         style={{
-          ...sizeStyle,
+          height: 'clamp(24px, 4vw, 38px)',
+          maxWidth: '140px',
           width: 'auto',
           objectFit: 'contain',
           filter: transparent ? 'drop-shadow(0 2px 10px rgba(255,255,255,0.10))' : 'none',

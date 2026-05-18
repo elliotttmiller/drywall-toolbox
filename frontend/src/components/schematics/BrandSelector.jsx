@@ -177,9 +177,7 @@ export default function BrandSelector({
                 src={brandLogos[brand]}
                 alt={`${brand} logo`}
                 style={{
-                  height: ['Columbia Taping Tools', 'Graco'].includes(brand)
-                    ? 'clamp(5.5rem, 16vw, 8rem)'
-                    : 'clamp(4rem, 12vw, 6rem)',
+                  height: 'clamp(4rem, 12vw, 6rem)',
                   width: 'auto',
                   objectFit: 'contain'
                 }}

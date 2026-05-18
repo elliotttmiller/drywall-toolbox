@@ -1484,12 +1484,6 @@
   max-width: clamp(90px, 14vw, 140px);
 }
 
-/* Columbia logo needs more room too */
-.viewer-brand-logo--columbia {
-  height: clamp(24px, 3.5vw, 36px);
-  max-width: clamp(100px, 15vw, 160px);
-}
-
 .viewer-tool-title {
   font-size: clamp(0.88rem, 1.8vw, 1.1rem);
   font-weight: 700;

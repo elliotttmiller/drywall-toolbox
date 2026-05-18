@@ -38,11 +38,6 @@ export default function ProductsBrandSelector({ brands, onSelectBrand }) {
         {sortedBrands.map((brand) => {
           const label = brand.label || brand.key || '';
           const logo = resolveLogo(brand);
-          const logoClassName = [
-            'products-brand-card__logo',
-            ['Columbia Taping Tools', 'Columbia'].includes(label) ? 'products-brand-card__logo--columbia' : '',
-            ['Platinum Drywall Tools', 'Platinum'].includes(label) ? 'products-brand-card__logo--platinum' : '',
-          ].filter(Boolean).join(' ');
           return (
             <button
               key={brand.slug || brand.key || label}
@@ -54,7 +49,7 @@ export default function ProductsBrandSelector({ brands, onSelectBrand }) {
                   <img
                     src={logo}
                     alt={`${label} logo`}
-                    className={logoClassName}
+                    className="products-brand-card__logo"
                   />
                 ) : (
                   <span className="products-brand-card__fallback-label">{label}</span>

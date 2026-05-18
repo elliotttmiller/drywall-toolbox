@@ -90,10 +90,6 @@
   object-fit: contain;
 }
 
-.brand-header-logo--columbia {
-  height: clamp(6rem, 15vw, 9rem);
-}
-
 /* ═══════════════════════════════════════════════════════════
    CATEGORY CARDS — image-forward, landscape (3:2 ratio)
 ═══════════════════════════════════════════════════════════ */
@@ -433,10 +429,6 @@
 
   .brand-header-logo {
     height: clamp(2.5rem, 12vw, 3.5rem);
-  }
-
-  .brand-header-logo--columbia {
-    height: clamp(5.5rem, 28vw, 8rem);
   }
 
   /* Categories: keep 2-col on mobile — landscape cards fit well */

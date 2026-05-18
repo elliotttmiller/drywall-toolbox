@@ -47,16 +47,6 @@
   object-fit: contain;
 }
 
-.products-brand-card__logo--columbia {
-  max-width: 94%;
-  max-height: 74%;
-}
-
-.products-brand-card__logo--platinum {
-  max-width: 92%;
-  max-height: 66%;
-}
-
 .products-brand-card__name {
   margin-top: 16px;
   font-size: 1.1rem;
@@ -104,10 +94,6 @@
   height: clamp(2.5rem, 6vw, 3.5rem);
   width: auto;
   object-fit: contain;
-}
-
-.product-brand-header-logo--large {
-  height: clamp(6rem, 15vw, 9rem);
 }
 
 .product-categories-grid {

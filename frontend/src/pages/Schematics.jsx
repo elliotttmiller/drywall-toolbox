@@ -2684,10 +2684,7 @@ const ALLOWED_BRANDS = [
                 <img
                   src={brandLogos[currentSchematic.brand]}
                   alt={`${currentSchematic.brand} logo`}
-                  className={[
-                    'viewer-brand-logo',
-                    currentSchematic.brand === 'Columbia Taping Tools' ? 'viewer-brand-logo--columbia' : '',
-                  ].filter(Boolean).join(' ')}
+                  className="viewer-brand-logo"
                 />
               )}
               <h1 id="viewer-tool-title-id" className="viewer-tool-title">{currentSchematic?.title}</h1>

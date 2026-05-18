@@ -474,11 +474,6 @@ export default function ProductDetail({
   const compareAt = getCompareAtPrice(selectedVariation) ?? getCompareAtPrice(product);
   const productSpecifications = getProductSpecifications(product);
 
-  const brandLogoClassName = [
-    'product-detail-brand-logo',
-    brandLabel === 'Columbia Taping Tools' ? 'product-detail-brand-logo--columbia' : '',
-  ].filter(Boolean).join(' ');
-
   const rawDescription = stripSpecsFromHtml(
     effectiveProduct.description_full || effectiveProduct.description || effectiveProduct.short_description || ''
   );
@@ -530,7 +525,7 @@ export default function ProductDetail({
                 isOutOfStock={isOutOfStock}
                 brandLabel={brandLabel}
                 brandLogoSrc={brandLabel ? getBrandLogo(brandLabel) : null}
-                brandLogoClassName={brandLogoClassName}
+                brandLogoClassName="product-detail-brand-logo"
                 displayPrice={displayPrice}
                 pricePrefix={pricePrefix}
                 compareAt={compareAt}

@@ -214,16 +214,6 @@
   object-fit: contain;
 }
 
-.storefront-brand-tile__logo--columbia {
-  max-height: 68px;
-  max-width: 94%;
-}
-
-.storefront-brand-tile__logo--platinum {
-  max-height: 58px;
-  max-width: 92%;
-}
-
 .storefront-brand-tile__name {
   font-size: 0.78rem;
   font-weight: 700;
