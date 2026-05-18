@@ -31,7 +31,8 @@ import ProductDetail from '../components/product/ProductDetail';
 import SEOHead from '../components/shared/SEOHead';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import Toast from '../components/ui/Toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { addRecentlyViewed } from '../utils/recentlyViewed.js';
 
 function getVariationDisplayName(product, selectedVariation, effectiveVariationName) {
   const variationName = `${selectedVariation?.name || ''}`.trim();
@@ -54,6 +55,19 @@ export default function ProductDetailPage() {
 
   // ── Variation state machine ────────────────────────────────────────────────
   const { selectedVariation } = useSelectedVariation(variations, computed);
+
+  // ── Recently viewed tracking ───────────────────────────────────────────────
+  useEffect( () => {
+    if ( ! product ) return;
+    addRecentlyViewed( {
+      id:    product.id,
+      slug:  product.slug || slug,
+      name:  product.name,
+      image: product.media?.images?.[0]?.src || product.media?.image?.src || product.images?.[0]?.src || product.image || '',
+      price: product.price_html ? String( product.price_html ).replace( /<[^>]+>/g, '' ) : ( product.price ? String( product.price ) : '' ),
+    } );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ product?.id ] );
 
   // ── Add to cart ────────────────────────────────────────────────────────────
   const handleAddToCart = (prod, qty = 1) => {

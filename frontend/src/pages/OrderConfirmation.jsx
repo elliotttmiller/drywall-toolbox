@@ -271,7 +271,7 @@ export default function OrderConfirmation() {
               </p>
               <p className="text-xs text-green-700 mt-0.5">
                 That's ${ pointsToUsd( calculatePointsEarned( parseFloat( order.total ) ) ).toFixed( 2 ) } toward your next order.&nbsp;
-                <Link to="/rewards" className="underline font-semibold">View your balance</Link>
+                <Link to="/dashboard?tab=rewards" className="underline font-semibold">View your balance</Link>
               </p>
             </div>
           </div>

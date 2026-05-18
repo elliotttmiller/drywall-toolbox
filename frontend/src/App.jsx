@@ -30,11 +30,6 @@ const Register = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Orders = lazy(() => import('./pages/Orders'));
-const Rewards = lazy(() => import('./pages/Rewards'));
-const AccountSettings = lazy(() => import('./pages/AccountSettings'));
-const SavedAddresses = lazy(() => import('./pages/SavedAddresses'));
-const Notifications = lazy(() => import('./pages/Notifications'));
 const Calculators = lazy(() => import('./pages/Calculators'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'));
@@ -104,11 +99,11 @@ function AppRoutes() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="/rewards" element={<ProtectedRoute><Rewards /></ProtectedRoute>} />
-          <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
-          <Route path="/addresses" element={<ProtectedRoute><SavedAddresses /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          <Route path="/orders" element={<Navigate to="/dashboard?tab=orders" replace />} />
+          <Route path="/rewards" element={<Navigate to="/dashboard?tab=rewards" replace />} />
+          <Route path="/account-settings" element={<Navigate to="/dashboard?tab=settings" replace />} />
+          <Route path="/addresses" element={<Navigate to="/dashboard?tab=addresses" replace />} />
+          <Route path="/notifications" element={<Navigate to="/dashboard?tab=settings" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
