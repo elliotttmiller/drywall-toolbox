@@ -25,13 +25,6 @@ const PRIMARY_NAV_LINKS = [
   { to: '/contact', label: 'Contact' },
 ];
 
-const SHOP_FEATURE_LINKS = [
-  { to: '/products', label: 'All Products', sub: 'Full drywall catalog' },
-  { to: '/products/brands', label: 'Shop by Brand', sub: 'TapeTech, Columbia, Level 5, and more' },
-  { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits, and schematics' },
-  { to: '/toolset-builder', label: 'Toolset Builder', sub: 'Configure a complete kit' },
-];
-
 const MAX_DRAWER_CATEGORIES = 12;
 
 const DRAWER_NAV_ROWS = [
@@ -53,6 +46,10 @@ function MobileDrawerChevron({ expanded = false, className = '' }) {
     />
   );
 }
+
+const buildProductsBrandRoute = (slug) => `/products/brands/${slug}`;
+const buildPartsBrandRoute = (slug) => `/parts?brand=${encodeURIComponent(slug)}`;
+const buildSchematicsBrandRoute = (slug) => `/schematics?brand=${encodeURIComponent(slug)}`;
 
 export default function Header({ onCartToggle, hasTopTicker = false }) {
   const location = useLocation();
@@ -98,6 +95,40 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
       ...category,
       to: buildDisplayCategoryUrl(category.slug),
     })), [facets]);
+  const desktopShopTabs = useMemo(() => ([
+    {
+      id: 'products',
+      title: 'All Products',
+      subtitle: 'Browse by category',
+      landingTo: '/products',
+      landingLabel: 'View all products',
+      items: drawerCategoryLinks.map(({ slug, to, label }) => ({ key: slug, to, label })),
+    },
+    {
+      id: 'brands',
+      title: 'Brands',
+      subtitle: 'Shop by brand',
+      landingTo: '/products/brands',
+      landingLabel: 'Shop all brands',
+      items: drawerBrands.map(({ slug, name }) => ({ key: `brand-${slug}`, to: buildProductsBrandRoute(slug), label: name })),
+    },
+    {
+      id: 'parts',
+      title: 'Parts',
+      subtitle: 'Replacement parts by brand',
+      landingTo: '/parts',
+      landingLabel: 'Browse all parts',
+      items: drawerBrands.map(({ slug, name }) => ({ key: `parts-${slug}`, to: buildPartsBrandRoute(slug), label: name })),
+    },
+    {
+      id: 'schematics',
+      title: 'Schematics',
+      subtitle: 'Documentation by brand',
+      landingTo: '/schematics',
+      landingLabel: 'Browse all schematics',
+      items: drawerBrands.map(({ slug, name }) => ({ key: `schematics-${slug}`, to: buildSchematicsBrandRoute(slug), label: name })),
+    },
+  ]), [drawerBrands, drawerCategoryLinks]);
 
   const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -278,15 +309,18 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     setAccountHubOpen(true);
   };
 
-  const closeDrawerAndNavigate = (to) => {
+  const navigateShopDestination = useCallback((to, { closeMobile = false } = {}) => {
     resetDrawerExpansions();
-    setMobileMenuOpen(false);
+    setShopDropdownOpen(false);
+    if (closeMobile) setMobileMenuOpen(false);
     navigate(to);
-  };
+  }, [navigate, resetDrawerExpansions]);
 
-  const handleDrawerBrandNavigate = (slug) => closeDrawerAndNavigate(`/products/brands/${slug}`);
-  const handleDrawerPartsBrandNavigate = (slug) => closeDrawerAndNavigate(`/parts?brand=${encodeURIComponent(slug)}`);
-  const handleDrawerSchematicsBrandNavigate = (slug) => closeDrawerAndNavigate(`/schematics?brand=${encodeURIComponent(slug)}`);
+  const closeDrawerAndNavigate = (to) => navigateShopDestination(to, { closeMobile: true });
+
+  const handleDrawerBrandNavigate = (slug) => closeDrawerAndNavigate(buildProductsBrandRoute(slug));
+  const handleDrawerPartsBrandNavigate = (slug) => closeDrawerAndNavigate(buildPartsBrandRoute(slug));
+  const handleDrawerSchematicsBrandNavigate = (slug) => closeDrawerAndNavigate(buildSchematicsBrandRoute(slug));
   const handleDrawerBrandsLanding = () => closeDrawerAndNavigate('/products/brands');
   const handleDrawerPartsLanding = () => closeDrawerAndNavigate('/parts');
   const handleDrawerSchematicsLanding = () => closeDrawerAndNavigate('/schematics');
@@ -387,15 +421,50 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
             <div className="header-left"><Link to="/" className="header-logo-link" aria-label="Drywall Toolbox home"><img src={LogoWhite} alt="Drywall Toolbox Logo" className="logo-image" /></Link></div>
             <div className="header-center">
               <nav className="nav-links header-desktop-nav" aria-label="Primary">
-                <div className={`header-mega${shopDropdownOpen ? ' is-open' : ''}`} onMouseEnter={handleDropdownMouseEnter} onMouseLeave={handleDropdownMouseLeave}>
-                  <button className={`nav-link header-nav-trigger ${shopActive ? 'active' : ''}`} type="button" aria-expanded={shopDropdownOpen}><span>Shop</span><ChevronDown size={14} className="header-nav-trigger__chevron" /></button>
+                <div
+                  className={`header-mega${shopDropdownOpen ? ' is-open' : ''}`}
+                  onMouseEnter={handleDropdownMouseEnter}
+                  onMouseLeave={handleDropdownMouseLeave}
+                  onFocusCapture={handleDropdownMouseEnter}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) handleDropdownMouseLeave();
+                  }}
+                >
+                  <button
+                    className={`nav-link header-nav-trigger ${shopActive ? 'active' : ''}`}
+                    type="button"
+                    onClick={() => setShopDropdownOpen((open) => !open)}
+                    aria-expanded={shopDropdownOpen}
+                    aria-haspopup="menu"
+                  >
+                    <span>Shop</span>
+                    <ChevronDown size={14} className="header-nav-trigger__chevron" />
+                  </button>
                   <div className={`shop-dropdown-menu header-mega-panel${shopDropdownOpen ? ' is-open' : ''}`}>
                     <div className="header-mega-accent" />
-                    <div className="header-mega-grid">
-                      <div className="header-mega-section"><p className="header-mega-section-title">Shop Navigation</p><div className="header-mega-links">{SHOP_FEATURE_LINKS.map(({ to, label, sub }) => <Link key={to} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-link"><span className="header-mega-link-copy"><span className="header-mega-link-title">{label}</span><span className="header-mega-link-sub">{sub}</span></span></Link>)}</div></div>
-                      <div className="header-mega-section"><p className="header-mega-section-title">Drywall Industry Categories</p><div className="header-mega-category-grid">{drawerCategoryLinks.map(({ slug, to, label }) => <Link key={slug} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-category-link">{label}</Link>)}</div></div>
+                    <div className="header-mega-grid header-mega-grid--shop">
+                      {desktopShopTabs.map((tab) => (
+                        <div key={tab.id} className="header-mega-section header-mega-section--shop-tab">
+                          <p className="header-mega-section-title">{tab.title}</p>
+                          <div className="header-mega-links">
+                            <button type="button" className="header-mega-link header-mega-link--cta" onClick={() => navigateShopDestination(tab.landingTo)}>
+                              <span className="header-mega-link-copy">
+                                <span className="header-mega-link-title">{tab.landingLabel}</span>
+                                <span className="header-mega-link-sub">{tab.subtitle}</span>
+                              </span>
+                            </button>
+                          </div>
+                          <div className="header-mega-category-grid header-mega-category-grid--tab">
+                            {tab.items.map(({ key, to, label }) => (
+                              <button key={key} type="button" onClick={() => navigateShopDestination(to)} className="header-mega-category-link">
+                                {label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="header-mega-footer"><div className="header-mega-footer-actions"><Link to="/products" onClick={() => setShopDropdownOpen(false)} className="header-mega-footer-link">View All Products</Link><Link to="/products/brands" onClick={() => setShopDropdownOpen(false)} className="header-mega-footer-link header-mega-footer-link--secondary">Shop by Brand</Link></div></div>
+                    <div className="header-mega-footer"><div className="header-mega-footer-actions">{DRAWER_NAV_ROWS.map(({ to, label }) => <button key={to} type="button" onClick={() => navigateShopDestination(to)} className="header-mega-footer-link header-mega-footer-link--secondary">{label}</button>)}</div></div>
                   </div>
                 </div>
                 {PRIMARY_NAV_LINKS.map(({ to, label }) => <Link key={to} to={to} className={`nav-link ${isActive(to) ? 'active' : ''}`}>{label}</Link>)}
