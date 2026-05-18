@@ -1,3 +1,10 @@
+/* ─────────────────────────────────────────────
+   Account Hub Sheet
+   Bottom sheet that slides up from the screen edge.
+   Matches CSR Building–style reference design.
+───────────────────────────────────────────── */
+
+/* ── Container ── */
 .account-hub {
   position: fixed;
   inset: 0;
@@ -9,14 +16,18 @@
   pointer-events: auto;
 }
 
+/* ── Backdrop ── */
 .account-hub__backdrop {
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgba(2, 6, 23, 0.55);
+  background: rgba(2, 6, 23, 0.52);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  cursor: pointer;
 }
 
 .account-hub--open .account-hub__backdrop {
@@ -24,102 +35,358 @@
   pointer-events: auto;
 }
 
+/* ── Sheet ── */
 .account-hub__sheet {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: min(92dvh, 760px);
-  border-radius: 22px 22px 0 0;
+  height: min(93dvh, 820px);
+  border-radius: 24px 24px 0 0;
   background: #fff;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transform: translateY(100%);
-  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -8px 40px rgba(2, 6, 23, 0.18);
 }
 
 .account-hub--open .account-hub__sheet {
   transform: translateY(0);
 }
 
+/* ── Close button ── */
 .account-hub__close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
   color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+  flex-shrink: 0;
+}
+
+.account-hub__close:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* ── Scrollable content ── */
+.account-hub__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+}
+
+/* ── Panel ── */
+.account-hub__panel {
+  padding: 28px 20px 16px;
+}
+
+.account-hub__panel--centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
+}
+
+/* ── Sign-in headline (unauthenticated) ── */
+.account-hub__headline {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+  margin: 0 0 14px;
+  padding-right: 48px; /* don't overlap X button */
+}
+
+.account-hub__rewards-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 20px;
+}
+
+.account-hub__signin-cta {
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 999px;
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  font-size: 0.97rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 150ms ease, transform 120ms ease;
+  text-align: center;
+}
+
+.account-hub__signin-cta:hover  { background: #1e293b; }
+.account-hub__signin-cta:active { transform: scale(0.98); }
+
+.account-hub__divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 22px 0;
+}
+
+/* ── Welcome heading (authenticated) ── */
+.account-hub__welcome {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  margin: 0 0 22px;
+  padding-right: 48px;
+}
+
+.account-hub__account-email {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: -16px 0 20px;
+}
+
+/* ── List sections ── */
+.account-hub__list-section {
+  margin-bottom: 20px;
+}
+
+/* ── Section header ── */
+.account-hub__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.account-hub__section-header--static {
+  cursor: default;
+}
+
+.account-hub__section-header span:first-child {
+  font-size: 1.0rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+/* ── Dashed empty-state card ── */
+.account-hub__empty-card {
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.account-hub__empty-card p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.account-hub__empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.account-hub__empty-icon--muted {
+  background: #fef2f2;
+  color: #fca5a5;
+}
+
+/* ── Centered empty state (orders tab) ── */
+.account-hub__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 20px;
+}
+
+.account-hub__empty-state-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.account-hub__empty-state-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #334155;
+  display: block;
+}
+
+.account-hub__empty-state-body {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  max-width: 280px;
+  margin: 0;
+}
+
+/* Outline pill button for empty states */
+.account-hub__outline-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.account-hub__content {
-  flex: 1;
-  overflow: auto;
-  padding: 56px 16px 90px;
-}
-
-.account-hub__panel,
-.account-hub__section {
-  display: grid;
-  gap: 12px;
-}
-
-.account-hub__card {
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 14px;
-  display: grid;
-  gap: 8px;
-}
-
-.account-hub__card a,
-.account-hub__link-button {
-  color: #1d4ed8;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 1.5px solid #0f172a;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.9rem;
   font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.account-hub__outline-btn:hover {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* ── Navigation links card ── */
+.account-hub__links-card {
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.account-hub__row-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 16px;
+  border-bottom: 1px solid #f1f5f9;
   text-decoration: none;
-  background: none;
-  border: 0;
-  text-align: left;
-  padding: 0;
+  color: #0f172a;
+  font-size: 0.93rem;
+  font-weight: 600;
+  transition: background 120ms ease;
 }
 
-.account-hub__link-button--danger {
+.account-hub__row-link:last-child {
+  border-bottom: none;
+}
+
+.account-hub__row-link:hover {
+  background: #f8fafc;
+}
+
+.account-hub__row-chevron {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* ── Sign out button ── */
+.account-hub__signout-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  background: #fef2f2;
   color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 150ms ease;
 }
 
-.account-hub__empty {
-  color: #64748b;
+.account-hub__signout-btn:hover {
+  background: #fee2e2;
 }
 
+/* ─────────────────────────────────────────────
+   Bottom Tab Navigation
+───────────────────────────────────────────── */
 .account-hub-nav {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #f1f5f9;
   background: #fff;
-  padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  padding: 8px 8px calc(env(safe-area-inset-bottom, 0px) + 10px);
+  flex-shrink: 0;
 }
 
-.account-hub-nav__button {
-  border: 0;
+.account-hub-nav__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
   background: transparent;
-  color: #64748b;
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 12px;
+  transition: background 120ms ease;
 }
 
-.account-hub-nav__button--active {
+/* Pill highlight on active tab */
+.account-hub-nav__pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 40px;
+  border-radius: 999px;
+  color: #94a3b8;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.account-hub-nav__item--active .account-hub-nav__pill {
+  background: #f1f5f9;
   color: #0f172a;
 }
+
+.account-hub-nav__item:hover .account-hub-nav__pill {
+  background: #f8fafc;
+  color: #475569;
+}
+
