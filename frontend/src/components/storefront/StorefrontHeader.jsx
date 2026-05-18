@@ -9,9 +9,13 @@ import StorefrontSearchOverlay from './StorefrontSearchOverlay';
 import StorefrontMobileDrawer from './StorefrontMobileDrawer';
 import AccountHubSheet from '../account/AccountHubSheet.jsx';
 import { searchProducts } from '../../services/catalog';
-import { brandToSlug, canonicalBrandLabel, sortBrandsBy } from '../../utils/catalogUrlState.js';
 import StorefrontSearchDock from './StorefrontSearchDock';
 import { useCatalogFacets } from '../../hooks/useCatalogFacets.js';
+import {
+  buildDisplayCategoryUrl,
+  mapCatalogBrands,
+  mergeCatalogDisplayCategories,
+} from '../../utils/catalogFacets.js';
 
 const PRIMARY_NAV_LINKS = [
   { to: '/schematics', label: 'Schematics' },
@@ -48,40 +52,6 @@ function MobileDrawerChevron({ expanded = false, className = '' }) {
       aria-hidden="true"
     />
   );
-}
-
-function toCatalogBrand(rawBrand = {}) {
-  const label = canonicalBrandLabel(rawBrand.label || rawBrand.name || rawBrand.key || rawBrand.slug || '');
-  if (!label) return null;
-  const slug = rawBrand.slug || rawBrand.key || brandToSlug(label);
-  if (!slug) return null;
-  return {
-    name: label,
-    slug,
-    count: rawBrand.productCount || rawBrand.count || 0,
-  };
-}
-
-function mergeCatalogDisplayCategories(displayCategoriesByBrand = {}) {
-  const merged = new Map();
-  Object.values(displayCategoriesByBrand || {}).forEach((items) => {
-    if (!Array.isArray(items)) return;
-    items.forEach((cat) => {
-      const slug = cat?.slug || cat?.key;
-      if (!slug) return;
-      const productCount = Number(cat?.productCount || cat?.count || 0);
-      const existing = merged.get(slug);
-      merged.set(slug, {
-        slug,
-        label: cat?.label || cat?.name || cat?.key || slug,
-        count: (existing?.count || 0) + productCount,
-      });
-    });
-  });
-
-  return Array.from(merged.values())
-    .filter((category) => category.count > 0)
-    .sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label));
 }
 
 export default function Header({ onCartToggle, hasTopTicker = false }) {
@@ -121,18 +91,12 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
 
   const isActive = (path) => location.pathname === path;
   const shopActive = location.pathname.startsWith('/products') || isActive('/parts') || isActive('/toolset-builder');
-  const drawerBrands = useMemo(() => {
-    if (!Array.isArray(facets?.brands)) return [];
-    const mapped = facets.brands
-      .map(toCatalogBrand)
-      .filter((brand) => brand && brand.name && brand.slug);
-    return sortBrandsBy(mapped, 'name');
-  }, [facets]);
+  const drawerBrands = useMemo(() => mapCatalogBrands(facets?.brands), [facets]);
   const drawerCategoryLinks = useMemo(() => mergeCatalogDisplayCategories(facets?.displayCategoriesByBrand || {})
     .slice(0, MAX_DRAWER_CATEGORIES)
     .map((category) => ({
       ...category,
-      to: `/products?display_category=${encodeURIComponent(category.slug)}`,
+      to: buildDisplayCategoryUrl(category.slug),
     })), [facets]);
 
   const toggleMobileMenu = () => setMobileMenuOpen((open) => !open);

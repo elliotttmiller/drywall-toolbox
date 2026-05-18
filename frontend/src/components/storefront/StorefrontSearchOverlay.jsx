@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { brandToSlug } from '../../utils/catalogUrlState.js';
+import { buildDisplayCategoryUrl, normalizeDisplayCategorySlug } from '../../utils/catalogFacets.js';
 import ProductCardImage from '../product/ProductCardImage.jsx';
 import ProductModal from '../product/ProductModal.jsx';
 import ProductDetail from '../product/ProductDetail.jsx';
@@ -33,11 +34,11 @@ export default function StorefrontSearchOverlay({
         if (typeof category === 'string') {
           return {
             label: category,
-            slug: category.toLowerCase().replace(/[^\w]+/g, '_'),
+            slug: normalizeDisplayCategorySlug(category),
           };
         }
         const label = category?.label || category?.name || '';
-        const slug = category?.slug || category?.key || label.toLowerCase().replace(/[^\w]+/g, '_');
+        const slug = category?.slug || category?.key || normalizeDisplayCategorySlug(label);
         return { label, slug };
       })
       .filter((category) => category.label && category.slug),
@@ -108,7 +109,7 @@ export default function StorefrontSearchOverlay({
                       <h3 className="storefront-search-overlay__section-title">Popular categories</h3>
                       <div className="storefront-search-overlay__chip-list">
                         {normalizedCategories.map((category) => (
-                          <Link key={category.slug} to={`/products?display_category=${encodeURIComponent(category.slug)}`} onClick={closeSearch} className="storefront-search-overlay__chip">
+                          <Link key={category.slug} to={buildDisplayCategoryUrl(category.slug)} onClick={closeSearch} className="storefront-search-overlay__chip">
                             {category.label}
                           </Link>
                         ))}

@@ -9,47 +9,21 @@ import StorefrontCategoryTile from '../components/storefront/StorefrontCategoryT
 import StorefrontBrandTile from '../components/storefront/StorefrontBrandTile';
 import StorefrontProductRail from '../components/storefront/StorefrontProductRail';
 import { useCatalogFacets } from '../hooks/useCatalogFacets.js';
-import { brandToSlug, canonicalBrandLabel, sortBrandsBy } from '../utils/catalogUrlState.js';
 import { getBrandLogo } from '../utils/brandAssets.js';
+import {
+  buildDisplayCategoryUrl,
+  mapCatalogBrands,
+  mergeCatalogDisplayCategories,
+} from '../utils/catalogFacets.js';
 
 const MAX_HOME_BRANDS = 8;
 const MAX_HOME_CATEGORIES = 8;
 
-function toCatalogBrand(rawBrand = {}) {
-  const name = canonicalBrandLabel(rawBrand.label || rawBrand.name || rawBrand.key || rawBrand.slug || '');
-  if (!name) return null;
-  const slug = rawBrand.slug || rawBrand.key || brandToSlug(name);
-  if (!slug) return null;
-  const count = Number(rawBrand.productCount || rawBrand.count || 0);
-  return { name, slug, count };
-}
-
-function mergeDisplayCategories(displayCategoriesByBrand = {}) {
-  const merged = new Map();
-  Object.values(displayCategoriesByBrand || {}).forEach((items) => {
-    if (!Array.isArray(items)) return;
-    items.forEach((item) => {
-      const slug = item?.slug || item?.key;
-      if (!slug) return;
-      const count = Number(item?.productCount || item?.count || 0);
-      const existing = merged.get(slug);
-      merged.set(slug, {
-        slug,
-        title: item?.label || item?.name || item?.key || slug,
-        count: (existing?.count || 0) + count,
-      });
-    });
-  });
-  return Array.from(merged.values())
-    .filter((item) => item.count > 0)
-    .sort((a, b) => (b.count - a.count) || a.title.localeCompare(b.title));
-}
-
 export default function Home() {
   const { facets } = useCatalogFacets();
   const brands = useMemo(() => {
-    const mapped = Array.isArray(facets?.brands) ? facets.brands.map(toCatalogBrand).filter(Boolean) : [];
-    return sortBrandsBy(mapped, 'name')
+    const mapped = mapCatalogBrands(facets?.brands);
+    return mapped
       .slice(0, MAX_HOME_BRANDS)
       .map((brand) => ({
         name: brand.name,
@@ -63,11 +37,11 @@ export default function Home() {
     to: brand.to,
   })), [brands]);
   const categories = useMemo(() => ([
-    ...mergeDisplayCategories(facets?.displayCategoriesByBrand || {})
+    ...mergeCatalogDisplayCategories(facets?.displayCategoriesByBrand || {})
       .slice(0, MAX_HOME_CATEGORIES)
       .map((category) => ({
-        title: category.title,
-        to: `/products?display_category=${encodeURIComponent(category.slug)}`,
+        title: category.label,
+        to: buildDisplayCategoryUrl(category.slug),
       })),
     { title: 'New Arrivals', to: '/products?sort=newest' },
   ]), [facets]);
