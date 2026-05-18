@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
       slug:  product.slug || slug,
       name:  product.name,
       image: product.media?.images?.[0]?.src || product.media?.image?.src || product.images?.[0]?.src || product.image || '',
-      price: product.price_html ? String( product.price_html ).replace( /<[^>]+>/g, '' ) : ( product.price ? String( product.price ) : '' ),
+      price: product.price ? `$${ parseFloat( product.price ).toFixed( 2 ) }` : '',
     } );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ product?.id ] );

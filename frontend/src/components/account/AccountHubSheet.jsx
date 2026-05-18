@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, Package, LifeBuoy, User, X, Heart, Sparkles, ChevronRight, Clock, CheckCircle, AlertCircle, Truck, Loader } from 'lucide-react';
+import { Home, Package, LifeBuoy, User, X, ShoppingBag, Heart, Sparkles, ChevronRight, Clock, CheckCircle, AlertCircle, Truck, Loader } from 'lucide-react';
 import { getCustomerOrders } from '../../api/orders.js';
 import { getRecentlyViewed } from '../../utils/recentlyViewed.js';
 
@@ -226,7 +226,7 @@ export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
                 ) : (
                   <div className="account-hub__empty-card">
                     <div className="account-hub__empty-icon">
-                      <Package size={26} strokeWidth={1.5} />
+                      <ShoppingBag size={26} strokeWidth={1.5} />
                     </div>
                     <p>Recently viewed products will appear here.</p>
                   </div>
@@ -273,7 +273,7 @@ export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
                 ) : (
                   <div className="account-hub__empty-card">
                     <div className="account-hub__empty-icon">
-                      <Package size={26} strokeWidth={1.5} />
+                      <ShoppingBag size={26} strokeWidth={1.5} />
                     </div>
                     <p>Recently viewed products will appear here.</p>
                   </div>
