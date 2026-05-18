@@ -30,11 +30,15 @@ export default function Home() {
         return {
           name: brand.name,
           logo,
-          src: logo,
           to: `/products/brands/${brand.slug}`,
         };
       });
   }, [facets]);
+  const heroBrands = useMemo(() => brands.map((brand) => ({
+    name: brand.name,
+    src: brand.logo,
+    to: brand.to,
+  })), [brands]);
   const categories = useMemo(() => ([
     ...mergeCatalogDisplayCategories(facets?.displayCategoriesByBrand || {})
       .slice(0, MAX_HOME_CATEGORIES)
@@ -58,7 +62,7 @@ export default function Home() {
         <HeroSection
           titleLines={['The New Standard', 'in Drywall.']}
           subtitle="Premium tools for every drywall job — unbeatable prices, lightning-fast shipping."
-          brands={brands}
+          brands={heroBrands}
         />
 
         <div className="container mx-auto px-5 pb-4 md:px-4">
