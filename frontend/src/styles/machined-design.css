@@ -1342,7 +1342,10 @@ button.header-mega-category-link,
 button.header-mega-footer-link {
     cursor: pointer;
     width: 100%;
-    font: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
 }
 
 button.header-mega-link,

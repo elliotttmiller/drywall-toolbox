@@ -152,10 +152,10 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     setSchematicsExpanded(false);
   }, []);
 
-  const handleDropdownMouseLeave = () => {
+  const handleDropdownMouseLeave = useCallback(() => {
     if (dropdownCloseTimerRef.current) clearTimeout(dropdownCloseTimerRef.current);
     dropdownCloseTimerRef.current = setTimeout(() => setShopDropdownOpen(false), 50);
-  };
+  }, []);
 
   const handleDropdownMouseEnter = () => {
     if (dropdownCloseTimerRef.current) {
@@ -164,6 +164,10 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
     }
     setShopDropdownOpen(true);
   };
+
+  const handleDropdownBlurCapture = useCallback((event) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) handleDropdownMouseLeave();
+  }, [handleDropdownMouseLeave]);
 
   useEffect(() => () => {
     if (dropdownCloseTimerRef.current) clearTimeout(dropdownCloseTimerRef.current);
@@ -426,16 +430,24 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
                   onMouseEnter={handleDropdownMouseEnter}
                   onMouseLeave={handleDropdownMouseLeave}
                   onFocusCapture={handleDropdownMouseEnter}
-                  onBlurCapture={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget)) handleDropdownMouseLeave();
-                  }}
+                  onBlurCapture={handleDropdownBlurCapture}
                 >
                   <button
                     className={`nav-link header-nav-trigger ${shopActive ? 'active' : ''}`}
                     type="button"
                     onClick={() => setShopDropdownOpen((open) => !open)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Escape') {
+                        event.preventDefault();
+                        setShopDropdownOpen(false);
+                      }
+                      if (event.key === 'ArrowDown') {
+                        event.preventDefault();
+                        setShopDropdownOpen(true);
+                      }
+                    }}
                     aria-expanded={shopDropdownOpen}
-                    aria-haspopup="menu"
+                    aria-haspopup="true"
                   >
                     <span>Shop</span>
                     <ChevronDown size={14} className="header-nav-trigger__chevron" />
