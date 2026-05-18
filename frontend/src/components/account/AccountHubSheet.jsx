@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Home, Package, LifeBuoy, User, X, ShoppingBag, Heart, Sparkles, ChevronRight } from 'lucide-react';
 
 const TABS = [
-  { id: 'home',    label: 'Home',    Icon: Home      },
-  { id: 'orders',  label: 'Orders',  Icon: Package   },
-  { id: 'support', label: 'Support', Icon: LifeBuoy  },
-  { id: 'account', label: 'Account', Icon: User      },
+  { id: 'home',    label: 'Home',    Icon: Home },
+  { id: 'orders',  label: 'Orders',  Icon: Package },
+  { id: 'support', label: 'Support', Icon: LifeBuoy },
+  { id: 'account', label: 'Account', Icon: User },
 ];
 
 export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
 
   const closeSheet = useCallback(() => {
@@ -21,13 +21,13 @@ export default function AccountHubSheet({ isOpen, onClose, user, onLogout }) {
   // Body scroll lock + Escape key
   useEffect(() => {
     if (!isOpen) return undefined;
-    const prev = document.body.style.overflow;
-    const onKey = (e) => { if (e.key === 'Escape') closeSheet(); };
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (e) => { if (e.key === 'Escape') closeSheet(); };
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKeyDown);
     return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
     };
   }, [isOpen, closeSheet]);
 
