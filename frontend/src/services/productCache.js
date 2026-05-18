@@ -44,6 +44,14 @@ function openDB() {
   if (_db) return Promise.resolve(_db);
 
   return new Promise((resolve, reject) => {
+    // 5-second safety timeout: if IndexedDB.open() never fires onsuccess or
+    // onerror (e.g. DB blocked by another tab holding an old connection after
+    // the user cleared site data), we reject instead of hanging forever.
+    const timeoutId = setTimeout(
+      () => reject(new Error('IndexedDB open timed out')),
+      5000,
+    );
+
     const req = indexedDB.open(DB_NAME, DB_VERSION);
 
     req.onupgradeneeded = (e) => {
@@ -54,11 +62,15 @@ function openDB() {
     };
 
     req.onsuccess = (e) => {
+      clearTimeout(timeoutId);
       _db = e.target.result;
       resolve(_db);
     };
 
-    req.onerror = () => reject(req.error);
+    req.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(req.error);
+    };
   });
 }
 

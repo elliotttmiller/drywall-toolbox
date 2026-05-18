@@ -21,9 +21,9 @@ import { getProductById as getCatalogProductById } from '../services/catalog.js'
  *                         orderby, order, min_price, max_price, stock_status
  * @returns {Promise<any>}
  */
-export async function fetchProducts( params = {} ) {
+export async function fetchProducts( params = {}, options = {} ) {
   const qs = new URLSearchParams( params ).toString();
-  return apiClient( `/wp-json/drywall/v1/products${ qs ? `?${ qs }` : '' }` );
+  return apiClient( `/wp-json/drywall/v1/products${ qs ? `?${ qs }` : '' }`, options );
 }
 
 /**

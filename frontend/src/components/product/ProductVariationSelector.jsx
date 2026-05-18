@@ -1,5 +1,5 @@
 import { motion as Motion, AnimatePresence } from 'framer-motion';
-import { Check, Loader2 } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 function attributeLabel(attr) {
   return (attr?.name || '').replace(/^pa_/i, '').replace(/[_-]+/g, ' ').trim();
@@ -57,8 +57,8 @@ export default function ProductVariationSelector({
                     disabled={disabled}
                     aria-pressed={selected}
                     aria-disabled={disabled || soldOut}
-                    aria-label={`${option.value}${soldOut ? ' - sold out' : unavailable ? ' - unavailable' : ''}`}
-                    className={`dtb-variant-pill${selected ? ' is-selected dtb-variant-pill--selected' : ''}${soldOut ? ' is-sold-out dtb-variant-pill--disabled' : ''}${disabled ? ' is-disabled dtb-variant-pill--disabled' : ''}`}
+                    aria-label={`${option.value}${variationsLoading ? ' - loading' : soldOut ? ' - sold out' : unavailable ? ' - unavailable' : ''}`}
+                    className={`dtb-variant-pill${selected ? ' is-selected dtb-variant-pill--selected' : ''}${!variationsLoading && soldOut ? ' is-sold-out dtb-variant-pill--disabled' : ''}${!variationsLoading && (soldOut || unavailable) ? ' is-disabled dtb-variant-pill--disabled' : ''}${variationsLoading ? ' is-loading' : ''}`}
                     whileTap={disabled ? undefined : { scale: 0.985 }}
                     transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                   >
@@ -76,11 +76,9 @@ export default function ProductVariationSelector({
                         </Motion.span>
                       </AnimatePresence>
                     ) : null}
-                    {variationsLoading ? (
-                      <span className="dtb-variant-pill__status"><Loader2 size={12} /> Loading</span>
-                    ) : soldOut ? (
+                    {!variationsLoading && soldOut ? (
                       <span className="dtb-variant-pill__status">Sold out</span>
-                    ) : unavailable ? (
+                    ) : !variationsLoading && unavailable ? (
                       <span className="sr-only">Unavailable</span>
                     ) : null}
                   </Motion.button>

@@ -365,6 +365,11 @@
   pointer-events: none;
 }
 
+.dtb-variant-pill.is-loading {
+  opacity: 0.55;
+  cursor: wait;
+}
+
 .dtb-variant-pill:not(:disabled):hover {
   border-color: rgba(37, 99, 235, 0.48);
 }
