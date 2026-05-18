@@ -2511,9 +2511,7 @@ aside input[type="range"],
 
     /* === CART PANEL: Tablet sizing === */
     .cart-panel {
-        width: min(480px, 92vw);
-        padding: 1.5rem;
-        max-height: 90vh;
+        width: min(420px, 100vw);
     }
 
     .cart-item {

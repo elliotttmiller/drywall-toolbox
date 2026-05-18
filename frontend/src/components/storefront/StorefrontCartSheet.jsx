@@ -22,7 +22,6 @@ export default function StorefrontCartSheet({ isOpen, onClose, cartItems = [], r
       className={`cart-overlay${isOpen ? ' active' : ''}`}
       onClick={onClose}
       aria-hidden={!isOpen}
-      style={{ alignItems: 'flex-end' }}
     >
       <aside
         className="cart-panel storefront-cart-sheet"
@@ -106,27 +105,11 @@ export default function StorefrontCartSheet({ isOpen, onClose, cartItems = [], r
 
       <style>{`
         .storefront-cart-sheet {
-          position: relative;
           display: flex;
           flex-direction: column;
           background: var(--dtb-surface);
           box-shadow: var(--dtb-shadow-sheet);
-          max-height: 92dvh;
           overflow: hidden;
-        }
-
-        /* Mobile: bottom sheet */
-        @media (max-width: 767px) {
-          .cart-overlay {
-            align-items: flex-end !important;
-          }
-
-          .storefront-cart-sheet {
-            width: 100% !important;
-            max-width: 100% !important;
-            border-radius: 20px 20px 0 0;
-            max-height: 90dvh;
-          }
         }
 
         .cart-sheet-header {
