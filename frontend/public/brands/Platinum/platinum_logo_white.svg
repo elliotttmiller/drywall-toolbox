@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg version="1.1" viewBox="0 0 2048 613" width="2048" height="611" xmlns="http://www.w3.org/2000/svg">
+<svg version="1.1" viewBox="0 0 2048 613" width="2048" height="611" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
 <path transform="translate(1613,204)" d="m0 0h119l19 2 17 5 11 6 7 6 2 3 4-2 8-7 12-6 19-5 16-2h57l19 2 17 4 12 5 6 4 6 5 6 10 2 8 1 28v57l-1 57-5 6-4 1h-14l-7-3-3-4-1-131-4-8-7-6-11-4-12-2-11-1h-40l-23 3-9 3-10 9-2 5-1 132-6 6-7 1h-12l-6-2-4-4-1-2-1-132-6-9-8-5-12-3-21-2h-83l-1 153-6 5-6 1h-11l-7-3-3-3-1-5v-158l-1-7 5-8 3-1z" fill="#FFFFFF"/>
 <path transform="translate(86,203)" d="m0 0h148l20 1 17 3 19 7 11 8 6 7 4 9v44l-3 10-5 8-4 5-10 7-12 5-15 4-16 2h-133v59l-3 5-5 3h-19l-6-5-1-3v-172l2-4zm27 28v65h134l16-4 9-6 5-8 1-2v-31l-6-8-10-4-9-2z" fill="#FFFFFF" fill-rule="evenodd"/>
 <path transform="translate(683,201)" d="m0 0h13l6 3 7 7 29 44 9 12 7 11 12 17 10 15 9 13 12 18 13 19 9 14 2 4-1 4-5 7-10 5-6 1-6-3-7-8-13-19-15-22v-2l-138 1-12 16-13 19-8 10-6 5-2 1-10-1-8-4-6-7 1-5 8-12 46-68 50-75 7-10 8-7zm4 37-7 10-10 15-16 23-11 16-6 8v2h101l-7-11-10-15-29-44-3-4z" fill="#FFFFFF" fill-rule="evenodd"/>
