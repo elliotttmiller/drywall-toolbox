@@ -471,6 +471,7 @@ export function buildPartsUrl(schematicId) {
 
 // Maps each brand name to the URL slug used in /schematics?brand=<slug>
 const BRAND_TO_SLUG = {
+  'Columbia Tools': 'columbia-taping-tools',
   'Columbia Taping Tools': 'columbia-taping-tools',
   'TapeTech': 'tapetech',
   'Asgard': 'asgard',

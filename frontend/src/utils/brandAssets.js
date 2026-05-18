@@ -10,6 +10,7 @@ import { brandToSlug, canonicalBrandLabel } from './catalogUrlState.js';
 
 export const BRAND_LOGOS_BY_LABEL = {
   TapeTech: tapeTechLogo,
+  'Columbia Tools': columbiaLogo,
   'Columbia Taping Tools': columbiaLogo,
   Columbia: columbiaLogo,
   SurPro: surproLogo,
@@ -26,6 +27,7 @@ export const BRAND_LOGOS_BY_LABEL = {
 export const BRAND_LOGOS_BY_SLUG = {
   tapetech: tapeTechLogo,
   'columbia-taping-tools': columbiaLogo,
+  'columbia-tools': columbiaLogo,
   columbia: columbiaLogo,
   surpro: surproLogo,
   asgard: asgardLogo,

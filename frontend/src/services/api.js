@@ -31,7 +31,7 @@ function hasStructuredIncludesMeta(metaItems = []) {
 // ─── Known brand names (kept in sync with ALLOWED_BRANDS in Products.jsx) ────
 const KNOWN_BRANDS = [
   'TapeTech',
-  'Columbia Taping Tools',
+  'Columbia Tools',
   'Asgard',
   'Level 5',
   'SurPro',
@@ -48,9 +48,10 @@ const BRAND_ALIASES = {
   'platinum drywall tools':    'Platinum Drywall Tools',
   'dura stilts':               'Dura-Stilts',
   'dura_stilts':               'Dura-Stilts',
-  'columbia':                  'Columbia Taping Tools',
-  'columbia taping':           'Columbia Taping Tools',
-  'columbia taping tools':     'Columbia Taping Tools',
+  'columbia':                  'Columbia Tools',
+  'columbia taping':           'Columbia Tools',
+  'columbia taping tools':     'Columbia Tools',
+  'columbia-tools':            'Columbia Tools',
   'level 5':                   'Level 5',
   'level5':                    'Level 5',
   'tapetech':                  'TapeTech',

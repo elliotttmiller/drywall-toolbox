@@ -11,7 +11,7 @@
 
 export const BRAND_TO_SLUG = {
   TapeTech: 'tapetech',
-  'Columbia Taping Tools': 'columbia-taping-tools',
+  'Columbia Tools': 'columbia-taping-tools',
   Asgard: 'asgard',
   SurPro: 'surpro',
   Graco: 'graco',
@@ -21,9 +21,13 @@ export const BRAND_TO_SLUG = {
 };
 
 export const BRAND_ALIASES = {
-  Columbia: 'Columbia Taping Tools',
-  COLUMBIA: 'Columbia Taping Tools',
-  columbia: 'Columbia Taping Tools',
+  Columbia: 'Columbia Tools',
+  COLUMBIA: 'Columbia Tools',
+  columbia: 'Columbia Tools',
+  'Columbia Taping Tools': 'Columbia Tools',
+  'columbia taping tools': 'Columbia Tools',
+  'COLUMBIA TAPING TOOLS': 'Columbia Tools',
+  'columbia-tools': 'Columbia Tools',
   Platinum: 'Platinum Drywall Tools',
   PLATINUM: 'Platinum Drywall Tools',
   TAPETECH: 'TapeTech',

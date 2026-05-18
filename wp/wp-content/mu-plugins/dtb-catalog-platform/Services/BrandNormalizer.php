@@ -20,7 +20,7 @@ final class DTB_BrandNormalizer {
 	 */
 	const BRAND_TO_SLUG = [
 		'TapeTech'               => 'tapetech',
-		'Columbia Taping Tools'  => 'columbia-taping-tools',
+		'Columbia Tools'         => 'columbia-taping-tools',
 		'Asgard'                 => 'asgard',
 		'SurPro'                 => 'surpro',
 		'Graco'                  => 'graco',
@@ -36,9 +36,14 @@ final class DTB_BrandNormalizer {
 	 * @var array<string, string>
 	 */
 	const BRAND_ALIASES = [
-		'Columbia'                => 'Columbia Taping Tools',
-		'columbia'                => 'Columbia Taping Tools',
-		'COLUMBIA'                => 'Columbia Taping Tools',
+		'Columbia'                => 'Columbia Tools',
+		'columbia'                => 'Columbia Tools',
+		'COLUMBIA'                => 'Columbia Tools',
+		'Columbia Taping Tools'   => 'Columbia Tools',
+		'columbia taping tools'   => 'Columbia Tools',
+		'COLUMBIA TAPING TOOLS'   => 'Columbia Tools',
+		'columbia-taping-tools'   => 'Columbia Tools',
+		'columbia-tools'          => 'Columbia Tools',
 		'TAPETECH'                => 'TapeTech',
 		'Tape Tech'               => 'TapeTech',
 		'LEVEL 5'                 => 'Level 5',
@@ -56,6 +61,15 @@ final class DTB_BrandNormalizer {
 	];
 
 	/**
+	 * Non-canonical slug aliases mapped to canonical slugs.
+	 *
+	 * @var array<string, string>
+	 */
+	const SLUG_ALIASES = [
+		'columbia-tools' => 'columbia-taping-tools',
+	];
+
+	/**
 	 * Normalize a raw brand string to the canonical { key, label, slug } tuple.
 	 *
 	 * Resolution order:
@@ -66,7 +80,7 @@ final class DTB_BrandNormalizer {
 	 *
 	 * Aliases intentionally run before canonical lookup so imported brand labels
 	 * such as "Columbia" collapse to the customer-facing canonical label
-	 * "Columbia Taping Tools" rather than creating a second frontend brand.
+	 * "Columbia Tools" rather than creating a second frontend brand.
 	 *
 	 * @param  string $raw  Raw brand string.
 	 * @return array{ key: string, label: string, slug: string }
@@ -117,6 +131,9 @@ final class DTB_BrandNormalizer {
 	 */
 	public static function label_from_slug( string $slug ): string {
 		$slug = strtolower( trim( $slug ) );
+		if ( isset( self::SLUG_ALIASES[ $slug ] ) ) {
+			$slug = self::SLUG_ALIASES[ $slug ];
+		}
 		foreach ( self::BRAND_TO_SLUG as $label => $s ) {
 			if ( $s === $slug ) {
 				return $label;
@@ -127,6 +144,10 @@ final class DTB_BrandNormalizer {
 
 	/** Returns true when $slug is a known canonical brand slug. */
 	public static function is_known_slug( string $slug ): bool {
-		return in_array( strtolower( trim( $slug ) ), array_values( self::BRAND_TO_SLUG ), true );
+		$slug = strtolower( trim( $slug ) );
+		if ( isset( self::SLUG_ALIASES[ $slug ] ) ) {
+			$slug = self::SLUG_ALIASES[ $slug ];
+		}
+		return in_array( $slug, array_values( self::BRAND_TO_SLUG ), true );
 	}
 }
