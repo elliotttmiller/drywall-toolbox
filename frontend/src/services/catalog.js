@@ -69,8 +69,13 @@ async function fetchFromApi() {
         .filter((p) => p.type !== 'variation');
     } catch (pageErr) {
       clearTimeout(timeoutId);
+      // Treat an abort (timeout) as a distinct failure type so callers can
+      // distinguish it from a generic network error if needed.
+      const err = pageErr?.name === 'AbortError'
+        ? Object.assign(new Error('Catalog page fetch timed out after 15 s.'), { code: 'timeout' })
+        : pageErr;
       if (all.length > 0) break;
-      throw pageErr;
+      throw err;
     }
     all = all.concat(batch);
     if (batch.length < PER) { done = true; break; }
