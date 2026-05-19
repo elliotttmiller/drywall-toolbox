@@ -199,14 +199,21 @@ function dtb_repair_register_meta(): void {
 		);
 	}
 
-	// Images stored as a JSON-encoded array of attachment IDs / URLs.
+	// Images stored as a JSON-encoded array of attachment IDs.
 	register_post_meta(
 		'dtb_repair_request',
 		'_repair_images',
 		[
 			'type'              => 'string',
 			'single'            => true,
-			'sanitize_callback' => 'wp_json_encode',
+			'sanitize_callback' => function ( $value ) {
+				// Accepts a JSON string; sanitize the decoded array and re-encode.
+				$decoded = is_string( $value ) ? json_decode( $value, true ) : $value;
+				if ( ! is_array( $decoded ) ) {
+					return '[]';
+				}
+				return wp_json_encode( array_values( array_map( 'absint', $decoded ) ) );
+			},
 			'auth_callback'     => $admin_auth,
 		]
 	);
@@ -506,7 +513,7 @@ function dtb_repair_rest_submit( WP_REST_Request $request ): WP_REST_Response|WP
 			'post_type'   => 'dtb_repair_request',
 			'post_status' => 'publish',
 			'post_title'  => wp_strip_all_tags( $post_title ),
-			'post_author' => $user_id ?: 1,
+			'post_author' => $user_id ?: 0,
 		],
 		true
 	);
@@ -694,7 +701,7 @@ function dtb_repair_rest_media( WP_REST_Request $request ): WP_REST_Response|WP_
 
 		// Extension/MIME consistency check.
 		$ext      = strtolower( pathinfo( $file['name'], PATHINFO_EXTENSION ) );
-		$ext_map  = [ 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif', 'webp' => 'image/webp' ];
+		$ext_map  = dtb_repair_allowed_mime_extension_map();
 		if ( ! isset( $ext_map[ $ext ] ) || $ext_map[ $ext ] !== $real_mime ) {
 			$validation_errors[] = sprintf(
 				/* translators: %d: file index */
@@ -960,6 +967,24 @@ function dtb_repair_on_created_queue_notifications( int $repair_id, array $meta_
 // =============================================================================
 
 /**
+ * Return the extension-to-MIME-type map for allowed repair media uploads.
+ *
+ * Single source of truth — used for both MIME validation and extension
+ * consistency checks so they stay in sync when DTB_REPAIR_ALLOWED_MIME_TYPES changes.
+ *
+ * @return array<string, string>  file extension → MIME type
+ */
+function dtb_repair_allowed_mime_extension_map(): array {
+	return [
+		'jpg'  => 'image/jpeg',
+		'jpeg' => 'image/jpeg',
+		'png'  => 'image/png',
+		'gif'  => 'image/gif',
+		'webp' => 'image/webp',
+	];
+}
+
+/**
  * Return the client IP address (supports common proxy headers).
  *
  * @return string
@@ -968,9 +993,10 @@ function dtb_repair_get_client_ip(): string {
 	$candidates = [ 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'REMOTE_ADDR' ];
 	foreach ( $candidates as $key ) {
 		if ( ! empty( $_SERVER[ $key ] ) ) {
-			$ip = sanitize_text_field( wp_unslash( (string) $_SERVER[ $key ] ) );
+			$ip   = sanitize_text_field( wp_unslash( (string) $_SERVER[ $key ] ) );
 			// Take the first IP from X-Forwarded-For lists.
-			$ip = trim( explode( ',', $ip )[0] );
+			$parts = explode( ',', $ip );
+			$ip    = trim( $parts[0] ?? '' );
 			if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 				return $ip;
 			}

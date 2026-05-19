@@ -822,11 +822,15 @@ function dtb_repair_metabox_queue( WP_Post $post ): void {
 		return;
 	}
 
+	$as_status = class_exists( 'ActionScheduler_Store' )
+		? \ActionScheduler_Store::STATUS_PENDING
+		: 'pending';
+
 	$actions = as_get_scheduled_actions(
 		[
 			'group'    => 'dtb-repairs',
 			'search'   => (string) $post->ID,
-			'status'   => \ActionScheduler_Store::STATUS_PENDING,
+			'status'   => $as_status,
 			'per_page' => 20,
 		]
 	);

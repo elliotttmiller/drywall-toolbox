@@ -140,11 +140,11 @@ function dtb_repair_event_default_visibility( string $event_type ): string {
 		return $map[ $event_type ];
 	}
 
-	// Fallback: infer from prefix.
-	if ( str_starts_with( $event_type, 'repair.' ) ) {
+	// Fallback: infer from prefix (strpos for PHP 7.4 compatibility).
+	if ( 0 === strpos( $event_type, 'repair.' ) ) {
 		return 'customer';
 	}
-	if ( str_starts_with( $event_type, 'system.' ) ) {
+	if ( 0 === strpos( $event_type, 'system.' ) ) {
 		return 'internal';
 	}
 

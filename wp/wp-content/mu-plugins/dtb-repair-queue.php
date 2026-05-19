@@ -642,12 +642,18 @@ function dtb_repair_create_woocommerce_order( int $repair_id ): int|WP_Error {
 
 	// TODO: Wire real pricing — fetch from WC product catalogue or option.
 	// Map service tiers to placeholder amounts for now.
-	$tier_prices = [
-		'standard' => 0.00, // Will be filled in by a quote.
-		'express'  => 0.00,
-		'warranty' => 0.00,
-	];
-	$line_amount = $tier_prices[ $service_tier ] ?? 0.00;
+	// Use the dtb_repair_service_tier_prices filter to configure from outside this file.
+	$tier_prices = (array) apply_filters(
+		'dtb_repair_service_tier_prices',
+		[
+			'standard' => 0.00, // Will be filled in by a quote.
+			'express'  => 0.00,
+			'warranty' => 0.00,
+		],
+		$service_tier,
+		$repair_id
+	);
+	$line_amount = (float) ( $tier_prices[ $service_tier ] ?? 0.00 );
 
 	$order_args = [];
 	if ( $user_id ) {

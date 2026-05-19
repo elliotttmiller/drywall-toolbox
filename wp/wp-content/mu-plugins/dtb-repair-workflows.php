@@ -60,9 +60,9 @@ function dtb_get_repair_status_label( string $status ): string {
  * @return string[]
  */
 function dtb_get_all_repair_statuses(): array {
-	return array_keys( dtb_get_allowed_transitions() ) + [
-		'closed', 'cancelled', 'quote_declined',
-	];
+	return array_values( array_unique(
+		array_merge( array_keys( dtb_get_allowed_transitions() ), [ 'closed', 'cancelled', 'quote_declined' ] )
+	) );
 }
 
 // =============================================================================
