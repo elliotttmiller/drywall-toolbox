@@ -1,0 +1,874 @@
+brand,official_sku,normalized_sku,issue_type,official_name,tsw_name,official_present,tsw_present,notes
+Columbia,10FBB,10FBB,name_mismatch,"10"" Fat Boy Flat Box","Columbia 10"" Fat Boy Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,10FBBA,10FBBA,name_mismatch,"10"" Automatic Fat Boy Box","Columbia 10"" Fat Boy Automatic Assist Drywall Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,10FFB,10FFB,name_mismatch,"10"" Flat Finisher Box","Columbia 10"" Flat Finishing Box",1,1,Official and TSW names differ after normalization.
+Columbia,10FFBA,10FFBA,name_mismatch,"10"" Automatic Flat Box","Columbia 10"" Automatic Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,12FBB,12FBB,name_mismatch,"12"" Fat Boy Flat Box","Columbia 12"" Fat Boy Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,12FBBA,12FBBA,name_mismatch,"12"" Automatic Fat Boy Box","Columbia 12"" Fat Boy Automatic Assist Drywall Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,12FFB,12FFB,name_mismatch,"12"" Flat Finisher Box","Columbia 12"" Flat Finishing Box",1,1,Official and TSW names differ after normalization.
+Columbia,12FFBA,12FFBA,name_mismatch,"12"" Automatic Flat Box","Columbia 12"" Automatic Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,14 FFB,14FFB,name_mismatch,"14"" Flat Finisher Box","Columbia 14"" Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,14FFBA,14FFBA,name_mismatch,"14"" Automatic Flat Box","Columbia 14"" Automatic Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,2.5AH,25AH,name_mismatch,"2.5"" Angle Head",Columbia 2.5″ Anglehead,1,1,Official and TSW names differ after normalization.
+Columbia,2.5CSF,25CSF,name_mismatch,"2.5"" Combo Flusher","Columbia 2.5"" Combo Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,2.5DF,25DF,name_mismatch,"2.5"" Direct Flusher","Columbia 2.5"" Direct Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,2.5SF,25SF,name_mismatch,"2.5"" Standard Flusher","Columbia 2.5"" Standard Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,2AH,2AH,name_mismatch,"2"" Angle Head",Columbia 2″ Anglehead,1,1,Official and TSW names differ after normalization.
+Columbia,2NS,2NS,name_mismatch,"2"" Nail Spotter",Columbia 2″ Nailspotter,1,1,Official and TSW names differ after normalization.
+Columbia,3.5AH,35AH,name_mismatch,"3.5"" Angle Head",Columbia 3.5″ Anglehead,1,1,Official and TSW names differ after normalization.
+Columbia,3.5CSF,35CSF,name_mismatch,"3.5"" Combo Flusher","Columbia 3.5"" Combo Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3.5DF,35DF,name_mismatch,"3.5"" Direct Flusher","Columbia 3.5"" Direct Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3.5SF,35SF,name_mismatch,"3.5"" Standard Flusher","Columbia 3.5"" Standard Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3AH,3AH,name_mismatch,"3"" Angle Head",Columbia 3″ Anglehead,1,1,Official and TSW names differ after normalization.
+Columbia,3BH,3BH,name_mismatch,3' 180 Degree Grip Flat Box Handle,"Columbia 36"" 180-Grip Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,3CSF,3CSF,name_mismatch,"3"" Combo Flusher","Columbia 3"" Combo Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3DF,3DF,name_mismatch,"3"" Direct Flusher","Columbia 3"" Direct Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3NS,3NS,name_mismatch,"3"" Nail Spotter",Columbia 3″ Nailspotter,1,1,Official and TSW names differ after normalization.
+Columbia,3SF,3SF,name_mismatch,"3"" Standard Flusher","Columbia 3"" Standard Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3WTCSF,3WTCSF,missing_in_tsw,"3"" Widetrack Combo Flusher",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,3WTDF,3WTDF,name_mismatch,"3"" Widetrack Direct Flusher","Columbia 3"" Widetrack Direct Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,3WTSF,3WTSF,name_mismatch,"3"" Widetrack Standard Flusher","Columbia 3"" Standard Corner Flusher",1,1,Official and TSW names differ after normalization.
+Columbia,42BH,42BH,name_mismatch,"42"" 180 Degree Grip Flat Box Handle","Columbia 42"" 180-Grip Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,4BH,4BH,name_mismatch,4' 180 Degree Grip Flat Box Handle,"Columbia 48"" 180-Grip Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,4DF,4DF,missing_in_tsw,"4"" Direct Flusher",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,4SF,4SF,missing_in_tsw,"4"" Standard Flusher",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,5.5FBB,55FBB,name_mismatch,"5.5"" Fat Boy Flat Box","Columbia 5.5"" Fat Boy Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,5.5FFB,55FFB,name_mismatch,"5.5"" Flat Finisher Box","Columbia 5.5"" Flat Finishing Box",1,1,Official and TSW names differ after normalization.
+Columbia,5BH,5BH,name_mismatch,5' 180 Degree Grip Flat Box Handle,"Columbia 60"" 180-Grip Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,6BH,6BH,name_mismatch,6' 180 Degree Grip Flat Box Handle,"Columbia 72"" 180-Grip Featherweight Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,7CFB,7CFB,name_mismatch,"7"" Corner Flusher Box",Columbia 7″ Throttle Box,1,1,Official and TSW names differ after normalization.
+Columbia,7FFB,7FFB,name_mismatch,"7"" Flat Finisher Box","Columbia 7"" Flat Finishing Box",1,1,Official and TSW names differ after normalization.
+Columbia,8CFB,8CFB,name_mismatch,"8"" Corner Flusher Box",Columbia 8″ Throttle Box,1,1,Official and TSW names differ after normalization.
+Columbia,8FBB,8FBB,name_mismatch,"8"" Fat Boy Flat Box","Columbia 8"" Fat Boy Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,8FBBA,8FBBA,name_mismatch,"8"" Automatic Fat Boy Box","Columbia 8"" Fat Boy Automatic Assist Drywall Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,8FFB,8FFB,name_mismatch,"8"" Flat Finisher Box","Columbia 8"" Flat Finishing Box",1,1,Official and TSW names differ after normalization.
+Columbia,8FFBA,8FFBA,name_mismatch,"8"" Automatic Flat Box","Columbia 8"" Automatic Assist Drywall Flat Box",1,1,Official and TSW names differ after normalization.
+Columbia,AHA,AHA,name_mismatch,Angle Head Adapter,Columbia Anglehead Adaptor,1,1,Official and TSW names differ after normalization.
+Columbia,BF,BF,name_mismatch,Box Filler,Columbia Box Filler,1,1,Official and TSW names differ after normalization.
+Columbia,C1H,C1H,name_mismatch,Columbia One Handle,Columbia 4' Extendable One Handle,1,1,Official and TSW names differ after normalization.
+Columbia,C1HEXT,C1HEXT,name_mismatch,Columbia One Extendible (3-5'),Columbia 3'-5' Extendable One Handle,1,1,Official and TSW names differ after normalization.
+Columbia,C1HS,C1HS,missing_in_tsw,Columbia One Handle Stubby,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,CBNCR,CBNCR,name_mismatch,Bullnose Outside Corner Roller,Columbia Outside Bullnose Corner Roller,1,1,Official and TSW names differ after normalization.
+Columbia,CC,CC,name_mismatch,Corner Cobra,Columbia Corner Cobra Adjustable Roller,1,1,Official and TSW names differ after normalization.
+Columbia,CEXT90,CEXT90,name_mismatch,External 90 Applicator,Columbia External 90 Mud Applicator,1,1,Official and TSW names differ after normalization.
+Columbia,CFLT,CFLT,name_mismatch,Flat Applicator,Columbia Flat Applicator,1,1,Official and TSW names differ after normalization.
+Columbia,CHXL,CHXL,name_mismatch,Columbia Long Extendible (4-8'),Columbia 4-8' Long Extendible Handle,1,1,Official and TSW names differ after normalization.
+Columbia,CLT24,CLT24,name_mismatch,"24"" Cam Lock Tube","Columbia 24"" Cam Lock Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CLT32,CLT32,name_mismatch,"32"" Cam Lock Tube","Columbia 32"" Cam Lock Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CLT42,CLT42,name_mismatch,"42"" Cam Lock Tube","Columbia 42"" Cam Lock Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CLT55,CLT55,name_mismatch,"55"" Cam Lock Tube","Columbia 55"" Cam Lock Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CLTHA,CLTHA,name_mismatch,Tomalock Adapter,Columbia Tomalock,1,1,Official and TSW names differ after normalization.
+Columbia,CMH,CMH,name_mismatch,Closet Monster Handle,"Columbia 18"" Closet Monster Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,CMT24,CMT24,name_mismatch,"24"" Compound Tube","Columbia 24"" Compound Mud Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CMT32,CMT32,name_mismatch,"32"" Compound Tube","Columbia 32"" Compound Mud Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CMT42,CMT42,name_mismatch,"42"" Compound Tube","Columbia 42"" Compound Mud Tube",1,1,Official and TSW names differ after normalization.
+Columbia,CMT55,CMT55,name_mismatch,"55"" Compound Tube","Columbia 55"" Compound Mud Tube",1,1,Official and TSW names differ after normalization.
+Columbia,COBCR,COBCR,name_mismatch,Standard Outside Corner Roller,Columbia Outside Corner Roller,1,1,Official and TSW names differ after normalization.
+Columbia,COBCRE,COBCRE,missing_in_tsw,European Outside Corner Roller,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,COBCRW,COBCRW,name_mismatch,Wide Outside Corner Roller,Columbia Wide Outside Corner Roller,1,1,Official and TSW names differ after normalization.
+Columbia,CR,CR,name_mismatch,Corner Roller,Columbia Inside Corner Roller,1,1,Official and TSW names differ after normalization.
+Columbia,CSH,CSH,missing_in_tsw,Columbia Sander Pole,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,FMH,FMH,name_mismatch,L-Trim Applicator (Plastic),Columbia L-Trim Mud Applicator Head,1,1,Official and TSW names differ after normalization.
+Columbia,GN,GN,name_mismatch,Gooseneck,Columbia Gooseneck,1,1,Official and TSW names differ after normalization.
+Columbia,HMP,HMP,name_mismatch,Hot Mud Pump,Columbia Mud Pump (Top Disconnect),1,1,Official and TSW names differ after normalization.
+Columbia,HMP-C,HMPC,missing_in_tsw,Hot Mud Pump (CDN),,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,HNSA-5-2,HNSA52,missing_in_tsw,"2"" Wheel Conversion Kit",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,HNSA-5-3,HNSA53,missing_in_tsw,"3"" Wheel Conversion Kit",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,IA90,IA90,name_mismatch,Inside 90 Degree Applicator (Plastic),Columbia 90 Inside Plastic Applicator,1,1,Official and TSW names differ after normalization.
+Columbia,ICA2-1,ICA21,name_mismatch,"Inside Corner Applicator (2 Wheels) - 1""",Columbia 2 Wheel Inside Corner Applicator,1,1,Official and TSW names differ after normalization.
+Columbia,ICA4-1,ICA41,name_mismatch,"Inside Corner Applicator (4 Wheels) - 1""",Columbia 4 Wheel Inside Corner Applicator,1,1,Official and TSW names differ after normalization.
+Columbia,ICATW,ICATW,name_mismatch,Two-Way Internal Corner Applicator (4 Wheels),Columbia Two Way Internal Corner Applicator,1,1,Official and TSW names differ after normalization.
+Columbia,ITC-K,ITCK,missing_in_tsw,Track Conversion Kit,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,MH,MH,name_mismatch,"Matrix Flat Box Handle 40-60""",Columbia Matrix Extendable Flat Box Handle,1,1,Official and TSW names differ after normalization.
+Columbia,MHL,MHL,name_mismatch,"Matrix Flat Box Handle 56-76""",Columbia Matrix XL Extendable Flat Box Handle,1,1,Official and TSW names differ after normalization.
+Columbia,MHS,MHS,name_mismatch,"Matrix Flat Box Handle 29-39""","Columbia Matrix 29-39"" Extendable Flat Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,OA90,OA90,name_mismatch,Outside 90 Degree Applicator (Plastic),Columbia Outside 90 Mud Head,1,1,Official and TSW names differ after normalization.
+Columbia,OA90-325,OA90325,missing_in_tsw,Outside 90 Degree 325 Applicator (Plastic),,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,PC1H,PC1H,name_mismatch,Predator One Handle 4',Columbia Predator One Handle,1,1,Official and TSW names differ after normalization.
+Columbia,PC1HEXT,PC1HEXT,name_mismatch,Predator Extendable 3'-5',Columbia 3-5' Predator One Extendable Handle,1,1,Official and TSW names differ after normalization.
+Columbia,PCHXL,PCHXL,name_mismatch,Predator Long Extendable 4'-8',Columbia 4-8' Predator Long Extendable Handle,1,1,Official and TSW names differ after normalization.
+Columbia,PCLT42,PCLT42,name_mismatch,"Predator Camlock Tube 42""","Columbia 42"" Predator Cam Lock Tube",1,1,Official and TSW names differ after normalization.
+Columbia,PCMT42,PCMT42,name_mismatch,"Predator Compound Tube 42""","Columbia 42"" Predator Compound Tube",1,1,Official and TSW names differ after normalization.
+Columbia,PDDM,PDDM,name_mismatch,Phantom DDM Sander,Columbia Phantom Dustless Drywall Sander,1,1,Official and TSW names differ after normalization.
+Columbia,PHMP,PHMP,name_mismatch,Predator Mud Pump,Columbia Predator Hot Mud Pump,1,1,Official and TSW names differ after normalization.
+Columbia,PMH,PMH,name_mismatch,"Predator Matrix Handle 40""-60""","Columbia 40""-58"" Predator Matrix Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,PMHL,PMHL,name_mismatch,"Predator Matrix Handle Long 56""-76""","Columbia 56""-76"" Predator Matrix Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,PMHS,PMHS,name_mismatch,"Predator Matrix Handle Short 29""-39""","Columbia 29""-39"" Predator Matrix Box Handle",1,1,Official and TSW names differ after normalization.
+Columbia,PTAPER,PTAPER,name_mismatch,Columbia Predator (Carbon Fiber) (53 inch length),Columbia Predator Carbon Fiber Automatic Taper,1,1,Official and TSW names differ after normalization.
+Columbia,PTS,PTS,name_mismatch,Predator Tactical Set,Columbia Predator Tactical Set,1,1,Official and TSW names differ after normalization.
+Columbia,SACS,SACS,name_mismatch,Commando Set,Columbia Semi Automatic Commando Set,1,1,Official and TSW names differ after normalization.
+Columbia,SAT,SAT,name_mismatch,Semi Automatic Taper,Columbia Semi Automatic Taper,1,1,Official and TSW names differ after normalization.
+Columbia,SPTAPER,SPTAPER,name_mismatch,Columbia Predator Sawed Off (Carbon Fiber) (39 inch length),Columbia Sawed Off Mini PREDATOR Automatic Taper,1,1,Official and TSW names differ after normalization.
+Columbia,STAPER,STAPER,name_mismatch,Columbia Sawed Off Taper (39 inch length),Columbia Sawed Off Mini Automatic Taper,1,1,Official and TSW names differ after normalization.
+Columbia,TAPER,TAPER,name_mismatch,Columbia Automatic Taper (53 inch length),Columbia Automatic Taper,1,1,Official and TSW names differ after normalization.
+Columbia,TBBF,TBBF,name_mismatch,Tall Boy Box Filler,Columbia Tall Boy Box Filler,1,1,Official and TSW names differ after normalization.
+Columbia,TBGN,TBGN,name_mismatch,Tall Boy Gooseneck,Columbia Tall Boy Gooseneck,1,1,Official and TSW names differ after normalization.
+Columbia,TBMP,TBMP,name_mismatch,Tall Boy Hot Mud Pump,Columbia Tall Boy Mud Pump,1,1,Official and TSW names differ after normalization.
+Columbia,TCS,TCS,name_mismatch,Columbia Gun Case,Columbia Semi Automatic Tool Case,1,1,Official and TSW names differ after normalization.
+Columbia,TL-3-8,TL38,name_mismatch,Twist Lock Handle w PHA,Columbia Twist Lock Extendable Handle 3' - 8',1,1,Official and TSW names differ after normalization.
+Columbia,TS,TS,name_mismatch,Tactical Set,Columbia Tactical Set,1,1,Official and TSW names differ after normalization.
+Columbia,TSB-10,TSB10,name_mismatch,"10"" Tomahawk","Columbia 10"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TSB-12,TSB12,name_mismatch,"12"" Tomahawk","Columbia 12"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TSB-14,TSB14,missing_in_tsw,"14"" Tomahawk",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,TSB-18,TSB18,name_mismatch,"18"" Tomahawk","Columbia 18"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TSB-24,TSB24,name_mismatch,"24"" Tomahawk","Columbia 24"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TSB-32,TSB32,name_mismatch,"32"" Tomahawk","Columbia 32"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TSB-40,TSB40,name_mismatch,"40"" Tomahawk","Columbia 40"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TSB-48,TSB48,missing_in_tsw,"48"" Tomahawk",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+Columbia,TSB-7,TSB7,name_mismatch,"7"" Tomahawk","Columbia 7"" Tomahawk Smoothing Blade",1,1,Official and TSW names differ after normalization.
+Columbia,TWS,TWS,name_mismatch,Warrior Set,Columbia Tomahawk Warrior Set,1,1,Official and TSW names differ after normalization.
+TapeTech,03TT,03TT,missing_in_tsw,EasyClean Automatic Mini-Taper,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,07TT,07TT,name_mismatch,EasyClean Automatic Taper,TapeTech EasyClean Automatic Taper,1,1,Official and TSW names differ after normalization.
+TapeTech,07TT-C,07TTC,name_mismatch,EasyClean Carbon Fiber Automatic Taper,CARBON FIBER EasyClean Automatic Taper,1,1,Official and TSW names differ after normalization.
+TapeTech,15TTE,15TTE,missing_in_tsw,Inside Corner Roller,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,16TT,16TT,name_mismatch,Outside Corner,16TT Mud Head,1,1,Official and TSW names differ after normalization.
+TapeTech,16TT90,16TT90,missing_in_tsw,Inside Corner,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,17TT,17TT,name_mismatch,Outside Corner Roller,TapeTech Outside Corner Roller,1,1,Official and TSW names differ after normalization.
+TapeTech,17TTE,17TTE,name_mismatch,Outside Corner Roller,TapeTech 17TTE Outside Corner Roller,1,1,Official and TSW names differ after normalization.
+TapeTech,40XTT,40XTT,name_mismatch,"2"" Corner Finisher","TapeTech 2"" Angle Head Drywall Corner Finisher - 40XTT",1,1,Official and TSW names differ after normalization.
+TapeTech,42TT,42TT,name_mismatch,"2.5"" Corner Finisher",2 1/2 in TapeTech 42TT Corner Finisher,1,1,Official and TSW names differ after normalization.
+TapeTech,48TT,48TT,name_mismatch,"3"" EasyRoll Adjustable Corner Finisher",3 in TapeTech EasyRoll Adjustable Corner Finisher,1,1,Official and TSW names differ after normalization.
+TapeTech,48XTT,48XTT,missing_in_tsw,"3.5"" EasyRoll Adjustable Corner Finisher",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,76TT,76TT,name_mismatch,EasyClean Pump,TapeTech EasyClean Loading Pump,1,1,Official and TSW names differ after normalization.
+TapeTech,76TT-CA,76TTCA,missing_in_tsw,EasyClean Pump,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,76XLTT,76XLTT,missing_in_tsw,Extra Long EasyClean Pump,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,8000TT-PA,8000TTPA,name_mismatch,Wizard Compact Finishing Box Handle for Power Assist,Wizard Handle for Power Assist,1,1,Official and TSW names differ after normalization.
+TapeTech,8034TT,8034TT,name_mismatch,"34"" Box Handle",34 in TapeTech Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,8042TT,8042TT,name_mismatch,"42"" Box Handle",42 in TapeTech Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,8054TT,8054TT,name_mismatch,"54"" Box Handle",54 in TapeTech Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,8072TT,8072TT,name_mismatch,"72"" Box Handle",72 in TapeTech Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,8134TT,8134TT,missing_in_tsw,"34"" EasyFinish Handle",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,8142TT,8142TT,name_mismatch,"42"" EasyFinish Handle",42 in TapeTech EasyFinish Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,8154TT,8154TT,missing_in_tsw,"54"" EasyFinish Handle",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,8172TT,8172TT,missing_in_tsw,"72"" EasyFinish Handle",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,85T,85T,missing_in_tsw,Gooseneck,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,85XLTT,85XLTT,name_mismatch,Gooseneck,Extra Long Gooseneck Adapter,1,1,Official and TSW names differ after normalization.
+TapeTech,88TTE,88TTE,name_mismatch,Box XTender Handle,41 in - 63 in TapeTech XTender Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,90T,90T,missing_in_tsw,Filler Adapter,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,ATX01TT,ATX01TT,missing_in_tsw,Automatic Taper Extension,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,BH,BH,name_mismatch,Brakeless Box Handle,TapeTech Brakeless Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,BHE,BHE,name_mismatch,Brakeless Box Handle (extendable),TapeTech Brakeless Extendable Finishing Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,BHE-SW,BHESW,name_mismatch,Rotational Brakeless Finishing Box Handle,TapeTech SideWinder Extendable Brakeless Box Handle,1,1,Official and TSW names differ after normalization.
+TapeTech,CA07TT,CA07TT,name_mismatch,"7"" Corner Applicator",7 in TapeTech Corner Applicator,1,1,Official and TSW names differ after normalization.
+TapeTech,CAA-TT,CAATT,missing_in_tsw,Corner Applicator Adapter,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CCAGE04,CCAGE04,missing_in_tsw,Roller Cage,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CCAGE09,CCAGE09,missing_in_tsw,Roller Cage,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CCAGE12,CCAGE12,missing_in_tsw,Roller Cage,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CFA-TT,CFATT,missing_in_tsw,Corner Finisher Adapter,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CH55TT,CH55TT,missing_in_tsw,Cove Applicator Head,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CH75TT,CH75TT,missing_in_tsw,Cove Applicator Head,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CH83TT,CH83TT,missing_in_tsw,Cove Applicator Head,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CH90TT,CH90TT,missing_in_tsw,Cove Applicator Head,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CK06CSTT,CK06CSTT,name_mismatch,"6"" Carbon Steel Clipped Joint Knife","TapeTech 6"" Carbon Steel Clipped Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,CROLL02,CROLL02,missing_in_tsw,Premium Compound Roller,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CROLL04,CROLL04,missing_in_tsw,Premium Compound Roller,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CROLL09,CROLL09,missing_in_tsw,Premium Compound Roller,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CROLL12,CROLL12,missing_in_tsw,Premium Compound Roller,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CROLLHAN2,CROLLHAN2,missing_in_tsw,Compound Roller Support Handle,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,CTADJUST-IN,CTADJUSTIN,missing_in_tsw,"3 3/4"" Adjustable Inside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EHC07,EHC07,missing_in_tsw,"7"" MaxxBox High Capacity Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EHC10,EHC10,missing_in_tsw,"10"" MaxxBox High Capacity Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EHC12,EHC12,missing_in_tsw,"12"" MaxxBox High Capacity Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EZ07TT,EZ07TT,missing_in_tsw,"7"" EasyClean Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EZ10TT,EZ10TT,missing_in_tsw,"10"" EasyClean Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EZ12TT,EZ12TT,missing_in_tsw,"12"" EasyClean Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,EZ15TT,EZ15TT,missing_in_tsw,"15"" EasyClean Box",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,FBH2642TT-CF,FBH2642TTCF,missing_in_tsw,Carbon Fiber Box Handle (extendable),,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,FBH4272TT-CF,FBH4272TTCF,missing_in_tsw,Carbon Fiber Box Handle (extendable),,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,FHTT,FHTT,missing_in_tsw,Fiberglass Handle,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,FHTT-CC,FHTTCC,name_mismatch,Closet Crusher Fiberglass Handle,"TapeTech Closet Crusher 18"" Support Handle",1,1,Official and TSW names differ after normalization.
+TapeTech,GSR-TT,GSRTT,name_mismatch,Gooseneck Riser,TapeTech Gooseneck Riser,1,1,Official and TSW names differ after normalization.
+TapeTech,HAWK001-PS,HAWK001PS,missing_in_tsw,"13"" x 13"" Aluminum Hawk",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,HAWK002-PS,HAWK002PS,missing_in_tsw,"13"" x 13"" Premium Anodized Hawk",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,JCT01TT,JCT01TT,name_mismatch,Jam Clearing Tool,TapeTech Jam Clearing Tool,1,1,Official and TSW names differ after normalization.
+TapeTech,JK01SSTT,JK01SSTT,name_mismatch,"1"" Stainless Steel Jointing Knife","TapeTech 1"" Premium Stainless Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK02SSTT,JK02SSTT,name_mismatch,"2"" Stainless Steel Jointing Knife","TapeTech 2"" Premium Stainless Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK03SSTT,JK03SSTT,name_mismatch,"3"" Stainless Steel Jointing Knife","TapeTech 3"" Premium Stainless Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK04CSTT,JK04CSTT,name_mismatch,"4"" Carbon Steel Jointing Knife","TapeTech 4"" Premium Carbon Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK04SSTT,JK04SSTT,name_mismatch,"4"" Stainless Steel Jointing Knife","TapeTech 4"" Premium Stainless Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK05SSTT,JK05SSTT,name_mismatch,"5"" Stainless Steel Jointing Knife","TapeTech 5"" Premium Stainless Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK06CSTT,JK06CSTT,name_mismatch,"6"" Carbon Steel Jointing Knife","TapeTech 6"" Premium Carbon Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK06SSTT,JK06SSTT,name_mismatch,"6"" Stainless Steel Jointing Knife","TapeTech 6"" Premium Stainless Steel Joint Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,JK125SSTT,JK125SSTT,missing_in_tsw,"1 1/4"" Stainless Steel Jointing Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,JK34SSTT,JK34SSTT,missing_in_tsw,"3/4"" Stainless Steel Jointing Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,JS01,JS01,name_mismatch,"6.5"" Carbon Steel Jab Saw",TapeTech 6.5″ Carbon Steel Jab Saw,1,1,Official and TSW names differ after normalization.
+TapeTech,MP12SSTT,MP12SSTT,missing_in_tsw,"12"" Stainless Steel Mud Pan",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,MP14SSTT,MP14SSTT,missing_in_tsw,"14"" Stainless Steel Mud Pan",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,MR01TT,MR01TT,name_mismatch,MudRunner Pro,TapeTech MudRunner Pro,1,1,Official and TSW names differ after normalization.
+TapeTech,MRX01TT,MRX01TT,missing_in_tsw,Extension,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,MT01TT,MT01TT,missing_in_tsw,9-in-1 Stainless Steel Multi-tool,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,NS02TT,NS02TT,missing_in_tsw,"2"" Nail Spotter",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,NS03TT,NS03TT,missing_in_tsw,"3"" Nail Spotter",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,NSA-TT,NSATT,name_mismatch,Nail Spotter Adapter,TapeTech Nail Spotter Adapter,1,1,Official and TSW names differ after normalization.
+TapeTech,NSW01,NSW01,missing_in_tsw,Nailspotter Wheel Kit,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,PAHC07,PAHC07,name_mismatch,"7"" Power Assist MaxxBox","7"" Power Assist MAXXBOX Finishing Box",1,1,Official and TSW names differ after normalization.
+TapeTech,PAHC10,PAHC10,missing_in_tsw,"10"" Power Assist MaxxBox",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,PAHC12,PAHC12,missing_in_tsw,"12"" Power Assist MaxxBox",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,PFK07TT,PFK07TT,name_mismatch,"7"" Wipedown Knife","TapeTech 7"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK12TT,PFK12TT,name_mismatch,"12"" Wipedown Knife","TapeTech 12"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK14TT,PFK14TT,name_mismatch,"14"" Finishing Knife","TapeTech 14"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK18TT,PFK18TT,name_mismatch,"18"" Finishing Knife","TapeTech 18"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK24TT,PFK24TT,name_mismatch,"24"" Finishing Knife","TapeTech 24"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK32TT,PFK32TT,name_mismatch,"32"" Finishing Knife","TapeTech 32"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK40TT,PFK40TT,name_mismatch,"40"" Finishing Knife","TapeTech 40"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFK48TT,PFK48TT,name_mismatch,"48"" Finishing Knife","TapeTech 48"" Premium Finishing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PFKHATT,PFKHATT,name_mismatch,Handle Adapter,Tapetech Premium Finishing Handle Adapter,1,1,Official and TSW names differ after normalization.
+TapeTech,PK35CSTT,PK35CSTT,name_mismatch,"3 1/2"" Carbon Steel Pointed Knife","TapeTech 3.5"" Carbon Steel Pointing Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,PKL001,PKL001,missing_in_tsw,Pocket Kicker Lift Tool,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,PMP001,PMP001,missing_in_tsw,"30"" Premium Mixing Paddle",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,QB06-QSX,QB06QSX,name_mismatch,"6.5"" QuickBox Finishing Box","QuickBox QSX - 6.5""",1,1,Official and TSW names differ after normalization.
+TapeTech,QB08-QSX,QB08QSX,name_mismatch,"8.5"" QuickBox Finishing Box","QuickBox QSX - 8.5""",1,1,Official and TSW names differ after normalization.
+TapeTech,RTC20TT,RTC20TT,missing_in_tsw,"20"" Radius Trowel - Curved",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,RTC26TT,RTC26TT,missing_in_tsw,"26"" Radius Trowel - Curved",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,RTS20TT,RTS20TT,name_mismatch,"20"" Radius Trowel - Straight",TapeTech 20” Radius Trowel – Straight,1,1,Official and TSW names differ after normalization.
+TapeTech,RTS26TT,RTS26TT,name_mismatch,"26"" Radius Trowel - Straight",TapeTech 26” Radius Trowel – Straight,1,1,Official and TSW names differ after normalization.
+TapeTech,SCP02,SCP02,missing_in_tsw,"6.5"" Bucket Scoop",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG110565-GS,TG110565GS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG12053-PS,TG12053PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG120565-CY,TG120565CY,missing_in_tsw,"12"" Curry-Style Finishing Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG120565-GS,TG120565GS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG120565-PSCU,TG120565PSCU,missing_in_tsw,Premium Gold Curved Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG120565-SQ,TG120565SQ,missing_in_tsw,Premium Gold Square Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG14053-PS,TG14053PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG14054-PS,TG14054PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG140565-CY,TG140565CY,missing_in_tsw,"14"" Curry-Style Finishing Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG140565-GS,TG140565GS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG140565-PSCU,TG140565PSCU,missing_in_tsw,Premium Gold Curved Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG140565-SQ,TG140565SQ,missing_in_tsw,Premium Gold Square Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG16053-PS,TG16053PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG16054-PS,TG16054PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG160565-GS,TG160565GS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG18053-PS,TG18053PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG18054-PS,TG18054PS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TG180565-GS,TG180565GS,missing_in_tsw,Premium Gold Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TGP120565-PS,TGP120565PS,missing_in_tsw,Premium Gold Pool Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TGP140565-PS,TGP140565PS,missing_in_tsw,Premium Gold Pool Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TGP160565-PS,TGP160565PS,missing_in_tsw,Premium Gold Pool Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TGP180565-PS,TGP180565PS,missing_in_tsw,Premium Gold Pool Trowel,,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TK08BSTT,TK08BSTT,name_mismatch,"8"" Blue Steel Taping Knife","TapeTech 8"" Premium Blue Steel Taping Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,TK08SSTT,TK08SSTT,name_mismatch,"8"" Stainless Steel Taping Knife","TapeTech 8"" Premium Stainless Steel Taping Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,TK10BSTT,TK10BSTT,name_mismatch,"10"" Blue Steel Taping Knife","TapeTech 10"" Premium Blue Steel Taping Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,TK10SSTT,TK10SSTT,name_mismatch,"10"" Stainless Steel Taping Knife","TapeTech 10"" Premium Stainless Steel Taping Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,TK12BSTT,TK12BSTT,missing_in_tsw,"12"" Blue Steel Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TK12SSTT,TK12SSTT,name_mismatch,"12"" Stainless Steel Taping Knife","TapeTech 12"" Premium Stainless Steel Taping Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,TK14BSTT,TK14BSTT,missing_in_tsw,"14"" Blue Steel Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TK14SSTT,TK14SSTT,name_mismatch,"14"" Stainless Steel Taping Knife","TapeTech 14"" Premium Stainless Steel Taping Knife",1,1,Official and TSW names differ after normalization.
+TapeTech,TKOS08BSTT,TKOS08BSTT,missing_in_tsw,"8"" Blue Steel Offset Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TKOS10BSTT,TKOS10BSTT,missing_in_tsw,"10"" Blue Steel Offset Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TKOS12BSTT,TKOS12BSTT,missing_in_tsw,"12"" Blue Steel Offset Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TKOS14BSTT,TKOS14BSTT,missing_in_tsw,"14"" Blue Steel Offset Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,TKOS16BSTT,TKOS16BSTT,missing_in_tsw,"16"" Blue Steel Offset Taping Knife",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VEX11075,VEX11075,missing_in_tsw,"3"" Stainless Steel Outside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VEX4030,VEX4030,missing_in_tsw,"1 3/16"" Stainless Steel Outside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VEX8025,VEX8025,missing_in_tsw,"1"" Stainless Steel Outside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VEX8060,VEX8060,missing_in_tsw,"2 3/8"" Stainless Steel Outside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VIN11075,VIN11075,missing_in_tsw,"3"" Stainless Steel Inside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VIN4030,VIN4030,missing_in_tsw,"1 3/16"" Stainless Steel Inside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VIN8025,VIN8025,missing_in_tsw,"1"" Stainless Steel Inside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,VIN8060,VIN8060,missing_in_tsw,"2 3/8"" Stainless Steel Inside Corner Trowel",,1,0,Official launch candidate SKU not found in TSW listing by normalized SKU.
+TapeTech,XHTT,XHTT,name_mismatch,Extension Handle,TapeTech Extension Handle,1,1,Official and TSW names differ after normalization.
+Columbia,,10ITFB,extra_in_tsw,,"Columbia 10"" Inside Track Fat Boy Flat Box",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,12ITFB,extra_in_tsw,,"Columbia 12"" Inside Track Fat Boy Flat Box",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,3BBH,extra_in_tsw,,"Columbia 36"" 180-Grip Bent Flat Box Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,42BBH,extra_in_tsw,,"Columbia 42"" 180-Grip Bent Flat Box Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,4BBH,extra_in_tsw,,"Columbia 48"" 180-Grip Bent Flat Box Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,5BBH,extra_in_tsw,,"Columbia 60"" 180-Grip Bent Flat Box Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,6BBH,extra_in_tsw,,"Columbia 72"" 180-Grip Bent Flat Box Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,8ITFB,extra_in_tsw,,"Columbia 8"" Inside Track Fat Boy Flat Box",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH32,extra_in_tsw,,"Columbia 2"" Angle Head Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH325,extra_in_tsw,,"Columbia 2.5"" Angle Head Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH33,extra_in_tsw,,"Columbia 3"" Angle Head Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH335,extra_in_tsw,,"Columbia 3.5"" Angle Head Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH4,extra_in_tsw,,Columbia Angle Head Side Blade,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH6A,extra_in_tsw,,Columbia Angle Head Ball Holder Release Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH72,extra_in_tsw,,"Columbia 2"" Angle Head Frame Tension Spring",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH725,extra_in_tsw,,"Columbia 2.5"" Angle Head Frame Tension Spring",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH73,extra_in_tsw,,"Columbia 3"" Angle Head Tension Spring",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH735,extra_in_tsw,,"Columbia 3.5"" Angle Head Frame Tension Spring",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH8,extra_in_tsw,,Columbia Angle Head Retainer Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AH9,extra_in_tsw,,Columbia Angle Head Retainer Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AHRBK2,extra_in_tsw,,"Columbia 2"" Anglehead Blade Maintenance Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AHRBK25,extra_in_tsw,,"Columbia 2.5"" Anglehead Blade Maintenance Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AHRBK3,extra_in_tsw,,"Columbia 3"" Anglehead Blade Maintenance Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,AHRBK35,extra_in_tsw,,"Columbia 3.5"" Anglehead Blade Maintenance Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,BH06,extra_in_tsw,,Columbia Box Handle Hinge Pin (180 Grip),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,BH07,extra_in_tsw,,Columbia Box Handle Cam Follower,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,BH1,extra_in_tsw,,Columbia Mounting Plate (180 Grip),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,BH2,extra_in_tsw,,Columbia Box Handle Plate (180 Grip),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,BH4,extra_in_tsw,,Columbia Lower Brake Lever,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,BH5,extra_in_tsw,,Columbia Upper Mounting Bracket (180 Grip),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,C12MPX6,extra_in_tsw,,"Columbia 12"" Stainless Steel Mud Pan",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,C14MPX6,extra_in_tsw,,"Columbia 14"" Stainless Steel Mud Pan",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CF1B,extra_in_tsw,,Columbia Direct Plate - Flusher,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CF4L,extra_in_tsw,,Columbia Ball Spring Long Flusher,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB15,extra_in_tsw,,Columbia Door Hinge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB16,extra_in_tsw,,Columbia Nylatron Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB1A,extra_in_tsw,,Columbia Hinge Seal,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB28,extra_in_tsw,,"Columbia 8"" Roll Face",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB47,extra_in_tsw,,"Columbia 7"" Pressure Door",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB48,extra_in_tsw,,"Columbia 8"" Pressure Door",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB6,extra_in_tsw,,Columbia Mud Supply Valve Unit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB77,extra_in_tsw,,"Columbia 7"" Angle Box Door Gasket",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB78,extra_in_tsw,,"Columbia 8"" Door Gasket for Angle Box",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB8,extra_in_tsw,,Columbia Handle Mount Casting,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CFB8A,extra_in_tsw,,Columbia ONE Angle Box Door Adaptor,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CLTBF,extra_in_tsw,,Columbia Compound Tube Box Filler,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CPFGN,extra_in_tsw,,Columbia Graco Powerfill Gooseneck,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CPFP,extra_in_tsw,,Columbia X Graco PowerFill 3.5 Loading Pump,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CR12,extra_in_tsw,,Columbia Swivel Coupling Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CR6,extra_in_tsw,,Columbia Handle Mounting Swivel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CRA2,extra_in_tsw,,Corner Roller Wheel Maintenance Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT1,extra_in_tsw,,Columbia Taper Head Casting,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT10,extra_in_tsw,,Columbia Taper Crimping Arm Bushing Right,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT103,extra_in_tsw,,Columbia Taper Barrel Main Body,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT105,extra_in_tsw,,Columbia Taper Crimper Lever,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT106,extra_in_tsw,,Columbia Taper Bearing Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT107,extra_in_tsw,,Columbia Taper Piston Body,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT109,extra_in_tsw,,Columbia Taper Cable Retaining Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT10A,extra_in_tsw,,Columbia Taper Crimping Arm Bushing Left,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT11,extra_in_tsw,,Columbia Taper Mud Guard Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT111,extra_in_tsw,,Columbia Taper Piston Cup,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT112,extra_in_tsw,,Columbia Taper Connecting Stud,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT113,extra_in_tsw,,Columbia Taper Lock Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT115,extra_in_tsw,,Columbia Taper Guard Ring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT115A,extra_in_tsw,,Columbia Taper Gasket New Style End Ring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT116A,extra_in_tsw,,Columbia Taper Strap,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT118A,extra_in_tsw,,Columbia Retaining Quick Release Spring Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT119,extra_in_tsw,,Columbia Spool Retaining Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT12,extra_in_tsw,,Columbia Taper Tape Advance Release Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT120,extra_in_tsw,,Columbia Taper Tape Spool w/ Tension Adjuster,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT122A,extra_in_tsw,,Columbia Taper Strap,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT123,extra_in_tsw,,Columbia Retaining Quick Release Spring Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT125,extra_in_tsw,,Columbia Taper Roller,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT125A,extra_in_tsw,,Columbia Taper Bearing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT127,extra_in_tsw,,Columbia Taper Extension Shaft Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT128A,extra_in_tsw,,Columbia Taper Shaft Guide Roller Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT129B,extra_in_tsw,,Columbia Taper Plastic Roller Sleeve,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT130,extra_in_tsw,,Columbia Taper Extension Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT14A,extra_in_tsw,,Columbia Taper Adjustable Brake,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT17,extra_in_tsw,,Columbia Taper Separation Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT19,extra_in_tsw,,Columbia Taper Paper Feed Guide,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT2,extra_in_tsw,,Columbia Taper Insert Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT20,extra_in_tsw,,Columbia Taper Hinge Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT22,extra_in_tsw,,Columbia Taper Brass Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT23,extra_in_tsw,,Columbia Taper Reinforcing Rod,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT25,extra_in_tsw,,Columbia Taper Knife Guide Square Tube,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT26,extra_in_tsw,,Columbia Taper Knife Guide Right Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT27,extra_in_tsw,,Columbia Taper Knife Guide Left Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT28,extra_in_tsw,,Columbia Taper Roller Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT29,extra_in_tsw,,Columbia Taper Nylatron Chain Roller,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT29A,extra_in_tsw,,Columbia Taper Nylatron Chain Roller (Left),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT31,extra_in_tsw,,Columbia Taper Chain Tension & Guide Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT34R,extra_in_tsw,,Columbia Removable Cover Plate Attachment Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT35,extra_in_tsw,,Columbia Taper Cap Reinforcing Tab,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT36,extra_in_tsw,,Columbia Taper Return Spring Tube,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT37,extra_in_tsw,,Columbia Taper Tube Holding Bracket Upper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT38,extra_in_tsw,,Columbia Taper Tube Holding Bracket Lower,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT39,extra_in_tsw,,Columbia Taper Knife Return Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT41,extra_in_tsw,,Columbia Taper Cutter Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT43,extra_in_tsw,,Columbia Taper Micro Chain,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT45,extra_in_tsw,,Columbia Taper Connecting Rod (Includes CT46 Stop),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT47,extra_in_tsw,,Columbia Taper Crimping Wheel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT48,extra_in_tsw,,Columbia Taper Crimping Arm Left,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT49,extra_in_tsw,,Columbia Taper Crimping Arm Right,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT5,extra_in_tsw,,Columbia Taper Right Wafer Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT50,extra_in_tsw,,Columbia Taper Crimping Wheel Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT51,extra_in_tsw,,Columbia Taper Spacer Bar,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT53,extra_in_tsw,,Columbia Taper Toe Kicker,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT57,extra_in_tsw,,Columbia Taper Tape Advance Carriage,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT58,extra_in_tsw,,Columbia Taper Guide Rod Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT6,extra_in_tsw,,Columbia Taper Side Plate Right,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT64,extra_in_tsw,,Columbia Taper Needle Return Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT65,extra_in_tsw,,Columbia Taper Needle Return Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT67,extra_in_tsw,,Columbia Taper Ratchet Gear,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT68,extra_in_tsw,,Columbia Taper Hub,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT6A,extra_in_tsw,,Columbia Taper Side Plate Left,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT7,extra_in_tsw,,Columbia Taper Side Plate Support Left,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT71,extra_in_tsw,,Columbia Taper Drive Sprocket Small,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT73,extra_in_tsw,,Columbia Taper Cable Drum,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT77,extra_in_tsw,,Columbia Taper Drive Sprocket Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT78,extra_in_tsw,,Columbia Taper Drive Chain,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT79,extra_in_tsw,,Columbia Taper Hollow Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT7A,extra_in_tsw,,Columbia Taper Side Plate Hub,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT8,extra_in_tsw,,Columbia Taper Side Plate Support Right,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT81,extra_in_tsw,,Columbia Taper Clutch Return Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT85,extra_in_tsw,,Columbia Taper Clutch Release Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT86,extra_in_tsw,,Columbia Taper Toe Kicker Cable,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT87A,extra_in_tsw,,Columbia Taper Bracket Base,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT87CS,extra_in_tsw,,Columbia Cover Plate Cork Seal,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT88,extra_in_tsw,,Columbia Taper Clutch Release Rod,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT89,extra_in_tsw,,Columbia Taper Release Rod Sleeve,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT92,extra_in_tsw,,Columbia Taper Release Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT92A,extra_in_tsw,,Columbia Taper L Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT93,extra_in_tsw,,Columbia Taper Mud Shut Off Lever Arm,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT94,extra_in_tsw,,Columbia Taper Mud Shut Off Upper Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT95,extra_in_tsw,,Columbia Taper Control Valve,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT96,extra_in_tsw,,Columbia Taper Mud Shut Off Gasket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT97,extra_in_tsw,,Columbia Taper Mud Supply Valve Body,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CT98,extra_in_tsw,,Columbia Taper Mud Supply Seal Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA107,extra_in_tsw,,Columbia Piston Assembly for Taper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA13,extra_in_tsw,,Columbia Taper Dog Base Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA41,extra_in_tsw,,Columbia Taper Cutter Block Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA59,extra_in_tsw,,Columbia Taper Magnet,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA84,extra_in_tsw,,Columbia Cable Pulley Guide,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA87CL,extra_in_tsw,,Columbia Cover Plate Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTA99,extra_in_tsw,,Columbia Removable Cover Plate Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTK10,extra_in_tsw,,Key Features:,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTK12,extra_in_tsw,,Key Features:,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTK14,extra_in_tsw,,Key Features:,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTK8,extra_in_tsw,,Key Features:,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTR1,extra_in_tsw,,Columbia Taper Maintenance Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTR42A,extra_in_tsw,,Columbia Taper Blades Maintenance Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,CTR72,extra_in_tsw,,Columbia Taper Cables Kit-3 per pack,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA201,extra_in_tsw,,"Columbia 1/16"" X 3/8"" Split Pin",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA208,extra_in_tsw,,"Columbia 4-40 x 1/8"" Binder Slot",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA215,extra_in_tsw,,Columbia 4-40 x 5/16 Binder Slot,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA220,extra_in_tsw,,"Columbia 4-40 X 3/4"" Bind Head Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA222,extra_in_tsw,,"Columbia 5-40 X 3/8"" Bind Head Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA224,extra_in_tsw,,"Columbia 1/8"" X 3/8"" Split Pin",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA225,extra_in_tsw,,"Columbia 1/8"" X 3/8"" Special Washer",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA231,extra_in_tsw,,"Columbia #6 X 3/8"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA232,extra_in_tsw,,Columbia 6-32 Hex Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA234,extra_in_tsw,,Columbia 6-32 Nyloc Jam Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA245,extra_in_tsw,,"Columbia 6-32 X 1/2"" Fill. Head Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA247,extra_in_tsw,,"Columbia 6-32 X 5/8"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA252,extra_in_tsw,,Columbia #8 Star Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA253,extra_in_tsw,,Columbia #8 Flat Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA256,extra_in_tsw,,"Columbia 8-32 x 3/16"" Pan Slot SS Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA261,extra_in_tsw,,"Columbia 8-32 X 3/8"" Socket Hd Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA262,extra_in_tsw,,"Columbia 8-32 X 1/2"" Socket Hd. Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA266,extra_in_tsw,,"Columbia 8-32 X 1"" Flat Head Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA267,extra_in_tsw,,"Columbia 8-32 X 1/2"" Pan Head Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA268,extra_in_tsw,,Columbia #10 Flat Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA270,extra_in_tsw,,"Columbia #10 X 3/4"" Fender Washer",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA273,extra_in_tsw,,"Columbia 10-24 X 1"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA274,extra_in_tsw,,"Columbia 10-24 X 3/8"" Socket Hd Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA275,extra_in_tsw,,"Columbia 10-24 X 3/4"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA276,extra_in_tsw,,Columbia 10-24 X 7/8 Pan Head Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA278,extra_in_tsw,,Columbia #8 Belleville Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA279,extra_in_tsw,,Columbia 10-24 X 1-1/4in Hex Bolt,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA280,extra_in_tsw,,Columbia #10 Belleville Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA281,extra_in_tsw,,Columbia 10-32 X Nyloc Jam Nut-2 per pack,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA285,extra_in_tsw,,"Columbia 1/4"" Plastic Washer",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA289,extra_in_tsw,,"Columbia Split Pin 1/4"" X 2""",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA290,extra_in_tsw,,Columbia 1/4-20 Nyloc Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA292,extra_in_tsw,,Columbia 1/4-20 Nyloc Jam Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA294,extra_in_tsw,,"Columbia 1/4-20 X 3/8"" Socket Hd Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA295,extra_in_tsw,,"Columbia 1/4-20 X 1/2"" Flat Socket",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA296,extra_in_tsw,,"Columbia 1/4-20 X 1/2"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA298,extra_in_tsw,,"Columbia 1/4-20 X 7/8"" Flat Socket",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA300,extra_in_tsw,,"Columbia 1/4-20 X 2"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA302,extra_in_tsw,,"Columbia 1/4-28 X 1/4"" Set Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA305,extra_in_tsw,,"Columbia 5/16-18 X 3/4"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA306,extra_in_tsw,,"Columbia 5/16-18 X 1-1/4"" Hex Bolt",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA308,extra_in_tsw,,"Columbia 33/64 X 7/8"" Flat Washer",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA312,extra_in_tsw,,"Columbia 10-24 X 1/4"" Set Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA314,extra_in_tsw,,Columbia 10-24 X 1-1/2 Pan Slot,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA379,extra_in_tsw,,"Columbia 1/4"" E-Clip for Matrix Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FA380,extra_in_tsw,,"Columbia 1/8"" E-Clip for Matrix Handle",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FFB17,extra_in_tsw,,Columbia Door Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,FFB43,extra_in_tsw,,Columbia Bead Wheel Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,MH17,extra_in_tsw,,Columbia Matrix Pinch Brake,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,MH21,extra_in_tsw,,Columbia Matrix Grip Adjuster Housing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,MH24,extra_in_tsw,,Columbia Matrix Pinch Brake Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,MH25,extra_in_tsw,,Columbia Matrix Pinch Brake Stem,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,MH9,extra_in_tsw,,CTTMH9,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,MPR1,extra_in_tsw,,Columbia Mud Pump Maintenance Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,PHA,extra_in_tsw,,Columbia Aluminum Coarse Thread Adapter,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SB212,extra_in_tsw,,"Columbia Replacement 12"" Blade for Tomahawk",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SB214,extra_in_tsw,,"Columbia Replacement 14"" Blade for Tomahawk",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SB218,extra_in_tsw,,"Columbia Replacement 18"" Blade for Tomahawk",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SB224,extra_in_tsw,,"Columbia Replacement 24"" Blade for Tomahawk",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SB232,extra_in_tsw,,"Columbia Replacement 32"" Blade for Tomahawk",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SB27,extra_in_tsw,,"Columbia Replacement 7"" Blade for Tomahawk",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SBC,extra_in_tsw,,Columbia Sabre Smoothing Blade Claw Adapter,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SBP,extra_in_tsw,,"Columbia 41-75"" Sabre Smoothing Blade Extension Pole",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SBSET,extra_in_tsw,,Columbia Sabre Set,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB10,extra_in_tsw,,"Columbia 10"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB12,extra_in_tsw,,"Columbia 12"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB14,extra_in_tsw,,"Columbia 14"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB16,extra_in_tsw,,"Columbia 16"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB18,extra_in_tsw,,"Columbia 18"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB24,extra_in_tsw,,"Columbia 24"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB32,extra_in_tsw,,"Columbia 32"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB40,extra_in_tsw,,"Columbia 40"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB48,extra_in_tsw,,"Columbia 48"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,SSB7,extra_in_tsw,,"Columbia 7"" Sabre Smoothing Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+Columbia,,TBPTAPER,extra_in_tsw,,Columbia Tall Boy Predator Automatic Taper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050019,extra_in_tsw,,TapeTech Disengaging Cam,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050023F,extra_in_tsw,,Spacer Bar,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050027,extra_in_tsw,,TapeTech 04TT Automatic Taper Replacement Needle Holder Lock,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050034F,extra_in_tsw,,Disengaging Rod,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050041F,extra_in_tsw,,Disengaging Rod Bearing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050043F,extra_in_tsw,,Anvil,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050058,extra_in_tsw,,TapeTech Control Valve,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050063,extra_in_tsw,,Cut Off Cover,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050064F,extra_in_tsw,,Automatic Taper Valve,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050070F,extra_in_tsw,,Axle Creaser Wheel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050073,extra_in_tsw,,TapeTech Automatic Taper Creaser Wheel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050083F,extra_in_tsw,,Cable Drum,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050086F,extra_in_tsw,,Bushing Head,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050109F,extra_in_tsw,,Automatic Taper Hub,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050110F,extra_in_tsw,,Driver Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050113F,extra_in_tsw,,Cutter Block Tube,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050123,extra_in_tsw,,Related Products,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050128F,extra_in_tsw,,Chain Roller Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050132F,extra_in_tsw,,TapeTech Cut-Off Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050141,extra_in_tsw,,Left Chain Support,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050145,extra_in_tsw,,TapeTech Creaser Chain,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050150F,extra_in_tsw,,TapeTech Hub,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050152F,extra_in_tsw,,Spacer Rod,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050154,extra_in_tsw,,Bearing Bracket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050163,extra_in_tsw,,TapeTech Main Chain Guide,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050200,extra_in_tsw,,TapeTech Plastic Piston,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050204,extra_in_tsw,,Cup Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050205,extra_in_tsw,,"Hex Head Cup Bolt 1/4-20X3 /4""",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050212F,extra_in_tsw,,TapeTech Lock Block for 07TT,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050215,extra_in_tsw,,Control Tuber Roller,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050249,extra_in_tsw,,TapeTech Creaser Connector,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050251F,extra_in_tsw,,Tube Protector,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050405B,extra_in_tsw,,Keeper Axle - Black,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050410B,extra_in_tsw,,TapeTech Control Tube Flange - Black,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050412,extra_in_tsw,,TapeTech Wheel Keeper Wire Form,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050413,extra_in_tsw,,TapeTech Control Tube Wheel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,0504186,extra_in_tsw,,Roller Axle - 6 Pack,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,050500,extra_in_tsw,,TapeTech Brake Roller,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,051105,extra_in_tsw,,Side Plate- Stainless Steel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,051408B,extra_in_tsw,,Black Slotted Spool Post,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052052,extra_in_tsw,,TapeTech Lock for 07TT,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052121F,extra_in_tsw,,Driver Shaft,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052125,extra_in_tsw,,Sprocket Driver,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,0521496,extra_in_tsw,,Sprocket Bushing [6],0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052150,extra_in_tsw,,Brake Adjuster,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052214,extra_in_tsw,,WHEEL ENCLOSURE,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052403,extra_in_tsw,,PLUNGER STOP LOCKING STRAP,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052404B,extra_in_tsw,,Keeper Yoke,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052407B,extra_in_tsw,,TapeTech Keeper Tube Cradle,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052409,extra_in_tsw,,TapeTech Keeper Wireform,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,052576,extra_in_tsw,,Brake Spring Mount,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054028,extra_in_tsw,,Gooser Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054032F,extra_in_tsw,,Push Rod Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054059F,extra_in_tsw,,Filler Tube Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054075,extra_in_tsw,,Tape Runner Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054095F,extra_in_tsw,,Long Creaser Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054096F,extra_in_tsw,,Short Creaser Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054101,extra_in_tsw,,TapeTech Tape Guide Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054104,extra_in_tsw,,Tape Runner Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054110F,extra_in_tsw,,Shaft Drive Assembly - Includes Sprocket,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054111F,extra_in_tsw,,TapeTech Gooser Guide Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054116F,extra_in_tsw,,Drive Dog Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054118F,extra_in_tsw,,Drive Dog Holder Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,054245F,extra_in_tsw,,TapeTech Trigger Assembly for Taper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,055007,extra_in_tsw,,Tape Tech Automatic Taper Locking Roller Assembly Brake Part #055007,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,056135,extra_in_tsw,,TapeTech Stainless Steel Cutter Chain Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,056142F,extra_in_tsw,,Cutter Chain,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,056248G,extra_in_tsw,,Gold Taper Tube,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,056707,extra_in_tsw,,TapeTech Bazooka Oil Aerosol Spray 8oz,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,057356,extra_in_tsw,,Pump Tube Cleaning Brush,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,058126F,extra_in_tsw,,TapeTech Automatic Taper Stainless Steel Drive Chain,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059005,extra_in_tsw,,4-40 Hex S.S. Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059013,extra_in_tsw,,Screw 6-32 X 5/16 Rd.,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059024,extra_in_tsw,,.15 Chain Keeper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059029,extra_in_tsw,,Screw 6-32 X 5/8 Fl.,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059038,extra_in_tsw,,#4 TapeTech Medium Spring Lockwasher,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059040,extra_in_tsw,,O Ring 568-006 Buna,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059044,extra_in_tsw,,Insert,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059060,extra_in_tsw,,"Stopnut 3-48 Hex., Nyloc SST",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059061F,extra_in_tsw,,Valve Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059067,extra_in_tsw,,Key Ring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059091,extra_in_tsw,,"6-32 X 1/2"" Fillister Head Sst Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059092,extra_in_tsw,,"8-32"" x 1-1/2"" Round Head Screw SST",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059098,extra_in_tsw,,"Shim, Side Plate",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059107,extra_in_tsw,,1/4 in x 6-32 TapeTech Stainless Steel Flat Head Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059117,extra_in_tsw,,"Screw Self Tap #8 x5/16""",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059119,extra_in_tsw,,Drive Dog Holder Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059120,extra_in_tsw,,"Axle, Drive Dog",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059129,extra_in_tsw,,Cutter Block Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059161,extra_in_tsw,,"4-40 X 3/8"" Fillister Head Sst Screw +",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059201,extra_in_tsw,,Screw 5-40 X 3/4 RD Head SST,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,059217,extra_in_tsw,,"4-40 X 3/8"" BIND HEADSST SCREW",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,140002C,extra_in_tsw,,MudRunner Main Tube,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,140003,extra_in_tsw,,Tube Cap,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,142001,extra_in_tsw,,Tube Only for Mudrunner,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,149021,extra_in_tsw,,TapeTech Round Lip U-Cup,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,149028,extra_in_tsw,,Nylon Bushing #6,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,149032,extra_in_tsw,,"O-Ring, Buna, 2-230",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,149120,extra_in_tsw,,Tapetech Threaded Gas Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,14TT,extra_in_tsw,,TapeTech MudRunner,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,151005,extra_in_tsw,,Wheel Angle Roller Roller,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,151011,extra_in_tsw,,Inner Roller,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,152006,extra_in_tsw,,Corner Roller Stud,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,159023,extra_in_tsw,,Nylon Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,159024,extra_in_tsw,,External Retaining Ring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,159026,extra_in_tsw,,Long Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,159027,extra_in_tsw,,"Washer 3/8"" OD 3/16"" IDSST",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,179009,extra_in_tsw,,Nyliner Type 6,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,190002,extra_in_tsw,,Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,190034,extra_in_tsw,,Coupler,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,196003,extra_in_tsw,,TapeTech Hinge Casting Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,200,extra_in_tsw,,Gooser Assembly Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,200052F,extra_in_tsw,,Finishing Box Shoulder Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,202020,extra_in_tsw,,Spring Anchor,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,202028,extra_in_tsw,,TapeTech Flat Box Threaded Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,202036,extra_in_tsw,,Shoulder Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,203010,extra_in_tsw,,7 & 10 Inch Crown Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,204002,extra_in_tsw,,"7"" BLADE HOLDER ASSEMBLY",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,209046,extra_in_tsw,,TapeTech Flat Box Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,209047,extra_in_tsw,,Flat Box Nyliner Bearing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,209050,extra_in_tsw,,Box Screw 209050,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,209058,extra_in_tsw,,6-32 Brass Nut,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,210024F,extra_in_tsw,,"7"" Wiper For Power Assist ECH/TTEC Boxes",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,210058F,extra_in_tsw,,TapeTech Latch,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,210059,extra_in_tsw,,Shoulder Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,212086,extra_in_tsw,,Power Assist Hook,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,213051,extra_in_tsw,,"Box Wheel, side guide",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,215,extra_in_tsw,,Drive Dog Assembly Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,219091,extra_in_tsw,,Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,219092,extra_in_tsw,,"4-40 X 1"" Bind Head Screw",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,219095,extra_in_tsw,,#4 NYLON FLAT WASHER,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,250009,extra_in_tsw,,"10"" Shim",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,250026F,extra_in_tsw,,"New Wiper One Piece For 10"" Flat Box",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,250040F,extra_in_tsw,,"10"" Tie Rod",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,251023G,extra_in_tsw,,Side Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,251025G,extra_in_tsw,,Side Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,254002,extra_in_tsw,,"10"" Box Blade Holder Assembly",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,254005,extra_in_tsw,,"TapeTech 10"" Clamp Assembly",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,256027G,extra_in_tsw,,"TapeTech 10"" Gold Pressure Plate",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,260024F,extra_in_tsw,,"10"" Wiper",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,300009,extra_in_tsw,,"12"" Shim",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,300026F,extra_in_tsw,,12 in TapeTech Flat Box Wiper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,300040F,extra_in_tsw,,"12"" Tie Rod",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,304002,extra_in_tsw,,"12"" Box Blade Holder",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,306027G,extra_in_tsw,,"TapeTech 12"" Pressure Plate (Gold)",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,310024F,extra_in_tsw,,"12"" Viton Wiper",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,310051F,extra_in_tsw,,TapeTech Flat Box Wheel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,310071,extra_in_tsw,,"TapeTech 12"" Spacer Rod",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,310096,extra_in_tsw,,"12"" SEAL",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,335,extra_in_tsw,,Piston Assembly Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,340,extra_in_tsw,,Cutter Chain Assembly Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,340001,extra_in_tsw,,"15"" Stainless Steel Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,350008,extra_in_tsw,,"8"" Wiper Set",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,350033F,extra_in_tsw,,Seal Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,400009F,extra_in_tsw,,Carbide Blade,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,402002F,extra_in_tsw,,4800 Spring Retainer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,402006,extra_in_tsw,,Insert Socket For Angle Heads,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,402012,extra_in_tsw,,Ball Retainer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,402017F,extra_in_tsw,,Center Clip (Short),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,402033,extra_in_tsw,,Ball Coupling,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,4090136,extra_in_tsw,,4-40 X 1/8 Socket Head SST Setscrew (6),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,411003,extra_in_tsw,,Tape Tech Part 411003,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,420009,extra_in_tsw,,"Blade, Carbide, 2.5""",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,450009F,extra_in_tsw,,"3"" Angle Head Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,480002F,extra_in_tsw,,4040 Wear Pad,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,480005,extra_in_tsw,,Outside Tension Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,480021,extra_in_tsw,,Inside Tension Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,480027,extra_in_tsw,,Wheel Bushing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,480209,extra_in_tsw,,"3-1/2"" Angle Head Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,486001F,extra_in_tsw,,"3"" Easy Roll Head Casting",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,499024,extra_in_tsw,,Washer - .188Id X,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,500028,extra_in_tsw,,7 in TapeTech Wiper,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501A,extra_in_tsw,,TapeTech Taper Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501C10,extra_in_tsw,,10 in TapeTech Flat Box Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501C12,extra_in_tsw,,12 in TapeTech Flat Box Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501C15,extra_in_tsw,,"TapeTech 15"" EZ15 Wear Parts Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501C7,extra_in_tsw,,7 in TapeTech Flat Box Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501F25A,extra_in_tsw,,"2.5"" Corner Finisher Maintenance Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501F2A,extra_in_tsw,,2 in TapeTech Corner Finisher Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501F3A,extra_in_tsw,,3 in TapeTech Corner Finisher Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501F4A,extra_in_tsw,,3 in TapeTech EZ Roll Adjustable Corner Finisher Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501H,extra_in_tsw,,TapeTech #1 Pump Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501J,extra_in_tsw,,Pump Maintenance Kit for 76TT,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,501RSE,extra_in_tsw,,TapeTech Inside Corner Roller Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502005F,extra_in_tsw,,"7"" Pivot Pressure Plate",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502006,extra_in_tsw,,PIVOTBEARING,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502007,extra_in_tsw,,Bearing,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502034,extra_in_tsw,,TapeTech Latch for Corner Box,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502A,extra_in_tsw,,TapeTech #2 Taper Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502CN,extra_in_tsw,,TapeTech Flat Box Wheel Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502F2,extra_in_tsw,,2 in TapeTech Corner Finisher Blade Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502F25,extra_in_tsw,,"2.5"" Corner Finisher Blade Change Kit",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502F3,extra_in_tsw,,3 in TapeTech Corner Finisher Blade Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502F4,extra_in_tsw,,3 in TapeTech EZ Roll Corner Finisher Blade Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502F4X,extra_in_tsw,,"3.5"" Easy Roll Corner Finisher Blade Repair Kit for 48XTT",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,502H,extra_in_tsw,,TapeTech #2 Pump Repair Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,506009,extra_in_tsw,,Stainless Steel Cone,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,509008,extra_in_tsw,,"10-32 X 1/2"" Bind Head Screw +",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,600005F,extra_in_tsw,,"2"" Nail Spotter Carbide Blade",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,600007,extra_in_tsw,,"TapeTech Skid 2"" Nail Spotter",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,630009,extra_in_tsw,,"2"" Nail Spotter Facing",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,631015,extra_in_tsw,,"TapeTech® 2"" Nail Spotter Wiper",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,632026,extra_in_tsw,,"Spring, Nail Spotter",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,634028,extra_in_tsw,,"TapeTech 2"" Pressure Plate Assembly w/ New Style Tab",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,650007,extra_in_tsw,,TapeTech Skid for NS03TT,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,650040,extra_in_tsw,,TapeTech Special Washer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,654036,extra_in_tsw,,"TapeTech 3"" Blade Clamp Assembly",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,680030,extra_in_tsw,,"3"" Nail Spotter Insert",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,681015,extra_in_tsw,,"3"" Wiper For EZ Clean Nailspotter",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,700004F,extra_in_tsw,,Gland,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,700010F,extra_in_tsw,,TapeTechï¿½ï¿½ 700010F Valve Seal,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,700032F,extra_in_tsw,,Pump Fine Mesh Screen,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,700033F,extra_in_tsw,,Pump Coarse Mesh Screen,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,700036,extra_in_tsw,,5/16-24 X 1-7/16 Stud,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,702031F,extra_in_tsw,,TapeTech Handle Ball,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,704040,extra_in_tsw,,TapeTech Filler Tube Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,709007,extra_in_tsw,,"Hex Head Nut - 5/16"" X 24 - 6 Pack",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,709046,extra_in_tsw,,Lock Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,720009,extra_in_tsw,,Piston Cup,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,722039,extra_in_tsw,,Discharge Tube,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,729009,extra_in_tsw,,"Wiper, U-Cup",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,729060,extra_in_tsw,,TapeTech O-Ring Gasket - Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,729072,extra_in_tsw,,TapeTech Head O-Ring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,762011,extra_in_tsw,,"Foot Valve, Universal",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,800008,extra_in_tsw,,Pivot Arm For Box Handle,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,800018F,extra_in_tsw,,TapeTech Box Handle Notched Connector Plate,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,800021F,extra_in_tsw,,TapeTech Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,800027,extra_in_tsw,,TapeTech Short Connector,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,801009,extra_in_tsw,,Coupling Pin (Repair Only Box Handles),0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,804003F,extra_in_tsw,,Grip Assembly For Box Handle,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,804234,extra_in_tsw,,"34"" Connector Assembly",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,804254,extra_in_tsw,,54 in TapeTech Connector Assembly,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,804272,extra_in_tsw,,"72"" Connector Assembly",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,808015F,extra_in_tsw,,"Hing Assy., Universal With Serial Number",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,809011,extra_in_tsw,,3/4 in x 5/16-18 TapeTech Dog Point Thumbscrew,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,811018,extra_in_tsw,,"Connector Plate, Notched",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,819038,extra_in_tsw,,Grip Adjuster Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,857355,extra_in_tsw,,Gooseneck Cleaning Brush,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,859016,extra_in_tsw,,"TapeTech Round Vinyl Black Cap, .315- ID, 2"" DP",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,861014,extra_in_tsw,,Gooseneck Spacer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,880028,extra_in_tsw,,Compression Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,880038,extra_in_tsw,,CONNECTING ROD,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,880042,extra_in_tsw,,TapeTech Rubber Grip Handle,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,880053,extra_in_tsw,,Lock Block,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,882012,extra_in_tsw,,Acutator Clip Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,882013,extra_in_tsw,,Locking Pin,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,882014,extra_in_tsw,,TapeTech Locking Clip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,883020,extra_in_tsw,,TapeTech Extrusion Insert for XH-TT,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,889017,extra_in_tsw,,Conical Spring,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,889030,extra_in_tsw,,4-40 X 3/16 Fillisterhead Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,889035,extra_in_tsw,,6-32 x 1/4 Pan Head Screw,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,889055,extra_in_tsw,,Nylon Spacer,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,90TT,extra_in_tsw,,TapeTech Filler Adapter,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,920003,extra_in_tsw,,Ball Coupling,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,AEM34491,extra_in_tsw,,Mud Jam Clear Tool,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,AMEAB0003,extra_in_tsw,,Ames Cobra Banjo Replacement Cutting Blade AB0003,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,AMEMP0012,extra_in_tsw,,12 in AMES Feather-Lite Stainless Steel Pan,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,AMERK4006,extra_in_tsw,,"Feather Lite Finishing Knife with Texture Handle - 6""",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,BAN001TT,extra_in_tsw,,TapeTech Mud Dog Banjo,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,CF35TT,extra_in_tsw,,"3.5"" Corner Flusher - Semi-Automatic",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,CFK02TT,extra_in_tsw,,Creaser Wheel Kit for Corner Flusher,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,CNTT,extra_in_tsw,,Cleaning Nozzle,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,CT24TT,extra_in_tsw,,"24"" Compound Tube - Semi-Automatic",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,CT36TT,extra_in_tsw,,"36"" Compound Tube - Semi-Automatic",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,CTA01TT,extra_in_tsw,,Compound Tube Filler Adapter,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EABS127TTSM,extra_in_tsw,,TapeTech Premium ABS Float – Smooth,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EALFED48,extra_in_tsw,,TapeTech 4′ Aluminum Featheredge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EALFED60,extra_in_tsw,,TapeTech 5′ Aluminum Featheredge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EALFED72,extra_in_tsw,,TapeTech 6′ Aluminum Featheredge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EBLADE04,extra_in_tsw,,TapeTech 4″ Hot Knife Blade,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EBLADE06,extra_in_tsw,,TapeTech 6″ Hot Knife Blade,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EBLADE08,extra_in_tsw,,TapeTech 8″ Hot Knife Blade,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EEXSET3135,extra_in_tsw,,TapeTech 3 Piece 135° Outside Corner Edgers Set,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EEXSET590,extra_in_tsw,,TapeTech 5 Piece 90° Outside Corner Edger Set,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EFLOAT0512N,extra_in_tsw,,TapeTech 12″ x 5″ x 1/4″ EVA Neo Float,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EHK18VROTATEKIT,extra_in_tsw,,TapeTech 18V Air Cooled Rotating Hot Knife Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EHKAC18V,extra_in_tsw,,TapeTech Air-Cooled 18V Hot Knife,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EHKAC500,extra_in_tsw,,TapeTech Air-Cooled Hot Knife,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EHKAC500KIT,extra_in_tsw,,TapeTech Air-Cooled Rotating Hot Knife KIT – 500,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EHKACROTATEKIT,extra_in_tsw,,TapeTech Rotating Hot Knife Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EHWJS100,extra_in_tsw,,TapeTech Portable Hot Wire Foam Cutter,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EIFSAND0614,extra_in_tsw,,TapeTech 6″ x 14″ EIFS Vacuum Hand Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EIFSAND120,extra_in_tsw,,TapeTech 120V Dual Disc Sander,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EINSET590,extra_in_tsw,,TapeTech 5 Piece 90° Inside Corner Edger Set,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ERASP0214,extra_in_tsw,,TapeTech 2″ x 14″ Tungsten Carbide Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ERASP0414,extra_in_tsw,,TapeTech 4″ x 14″ Tungsten Carbide EIFS Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ERASP0614,extra_in_tsw,,TapeTech 6″ x 14″ Tungsten Carbide EIFS Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ERASP0814,extra_in_tsw,,TapeTech 8″ x 14″ Tungsten Carbide EIFS Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ERASPSERRATED0414,extra_in_tsw,,TapeTech 4″ x 14″ Tungsten Carbide EIFS Claw Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ERASPSERRATED0614,extra_in_tsw,,"TapeTech 6"" x 14"" Tungsten Carbide Claw Rasp",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ESAND0414,extra_in_tsw,,TapeTech 4″ x 14″ EIFSAND Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ESAND0614,extra_in_tsw,,TapeTech 6″ x 14″ EIFSAND Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,ESAND0814,extra_in_tsw,,TapeTech 8″ x 14″ EIFSAND Rasp,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EZCOVER07,extra_in_tsw,,EasyClean Cover Plate Conversion Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,EZROLLKIT,extra_in_tsw,,EasyRoll Wheel Replacement Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,HWK001PS,extra_in_tsw,,TapeTech 13″ x 13″ Aluminum Hawk,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,JK05CSTT,extra_in_tsw,,"TapeTech 5"" Premium Carbon Steel Joint Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,KRATL137,extra_in_tsw,,Kraft Tools Carbide Scoring & Cutting Tool,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,MAR19046,extra_in_tsw,,"3"" Corner Roller",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,MP12TT,extra_in_tsw,,"TapeTech 12"" Premium Mud Pan",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,MP14TT,extra_in_tsw,,"TapeTech 14"" Premium Mud Pan",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,MT01,extra_in_tsw,,TapeTech 9-1 Stainless Steel Multi-Tool,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,MWS01TT,extra_in_tsw,,TapeTech Mobile Wash Station,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB07,extra_in_tsw,,"TapeTech 7"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB12,extra_in_tsw,,"TapeTech 12"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB14,extra_in_tsw,,"TapeTech 14"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB18,extra_in_tsw,,"TapeTech 18"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB24,extra_in_tsw,,"TapeTech 24"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB32,extra_in_tsw,,"TapeTech 32"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB40,extra_in_tsw,,"TapeTech 40"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PFB48,extra_in_tsw,,"TapeTech 48"" Replace Blade for Finishing Knife",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PKPFK,extra_in_tsw,,Tapetech Premium Knife Parts Finishing Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWT46TT,extra_in_tsw,,Premium Work Trousers - Waist Size 30,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHV1,extra_in_tsw,,TapeTech Hi-Viz Premium Work Shirt - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHV2,extra_in_tsw,,TapeTech Hi-Viz Premium Work Shirt - Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHV3,extra_in_tsw,,TapeTech Hi-Viz Premium Work Shirt - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHV4,extra_in_tsw,,TapeTech Hi-Viz Premium Work Shirt - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHV5,extra_in_tsw,,TapeTech Hi-Viz Premium Work Shirt - XXXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVLS1,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Premium Work Shirt - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVLS2,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Premium Work Shirt -Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVLS3,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Premium Work Shirt - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVLS4,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Premium Work Shirt - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVLS5,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Premium Work Shirt - XXXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBLS1,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Safety Shirt - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBLS2,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Safety Shirt -Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBLS3,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Safety Shirt - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBLS4,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Safety Shirt - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBLS5,extra_in_tsw,,TapeTech Hi-Viz Long Sleeve Safety Shirt - XXXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBY1,extra_in_tsw,,TapeTech Hi-Viz Safety Shirt - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBY2,extra_in_tsw,,TapeTech Hi-Viz Safety Shirt - Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBY3,extra_in_tsw,,TapeTech Hi-Viz Safety Shirt - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBY4,extra_in_tsw,,TapeTech Hi-Viz Safety Shirt - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWHVTBY5,extra_in_tsw,,TapeTech Hi-Viz Safety Shirt - XXXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS11,extra_in_tsw,,TapeTech Premium Work Shirt - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS12,extra_in_tsw,,TapeTech Premium Work Shirt - Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS13,extra_in_tsw,,TapeTech Premium Work Shirt - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS14,extra_in_tsw,,TapeTech Premium Work Shirt - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS15,extra_in_tsw,,TapeTech Premium Work Shirt - XXXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS1LS1,extra_in_tsw,,TapeTech Long Sleeve Premium Work Shirt - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS1LS2,extra_in_tsw,,TapeTech Long Sleeve Premium Work Shirt - Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS1LS3,extra_in_tsw,,TapeTech Long Sleeve Premium Work Shirt - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWS1LS4,extra_in_tsw,,TapeTech Long Sleeve Premium Work Shirt - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWSSJ1,extra_in_tsw,,TapeTech Premium Jacket - Medium,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWSSJ2,extra_in_tsw,,TapeTech Premium Jacket - Large,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWSSJ3,extra_in_tsw,,TapeTech Premium Jacket - XLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWSSJ4,extra_in_tsw,,TapeTech Premium Jacket - XXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,PWWSSJ5,extra_in_tsw,,TapeTech Premium Jacket - XXXLarge,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,QB80035,extra_in_tsw,,"TapeTech 8"" QSX Flat Finishing Blades-5 per pack",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,QB80235,extra_in_tsw,,"TapeTech 6.5"" QSX Crown Finishing Blades-5 per pack",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,QB80435,extra_in_tsw,,"TapeTech 8"" QSX Notched Adhesive Blades 5 per pack",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,QCATT,extra_in_tsw,,Quick-Connect Adapter,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,RGDRATS10L,extra_in_tsw,,10 in Renegade Tools Left Cut Aviation Snips - Red,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,RTTCTT,extra_in_tsw,,Taper Cable Repair Tool,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,SCP001WD,extra_in_tsw,,"TapeTech 7""X13"" Galvaniz Steel Bucket Scoop",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,SSDAF,extra_in_tsw,,TapeTech Dual Angle Sanding Sponge Fine-24 per box,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,SSDAM,extra_in_tsw,,TapeTech Dual Angle Sanding Sponge Medium-24 per box,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,SSDAMF,extra_in_tsw,,TapeTech Dual Angle Sanding Sponge Med/Fine-24 per box,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,SSSAF,extra_in_tsw,,TapeTech Single Angle Sanding Sponge Fine-24 per box,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,SSSAM,extra_in_tsw,,TapeTech Single Angle Sanding Sponge Medium- 24 per box,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,T032,extra_in_tsw,,TapeTech Gooser Release Cam,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TC01TT,extra_in_tsw,,Tool Caddy,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TG110565PS,extra_in_tsw,,TapeTech 11″ x 5″ Premium Gold Stainless Steel Finishing Trowel – ProSoft Grip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TG120565PS,extra_in_tsw,,TapeTech 12″ x 5″ Premium Gold Stainless Steel Finishing Trowel – ProSoft Grip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TG140565PS,extra_in_tsw,,TapeTech 14″ x 5″ Premium Gold Stainless Steel Finishing Trowel – ProSoft Grip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TG160565PS,extra_in_tsw,,TapeTech 16″ x 5″ Premium Gold Stainless Steel Finishing Trowel – ProSoft Grip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TG180565PS,extra_in_tsw,,TapeTech 18″ x 5″ Premium Gold Stainless Steel Finishing Trowel – ProSoft Grip,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,TMK01TT,extra_in_tsw,,ATF Tool Maintenance Kit,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VABS050,extra_in_tsw,,"TapeTech 2"" Italian ABS Float",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VABS130,extra_in_tsw,,"TapeTech 5"" Italian ABS Float",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VBUCKET08,extra_in_tsw,,TapeTech 8″ Bucket Trowel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VEIFSU01,extra_in_tsw,,TapeTech EIFS 1/2″ x 1/2″ x 2″ U-Notch Trowel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VEIFSU02,extra_in_tsw,,TapeTech EIFS 1/4″ x 1/4″ x 1.5″ U-Notch Trowel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VEIFSU03,extra_in_tsw,,TapeTech EIFS 3/8″ x 1/2″ x 1.5″ U-Notch Trowel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VMARG05,extra_in_tsw,,"TapeTech 5"" x 2"" Margin Trowel",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VMARGSET0506,extra_in_tsw,,"TapeTech 5"" and 6"" Margin Trowel Set",0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VROUND55,extra_in_tsw,,TapeTech 5.5″ Mini Round Trowel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
+TapeTech,,VTRIAN55,extra_in_tsw,,TapeTech 5.5″ Mini Triangular Trowel,0,1,TSW SKU is not present in official launch-candidate catalog by normalized SKU.
