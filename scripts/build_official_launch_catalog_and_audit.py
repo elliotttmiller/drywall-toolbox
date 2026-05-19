@@ -83,7 +83,8 @@ def first_sentence(value: str, max_len: int = 220) -> str:
     out = clean_text(m.group(1)) if m else value
     if len(out) <= max_len:
         return out
-    return clean_text(out[: max_len - 1].rsplit(" ", 1)[0]) + "."
+    trimmed = clean_text(out[: max_len - 1].rsplit(" ", 1)[0])
+    return trimmed if re.search(r"[.!?]$", trimmed) else f"{trimmed}."
 
 
 def csv_rows(path: Path) -> list[dict[str, str]]:
@@ -99,11 +100,17 @@ def parse_columbia_source_pages(text: str) -> list[str]:
     return [u.strip() for u in tail.split("|") if u.strip().startswith("http")]
 
 
+def host_matches_domain(host: str, domain: str) -> bool:
+    host = host.lower()
+    domain = domain.lower()
+    return host == domain or host.endswith(f".{domain}")
+
+
 def allowed_image(url: str, brand: str) -> bool:
     host = (urlparse(url).hostname or "").lower()
     if brand == "TapeTech":
-        return host.endswith("tapetech.com") or host.endswith("shopamestools.com")
-    return host.endswith("columbiatools.com")
+        return host_matches_domain(host, "tapetech.com") or host_matches_domain(host, "shopamestools.com")
+    return host_matches_domain(host, "columbiatools.com")
 
 
 def build_tapetech_lookup(rows: list[dict[str, str]]) -> dict[str, dict[str, str]]:
@@ -338,7 +345,7 @@ def build() -> None:
         is_priced = bool(clean_text(reg_price))
         published = "1" if is_priced else "0"
         visibility = "visible" if is_priced else "hidden"
-        in_stock = "1" if is_priced else "0"
+        in_stock = "1"
         out_rows.append(
             {
                 "ID": "",

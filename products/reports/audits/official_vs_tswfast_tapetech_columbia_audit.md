@@ -1,6 +1,6 @@
 # Official vs TSWFast Catalog Audit (TapeTech + Columbia)
 
-Generated: 2026-05-19T04:10:33+00:00
+Generated: 2026-05-19T04:11:35+00:00
 
 ## Source of Truth
 - TapeTech official catalog source used in-repo: `products/scraped_results/brands/TapeTech/old/tapetech_master_catalog.csv` (shopamestools.com catalog scrape), with fallback enrichment from `products/scraped_results/brands/TapeTech/wp-catalog.csv`.
