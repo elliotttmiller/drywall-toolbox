@@ -221,5 +221,11 @@ _dtb_require( $_dtb_dir . '/dtb-schematics-api.php' );
 _dtb_require( $_dtb_dir . '/dtb-coming-soon.php' );
 _dtb_require( $_dtb_dir . '/dtb-seo.php' );           // WooCommerce product SEO meta fields
 _dtb_require( $_dtb_dir . '/dtb-config-reference.php' );
+_dtb_require( $_dtb_dir . '/dtb-repair-events.php' );       // Repair event log table + helpers (must load first)
+_dtb_require( $_dtb_dir . '/dtb-repair-workflows.php' );    // State machine + status transitions
+_dtb_require( $_dtb_dir . '/dtb-repair-queue.php' );        // Action Scheduler job handlers
+_dtb_require( $_dtb_dir . '/dtb-repair-notifications.php' ); // Email templates + dispatch
+_dtb_require( $_dtb_dir . '/dtb-repairs.php' );             // CPT, meta, REST endpoints
+_dtb_require( $_dtb_dir . '/dtb-repair-admin.php' );        // WP-Admin UI (list table, metaboxes, AJAX)
 
 unset( $_dtb_dir );
