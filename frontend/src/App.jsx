@@ -19,6 +19,7 @@ const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const Schematics = lazy(() => import('./pages/Schematics'));
 const Repairs = lazy(() => import('./pages/Repairs'));
+const RepairStatus = lazy(() => import('./pages/RepairStatus'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
@@ -82,6 +83,7 @@ function AppRoutes() {
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/schematics" element={<Schematics />} />
           <Route path="/repairs" element={<Repairs />} />
+          <Route path="/repairs/status/:id" element={<RepairStatus />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/calculators" element={<Calculators />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
