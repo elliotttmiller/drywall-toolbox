@@ -513,7 +513,7 @@ function dtb_repair_rest_submit( WP_REST_Request $request ): WP_REST_Response|WP
 			'post_type'   => 'dtb_repair_request',
 			'post_status' => 'publish',
 			'post_title'  => wp_strip_all_tags( $post_title ),
-			'post_author' => $user_id ?: 0,
+			'post_author' => $user_id, // 0 = no author (anonymous); already validated int.
 		],
 		true
 	);
@@ -815,11 +815,11 @@ function dtb_repair_rest_events_stream( WP_REST_Request $request ): void {
 	// Fetch customer-visible events since last_event_id.
 	global $wpdb;
 	$table  = $wpdb->prefix . 'dtb_repair_events';
-	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is built from $wpdb->prefix (trusted); esc_sql() applied for defense-in-depth.
 	$events = $wpdb->get_results(
 		$wpdb->prepare(
 			"SELECT id, event_type, from_status, to_status, payload_json, created_at
-			 FROM `{$table}`
+			 FROM `" . esc_sql( $table ) . "`
 			 WHERE repair_id = %d
 			   AND id > %d
 			   AND visibility IN ('customer', 'operator')

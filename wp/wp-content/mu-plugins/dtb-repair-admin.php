@@ -248,11 +248,14 @@ class DTB_Repair_List_Table extends WP_List_Table {
 	}
 
 	public function process_bulk_action(): void {
-		if ( empty( $_POST['repair'] ) || ! is_array( $_POST['repair'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		// Verify nonce before touching any POST data; bail silently on regular page loads.
+		if ( empty( $_REQUEST['_wpnonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
-		if ( ! check_admin_referer( 'bulk-repairs' ) ) {
+		check_admin_referer( 'bulk-repairs' );
+
+		if ( empty( $_POST['repair'] ) || ! is_array( $_POST['repair'] ) ) {
 			return;
 		}
 
@@ -822,9 +825,8 @@ function dtb_repair_metabox_queue( WP_Post $post ): void {
 		return;
 	}
 
-	$as_status = class_exists( 'ActionScheduler_Store' )
-		? \ActionScheduler_Store::STATUS_PENDING
-		: 'pending';
+	// function_exists('as_get_scheduled_actions') passed above — AS is active, so the class exists.
+	$as_status = \ActionScheduler_Store::STATUS_PENDING;
 
 	$actions = as_get_scheduled_actions(
 		[
