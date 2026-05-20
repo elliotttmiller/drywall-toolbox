@@ -2,11 +2,11 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-ops-dashboard.php' );
+	dtb_module_require( 'dtb-platform/Legacy/dtb-ops-dashboard.php' );
 	return;
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-ops-dashboard.php';
+$legacy_path = dirname( __DIR__, 2 ) . '/dtb-platform/Legacy/dtb-ops-dashboard.php';
 if ( file_exists( $legacy_path ) ) {
 	require_once $legacy_path;
 }

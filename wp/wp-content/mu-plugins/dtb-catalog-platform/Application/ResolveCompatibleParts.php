@@ -2,11 +2,11 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-product-mapping.php' );
+	dtb_module_require( 'dtb-catalog-platform/Legacy/dtb-product-mapping.php' );
 	return;
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-product-mapping.php';
+$legacy_path = dirname( __DIR__, 2 ) . '/dtb-catalog-platform/Legacy/dtb-product-mapping.php';
 if ( file_exists( $legacy_path ) ) {
 	require_once $legacy_path;
 }

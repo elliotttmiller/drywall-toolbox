@@ -2,11 +2,11 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-repair-workflows.php' );
+	dtb_module_require( 'dtb-repair-service/Legacy/dtb-repair-workflows.php' );
 	return;
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-repair-workflows.php';
+$legacy_path = dirname( __DIR__, 2 ) . '/dtb-repair-service/Legacy/dtb-repair-workflows.php';
 if ( file_exists( $legacy_path ) ) {
 	require_once $legacy_path;
 }
