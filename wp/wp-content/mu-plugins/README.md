@@ -30,9 +30,28 @@ Drywall Toolbox additionally uses `00-dtb-loader.php` to enforce explicit depend
 8. `dtb-repair-service/bootstrap.php`
 9. `dtb-integrations/bootstrap.php`
 
-Each module bootstrap currently includes legacy root files via `require_once` as compatibility shims while logic is incrementally re-housed into module layer folders.
+Each module bootstrap now loads bounded module paths (for example `dtb-platform/Security/ApiSecurity.php` and `dtb-order-platform/Infrastructure/OrderEventRepository.php`).
+Where extraction is not yet complete, those module files are temporary compatibility wrappers that delegate to legacy root files.
 
-### 1.2 Also auto-loaded by WordPress (outside `_dtb_require` list)
+### 1.2 Compatibility wrappers (temporary)
+
+Wrapper files exist only to preserve runtime behavior while root-heavy files are being extracted into module internals.
+
+Removal criteria:
+- The wrapper’s legacy root dependency has been fully moved to module-native code.
+- Bootstrap wiring is updated to module-native implementation files.
+- Smoke checks confirm routes, admin pages, event ledgers, queues, and tracking projections still function.
+
+Current wrapper-backed legacy roots include:
+- `dtb-utils.php`, `dtb-auth.php`, `dtb-cache.php`, `dtb-cache-admin.php`, `dtb-rest-api.php`
+- `dtb-api-security.php`, `dtb-frontend-security.php`, `dtb-admin-security.php`
+- `dtb-api-health-monitor.php`, `dtb-admin-performance.php`, `dtb-ops-dashboard.php`, `dtb-config-reference.php`
+- `dtb-order-events.php`, `dtb-order-workflows.php`, `dtb-order-queue.php`, `dtb-order-tracking.php`, `dtb-payment-webhooks.php`, `dtb-order-admin.php`
+- `dtb-repair-events.php`, `dtb-repair-workflows.php`, `dtb-repair-queue.php`, `dtb-repair-notifications.php`, `dtb-repairs.php`, `dtb-repair-admin.php`
+- `dtb-image-sync.php`, `dtb-coming-soon.php`, `dtb-seo.php`
+- `dtb-woocommerce.php`, `dtb-veeqo.php`, `dtb-quickbooks.php`, `dtb-rewards.php`
+- `dtb-product-mapping.php`, `dtb-schematics-api.php`, `dtb-schematics-admin.php`, `dtb-catalog-health.php`
+### 1.3 Also auto-loaded by WordPress (outside `_dtb_require` list)
 
 WordPress still scans top-level `*.php` files in `mu-plugins/`. DTB relies on module bootstraps to include legacy files first; subsequent WordPress `include_once` passes are no-ops for already-loaded files.
 

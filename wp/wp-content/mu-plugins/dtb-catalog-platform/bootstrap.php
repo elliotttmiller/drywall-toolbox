@@ -48,7 +48,7 @@ require_once $_dtb_cp . '/Services/BrandNormalizer.php';
 require_once $_dtb_cp . '/Services/CategoryNormalizer.php';
 require_once $_dtb_cp . '/Services/ToolFamilyResolver.php';
 require_once $_dtb_cp . '/Services/CatalogProductNormalizer.php';
-require_once $_dtb_cp . '/Services/CatalogProductRepository.php';
+require_once $_dtb_cp . '/Infrastructure/CatalogProductRepository.php';
 require_once $_dtb_cp . '/Services/VariationReadModelService.php';
 require_once $_dtb_cp . '/Services/DefaultVariationResolver.php';
 require_once $_dtb_cp . '/Services/CatalogFacetService.php';
@@ -79,7 +79,7 @@ if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 }
 
 // Transitional legacy bridge for existing catalog health diagnostics.
-dtb_module_require( 'dtb-catalog-health.php' );
+dtb_module_require( 'dtb-catalog-platform/Admin/CatalogHealthPage.php' );
 
 unset( $_dtb_cp );
 

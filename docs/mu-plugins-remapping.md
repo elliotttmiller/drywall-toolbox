@@ -577,6 +577,15 @@ The rebuild document explicitly identifies these root-heavy files as the current
 
 ⸻
 
+Execution note (current repository state)
+
+- The full target directory/file tree above is now present in `wp/wp-content/mu-plugins/`.
+- `00-dtb-loader.php` remains the composition root and loads module bootstraps only.
+- For legacy runtime parity, module files currently include temporary compatibility wrappers that delegate to existing root DTB files where full extraction is not yet complete.
+- Wrapper removal should happen only after each mapped concern is fully implemented in module-native code and smoke checks pass.
+
+⸻
+
 Current-to-Target Mapping
 
 Platform

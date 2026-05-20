@@ -7,4 +7,4 @@
 
 defined( 'ABSPATH' ) || exit;
 
-dtb_module_require( 'dtb-image-sync.php' );
+dtb_module_require( 'dtb-media/Application/SyncRemoteImage.php' );

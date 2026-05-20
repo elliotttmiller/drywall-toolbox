@@ -7,6 +7,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-dtb_module_require( 'dtb-product-mapping.php' );
-dtb_module_require( 'dtb-schematics-api.php' );
-dtb_module_require( 'dtb-schematics-admin.php' );
+dtb_module_require( 'dtb-schematics/Application/ResolveSchematicParts.php' );
+dtb_module_require( 'dtb-schematics/Rest/SchematicManifestController.php' );
+dtb_module_require( 'dtb-schematics/Admin/SchematicAdminMenu.php' );

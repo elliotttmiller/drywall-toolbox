@@ -141,6 +141,8 @@ function dtb_payment_webhook_verify_signature( string $gateway, string $raw_body
 if ( ! defined( 'DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE' ) ) {
 	define( 'DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE', 300 );
 }
+
+/**
  *
  * @param string          $raw_body
  * @param WP_REST_Request $request
