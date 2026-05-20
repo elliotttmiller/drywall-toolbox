@@ -81,6 +81,9 @@ function dtb_oo_enqueue_assets( string $hook ): void {
 
 	$settings = function_exists( 'dtb_oo_get_settings' ) ? dtb_oo_get_settings() : [];
 
+	// wp_enqueue_style/script with false source registers a handle-only placeholder so
+	// wp_add_inline_style / wp_add_inline_script can attach content without an external file.
+	// The WordPress version string is still passed to bust any edge-case caches.
 	wp_enqueue_style( 'dtb-oo-dashboard', false, [], '1.0.0' ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
 	wp_add_inline_style( 'dtb-oo-dashboard', dtb_oo_inline_css() );
 

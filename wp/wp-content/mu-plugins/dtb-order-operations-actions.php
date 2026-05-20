@@ -611,6 +611,8 @@ function dtb_oo_exec_queue_action( string $action, int $job_id ): array {
 				}
 
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	// Note: Action Scheduler uses American English 'canceled' (not 'cancelled').
+	// This is intentional for AS API compatibility.
 				$wpdb->update(
 					$table,
 					[ 'status' => 'canceled' ],

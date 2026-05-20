@@ -296,14 +296,14 @@ function dtb_oo_get_overview_kpis(): array {
 	];
 
 	// Awaiting review.
-	$awating_review = get_posts( array_merge( $repair_args_base, [
+	$awaiting_review = get_posts( array_merge( $repair_args_base, [
 		'meta_query' => [ [ 'key' => '_repair_status', 'value' => 'submitted' ] ],
 	] ) );
 	$kpis['repairs_awaiting_review'] = [
 		'label' => 'Awaiting Review',
-		'value' => count( $awating_review ),
-		'warn'  => count( $awating_review ) > 5,
-		'badge' => count( $awating_review ) > 5 ? 'yellow' : 'blue',
+		'value' => count( $awaiting_review ),
+		'warn'  => count( $awaiting_review ) > 5,
+		'badge' => count( $awaiting_review ) > 5 ? 'yellow' : 'blue',
 	];
 
 	// Awaiting customer.
