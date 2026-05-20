@@ -18,38 +18,28 @@ Drywall Toolbox additionally uses `00-dtb-loader.php` to enforce explicit depend
 
 ### 1.1 Loader-managed chain (`00-dtb-loader.php`)
 
-`00-dtb-loader.php` loads these files in this order:
+`00-dtb-loader.php` is now the composition root and loads only module bootstraps:
 
-1. `dtb-utils.php`
-2. `dtb-auth.php`
-3. `dtb-cache.php`
-4. `dtb-cache-admin.php`
-5. `dtb-rest-api.php`
-6. `dtb-api-security.php`
-7. `dtb-frontend-security.php`
-8. `dtb-admin-security.php`
-9. `dtb-rewards.php`
-10. `dtb-image-sync.php`
-11. `dtb-woocommerce.php`
-12. `dtb-veeqo.php`
-13. `dtb-ops-dashboard.php`
-14. `dtb-quickbooks.php`
-15. `dtb-schematics-api.php`
-16. `dtb-coming-soon.php`
-17. `dtb-seo.php`
-18. `dtb-config-reference.php`
+1. `dtb-platform/bootstrap.php`
+2. `dtb-catalog-platform/bootstrap.php`
+3. `dtb-commerce/bootstrap.php`
+4. `dtb-order-platform/bootstrap.php`
+5. `dtb-schematics/bootstrap.php`
+6. `dtb-media/bootstrap.php`
+7. `dtb-marketing/bootstrap.php`
+8. `dtb-repair-service/bootstrap.php`
+9. `dtb-integrations/bootstrap.php`
+
+Each module bootstrap currently includes legacy root files via `require_once` as compatibility shims while logic is incrementally re-housed into module layer folders.
 
 ### 1.2 Also auto-loaded by WordPress (outside `_dtb_require` list)
 
-These still execute because they exist in `mu-plugins/` and are alphabetically loaded by WordPress:
+WordPress still scans top-level `*.php` files in `mu-plugins/`. DTB relies on module bootstraps to include legacy files first; subsequent WordPress `include_once` passes are no-ops for already-loaded files.
 
-- `dtb-admin-performance.php`
-- `dtb-api-health-monitor.php`
-- `dtb-product-mapping.php`
-- `dtb-schematics-admin.php`
-- host-provided mu-plugins: `endurance-page-cache.php`, `sso.php`
+Host-provided mu-plugins still auto-load directly:
 
-`require_once` in the loader prevents duplicate execution for files already included there.
+- `endurance-page-cache.php`
+- `sso.php`
 
 ---
 
@@ -331,23 +321,32 @@ These are optional (module or feature flags), and plugin code has fallbacks/defa
 
 ## 8) Module map (what lives where)
 
-- Auth/session: `dtb-auth.php`
-- REST proxy + catalog import orchestration: `dtb-rest-api.php`
-- REST security/CORS/nonces/public-read policy: `dtb-api-security.php`
-- Caching + cache diagnostics: `dtb-cache.php`, `dtb-cache-admin.php`
-- WooCommerce runtime fixes + webhook management: `dtb-woocommerce.php`
-- Ops dashboard/audit/KPI/health: `dtb-ops-dashboard.php`
-- QBO integration: `dtb-quickbooks.php`
-- Veeqo integration: `dtb-veeqo.php`
-- Rewards + points/coupon bridge: `dtb-rewards.php`
-- Image sync + media linking pipeline: `dtb-image-sync.php`
-- Schematics API + admin manager: `dtb-schematics-api.php`, `dtb-schematics-admin.php`
-- Product mapping admin toolkit: `dtb-product-mapping.php`
-- API health monitor admin toolkit: `dtb-api-health-monitor.php`
-- Coming-soon subscriber capture: `dtb-coming-soon.php`
-- Frontend/admin hardening/perf helpers: `dtb-frontend-security.php`, `dtb-admin-security.php`, `dtb-admin-performance.php`
-- SEO fields exposure: `dtb-seo.php`
-- Inline config reference comments: `dtb-config-reference.php`
+- `dtb-platform/`
+  - shared config/auth/cache/security/REST wiring + ops/admin health utilities
+  - legacy bridge loads: `dtb-utils.php`, `dtb-auth.php`, `dtb-cache.php`, `dtb-cache-admin.php`, `dtb-rest-api.php`, `dtb-api-security.php`, `dtb-frontend-security.php`, `dtb-admin-security.php`, `dtb-api-health-monitor.php`, `dtb-admin-performance.php`, `dtb-ops-dashboard.php`, `dtb-config-reference.php`
+- `dtb-catalog-platform/`
+  - canonical catalog product model and toolset APIs
+  - legacy bridge also loads: `dtb-catalog-health.php`
+- `dtb-commerce/`
+  - cart/order line metadata persistence for Store API toolset flows
+- `dtb-order-platform/`
+  - order lifecycle/event ledger/queue/tracking/payment webhook/admin tooling
+  - legacy bridge loads: `dtb-order-events.php`, `dtb-order-workflows.php`, `dtb-order-queue.php`, `dtb-order-tracking.php`, `dtb-payment-webhooks.php`, `dtb-order-admin.php`
+- `dtb-schematics/`
+  - schematics and product mapping surfaces
+  - legacy bridge loads: `dtb-product-mapping.php`, `dtb-schematics-api.php`, `dtb-schematics-admin.php`
+- `dtb-media/`
+  - media sync operational workflows
+  - legacy bridge loads: `dtb-image-sync.php`
+- `dtb-marketing/`
+  - coming-soon and SEO surfaces
+  - legacy bridge loads: `dtb-coming-soon.php`, `dtb-seo.php`
+- `dtb-repair-service/`
+  - repair lifecycle/event queue/rest/admin tooling
+  - legacy bridge loads: `dtb-repair-events.php`, `dtb-repair-workflows.php`, `dtb-repair-queue.php`, `dtb-repair-notifications.php`, `dtb-repairs.php`, `dtb-repair-admin.php`
+- `dtb-integrations/`
+  - external commerce/integration adapters
+  - legacy bridge loads: `dtb-woocommerce.php`, `dtb-veeqo.php`, `dtb-quickbooks.php`, `dtb-rewards.php`
 
 ---
 
@@ -379,6 +378,7 @@ These are optional (module or feature flags), and plugin code has fallbacks/defa
 ## 10) Maintenance rules for future edits
 
 - Keep `00-dtb-loader.php` load order comments in sync with actual `_dtb_require(...)` list.
+- Run `scripts/smoke-dtb-mu-modules.ps1` after loader/bootstrap edits to verify required module bootstraps and composition order.
 - Any new REST route must be documented in section 3.
 - Any new `wp-config.php` constant contract must be documented in section 7.
 - Any new admin page/AJAX endpoint should be added to section 4.

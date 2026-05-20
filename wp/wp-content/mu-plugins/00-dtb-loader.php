@@ -14,28 +14,16 @@
  * semantics prevent double-inclusion when WordPress later tries to load the
  * same files.
  *
- * Load order:
- *   dtb-utils.php          — shared helper functions
- *   dtb-auth.php           — JWT generation / verification / REST auth routes
- *   dtb-cache.php          — transient cache helpers and diagnostic route
- *   dtb-cache-admin.php    — wp-admin cache management page
- *   dtb-rest-api.php       — WC proxy + site-management REST routes
- *   dtb-api-security.php   — REST/CORS policy, public WC read, nonce refresh
- *   dtb-frontend-security.php — frontend headers and public hardening
- *   dtb-admin-security.php — wp-admin/Woo Admin diagnostics and compatibility
- *   dtb-rewards.php        — WPLoyalty REST bridge (dtb/v1/rewards/* endpoints)
- *   dtb-image-sync.php     — media-library sync for uploads/YYYY/MM/ images
- *   dtb-woocommerce.php    — WC configuration and webhook auto-creation
- *   dtb-veeqo.php          — Veeqo API proxy, order/inventory sync, shipping rates
- *   dtb-ops-dashboard.php  — ops KPI dashboard, audit log, health endpoint
- *   dtb-catalog-health.php — variable product diagnostics, issue export, cache flush
- *   dtb-quickbooks.php     — QuickBooks Online OAuth2 + accounting sync
- *   dtb-schematics-api.php — schematics media REST route
- *   dtb-coming-soon.php    — e-mail subscriber handler
- *   dtb-seo.php            — WooCommerce product SEO meta fields + REST exposure
- *   dtb-config-reference.php — comment-only constant reference (no exec code)
- *   dtb-catalog-platform/  — canonical product architecture, catalog read model,
- *                             toolset templates/options/validation REST endpoints
+ * Load order (module composition root):
+ *   1. dtb-platform/bootstrap.php
+ *   2. dtb-catalog-platform/bootstrap.php
+ *   3. dtb-commerce/bootstrap.php
+ *   4. dtb-order-platform/bootstrap.php
+ *   5. dtb-schematics/bootstrap.php
+ *   6. dtb-media/bootstrap.php
+ *   7. dtb-marketing/bootstrap.php
+ *   8. dtb-repair-service/bootstrap.php
+ *   9. dtb-integrations/bootstrap.php
  *
  * @package drywall-toolbox
  */
@@ -198,42 +186,14 @@ function _dtb_require( string $path ): void {
 	} );
 }
 
-_dtb_require( $_dtb_dir . '/dtb-utils.php' );
-_dtb_require( $_dtb_dir . '/dtb-auth.php' );
-_dtb_require( $_dtb_dir . '/dtb-cache.php' );
-_dtb_require( $_dtb_dir . '/dtb-cache-admin.php' );
-_dtb_require( $_dtb_dir . '/dtb-rest-api.php' );
-// Catalog platform: canonical product architecture, metadata, and catalog endpoints.
-// Must load before catalog health, product mapping, ops, and integration consumers.
+_dtb_require( $_dtb_dir . '/dtb-platform/bootstrap.php' );
 _dtb_require( $_dtb_dir . '/dtb-catalog-platform/bootstrap.php' );
-_dtb_require( $_dtb_dir . '/dtb-api-security.php' );
-_dtb_require( $_dtb_dir . '/dtb-frontend-security.php' );
-_dtb_require( $_dtb_dir . '/dtb-admin-security.php' );
-_dtb_require( $_dtb_dir . '/dtb-rewards.php' );       // WPLoyalty REST bridge (loads after dtb-auth)
-_dtb_require( $_dtb_dir . '/dtb-image-sync.php' );    // media-library sync for uploads/YYYY/MM/ images
-_dtb_require( $_dtb_dir . '/dtb-woocommerce.php' );
-_dtb_require( $_dtb_dir . '/dtb-commerce/bootstrap.php' ); // cart/order metadata wiring for Store API flows
-_dtb_require( $_dtb_dir . '/dtb-veeqo.php' );         // Veeqo API proxy, order/inventory sync, shipping rates
-_dtb_require( $_dtb_dir . '/dtb-ops-dashboard.php' ); // Ops KPI dashboard, audit log, health endpoint
-_dtb_require( $_dtb_dir . '/dtb-catalog-health.php' ); // Variable product diagnostics + catalog health admin
-_dtb_require( $_dtb_dir . '/dtb-quickbooks.php' );    // QuickBooks Online OAuth2 + accounting sync
-_dtb_require( $_dtb_dir . '/dtb-schematics-api.php' );
-_dtb_require( $_dtb_dir . '/dtb-coming-soon.php' );
-_dtb_require( $_dtb_dir . '/dtb-seo.php' );           // WooCommerce product SEO meta fields
-_dtb_require( $_dtb_dir . '/dtb-config-reference.php' );
-_dtb_require( $_dtb_dir . '/dtb-repair-events.php' );       // Repair event log table + helpers (must load first)
-_dtb_require( $_dtb_dir . '/dtb-repair-workflows.php' );    // State machine + status transitions
-_dtb_require( $_dtb_dir . '/dtb-repair-queue.php' );        // Action Scheduler job handlers
-_dtb_require( $_dtb_dir . '/dtb-repair-notifications.php' ); // Email templates + dispatch
-_dtb_require( $_dtb_dir . '/dtb-repairs.php' );             // CPT, meta, REST endpoints
-_dtb_require( $_dtb_dir . '/dtb-repair-admin.php' );        // WP-Admin UI (list table, metaboxes, AJAX)
-// Product ordering infrastructure — event ledger, workflows, queue, tracking, webhooks, admin UI.
-// Load order: events → workflows → queue → tracking → webhooks → admin
-_dtb_require( $_dtb_dir . '/dtb-order-events.php' );        // wp_dtb_order_events table + event helpers (must load first)
-_dtb_require( $_dtb_dir . '/dtb-order-workflows.php' );     // Order lifecycle state machine + WC hooks
-_dtb_require( $_dtb_dir . '/dtb-order-queue.php' );         // Action Scheduler job handlers (Veeqo, QB, Rewards, etc.)
-_dtb_require( $_dtb_dir . '/dtb-order-tracking.php' );      // Customer-safe tracking projection + REST endpoints
-_dtb_require( $_dtb_dir . '/dtb-payment-webhooks.php' );    // Payment gateway webhook validation + idempotency
-_dtb_require( $_dtb_dir . '/dtb-order-admin.php' );         // WP-Admin columns, metaboxes, operator AJAX actions
+_dtb_require( $_dtb_dir . '/dtb-commerce/bootstrap.php' );
+_dtb_require( $_dtb_dir . '/dtb-order-platform/bootstrap.php' );
+_dtb_require( $_dtb_dir . '/dtb-schematics/bootstrap.php' );
+_dtb_require( $_dtb_dir . '/dtb-media/bootstrap.php' );
+_dtb_require( $_dtb_dir . '/dtb-marketing/bootstrap.php' );
+_dtb_require( $_dtb_dir . '/dtb-repair-service/bootstrap.php' );
+_dtb_require( $_dtb_dir . '/dtb-integrations/bootstrap.php' );
 
 unset( $_dtb_dir );
