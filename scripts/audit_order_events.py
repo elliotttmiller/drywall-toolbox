@@ -62,6 +62,10 @@ def audit(events: list[dict], lookback_days: int) -> list[str]:
 
     # 2. Per-order checks.
     for oid, evts in by_order.items():
+        if not evts:
+            issues.append(f"[NO_EVENTS] order_id={oid} has no event rows")
+            continue
+
         types = {e["event_type"] for e in evts}
         last_dt = max(datetime.fromisoformat(e["created_at"]) for e in evts)
         has_terminal = bool(types & terminal_types)
@@ -76,11 +80,7 @@ def audit(events: list[dict], lookback_days: int) -> list[str]:
                 f"[STALE_FULFILLMENT] order_id={oid} paid but no fulfillment event after {age} days"
             )
 
-        # 2b. No events at all (shouldn't happen in normal flow, but check anyway).
-        if len(evts) == 0:
-            issues.append(f"[NO_EVENTS] order_id={oid} has no event rows")
-
-        # 2c. Old non-terminal orders (possible stuck state).
+        # 2b. Old non-terminal orders (possible stuck state).
         if not has_terminal and last_dt < cutoff:
             age = (datetime.utcnow() - last_dt).days
             issues.append(

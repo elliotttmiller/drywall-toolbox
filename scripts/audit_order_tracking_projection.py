@@ -23,11 +23,11 @@ import sys
 import urllib.request
 import urllib.error
 
-FORBIDDEN_FIELDS = [
+FORBIDDEN_FIELDS = {
     "gateway_raw", "raw_error", "stack_trace", "fraud_score",
     "quickbooks_token", "veeqo_api_key", "admin_note",
     "queue_job_id", "payment_method_details", "risk_level",
-]
+}
 
 
 def get_tracking(base_url: str, order_id: int, order_key: str = "") -> tuple[int, dict | None]:

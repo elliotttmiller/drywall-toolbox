@@ -177,7 +177,7 @@ function dtb_order_job_sync_veeqo( int $order_id, array $args = [] ): void {
 		dtb_order_enqueue_job( 'dtb_order_refresh_tracking_projection', $order_id );
 
 	} catch ( Throwable $e ) {
-		$is_retryable = ! str_contains( $e->getMessage(), '4' ); // 4xx = non-retryable.
+		$is_retryable = ! preg_match( '/\b4\d{2}\b/', $e->getMessage() ); // 4xx = non-retryable client error
 
 		dtb_order_update_integration_state( $order_id, 'veeqo', [
 			'status' => 'failed',
@@ -244,7 +244,7 @@ function dtb_order_job_sync_quickbooks( int $order_id, array $args = [] ): void 
 		] );
 
 	} catch ( Throwable $e ) {
-		$is_retryable = ! str_contains( $e->getMessage(), '4' );
+		$is_retryable = ! preg_match( '/\b4\d{2}\b/', $e->getMessage() ); // 4xx = non-retryable client error
 
 		dtb_order_update_integration_state( $order_id, 'quickbooks', [
 			'status' => 'failed',

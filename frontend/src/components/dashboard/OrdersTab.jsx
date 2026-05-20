@@ -123,7 +123,7 @@ export default function OrdersTab( { userId } ) {
                     <div>
                       <div style={ { display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '3px' } }>
                         <span style={ { fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' } }>Order #{ order.id }</span>
-                        <StatusBadge status={ order.status_label ? order.status : ( order.status ) } />
+                        <StatusBadge status={ order.status } />
                       </div>
                       <p style={ { margin: 0, fontSize: '0.73rem', color: 'rgba(15,23,42,0.4)' } }>
                         { order.date_created ? new Date( order.date_created ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric' } ) : '' }

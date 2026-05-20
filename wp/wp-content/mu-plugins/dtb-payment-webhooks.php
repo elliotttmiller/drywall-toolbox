@@ -19,6 +19,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/** Tolerance in seconds for Stripe webhook timestamp replay protection (default: 5 minutes). */
+if ( ! defined( 'DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE' ) ) {
+	define( 'DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE', 300 );
+}
+
 // =============================================================================
 // SECTION 1 — REST ROUTE
 // =============================================================================
@@ -37,7 +42,7 @@ function dtb_payment_webhook_register_routes(): void {
 			'gateway' => [
 				'type'     => 'string',
 				'required' => true,
-				'enum'     => apply_filters( 'dtb_webhook_gateway_ids', [ 'stripe', 'paypal', 'square', 'authorize_net' ] ),
+				'enum'     => apply_filters( 'dtb_webhook_gateway_ids', [ 'stripe', 'paypal' ] ),
 			],
 		],
 	] );
@@ -132,8 +137,10 @@ function dtb_payment_webhook_verify_signature( string $gateway, string $raw_body
 	}
 }
 
-/**
- * Verify a Stripe webhook using the Stripe-Signature header and HMAC SHA-256.
+/** Tolerance window in seconds for Stripe webhook timestamp replay protection. */
+if ( ! defined( 'DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE' ) ) {
+	define( 'DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE', 300 );
+}
  *
  * @param string          $raw_body
  * @param WP_REST_Request $request
@@ -175,8 +182,8 @@ function dtb_payment_webhook_verify_stripe( string $raw_body, WP_REST_Request $r
 		return new WP_Error( 'dtb_webhook_invalid_sig', 'Invalid Stripe-Signature format.', [ 'status' => 400 ] );
 	}
 
-	// Replay protection: reject signatures older than 5 minutes.
-	if ( abs( time() - $timestamp ) > 300 ) {
+	// Replay protection: reject signatures older than the configured tolerance.
+	if ( abs( time() - $timestamp ) > DTB_STRIPE_WEBHOOK_TIMESTAMP_TOLERANCE ) {
 		return new WP_Error( 'dtb_webhook_replay', 'Stripe webhook timestamp too old.', [ 'status' => 400 ] );
 	}
 

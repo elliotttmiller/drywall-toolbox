@@ -233,8 +233,8 @@ function dtb_order_append_event( int $order_id, string $event_type, array $args 
 	$wpdb->insert( $wpdb->prefix . 'dtb_order_events', $row, $formats ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 	if ( $wpdb->last_error ) {
-		// Silently absorb duplicate-key errors (idempotency).
-		if ( str_contains( (string) $wpdb->last_error, 'Duplicate entry' ) ) {
+		// Silently absorb duplicate-key errors (idempotency). MySQL errno 1062 = ER_DUP_ENTRY.
+		if ( 1062 === (int) $wpdb->errno || str_contains( (string) $wpdb->last_error, 'Duplicate entry' ) ) {
 			return false;
 		}
 		error_log( '[DTB Orders] dtb_order_append_event error: ' . $wpdb->last_error );

@@ -16,7 +16,7 @@
  *   - Skeleton UI while loading
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import {
   Package,
@@ -202,12 +202,13 @@ export default function OrderTracking() {
   const { data, loading, error, refresh } = useOrderStatus( id, orderKey );
   const { streaming }                      = useOrderEventStream( id, orderKey );
 
-  // Merge SSE-pushed timeline updates into the polling snapshot on refresh.
+  // Refresh periodically when streaming is active as a lightweight heartbeat.
+  // Use a long interval (60s) to catch any SSE frames that may have been missed,
+  // without duplicating real-time updates.
   useEffect( () => {
-    if ( streaming ) {
-      const timer = setInterval( refresh, 10_000 );
-      return () => clearInterval( timer );
-    }
+    if ( ! streaming ) return;
+    const timer = setInterval( refresh, 60_000 );
+    return () => clearInterval( timer );
   }, [ streaming, refresh ] );
 
   // ── Loading ──────────────────────────────────────────────────────────────────
