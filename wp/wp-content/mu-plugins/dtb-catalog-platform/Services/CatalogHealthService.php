@@ -120,50 +120,6 @@ final class DTB_CatalogHealthService {
 	 * @return array[]
 	 */
 	public static function inspect_dtb_meta( array $product_ids ): array {
-		if ( class_exists( 'DTB_CatalogValidationService' ) ) {
-			return DTB_CatalogValidationService::validate_products( array_map( 'intval', $product_ids ) );
-		}
-
-		$issues = [];
-		foreach ( array_map( 'intval', $product_ids ) as $product_id ) {
-			$product = wc_get_product( $product_id );
-			if ( ! $product ) {
-				continue;
-			}
-
-			$name             = $product->get_name();
-			$sku              = $product->get_sku() ?: '(none)';
-			$brand_key        = (string) get_post_meta( $product_id, '_dtb_brand_key', true );
-			$category_key     = (string) get_post_meta( $product_id, '_dtb_category_key', true );
-			$product_kind     = (string) get_post_meta( $product_id, '_dtb_product_kind', true );
-			$tool_family      = (string) get_post_meta( $product_id, '_dtb_tool_family', true );
-			$builder_eligible = (string) get_post_meta( $product_id, '_dtb_builder_eligible', true );
-			$builder_slots    = (string) get_post_meta( $product_id, '_dtb_builder_slots', true );
-			$default_var_id   = (string) get_post_meta( $product_id, '_dtb_default_variation_id', true );
-
-			if ( '' === $brand_key ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'error', 'dtb_missing_brand_key', 'Product is published but has no _dtb_brand_key.' );
-			}
-			if ( '' === $category_key ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'error', 'dtb_missing_category_key', 'Product is published but has no _dtb_category_key.' );
-			}
-			if ( '' === $product_kind ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'warning', 'dtb_missing_product_kind', 'Product is missing _dtb_product_kind.' );
-			}
-			if ( '1' === $builder_eligible && '' === $tool_family ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'warning', 'dtb_builder_missing_family', 'Builder-eligible product has no _dtb_tool_family.' );
-			}
-			if ( '1' === $builder_eligible && '' === $builder_slots ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'warning', 'dtb_builder_missing_slots', 'Builder-eligible product has no _dtb_builder_slots.' );
-			}
-			if ( $product->is_type( 'variable' ) && '' === $default_var_id ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'warning', 'dtb_missing_default_var', 'Variable parent has no _dtb_default_variation_id.' );
-			}
-			if ( $product->is_type( 'variable' ) && '' !== $default_var_id && ! in_array( (int) $default_var_id, $product->get_children(), true ) ) {
-				$issues[] = DTB_CatalogHealthIssue::make( $product_id, $name, $sku, 'warning', 'dtb_invalid_default_var', sprintf( '_dtb_default_variation_id (%s) does not belong to this product.', esc_html( $default_var_id ) ) );
-			}
-		}
-
-		return $issues;
+		return DTB_CatalogValidationService::validate_products( array_map( 'intval', $product_ids ) );
 	}
 }
