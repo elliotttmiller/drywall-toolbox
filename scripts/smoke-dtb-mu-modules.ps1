@@ -21,6 +21,7 @@ if (-not (Test-Path $loaderPath)) {
 }
 
 $loaderContent = Get-Content -Path $loaderPath -Raw
+$normalizedLoaderContent = $loaderContent -replace "\\", "/"
 $position = -1
 
 foreach ($bootstrap in $expectedBootstraps) {
@@ -29,10 +30,7 @@ foreach ($bootstrap in $expectedBootstraps) {
     throw "Missing bootstrap: $bootstrap"
   }
 
-  # Match both "/" and "\" separators in loader include strings.
-  $escapedBootstrap = [Regex]::Escape($bootstrap) -replace "/", "[/\\]"
-  $match = [Regex]::Match($loaderContent, "[\\/]$escapedBootstrap")
-  $nextPosition = if ($match.Success) { $match.Index } else { -1 }
+  $nextPosition = $normalizedLoaderContent.IndexOf("/$bootstrap")
   if ($nextPosition -lt 0) {
     throw "Loader is missing bootstrap include: $bootstrap"
   }

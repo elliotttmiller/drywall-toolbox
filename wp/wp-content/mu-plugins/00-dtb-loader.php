@@ -202,7 +202,10 @@ function dtb_module_require( string $relative ): void {
 
 	if ( file_exists( $path ) ) {
 		require_once $path;
+		return;
 	}
+
+	error_log( "[DTB] mu-plugin module file not found: {$path}" );
 }
 
 _dtb_require( $_dtb_dir . '/dtb-platform/bootstrap.php' );
