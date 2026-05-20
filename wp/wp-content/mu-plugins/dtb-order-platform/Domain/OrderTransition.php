@@ -1,12 +1,34 @@
 <?php
+/**
+ * Domain: Order Transition — fulfillment substate read/write.
+ *
+ * @package drywall-toolbox
+ */
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-order-workflows.php' );
-	return;
+function dtb_order_get_fulfillment_substate( int $order_id ): string {
+$val = get_post_meta( $order_id, '_dtb_fulfillment_substate', true );
+return ( is_string( $val ) && '' !== $val ) ? $val : 'pending';
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-order-workflows.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_order_set_fulfillment_substate( int $order_id, string $substate, array $payload = [] ): void {
+$prev = dtb_order_get_fulfillment_substate( $order_id );
+if ( $prev === $substate ) { return; }
+update_post_meta( $order_id, '_dtb_fulfillment_substate', sanitize_key( $substate ) );
+$event_map = [
+'inventory_reserved' => 'order.inventory_reserved',
+'picked'             => 'order.picked',
+'packed'             => 'order.packed',
+'shipped'            => 'order.shipped',
+'delivered'          => 'order.delivered',
+'exception'          => 'integration.veeqo.failed',
+];
+if ( isset( $event_map[ $substate ] ) ) {
+dtb_order_append_event( $order_id, $event_map[ $substate ], [
+'source'     => 'veeqo',
+'actor_type' => 'veeqo',
+'visibility' => 'customer',
+'payload'    => $payload,
+] );
+}
 }

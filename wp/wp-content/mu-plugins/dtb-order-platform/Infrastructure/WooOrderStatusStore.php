@@ -1,4 +1,8 @@
 <?php
+/**
+ * Infrastructure: WooCommerce Order Status Store — thin re-export shim.
+ * Status map lives in Domain/OrderLifecycleStatus.php.
+ *
+ * @package drywall-toolbox
+ */
 defined( 'ABSPATH' ) || exit;
-
-// Architecture placeholder for bounded module extraction: dtb-order-platform/Infrastructure/WooOrderStatusStore.php.
