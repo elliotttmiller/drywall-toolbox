@@ -949,7 +949,7 @@ The dashboard is production-ready when:
 15. Existing WooCommerce order-detail diagnostics continue working.
 16. Existing repair admin screens continue working.
 17. No raw secrets, tokens, payment payloads, webhook payloads, or stack traces are shown.
-18. Repository smoke checks are documented and pass before rollout.
+18. Repository smoke checks in Section 24 (frontend lint/build and MU-plugin composition) are documented and pass before rollout.
 19. Regression checks show no breakage in existing frontend or MU-plugin composition behavior.
 
 ⸻
@@ -974,9 +974,11 @@ Run these before release:
 1. Frontend baseline:
    - `cd frontend`
    - `npm install`
-   - `npm run lint --if-present`
+   - `npm run lint`
    - `npm run build`
+   - Success criteria: both commands exit with status code 0.
 2. MU-plugin composition:
    - `pwsh -File scripts/smoke-dtb-mu-modules.ps1`
+   - Success criteria: command exits with status code 0 and prints `DTB MU module smoke check passed.`
 
 If any command fails, block rollout and resolve failures before enabling operator-facing dashboard mutations.
