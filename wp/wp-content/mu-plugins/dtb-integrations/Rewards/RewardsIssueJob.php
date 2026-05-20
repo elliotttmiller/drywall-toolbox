@@ -1,12 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-integrations/Legacy/dtb-rewards.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-integrations/Legacy/dtb-rewards.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_integrations_rewards_recent_redemptions( int $limit = 25 ): array {
+	return function_exists( 'dtb_rewards_get_recent_redemptions' ) ? (array) dtb_rewards_get_recent_redemptions( $limit ) : [];
 }

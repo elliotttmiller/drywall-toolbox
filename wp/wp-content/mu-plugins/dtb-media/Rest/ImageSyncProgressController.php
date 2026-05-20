@@ -1,12 +1,23 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-media/Legacy/dtb-image-sync.php' );
-	return;
+function dtb_route_sync_images_progress(): WP_REST_Response {
+	$lock     = (bool) get_transient( DTB_SYNC_LOCK_KEY );
+	$progress = get_transient( DTB_SYNC_PROGRESS_KEY );
+	return rest_ensure_response( [
+		'locked'   => $lock,
+		'progress' => $progress ?: null,
+	] );
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-media/Legacy/dtb-image-sync.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
-}
+// ============================================================================
+// GET /dtb/v1/sync-images/status
+// ============================================================================
+
+/**
+ * Parse a WooCommerce gallery meta string into normalized attachment IDs.
+ *
+ * @param string $gallery_meta Raw `_product_image_gallery` meta value.
+ * @return int[]
+ */
+

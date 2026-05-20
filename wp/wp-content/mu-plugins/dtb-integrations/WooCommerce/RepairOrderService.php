@@ -1,12 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-commerce/Legacy/dtb-woocommerce.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-commerce/Legacy/dtb-woocommerce.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_integrations_woo_repair_quote_totals( array $lines ): array {
+	if ( function_exists( 'dtb_repair_calculate_totals' ) ) {
+		return (array) dtb_repair_calculate_totals( $lines );
+	}
+	return [];
 }

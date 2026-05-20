@@ -1,12 +1,29 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-catalog-platform/Legacy/dtb-product-mapping.php' );
-	return;
-}
+/**
+ * Resolve product IDs mapped to a schematic identifier.
+ */
+function dtb_schematics_resolve_product_ids_for_schematic( string $schematic_id ): array {
+	if ( '' === trim( $schematic_id ) ) {
+		return [];
+	}
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-catalog-platform/Legacy/dtb-product-mapping.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+	$ids = get_posts(
+		[
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_query'     => [
+				[
+					'key'     => '_dtb_schematic_id',
+					'value'   => sanitize_text_field( $schematic_id ),
+					'compare' => '=',
+				],
+			],
+		]
+	);
+
+	return array_values( array_map( 'intval', (array) $ids ) );
 }

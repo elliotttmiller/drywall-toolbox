@@ -1,12 +1,16 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-media/Legacy/dtb-image-sync.php' );
-	return;
+/**
+ * Resolve an absolute uploads directory and base URL for a relative path.
+ */
+function dtb_image_sync_resolve_upload_directory( string $relative_path ): array {
+	$upload_dir = wp_upload_dir();
+	$relative_path = trim( $relative_path, '/' );
+	return [
+		'basedir'  => trailingslashit( $upload_dir['basedir'] ) . $relative_path,
+		'baseurl'  => trailingslashit( $upload_dir['baseurl'] ) . $relative_path,
+		'relative' => $relative_path,
+	];
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-media/Legacy/dtb-image-sync.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
-}

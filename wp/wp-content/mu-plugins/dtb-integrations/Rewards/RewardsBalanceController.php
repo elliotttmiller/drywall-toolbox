@@ -1,12 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-integrations/Legacy/dtb-rewards.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-integrations/Legacy/dtb-rewards.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_integrations_rewards_balance( WP_REST_Request $request ) {
+	return function_exists( 'dtb_rewards_get_balance' ) ? dtb_rewards_get_balance( $request ) : new WP_Error( 'rewards_unavailable', 'Rewards balance unavailable.' );
 }

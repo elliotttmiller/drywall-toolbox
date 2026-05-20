@@ -115,6 +115,6 @@ require_once $_dtb_platform . '/Rest/OpsLocalQueueController.php';
 require_once $_dtb_platform . '/Rest/OpsProductOrdersController.php';
 require_once $_dtb_platform . '/Rest/OpsRepairOrdersController.php';
 require_once $_dtb_platform . '/Rest/OpsSettingsController.php';
-require_once $_dtb_platform . '/Rest/LegacyProxyRoutes.php';
+require_once $_dtb_platform . '/Rest/ProxyRoutes.php';
 
 unset( $_dtb_platform );

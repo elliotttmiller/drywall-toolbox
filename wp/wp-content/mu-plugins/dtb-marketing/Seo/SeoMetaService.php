@@ -1,12 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-marketing/Legacy/dtb-seo.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-marketing/Legacy/dtb-seo.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_marketing_output_seo_head_tags(): void {
+	if ( function_exists( 'dtb_seo_output_head_tags' ) ) {
+		dtb_seo_output_head_tags();
+	}
 }

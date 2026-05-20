@@ -1,16 +1,16 @@
 <?php
 /**
- * Legacy shim. Real implementation moved to dtb-commerce/Legacy/dtb-woocommerce.php.
- * Remove after deployment verification window.
+ * Backward-compatible entrypoint shim.
+ * Real implementation loads from dtb-integrations/WooCommerce/WooCommerceBridge.php.
  */
 defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-commerce/Legacy/dtb-woocommerce.php' );
+	dtb_module_require( 'dtb-integrations/WooCommerce/WooCommerceBridge.php' );
 	return;
 }
 
-$legacy_path = __DIR__ . '/dtb-commerce/Legacy/dtb-woocommerce.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+$module_path = __DIR__ . '/dtb-integrations/WooCommerce/WooCommerceBridge.php';
+if ( file_exists( $module_path ) ) {
+	require_once $module_path;
 }

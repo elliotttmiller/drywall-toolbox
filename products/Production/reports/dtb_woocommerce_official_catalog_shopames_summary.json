@@ -1,0 +1,27 @@
+{
+  "output": "/mnt/data/dtb_woocommerce_official_catalog_shopames_optimized.csv",
+  "audit": "/mnt/data/dtb_woocommerce_official_catalog_shopames_audit.csv",
+  "row_count": 355,
+  "type_counts": {
+    "variable": 66,
+    "variation": 215,
+    "simple": 74
+  },
+  "brand_counts": {
+    "Columbia Tools": 151,
+    "TapeTech": 204
+  },
+  "priced_nonparent_rows": 199,
+  "visible_rows": 252,
+  "hidden_rows": 103,
+  "blank_images": true,
+  "source_validation_counts": {
+    "official-brand-catalog-validated": 90,
+    "official-brand-catalog-shopames-price-validated": 165,
+    "source-retained-retailer-page": 23,
+    "shopames-official-source-validated": 77
+  },
+  "launch_official_products_covered": 223,
+  "shopames_current_only_nonparent_products_added": 66,
+  "variables_with_children": 66
+}

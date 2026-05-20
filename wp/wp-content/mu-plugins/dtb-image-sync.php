@@ -1,16 +1,16 @@
 <?php
 /**
- * Legacy shim. Real implementation moved to dtb-media/Legacy/dtb-image-sync.php.
- * Remove after deployment verification window.
+ * Backward-compatible entrypoint shim.
+ * Real implementation loads from dtb-media/bootstrap.php.
  */
 defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-media/Legacy/dtb-image-sync.php' );
+	dtb_module_require( 'dtb-media/bootstrap.php' );
 	return;
 }
 
-$legacy_path = __DIR__ . '/dtb-media/Legacy/dtb-image-sync.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+$module_path = __DIR__ . '/dtb-media/bootstrap.php';
+if ( file_exists( $module_path ) ) {
+	require_once $module_path;
 }

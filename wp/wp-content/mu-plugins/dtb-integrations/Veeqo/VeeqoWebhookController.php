@@ -1,12 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-integrations/Legacy/dtb-veeqo.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-integrations/Legacy/dtb-veeqo.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_integrations_veeqo_webhook_order( WP_REST_Request $request ): ?WP_REST_Response {
+	return function_exists( 'dtb_veeqo_route_webhook_order' ) ? dtb_veeqo_route_webhook_order( $request ) : null;
 }

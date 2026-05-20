@@ -1,12 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-integrations/Legacy/dtb-veeqo.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-integrations/Legacy/dtb-veeqo.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_integrations_veeqo_healthcheck(): void {
+	if ( function_exists( 'dtb_veeqo_run_health_check' ) ) {
+		dtb_veeqo_run_health_check();
+	}
 }

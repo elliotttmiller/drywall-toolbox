@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  *   dtb-order-operations-read-models.php  — query/projection helpers
  *   dtb-order-operations-actions.php      — mutation handlers
  *   dtb-order-operations-ajax.php         — AJAX endpoint registrations
- *   dtb-platform/Legacy/dtb-ops-dashboard.php — parent DTB Ops menu
+ *   dtb-platform/Observability/OpsDashboard.php — parent DTB Ops menu
  *
  * @package drywall-toolbox
  */

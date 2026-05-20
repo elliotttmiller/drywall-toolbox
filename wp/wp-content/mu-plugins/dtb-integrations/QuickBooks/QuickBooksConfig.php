@@ -1,12 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-integrations/Legacy/dtb-quickbooks.php' );
-	return;
-}
-
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-integrations/Legacy/dtb-quickbooks.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_integrations_qbo_config(): array {
+	return function_exists( 'dtb_qbo_config' ) ? dtb_qbo_config() : [];
 }

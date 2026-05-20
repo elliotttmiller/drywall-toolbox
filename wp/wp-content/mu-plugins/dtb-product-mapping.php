@@ -1,16 +1,16 @@
 <?php
 /**
- * Legacy shim. Real implementation moved to dtb-catalog-platform/Legacy/dtb-product-mapping.php.
- * Remove after deployment verification window.
+ * Backward-compatible entrypoint shim.
+ * Real implementation loads from dtb-catalog-platform/bootstrap.php.
  */
 defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-catalog-platform/Legacy/dtb-product-mapping.php' );
+	dtb_module_require( 'dtb-catalog-platform/bootstrap.php' );
 	return;
 }
 
-$legacy_path = __DIR__ . '/dtb-catalog-platform/Legacy/dtb-product-mapping.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+$module_path = __DIR__ . '/dtb-catalog-platform/bootstrap.php';
+if ( file_exists( $module_path ) ) {
+	require_once $module_path;
 }
