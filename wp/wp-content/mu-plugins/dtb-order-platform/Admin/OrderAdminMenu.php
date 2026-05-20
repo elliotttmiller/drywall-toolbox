@@ -1,12 +1,43 @@
 <?php
+/**
+ * DTB Order Admin Menu — metabox registration for WooCommerce order detail screens.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-order-admin.php' );
-	return;
-}
+add_action( 'add_meta_boxes', 'dtb_order_admin_register_metaboxes', 30 );
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-order-admin.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_order_admin_register_metaboxes(): void {
+	$screens = [ 'shop_order', 'woocommerce_page_wc-orders' ];
+
+	foreach ( $screens as $screen ) {
+		add_meta_box(
+			'dtb-order-timeline',
+			__( 'DTB Order Timeline', 'drywall-toolbox' ),
+			'dtb_order_admin_metabox_timeline',
+			$screen,
+			'normal',
+			'high'
+		);
+
+		add_meta_box(
+			'dtb-integration-state',
+			__( 'DTB Integration State', 'drywall-toolbox' ),
+			'dtb_order_admin_metabox_integration',
+			$screen,
+			'side',
+			'default'
+		);
+
+		add_meta_box(
+			'dtb-operator-actions',
+			__( 'DTB Operator Actions', 'drywall-toolbox' ),
+			'dtb_order_admin_metabox_actions',
+			$screen,
+			'side',
+			'low'
+		);
+	}
 }

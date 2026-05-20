@@ -40,13 +40,13 @@ $rootShimMap = @{
   'dtb-catalog-health.php'  = 'dtb-catalog-platform/Legacy/dtb-catalog-health.php'
   # dtb-commerce — TRANSITIONAL
   'dtb-woocommerce.php'     = 'dtb-commerce/Legacy/dtb-woocommerce.php'
-  # dtb-order-platform — TRANSITIONAL
-  'dtb-order-events.php'    = 'dtb-order-platform/Legacy/dtb-order-events.php'
-  'dtb-order-workflows.php' = 'dtb-order-platform/Legacy/dtb-order-workflows.php'
-  'dtb-order-queue.php'     = 'dtb-order-platform/Legacy/dtb-order-queue.php'
-  'dtb-order-tracking.php'  = 'dtb-order-platform/Legacy/dtb-order-tracking.php'
-  'dtb-payment-webhooks.php' = 'dtb-order-platform/Legacy/dtb-payment-webhooks.php'
-  'dtb-order-admin.php'     = 'dtb-order-platform/Legacy/dtb-order-admin.php'
+  # dtb-order-platform — COMPLETED (bootstrap owns all implementation)
+  'dtb-order-events.php'    = ''
+  'dtb-order-workflows.php' = ''
+  'dtb-order-queue.php'     = ''
+  'dtb-order-tracking.php'  = ''
+  'dtb-payment-webhooks.php' = ''
+  'dtb-order-admin.php'     = ''
   # dtb-repair-service — TRANSITIONAL
   'dtb-repairs.php'         = 'dtb-repair-service/Legacy/dtb-repairs.php'
   'dtb-repair-events.php'   = 'dtb-repair-service/Legacy/dtb-repair-events.php'

@@ -1,12 +1,21 @@
 <?php
+/**
+ * DTB Payment Webhook Idempotency — event ID extraction.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-payment-webhooks.php' );
-	return;
-}
+function dtb_payment_webhook_extract_event_id( string $gateway, array $payload ): ?string {
+	switch ( $gateway ) {
+		case 'stripe':
+			return ! empty( $payload['id'] ) ? sanitize_text_field( (string) $payload['id'] ) : null;
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-payment-webhooks.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+		case 'paypal':
+			return ! empty( $payload['id'] ) ? sanitize_text_field( (string) $payload['id'] ) : null;
+
+		default:
+			return apply_filters( "dtb_payment_webhook_event_id_{$gateway}", null, $payload );
+	}
 }

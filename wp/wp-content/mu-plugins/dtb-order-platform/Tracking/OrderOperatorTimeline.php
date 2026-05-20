@@ -1,12 +1,29 @@
 <?php
+/**
+ * DTB Order Operator Timeline — operator-facing event timeline.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-order-tracking.php' );
-	return;
-}
+function dtb_order_get_operator_timeline( int $order_id ): array {
+	$events   = dtb_order_get_events( $order_id, [ 'order' => 'ASC' ] );
+	$timeline = [];
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-order-tracking.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+	foreach ( $events as $row ) {
+		if ( 'internal' === (string) $row->visibility ) {
+			continue;
+		}
+
+		$timeline[] = [
+			'type'        => (string) $row->event_type,
+			'visibility'  => (string) $row->visibility,
+			'actor_type'  => (string) $row->actor_type,
+			'actor_id'    => $row->actor_id !== null ? (int) $row->actor_id : null,
+			'occurred_at' => (string) $row->created_at,
+		];
+	}
+
+	return $timeline;
 }

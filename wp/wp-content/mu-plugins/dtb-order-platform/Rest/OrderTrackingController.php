@@ -1,12 +1,19 @@
 <?php
+/**
+ * DTB Order Tracking Controller — REST handler for tracking endpoint.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-order-tracking.php' );
-	return;
-}
+function dtb_order_rest_get_tracking( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+	$order_id   = (int) $request->get_param( 'id' );
+	$projection = dtb_order_get_tracking_projection( $order_id );
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-order-tracking.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+	if ( null === $projection ) {
+		return new WP_Error( 'dtb_not_found', 'Order not found.', [ 'status' => 404 ] );
+	}
+
+	return new WP_REST_Response( $projection, 200 );
 }

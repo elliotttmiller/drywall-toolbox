@@ -1,12 +1,19 @@
 <?php
+/**
+ * DTB Update Order Tracking — application command to update tracking info and refresh projection.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-order-tracking.php' );
-	return;
-}
+function dtb_application_update_order_tracking( int $order_id, string $tracking_number, string $carrier ): void {
+	$int_state = dtb_order_get_integration_state( $order_id );
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-order-tracking.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+	$int_state['veeqo']['tracking'] = sanitize_text_field( $tracking_number );
+	$int_state['veeqo']['carrier']  = sanitize_text_field( $carrier );
+
+	dtb_order_update_integration_state( $order_id, 'veeqo', $int_state['veeqo'] );
+
+	dtb_application_refresh_order_projection( $order_id );
 }

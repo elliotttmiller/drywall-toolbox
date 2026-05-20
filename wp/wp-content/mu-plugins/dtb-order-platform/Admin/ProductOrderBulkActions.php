@@ -1,12 +1,17 @@
 <?php
+/**
+ * DTB Product Order Bulk Actions — product-order-specific bulk actions for shop_order list.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-order-platform/Legacy/dtb-order-admin.php' );
-	return;
-}
+add_filter( 'bulk_actions-edit-shop_order', 'dtb_product_order_admin_bulk_actions' );
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-order-platform/Legacy/dtb-order-admin.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+function dtb_product_order_admin_bulk_actions( array $actions ): array {
+	$actions['dtb_retry_veeqo']      = __( 'DTB: Retry Veeqo Sync', 'drywall-toolbox' );
+	$actions['dtb_retry_quickbooks'] = __( 'DTB: Retry QuickBooks Sync', 'drywall-toolbox' );
+	$actions['dtb_refresh_tracking'] = __( 'DTB: Refresh Tracking Projection', 'drywall-toolbox' );
+	return $actions;
 }
