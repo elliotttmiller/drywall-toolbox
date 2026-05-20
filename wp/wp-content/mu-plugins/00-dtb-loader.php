@@ -218,11 +218,10 @@ _dtb_require( $_dtb_dir . '/dtb-marketing/bootstrap.php' );
 _dtb_require( $_dtb_dir . '/dtb-repair-service/bootstrap.php' );
 _dtb_require( $_dtb_dir . '/dtb-integrations/bootstrap.php' );
 
-// Order Operations Dashboard — loaded after all platform bootstraps.
-// Load order: read-models (pure queries) → actions (mutations) → ajax (handlers) → dashboard (UI + hooks).
-_dtb_require( $_dtb_dir . '/dtb-order-operations-read-models.php' );
-_dtb_require( $_dtb_dir . '/dtb-order-operations-actions.php' );
-_dtb_require( $_dtb_dir . '/dtb-order-operations-ajax.php' );
-_dtb_require( $_dtb_dir . '/dtb-order-operations-dashboard.php' );
+// Order Operations Dashboard — migrated to dtb-platform module (Observability/).
+// _dtb_require( $_dtb_dir . '/dtb-order-operations-read-models.php' );
+// _dtb_require( $_dtb_dir . '/dtb-order-operations-actions.php' );
+// _dtb_require( $_dtb_dir . '/dtb-order-operations-ajax.php' );
+// _dtb_require( $_dtb_dir . '/dtb-order-operations-dashboard.php' );
 
 unset( $_dtb_dir );
