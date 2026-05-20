@@ -1,10 +1,6 @@
 <?php
 /**
- * dtb-repair-workflows — no-op shim.
- *
- * All logic has migrated to mu-plugins/dtb-repair-service/.
- *
- * @package drywall-toolbox
+ * Legacy shim. Real implementation moved to the corresponding module bootstrap.
+ * Remove after deployment verification window.
  */
-
 defined( 'ABSPATH' ) || exit;

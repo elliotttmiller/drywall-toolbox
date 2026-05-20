@@ -1,10 +1,6 @@
 <?php
 /**
- * dtb-repair-notifications — no-op shim.
- *
- * All logic has migrated to mu-plugins/dtb-repair-service/.
- *
- * @package drywall-toolbox
+ * Legacy shim. Real implementation moved to dtb-repair-service/bootstrap.php.
+ * Remove after deployment verification window.
  */
-
 defined( 'ABSPATH' ) || exit;
