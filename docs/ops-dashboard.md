@@ -1,12 +1,6 @@
-Below is a production-grade implementation document you can save as:
+# DTB Ops — Order Operations Dashboard
 
-docs/order-operations-dashboard.md
-
-⸻
-
-DTB Order Operations Dashboard
-
-Production-Grade WP-Admin Observability & Management Implementation Blueprint
+Production-grade WP-Admin observability and management source of truth.
 
 1. Objective
 
@@ -955,6 +949,8 @@ The dashboard is production-ready when:
 15. Existing WooCommerce order-detail diagnostics continue working.
 16. Existing repair admin screens continue working.
 17. No raw secrets, tokens, payment payloads, webhook payloads, or stack traces are shown.
+18. Repository smoke checks are documented and pass before rollout.
+19. Regression checks show no breakage in existing frontend or MU-plugin composition behavior.
 
 ⸻
 
@@ -968,3 +964,19 @@ This gives DTB a focused production-grade operations interface for the two core 
 
 Product Orders
 Repair Orders
+
+⸻
+
+24. Smoke Checks / Regression Verification
+
+Run these before release:
+
+1. Frontend baseline:
+   - `cd frontend`
+   - `npm install`
+   - `npm run lint --if-present`
+   - `npm run build`
+2. MU-plugin composition:
+   - `pwsh -File scripts/smoke-dtb-mu-modules.ps1`
+
+If any command fails, block rollout and resolve failures before enabling operator-facing dashboard mutations.
