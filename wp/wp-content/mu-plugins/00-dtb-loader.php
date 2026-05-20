@@ -186,6 +186,25 @@ function _dtb_require( string $path ): void {
 	} );
 }
 
+/**
+ * Require a file by mu-plugin-root-relative path.
+ *
+ * @param string $relative Relative path from wp-content/mu-plugins.
+ */
+function dtb_module_require( string $relative ): void {
+	$relative = ltrim( $relative, '/' );
+	$path     = __DIR__ . '/' . $relative;
+
+	if ( function_exists( '_dtb_require' ) ) {
+		_dtb_require( $path );
+		return;
+	}
+
+	if ( file_exists( $path ) ) {
+		require_once $path;
+	}
+}
+
 _dtb_require( $_dtb_dir . '/dtb-platform/bootstrap.php' );
 _dtb_require( $_dtb_dir . '/dtb-catalog-platform/bootstrap.php' );
 _dtb_require( $_dtb_dir . '/dtb-commerce/bootstrap.php' );

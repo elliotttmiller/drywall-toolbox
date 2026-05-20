@@ -29,8 +29,10 @@ foreach ($bootstrap in $expectedBootstraps) {
     throw "Missing bootstrap: $bootstrap"
   }
 
-  $needle = "/$bootstrap"
-  $nextPosition = $loaderContent.IndexOf($needle)
+  # Match both "/" and "\" separators in loader include strings.
+  $escapedBootstrap = [Regex]::Escape($bootstrap) -replace "/", "[/\\]"
+  $match = [Regex]::Match($loaderContent, "[\\/]$escapedBootstrap")
+  $nextPosition = if ($match.Success) { $match.Index } else { -1 }
   if ($nextPosition -lt 0) {
     throw "Loader is missing bootstrap include: $bootstrap"
   }

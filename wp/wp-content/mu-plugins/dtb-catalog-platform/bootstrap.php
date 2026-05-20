@@ -79,14 +79,7 @@ if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 }
 
 // Transitional legacy bridge for existing catalog health diagnostics.
-if ( function_exists( '_dtb_require' ) ) {
-	_dtb_require( dirname( __DIR__ ) . '/dtb-catalog-health.php' );
-} else {
-	$legacy_catalog_health = dirname( __DIR__ ) . '/dtb-catalog-health.php';
-	if ( file_exists( $legacy_catalog_health ) ) {
-		require_once $legacy_catalog_health;
-	}
-}
+dtb_module_require( 'dtb-catalog-health.php' );
 
 unset( $_dtb_cp );
 
