@@ -1,12 +1,93 @@
 <?php
+/**
+ * Infrastructure — RepairMetaRepository: registers all post meta keys.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-repair-service/Legacy/dtb-repairs.php' );
-	return;
+add_action( 'init', 'dtb_repair_register_meta' );
+
+/**
+ * Register all post meta keys for dtb_repair_request.
+ */
+function dtb_repair_register_meta(): void {
+$admin_auth = function (): bool {
+return current_user_can( 'dtb_manage_repairs' );
+};
+
+$string_meta = [
+'_repair_status', '_repair_public_token', '_repair_idempotency_key',
+'_repair_customer_email', '_repair_customer_name', '_repair_customer_phone',
+'_repair_tool_brand', '_repair_model', '_repair_serial',
+'_repair_service_tier', '_repair_issue', '_repair_internal_notes',
+'_repair_veeqo_sync_status', '_repair_veeqo_tracking',
+'_repair_quickbooks_invoice_id', '_repair_rewards_status',
+'_repair_submitted_at', '_repair_reviewed_at', '_repair_completed_at', '_repair_closed_at',
+'_repair_integration_state', '_repair_rewards_event_id', '_repair_rewards_issued_at',
+];
+
+foreach ( $string_meta as $key ) {
+register_post_meta(
+'dtb_repair_request',
+$key,
+[
+'type'              => 'string',
+'single'            => true,
+'sanitize_callback' => 'sanitize_text_field',
+'auth_callback'     => $admin_auth,
+]
+);
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-repair-service/Legacy/dtb-repairs.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+$int_meta = [
+'_repair_customer_user_id',
+'_repair_assigned_tech_id',
+'_repair_wc_order_id',
+];
+
+foreach ( $int_meta as $key ) {
+register_post_meta(
+'dtb_repair_request',
+$key,
+[
+'type'              => 'integer',
+'single'            => true,
+'sanitize_callback' => 'absint',
+'auth_callback'     => $admin_auth,
+]
+);
+}
+
+$bool_meta = [ '_repair_rewards_issued' ];
+foreach ( $bool_meta as $key ) {
+register_post_meta(
+'dtb_repair_request',
+$key,
+[
+'type'              => 'boolean',
+'single'            => true,
+'sanitize_callback' => 'rest_sanitize_boolean',
+'auth_callback'     => $admin_auth,
+]
+);
+}
+
+register_post_meta(
+'dtb_repair_request',
+'_repair_images',
+[
+'type'              => 'string',
+'single'            => true,
+'sanitize_callback' => function ( $value ) {
+$decoded = is_string( $value ) ? json_decode( $value, true ) : $value;
+if ( ! is_array( $decoded ) ) {
+return '[]';
+}
+return wp_json_encode( array_values( array_map( 'absint', $decoded ) ) );
+},
+'auth_callback'     => $admin_auth,
+]
+);
 }

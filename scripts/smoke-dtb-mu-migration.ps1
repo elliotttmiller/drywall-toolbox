@@ -47,13 +47,13 @@ $rootShimMap = @{
   'dtb-order-tracking.php'  = ''
   'dtb-payment-webhooks.php' = ''
   'dtb-order-admin.php'     = ''
-  # dtb-repair-service — TRANSITIONAL
-  'dtb-repairs.php'         = 'dtb-repair-service/Legacy/dtb-repairs.php'
-  'dtb-repair-events.php'   = 'dtb-repair-service/Legacy/dtb-repair-events.php'
-  'dtb-repair-workflows.php' = 'dtb-repair-service/Legacy/dtb-repair-workflows.php'
-  'dtb-repair-queue.php'    = 'dtb-repair-service/Legacy/dtb-repair-queue.php'
-  'dtb-repair-notifications.php' = 'dtb-repair-service/Legacy/dtb-repair-notifications.php'
-  'dtb-repair-admin.php'    = 'dtb-repair-service/Legacy/dtb-repair-admin.php'
+  # dtb-repair-service — COMPLETED
+  'dtb-repairs.php'              = ''
+  'dtb-repair-events.php'        = ''
+  'dtb-repair-workflows.php'     = ''
+  'dtb-repair-queue.php'         = ''
+  'dtb-repair-notifications.php' = ''
+  'dtb-repair-admin.php'         = ''
   # dtb-schematics — TRANSITIONAL
   'dtb-schematics-api.php'  = 'dtb-schematics/Legacy/dtb-schematics-api.php'
   'dtb-schematics-admin.php' = 'dtb-schematics/Legacy/dtb-schematics-admin.php'

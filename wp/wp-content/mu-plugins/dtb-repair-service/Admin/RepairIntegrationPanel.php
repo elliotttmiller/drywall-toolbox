@@ -1,12 +1,47 @@
 <?php
+/**
+ * Admin — RepairIntegrationPanel: integration status helpers for the meta box.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-repair-service/Legacy/dtb-repair-admin.php' );
-	return;
+
+/**
+ * Read a single value from the integration state JSON meta.
+ *
+ * @param int    $repair_id
+ * @param string $integration  'woocommerce' | 'veeqo' | 'quickbooks' | 'rewards'
+ * @param string $key          Key within the integration slice.
+ * @return mixed
+ */
+function dtb_repair_admin_get_integration_state_value( int $repair_id, string $integration, string $key ): mixed {
+	$raw     = (string) get_post_meta( $repair_id, '_repair_integration_state', true );
+	$decoded = ( '' !== $raw ) ? json_decode( $raw, true ) : [];
+	return $decoded[ $integration ][ $key ] ?? null;
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-repair-service/Legacy/dtb-repair-admin.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+/**
+ * Render a small integration status badge.
+ *
+ * @param mixed $state  State string from the integration projection.
+ * @return string  HTML badge.
+ */
+function dtb_repair_admin_integration_badge( mixed $state ): string {
+	$state = (string) $state;
+
+	if ( '' === $state || 'pending' === $state || 'not_configured' === $state ) {
+		return '<span class="dtb-integration-pending">—</span>';
+	}
+
+	if ( in_array( $state, [ 'synced', 'issued', 'ok' ], true ) ) {
+		return '<span class="dtb-integration-ok">✓</span>';
+	}
+
+	if ( in_array( $state, [ 'error', 'failed' ], true ) ) {
+		return '<span class="dtb-integration-error">✗</span>';
+	}
+
+	return '<span>' . esc_html( $state ) . '</span>';
 }

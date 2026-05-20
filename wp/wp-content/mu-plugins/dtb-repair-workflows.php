@@ -1,16 +1,10 @@
 <?php
 /**
- * Legacy shim. Real implementation moved to dtb-repair-service/Legacy/dtb-repair-workflows.php.
- * Remove after deployment verification window.
+ * dtb-repair-workflows — no-op shim.
+ *
+ * All logic has migrated to mu-plugins/dtb-repair-service/.
+ *
+ * @package drywall-toolbox
  */
+
 defined( 'ABSPATH' ) || exit;
-
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-repair-service/Legacy/dtb-repair-workflows.php' );
-	return;
-}
-
-$legacy_path = __DIR__ . '/dtb-repair-service/Legacy/dtb-repair-workflows.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
-}

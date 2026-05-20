@@ -1,12 +1,25 @@
 <?php
+/**
+ * Domain — RepairTransition: transition validation.
+ *
+ * @package drywall-toolbox
+ */
+
 defined( 'ABSPATH' ) || exit;
 
-if ( function_exists( 'dtb_module_require' ) ) {
-	dtb_module_require( 'dtb-repair-service/Legacy/dtb-repair-workflows.php' );
-	return;
+/**
+ * Return true if a transition from $from to $to is valid.
+ *
+ * @param string $from Current status.
+ * @param string $to   Proposed status.
+ * @return bool
+ */
+function dtb_is_valid_repair_transition( string $from, string $to ): bool {
+$map = dtb_get_allowed_transitions();
+
+if ( ! isset( $map[ $from ] ) ) {
+return false;
 }
 
-$legacy_path = dirname( __DIR__, 2 ) . '/dtb-repair-service/Legacy/dtb-repair-workflows.php';
-if ( file_exists( $legacy_path ) ) {
-	require_once $legacy_path;
+return in_array( $to, $map[ $from ], true );
 }
