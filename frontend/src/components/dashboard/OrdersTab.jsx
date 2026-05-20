@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion as Motion } from 'framer-motion';
 import { Package, Clock, CheckCircle, AlertCircle, Truck, Loader, ChevronRight, ShoppingCart } from 'lucide-react';
-import { getCustomerOrders } from '../../api/orders.js';
+import { getOrders } from '../../api/orders.js';
 
 const fadeUp = {
   hidden:  { opacity: 0, y: 12 },
@@ -57,7 +57,7 @@ export default function OrdersTab( { userId } ) {
     append ? setLoadingMore( true ) : setLoading( true );
     setError( null );
     try {
-      const data    = await getCustomerOrders( userId, pageNum, PER_PAGE );
+      const data    = await getOrders( pageNum, PER_PAGE );
       const fetched = Array.isArray( data ) ? data : ( data?.orders ?? [] );
       setOrders( ( prev ) => append ? [ ...prev, ...fetched ] : fetched );
       setHasMore( fetched.length === PER_PAGE );
@@ -113,7 +113,8 @@ export default function OrdersTab( { userId } ) {
               animate="visible"
               style={ { background: 'white', border: '1px solid rgba(15,23,42,0.08)', borderRadius: '11px', boxShadow: '0 2px 10px rgba(15,23,42,0.04)', overflow: 'hidden' } }
             >
-              <Link to={ `/order/${ order.id }` } style={ { textDecoration: 'none', display: 'block', padding: '14px 16px' } }>
+              <div style={ { display: 'flex', alignItems: 'stretch', overflow: 'hidden' } }>
+                <Link to={ `/order/${ order.id }` } style={ { textDecoration: 'none', flex: 1, display: 'block', padding: '14px 16px' } }>
                 <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' } }>
                   <div style={ { display: 'flex', alignItems: 'center', gap: '11px' } }>
                     <div style={ { width: '36px', height: '36px', borderRadius: '9px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }>
@@ -122,11 +123,12 @@ export default function OrdersTab( { userId } ) {
                     <div>
                       <div style={ { display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '3px' } }>
                         <span style={ { fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' } }>Order #{ order.id }</span>
-                        <StatusBadge status={ order.status } />
+                        <StatusBadge status={ order.status_label ? order.status : ( order.status ) } />
                       </div>
                       <p style={ { margin: 0, fontSize: '0.73rem', color: 'rgba(15,23,42,0.4)' } }>
                         { order.date_created ? new Date( order.date_created ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'short', day: 'numeric' } ) : '' }
-                        { order.line_items?.length > 0 && ` · ${ order.line_items.length } item${ order.line_items.length !== 1 ? 's' : '' }` }
+                        { order.items_count > 0 && ` · ${ order.items_count } item${ order.items_count !== 1 ? 's' : '' }` }
+                        { order.line_items?.length > 0 && ! order.items_count && ` · ${ order.line_items.length } item${ order.line_items.length !== 1 ? 's' : '' }` }
                       </p>
                     </div>
                   </div>
@@ -135,7 +137,17 @@ export default function OrdersTab( { userId } ) {
                     <ChevronRight size={ 14 } style={ { color: 'rgba(15,23,42,0.25)' } } />
                   </div>
                 </div>
-              </Link>
+                </Link>
+                { ( order.status === 'processing' || order.status === 'shipped' ) && (
+                  <Link
+                    to={ `/order-tracking/${ order.id }` }
+                    title="Track order"
+                    style={ { display: 'flex', alignItems: 'center', padding: '0 14px', borderLeft: '1px solid rgba(15,23,42,0.06)', color: '#2563eb', textDecoration: 'none', fontSize: '0.72rem', fontWeight: 650, flexShrink: 0 } }
+                  >
+                    <Truck size={ 13 } style={ { marginRight: '4px' } } />Track
+                  </Link>
+                ) }
+              </div>
             </Motion.div>
           ) ) }
 

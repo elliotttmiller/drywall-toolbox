@@ -23,6 +23,7 @@ const RepairStatus = lazy(() => import('./pages/RepairStatus'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
+const OrderTracking = lazy(() => import('./pages/OrderTracking'));
 const Contact = lazy(() => import('./pages/Contact'));
 const WooCommerceSettings = lazy(() => import('./pages/WooCommerceSettings'));
 const Login = lazy(() => import('./pages/Login'));
@@ -94,6 +95,7 @@ function AppRoutes() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order/:id" element={<OrderConfirmation />} />
+          <Route path="/order-tracking/:id" element={<OrderTracking />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/settings/woocommerce" element={<ProtectedRoute><WooCommerceSettings /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
