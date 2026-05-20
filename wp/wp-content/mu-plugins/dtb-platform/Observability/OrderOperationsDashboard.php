@@ -28,7 +28,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 // =============================================================================
 // SECTION 1 — CONSTANTS & SETTINGS

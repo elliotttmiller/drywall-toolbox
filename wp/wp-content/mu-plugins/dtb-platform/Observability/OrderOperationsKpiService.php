@@ -19,7 +19,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 if ( ! is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 	return;

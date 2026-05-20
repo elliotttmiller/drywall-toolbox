@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'DISALLOW_FILE_EDIT' ) ) {
 	define( 'DISALLOW_FILE_EDIT', true );

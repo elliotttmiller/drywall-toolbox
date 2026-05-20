@@ -11,7 +11,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 add_action( 'rest_api_init', 'dtb_cors_init', 15 );
 add_action( 'init', 'dtb_emit_cors_headers_early', 0 );

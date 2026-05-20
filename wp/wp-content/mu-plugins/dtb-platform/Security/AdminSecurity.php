@@ -10,7 +10,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 add_action( 'rest_api_init', 'dtb_admin_security_register_routes', 20 );
 add_filter( 'rest_post_dispatch', 'dtb_admin_security_log_rest_denials', 10, 3 );

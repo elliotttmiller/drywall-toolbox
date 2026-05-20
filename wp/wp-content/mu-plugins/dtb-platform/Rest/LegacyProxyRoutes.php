@@ -31,7 +31,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 // =============================================================================
 // ROUTE REGISTRATION

@@ -18,7 +18,6 @@ defined( 'ABSPATH' ) || exit;
  * @package drywall-toolbox
  */
 
-defined( 'ABSPATH' ) || exit;
 
 // ─── Request detection ────────────────────────────────────────────────────────
 
