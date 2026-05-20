@@ -101,8 +101,7 @@ function dtb_is_rest_request(): bool {
 	$rest_path   = wp_parse_url( rest_url(), PHP_URL_PATH );
 
 	return ( $rest_path && str_starts_with( $request_uri, $rest_path ) )
-		|| str_contains( $request_uri, '/wp-json/' )
-		|| str_contains( $request_uri, '/wp-json' );
+		|| str_contains( $request_uri, '/wp-json/' );
 }
 
 function dtb_emit_cors_headers( ?string $raw_origin = null ): void {
