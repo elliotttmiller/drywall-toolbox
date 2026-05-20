@@ -227,5 +227,13 @@ _dtb_require( $_dtb_dir . '/dtb-repair-queue.php' );        // Action Scheduler 
 _dtb_require( $_dtb_dir . '/dtb-repair-notifications.php' ); // Email templates + dispatch
 _dtb_require( $_dtb_dir . '/dtb-repairs.php' );             // CPT, meta, REST endpoints
 _dtb_require( $_dtb_dir . '/dtb-repair-admin.php' );        // WP-Admin UI (list table, metaboxes, AJAX)
+// Product ordering infrastructure — event ledger, workflows, queue, tracking, webhooks, admin UI.
+// Load order: events → workflows → queue → tracking → webhooks → admin
+_dtb_require( $_dtb_dir . '/dtb-order-events.php' );        // wp_dtb_order_events table + event helpers (must load first)
+_dtb_require( $_dtb_dir . '/dtb-order-workflows.php' );     // Order lifecycle state machine + WC hooks
+_dtb_require( $_dtb_dir . '/dtb-order-queue.php' );         // Action Scheduler job handlers (Veeqo, QB, Rewards, etc.)
+_dtb_require( $_dtb_dir . '/dtb-order-tracking.php' );      // Customer-safe tracking projection + REST endpoints
+_dtb_require( $_dtb_dir . '/dtb-payment-webhooks.php' );    // Payment gateway webhook validation + idempotency
+_dtb_require( $_dtb_dir . '/dtb-order-admin.php' );         // WP-Admin columns, metaboxes, operator AJAX actions
 
 unset( $_dtb_dir );
