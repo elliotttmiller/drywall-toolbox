@@ -4,6 +4,8 @@ defined( 'ABSPATH' ) || exit;
 // Transitional compatibility wrapper: module-path wiring now resolves through
 // the dtb-media module tree, but image sync runtime behavior is still served
 // by the legacy root implementation until extraction is completed.
+// Remove after native dtb-media image-sync implementation replaces root logic
+// and `pwsh -File scripts/smoke-dtb-mu-modules.ps1` passes.
 if ( function_exists( 'dtb_module_require' ) ) {
 	dtb_module_require( 'dtb-image-sync.php' );
 	return;
