@@ -24,6 +24,7 @@ $_dtb_cp = __DIR__;
 require_once $_dtb_cp . '/Domain/ProductMeta.php';
 require_once $_dtb_cp . '/Domain/ToolFamilies.php';
 require_once $_dtb_cp . '/Domain/ToolsetData.php';
+require_once $_dtb_cp . '/Domain/CatalogHealthIssue.php';
 
 // Services and infrastructure.
 require_once $_dtb_cp . '/Services/BrandNormalizer.php';
@@ -31,9 +32,11 @@ require_once $_dtb_cp . '/Services/CategoryNormalizer.php';
 require_once $_dtb_cp . '/Services/ToolFamilyResolver.php';
 require_once $_dtb_cp . '/Services/CatalogProductNormalizer.php';
 require_once $_dtb_cp . '/Infrastructure/CatalogProductRepository.php';
+require_once $_dtb_cp . '/Infrastructure/CatalogHealthRepository.php';
 require_once $_dtb_cp . '/Services/VariationReadModelService.php';
 require_once $_dtb_cp . '/Services/DefaultVariationResolver.php';
 require_once $_dtb_cp . '/Services/CatalogFacetService.php';
+require_once $_dtb_cp . '/Services/CatalogHealthService.php';
 require_once $_dtb_cp . '/Services/ToolsetEligibilityService.php';
 require_once $_dtb_cp . '/Services/ToolsetValidationService.php';
 
@@ -55,15 +58,18 @@ require_once $_dtb_cp . '/Validation/PricingValidator.php';
 require_once $_dtb_cp . '/Validation/ImageValidator.php';
 require_once $_dtb_cp . '/Validation/SeoValidator.php';
 
-// Application hook wiring.
+// Application hook wiring and use cases.
 require_once $_dtb_cp . '/Application/RegisterCatalogMeta.php';
 require_once $_dtb_cp . '/Application/RegisterCatalogRoutes.php';
 require_once $_dtb_cp . '/Application/RegisterCatalogHooks.php';
+require_once $_dtb_cp . '/Application/RunCatalogHealthScan.php';
 require_once $_dtb_cp . '/Application/ResolveCompatibleParts.php';
 
 // Admin / CLI tools.
 if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 	require_once $_dtb_cp . '/Admin/MetaBackfillTool.php';
+	require_once $_dtb_cp . '/Admin/CatalogHealthRenderer.php';
+	require_once $_dtb_cp . '/Admin/CatalogHealthActions.php';
 	require_once $_dtb_cp . '/Admin/CatalogHealthPage.php';
 }
 
