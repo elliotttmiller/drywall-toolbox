@@ -44,7 +44,6 @@ export default function ProductDetailPlatform({
 
   return (
     <ProductDetail
-      key={resolvedProduct?.id || slug}
       product={resolvedProduct}
       onAddToCart={onAddToCart}
       onClose={onClose}
