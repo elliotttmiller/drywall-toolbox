@@ -69,6 +69,9 @@ function generateIdempotencyKey() {
   ).join( '' );
 }
 
+// Keep this field-picking behavior aligned with
+// wp/wp-content/mu-plugins/dtb-repair-service/Application/SubmitRepairRequest.php
+// so both frontend submission paths normalize the same payload aliases.
 function pickRepairField( payload, keys, fallback = '' ) {
   for ( const key of keys ) {
     if ( ! Object.prototype.hasOwnProperty.call( payload, key ) ) continue;

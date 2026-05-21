@@ -574,7 +574,7 @@ $order->set_shipping_state( $state );
 $order->set_shipping_postcode( $postcode );
 $order->set_shipping_country( $country );
 
-$service_item_model = $model ?: ( $tool_category ?: __( 'General Repair', 'drywall-toolbox' ) );
+$service_item_label = $model ?: ( $tool_category ?: __( 'General Repair', 'drywall-toolbox' ) );
 
 $item = new WC_Order_Item_Fee();
 $item->set_name(
@@ -582,7 +582,7 @@ sprintf(
 /* translators: 1: brand, 2: model, 3: service tier */
 __( 'Repair Service (%1$s %2$s — %3$s)', 'drywall-toolbox' ),
 $brand,
-$service_item_model,
+$service_item_label,
 ucfirst( $service_tier )
 )
 );

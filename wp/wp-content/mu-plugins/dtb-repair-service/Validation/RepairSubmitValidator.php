@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  */
 function dtb_validate_repair_submit( array $data ): bool|WP_Error {
 $errors = new WP_Error();
-$read_text = function_exists( 'dtb_repair_pick_submission_text' )
+$submission_text_fn = function_exists( 'dtb_repair_pick_submission_text' )
 	? 'dtb_repair_pick_submission_text'
 	: null;
 
@@ -39,8 +39,8 @@ $required = [
 ];
 
 foreach ( $required as $field => $rule ) {
-	$value = $read_text
-		? $read_text( $data, $rule['keys'] )
+	$value = $submission_text_fn
+		? $submission_text_fn( $data, $rule['keys'] )
 		: '';
 
 	if ( '' === $value ) {
@@ -55,8 +55,8 @@ $rule['label']
 }
 }
 
-$customer_email = $read_text
-	? $read_text( $data, [ 'customer_email', 'email' ] )
+$customer_email = $submission_text_fn
+	? $submission_text_fn( $data, [ 'customer_email', 'email' ] )
 	: '';
 
 if ( '' !== $customer_email && ! is_email( $customer_email ) ) {
@@ -66,8 +66,8 @@ __( 'A valid email address is required.', 'drywall-toolbox' )
 );
 }
 
-$customer_name = $read_text
-	? $read_text( $data, [ 'customer_name', 'full_name', 'fullName' ] )
+$customer_name = $submission_text_fn
+	? $submission_text_fn( $data, [ 'customer_name', 'full_name', 'fullName' ] )
 	: '';
 
 if ( '' !== $customer_name && mb_strlen( $customer_name ) > 100 ) {
@@ -77,8 +77,8 @@ __( 'Customer name must be 100 characters or fewer.', 'drywall-toolbox' )
 );
 }
 
-$description = $read_text
-	? $read_text( $data, [ 'description', 'issue', 'issueDescription' ] )
+$description = $submission_text_fn
+	? $submission_text_fn( $data, [ 'description', 'issue', 'issueDescription' ] )
 	: '';
 
 if ( '' !== $description && mb_strlen( $description ) > 3000 ) {
