@@ -510,9 +510,24 @@ return new WP_Error( 'wc_unavailable', __( 'WooCommerce is not active.', 'drywal
 
 $customer_email = sanitize_email( (string) get_post_meta( $repair_id, '_repair_customer_email', true ) );
 $customer_name  = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_customer_name', true ) );
+$customer_phone = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_customer_phone', true ) );
+$company        = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_company', true ) );
 $service_tier   = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_service_tier', true ) );
 $brand          = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_tool_brand', true ) );
+$tool_category  = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_tool_category', true ) );
 $model          = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_model', true ) );
+$serial         = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_serial', true ) );
+$issue          = sanitize_textarea_field( (string) get_post_meta( $repair_id, '_repair_issue', true ) );
+$priority       = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_priority', true ) );
+$issue_start    = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_issue_start', true ) );
+$contact_pref   = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_contact_preference', true ) );
+$address_1      = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_return_address_1', true ) );
+$city           = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_return_city', true ) );
+$state          = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_return_state', true ) );
+$postcode       = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_return_postcode', true ) );
+$country        = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_return_country', true ) );
+$shipping_rate_name  = sanitize_text_field( (string) get_post_meta( $repair_id, '_repair_shipping_rate_name', true ) );
+$shipping_rate_price = (float) get_post_meta( $repair_id, '_repair_shipping_rate_price', true );
 $user_id        = (int) get_post_meta( $repair_id, '_repair_customer_user_id', true );
 
 $tier_prices = (array) apply_filters(
@@ -541,7 +556,23 @@ return $order;
 $name_parts = explode( ' ', $customer_name, 2 );
 $order->set_billing_first_name( $name_parts[0] ?? '' );
 $order->set_billing_last_name( $name_parts[1] ?? '' );
+$order->set_billing_company( $company );
 $order->set_billing_email( $customer_email );
+$order->set_billing_phone( $customer_phone );
+$order->set_billing_address_1( $address_1 );
+$order->set_billing_city( $city );
+$order->set_billing_state( $state );
+$order->set_billing_postcode( $postcode );
+$order->set_billing_country( $country );
+
+$order->set_shipping_first_name( $name_parts[0] ?? '' );
+$order->set_shipping_last_name( $name_parts[1] ?? '' );
+$order->set_shipping_company( $company );
+$order->set_shipping_address_1( $address_1 );
+$order->set_shipping_city( $city );
+$order->set_shipping_state( $state );
+$order->set_shipping_postcode( $postcode );
+$order->set_shipping_country( $country );
 
 $item = new WC_Order_Item_Fee();
 $item->set_name(
@@ -549,7 +580,7 @@ sprintf(
 /* translators: 1: brand, 2: model, 3: service tier */
 __( 'Repair Service (%1$s %2$s — %3$s)', 'drywall-toolbox' ),
 $brand,
-$model,
+$model ?: $tool_category,
 ucfirst( $service_tier )
 )
 );
@@ -558,11 +589,38 @@ $item->set_total( $line_amount );
 $item->add_meta_data( '_dtb_repair_service_tier', $service_tier );
 $order->add_item( $item );
 
+if ( $shipping_rate_price > 0 ) {
+	$shipping_item = new WC_Order_Item_Shipping();
+	$shipping_item->set_method_title( $shipping_rate_name ?: __( 'Return Shipping', 'drywall-toolbox' ) );
+	$shipping_item->set_method_id( 'dtb_repair_return_shipping' );
+	$shipping_item->set_instance_id( '0' );
+	$shipping_item->set_total( (string) $shipping_rate_price );
+	$order->add_item( $shipping_item );
+}
+
 $order->update_meta_data( '_dtb_is_repair_order', '1' );
 $order->update_meta_data( '_dtb_repair_id', $repair_id );
+$order->update_meta_data( '_dtb_repair_tool_brand', $brand );
+$order->update_meta_data( '_dtb_repair_tool_category', $tool_category );
+$order->update_meta_data( '_dtb_repair_tool_model', $model );
+$order->update_meta_data( '_dtb_repair_serial', $serial );
 $order->update_meta_data( '_dtb_repair_service_tier', $service_tier );
+$order->update_meta_data( '_dtb_repair_priority', $priority );
+$order->update_meta_data( '_dtb_repair_issue_start', $issue_start );
+$order->update_meta_data( '_dtb_repair_contact_pref', $contact_pref );
 
 $order->set_status( 'pending' );
+$order->add_order_note(
+	sprintf(
+		/* translators: 1: issue description, 2: serial number, 3: issue start, 4: contact preference */
+		__( "Repair request details:\nIssue: %1\$s\nSerial: %2\$s\nIssue start: %3\$s\nContact preference: %4\$s", 'drywall-toolbox' ),
+		$issue ?: __( 'Not provided', 'drywall-toolbox' ),
+		$serial ?: __( 'N/A', 'drywall-toolbox' ),
+		$issue_start ?: __( 'Not provided', 'drywall-toolbox' ),
+		$contact_pref ?: __( 'email', 'drywall-toolbox' )
+	),
+	false
+);
 $order->calculate_totals();
 $order->save();
 

@@ -30,7 +30,7 @@ __( 'Repair not found.', 'drywall-toolbox' ),
 );
 }
 
-if ( is_user_logged_in() && current_user_can( 'manage_dtb_repairs' ) ) {
+if ( is_user_logged_in() && current_user_can( 'dtb_manage_repairs' ) ) {
 return true;
 }
 

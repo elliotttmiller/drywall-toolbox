@@ -69,6 +69,53 @@ function generateIdempotencyKey() {
   ).join( '' );
 }
 
+function pickRepairField( payload, keys, fallback = '' ) {
+  for ( const key of keys ) {
+    if ( ! Object.prototype.hasOwnProperty.call( payload, key ) ) continue;
+    const value = payload[ key ];
+    if ( value === null || value === undefined ) continue;
+    if ( typeof value === 'string' && value.trim() === '' ) continue;
+    return value;
+  }
+
+  return fallback;
+}
+
+function normalizeRepairSubmitPayload( payload = {} ) {
+  const shippingRatePrice = pickRepairField( payload, [ 'shipping_rate_price', 'shippingRatePrice' ], 0 );
+
+  return {
+    idempotency_key: pickRepairField( payload, [ 'idempotency_key', 'idempotencyKey' ], generateIdempotencyKey() ),
+    customer_name: pickRepairField( payload, [ 'customer_name', 'full_name', 'fullName' ] ),
+    customer_email: pickRepairField( payload, [ 'customer_email', 'email' ] ),
+    customer_phone: pickRepairField( payload, [ 'customer_phone', 'phone' ] ),
+    company: pickRepairField( payload, [ 'company' ] ),
+    item_type: pickRepairField( payload, [ 'item_type', 'tool_category', 'toolCategory', 'item_brand', 'tool_brand', 'toolBrand' ], 'Repair Service' ),
+    item_brand: pickRepairField( payload, [ 'item_brand', 'tool_brand', 'toolBrand' ] ),
+    item_model: pickRepairField( payload, [ 'item_model', 'tool_model', 'toolModel' ] ),
+    serial_number: pickRepairField( payload, [ 'serial_number', 'tool_serial', 'serialNumber' ] ),
+    tool_age: pickRepairField( payload, [ 'tool_age', 'toolAge' ] ),
+    service_tier: pickRepairField( payload, [ 'service_tier', 'serviceType', 'pricingTierId' ] ),
+    priority: pickRepairField( payload, [ 'priority' ] ),
+    issue_start: pickRepairField( payload, [ 'issue_start', 'issueStart' ] ),
+    description: pickRepairField( payload, [ 'description', 'issue', 'issueDescription' ] ),
+    contact_preference: pickRepairField( payload, [ 'contact_preference', 'contactPreference' ], 'email' ),
+    address: pickRepairField( payload, [ 'address', 'address_1' ] ),
+    city: pickRepairField( payload, [ 'city' ] ),
+    state: pickRepairField( payload, [ 'state', 'province' ] ),
+    zip: pickRepairField( payload, [ 'zip', 'postcode', 'postal_code' ] ),
+    country: pickRepairField( payload, [ 'country' ], 'US' ),
+    shipping_rate_id: pickRepairField( payload, [ 'shipping_rate_id', 'shippingRateId' ] ),
+    shipping_rate_name: pickRepairField( payload, [ 'shipping_rate_name', 'shippingRateName' ] ),
+    shipping_rate_price: Number.isFinite( Number( shippingRatePrice ) ) ? Number( shippingRatePrice ) : 0,
+    source: pickRepairField( payload, [ 'source' ], 'frontend_repair_form' ),
+  };
+}
+
+function unwrapRepairResponse( response ) {
+  return response?.data ?? response;
+}
+
 // ─── API functions ────────────────────────────────────────────────────────────
 
 /**
@@ -79,13 +126,10 @@ function generateIdempotencyKey() {
  * @returns {Promise<{ repair_id: number, public_token: string, status: string, message: string }>}
  */
 export async function submitRepair( payload ) {
-  return apiClient( '/wp-json/dtb/v1/repairs/submit', {
+  return unwrapRepairResponse( await apiClient( '/wp-json/dtb/v1/repairs/submit', {
     method: 'POST',
-    body: JSON.stringify( {
-      idempotency_key: generateIdempotencyKey(),
-      ...payload,
-    } ),
-  } );
+    body: JSON.stringify( normalizeRepairSubmitPayload( payload ) ),
+  } ) );
 }
 
 /**
@@ -97,7 +141,9 @@ export async function submitRepair( payload ) {
  */
 export async function getRepairStatus( repairId, token ) {
   const params = token ? `?token=${ encodeURIComponent( token ) }` : '';
-  return apiClient( `/wp-json/dtb/v1/repairs/status/${ encodeURIComponent( repairId ) }${ params }` );
+  return unwrapRepairResponse(
+    await apiClient( `/wp-json/dtb/v1/repairs/status/${ encodeURIComponent( repairId ) }${ params }` )
+  );
 }
 
 /**

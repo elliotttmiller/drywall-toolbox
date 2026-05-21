@@ -1164,6 +1164,11 @@ export default function Repairs() {
                 <h3 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 800, color: 'black', margin: '0 0 12px 0' }}>
                   Request Submitted!
                 </h3>
+                {orderResult?.repair_id && (
+                  <p style={{ fontSize: '0.82rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 8px 0' }}>
+                    Repair <strong style={{ color: 'black' }}>DTB-{orderResult.repair_id}</strong>
+                  </p>
+                )}
                 {orderResult?.wc_order_number && (
                   <p style={{ fontSize: '0.82rem', color: 'rgba(15,23,42,0.5)', margin: '0 0 8px 0' }}>
                     Order <strong style={{ color: 'black' }}>#{orderResult.wc_order_number}</strong>
@@ -1177,6 +1182,18 @@ export default function Repairs() {
                   Our service team will contact you at <strong>{formData.email}</strong> within one business day
                   with a quote and estimated turnaround time.
                 </p>
+                {orderResult?.public_token && (
+                  <p style={{ fontSize: '0.875rem', color: 'rgba(15,23,42,0.6)', margin: '0 0 24px 0', lineHeight: 1.6 }}>
+                    Track this request anytime at{' '}
+                    <Link
+                      to={`/repairs/status/${orderResult.repair_id}?token=${encodeURIComponent(orderResult.public_token)}`}
+                      style={{ color: '#2563eb', fontWeight: 700 }}
+                    >
+                      your repair status page
+                    </Link>
+                    .
+                  </p>
+                )}
                 {/* What Happens Next */}
                 <div style={{
                   background: 'var(--alloy-base)',

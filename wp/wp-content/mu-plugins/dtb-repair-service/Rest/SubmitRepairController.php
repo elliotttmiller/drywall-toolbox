@@ -26,10 +26,16 @@ $data = $request->get_json_params() ?: $request->get_body_params();
 
 $valid = dtb_validate_repair_submit( $data );
 if ( is_wp_error( $valid ) ) {
-return new WP_REST_Response(
-[ 'success' => false, 'errors' => $valid->get_error_messages() ],
-422
-);
+	$errors = $valid->get_error_messages();
+
+	return new WP_REST_Response(
+		[
+			'success' => false,
+			'message' => $errors[0] ?? __( 'Repair submission failed validation.', 'drywall-toolbox' ),
+			'errors'  => $errors,
+		],
+		422
+	);
 }
 
 $result = dtb_submit_repair_request( $data );
@@ -37,11 +43,21 @@ if ( is_wp_error( $result ) ) {
 return $result;
 }
 
+$public_token = function_exists( 'dtb_repair_ensure_public_token' )
+	? dtb_repair_ensure_public_token( $result )
+	: sanitize_text_field( (string) get_post_meta( $result, '_repair_public_token', true ) );
+
 return new WP_REST_Response(
 [
-'success'   => true,
-'repair_id' => $result,
-'message'   => __( 'Your repair request has been submitted.', 'drywall-toolbox' ),
+'success'      => true,
+'repair_id'    => $result,
+'public_token' => $public_token,
+'status'       => (string) get_post_meta( $result, '_repair_status', true ) ?: 'submitted',
+'tracking_url' => add_query_arg(
+	[ 'token' => $public_token ],
+	home_url( '/repairs/status/' . $result )
+),
+'message'      => __( 'Your repair request has been submitted.', 'drywall-toolbox' ),
 ],
 201
 );

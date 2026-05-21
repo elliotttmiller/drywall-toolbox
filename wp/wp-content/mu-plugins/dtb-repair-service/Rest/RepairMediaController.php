@@ -24,12 +24,40 @@ register_rest_route(
 );
 }
 
+/**
+ * Extract a public repair token from the request query or Bearer header.
+ *
+ * @param WP_REST_Request $request
+ * @return string
+ */
+function dtb_repair_rest_media_token( WP_REST_Request $request ): string {
+	$token = sanitize_text_field( (string) $request->get_param( 'token' ) );
+	if ( '' !== $token ) {
+		return $token;
+	}
+
+	$auth_header = (string) $request->get_header( 'authorization' );
+	if ( preg_match( '/Bearer\s+(.+)/i', $auth_header, $matches ) ) {
+		return sanitize_text_field( trim( (string) $matches[1] ) );
+	}
+
+	return '';
+}
+
 function dtb_repair_rest_media( WP_REST_Request $request ): WP_REST_Response|WP_Error {
-	$repair_id = (int) $request->get_param( 'repair_id' );
+	$repair_id = (int) $request->get_param( 'id' );
+	$token     = dtb_repair_rest_media_token( $request );
 	$post      = get_post( $repair_id );
 
 	if ( ! $post || 'dtb_repair_request' !== $post->post_type ) {
 		return new WP_Error( 'dtb_repair_not_found', __( 'Repair request not found.', 'drywall-toolbox' ), [ 'status' => 404 ] );
+	}
+
+	$access = function_exists( 'dtb_validate_repair_access' )
+		? dtb_validate_repair_access( $repair_id, $token )
+		: true;
+	if ( is_wp_error( $access ) ) {
+		return $access;
 	}
 
 	// Check terminal states.
@@ -44,13 +72,14 @@ function dtb_repair_rest_media( WP_REST_Request $request ): WP_REST_Response|WP_
 	}
 
 	// Validate files are present.
-	$files = $request->get_file_params();
-	if ( empty( $files ) || empty( $files['files'] ) ) {
+	$files    = $request->get_file_params();
+	$file_key = isset( $files['files'] ) ? 'files' : ( isset( $files['files[]'] ) ? 'files[]' : '' );
+	if ( empty( $files ) || '' === $file_key ) {
 		return new WP_Error( 'dtb_repair_no_files', __( 'No files uploaded.', 'drywall-toolbox' ), [ 'status' => 400 ] );
 	}
 
 	// Normalize single/multiple file uploads.
-	$file_list = dtb_repair_normalize_file_params( $files['files'] );
+	$file_list = dtb_repair_normalize_file_params( $files[ $file_key ] );
 
 	if ( count( $file_list ) > DTB_REPAIR_MAX_MEDIA_FILES ) {
 		return new WP_Error(

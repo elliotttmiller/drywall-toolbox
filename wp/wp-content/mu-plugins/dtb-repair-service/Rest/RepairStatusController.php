@@ -10,19 +10,26 @@ defined( 'ABSPATH' ) || exit;
 add_action( 'rest_api_init', 'dtb_repair_register_status_route' );
 
 function dtb_repair_register_status_route(): void {
-register_rest_route(
-'dtb/v1',
-'/repairs/(?P<id>\d+)/status',
-[
-'methods'             => WP_REST_Server::READABLE,
-'callback'            => 'dtb_repair_rest_status',
-'permission_callback' => '__return_true',
-'args'                => [
-'id'    => [ 'type' => 'integer', 'required' => true, 'minimum' => 1 ],
-'token' => [ 'type' => 'string', 'required' => false, 'default' => '' ],
-],
-]
-);
+	$routes = [
+		'/repairs/(?P<id>\d+)/status',
+		'/repairs/status/(?P<id>\d+)',
+	];
+
+	foreach ( $routes as $route ) {
+		register_rest_route(
+			'dtb/v1',
+			$route,
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => 'dtb_repair_rest_status',
+				'permission_callback' => '__return_true',
+				'args'                => [
+					'id'    => [ 'type' => 'integer', 'required' => true, 'minimum' => 1 ],
+					'token' => [ 'type' => 'string', 'required' => false, 'default' => '' ],
+				],
+			]
+		);
+	}
 }
 
 function dtb_repair_rest_status( WP_REST_Request $request ): WP_REST_Response|WP_Error {

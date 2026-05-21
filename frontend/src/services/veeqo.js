@@ -6,11 +6,13 @@
  *
  * PUBLIC PROXY METHODS (no authentication required from the browser):
  *   getShippingRates(destination, items)  → POST /wp-json/dtb/v1/veeqo/shipping-rates
- *   submitRepairRequest(formData)         → POST /wp-json/dtb/v1/repair-request
+ *   submitRepairRequest(formData)         → POST /wp-json/dtb/v1/repairs/submit
  *   checkInventoryAvailability(cartItems) → GET  /wp-json/dtb/v1/veeqo/inventory
  *
  * Documentation: https://developers.veeqo.com/
  */
+
+import { submitRepair } from '../api/repairs.js';
 
 // Server-side proxy base (Veeqo API key kept on the WordPress server).
 const DTB_PROXY_BASE =
@@ -50,29 +52,14 @@ class VeeqoService {
   /**
    * Submit a repair service request.
    *
-   * Creates a WooCommerce order (status: pending) for the repair, optionally
-   * syncs it to Veeqo, and sends a confirmation email — all server-side.
+   * Routes the storefront repair form through the canonical repair-service
+   * workflow so the request is created in WP-Admin and queued for WooCommerce.
    *
    * @param {Object} formData  All fields from the 5-step repair form.
-   * @returns {Promise<{ success: boolean, wc_order_id: number, wc_order_number: string, message: string }>}
+   * @returns {Promise<{ success: boolean, repair_id: number, public_token: string, status: string, message: string }>}
    */
   async submitRepairRequest( formData ) {
-    const url = `${ DTB_PROXY_BASE }/repair-request`;
-    const res = await fetch( url, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify( formData ),
-    } );
-
-    let data;
-    try { data = await res.json(); } catch { data = {}; }
-
-    if ( !res.ok ) {
-      throw new Error( data.message || `Repair request failed (${ res.status }).` );
-    }
-
-    return data;
+    return submitRepair( formData );
   }
 
   /**
