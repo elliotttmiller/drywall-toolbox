@@ -46,6 +46,12 @@ return $result;
 $public_token = function_exists( 'dtb_repair_ensure_public_token' )
 	? dtb_repair_ensure_public_token( $result )
 	: sanitize_text_field( (string) get_post_meta( $result, '_repair_public_token', true ) );
+if ( '' === $public_token ) {
+	$public_token = function_exists( 'dtb_repair_generate_public_token' )
+		? dtb_repair_generate_public_token()
+		: wp_generate_password( 32, false, false );
+	update_post_meta( $result, '_repair_public_token', $public_token );
+}
 
 return new WP_REST_Response(
 [

@@ -93,7 +93,8 @@ $shipping_rate_name  = sanitize_text_field( dtb_repair_pick_submission_text( $da
 $shipping_rate_price = (string) (float) dtb_repair_pick_submission_value( $data, [ 'shipping_rate_price', 'shippingRatePrice' ], 0 );
 $source          = sanitize_text_field( dtb_repair_pick_submission_text( $data, [ 'source' ], 'frontend_repair_form' ) );
 
-$tool_descriptor = trim( implode( ' — ', array_filter( [ $item_brand, $item_model ?: $item_type ] ) ) );
+$descriptor_detail = $item_model ?: ( 'Repair Service' !== $item_type ? $item_type : '' );
+$tool_descriptor   = trim( implode( ' — ', array_filter( [ $item_brand, $descriptor_detail ] ) ) );
 
 $title = sprintf(
 /* translators: 1: customer name, 2: item type */

@@ -73,7 +73,12 @@ function dtb_repair_rest_media( WP_REST_Request $request ): WP_REST_Response|WP_
 
 	// Validate files are present.
 	$files    = $request->get_file_params();
-	$file_key = isset( $files['files'] ) ? 'files' : ( isset( $files['files[]'] ) ? 'files[]' : '' );
+	$file_key = '';
+	if ( isset( $files['files'] ) ) {
+		$file_key = 'files';
+	} elseif ( isset( $files['files[]'] ) ) {
+		$file_key = 'files[]';
+	}
 	if ( empty( $files ) || '' === $file_key ) {
 		return new WP_Error( 'dtb_repair_no_files', __( 'No files uploaded.', 'drywall-toolbox' ), [ 'status' => 400 ] );
 	}
