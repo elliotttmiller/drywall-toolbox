@@ -36,6 +36,14 @@ async function storeFetch( path, options = {}, isRetry = false ) {
     headers,
   } );
 
+  // WooCommerce 8+ returns the nonce as 'Nonce'; older versions use
+  // 'X-WC-Store-API-Nonce'.  Capture it from every response so the
+  // in-memory nonce stays fresh for subsequent mutations.
+  const freshNonce = res.headers.get( 'Nonce' ) || res.headers.get( 'X-WC-Store-API-Nonce' );
+  if ( freshNonce ) {
+    _storeNonce = freshNonce;
+  }
+
   // 401 — refresh nonce via initCart() and retry once.
   if ( res.status === 401 ) {
     if ( isRetry ) {
@@ -78,7 +86,7 @@ export async function initCart() {
     headers: { 'Content-Type': 'application/json' },
   } );
 
-  const nonce = res.headers.get( 'X-WC-Store-API-Nonce' );
+  const nonce = res.headers.get( 'Nonce' ) || res.headers.get( 'X-WC-Store-API-Nonce' );
   if ( nonce ) {
     _storeNonce = nonce;
   }

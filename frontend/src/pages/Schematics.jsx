@@ -2089,7 +2089,7 @@ const ALLOWED_BRANDS = [
         _wcProduct: wcProduct,
       };
 
-      addToCart(cartProduct, 1);
+      await addToCart(cartProduct, 1);
       setToast({
         message: `${cartProduct.name} added to cart!`,
         type: 'cart',

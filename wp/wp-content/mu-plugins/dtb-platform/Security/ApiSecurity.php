@@ -137,7 +137,7 @@ function dtb_emit_cors_headers( ?string $raw_origin = null ): void {
 
 	header( 'Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS' );
 	header( 'Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With, X-WC-Store-API-Nonce' );
-	header( 'Access-Control-Expose-Headers: X-WC-Store-API-Nonce' );
+	header( 'Access-Control-Expose-Headers: X-WC-Store-API-Nonce, Nonce' );
 	header( 'Access-Control-Max-Age: 86400' );
 
 	$ops_version = defined( 'DTB_OPS_VERSION' ) ? DTB_OPS_VERSION : '1.0.0';

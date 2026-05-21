@@ -109,9 +109,13 @@ export default function StorefrontProductRail({
     return () => { mounted = false; };
   }, [variableIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleAddToCart = (product) => {
-    addToCart(product, 1);
-    setToast({ message: `${product.name} added to cart!`, type: 'cart' });
+  const handleAddToCart = async (product) => {
+    try {
+      await addToCart(product, 1);
+      setToast({ message: `${product.name} added to cart!`, type: 'cart' });
+    } catch (err) {
+      setToast({ message: err?.message || 'Could not add item to cart. Please try again.', type: 'error' });
+    }
   };
 
   const openModal = (product, cardProduct = null) => {

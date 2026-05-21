@@ -70,8 +70,8 @@ export default function StorefrontSearchOverlay({
     setIsModalOpen(true);
   }, []);
 
-  const handleAddToCart = useCallback((product, quantity = 1) => {
-    addToCart(product, quantity);
+  const handleAddToCart = useCallback(async (product, quantity = 1) => {
+    await addToCart(product, quantity);
   }, [addToCart]);
 
   if (!isOpen) return null;
