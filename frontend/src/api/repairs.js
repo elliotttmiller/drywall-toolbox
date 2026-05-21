@@ -86,7 +86,7 @@ function pickRepairField( payload, keys, fallback = '' ) {
 
 function normalizeRepairSubmitPayload( payload = {} ) {
   const shippingRatePrice = pickRepairField( payload, [ 'shipping_rate_price', 'shippingRatePrice' ], 0 );
-  const numericShippingRatePrice = Number( shippingRatePrice );
+  const shippingRatePriceNum = Number( shippingRatePrice );
 
   return {
     idempotency_key: pickRepairField( payload, [ 'idempotency_key', 'idempotencyKey' ], generateIdempotencyKey() ),
@@ -111,7 +111,7 @@ function normalizeRepairSubmitPayload( payload = {} ) {
     country: pickRepairField( payload, [ 'country' ], 'US' ),
     shipping_rate_id: pickRepairField( payload, [ 'shipping_rate_id', 'shippingRateId' ] ),
     shipping_rate_name: pickRepairField( payload, [ 'shipping_rate_name', 'shippingRateName' ] ),
-    shipping_rate_price: Number.isFinite( numericShippingRatePrice ) ? numericShippingRatePrice : 0,
+    shipping_rate_price: Number.isFinite( shippingRatePriceNum ) ? shippingRatePriceNum : 0,
     source: pickRepairField( payload, [ 'source' ], 'frontend_repair_form' ),
   };
 }

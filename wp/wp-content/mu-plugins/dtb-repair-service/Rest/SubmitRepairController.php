@@ -58,7 +58,9 @@ return new WP_REST_Response(
 'success'      => true,
 'repair_id'    => $result,
 'public_token' => $public_token,
-'status'       => (string) get_post_meta( $result, '_repair_status', true ) ?: 'submitted',
+'status'       => '' !== (string) get_post_meta( $result, '_repair_status', true )
+	? (string) get_post_meta( $result, '_repair_status', true )
+	: 'submitted',
 'tracking_url' => add_query_arg(
 	[ 'token' => $public_token ],
 	home_url( '/repairs/status/' . $result )

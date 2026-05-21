@@ -574,7 +574,7 @@ $order->set_shipping_state( $state );
 $order->set_shipping_postcode( $postcode );
 $order->set_shipping_country( $country );
 
-$service_item_label = $model ?: ( $tool_category ?: __( 'General Repair', 'drywall-toolbox' ) );
+$repair_item_description = $model ?: ( $tool_category ?: __( 'General Repair', 'drywall-toolbox' ) );
 
 $item = new WC_Order_Item_Fee();
 $item->set_name(
@@ -582,7 +582,7 @@ sprintf(
 /* translators: 1: brand, 2: model, 3: service tier */
 __( 'Repair Service (%1$s %2$s — %3$s)', 'drywall-toolbox' ),
 $brand,
-$service_item_label,
+$repair_item_description,
 ucfirst( $service_tier )
 )
 );
@@ -612,14 +612,16 @@ $order->update_meta_data( '_dtb_repair_issue_start', $issue_start );
 $order->update_meta_data( '_dtb_repair_contact_pref', $contact_pref );
 
 $order->set_status( 'pending' );
+$line_break = PHP_EOL;
 $order->add_order_note(
 	sprintf(
 		/* translators: 1: issue description, 2: serial number, 3: issue start, 4: contact preference */
-		__( "Repair request details:\nIssue: %1\$s\nSerial: %2\$s\nIssue start: %3\$s\nContact preference: %4\$s", 'drywall-toolbox' ),
+		__( 'Repair request details:%5$sIssue: %1$s%5$sSerial: %2$s%5$sIssue start: %3$s%5$sContact preference: %4$s', 'drywall-toolbox' ),
 		$issue ?: __( 'Not provided', 'drywall-toolbox' ),
 		$serial ?: __( 'N/A', 'drywall-toolbox' ),
 		$issue_start ?: __( 'Not provided', 'drywall-toolbox' ),
-		$contact_pref ?: __( 'email', 'drywall-toolbox' )
+		$contact_pref ?: __( 'email', 'drywall-toolbox' ),
+		$line_break
 	),
 	false
 );
