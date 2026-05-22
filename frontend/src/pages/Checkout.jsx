@@ -84,6 +84,19 @@ function SkeletonRow() {
   );
 }
 
+// ─── Shared payment UI class constants ────────────────────────────────────────
+// Used in both the desktop OrderSummaryPanel action section and the mobile
+// inline payment card to maintain visual consistency.
+const PAY_SELECT_CLASS =
+  'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm transition-all ' +
+  'focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30';
+
+const PLACE_ORDER_CLASS =
+  'min-h-12 w-full inline-flex items-center justify-center gap-2 ' +
+  'bg-primary-600 hover:bg-primary-700 active:scale-[0.99] ' +
+  'text-white py-4 rounded-xl font-bold text-sm tracking-wide ' +
+  'transition-all shadow-md disabled:cursor-not-allowed disabled:opacity-50';
+
 // ─── OrderSummaryPanel ────────────────────────────────────────────────────────
 // Sticky right-column panel that shows cart items, pricing totals, and a
 // skeleton loading state while the order is being processed.
@@ -190,7 +203,7 @@ function OrderSummaryPanel( {
                 value={ paymentMethod }
                 onChange={ ( e ) => onPaymentMethodChange?.( e.target.value ) }
                 disabled={ processing }
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+                className={ PAY_SELECT_CLASS }
               >
                 { paymentMethods.map( ( m ) => (
                   <option key={ m.id } value={ m.id }>{ m.title || m.id }</option>
@@ -203,11 +216,7 @@ function OrderSummaryPanel( {
             type="button"
             onClick={ onPlaceOrder }
             disabled={ processing || ! isFormComplete || ! hasItems }
-            className="min-h-12 w-full inline-flex items-center justify-center gap-2
-                       bg-primary-600 hover:bg-primary-700 active:scale-[0.99]
-                       text-white py-4 rounded-xl font-bold text-sm tracking-wide
-                       transition-all shadow-md
-                       disabled:cursor-not-allowed disabled:opacity-50"
+            className={ PLACE_ORDER_CLASS }
           >
             <Lock size={ 15 } />
             { processing ? 'Processing…' : 'Place Order' }
@@ -301,14 +310,14 @@ export default function Checkout() {
     setFormData( ( prev ) => {
       const updates = {};
       if ( ! prev.email && user.email ) updates.email = user.email;
-      if ( ! prev.firstName && ! prev.lastName && user.display_name ) {
+      // Parse display_name into first/last independently so a partially-filled
+      // form (e.g. email typed, name fields empty) still benefits from pre-fill.
+      if ( user.display_name ) {
         const parts = user.display_name.trim().split( /\s+/ );
-        if ( parts.length >= 2 ) {
-          updates.firstName = parts.slice( 0, -1 ).join( ' ' );
-          updates.lastName  = parts[ parts.length - 1 ];
-        } else {
-          updates.firstName = user.display_name;
-        }
+        const derivedFirst = parts.length >= 2 ? parts.slice( 0, -1 ).join( ' ' ) : user.display_name;
+        const derivedLast  = parts.length >= 2 ? parts[ parts.length - 1 ] : '';
+        if ( ! prev.firstName && derivedFirst ) updates.firstName = derivedFirst;
+        if ( ! prev.lastName  && derivedLast  ) updates.lastName  = derivedLast;
       }
       return Object.keys( updates ).length > 0 ? { ...prev, ...updates } : prev;
     } );
@@ -553,7 +562,7 @@ export default function Checkout() {
      focus:outline-none focus:ring-4 focus:ring-primary-500/15 focus:border-primary-500
      ${ errors[field] ? 'border-red-400 bg-red-50/40' : 'border-slate-200 bg-white hover:border-slate-300' }`;
 
-  const labelClass = 'block text-xs font-bold uppercase tracking-[0.14em] text-slate-500 mb-1.5';
+  const labelClass   = 'block text-xs font-bold uppercase tracking-[0.14em] text-slate-500 mb-1.5';
   const requiredMark = <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>;
 
   // ── Empty cart guard ──────────────────────────────────────────────────────
@@ -990,7 +999,7 @@ export default function Checkout() {
                       value={ paymentMethod }
                       onChange={ ( e ) => setPaymentMethod( e.target.value ) }
                       disabled={ processing }
-                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+                      className={ PAY_SELECT_CLASS }
                     >
                       { paymentMethods.map( ( method ) => (
                         <option key={ method.id } value={ method.id }>
@@ -1005,11 +1014,7 @@ export default function Checkout() {
                   type="button"
                   onClick={ handlePlaceOrder }
                   disabled={ processing || ! isFormComplete || safeCartItems.length === 0 }
-                  className="min-h-12 w-full inline-flex items-center justify-center gap-2
-                             bg-primary-600 hover:bg-primary-700 active:scale-[0.99]
-                             text-white py-4 rounded-xl font-bold text-sm tracking-wide
-                             transition-all shadow-md
-                             disabled:cursor-not-allowed disabled:opacity-50"
+                  className={ PLACE_ORDER_CLASS }
                 >
                   <Lock size={ 15 } />
                   { processing ? 'Processing…' : 'Place Order' }
