@@ -1,3 +1,5 @@
+import './setWebpackPublicPath.js';
+
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import PageTransition from './components/routing/PageTransition';

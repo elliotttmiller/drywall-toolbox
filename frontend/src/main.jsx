@@ -141,7 +141,12 @@ if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     }).catch(() => {});
   } else {
     window.addEventListener('load', () => {
-      const swUrl = process.env.PUBLIC_URL + '/service-worker.js';
+      const assetBase = (
+        typeof window !== 'undefined' && typeof window.DTB_CONFIG?.assetsUrl === 'string' && window.DTB_CONFIG.assetsUrl.trim()
+      )
+        ? window.DTB_CONFIG.assetsUrl.trim().replace(/\/+$/, '')
+        : (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
+      const swUrl = `${assetBase}/service-worker.js`.replace(/^\/\//, '/');
       navigator.serviceWorker
         .register(swUrl)
         .catch(() => {
