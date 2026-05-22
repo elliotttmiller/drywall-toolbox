@@ -15,6 +15,7 @@ import './styles/storefront-drawer.css'
 import './styles/account-hub.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
+import { joinRuntimeAssetUrl } from './setWebpackPublicPath.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
 // Product listing pages use the DTB catalog-platform endpoints, so prewarm
@@ -141,12 +142,7 @@ if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     }).catch(() => {});
   } else {
     window.addEventListener('load', () => {
-      const assetBase = (
-        typeof window !== 'undefined' && typeof window.DTB_CONFIG?.assetsUrl === 'string' && window.DTB_CONFIG.assetsUrl.trim()
-      )
-        ? window.DTB_CONFIG.assetsUrl.trim().replace(/\/+$/, '')
-        : (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
-      const swUrl = `${assetBase}/service-worker.js`.replace(/^\/\//, '/');
+      const swUrl = joinRuntimeAssetUrl('service-worker.js');
       navigator.serviceWorker
         .register(swUrl)
         .catch(() => {

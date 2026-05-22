@@ -1,4 +1,9 @@
-function resolveRuntimeAssetBase() {
+// Matches the emitted webpack entry scripts. This stays in sync with
+// frontend/webpack.config.cjs, which writes JS bundles to assets/js/.
+const ASSET_SCRIPT_PATH_PATTERN = /\/assets\/js\/[^/]+\.js(?:[?#].*)?$/i;
+const ASSET_SCRIPT_SUFFIX_PATTERN = /\/assets\/js\/[^/]+\.js$/i;
+
+export function resolveRuntimeAssetBase() {
   if ( typeof window === 'undefined' ) {
     return '';
   }
@@ -17,15 +22,30 @@ function resolveRuntimeAssetBase() {
     .filter( Boolean )
     .reverse();
 
-  const activeScriptUrl = scriptSources.find( ( src ) => /\/assets\/js\/[^/]+\.js(?:[?#].*)?$/i.test( src ) );
+  const activeScriptUrl = scriptSources.find( ( src ) => ASSET_SCRIPT_PATH_PATTERN.test( src ) );
   if ( ! activeScriptUrl ) {
     return '';
   }
 
   return activeScriptUrl
     .replace( /[?#].*$/, '' )
-    .replace( /\/assets\/js\/[^/]+\.js$/i, '' )
+    .replace( ASSET_SCRIPT_SUFFIX_PATTERN, '' )
     .replace( /\/+$/, '' );
+}
+
+export function joinRuntimeAssetUrl( relativePath = '' ) {
+  const normalizedRelativePath = String( relativePath || '' ).replace( /^\/+/, '' );
+  const runtimeAssetBase = resolveRuntimeAssetBase();
+
+  if ( ! normalizedRelativePath ) {
+    return runtimeAssetBase || '/';
+  }
+
+  if ( ! runtimeAssetBase ) {
+    return `/${ normalizedRelativePath }`;
+  }
+
+  return `${ runtimeAssetBase }/${ normalizedRelativePath }`;
 }
 
 const runtimeAssetBase = resolveRuntimeAssetBase();
