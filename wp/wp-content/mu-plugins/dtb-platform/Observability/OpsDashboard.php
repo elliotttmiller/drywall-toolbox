@@ -303,6 +303,7 @@ function dtb_ops_inline_css(): string {
 .dtb-audit-header{margin-bottom:24px}
 .dtb-audit-count-badge{background:var(--dtb-primary-lt);color:var(--dtb-primary);border:1px solid #c7d2fe;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
 .dtb-table .dtb-ip-cell{font-family:var(--dtb-mono,"Courier New");font-size:11px;color:var(--dtb-muted)}
+.dtb-context-cell{font-family:var(--dtb-mono,"Courier New");font-size:11px;word-break:break-all;max-width:400px;white-space:normal;color:var(--dtb-muted)}
 
 /* ── Animations ─────────────────────────────────────────────────── */
 @keyframes dtbPulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}50%{box-shadow:0 0 0 5px rgba(74,222,128,0)}}
@@ -665,8 +666,8 @@ function dtb_ops_render_audit_page(): void {
 						<td class="dtb-text-muted dtb-text-mono"><?php echo esc_html( $row->log_timestamp ); ?></td>
 						<td><?php echo esc_html( $_label ); ?></td>
 						<td><span class="dtb-event-tag"><?php echo esc_html( $row->event ); ?></span></td>
-						<td class="dtb-text-muted dtb-text-mono" style="max-width:360px;word-break:break-all;white-space:normal;font-size:11px;"><?php echo esc_html( $row->context ); ?></td>
-						<td class="dtb-ip-cell"><?php echo esc_html( $row->ip ?: '—' ); ?></td>
+						<td class="dtb-context-cell"><?php echo esc_html( $row->context ); ?></td>
+						<td class="dtb-ip-cell"><?php echo esc_html( ( $row->ip !== '' ) ? $row->ip : '—' ); ?></td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>
@@ -756,7 +757,7 @@ function dtb_ops_render_recent_audit(): void {
 		echo '<tr>';
 		echo '<td class="dtb-text-muted dtb-text-mono">' . esc_html( $row->log_timestamp ) . '</td>';
 		echo '<td><span class="dtb-event-tag">' . esc_html( $row->event ) . '</span></td>';
-		echo '<td class="dtb-text-muted dtb-text-mono" style="font-size:11px;word-break:break-all;max-width:420px;">' . esc_html( substr( $row->context, 0, 180 ) ) . '</td>';
+		echo '<td class="dtb-context-cell">' . esc_html( substr( $row->context, 0, 180 ) ) . '</td>';
 		echo '</tr>';
 	}
 	echo '</tbody></table>';
