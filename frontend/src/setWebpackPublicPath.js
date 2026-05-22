@@ -1,5 +1,3 @@
-/* global __webpack_public_path__ */
-
 function resolveRuntimeAssetBase() {
   if ( typeof window === 'undefined' ) {
     return '';
@@ -33,5 +31,6 @@ function resolveRuntimeAssetBase() {
 const runtimeAssetBase = resolveRuntimeAssetBase();
 
 if ( runtimeAssetBase ) {
+  // eslint-disable-next-line no-undef
   __webpack_public_path__ = `${ runtimeAssetBase }/`;
 }
