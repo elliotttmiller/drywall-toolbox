@@ -18,6 +18,8 @@ import {
   AlertTriangle,
   ShoppingCart,
   User,
+  LogIn,
+  CreditCard,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
@@ -85,7 +87,19 @@ function SkeletonRow() {
 // ─── OrderSummaryPanel ────────────────────────────────────────────────────────
 // Sticky right-column panel that shows cart items, pricing totals, and a
 // skeleton loading state while the order is being processed.
-function OrderSummaryPanel( { cartItems, subtotal, shipping, tax, total, loading, className = '' } ) {
+// When showAction=true, renders the payment method selector and Place Order CTA.
+function OrderSummaryPanel( {
+  cartItems, subtotal, shipping, tax, total, loading, className = '',
+  // action props — shown when showAction is true (desktop right column)
+  showAction       = false,
+  paymentMethods   = [],
+  paymentMethod    = 'cod',
+  onPaymentMethodChange,
+  onPlaceOrder,
+  processing       = false,
+  isFormComplete   = false,
+  hasItems         = false,
+} ) {
   const toMoney = ( value ) => {
     const n = Number( value );
     return Number.isFinite( n ) ? n : 0;
@@ -163,6 +177,48 @@ function OrderSummaryPanel( { cartItems, subtotal, shipping, tax, total, loading
           </p>
         ) }
       </div>
+
+      { showAction && (
+        <div className="px-5 pb-5 space-y-4">
+          { paymentMethods.length > 0 && (
+            <div>
+              <label className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                <CreditCard size={ 12 } />
+                Payment Method
+              </label>
+              <select
+                value={ paymentMethod }
+                onChange={ ( e ) => onPaymentMethodChange?.( e.target.value ) }
+                disabled={ processing }
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+              >
+                { paymentMethods.map( ( m ) => (
+                  <option key={ m.id } value={ m.id }>{ m.title || m.id }</option>
+                ) ) }
+              </select>
+            </div>
+          ) }
+
+          <button
+            type="button"
+            onClick={ onPlaceOrder }
+            disabled={ processing || ! isFormComplete || ! hasItems }
+            className="min-h-12 w-full inline-flex items-center justify-center gap-2
+                       bg-primary-600 hover:bg-primary-700 active:scale-[0.99]
+                       text-white py-4 rounded-xl font-bold text-sm tracking-wide
+                       transition-all shadow-md
+                       disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Lock size={ 15 } />
+            { processing ? 'Processing…' : 'Place Order' }
+          </button>
+
+          <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-400">
+            <Lock size={ 10 } />
+            Secured &amp; encrypted checkout
+          </p>
+        </div>
+      ) }
     </StepCard>
   );
 }
@@ -186,7 +242,7 @@ export default function Checkout() {
     [ cartItems ],
   );
   const { showWorkflow, hideWorkflow } = useWorkflowTransition();
-  const { user, isAuthenticated } = useAuthContext();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthContext();
 
   const [formData, setFormData] = useState( {
     firstName:    '',
@@ -207,7 +263,6 @@ export default function Checkout() {
   const [orderComplete, setOrderComplete] = useState( false );
   const [orderDetails,  setOrderDetails ] = useState( null );
   const [step,          setStep         ] = useState( 'form' ); // 'form' | 'syncing' | 'placing'
-  const [paymentGateway, setPaymentGateway] = useState( 'woo_native' );
   const [paymentMethod, setPaymentMethod] = useState( 'cod' );
   const [paymentMethods, setPaymentMethods] = useState( [] );
 
@@ -238,6 +293,27 @@ export default function Checkout() {
     }
   }, [ isAuthenticated, rewardsEnabled, user?.id ] );
 
+  // ── Pre-fill form from authenticated user profile (runs once on auth resolve) ─
+  const prefillApplied = useRef( false );
+  useEffect( () => {
+    if ( prefillApplied.current || authLoading || ! isAuthenticated || ! user ) return;
+    prefillApplied.current = true;
+    setFormData( ( prev ) => {
+      const updates = {};
+      if ( ! prev.email && user.email ) updates.email = user.email;
+      if ( ! prev.firstName && ! prev.lastName && user.display_name ) {
+        const parts = user.display_name.trim().split( /\s+/ );
+        if ( parts.length >= 2 ) {
+          updates.firstName = parts.slice( 0, -1 ).join( ' ' );
+          updates.lastName  = parts[ parts.length - 1 ];
+        } else {
+          updates.firstName = user.display_name;
+        }
+      }
+      return Object.keys( updates ).length > 0 ? { ...prev, ...updates } : prev;
+    } );
+  }, [ authLoading, isAuthenticated, user ] );
+
   useEffect( () => {
     let mounted = true;
     getCheckoutCapabilities()
@@ -248,7 +324,6 @@ export default function Checkout() {
           ? caps.gateways.find( (g) => g.id === defaultGateway ) || caps.gateways[0]
           : null;
         const methods = Array.isArray( gateway?.payment_methods ) ? gateway.payment_methods : [];
-        setPaymentGateway( gateway?.id || defaultGateway );
         setPaymentMethods( methods );
         if ( methods[0]?.id ) {
           setPaymentMethod( methods[0].id );
@@ -584,7 +659,7 @@ export default function Checkout() {
 
   // ── Checkout form ─────────────────────────────────────────────────────────
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-100 pb-28 md:pb-14 page-wrapper">
+    <div className="relative min-h-screen overflow-hidden bg-slate-100 pb-6 page-wrapper">
       <SEOHead noindex title="Checkout" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-slate-950" />
       <div
@@ -627,6 +702,34 @@ export default function Checkout() {
 
           {/* ── Left column: form steps ─────────────────────────────────── */}
           <div className="space-y-5">
+
+            {/* Guest login nudge — shown only for unauthenticated users */}
+            { ! authLoading && ! isAuthenticated && (
+              <Motion.div
+                initial={ { opacity: 0, y: -8 } }
+                animate={ { opacity: 1, y: 0 } }
+                transition={ { duration: 0.3 } }
+                className="flex items-center gap-3 rounded-2xl border border-primary-200/60
+                           bg-primary-50/50 px-4 py-3.5 backdrop-blur"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100">
+                  <LogIn size={ 16 } className="text-primary-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-slate-800">Have an account?</p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    <Link
+                      to="/login"
+                      state={ { from: { pathname: '/checkout' } } }
+                      className="font-semibold text-primary-600 hover:underline"
+                    >
+                      Sign in
+                    </Link>
+                    { ' ' }for faster checkout, order history &amp; rewards.
+                  </p>
+                </div>
+              </Motion.div>
+            ) }
 
             {/* Contact Information */}
             <StepCard delay={ 0 } className="p-6">
@@ -869,42 +972,55 @@ export default function Checkout() {
               />
             </StepCard>
 
-            {/* ── Payment section (WooCommerce-native) ───────────────────── */}
-            <StepCard delay={ 0.2 } className="p-6" id="payment-section">
-              <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                Payment
-              </p>
-              <p className="text-sm text-slate-600 mb-4">
-                { `Payment is processed through ${ paymentGateway } using gateways enabled in WooCommerce.` }
-              </p>
-              { paymentMethods.length > 0 && (
-                <div className="mb-4">
-                  <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 mb-2">
-                    Payment Method
-                  </label>
-                  <select
-                    value={ paymentMethod }
-                    onChange={ (e) => setPaymentMethod( e.target.value ) }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500"
-                  >
-                    { paymentMethods.map( (method) => (
-                      <option key={ method.id } value={ method.id }>
-                        { method.title || method.id }
-                      </option>
-                    ) ) }
-                  </select>
-                </div>
-              ) }
-              <button
-                type="button"
-                onClick={ handlePlaceOrder }
-                disabled={ processing || ! isFormComplete || safeCartItems.length === 0 }
-                className="w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all shadow-md active:scale-[0.99] min-h-12 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Lock size={ 16 } />
-                { processing ? 'Processing…' : 'Place Order' }
-              </button>
-            </StepCard>
+            {/* ── Mobile-only: Payment + Place Order ──────────────────────
+                On desktop this lives in the sticky right-column panel.    */}
+            <div className="lg:hidden">
+              <StepCard delay={ 0.2 } className="p-6">
+                <h2 className="mb-5 flex items-center gap-2 text-base font-bold text-gray-900">
+                  <CreditCard size={ 17 } className="text-primary-500" />
+                  Payment
+                </h2>
+
+                { paymentMethods.length > 0 && (
+                  <div className="mb-5">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                      Payment Method
+                    </label>
+                    <select
+                      value={ paymentMethod }
+                      onChange={ ( e ) => setPaymentMethod( e.target.value ) }
+                      disabled={ processing }
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+                    >
+                      { paymentMethods.map( ( method ) => (
+                        <option key={ method.id } value={ method.id }>
+                          { method.title || method.id }
+                        </option>
+                      ) ) }
+                    </select>
+                  </div>
+                ) }
+
+                <button
+                  type="button"
+                  onClick={ handlePlaceOrder }
+                  disabled={ processing || ! isFormComplete || safeCartItems.length === 0 }
+                  className="min-h-12 w-full inline-flex items-center justify-center gap-2
+                             bg-primary-600 hover:bg-primary-700 active:scale-[0.99]
+                             text-white py-4 rounded-xl font-bold text-sm tracking-wide
+                             transition-all shadow-md
+                             disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Lock size={ 15 } />
+                  { processing ? 'Processing…' : 'Place Order' }
+                </button>
+
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-400">
+                  <Lock size={ 10 } />
+                  Secured &amp; encrypted checkout
+                </p>
+              </StepCard>
+            </div>
 
             {/* Checkout error */}
             <AnimatePresence>
@@ -925,7 +1041,7 @@ export default function Checkout() {
             </AnimatePresence>
           </div>
 
-          {/* ── Right column: sticky order summary ─────────────────────── */}
+          {/* ── Right column: sticky order summary + payment + CTA ──────── */}
           <div className="hidden lg:block">
             <OrderSummaryPanel
               cartItems={ safeCartItems }
@@ -935,34 +1051,30 @@ export default function Checkout() {
               total={ total }
               loading={ processing }
               className="sticky top-24"
+              showAction={ true }
+              paymentMethods={ paymentMethods }
+              paymentMethod={ paymentMethod }
+              onPaymentMethodChange={ setPaymentMethod }
+              onPlaceOrder={ handlePlaceOrder }
+              processing={ processing }
+              isFormComplete={ isFormComplete }
+              hasItems={ safeCartItems.length > 0 }
             />
+            { checkoutError && (
+              <Motion.div
+                initial={ { opacity: 0, y: -8 } }
+                animate={ { opacity: 1, y: 0 } }
+                className="mt-4 bg-red-50 border border-red-200 rounded-xl p-4"
+                role="alert"
+              >
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-700">{ checkoutError }</p>
+                </div>
+              </Motion.div>
+            ) }
           </div>
         </div>
-      </div>
-
-      {/* ── Mobile sticky summary bar ─────────────────────────────────────────
-          Visible only on mobile (< md breakpoint), docked to the viewport
-          bottom. Shows cart total and scrolls to the payment section.         */}
-      <div
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40
-                   bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3 shadow-xl"
-      >
-        <div className="flex justify-between items-center text-xs text-gray-500 mb-2.5 px-0.5">
-          <span>{ safeCartItems.length } item{ safeCartItems.length !== 1 ? 's' : '' }</span>
-          <span className="font-bold text-gray-900 tabular-nums text-sm">
-            ${ total.toFixed( 2 ) }
-          </span>
-        </div>
-        <a
-          href="#payment-section"
-          className="w-full inline-flex items-center justify-center gap-2
-                     bg-primary-600 hover:bg-primary-700 text-white py-3.5 rounded-xl
-                     font-bold text-sm tracking-wide transition-all shadow-md
-                     active:scale-[0.99] min-h-12"
-        >
-          <Lock size={ 16 } />
-          { isFormComplete ? 'Review Payment Section' : 'Fill in required fields' }
-        </a>
       </div>
     </div>
   );
