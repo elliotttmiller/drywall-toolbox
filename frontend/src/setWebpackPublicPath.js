@@ -18,12 +18,17 @@ export function resolveRuntimeAssetBase() {
     return '';
   }
 
-  const scriptSources = Array.from( document.scripts || [] )
-    .map( ( script ) => script?.src || '' )
-    .filter( Boolean )
-    .reverse();
+  const scriptElements = document.scripts || [];
+  let entryScriptUrl = '';
 
-  const entryScriptUrl = scriptSources.find( ( src ) => ASSET_SCRIPT_PATH_PATTERN.test( src ) );
+  for ( let index = scriptElements.length - 1; index >= 0; index -= 1 ) {
+    const candidateSrc = scriptElements[index]?.src || '';
+    if ( candidateSrc && ASSET_SCRIPT_PATH_PATTERN.test( candidateSrc ) ) {
+      entryScriptUrl = candidateSrc;
+      break;
+    }
+  }
+
   if ( ! entryScriptUrl ) {
     return '';
   }
@@ -49,9 +54,11 @@ export function joinRuntimeAssetUrl( relativePath = '' ) {
   return `${ runtimeAssetBase }/${ normalizedRelativePath }`;
 }
 
-const runtimeAssetBase = resolveRuntimeAssetBase();
+export function initializeWebpackPublicPath() {
+  const runtimeAssetBase = resolveRuntimeAssetBase();
 
-if ( runtimeAssetBase ) {
-  // eslint-disable-next-line no-undef
-  __webpack_public_path__ = `${ runtimeAssetBase }/`;
+  if ( runtimeAssetBase ) {
+    // eslint-disable-next-line no-undef
+    __webpack_public_path__ = `${ runtimeAssetBase }/`;
+  }
 }
