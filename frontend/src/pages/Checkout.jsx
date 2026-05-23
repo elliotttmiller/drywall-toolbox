@@ -79,6 +79,7 @@ function resolvePreferredPaymentMethod( methods = [] ) {
 function paymentTabForMethod( methodId = '' ) {
   const m = String( methodId ).toLowerCase();
   if ( m.includes( 'paypal' ) ) return 'paypal';
+  if ( m.includes( 'klarna' ) || m.includes( 'affirm' ) || m.includes( 'afterpay' ) || m.includes( 'bnpl' ) || m.includes( 'pay_later' ) ) return 'bnpl';
   if ( m.includes( 'stripe' ) || m.includes( 'square' ) || m.includes( 'card' ) || m.includes( 'credit' ) ) return 'card';
   return 'other';
 }
@@ -96,6 +97,40 @@ function resolveCartItemImage( item ) {
     || item.images?.[0]?.src
     || item.images?.[0]
     || ''
+  );
+}
+
+// ─── Payment brand icon helpers ───────────────────────────────────────────────
+function ApplePayMark( { className = '' } ) {
+  return (
+    <svg className={ className } viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.22.15-2.17 1.28-2.14 3.8.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    </svg>
+  );
+}
+
+function GoogleGMark() {
+  return (
+    <span
+      aria-hidden="true"
+      style={ {
+        background: '#4285F4',
+        color: '#fff',
+        borderRadius: '50%',
+        width: 18,
+        height: 18,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 11,
+        fontWeight: 900,
+        lineHeight: 1,
+        fontFamily: 'sans-serif',
+        flexShrink: 0,
+      } }
+    >
+      G
+    </span>
   );
 }
 
@@ -201,7 +236,7 @@ function SkeletonRow() {
 }
 
 // ─── DesktopSummaryPanel ──────────────────────────────────────────────────────
-// Sticky right-column dark panel: order items + totals + CTA.
+// Sticky right-column branded navy panel: order items + totals + CTA.
 function DesktopSummaryPanel( {
   cartItems,
   subtotal,
@@ -220,32 +255,51 @@ function DesktopSummaryPanel( {
   const totalQty = cartItems.reduce( ( sum, item ) => sum + Number( item.quantity || 0 ), 0 );
 
   return (
-    <aside className="hidden lg:flex flex-col sticky top-0 h-screen bg-slate-950 overflow-hidden">
+    <aside
+      className="dtb-summary-panel hidden lg:flex flex-col sticky top-0 h-screen overflow-hidden"
+      style={ { background: 'linear-gradient(170deg, #0d1829 0%, #0a1020 80%)' } }
+    >
+      {/* Top brand accent stripe */}
+      <div className="h-[3px] shrink-0 bg-gradient-to-r from-primary-700 via-primary-500 to-primary-600" />
+
       {/* Header */}
-      <div className="px-7 pt-10 pb-5 border-b border-white/8">
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-sky-300/70 mb-0.5">
-          Order Summary
-        </p>
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-xl font-bold text-white">{ totalQty } item{ totalQty !== 1 ? 's' : '' }</h2>
-          <span className="text-2xl font-black text-white tabular-nums">${ total.toFixed( 2 ) }</span>
+      <div className="px-7 pt-7 pb-5 border-b border-white/8 shrink-0">
+        <div className="flex items-center gap-1.5 mb-4">
+          <Lock size={ 9 } className="text-primary-400/80" />
+          <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-primary-400/80">
+            Secure Checkout
+          </span>
+        </div>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 mb-0.5">
+              Order Summary
+            </p>
+            <h2 className="text-xl font-bold text-white leading-tight">
+              { totalQty } item{ totalQty !== 1 ? 's' : '' }
+            </h2>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-slate-500 mb-0.5">Total</p>
+            <span className="text-2xl font-black text-white tabular-nums">${ total.toFixed( 2 ) }</span>
+          </div>
         </div>
       </div>
 
       {/* Item list */}
-      <div className="flex-1 overflow-y-auto px-7 py-5 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-5 space-y-3">
         <AnimatePresence>
           { processing
             ? [0, 1, 2].map( ( i ) => <SkeletonRow key={ i } /> )
             : cartItems.map( ( item ) => (
                 <Motion.div
                   key={ item.cartKey || item.id }
-                  initial={ { opacity: 0, x: 8 } }
+                  initial={ { opacity: 0, x: 10 } }
                   animate={ { opacity: 1, x: 0 } }
                   exit={ { opacity: 0 } }
-                  className="flex items-center gap-3"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.07] transition-colors"
                 >
-                  <div className="relative h-12 w-12 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-white/5">
+                  <div className="relative h-14 w-14 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-white/[0.06]">
                     { resolveCartItemImage( item ) ? (
                       <img
                         src={ resolveCartItemImage( item ) }
@@ -255,18 +309,18 @@ function DesktopSummaryPanel( {
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-white/20">
-                        <ShoppingBag size={ 14 } />
+                        <ShoppingBag size={ 16 } />
                       </div>
                     ) }
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-600 text-[9px] font-bold text-white">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-500 text-[9px] font-bold text-white shadow-sm">
                       { item.quantity }
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate leading-snug">{ item.name }</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Qty { item.quantity }</p>
+                    <p className="text-[13px] font-semibold text-white truncate leading-snug">{ item.name }</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Qty { item.quantity }</p>
                   </div>
-                  <p className="text-sm font-semibold text-white shrink-0 tabular-nums">
+                  <p className="text-sm font-bold text-slate-200 shrink-0 tabular-nums">
                     ${ ( toMoneyValue( item.price ) * toMoneyValue( item.quantity ) ).toFixed( 2 ) }
                   </p>
                 </Motion.div>
@@ -276,8 +330,8 @@ function DesktopSummaryPanel( {
       </div>
 
       {/* Coupon */}
-      <div className="px-7 py-4 border-t border-white/8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 mb-2">
+      <div className="px-6 py-4 border-t border-white/8 shrink-0">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 mb-2">
           Discount Code
         </p>
         <div className="flex gap-2">
@@ -285,12 +339,12 @@ function DesktopSummaryPanel( {
             value={ couponInput }
             onChange={ ( e ) => setCouponInput( e.target.value.toUpperCase() ) }
             placeholder="Enter code"
-            className="flex-1 rounded-xl border border-white/12 bg-white/6 px-3.5 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/25 transition-all"
+            className="flex-1 rounded-xl border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-white placeholder:text-slate-600 focus:border-primary-500/60 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all"
           />
           <button
             type="button"
             onClick={ addManualCoupon }
-            className="rounded-xl bg-white/10 hover:bg-white/16 border border-white/12 px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+            className="rounded-xl bg-primary-600/20 hover:bg-primary-600/30 border border-primary-500/30 px-4 py-2.5 text-sm font-bold text-primary-300 transition-colors"
           >
             Apply
           </button>
@@ -302,7 +356,7 @@ function DesktopSummaryPanel( {
                 key={ code }
                 type="button"
                 onClick={ () => removeManualCoupon( code ) }
-                className="flex items-center gap-1 rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-1 text-[11px] font-semibold text-teal-400"
+                className="flex items-center gap-1 rounded-full border border-primary-500/30 bg-primary-500/10 px-2.5 py-1 text-[11px] font-semibold text-primary-300"
               >
                 <Tag size={ 9 } /> { code } ×
               </button>
@@ -312,39 +366,53 @@ function DesktopSummaryPanel( {
       </div>
 
       {/* Totals */}
-      <div className="px-7 pt-4 pb-1 border-t border-white/8 space-y-2">
+      <div className="px-6 pt-4 pb-1 border-t border-white/8 shrink-0 space-y-2.5">
         { [
-          { label: 'Subtotal',    value: `$${ subtotal.toFixed( 2 ) }` },
-          { label: 'Shipping',    value: shipping === 0 ? 'Free' : `$${ shipping.toFixed( 2 ) }` },
-          { label: 'Tax (8%)',    value: `$${ tax.toFixed( 2 ) }` },
+          { label: 'Subtotal', value: `$${ subtotal.toFixed( 2 ) }` },
+          { label: 'Shipping', value: shipping === 0 ? 'Free' : `$${ shipping.toFixed( 2 ) }` },
+          { label: 'Tax (8%)', value: `$${ tax.toFixed( 2 ) }` },
         ].map( ( { label, value } ) => (
           <div key={ label } className="flex justify-between text-sm">
-            <span className="text-slate-400">{ label }</span>
-            <span className={ `font-medium tabular-nums ${ label === 'Shipping' && shipping === 0 ? 'text-emerald-400' : 'text-slate-200' }` }>
+            <span className="text-slate-500">{ label }</span>
+            <span className={ `font-medium tabular-nums ${ label === 'Shipping' && shipping === 0 ? 'text-emerald-400' : 'text-slate-300' }` }>
               { value }
             </span>
           </div>
         ) ) }
-        <div className="flex justify-between items-baseline pt-3 pb-1 border-t border-white/10">
+        <div className="flex justify-between items-baseline pt-3 pb-1 border-t border-white/8">
           <span className="text-base font-bold text-white">Total</span>
           <span className="text-2xl font-black text-white tabular-nums">${ total.toFixed( 2 ) }</span>
         </div>
       </div>
 
       {/* CTA */}
-      <div className="px-7 py-6">
+      <div className="px-6 pb-7 pt-3 shrink-0">
+        {/* Payment icons */}
+        <div className="flex items-center justify-center gap-1.5 mb-4 flex-wrap">
+          { [ ['VISA', '#a0b4f5'], ['MC', '#f87171'], ['AMEX', '#60a5fa'] ].map( ( [ label, color ] ) => (
+            <span key={ label } style={ { color } } className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[9px] font-black">
+              { label }
+            </span>
+          ) ) }
+          <span className="rounded border border-white/10 bg-white/[0.06] text-slate-300 px-1.5 py-0.5 text-[9px] font-semibold">
+            Apple Pay
+          </span>
+          <span className="rounded border border-white/10 bg-white/[0.06] text-slate-300 px-1.5 py-0.5 text-[9px] font-semibold">
+            G Pay
+          </span>
+        </div>
         <button
           type="button"
           onClick={ onPlaceOrder }
           disabled={ ! canSubmit }
-          className="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary-600 hover:bg-primary-700 active:scale-[0.99] text-white py-4 text-sm font-bold tracking-wide shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-13"
+          className="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary-600 hover:bg-primary-500 active:scale-[0.99] text-white py-4 text-sm font-bold tracking-wide shadow-[0_4px_20px_rgba(37,99,235,0.30)] transition-all disabled:opacity-40 disabled:cursor-not-allowed min-h-[52px]"
         >
-          <Lock size={ 15 } strokeWidth={ 2.5 } />
+          <Lock size={ 14 } strokeWidth={ 2.5 } />
           { processing ? 'Processing…' : 'Place Order & Pay' }
         </button>
-        <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-slate-500">
+        <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-slate-600">
           <Lock size={ 10 } />
-          <span>Secured & encrypted checkout</span>
+          <span>256-bit SSL encrypted</span>
         </div>
       </div>
     </aside>
@@ -628,8 +696,9 @@ export default function Checkout() {
       && safeCartItems.length > 0
       && Boolean( paymentMethod )
       && !manualPaymentSelected
+      && filteredPaymentMethods.length > 0
     ),
-    [ isFormComplete, manualPaymentSelected, paymentMethod, processing, safeCartItems.length ],
+    [ filteredPaymentMethods.length, isFormComplete, manualPaymentSelected, paymentMethod, processing, safeCartItems.length ],
   );
 
   // True when the address fields needed for rate calculation are all filled.
@@ -929,7 +998,7 @@ export default function Checkout() {
       <SEOHead noindex title="Checkout" />
 
       {/* ── Two-column grid: form (left) + dark summary (right, desktop only) ── */}
-      <div className="lg:grid lg:grid-cols-[1fr_420px] min-h-screen">
+      <div className="lg:grid lg:grid-cols-[1fr_500px] min-h-screen">
 
         {/* ── Left column: form ───────────────────────────────────────────── */}
         <div className="px-4 py-8 sm:px-8 md:px-10 lg:px-12 xl:px-16 pb-32 lg:pb-16 lg:overflow-y-auto lg:max-h-screen">
@@ -1259,31 +1328,75 @@ export default function Checkout() {
                     </span>
                     <h2 className="text-[0.95rem] font-bold text-slate-900 tracking-tight">Payment</h2>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 flex-wrap justify-end max-w-[200px]">
                     { [ ['VISA', '#1A1F71'], ['MC', '#EB001B'], ['AMEX', '#006FCF'] ].map( ( [ label, color ] ) => (
-                      <span
-                        key={ label }
-                        style={ { color } }
-                        className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-black"
-                      >
+                      <span key={ label } style={ { color } } className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-black">
                         { label }
                       </span>
                     ) ) }
+                    <span className="rounded border border-gray-800 bg-black text-white px-1.5 py-0.5 text-[9px] font-semibold">
+                      Apple Pay
+                    </span>
+                    <span className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold" style={ { color: '#4285F4' } }>
+                      G Pay
+                    </span>
+                    <span className="rounded border border-pink-200 bg-pink-50 text-[#17120e] px-1.5 py-0.5 text-[9px] font-black">
+                      Klarna
+                    </span>
+                  </div>
+                </div>
+
+                {/* Express checkout row */}
+                <div className="mb-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-slate-400 mb-2.5 text-center">
+                    Express Checkout
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    <button
+                      type="button"
+                      disabled
+                      title="Apple Pay coming soon"
+                      className="relative flex items-center justify-center gap-2 h-11 rounded-xl bg-black border border-black/80 text-white text-[13px] font-semibold opacity-60 cursor-not-allowed select-none"
+                    >
+                      <ApplePayMark className="h-4 w-4" />
+                      Apple Pay
+                      <span className="absolute -top-2 -right-1.5 bg-slate-200 text-slate-600 text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                        Soon
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled
+                      title="Google Pay coming soon"
+                      className="relative flex items-center justify-center gap-2 h-11 rounded-xl bg-white border border-slate-200 text-[13px] font-semibold text-slate-700 opacity-60 cursor-not-allowed select-none"
+                    >
+                      <GoogleGMark />
+                      Google Pay
+                      <span className="absolute -top-2 -right-1.5 bg-slate-200 text-slate-600 text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                        Soon
+                      </span>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-slate-200" />
+                    <span className="text-[11px] text-slate-400 font-medium whitespace-nowrap">or pay another way</span>
+                    <div className="flex-1 h-px bg-slate-200" />
                   </div>
                 </div>
 
                 {/* Payment type tabs */}
-                <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl mb-5">
+                <div className="flex gap-1 p-1 bg-slate-100 rounded-xl mb-5">
                   { [
-                    { id: 'card', label: 'Credit Card' },
+                    { id: 'card',   label: 'Card' },
                     { id: 'paypal', label: 'PayPal' },
-                    { id: 'other', label: 'Other' },
+                    { id: 'bnpl',   label: 'Pay Later' },
+                    { id: 'other',  label: 'Other' },
                   ].map( ( tab ) => (
                     <button
                       key={ tab.id }
                       type="button"
                       onClick={ () => setPaymentTab( tab.id ) }
-                      className={ `flex-1 rounded-lg py-2 text-xs font-semibold transition-all
+                      className={ `flex-1 rounded-lg py-2 text-[11px] font-semibold transition-all
                                    ${ paymentTab === tab.id
                                      ? 'bg-white text-slate-900 shadow-sm'
                                      : 'text-slate-500 hover:text-slate-700' }` }
@@ -1293,14 +1406,49 @@ export default function Checkout() {
                   ) ) }
                 </div>
 
-                { paymentMethods.length === 0 && (
+                {/* BNPL coming-soon cards (always shown when on bnpl tab) */}
+                { paymentTab === 'bnpl' && (
+                  <div className="mb-4 space-y-2.5">
+                    <div className="flex items-center gap-3.5 rounded-xl border border-pink-200/60 bg-[#fdf0f4] px-4 py-3.5">
+                      <div className="h-8 w-8 shrink-0 rounded-lg bg-[#ffb3c7] flex items-center justify-center">
+                        <span className="text-[#17120e] text-sm font-black">K</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-900">Klarna</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Pay in 4 · 0% interest · No fees</p>
+                      </div>
+                      <span className="shrink-0 text-[10px] font-bold bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3.5 rounded-xl border border-indigo-200/60 bg-indigo-50 px-4 py-3.5">
+                      <div className="h-8 w-8 shrink-0 rounded-lg bg-indigo-100 flex items-center justify-center">
+                        <span className="text-indigo-700 text-[10px] font-black leading-none">aff</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-900">Affirm</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Monthly payments · 0–30% APR</p>
+                      </div>
+                      <span className="shrink-0 text-[10px] font-bold bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 text-center pt-1">
+                      Buy now, pay later options launching soon.
+                    </p>
+                  </div>
+                ) }
+
+                {/* Standard payment method error (non-BNPL tabs only) */}
+                { paymentTab !== 'bnpl' && paymentMethods.length === 0 && (
                   <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
                     <AlertCircle size={ 14 } className="shrink-0 mt-0.5" />
                     No payment methods configured. Please contact support.
                   </div>
                 ) }
 
-                { paymentMethods.length > 0 && (
+                {/* Standard payment methods (non-BNPL tabs) */}
+                { paymentTab !== 'bnpl' && paymentMethods.length > 0 && (
                   <div className="mb-4 space-y-2" role="radiogroup" aria-label="Payment Method">
                     { filteredPaymentMethods.map( ( method ) => {
                       const isSelected = paymentMethod === method.id;

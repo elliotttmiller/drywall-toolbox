@@ -102,9 +102,9 @@
 }
 
 /* Dark summary panel text overrides */
-.dtb-checkout aside.bg-slate-950 h2,
-.dtb-checkout aside.bg-slate-950 p,
-.dtb-checkout aside.bg-slate-950 span {
+.dtb-checkout .dtb-summary-panel h2,
+.dtb-checkout .dtb-summary-panel p,
+.dtb-checkout .dtb-summary-panel span {
   color: inherit;
 }
 
