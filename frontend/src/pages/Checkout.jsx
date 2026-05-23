@@ -59,6 +59,9 @@ const cardVariants = {
   }),
 };
 
+// ─── Shared money helper (used by all sub-components) ─────────────────────────
+const toMoneyValue = ( v ) => { const n = Number( v ); return Number.isFinite( n ) ? n : 0; };
+
 const MANUAL_PAYMENT_METHOD_IDS = new Set( [ 'cod', 'bacs', 'cheque' ] );
 
 function isManualPaymentMethod( method ) {
@@ -214,8 +217,7 @@ function DesktopSummaryPanel( {
   canSubmit,
   onPlaceOrder,
 } ) {
-  const toMoney = ( v ) => { const n = Number( v ); return Number.isFinite( n ) ? n : 0; };
-  const qty     = cartItems.reduce( ( s, i ) => s + Number( i.quantity || 0 ), 0 );
+  const totalQty = cartItems.reduce( ( sum, item ) => sum + Number( item.quantity || 0 ), 0 );
 
   return (
     <aside className="hidden lg:flex flex-col sticky top-0 h-screen bg-slate-950 overflow-hidden">
@@ -225,7 +227,7 @@ function DesktopSummaryPanel( {
           Order Summary
         </p>
         <div className="flex items-baseline justify-between">
-          <h2 className="text-xl font-bold text-white">{ qty } item{ qty !== 1 ? 's' : '' }</h2>
+          <h2 className="text-xl font-bold text-white">{ totalQty } item{ totalQty !== 1 ? 's' : '' }</h2>
           <span className="text-2xl font-black text-white tabular-nums">${ total.toFixed( 2 ) }</span>
         </div>
       </div>
@@ -265,7 +267,7 @@ function DesktopSummaryPanel( {
                     <p className="text-xs text-slate-400 mt-0.5">Qty { item.quantity }</p>
                   </div>
                   <p className="text-sm font-semibold text-white shrink-0 tabular-nums">
-                    ${ ( toMoney( item.price ) * toMoney( item.quantity ) ).toFixed( 2 ) }
+                    ${ ( toMoneyValue( item.price ) * toMoneyValue( item.quantity ) ).toFixed( 2 ) }
                   </p>
                 </Motion.div>
               ) )
@@ -353,7 +355,6 @@ function DesktopSummaryPanel( {
 // Compact top-of-page summary for mobile (< lg). Collapsible.
 function MobileSummaryStrip( { cartItems, subtotal, shipping, tax, total } ) {
   const [open, setOpen] = useState( false );
-  const toMoney = ( v ) => { const n = Number( v ); return Number.isFinite( n ) ? n : 0; };
 
   return (
     <Motion.div
@@ -404,7 +405,7 @@ function MobileSummaryStrip( { cartItems, subtotal, shipping, tax, total } ) {
                     <p className="text-[11px] text-slate-400">Qty { item.quantity }</p>
                   </div>
                   <p className="text-xs font-bold text-slate-900 tabular-nums shrink-0">
-                    ${ ( toMoney( item.price ) * toMoney( item.quantity ) ).toFixed( 2 ) }
+                    ${ ( toMoneyValue( item.price ) * toMoneyValue( item.quantity ) ).toFixed( 2 ) }
                   </p>
                 </div>
               ) ) }
@@ -472,7 +473,6 @@ export default function Checkout() {
   const [orderComplete, setOrderComplete] = useState( false );
   const [orderDetails,  setOrderDetails ] = useState( null );
   const [step,          setStep         ] = useState( 'form' ); // 'form' | 'syncing' | 'placing'
-  const [, setPaymentGateway] = useState( 'woo_native' );
   const [paymentMethod, setPaymentMethod] = useState( '' );
   const [paymentMethods, setPaymentMethods] = useState( [] );
   const [paymentTab, setPaymentTab] = useState( 'card' );
@@ -516,7 +516,6 @@ export default function Checkout() {
           ? caps.gateways.find( (g) => g.id === defaultGateway ) || caps.gateways[0]
           : null;
         const methods = Array.isArray( gateway?.payment_methods ) ? gateway.payment_methods : [];
-        setPaymentGateway( gateway?.id || defaultGateway );
         setPaymentMethods( methods );
         const preferredMethod = resolvePreferredPaymentMethod( methods );
         if ( preferredMethod ) {
@@ -963,7 +962,11 @@ export default function Checkout() {
               animate={ { opacity: 1 } }
               transition={ { duration: 0.3, delay: 0.05 } }
             >
-              <StepProgress activeStep={ paymentMethod && isFormComplete ? 'payment' : 'shipping' } />
+              <StepProgress activeStep={
+                orderComplete   ? 'review'
+                : ( paymentMethod && isFormComplete ) ? 'payment'
+                : 'shipping'
+              } />
             </Motion.div>
 
             {/* Mobile order summary */}
