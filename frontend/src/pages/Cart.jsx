@@ -151,7 +151,7 @@ export default function Cart() {
                         <div className="flex justify-between gap-2 mb-1">
                           <div className="min-w-0">
                             { item.brand && (
-                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary-500 mb-0.5">
+                              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary-500 mb-0.5">
                                 { item.brand }
                               </p>
                             ) }

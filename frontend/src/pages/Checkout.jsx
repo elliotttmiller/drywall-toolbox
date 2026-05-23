@@ -76,11 +76,16 @@ function resolvePreferredPaymentMethod( methods = [] ) {
   return ( online?.id || methods[0]?.id || '' );
 }
 
+// BNPL gateway identifier keywords — update when adding new providers.
+const BNPL_KEYWORDS = ['klarna', 'affirm', 'afterpay', 'bnpl', 'pay_later'];
+// Card gateway identifier keywords.
+const CARD_KEYWORDS = ['stripe', 'square', 'card', 'credit'];
+
 function paymentTabForMethod( methodId = '' ) {
   const m = String( methodId ).toLowerCase();
   if ( m.includes( 'paypal' ) ) return 'paypal';
-  if ( m.includes( 'klarna' ) || m.includes( 'affirm' ) || m.includes( 'afterpay' ) || m.includes( 'bnpl' ) || m.includes( 'pay_later' ) ) return 'bnpl';
-  if ( m.includes( 'stripe' ) || m.includes( 'square' ) || m.includes( 'card' ) || m.includes( 'credit' ) ) return 'card';
+  if ( BNPL_KEYWORDS.some( ( kw ) => m.includes( kw ) ) ) return 'bnpl';
+  if ( CARD_KEYWORDS.some( ( kw ) => m.includes( kw ) ) ) return 'card';
   return 'other';
 }
 
@@ -101,6 +106,8 @@ function resolveCartItemImage( item ) {
 }
 
 // ─── Payment brand icon helpers ───────────────────────────────────────────────
+const GOOGLE_BRAND_BLUE = '#4285F4';
+
 function ApplePayMark( { className = '' } ) {
   return (
     <svg className={ className } viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -109,12 +116,12 @@ function ApplePayMark( { className = '' } ) {
   );
 }
 
-function GoogleGMark() {
+function GooglePayMark() {
   return (
     <span
       aria-hidden="true"
       style={ {
-        background: '#4285F4',
+        background: GOOGLE_BRAND_BLUE,
         color: '#fff',
         borderRadius: '50%',
         width: 18,
@@ -612,6 +619,13 @@ export default function Checkout() {
     }
   }, [ filteredPaymentMethods, paymentMethod ] );
 
+  // Clear the selected payment method when the user switches to the BNPL tab
+  // (coming-soon tab has no real methods; clearing ensures checkout stays disabled
+  // until the user switches back to a tab with a valid method selected).
+  useEffect( () => {
+    if ( paymentTab === 'bnpl' ) setPaymentMethod( '' );
+  }, [ paymentTab ] );
+
   const manualPaymentSelected = useMemo(
     () => isManualPaymentMethod( selectedPaymentMethod || paymentMethod ),
     [ paymentMethod, selectedPaymentMethod ],
@@ -696,9 +710,8 @@ export default function Checkout() {
       && safeCartItems.length > 0
       && Boolean( paymentMethod )
       && !manualPaymentSelected
-      && filteredPaymentMethods.length > 0
     ),
-    [ filteredPaymentMethods.length, isFormComplete, manualPaymentSelected, paymentMethod, processing, safeCartItems.length ],
+    [ isFormComplete, manualPaymentSelected, paymentMethod, processing, safeCartItems.length ],
   );
 
   // True when the address fields needed for rate calculation are all filled.
@@ -1337,7 +1350,7 @@ export default function Checkout() {
                     <span className="rounded border border-gray-800 bg-black text-white px-1.5 py-0.5 text-[9px] font-semibold">
                       Apple Pay
                     </span>
-                    <span className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold" style={ { color: '#4285F4' } }>
+                    <span className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold" style={ { color: GOOGLE_BRAND_BLUE } }>
                       G Pay
                     </span>
                     <span className="rounded border border-pink-200 bg-pink-50 text-[#17120e] px-1.5 py-0.5 text-[9px] font-black">
@@ -1370,7 +1383,7 @@ export default function Checkout() {
                       title="Google Pay coming soon"
                       className="relative flex items-center justify-center gap-2 h-11 rounded-xl bg-white border border-slate-200 text-[13px] font-semibold text-slate-700 opacity-60 cursor-not-allowed select-none"
                     >
-                      <GoogleGMark />
+                      <GooglePayMark />
                       Google Pay
                       <span className="absolute -top-2 -right-1.5 bg-slate-200 text-slate-600 text-[8px] font-bold px-1.5 py-0.5 rounded-full leading-none">
                         Soon
