@@ -36,25 +36,25 @@
 
 .dtb-checkout h1 {
   color: var(--checkout-ink);
-  font-size: clamp(2rem, 1.7rem + 0.9vw, 2.85rem);
-  font-weight: 800;
-  line-height: 1.02;
+  font-size: clamp(1.75rem, 1.5rem + 0.75vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.05;
 }
 
 .dtb-checkout h2,
 .dtb-checkout h3 {
   color: var(--checkout-ink);
-  font-weight: 750;
-  line-height: 1.12;
+  font-weight: 700;
+  line-height: 1.15;
 }
 
 .dtb-checkout p {
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .dtb-checkout label {
   color: #52627a;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.2;
   text-transform: none;
@@ -64,20 +64,19 @@
 .dtb-checkout textarea,
 .dtb-checkout select {
   color: var(--checkout-ink);
-  font-size: 1rem !important;
+  font-size: 0.9rem !important;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .dtb-checkout input::placeholder,
 .dtb-checkout textarea::placeholder {
   color: #9aa7b8;
-  font-weight: 500;
+  font-weight: 400;
 }
 
-.dtb-checkout button,
-.dtb-checkout a[href="#payment-section"] {
-  font-weight: 750;
+.dtb-checkout button {
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -88,11 +87,11 @@
 }
 
 .dtb-checkout .text-xs {
-  line-height: 1.35;
+  line-height: 1.38;
 }
 
 .dtb-checkout .text-sm {
-  line-height: 1.42;
+  line-height: 1.45;
 }
 
 .dtb-checkout .text-slate-500,
@@ -102,37 +101,28 @@
   color: var(--checkout-muted);
 }
 
-.dtb-checkout .bg-slate-950 h2,
-.dtb-checkout .bg-slate-950 p,
-.dtb-checkout .bg-slate-950 span {
+/* Dark summary panel text overrides */
+.dtb-checkout aside.bg-slate-950 h2,
+.dtb-checkout aside.bg-slate-950 p,
+.dtb-checkout aside.bg-slate-950 span {
   color: inherit;
 }
 
-.dtb-checkout .bg-slate-950 h2 {
-  font-weight: 800;
-}
-
-.dtb-checkout .bg-slate-950 p {
-  color: #bfdbfe;
-  font-size: 0.69rem;
-  font-weight: 750;
-}
-
 .dtb-checkout .font-black {
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .dtb-checkout .font-bold {
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .dtb-checkout .font-semibold {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 @media (max-width: 640px) {
   .dtb-checkout h1 {
-    font-size: 2rem;
-    line-height: 1.04;
+    font-size: 1.75rem;
+    line-height: 1.07;
   }
 }
