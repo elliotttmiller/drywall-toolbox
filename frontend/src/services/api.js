@@ -22,6 +22,7 @@ import {
   mergeSpecMeta,
 } from '../utils/csvSpecificationMapping.js';
 import { buildIncludesMetaFromContent } from '../utils/includesExtraction.js';
+import { decodeHtmlEntities } from '../utils/string.js';
 
 function hasStructuredIncludesMeta(metaItems = []) {
   return metaItems.some(({ key }) => /^_includes_\d+_(name|sku)$/.test(String(key || '')));
@@ -105,15 +106,6 @@ const GENERIC_MAPPED_CATEGORY_NAMES = new Set([
 ]);
 
 /** Decode common HTML entities that WooCommerce embeds in category names via the REST API. */
-function decodeHtmlEntities(str) {
-  return (str || '')
-    .replace(/&amp;/g,  '&')
-    .replace(/&lt;/g,   '<')
-    .replace(/&gt;/g,   '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&nbsp;/g, ' ');
-}
 
 /**
  * Map a WooCommerce REST API categories array to our internal category key.
@@ -459,7 +451,7 @@ export function normalizeProduct(wcProduct) {
     slug:         wcProduct.slug || '',
 
     // Display
-    name:         wcProduct.name || wcProduct.sku || String(wcProduct.id),
+    name:         decodeHtmlEntities(wcProduct.name || wcProduct.sku || String(wcProduct.id)),
     brand,
     category,
     display_category,

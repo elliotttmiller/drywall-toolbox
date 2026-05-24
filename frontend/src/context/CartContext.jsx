@@ -8,6 +8,7 @@ import {
   clearStoreCart,
 } from '../api/cart.js';
 import { trackAddToCart, trackRemoveFromCart } from '../analytics/ecommerceEvents.js';
+import { decodeHtmlEntities } from '../utils/string.js';
 
 const CART_SNAPSHOT_KEY = 'drywall-cart-snapshot';
 const CartContext = createContext();
@@ -43,7 +44,7 @@ function normalizeStoreCartItem(item) {
     cartKey: item.key,
     id: item.id,
     key: item.key,
-    name: item.name,
+    name: decodeHtmlEntities(item.name),
     brand: item.brand || '',
     price: parsePriceFromStoreApi(item?.prices?.price ?? item?.price),
     image: getStoreItemImage(item),
