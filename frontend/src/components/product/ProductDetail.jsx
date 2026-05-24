@@ -611,9 +611,9 @@ export default function ProductDetail({
           );
           if (!mounted) return null;
           const items = Array.isArray(payload?.items) ? payload.items : [];
-          const first = items.find((item) => item?.id && item?.sku !== lookupSku);
-          if (first) {
-            const normalized = toLegacyProductCardDTO(first);
+          const brandPart = items.find((item) => item?.id && item?.sku !== lookupSku);
+          if (brandPart) {
+            const normalized = toLegacyProductCardDTO(brandPart);
             if (normalized?.id) return normalized;
           }
         } catch {
@@ -629,9 +629,9 @@ export default function ProductDetail({
           );
           if (!mounted) return null;
           const items = Array.isArray(payload?.items) ? payload.items : [];
-          const first = items.find((item) => item?.id && item?.sku !== lookupSku);
-          if (first) {
-            const normalized = toLegacyProductCardDTO(first);
+          const categoryProduct = items.find((item) => item?.id && item?.sku !== lookupSku);
+          if (categoryProduct) {
+            const normalized = toLegacyProductCardDTO(categoryProduct);
             if (normalized?.id) return normalized;
           }
         } catch {
