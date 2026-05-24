@@ -24,7 +24,7 @@ const CARD = {
   background:   'white',
   border:       '1px solid rgba(15,23,42,0.08)',
   borderRadius: '12px',
-  boxShadow:    '0 2px 12px rgba(15,23,42,0.05)',
+  boxShadow:    '0 1px 8px rgba(15,23,42,0.04)',
 };
 
 const ORDER_STATUS = {
@@ -55,26 +55,40 @@ function StatusPill( { status } ) {
   );
 }
 
-function StatCard( { icon, label, value, color, bg, delay } ) {
-  const Icon = icon;
+function StatStrip( { stats, delay } ) {
   return (
     <Motion.div custom={ delay } variants={ fadeUp } initial="hidden" animate="visible"
-      style={ { ...CARD, padding: '16px 18px', display: 'flex', alignItems: 'center', gap: '12px' } }
+      style={ { ...CARD, display: 'flex', alignItems: 'stretch', overflow: 'hidden' } }
     >
-      <div style={ {
-        width: '40px', height: '40px', borderRadius: '10px',
-        background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-      } }>
-        <Icon size={ 18 } style={ { color } } />
-      </div>
-      <div>
-        <p style={ { margin: 0, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.09em', color: 'rgba(15,23,42,0.42)', fontWeight: 700 } }>
-          { label }
-        </p>
-        <p style={ { margin: '2px 0 0', fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 } }>
-          { value }
-        </p>
-      </div>
+      { stats.map( ( s, i ) => {
+        const Icon = s.icon;
+        return (
+          <div key={ s.label } style={ { display: 'contents' } }>
+            { i > 0 && (
+              <div style={ { width: '1px', background: 'rgba(15,23,42,0.07)', flexShrink: 0, alignSelf: 'stretch' } } />
+            ) }
+            <div style={ {
+              flex: 1, display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '12px 14px', minWidth: 0,
+            } }>
+              <div style={ {
+                width: '32px', height: '32px', borderRadius: '8px',
+                background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              } }>
+                <Icon size={ 14 } style={ { color: s.color } } />
+              </div>
+              <div style={ { minWidth: 0 } }>
+                <p style={ { margin: 0, fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(15,23,42,0.38)', fontWeight: 700, whiteSpace: 'nowrap' } }>
+                  { s.label }
+                </p>
+                <p style={ { margin: '1px 0 0', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1, whiteSpace: 'nowrap' } }>
+                  { s.value }
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      } ) }
     </Motion.div>
   );
 }
@@ -86,47 +100,50 @@ export default function OverviewTab( { user, pointsData, orders, ordersLoading, 
   const completedCount = orders.filter( ( o ) => o.status === 'completed' ).length;
 
   return (
-    <div style={ { display: 'flex', flexDirection: 'column', gap: '18px' } }>
+    <div style={ { display: 'flex', flexDirection: 'column', gap: '14px' } }>
 
-      {/* Stats row */}
-      <div style={ { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' } }>
-        <StatCard icon={ Package }     label="Orders"    value={ ordersLoading ? '…' : String( orders.length ) }                                                               color="#2563eb" bg="#eff6ff" delay={ 0 } />
-        <StatCard icon={ Clock }       label="Active"    value={ ordersLoading ? '…' : String( pendingCount ) }                                                                color="#d97706" bg="#fffbeb" delay={ 0.05 } />
-        <StatCard icon={ CheckCircle } label="Completed" value={ ordersLoading ? '…' : String( completedCount ) }                                                              color="#16a34a" bg="#f0fdf4" delay={ 0.1 } />
-        <StatCard icon={ Star }        label="Rewards"   value={ pointsData ? `$${ pointsToUsd( pointsData.points ).toFixed( 2 ) }` : '—' } color="#d97706" bg="#fffbeb" delay={ 0.15 } />
-      </div>
+      {/* Horizontal stat strip */}
+      <StatStrip
+        delay={ 0 }
+        stats={ [
+          { icon: Package,     label: 'Orders',    value: ordersLoading ? '…' : String( orders.length ),                                                             color: '#2563eb', bg: '#eff6ff' },
+          { icon: Clock,       label: 'Active',    value: ordersLoading ? '…' : String( pendingCount ),                                                              color: '#d97706', bg: '#fffbeb' },
+          { icon: CheckCircle, label: 'Completed', value: ordersLoading ? '…' : String( completedCount ),                                                            color: '#16a34a', bg: '#f0fdf4' },
+          { icon: Star,        label: 'Rewards',   value: pointsData ? `$${ pointsToUsd( pointsData.points ).toFixed( 2 ) }` : '—', color: '#d97706', bg: '#fffbeb' },
+        ] }
+      />
 
       {/* Recent orders */}
-      <Motion.div custom={ 0.24 } variants={ fadeUp } initial="hidden" animate="visible"
-        style={ { ...CARD, padding: '18px 20px' } }
+      <Motion.div custom={ 0.12 } variants={ fadeUp } initial="hidden" animate="visible"
+        style={ { ...CARD, padding: '14px 16px' } }
       >
-        <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' } }>
-          <div style={ { display: 'flex', alignItems: 'center', gap: '10px' } }>
-            <div style={ { width: '34px', height: '34px', borderRadius: '8px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
-              <Package size={ 16 } style={ { color: '#2563eb' } } />
+        <div style={ { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' } }>
+          <div style={ { display: 'flex', alignItems: 'center', gap: '8px' } }>
+            <div style={ { width: '28px', height: '28px', borderRadius: '7px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
+              <Package size={ 13 } style={ { color: '#2563eb' } } />
             </div>
-            <span style={ { fontSize: '0.92rem', fontWeight: 700, color: '#0f172a' } }>Recent Orders</span>
+            <span style={ { fontSize: '0.87rem', fontWeight: 700, color: '#0f172a' } }>Recent Orders</span>
           </div>
           <button
             type="button"
             onClick={ () => onTabChange( 1 ) }
-            style={ { fontSize: '0.76rem', fontWeight: 650, color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px', padding: 0 } }
+            style={ { fontSize: '0.73rem', fontWeight: 650, color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px', padding: 0 } }
           >
-            View all <ChevronRight size={ 12 } />
+            View all <ChevronRight size={ 11 } />
           </button>
         </div>
 
         { ordersLoading ? (
-          <div style={ { display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' } }>
-            <Loader size={ 15 } className="animate-spin" style={ { color: '#2563eb' } } />
-            <span style={ { fontSize: '0.82rem', color: 'rgba(15,23,42,0.45)' } }>Loading orders…</span>
+          <div style={ { display: 'flex', alignItems: 'center', gap: '7px', padding: '6px 0' } }>
+            <Loader size={ 13 } className="animate-spin" style={ { color: '#2563eb' } } />
+            <span style={ { fontSize: '0.8rem', color: 'rgba(15,23,42,0.45)' } }>Loading orders…</span>
           </div>
         ) : orders.length === 0 ? (
-          <div style={ { textAlign: 'center', padding: '24px 16px', background: '#f8fafc', borderRadius: '8px' } }>
-            <Package size={ 26 } style={ { color: 'rgba(15,23,42,0.18)', display: 'block', margin: '0 auto 8px' } } />
-            <p style={ { margin: '0 0 12px', fontSize: '0.82rem', color: 'rgba(15,23,42,0.45)' } }>No orders yet.</p>
-            <Link to="/products" style={ { fontSize: '0.78rem', fontWeight: 650, color: '#2563eb', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#eff6ff', padding: '6px 12px', borderRadius: '6px' } }>
-              <ShoppingCart size={ 12 } /> Browse Products
+          <div style={ { textAlign: 'center', padding: '18px 12px', background: '#f8fafc', borderRadius: '7px' } }>
+            <Package size={ 22 } style={ { color: 'rgba(15,23,42,0.18)', display: 'block', margin: '0 auto 7px' } } />
+            <p style={ { margin: '0 0 10px', fontSize: '0.8rem', color: 'rgba(15,23,42,0.45)' } }>No orders yet.</p>
+            <Link to="/products" style={ { fontSize: '0.76rem', fontWeight: 650, color: '#2563eb', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#eff6ff', padding: '5px 10px', borderRadius: '6px' } }>
+              <ShoppingCart size={ 11 } /> Browse Products
             </Link>
           </div>
         ) : (
@@ -134,26 +151,26 @@ export default function OverviewTab( { user, pointsData, orders, ordersLoading, 
             { orders.slice( 0, 4 ).map( ( order, i ) => (
               <Link key={ order.id } to={ `/order/${ order.id }` } style={ { textDecoration: 'none', display: 'block' } }>
                 <div style={ {
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '10px 0',
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '8px 0',
                   borderBottom: i < Math.min( orders.length, 4 ) - 1 ? '1px solid rgba(15,23,42,0.055)' : 'none',
                   transition: 'background 0.1s',
                 } }
-                  onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.padding = '10px 8px'; e.currentTarget.style.borderRadius = '6px'; e.currentTarget.style.margin = '0 -8px'; } }
-                  onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.padding = '10px 0'; e.currentTarget.style.borderRadius = '0'; e.currentTarget.style.margin = '0'; } }
+                  onMouseEnter={ ( e ) => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.padding = '8px 7px'; e.currentTarget.style.borderRadius = '5px'; e.currentTarget.style.margin = '0 -7px'; } }
+                  onMouseLeave={ ( e ) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.padding = '8px 0'; e.currentTarget.style.borderRadius = '0'; e.currentTarget.style.margin = '0'; } }
                 >
-                  <div style={ { flex: 1 } }>
-                    <div style={ { display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '2px' } }>
-                      <span style={ { fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' } }>Order #{ order.id }</span>
+                  <div style={ { flex: 1, minWidth: 0 } }>
+                    <div style={ { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '1px', flexWrap: 'wrap' } }>
+                      <span style={ { fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' } }>Order #{ order.id }</span>
                       <StatusPill status={ order.status } />
                     </div>
-                    <p style={ { margin: 0, fontSize: '0.72rem', color: 'rgba(15,23,42,0.4)' } }>
+                    <p style={ { margin: 0, fontSize: '0.7rem', color: 'rgba(15,23,42,0.4)' } }>
                       { order.date_created ? new Date( order.date_created ).toLocaleDateString( 'en-US', { month: 'short', day: 'numeric', year: 'numeric' } ) : '' }
                     </p>
                   </div>
-                  <div style={ { display: 'flex', alignItems: 'center', gap: '6px' } }>
-                    <span style={ { fontWeight: 750, color: '#0f172a', fontSize: '0.88rem' } }>${ parseFloat( order.total ?? 0 ).toFixed( 2 ) }</span>
-                    <ChevronRight size={ 13 } style={ { color: 'rgba(15,23,42,0.25)' } } />
+                  <div style={ { display: 'flex', alignItems: 'center', gap: '5px' } }>
+                    <span style={ { fontWeight: 750, color: '#0f172a', fontSize: '0.85rem' } }>${ parseFloat( order.total ?? 0 ).toFixed( 2 ) }</span>
+                    <ChevronRight size={ 12 } style={ { color: 'rgba(15,23,42,0.25)' } } />
                   </div>
                 </div>
               </Link>
@@ -163,17 +180,17 @@ export default function OverviewTab( { user, pointsData, orders, ordersLoading, 
       </Motion.div>
 
       {/* Account info */}
-      <Motion.div custom={ 0.3 } variants={ fadeUp } initial="hidden" animate="visible"
-        style={ { ...CARD, padding: '18px 20px' } }
+      <Motion.div custom={ 0.18 } variants={ fadeUp } initial="hidden" animate="visible"
+        style={ { ...CARD, padding: '14px 16px' } }
       >
-        <div style={ { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' } }>
-          <div style={ { width: '34px', height: '34px', borderRadius: '8px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
-            <CreditCard size={ 16 } style={ { color: '#64748b' } } />
+        <div style={ { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' } }>
+          <div style={ { width: '28px', height: '28px', borderRadius: '7px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
+            <CreditCard size={ 13 } style={ { color: '#64748b' } } />
           </div>
-          <span style={ { fontSize: '0.92rem', fontWeight: 700, color: '#0f172a' } }>Account Information</span>
+          <span style={ { fontSize: '0.87rem', fontWeight: 700, color: '#0f172a' } }>Account Information</span>
         </div>
 
-        <div style={ { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' } }>
+        <div style={ { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px' } }>
           { [
             { label: 'Full Name',    value: displayName },
             { label: 'Email',        value: user.email  },
@@ -182,36 +199,36 @@ export default function OverviewTab( { user, pointsData, orders, ordersLoading, 
                 ? new Date( user.registered ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'long' } ) : '—' },
           ].map( ( row ) => (
             <div key={ row.label }>
-              <p style={ { margin: '0 0 3px', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700, color: 'rgba(15,23,42,0.38)' } }>{ row.label }</p>
-              <p style={ { margin: 0, fontSize: '0.86rem', color: '#0f172a', fontWeight: 500, wordBreak: 'break-word' } }>{ row.value }</p>
+              <p style={ { margin: '0 0 2px', fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 700, color: 'rgba(15,23,42,0.38)' } }>{ row.label }</p>
+              <p style={ { margin: 0, fontSize: '0.83rem', color: '#0f172a', fontWeight: 500, wordBreak: 'break-word' } }>{ row.value }</p>
             </div>
           ) ) }
         </div>
       </Motion.div>
 
       {/* Quick links */}
-      <Motion.div custom={ 0.36 } variants={ fadeUp } initial="hidden" animate="visible"
-        style={ { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' } }
+      <Motion.div custom={ 0.24 } variants={ fadeUp } initial="hidden" animate="visible"
+        style={ { display: 'flex', gap: '8px', flexWrap: 'wrap' } }
       >
         { [
           { icon: ShoppingCart, label: 'Browse Products', to: '/products',  color: '#2563eb', bg: '#eff6ff' },
           { icon: ShoppingCart, label: 'View Cart',        to: '/cart',      color: '#ea580c', bg: '#fff7ed' },
           { icon: Wrench,       label: 'Book a Repair',    to: '/repairs',   color: '#16a34a', bg: '#f0fdf4' },
         ].map( ( action ) => (
-          <Link key={ action.to } to={ action.to } style={ { textDecoration: 'none' } }>
+          <Link key={ action.to } to={ action.to } style={ { textDecoration: 'none', flex: '1 1 120px' } }>
             <div style={ {
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: '8px', padding: '16px 12px',
-              background: 'white', border: '1px solid rgba(15,23,42,0.07)', borderRadius: '10px',
-              textAlign: 'center', transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.12s', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '10px 12px',
+              background: 'white', border: '1px solid rgba(15,23,42,0.07)', borderRadius: '9px',
+              transition: 'border-color 0.15s, box-shadow 0.15s', cursor: 'pointer',
             } }
-              onMouseEnter={ ( e ) => { e.currentTarget.style.borderColor = action.color; e.currentTarget.style.boxShadow = `0 4px 14px ${ action.color }22`; e.currentTarget.style.transform = 'translateY(-1px)'; } }
-              onMouseLeave={ ( e ) => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.07)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; } }
+              onMouseEnter={ ( e ) => { e.currentTarget.style.borderColor = action.color; e.currentTarget.style.boxShadow = `0 3px 10px ${ action.color }22`; } }
+              onMouseLeave={ ( e ) => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.07)'; e.currentTarget.style.boxShadow = 'none'; } }
             >
-              <div style={ { width: '36px', height: '36px', borderRadius: '9px', background: action.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' } }>
-                <action.icon size={ 16 } style={ { color: action.color } } />
+              <div style={ { width: '28px', height: '28px', borderRadius: '7px', background: action.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } }>
+                <action.icon size={ 13 } style={ { color: action.color } } />
               </div>
-              <span style={ { fontSize: '0.75rem', fontWeight: 650, color: '#374151' } }>{ action.label }</span>
+              <span style={ { fontSize: '0.75rem', fontWeight: 650, color: '#374151', whiteSpace: 'nowrap' } }>{ action.label }</span>
             </div>
           </Link>
         ) ) }

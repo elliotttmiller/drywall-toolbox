@@ -1,0 +1,588 @@
+/*
+ * DTB WP Admin — Mobile & Responsive Styles
+ *
+ * Loaded on every WP admin page via admin_enqueue_scripts.
+ * Enhances WordPress core's 782 px breakpoint with responsive rules for:
+ *   • Core admin layout (nav, content, tables, forms, meta boxes)
+ *   • WooCommerce product, order, and settings pages
+ *   • DTB custom pages (Ops Dashboard, Repairs, Schematics, Catalog Health)
+ *
+ * Design philosophy: non-destructive additions/overrides only.
+ * All rules are scoped to media queries or specific WP/DTB selectors.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   0. UNIVERSAL BOX-SIZING GUARD
+   ──────────────────────────────────────────────────────────────────────── */
+#wpcontent *,
+#wpbody-content * {
+	box-sizing: border-box;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   1. CORE LAYOUT — 782 px BREAKPOINT
+   ──────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 782px) {
+
+	/* Admin bar always fixed */
+	#wpadminbar {
+		position: fixed !important;
+	}
+
+	/* Remove extra horizontal padding added by WP on small screens */
+	#wpcontent {
+		padding-left: 10px !important;
+	}
+
+	.wrap {
+		margin: 8px 0 !important;
+	}
+
+	/* Page headings */
+	h1.wp-heading-inline {
+		font-size: 18px !important;
+		line-height: 1.3 !important;
+		vertical-align: middle;
+	}
+
+	/* Add New button beside heading */
+	.page-title-action {
+		display: inline-block;
+		margin: 4px 0 0 6px !important;
+		vertical-align: middle;
+	}
+
+	/* ── Admin notices ──────────────────────────────────────────────── */
+	.notice,
+	.notice-success,
+	.notice-warning,
+	.notice-error,
+	.notice-info,
+	.updated,
+	.error,
+	.update-nag {
+		margin: 5px 0 12px !important;
+		word-wrap: break-word !important;
+	}
+
+	/* ── List tables ────────────────────────────────────────────────── */
+	.wp-list-table {
+		width: 100% !important;
+	}
+
+	/* Wrap the table in a scrollable container */
+	.wp-list-table-wrap,
+	.tablenav,
+	#the-list,
+	.widefat {
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* tablenav: stack bulk actions + pagination vertically */
+	.tablenav {
+		display: flex !important;
+		flex-wrap: wrap !important;
+		align-items: center !important;
+		gap: 8px !important;
+	}
+
+	.tablenav .tablenav-pages,
+	.tablenav .bulkactions {
+		float: none !important;
+	}
+
+	.tablenav .tablenav-pages {
+		margin-left: auto !important;
+	}
+
+	/* ── Screen reader text / accessibility labels ───────────────── */
+	.screen-reader-text {
+		clip: rect(1px, 1px, 1px, 1px);
+		position: absolute !important;
+		height: 1px;
+		width: 1px;
+		overflow: hidden;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   2. EDIT SCREENS (posts, pages, products, repairs)
+	   ──────────────────────────────────────────────────────────────── */
+
+	/* Two-column → single column */
+	#post-body.columns-2 {
+		display: block !important;
+	}
+
+	#post-body.columns-2 #post-body-content {
+		float: none !important;
+		margin-right: 0 !important;
+		width: 100% !important;
+	}
+
+	#post-body.columns-2 #side-info-column,
+	#post-body.columns-2 #postbox-container-1 {
+		float: none !important;
+		clear: both !important;
+		width: 100% !important;
+		min-width: 0 !important;
+	}
+
+	/* Meta boxes */
+	.postbox {
+		min-width: 0 !important;
+	}
+
+	.postbox .inside {
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* Publish metabox actions */
+	#misc-publishing-actions,
+	#minor-publishing-actions {
+		float: none !important;
+		width: 100% !important;
+		padding: 8px 10px !important;
+	}
+
+	#publishing-action {
+		float: none !important;
+		text-align: right;
+		padding: 8px 10px !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   3. FORM TABLES (Settings pages)
+	   ──────────────────────────────────────────────────────────────── */
+	.form-table,
+	.form-table > tbody {
+		display: block !important;
+		width: 100% !important;
+	}
+
+	.form-table tr {
+		display: block !important;
+		margin-bottom: 12px;
+	}
+
+	.form-table th,
+	.form-table td {
+		display: block !important;
+		width: 100% !important;
+		padding: 6px 0 !important;
+	}
+
+	.form-table th {
+		padding-bottom: 2px !important;
+		font-size: 13px;
+	}
+
+	.form-table td input[type="text"],
+	.form-table td input[type="email"],
+	.form-table td input[type="url"],
+	.form-table td input[type="password"],
+	.form-table td input[type="number"],
+	.form-table td input[type="tel"],
+	.form-table td select,
+	.form-table td textarea {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   4. INLINE EDIT ROWS
+	   ──────────────────────────────────────────────────────────────── */
+	.inline-edit-row fieldset {
+		float: none !important;
+		clear: both !important;
+		width: 100% !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	.inline-edit-row fieldset label {
+		width: 100% !important;
+		float: none !important;
+		margin: 0 0 8px !important;
+	}
+
+	.inline-edit-row .inline-edit-save {
+		padding: 10px 0 !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   5. DASHBOARD WIDGETS
+	   ──────────────────────────────────────────────────────────────── */
+	#dashboard-widgets-wrap {
+		display: block !important;
+	}
+
+	.metabox-holder .postbox-container {
+		float: none !important;
+		clear: both !important;
+		width: 100% !important;
+		padding: 0 !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   6. SCREEN OPTIONS & HELP TABS
+	   ──────────────────────────────────────────────────────────────── */
+	#screen-options-wrap,
+	#contextual-help-wrap {
+		max-width: 100% !important;
+		overflow-x: auto !important;
+	}
+
+	#screen-options-wrap .metabox-prefs {
+		column-count: 2 !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   7. WOOCOMMERCE — PRODUCT EDIT
+	   ──────────────────────────────────────────────────────────────── */
+	#woocommerce-product-data ul.product_data_tabs {
+		display: flex !important;
+		flex-wrap: nowrap !important;
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+		gap: 0 !important;
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	#woocommerce-product-data ul.product_data_tabs li {
+		float: none !important;
+		flex-shrink: 0 !important;
+	}
+
+	#woocommerce-product-data .panel {
+		width: 100% !important;
+		float: none !important;
+		overflow-x: auto !important;
+	}
+
+	.woocommerce_options_panel .options_group .form-field,
+	.woocommerce_options_panel .options_group .form-field.full-width {
+		width: 100% !important;
+		float: none !important;
+		clear: both !important;
+		padding: 4px 0 !important;
+	}
+
+	.woocommerce_options_panel .options_group .form-field input,
+	.woocommerce_options_panel .options_group .form-field select,
+	.woocommerce_options_panel .options_group .form-field textarea {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+	/* Variable product attribute rows */
+	.woocommerce_variation .woocommerce_options_panel {
+		padding: 0 !important;
+	}
+
+	.woocommerce_variation .form-row {
+		width: 100% !important;
+		float: none !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   8. WOOCOMMERCE — ORDER EDIT
+	   ──────────────────────────────────────────────────────────────── */
+	#woocommerce-order-items .woocommerce_order_items_wrapper {
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	#woocommerce-order-items table.woocommerce_order_items {
+		min-width: 560px;
+	}
+
+	.wc-order-totals {
+		width: 100% !important;
+	}
+
+	/* Order data column (billing/shipping) */
+	#order_data .order_data_column_container {
+		display: flex !important;
+		flex-direction: column !important;
+	}
+
+	#order_data .order_data_column {
+		float: none !important;
+		width: 100% !important;
+		padding: 0 !important;
+		margin: 0 0 12px !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   9. WOOCOMMERCE — SETTINGS TABS
+	   ──────────────────────────────────────────────────────────────── */
+	.woo-nav-tab-wrapper,
+	.nav-tab-wrapper {
+		display: flex !important;
+		flex-wrap: nowrap !important;
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+		border-bottom: 1px solid #c3c4c7 !important;
+		gap: 0 !important;
+	}
+
+	.woo-nav-tab-wrapper .nav-tab,
+	.nav-tab-wrapper .nav-tab {
+		float: none !important;
+		flex-shrink: 0 !important;
+		white-space: nowrap !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   10. WOOCOMMERCE — ANALYTICS & REPORTS
+	   ──────────────────────────────────────────────────────────────── */
+	.woocommerce-layout__header {
+		flex-wrap: wrap !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   11. DTB REPAIRS ADMIN LIST PAGE
+	   ──────────────────────────────────────────────────────────────── */
+	.dtb-stats-row {
+		grid-template-columns: repeat(3, 1fr) !important;
+	}
+
+	.dtb-tab-bar {
+		flex-direction: column !important;
+		padding: 0 12px !important;
+		min-height: auto !important;
+		gap: 0 !important;
+	}
+
+	.dtb-tabs {
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+		width: 100% !important;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.dtb-tab-bar-right {
+		width: 100% !important;
+		justify-content: flex-end !important;
+		padding: 8px 0 !important;
+		border-top: 1px solid #f3f4f6;
+	}
+
+	.dtb-chip-bar {
+		padding: 8px 12px !important;
+		gap: 5px !important;
+	}
+
+	.dtb-chip {
+		font-size: 11px !important;
+		padding: 3px 9px !important;
+	}
+
+	.dtb-table-wrap .search-box {
+		flex-direction: column !important;
+		align-items: stretch !important;
+		gap: 8px !important;
+	}
+
+	.dtb-table-wrap .search-box #dtb-repair-search-input,
+	.dtb-table-wrap .search-box input[type="search"] {
+		min-width: 0 !important;
+		width: 100% !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   12. DTB OPS DASHBOARD
+	   ──────────────────────────────────────────────────────────────── */
+	.dtb-ops-header {
+		flex-direction: column !important;
+		gap: 12px !important;
+		align-items: flex-start !important;
+		padding: 16px 18px !important;
+		border-radius: 0 0 12px 12px !important;
+	}
+
+	.dtb-ops-header-right {
+		width: 100% !important;
+		justify-content: space-between !important;
+	}
+
+	.dtb-ops-header h1 {
+		font-size: 18px !important;
+	}
+
+	.dtb-kpi-grid {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+
+	.dtb-status-grid {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+
+	/* Section header wraps */
+	.dtb-section-header {
+		flex-wrap: wrap !important;
+		gap: 8px !important;
+	}
+
+	/* Tables inside dtb sections scroll horizontally */
+	.dtb-section-body .dtb-table,
+	.dtb-section .dtb-table {
+		min-width: 540px;
+	}
+
+	.dtb-section-body,
+	.dtb-section .dtb-section-body {
+		overflow-x: auto !important;
+		-webkit-overflow-scrolling: touch;
+		padding: 12px 14px !important;
+	}
+
+	/* Audit table on mobile: collapse narrow columns */
+	.dtb-table .dtb-ip-cell,
+	.dtb-table .dtb-context-cell {
+		max-width: 180px !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   13. DTB ORDER OPERATIONS
+	   ──────────────────────────────────────────────────────────────── */
+	.dtb-oo-wrap .dtb-oo-kpi-grid {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+
+	.dtb-oo-kpi-grid {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   14. DTB CATALOG HEALTH PAGE
+	   ──────────────────────────────────────────────────────────────── */
+	.dtb-catalog-health-wrap .dtb-stats-strip {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────
+	   15. GENERAL WP ADMIN INPUTS
+	   ──────────────────────────────────────────────────────────────── */
+	input[type="text"],
+	input[type="email"],
+	input[type="url"],
+	input[type="password"],
+	input[type="number"],
+	input[type="search"],
+	input[type="tel"],
+	select,
+	textarea {
+		font-size: 16px !important; /* Prevent iOS zoom-on-focus */
+	}
+
+	/* Regular input size classes */
+	.regular-text,
+	.large-text {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+} /* end @media 782px */
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TIGHTER BREAKPOINT — 600 px
+   ──────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 600px) {
+
+	/* Stat grids become single column */
+	.dtb-stats-row {
+		grid-template-columns: repeat(2, 1fr) !important;
+	}
+
+	.dtb-kpi-grid,
+	.dtb-status-grid,
+	.dtb-oo-kpi-grid {
+		grid-template-columns: 1fr 1fr !important;
+	}
+
+	.dtb-stat-num {
+		font-size: 22px !important;
+	}
+
+	/* WP admin bar labels get hidden (WP core also does this) */
+	#wpadminbar li.menupop .ab-sub-wrapper {
+		max-width: 90vw !important;
+	}
+
+	/* Ensure repair table stat cards shrink gracefully */
+	.dtb-stat-card {
+		padding: 12px 12px 10px !important;
+	}
+
+	/* Section body full-bleed on tiny screens */
+	.dtb-section-header {
+		padding: 12px 14px !important;
+	}
+
+	/* WooCommerce: hide less important order columns on tiny screens */
+	.wp-list-table.orders td.column-order_actions,
+	.wp-list-table.orders th.column-order_actions {
+		display: none !important;
+	}
+
+	/* Pagination buttons slightly smaller */
+	.dtb-page-link,
+	.dtb-page-current {
+		min-width: 26px !important;
+		height: 26px !important;
+		font-size: 11px !important;
+	}
+
+} /* end @media 600px */
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   EXTRA NARROW — 480 px
+   ──────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 480px) {
+
+	h1.wp-heading-inline {
+		font-size: 15px !important;
+	}
+
+	.dtb-kpi-value {
+		font-size: 26px !important;
+	}
+
+	/* Single-column KPIs on very small screens */
+	.dtb-kpi-grid,
+	.dtb-status-grid,
+	.dtb-oo-kpi-grid,
+	.dtb-stats-row {
+		grid-template-columns: 1fr 1fr !important;
+	}
+
+	/* Section buttons stack below title */
+	.dtb-section-header {
+		flex-direction: column !important;
+		align-items: flex-start !important;
+	}
+
+	/* Ops dashboard toast anchors to bottom of screen */
+	.dtb-toast {
+		left: 10px !important;
+		right: 10px !important;
+		bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
+		max-width: none !important;
+	}
+
+	/* WooCommerce tabs: allow icon-only display */
+	#woocommerce-product-data ul.product_data_tabs li a::before {
+		margin-right: 0 !important;
+	}
+
+	#woocommerce-product-data ul.product_data_tabs li a span {
+		display: none !important;
+	}
+
+} /* end @media 480px */

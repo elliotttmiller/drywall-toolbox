@@ -398,3 +398,34 @@ function dtb_clean_head(): void {
 
 // Theme policy is intentionally thin: REST/CORS/security/performance hardening
 // now lives in mu-plugins so active-theme changes do not change production policy.
+
+
+// =============================================================================
+// 5. WP ADMIN — MOBILE-RESPONSIVE STYLESHEET
+// Enqueues admin-mobile.css on every WP admin page to make the interface
+// fluid and usable on phones and tablets.
+// =============================================================================
+
+add_action( 'admin_enqueue_scripts', 'dtb_enqueue_admin_mobile_css' );
+
+/**
+ * Load the DTB admin mobile responsive stylesheet on all WP admin pages.
+ *
+ * The stylesheet is non-destructive — it only adds responsive media-query
+ * overrides and does not alter the admin UI on desktop.
+ */
+function dtb_enqueue_admin_mobile_css(): void {
+	$css_file = get_template_directory() . '/admin-mobile.css';
+	$css_uri  = get_template_directory_uri() . '/admin-mobile.css';
+
+	if ( ! file_exists( $css_file ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'dtb-admin-mobile',
+		$css_uri,
+		[],
+		filemtime( $css_file )
+	);
+}

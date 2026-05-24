@@ -635,113 +635,146 @@ function PricingTabs() {
           animate="center"
           exit="exit"
         >
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(220px, 28vw, 280px), 1fr))',
-            gap: '16px',
-          }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {tab.tiers.map((tier) => {
               const isBestValue = tier.badge === 'Best Value';
               const isFree = tier.price === 'FREE';
+              const accentColor = isBestValue ? 'var(--primary-600)' :
+                tier.badge === 'Bundle Savings' || tier.badge === '3-Box Bundle' ? '#f59e0b' :
+                tier.badge === 'Free' ? '#16a34a' :
+                tier.badge === 'Popular' ? '#8b5cf6' : '#64748b';
               return (
                 <div
                   key={tier.id}
                   style={{
-                    background: isBestValue ? 'linear-gradient(160deg, #eff6ff 0%, #dbeafe 100%)' : 'white',
-                    border: isBestValue ? '2px solid var(--primary-600)' : '1px solid var(--machined-border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0',
+                    background: isBestValue ? 'linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%)' : 'white',
+                    border: isBestValue ? `1.5px solid var(--primary-600)` : '1px solid var(--machined-border)',
                     borderRadius: '10px',
-                    padding: 'clamp(16px, 3vw, 22px)',
+                    overflow: 'hidden',
+                    transition: 'box-shadow 0.18s, transform 0.15s',
                     position: 'relative',
-                    transition: 'box-shadow 0.2s, transform 0.2s',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.boxShadow = isBestValue
-                      ? '0 8px 32px rgba(37,99,235,0.2)'
-                      : '0 6px 24px rgba(15,23,42,0.08)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
+                      ? '0 4px 18px rgba(37,99,235,0.16)'
+                      : '0 3px 12px rgba(15,23,42,0.07)';
+                    e.currentTarget.style.transform = 'translateX(2px)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
-                  {/* Badge */}
-                  {tier.badge && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '-11px',
-                      right: '14px',
-                      background: isBestValue ? 'var(--primary-600)'
-                        : tier.badge === 'Bundle Savings' || tier.badge === '3-Box Bundle' ? '#f59e0b'
-                        : tier.badge === 'Free' ? '#16a34a'
-                        : tier.badge === 'Popular' ? '#8b5cf6'
-                        : '#64748b',
-                      color: 'white',
-                      borderRadius: '999px',
-                      padding: '3px 11px',
-                      fontSize: '0.62rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                    }}>
-                      {tier.badge}
-                    </div>
-                  )}
+                  {/* Left accent bar */}
+                  <div style={{
+                    width: '4px',
+                    alignSelf: 'stretch',
+                    background: accentColor,
+                    flexShrink: 0,
+                  }} />
 
-                  {/* Name + Price */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                    <h4 style={{
-                      margin: 0,
-                      fontSize: 'clamp(0.875rem, 1.8vw, 0.95rem)',
-                      fontWeight: 800,
-                      color: isBestValue ? 'var(--primary-600)' : '#0f172a',
-                      lineHeight: 1.3,
-                      flex: 1,
-                      paddingRight: '8px',
-                    }}>
-                      {tier.name}
-                    </h4>
-                    <span style={{
-                      fontSize: 'clamp(1rem, 2.2vw, 1.2rem)',
-                      fontWeight: 900,
-                      color: isFree ? '#16a34a' : isBestValue ? 'var(--primary-600)' : '#0f172a',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                    }}>
-                      {tier.price}
-                    </span>
+                  {/* Name + badge */}
+                  <div style={{
+                    padding: 'clamp(10px, 2vw, 13px) clamp(12px, 2.5vw, 16px)',
+                    flex: '0 0 clamp(140px, 25%, 200px)',
+                    minWidth: 0,
+                    borderRight: '1px solid rgba(15,23,42,0.06)',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                      <span style={{
+                        fontSize: 'clamp(0.82rem, 1.8vw, 0.9rem)',
+                        fontWeight: 800,
+                        color: isBestValue ? 'var(--primary-600)' : '#0f172a',
+                        lineHeight: 1.2,
+                      }}>
+                        {tier.name}
+                      </span>
+                      {tier.badge && (
+                        <span style={{
+                          background: accentColor,
+                          color: 'white',
+                          borderRadius: '999px',
+                          padding: '2px 8px',
+                          fontSize: '0.58rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
+                        }}>
+                          {tier.badge}
+                        </span>
+                      )}
+                    </div>
+                    {tier.target && (
+                      <p style={{
+                        margin: 0,
+                        fontSize: '0.7rem',
+                        color: 'rgba(15,23,42,0.45)',
+                        lineHeight: 1.3,
+                        fontStyle: 'italic',
+                      }}>
+                        {tier.target}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Target */}
-                  <p style={{
-                    margin: '0 0 12px 0',
-                    fontSize: '0.75rem',
-                    color: 'rgba(15,23,42,0.5)',
-                    lineHeight: 1.4,
-                    fontStyle: 'italic',
+                  {/* Features — scrollable horizontal pill list */}
+                  <div style={{
+                    flex: 1,
+                    padding: 'clamp(10px, 2vw, 13px) clamp(10px, 2vw, 14px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    flexWrap: 'wrap',
+                    minWidth: 0,
                   }}>
-                    {tier.target}
-                  </p>
-
-                  {/* Feature list */}
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {tier.features.map((feat) => (
-                      <li key={feat} style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '7px',
-                        fontSize: '0.78rem',
-                        color: 'rgba(15,23,42,0.7)',
-                        lineHeight: 1.45,
+                      <span key={feat} style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        background: isBestValue ? 'rgba(37,99,235,0.07)' : 'rgba(15,23,42,0.04)',
+                        border: '1px solid ' + (isBestValue ? 'rgba(37,99,235,0.15)' : 'rgba(15,23,42,0.08)'),
+                        borderRadius: '999px',
+                        padding: '3px 9px',
+                        fontSize: '0.7rem',
+                        color: isBestValue ? 'var(--primary-600)' : 'rgba(15,23,42,0.65)',
+                        fontWeight: 550,
+                        whiteSpace: 'nowrap',
                       }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isBestValue ? 'var(--primary-600)' : '#16a34a'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
                         {feat}
-                      </li>
+                      </span>
                     ))}
-                  </ul>
+                  </div>
+
+                  {/* Price */}
+                  <div style={{
+                    padding: 'clamp(10px, 2vw, 13px) clamp(14px, 2.5vw, 20px)',
+                    borderLeft: '1px solid rgba(15,23,42,0.06)',
+                    flexShrink: 0,
+                    textAlign: 'right',
+                  }}>
+                    <span style={{
+                      display: 'block',
+                      fontSize: 'clamp(1.05rem, 2vw, 1.2rem)',
+                      fontWeight: 900,
+                      color: isFree ? '#16a34a' : isBestValue ? 'var(--primary-600)' : '#0f172a',
+                      lineHeight: 1,
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {tier.price}
+                    </span>
+                    {isBestValue && (
+                      <span style={{ fontSize: '0.62rem', color: 'var(--primary-600)', fontWeight: 700, opacity: 0.7 }}>Best Value</span>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -1599,18 +1632,15 @@ export default function Repairs() {
                       Tell us what kind of service you need and describe the issue in as much detail as possible.
                     </p>
 
-                    {/* Service Tier Cards */}
+                    {/* Service Tier Rows */}
                     <div style={{ marginBottom: '24px' }}>
                       <label className="machined-label" style={{ color: 'var(--primary-600)', marginBottom: 10, display: 'block' }}>
                         Service Type <span style={{ color: '#ef4444', marginLeft: 3 }}>*</span>
                       </label>
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                        gap: '12px',
-                      }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                         {(REPAIR_PRICING[repairCategory]?.tiers || []).map((tier) => {
                           const selected = formData.pricingTierId === tier.id;
+                          const isBestValue = tier.badge === 'Best Value';
                           return (
                             <div
                               key={tier.id}
@@ -1619,34 +1649,58 @@ export default function Repairs() {
                               tabIndex={0}
                               onKeyDown={(e) => e.key === 'Enter' && selectTier(tier)}
                               style={{
-                                border: `2px solid ${selected ? 'var(--primary-600)' : 'rgba(15,23,42,0.1)'}`,
-                                borderRadius: '14px',
-                                padding: '16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0',
+                                border: `${selected ? '2px' : '1px'} solid ${selected ? 'var(--primary-600)' : 'rgba(15,23,42,0.1)'}`,
+                                borderRadius: '10px',
+                                overflow: 'hidden',
                                 cursor: 'pointer',
-                                position: 'relative',
                                 background: selected ? '#eff6ff' : 'white',
-                                transition: 'border-color 0.2s, background 0.2s',
+                                transition: 'border-color 0.18s, background 0.18s, box-shadow 0.15s',
+                                boxShadow: selected ? '0 2px 12px rgba(37,99,235,0.12)' : 'none',
                               }}
                             >
-                              {tier.badge && (
-                                <div style={{
-                                  position: 'absolute', top: -10, right: 12,
-                                  background: tier.badge === 'Best Value' ? '#16a34a' : '#f59e0b',
-                                  color: 'white', borderRadius: '999px',
-                                  padding: '2px 10px', fontSize: '0.65rem', fontWeight: 700,
-                                }}>
-                                  {tier.badge}
+                              {/* Selection indicator */}
+                              <div style={{
+                                width: '4px', alignSelf: 'stretch', flexShrink: 0,
+                                background: selected ? 'var(--primary-600)' : (isBestValue ? '#16a34a' : 'rgba(15,23,42,0.08)'),
+                                transition: 'background 0.18s',
+                              }} />
+                              {/* Name + desc */}
+                              <div style={{ flex: 1, padding: '10px 13px', minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
+                                  <span style={{ fontWeight: 700, color: selected ? 'var(--primary-600)' : '#0f172a', fontSize: '0.87rem' }}>{tier.name}</span>
+                                  {tier.badge && (
+                                    <span style={{
+                                      background: isBestValue ? '#16a34a' : '#f59e0b',
+                                      color: 'white', borderRadius: '999px',
+                                      padding: '2px 8px', fontSize: '0.6rem', fontWeight: 700,
+                                      textTransform: 'uppercase', letterSpacing: '0.05em',
+                                    }}>
+                                      {tier.badge}
+                                    </span>
+                                  )}
                                 </div>
-                              )}
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>{tier.name}</span>
-                                <span style={{ fontWeight: 800, color: 'var(--primary-600)', fontSize: '1.05rem', marginLeft: '8px', whiteSpace: 'nowrap' }}>
+                                <p style={{ margin: '2px 0 0', fontSize: '0.74rem', color: 'rgba(15,23,42,0.5)', lineHeight: 1.3 }}>
+                                  {tier.desc}
+                                </p>
+                              </div>
+                              {/* Price */}
+                              <div style={{ padding: '10px 14px', borderLeft: '1px solid rgba(15,23,42,0.07)', flexShrink: 0, textAlign: 'right' }}>
+                                <span style={{ fontWeight: 800, color: selected ? 'var(--primary-600)' : '#0f172a', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>
                                   {tier.priceMin ? `$${tier.priceMin}–$${tier.priceMax}` : `$${tier.price}${tier.perUnit ? '/box' : ''}`}
                                 </span>
                               </div>
-                              <p style={{ margin: '6px 0 0', fontSize: '0.78rem', color: 'rgba(15,23,42,0.55)' }}>
-                                {tier.desc}
-                              </p>
+                              {/* Check mark */}
+                              <div style={{
+                                width: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                flexShrink: 0, opacity: selected ? 1 : 0, transition: 'opacity 0.18s',
+                              }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                              </div>
                             </div>
                           );
                         })}
