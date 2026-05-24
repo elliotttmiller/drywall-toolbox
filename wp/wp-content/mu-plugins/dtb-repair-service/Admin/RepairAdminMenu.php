@@ -146,14 +146,14 @@ function dtb_repair_admin_inline_styles(): void {
 		background: #fff;
 		border: 1px solid var(--dtb-border);
 		border-radius: var(--dtb-radius);
-		padding: 12px 16px 12px 18px;
+		padding: 10px 14px 10px 16px;
 		position: relative;
 		overflow: hidden;
 		box-shadow: var(--dtb-shadow);
 		display: flex;
 		align-items: center;
 		gap: 10px;
-		min-height: 56px;
+		min-height: 48px;
 	}
 	.dtb-stat-card::before {
 		content: '';
@@ -168,7 +168,7 @@ function dtb_repair_admin_inline_styles(): void {
 	.dtb-sc-completed::before{ background: #22c55e; }
 	.dtb-sc-cancelled::before{ background: #ef4444; }
 	.dtb-stat-num {
-		font-size: 26px;
+		font-size: 22px;
 		font-weight: 800;
 		color: var(--dtb-text);
 		line-height: 1;
@@ -501,8 +501,8 @@ function dtb_repair_admin_inline_styles(): void {
 		.dtb-stats-row { grid-template-columns: repeat(3, 1fr); }
 	}
 	@media (max-width: 782px) {
-		.dtb-stats-row     { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-		.dtb-stat-num      { font-size: 22px; }
+		.dtb-stats-row     { grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+		.dtb-stat-num      { font-size: 20px; }
 		.dtb-tab-bar       { padding: 0 10px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; }
 		.dtb-tabs          { flex-wrap: nowrap; flex-shrink: 0; }
 		.dtb-tab           { padding: 0 12px; font-size: 12px; flex-shrink: 0; }
@@ -513,12 +513,13 @@ function dtb_repair_admin_inline_styles(): void {
 		.dtb-repairs-wrap .wp-list-table td,
 		.dtb-repairs-wrap .wp-list-table th { padding: 10px 8px !important; }
 		.dtb-repairs-wrap .tablenav { flex-wrap: wrap; }
-		.dtb-page-header   { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+		.dtb-page-header   { flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
 		.dtb-list-shell    { border-radius: 8px; }
 	}
 	@media (max-width: 480px) {
-		.dtb-stats-row    { gap: 6px; }
-		.dtb-stat-num     { font-size: 20px; }
+		.dtb-stats-row    { grid-template-columns: 1fr 1fr; gap: 6px; }
+		.dtb-stat-num     { font-size: 18px; }
+		.dtb-stat-card    { padding: 8px 10px 8px 12px; min-height: 42px; }
 		.dtb-repairs-wrap { padding: 4px 0 0; }
 	}
 
@@ -1228,7 +1229,64 @@ function dtb_repair_admin_inline_styles(): void {
 	.dtb-repair-chat-msg.is-ok { color: #166534; }
 	.dtb-repair-chat-msg.is-err { color: #b91c1c; }
 
-	/* ── Integration status pills ───────────────────────────────────────────── */
+	/* ── Customer-submitted photos gallery ──────────────────────────────────── */
+	.dtb-customer-photos-section {
+		margin-top: 14px;
+		padding-top: 12px;
+		border-top: 1px solid #eef2f7;
+	}
+	.dtb-customer-photos-head {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--dtb-muted);
+		text-transform: uppercase;
+		letter-spacing: .5px;
+		margin-bottom: 8px;
+		line-height: 1;
+	}
+	.dtb-customer-photos-head .dashicons {
+		font-size: 13px;
+		width: 13px;
+		height: 13px;
+		line-height: 1;
+	}
+	.dtb-customer-photos-count {
+		font-weight: 400;
+		color: #94a3b8;
+		text-transform: none;
+		font-size: 11px;
+	}
+	.dtb-customer-photos-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+		gap: 8px;
+	}
+	.dtb-customer-photo-link {
+		display: block;
+		border-radius: 8px;
+		overflow: hidden;
+		border: 1px solid var(--dtb-border);
+		background: #f8fafc;
+		transition: border-color .15s, box-shadow .15s;
+		aspect-ratio: 4 / 3;
+		line-height: 0;
+	}
+	.dtb-customer-photo-link:hover {
+		border-color: var(--dtb-blue);
+		box-shadow: 0 0 0 2px rgba(29,78,216,.1);
+	}
+	.dtb-customer-photo-link img {
+		width: 100% !important;
+		height: 100% !important;
+		object-fit: cover !important;
+		display: block !important;
+		border-radius: 0 !important;
+	}
+
+
 	.dtb-integration-row {
 		display: flex;
 		align-items: center;
@@ -1655,19 +1713,32 @@ function dtb_repair_admin_inline_styles(): void {
 		/* Tech grid */
 		.dtb-tech-grid { grid-template-columns: 1fr; }
 		.dtb-tech-row  { grid-template-columns: 1fr; }
+		/* Customer photos */
+		.dtb-customer-photos-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
 		/* Command center panels stack */
 		.dtb-cc-panel { padding: 14px 16px; }
 		.dtb-cc-panel + .dtb-cc-panel {
 			border-left: none;
 			border-top: 1px solid var(--dtb-border);
 		}
-		/* WP two-column layout → single column */
+		/* WP two-column layout → single column, side column at bottom */
+		/* Use .wp-admin higher specificity to beat WP core's float-based layout.
+		   Flex context automatically neutralises float on child containers,
+		   so !important is only needed on width/margin which WP sets inline. */
+		.wp-admin #post-body.columns-2 {
+			display: flex;
+			flex-direction: column;
+		}
 		#post-body.columns-2 #postbox-container-1,
 		#post-body.columns-2 #postbox-container-2 {
 			float: none !important;
 			width: 100% !important;
 			margin-left: 0 !important;
+			box-sizing: border-box;
 		}
+		/* Main content (metaboxes) first, side column (Custom Fields + Queue) last */
+		#post-body.columns-2 #postbox-container-2 { order: 1; }
+		#post-body.columns-2 #postbox-container-1 { order: 99; }
 		#postbox-container-2 #normal-sortables {
 			grid-template-columns: 1fr;
 		}

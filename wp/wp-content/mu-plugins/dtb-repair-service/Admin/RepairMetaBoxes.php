@@ -81,16 +81,27 @@ function dtb_repair_metabox_issue( WP_Post $post ): void {
 	echo '<p>' . wp_kses_post( $issue ) . '</p>';
 
 	if ( ! empty( $images ) && is_array( $images ) ) {
-		echo '<p><strong>' . esc_html__( 'Attached Images:', 'drywall-toolbox' ) . '</strong></p><div style="display:flex;gap:8px;flex-wrap:wrap;">';
-		foreach ( $images as $att_id ) {
-			$att_id = absint( $att_id );
-			$thumb  = wp_get_attachment_image( $att_id, [ 80, 80 ] );
-			$url    = wp_get_attachment_url( $att_id );
-			if ( $thumb && $url ) {
-				echo '<a href="' . esc_url( $url ) . '" target="_blank">' . $thumb . '</a>';
+		$valid_images = array_values( array_filter( array_map( 'absint', $images ) ) );
+		if ( ! empty( $valid_images ) ) {
+			echo '<div class="dtb-customer-photos-section">';
+			echo '<div class="dtb-customer-photos-head">';
+			echo '<span class="dashicons dashicons-format-image"></span> ';
+			echo '<span>' . esc_html__( 'Customer Photos', 'drywall-toolbox' ) . '</span>';
+			echo ' <span class="dtb-customer-photos-count">(' . count( $valid_images ) . ')</span>';
+			echo '</div>';
+			echo '<div class="dtb-customer-photos-grid">';
+			foreach ( $valid_images as $att_id ) {
+				$thumb = wp_get_attachment_image( $att_id, [ 240, 180 ], false, [ 'loading' => 'lazy' ] );
+				$url   = wp_get_attachment_url( $att_id );
+				if ( $thumb && $url ) {
+					echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" class="dtb-customer-photo-link">';
+					echo $thumb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '</a>';
+				}
 			}
+			echo '</div>';
+			echo '</div>';
 		}
-		echo '</div>';
 	}
 	echo '</div>';
 }
@@ -123,16 +134,37 @@ function dtb_repair_metabox_order_details( WP_Post $post ): void {
 	echo '<p style="margin:0 0 10px;color:#111827;font-size:13px;line-height:1.5;">' . wp_kses_post( $issue ) . '</p>';
 
 	if ( ! empty( $images ) && is_array( $images ) ) {
-		echo '<p style="margin:0 0 6px;"><strong>' . esc_html__( 'Attached Images:', 'drywall-toolbox' ) . '</strong></p><div style="display:flex;gap:8px;flex-wrap:wrap;">';
-		foreach ( $images as $att_id ) {
-			$att_id = absint( $att_id );
-			$thumb  = wp_get_attachment_image( $att_id, [ 80, 80 ] );
-			$url    = wp_get_attachment_url( $att_id );
-			if ( $thumb && $url ) {
-				echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . $thumb . '</a>';
+		$valid_images = array_values( array_filter( array_map( 'absint', $images ) ) );
+		if ( ! empty( $valid_images ) ) {
+			echo '<div class="dtb-customer-photos-section">';
+			echo '<div class="dtb-customer-photos-head">';
+			echo '<span class="dashicons dashicons-format-image"></span> ';
+			echo '<span>' . esc_html__( 'Customer Photos', 'drywall-toolbox' ) . '</span>';
+			echo ' <span class="dtb-customer-photos-count">(' . count( $valid_images ) . ')</span>';
+			echo '</div>';
+			echo '<div class="dtb-customer-photos-grid">';
+			foreach ( $valid_images as $att_id ) {
+				$thumb = wp_get_attachment_image(
+					$att_id,
+					[ 240, 180 ],
+					false,
+					[
+						'loading' => 'lazy',
+						'class'   => '',
+					]
+				);
+				$url  = wp_get_attachment_url( $att_id );
+				$file = get_attached_file( $att_id );
+				$name = ( $file && is_string( $file ) ) ? wp_basename( $file ) : '';
+				if ( $thumb && $url ) {
+					echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" class="dtb-customer-photo-link"' . ( $name ? ' title="' . esc_attr( $name ) . '"' : '' ) . '>';
+					echo $thumb; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '</a>';
+				}
 			}
+			echo '</div>';
+			echo '</div>';
 		}
-		echo '</div>';
 	}
 	echo '</div>';
 
