@@ -680,6 +680,13 @@ export default function ProductDetail({
     ? composeEffectiveVariationProduct(product, selectedVariation, selectedVariationLabel)
     : product;
   const brandLabel = getBrandLabel(product, effectiveProduct);
+
+  // Build the "browse all compatible parts" URL — prefer the specific schematic link,
+  // fall back to the brand's parts page, then to the generic /parts landing.
+  const canonicalBrandForParts = BRAND_ALIASES[brandLabel] || brandLabel;
+  const brandSlugForParts = BRAND_TO_SLUG[canonicalBrandForParts] || '';
+  const browsePartsUrl = partsUrl ||
+    (brandSlugForParts ? `/parts?brand=${encodeURIComponent(brandSlugForParts)}` : '/parts');
   const effectiveSku = effectiveProduct.sku || product.sku || '';
   const effectiveStock = effectiveProduct.stock_status || product.stock_status || 'instock';
   const isOutOfStock = effectiveStock === 'outofstock';
@@ -825,6 +832,8 @@ export default function ProductDetail({
                 reviewsClassName="dtb-pdp-mobile-relocate"
               />
 
+              <p className="dtb-pdp-shipping-note">Shipping calculated at checkout.</p>
+
               {needsVariation ? (
                 <ProductVariationRail
                   variationAttributes={variationAttributes}
@@ -839,6 +848,13 @@ export default function ProductDetail({
                   hasCompleteSelection={hasCompleteSelection}
                 />
               ) : null}
+
+              <div className={`dtb-pdp-stock-meter dtb-pdp-stock-meter--pre-cart ${isOutOfStock ? 'is-out' : ''}`}>
+                <p className="dtb-pdp-stock-meter__label">{stockHint}</p>
+                <div className="dtb-pdp-stock-meter__track" aria-hidden="true">
+                  <span className="dtb-pdp-stock-meter__fill" style={{ width: `${stockProgress}%` }} />
+                </div>
+              </div>
 
               <ProductPurchasePanel
                 quantity={quantity}
@@ -877,15 +893,6 @@ export default function ProductDetail({
               ) : null}
 
               <div className="dtb-pdp-side-stack">
-                <p className="dtb-pdp-shipping-note">Shipping calculated at checkout.</p>
-
-                <div className={`dtb-pdp-stock-meter ${isOutOfStock ? 'is-out' : ''}`}>
-                  <p className="dtb-pdp-stock-meter__label">{stockHint}</p>
-                  <div className="dtb-pdp-stock-meter__track" aria-hidden="true">
-                    <span className="dtb-pdp-stock-meter__fill" style={{ width: `${stockProgress}%` }} />
-                  </div>
-                </div>
-
                 <div className="dtb-pdp-fbt">
                   <p className="dtb-pdp-fbt__title">Frequently Bought Together</p>
                   <div className="dtb-pdp-fbt__media-row dtb-pdp-fbt__media-row--toggle">
@@ -962,13 +969,11 @@ export default function ProductDetail({
             reviewsNode={<Reviews productId={effectiveProduct.id || product.id || effectiveSku || product.slug || product.name} />}
           />
 
-          {partsUrl ? (
-            <div className="dtb-pdp-browse-parts-row">
-              <Link to={partsUrl} className="dtb-pdp-browse-parts-row__link">
-                Browse all compatible parts &amp; schematics
-              </Link>
-            </div>
-          ) : null}
+          <div className="dtb-pdp-browse-parts-row">
+            <Link to={browsePartsUrl} className="dtb-pdp-browse-parts-row__link">
+              Browse all compatible parts &amp; schematics
+            </Link>
+          </div>
 
         </div>
       </div>

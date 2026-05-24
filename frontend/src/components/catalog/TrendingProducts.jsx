@@ -63,9 +63,10 @@ export default function TrendingProducts() {
     getProducts().then((allProducts) => {
       if (!mounted) return;
 
-      const toolsOnly = allProducts.filter((p) => p.category !== 'parts');
+      // Exclude replacement parts; prefer actual tools and tool sets.
+      const toolsOnly = allProducts.filter((p) => !p.is_parts && p.category !== 'parts');
       const withPrice = toolsOnly.filter((p) => {
-        const price = Number(p.price) || Number(p.min_price) || 0;
+        const price = Number(p.price) || Number(p.min_price) || Number(p.regular_price) || 0;
         return price > 0;
       });
 
@@ -80,16 +81,16 @@ export default function TrendingProducts() {
       Object.keys(groupedByBrand).forEach((brand) => {
         const brandTools = groupedByBrand[brand];
         brandTools.sort((a, b) => {
-          const aPrice = Number(a.price) || Number(a.min_price) || 0;
-          const bPrice = Number(b.price) || Number(b.min_price) || 0;
+          const aPrice = Number(a.price) || Number(a.min_price) || Number(a.regular_price) || 0;
+          const bPrice = Number(b.price) || Number(b.min_price) || Number(b.regular_price) || 0;
           return bPrice - aPrice;
         });
         balancedSelection.push(...brandTools.slice(0, 4));
       });
 
       balancedSelection.sort((a, b) => {
-        const aPrice = Number(a.price) || Number(a.min_price) || 0;
-        const bPrice = Number(b.price) || Number(b.min_price) || 0;
+        const aPrice = Number(a.price) || Number(a.min_price) || Number(a.regular_price) || 0;
+        const bPrice = Number(b.price) || Number(b.min_price) || Number(b.regular_price) || 0;
         if (Math.abs(bPrice - aPrice) > 1) return bPrice - aPrice;
         return (a.brand || '').localeCompare(b.brand || '');
       });

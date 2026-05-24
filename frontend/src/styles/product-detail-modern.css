@@ -522,7 +522,7 @@
 }
 
 .dtb-pdp-shipping-note {
-  margin: 0;
+  margin: 0.35rem 0 0.1rem;
   font-size: 0.9rem;
   color: #475569;
 }
@@ -530,6 +530,12 @@
 .dtb-pdp-stock-meter {
   display: grid;
   gap: 0.45rem;
+}
+
+/* When the stock meter sits directly above the purchase panel */
+.dtb-pdp-stock-meter--pre-cart {
+  margin-top: 0.6rem;
+  margin-bottom: 0.1rem;
 }
 
 .dtb-pdp-stock-meter__label {
