@@ -764,22 +764,23 @@
 
 .dtb-pdp-sections {
   display: grid;
-  gap: 1rem;
-  padding-top: 1.3rem;
+  gap: 0;
+  padding-top: 1.5rem;
   border-top: 1px solid #e5e7eb;
 }
 
 .dtb-pdp-tabs {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 4px;
-  border-radius: var(--dtb-radius-lg, 14px);
-  border: 1px solid rgba(203, 213, 225, 0.5);
-  background: #f1f5f9;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  border-bottom: 2px solid #e5e7eb;
+  background: transparent;
   overflow-x: auto;
   scrollbar-width: none;
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
 }
 
@@ -791,6 +792,7 @@
   display: grid;
   gap: 0.85rem;
   min-width: 0;
+  padding-top: 1.25rem;
 }
 
 .dtb-pdp-section__heading-wrap {
@@ -821,80 +823,89 @@
 }
 
 .dtb-pdp-section__content--description {
-  border: 1px solid rgba(226, 232, 240, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.7);
   border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.98));
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.06);
+  background: #ffffff;
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    0 8px 24px rgba(15, 23, 42, 0.05);
   overflow: hidden;
 }
 
 .dtb-pdp-description-content {
   display: grid;
   gap: 0.85rem;
-  color: #334155;
-  font-size: 0.98rem;
-  line-height: 1.72;
+  color: #374151;
+  font-size: 0.96rem;
+  line-height: 1.75;
   max-width: 76ch;
-  padding: 1.05rem;
+  padding: 1.5rem 1.5rem 1.25rem;
 }
 
 .dtb-pdp-description-kicker {
   width: fit-content;
-  margin: 0 0 0.1rem;
-  padding: 0.32rem 0.58rem;
-  border: 1px solid rgba(37, 99, 235, 0.12);
+  margin: 0 0 0.35rem;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid rgba(37, 99, 235, 0.15);
   border-radius: 999px;
-  background: rgba(239, 246, 255, 0.78);
+  background: rgba(239, 246, 255, 0.9);
   color: #1d4ed8;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.68rem;
+  font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .dtb-pdp-description-card {
-  padding: 0.95rem 1rem;
-  border: 1px solid rgba(226, 232, 240, 0.88);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+  padding: 1.1rem 1.15rem;
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  border-radius: 12px;
+  background: #f8fafc;
+  box-shadow: none;
 }
 
 .dtb-pdp-description-card h3 {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin: 0 0 0.45rem;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
   color: #0f172a;
-  font-size: 0.92rem;
-  font-weight: 800;
-  line-height: 1.22;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .dtb-pdp-description-card h3::before {
   content: "";
-  width: 0.48rem;
-  height: 0.48rem;
+  width: 0.44rem;
+  height: 0.44rem;
   border-radius: 999px;
   background: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
   flex: 0 0 auto;
 }
 
 .dtb-pdp-description-card p {
   margin: 0;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
 
 .dtb-pdp-description-lead {
-  color: #1f2a3d;
-  font-size: 1.02rem;
-  font-weight: 600;
-  line-height: 1.64;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.68;
 }
 
 .dtb-pdp-description-content--rich .dtb-pdp-description-card {
   display: flow-root;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }
 
 .dtb-pdp-description-content > :first-child {
@@ -1014,37 +1025,42 @@
 }
 
 .dtb-pdp-tabs__tab {
-  flex: 1;
-  padding: 0.45rem 0.5rem;
-  border-radius: var(--dtb-radius, 10px);
+  flex: 0 0 auto;
+  position: relative;
+  padding: 0.72rem 1.15rem 0.68rem;
+  border-radius: 0;
   border: none;
+  border-bottom: 2.5px solid transparent;
   background: transparent;
   color: #64748b;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   font-weight: 500;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
-  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+  letter-spacing: 0.005em;
+  transition: color 150ms ease, border-color 150ms ease;
+  margin-bottom: -2px; /* overlap container bottom border */
+  cursor: pointer;
 }
 
 .dtb-pdp-tabs__tab:hover:not(.is-active) {
-  color: #1e293b;
-  background: rgba(255, 255, 255, 0.5);
+  color: #334155;
+  background: transparent;
 }
 
 .dtb-pdp-tabs__tab.is-active {
-  background: #fff;
+  background: transparent;
   color: #0f172a;
-  font-weight: 600;
-  box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.08),
-    0 0 0 1px rgba(15, 23, 42, 0.06);
+  font-weight: 650;
+  border-bottom-color: #2563eb;
+  box-shadow: none;
 }
 
 .dtb-pdp-tabs__tab:focus-visible {
   outline: 2px solid rgba(37, 99, 235, 0.35);
-  outline-offset: 2px;
+  outline-offset: -2px;
+  border-radius: 4px 4px 0 0;
 }
 
 @media (max-width: 768px) {
@@ -1297,19 +1313,18 @@
   }
 
   .dtb-pdp-tabs__tab {
-    padding: 0.4rem 0.35rem;
-    font-size: 0.78rem;
+    padding: 0.62rem 0.85rem;
+    font-size: 0.8rem;
   }
 
   .dtb-pdp-tabs__tab.is-active {
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     color: #0f172a;
-    font-weight: 600;
-    box-shadow:
-      0 1px 4px rgba(15, 23, 42, 0.07),
-      0 0 0 1px rgba(15, 23, 42, 0.05);
+    font-weight: 650;
+    box-shadow: none;
+    border-bottom-color: #2563eb;
   }
 
   .dtb-pdp-header__reviews {
@@ -1326,20 +1341,21 @@
   }
 
   .dtb-pdp-sections {
-    gap: 0.9rem;
-    padding-top: 1rem;
+    gap: 0;
+    padding-top: 1.1rem;
     margin-top: 0.25rem;
   }
 
   .dtb-pdp-tabs {
     width: 100%;
-    gap: 2px;
+    gap: 0;
     margin-inline: 0;
-    padding: 3px;
+    padding: 0;
   }
 
   .dtb-pdp-section {
-    gap: 0.65rem;
+    gap: 0.75rem;
+    padding-top: 1rem;
   }
 
   .dtb-pdp-section__heading {
@@ -1356,15 +1372,15 @@
   }
 
   .dtb-pdp-section__content--description {
-    border-radius: 14px;
+    border-radius: 12px;
   }
 
   .dtb-pdp-description-content {
     gap: 0.72rem;
     max-width: none;
-    padding: 0.75rem;
-    font-size: 0.92rem;
-    line-height: 1.62;
+    padding: 1rem;
+    font-size: 0.91rem;
+    line-height: 1.65;
   }
 
   .dtb-pdp-description-kicker {
