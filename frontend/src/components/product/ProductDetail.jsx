@@ -16,6 +16,7 @@ import { setCachedVariations } from '../../utils/variationCache';
 import { apiClient } from '../../api/client.js';
 import { getBrandLogo } from '../../utils/brandAssets.js';
 import { toLegacyProductCardDTO, toProductDetailDTO } from '../../utils/catalogDtoAdapters.js';
+import { BRAND_TO_SLUG, BRAND_ALIASES } from '../../utils/catalogUrlState.js';
 import { getSchematicIdForProduct, buildSchematicsUrl } from '../../data/schematicMappings';
 import DOMPurify from 'dompurify';
 
@@ -568,8 +569,12 @@ export default function ProductDetail({
     const lookupSku = String(selectedVariation?.sku || product?.sku || '')
       .trim()
       .toUpperCase();
+    const rawBrandLabel = String(product?.brand || '').trim();
+    const canonicalBrandLabel = BRAND_ALIASES[rawBrandLabel] || rawBrandLabel;
+    const brandSlug = BRAND_TO_SLUG[canonicalBrandLabel] || '';
+    const currentCategory = String(product?.category || product?.display_category || '').trim();
 
-    if (!lookupSku) {
+    if (!lookupSku && !brandSlug) {
       setFbtAccessoryProduct(null);
       setFbtIncludeAccessory(false);
       setFbtLoading(false);
@@ -581,21 +586,72 @@ export default function ProductDetail({
     setFbtAccessoryProduct(null);
     setFbtIncludeAccessory(false);
 
-    apiClient(`/wp-json/dtb/v1/products/${encodeURIComponent(lookupSku)}/compatible-parts`)
-      .then((payload) => {
+    const findFbtProduct = async () => {
+      // Tier 1: compatible parts explicitly linked to this specific SKU
+      if (lookupSku) {
+        try {
+          const payload = await apiClient(`/wp-json/dtb/v1/products/${encodeURIComponent(lookupSku)}/compatible-parts`);
+          if (!mounted) return null;
+          const parts = Array.isArray(payload?.products) ? payload.products : [];
+          const firstPart = parts.find((item) => Number.isFinite(Number(item?.id)));
+          if (firstPart) {
+            const normalized = toLegacyProductCardDTO(firstPart);
+            if (normalized?.id) return normalized;
+          }
+        } catch {
+          if (!mounted) return null;
+        }
+      }
+
+      // Tier 2: replacement parts from the same brand
+      if (brandSlug) {
+        try {
+          const payload = await apiClient(
+            `/wp-json/dtb/v1/catalog/products?brand=${encodeURIComponent(brandSlug)}&is_parts=1&per_page=6&sort=popular`
+          );
+          if (!mounted) return null;
+          const items = Array.isArray(payload?.items) ? payload.items : [];
+          const first = items.find((item) => item?.id && item?.sku !== lookupSku);
+          if (first) {
+            const normalized = toLegacyProductCardDTO(first);
+            if (normalized?.id) return normalized;
+          }
+        } catch {
+          if (!mounted) return null;
+        }
+      }
+
+      // Tier 3: products from the same brand and category (excludes parts)
+      if (brandSlug && currentCategory && currentCategory !== 'parts') {
+        try {
+          const payload = await apiClient(
+            `/wp-json/dtb/v1/catalog/products?brand=${encodeURIComponent(brandSlug)}&category=${encodeURIComponent(currentCategory)}&per_page=6&sort=popular`
+          );
+          if (!mounted) return null;
+          const items = Array.isArray(payload?.items) ? payload.items : [];
+          const first = items.find((item) => item?.id && item?.sku !== lookupSku);
+          if (first) {
+            const normalized = toLegacyProductCardDTO(first);
+            if (normalized?.id) return normalized;
+          }
+        } catch {
+          if (!mounted) return null;
+        }
+      }
+
+      return null;
+    };
+
+    findFbtProduct()
+      .then((result) => {
         if (!mounted) return;
-        const parts = Array.isArray(payload?.products) ? payload.products : [];
-        const firstPart = parts.find((item) => Number.isFinite(Number(item?.id)));
-        if (!firstPart) return;
-        const normalized = toLegacyProductCardDTO(firstPart);
-        if (!normalized?.id) return;
-        setFbtAccessoryProduct(normalized);
-        setFbtIncludeAccessory(true);
-      })
-      .catch(() => {
-        if (!mounted) return;
-        setFbtAccessoryProduct(null);
-        setFbtIncludeAccessory(false);
+        if (result) {
+          setFbtAccessoryProduct(result);
+          setFbtIncludeAccessory(true);
+        } else {
+          setFbtAccessoryProduct(null);
+          setFbtIncludeAccessory(false);
+        }
       })
       .finally(() => {
         if (mounted) setFbtLoading(false);
@@ -604,7 +660,7 @@ export default function ProductDetail({
     return () => {
       mounted = false;
     };
-  }, [product?.sku, selectedVariation?.sku]);
+  }, [product?.sku, selectedVariation?.sku, product?.brand, product?.category, product?.display_category]);
 
   if (!product) return null;
 
@@ -846,7 +902,9 @@ export default function ProductDetail({
                         <span className="dtb-pdp-fbt__media-fallback">{(effectiveProduct.name || product.name || 'P').slice(0, 1).toUpperCase()}</span>
                       )}
                     </button>
-                    <span className="dtb-pdp-fbt__plus" aria-hidden="true">+</span>
+                    {(fbtLoading || fbtAccessoryProduct) ? (
+                      <span className="dtb-pdp-fbt__plus" aria-hidden="true">+</span>
+                    ) : null}
                     {fbtAccessoryProduct ? (
                       <button
                         type="button"
@@ -866,20 +924,9 @@ export default function ProductDetail({
                           <span className="dtb-pdp-fbt__media-fallback">{(fbtAccessoryProduct.name || 'A').slice(0, 1).toUpperCase()}</span>
                         )}
                       </button>
-                    ) : (
-                      <Link to={partsUrl || '/parts'} className="dtb-pdp-fbt__media-card dtb-pdp-fbt__media-card--placeholder">
-                        <span className="dtb-pdp-fbt__media-fallback">+</span>
-                      </Link>
-                    )}
-                  </div>
-                  <div className="dtb-pdp-fbt__items">
-                    <span className={`dtb-pdp-fbt__item ${fbtIncludePrimary ? 'is-selected' : ''}`}>
-                      {effectiveProduct.name || product.name} · ${money(fbtPrimaryPrice * quantity)}
-                    </span>
-                    <span className={`dtb-pdp-fbt__item ${fbtIncludeAccessory ? 'is-selected' : ''}`}>
-                      {fbtAccessoryProduct?.name || (fbtLoading ? 'Loading compatible item…' : 'Compatible parts & accessories')}
-                      {fbtAccessoryProduct?.price ? ` · $${money(fbtAccessoryPrice)}` : ''}
-                    </span>
+                    ) : fbtLoading ? (
+                      <div className="dtb-pdp-fbt__media-card dtb-pdp-fbt__media-card--loading" aria-hidden="true" />
+                    ) : null}
                   </div>
                   <p className="dtb-pdp-fbt__total">
                     Total price: <strong>${money(fbtTotal)}</strong>
@@ -892,12 +939,6 @@ export default function ProductDetail({
                   >
                     {fbtAdding ? 'Adding selected…' : 'Add selected to cart'}
                   </button>
-                  <div className="dtb-pdp-fbt__helper-row">
-                    <span>Click image cards to toggle include/exclude.</span>
-                    <Link to={partsUrl || '/parts'} className="dtb-pdp-fbt__link">
-                      Browse all compatible parts
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
@@ -920,6 +961,14 @@ export default function ProductDetail({
             specsNode={<ProductSpecTable specs={productSpecifications} onItemClick={onClose} />}
             reviewsNode={<Reviews productId={effectiveProduct.id || product.id || effectiveSku || product.slug || product.name} />}
           />
+
+          {partsUrl ? (
+            <div className="dtb-pdp-browse-parts-row">
+              <Link to={partsUrl} className="dtb-pdp-browse-parts-row__link">
+                Browse all compatible parts &amp; schematics
+              </Link>
+            </div>
+          ) : null}
 
         </div>
       </div>

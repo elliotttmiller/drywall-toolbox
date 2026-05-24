@@ -642,6 +642,17 @@
   text-decoration: none;
 }
 
+.dtb-pdp-fbt__media-card--loading {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 400px 100%;
+  animation: dtb-fbt-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes dtb-fbt-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
 .dtb-pdp-fbt__media-image {
   width: 100%;
   height: 100%;
@@ -767,6 +778,33 @@
 
 .dtb-pdp-parts-link--mobile {
   display: none;
+}
+
+.dtb-pdp-browse-parts-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.dtb-pdp-browse-parts-row__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.dtb-pdp-browse-parts-row__link:hover {
+  background: #2563eb;
+  color: #fff;
 }
 
 .dtb-pdp-brand-banner {
