@@ -32,6 +32,8 @@ if (typeof window !== 'undefined') {
   const pathname = window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') || '/';
   const isCatalogRoute = pathname.startsWith('/products') || pathname.startsWith('/parts');
   const isHomePage = pathname === '/';
+  // Max delay for background catalog prewarm on non-home, non-catalog routes.
+  const CATALOG_PREWARM_TIMEOUT_MS = 5000;
 
   if (!isCatalogRoute) {
     const scheduleLegacyCatalogPrewarm = () => prewarmCatalog();
@@ -40,9 +42,9 @@ if (typeof window !== 'undefined') {
     if (isHomePage) {
       scheduleLegacyCatalogPrewarm();
     } else if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(scheduleLegacyCatalogPrewarm, { timeout: 5000 });
+      window.requestIdleCallback(scheduleLegacyCatalogPrewarm, { timeout: CATALOG_PREWARM_TIMEOUT_MS });
     } else {
-      window.setTimeout(scheduleLegacyCatalogPrewarm, 5000);
+      window.setTimeout(scheduleLegacyCatalogPrewarm, CATALOG_PREWARM_TIMEOUT_MS);
     }
   }
 }
