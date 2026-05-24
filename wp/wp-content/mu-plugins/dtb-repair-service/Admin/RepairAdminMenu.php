@@ -94,6 +94,8 @@ function dtb_repair_admin_inline_styles(): void {
 		--dtb-radius:      10px;
 		--dtb-shadow:      0 1px 4px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.05);
 		--dtb-shadow-md:   0 4px 16px rgba(0,0,0,.10);
+		/* WP admin bar collapses to 46px on mobile (≤782px) */
+		--dtb-admin-bar-mobile: 46px;
 	}
 
 	/* ── Status badges ──────────────────────────────────────────────────────── */
@@ -144,10 +146,14 @@ function dtb_repair_admin_inline_styles(): void {
 		background: #fff;
 		border: 1px solid var(--dtb-border);
 		border-radius: var(--dtb-radius);
-		padding: 16px 18px 14px;
+		padding: 12px 16px 12px 18px;
 		position: relative;
 		overflow: hidden;
 		box-shadow: var(--dtb-shadow);
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-height: 56px;
 	}
 	.dtb-stat-card::before {
 		content: '';
@@ -162,19 +168,20 @@ function dtb_repair_admin_inline_styles(): void {
 	.dtb-sc-completed::before{ background: #22c55e; }
 	.dtb-sc-cancelled::before{ background: #ef4444; }
 	.dtb-stat-num {
-		font-size: 30px;
+		font-size: 26px;
 		font-weight: 800;
 		color: var(--dtb-text);
 		line-height: 1;
-		margin-bottom: 5px;
 		letter-spacing: -.5px;
+		flex-shrink: 0;
 	}
 	.dtb-stat-label {
 		font-size: 11px;
-		font-weight: 700;
+		font-weight: 600;
 		color: var(--dtb-muted);
 		text-transform: uppercase;
-		letter-spacing: .6px;
+		letter-spacing: .5px;
+		line-height: 1.3;
 	}
 
 	/* ── List shell (white card — tabs + table) ───────────────── */
@@ -487,6 +494,32 @@ function dtb_repair_admin_inline_styles(): void {
 	.dtb-repairs-wrap .notice {
 		border-radius: 8px;
 		margin-bottom: 14px;
+	}
+
+	/* ── Responsive: list / ops pages ──────────────────────────── */
+	@media (max-width: 960px) {
+		.dtb-stats-row { grid-template-columns: repeat(3, 1fr); }
+	}
+	@media (max-width: 782px) {
+		.dtb-stats-row     { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+		.dtb-stat-num      { font-size: 22px; }
+		.dtb-tab-bar       { padding: 0 10px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 0; }
+		.dtb-tabs          { flex-wrap: nowrap; flex-shrink: 0; }
+		.dtb-tab           { padding: 0 12px; font-size: 12px; flex-shrink: 0; }
+		.dtb-tab-bar-right { flex-shrink: 0; padding: 6px 0; }
+		.dtb-chip-bar      { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 8px 10px; gap: 4px; }
+		.dtb-chip          { flex-shrink: 0; }
+		.dtb-table-wrap    { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+		.dtb-repairs-wrap .wp-list-table td,
+		.dtb-repairs-wrap .wp-list-table th { padding: 10px 8px !important; }
+		.dtb-repairs-wrap .tablenav { flex-wrap: wrap; }
+		.dtb-page-header   { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+		.dtb-list-shell    { border-radius: 8px; }
+	}
+	@media (max-width: 480px) {
+		.dtb-stats-row    { gap: 6px; }
+		.dtb-stat-num     { font-size: 20px; }
+		.dtb-repairs-wrap { padding: 4px 0 0; }
 	}
 
 	<?php if ( $is_edit ) : ?>
@@ -1583,6 +1616,75 @@ function dtb_repair_admin_inline_styles(): void {
 		color: var(--dtb-text) !important;
 		resize: vertical;
 		box-sizing: border-box;
+	}
+
+	/* ── Responsive: repair edit / detail page ──────────────────────────────── */
+	@media (max-width: 782px) {
+		/* WP admin bar collapses to var(--dtb-admin-bar-mobile) on mobile */
+		#dtb-sticky-bar {
+			left: 0;
+			top: var(--dtb-admin-bar-mobile);
+			padding: 6px 14px;
+		}
+		/* Hero banner stacks vertically */
+		#dtb-repair-hero {
+			flex-direction: column;
+			padding: 16px;
+			gap: 14px;
+			border-radius: 8px;
+		}
+		#dtb-repair-hero .dtb-hero-top {
+			flex-direction: column;
+			gap: 12px;
+		}
+		#dtb-repair-hero .dtb-hero-integrations {
+			min-width: 0;
+			width: 100%;
+			grid-template-columns: repeat(2, 1fr);
+		}
+		#dtb-repair-hero .dtb-hero-title { font-size: 17px; }
+		/* Workspace tabs scroll */
+		#dtb-repair-workspace-tabs {
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+			gap: 4px;
+			padding: 6px 10px;
+		}
+		.dtb-workspace-tab { flex-shrink: 0; }
+		/* Tech grid */
+		.dtb-tech-grid { grid-template-columns: 1fr; }
+		.dtb-tech-row  { grid-template-columns: 1fr; }
+		/* Command center panels stack */
+		.dtb-cc-panel { padding: 14px 16px; }
+		.dtb-cc-panel + .dtb-cc-panel {
+			border-left: none;
+			border-top: 1px solid var(--dtb-border);
+		}
+		/* WP two-column layout → single column */
+		#post-body.columns-2 #postbox-container-1,
+		#post-body.columns-2 #postbox-container-2 {
+			float: none !important;
+			width: 100% !important;
+			margin-left: 0 !important;
+		}
+		#postbox-container-2 #normal-sortables {
+			grid-template-columns: 1fr;
+		}
+		#postbox-container-2 #normal-sortables .dtb-top-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (max-width: 600px) {
+		#dtb-sticky-bar { top: var(--dtb-admin-bar-mobile); }
+		#dtb-repair-hero {
+			padding: 12px;
+		}
+		#dtb-repair-hero .dtb-hero-integrations {
+			grid-template-columns: 1fr 1fr;
+		}
+		#dtb-repair-hero .dtb-hero-id    { font-size: 10px; }
+		#dtb-repair-hero .dtb-hero-title { font-size: 15px; }
 	}
 
 	<?php endif; ?>

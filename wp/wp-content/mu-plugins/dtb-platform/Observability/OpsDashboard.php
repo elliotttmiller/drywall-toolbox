@@ -311,9 +311,21 @@ function dtb_ops_inline_css(): string {
   .dtb-ops-header-right{width:100%;justify-content:space-between}
   .dtb-kpi-grid{grid-template-columns:1fr 1fr}
   .dtb-status-grid{grid-template-columns:1fr 1fr}
+  .dtb-section{overflow-x:auto}
+  .dtb-section-header{padding:12px 14px;flex-wrap:wrap;gap:8px}
+  .dtb-section-title{font-size:13px}
+  .dtb-section-body{padding:12px 14px}
+  .dtb-table{min-width:520px}
+  .dtb-oo-wrap{overflow-x:auto}
+  .dtb-pagination{padding-top:12px;flex-wrap:wrap}
 }
 @media(max-width:480px){
   .dtb-kpi-grid,.dtb-status-grid{grid-template-columns:1fr}
+  .dtb-ops-header{padding:14px 16px}
+  .dtb-kpi-card{padding:14px}
+  .dtb-kpi-value{font-size:26px}
+  .dtb-btn-refresh{padding:6px 12px;font-size:11px}
+  .dtb-ops-header h1{font-size:18px}
 }
 CSS;
 }
