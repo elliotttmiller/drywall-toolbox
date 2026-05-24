@@ -552,6 +552,21 @@ function PhotoUploader({ photos, onChange }) {
 /* ─────────────────────────────────────────────────────────────────────────────
    Multi-tab pricing component — shows all repair categories with tier cards
    ───────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Returns the accent color for a pricing tier badge based on badge type.
+ * @param {string|undefined} badge - The badge label.
+ * @param {boolean} isBestValue    - Whether the tier is the "Best Value" tier.
+ * @returns {string} A CSS color value.
+ */
+function getTierAccentColor(badge, isBestValue) {
+  if (isBestValue) return 'var(--primary-600)';
+  if (badge === 'Bundle Savings' || badge === '3-Box Bundle') return '#f59e0b';
+  if (badge === 'Free') return '#16a34a';
+  if (badge === 'Popular') return '#8b5cf6';
+  return '#64748b';
+}
+
 const tabPanelVariants = {
   enter: { opacity: 0, y: 10 },
   center: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
@@ -639,10 +654,7 @@ function PricingTabs() {
             {tab.tiers.map((tier) => {
               const isBestValue = tier.badge === 'Best Value';
               const isFree = tier.price === 'FREE';
-              const accentColor = isBestValue ? 'var(--primary-600)' :
-                tier.badge === 'Bundle Savings' || tier.badge === '3-Box Bundle' ? '#f59e0b' :
-                tier.badge === 'Free' ? '#16a34a' :
-                tier.badge === 'Popular' ? '#8b5cf6' : '#64748b';
+              const accentColor = getTierAccentColor(tier.badge, isBestValue);
               return (
                 <div
                   key={tier.id}
@@ -712,8 +724,8 @@ function PricingTabs() {
                     {tier.target && (
                       <p style={{
                         margin: 0,
-                        fontSize: '0.7rem',
-                        color: 'rgba(15,23,42,0.45)',
+                        fontSize: '0.75rem',
+                        color: 'rgba(15,23,42,0.6)',
                         lineHeight: 1.3,
                         fontStyle: 'italic',
                       }}>

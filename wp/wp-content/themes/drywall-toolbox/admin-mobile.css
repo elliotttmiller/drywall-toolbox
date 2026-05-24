@@ -543,6 +543,7 @@
 
 /* ─────────────────────────────────────────────────────────────────────────
    EXTRA NARROW — 480 px
+   Additional overrides beyond the 600px rules above.
    ──────────────────────────────────────────────────────────────────────── */
 @media screen and (max-width: 480px) {
 
@@ -552,14 +553,6 @@
 
 	.dtb-kpi-value {
 		font-size: 26px !important;
-	}
-
-	/* Single-column KPIs on very small screens */
-	.dtb-kpi-grid,
-	.dtb-status-grid,
-	.dtb-oo-kpi-grid,
-	.dtb-stats-row {
-		grid-template-columns: 1fr 1fr !important;
 	}
 
 	/* Section buttons stack below title */
