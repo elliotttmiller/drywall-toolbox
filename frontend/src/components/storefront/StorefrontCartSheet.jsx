@@ -20,16 +20,6 @@ export default function StorefrontCartSheet({ isOpen, onClose, cartItems = [], r
     handleClose();
   }, [handleClose]);
 
-  const handleQtyChange = useCallback(async (key, delta, currentQty) => {
-    const next = currentQty + delta;
-    setPendingKey(key);
-    try {
-      await updateQuantity?.(key, next);
-    } finally {
-      setPendingKey(null);
-    }
-  }, [updateQuantity]);
-
   const handleRemove = useCallback(async (key) => {
     setPendingKey(key);
     try {
@@ -38,6 +28,20 @@ export default function StorefrontCartSheet({ isOpen, onClose, cartItems = [], r
       setPendingKey(null);
     }
   }, [removeFromCart]);
+
+  const handleQtyChange = useCallback(async (key, delta, currentQty) => {
+    const next = currentQty + delta;
+    if (next < 1) {
+      await handleRemove(key);
+      return;
+    }
+    setPendingKey(key);
+    try {
+      await updateQuantity?.(key, next);
+    } finally {
+      setPendingKey(null);
+    }
+  }, [updateQuantity, handleRemove]);
 
   useEffect(() => {
     if (isOpen) {
@@ -152,7 +156,7 @@ export default function StorefrontCartSheet({ isOpen, onClose, cartItems = [], r
                             type="button"
                             className="scs-qty-btn"
                             onClick={() => handleQtyChange(key, -1, item.quantity)}
-                            aria-label="Decrease quantity"
+                            aria-label={item.quantity === 1 ? `Remove ${item.name}` : 'Decrease quantity'}
                             disabled={isPending}
                           >
                             {item.quantity === 1
