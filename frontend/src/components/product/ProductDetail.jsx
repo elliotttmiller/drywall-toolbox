@@ -638,20 +638,20 @@ export default function ProductDetail({
   const descriptionNode = descriptionContent;
 
   return (
-    <div className={`dtb-pdp${onClose ? ' dtb-pdp--modal' : ''} bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-6xl mx-auto flex flex-col relative`}>
+    <div className={`dtb-pdp${onClose ? ' dtb-pdp--modal' : ''} w-full max-w-6xl mx-auto flex flex-col relative`}>
       {onClose ? (
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 hover:bg-gray-100 rounded-full transition-colors"
+          className="dtb-pdp__close-btn"
           aria-label="Close product detail"
           title="Close"
         >
-          <X size={20} className="text-gray-600 hover:text-gray-900" />
+          <X size={18} strokeWidth={2.5} />
         </button>
       ) : null}
 
       <div className="overflow-x-hidden">
-        <div className="dtb-pdp__inner p-4 sm:p-6 md:p-8 lg:p-12 max-w-full">
+        <div className="dtb-pdp__inner max-w-full">
           <div className="dtb-pdp__hero grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
             <div className="dtb-pdp-gallery">
               <ProductImageGallery product={effectiveProduct} />
