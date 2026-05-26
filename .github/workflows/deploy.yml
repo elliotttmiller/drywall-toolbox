@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - copilot/push-and-deploy-github-workflow
   workflow_dispatch:
 
 concurrency:
