@@ -202,7 +202,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--csv",
         type=Path,
-        default=Path(r"C:\Users\Elliott\drywall-toolbox\products\Production\launch\dtb_woocommerce_official_catalog_optimized.csv"),
+        default=Path(__file__).resolve().parent.parent
+            / "products" / "Production" / "catalogs" / "official" / "woocommerce_catalog_production.csv",
         help="Path to WooCommerce CSV file.",
     )
     parser.add_argument("--no-backup", action="store_true", help="Skip creating .pre_specs_meta backup file.")
