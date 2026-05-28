@@ -1,0 +1,7 @@
+sku,product_name,old_row_type,new_row_type,new_parent_sku,variation_attribute,variation_value
+4-743,3” Corner Flusher,simple,variation,LV5-CORNER-FLUSHER,Size,3”
+4-744,3.5” Corner Flusher,simple,variation,LV5-CORNER-FLUSHER,Size,3.5”
+LV5-CORNER-FLUSHER,LEVEL5 Corner Flusher,n/a,variable,,Size,
+4-722,10” Flat Box,simple,variation,LV5-FLAT-BOX-SEMI,Size,10”
+4-723,12” Flat Box,simple,variation,LV5-FLAT-BOX-SEMI,Size,12”
+LV5-FLAT-BOX-SEMI,LEVEL5 Flat Box (Semi-Automatic Line),n/a,variable,,Size,
