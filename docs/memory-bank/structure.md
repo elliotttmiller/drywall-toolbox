@@ -21,7 +21,7 @@ drywall-toolbox/
 │     ├─ deploy.yml.archived
 │     └─ performance.yml.archived
 ├─ frontend/                    React SPA (public UI)
-├─ memory-bank/                 internal architecture docs
+├─ docs/memory-bank/            internal architecture docs
 ├─ products/                    catalog/media/source data
 ├─ scripts/                     operational scripts
 ├─ wp/                          WordPress installation
@@ -114,6 +114,51 @@ Also present in `mu-plugins/` are additional auto-loaded/support files (`dtb-api
 
 - `mu-plugins/dtb-catalog-platform/` (`Domain/`, `Rest/`, `Services/`, `Validation/`, `Admin/`)
 - `mu-plugins/dtb-commerce/` (`Cart/`, `Orders/`)
+
+## Production live mirror (`drywalltoolbox-live/`)
+
+`drywalltoolbox-live/` is the repository’s production live-server code mirror.
+
+Current top-level structure:
+
+```text
+drywalltoolbox-live/
+├─ .ftpquota
+├─ .htaccess
+├─ .htaccess.nfd-backup
+├─ .user.ini
+├─ logos/
+└─ wp/
+```
+
+Current WordPress subtree highlights:
+
+```text
+drywalltoolbox-live/wp/
+├─ wp-content/
+│  ├─ mu-plugins/
+│  │  ├─ 00-dtb-loader.php
+│  │  ├─ dtb-platform/bootstrap.php
+│  │  ├─ dtb-catalog-platform/bootstrap.php
+│  │  ├─ dtb-commerce/bootstrap.php
+│  │  ├─ dtb-order-platform/bootstrap.php
+│  │  ├─ dtb-schematics/bootstrap.php
+│  │  ├─ dtb-media/bootstrap.php
+│  │  ├─ dtb-marketing/bootstrap.php
+│  │  ├─ dtb-repair-service/bootstrap.php
+│  │  ├─ dtb-integrations/bootstrap.php
+│  │  └─ README.md (mu-plugin architecture source of truth)
+│  ├─ themes/
+│  │  ├─ drywall-toolbox/
+│  │  └─ headless-base/
+│  └─ uploads/
+└─ index.php
+```
+
+Engineering rule for maintenance work:
+
+- treat `drywalltoolbox-live/wp/wp-content/mu-plugins/README.md` as canonical documentation for live mu-plugin runtime/load-order details
+- keep repository-level architecture memory in `docs/memory-bank/*` synchronized with live-directory structural reality when production topology changes
 
 ## Data and operations structure
 
