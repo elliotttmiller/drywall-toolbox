@@ -92,6 +92,12 @@ wp-content/advanced-cache.php
 wp-content/wp-cache-config.php
 wp/error_log
 
+# Mirrored live directory transient artifacts (do not track)
+drywalltoolbox/.ftpquota
+drywalltoolbox/error_log
+drywalltoolbox/wp/wp-content/updraft/backup_*.gz
+drywalltoolbox/wp/wp-content/updraft/log*.txt
+
 # WordPress content tracked in this repo (wp/wp-content/):
 #   wp/wp-content/themes/drywall-toolbox/           — legacy theme (kept until headless-base validated)
 #   wp/wp-content/themes/headless-base/             — active minimal headless theme (zero frontend output)

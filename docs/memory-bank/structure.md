@@ -115,14 +115,14 @@ Also present in `mu-plugins/` are additional auto-loaded/support files (`dtb-api
 - `mu-plugins/dtb-catalog-platform/` (`Domain/`, `Rest/`, `Services/`, `Validation/`, `Admin/`)
 - `mu-plugins/dtb-commerce/` (`Cart/`, `Orders/`)
 
-## Production live mirror (`drywalltoolbox-live/`)
+## Production live mirror (`drywalltoolbox/`)
 
-`drywalltoolbox-live/` is the repository’s production live-server code mirror.
+`drywalltoolbox/` is the repository’s production live-server code mirror.
 
 Current top-level structure:
 
 ```text
-drywalltoolbox-live/
+drywalltoolbox/
 ├─ .ftpquota
 ├─ .htaccess
 ├─ .htaccess.nfd-backup
@@ -134,7 +134,7 @@ drywalltoolbox-live/
 Current WordPress subtree highlights:
 
 ```text
-drywalltoolbox-live/wp/
+drywalltoolbox/wp/
 ├─ wp-content/
 │  ├─ mu-plugins/
 │  │  ├─ 00-dtb-loader.php
@@ -157,7 +157,7 @@ drywalltoolbox-live/wp/
 
 Engineering rule for maintenance work:
 
-- treat `drywalltoolbox-live/wp/wp-content/mu-plugins/README.md` as canonical documentation for live mu-plugin runtime/load-order details
+- treat `drywalltoolbox/wp/wp-content/mu-plugins/README.md` as canonical documentation for live mu-plugin runtime/load-order details
 - keep repository-level architecture memory in `docs/memory-bank/*` synchronized with live-directory structural reality when production topology changes
 
 ## Data and operations structure
