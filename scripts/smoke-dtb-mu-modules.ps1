@@ -1,7 +1,15 @@
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$muRoot = Join-Path $repoRoot "wp/wp-content/mu-plugins"
+$muRootCandidates = @(
+  (Join-Path $repoRoot "wp/wp-content/mu-plugins"),
+  (Join-Path $repoRoot "drywalltoolbox/wp/wp-content/mu-plugins"),
+  (Join-Path $repoRoot "drywalltoolbox-live/wp/wp-content/mu-plugins")
+)
+$muRoot = $muRootCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $muRoot) {
+  throw "MU plugins directory not found. Checked: $($muRootCandidates -join ', ')"
+}
 $loaderPath = Join-Path $muRoot "00-dtb-loader.php"
 
 $expectedBootstraps = @(

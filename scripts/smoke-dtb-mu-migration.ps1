@@ -1,7 +1,15 @@
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$muRoot = Join-Path $repoRoot 'wp/wp-content/mu-plugins'
+$muRootCandidates = @(
+  (Join-Path $repoRoot 'wp/wp-content/mu-plugins'),
+  (Join-Path $repoRoot 'drywalltoolbox/wp/wp-content/mu-plugins'),
+  (Join-Path $repoRoot 'drywalltoolbox-live/wp/wp-content/mu-plugins')
+)
+$muRoot = $muRootCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $muRoot) {
+  throw "MU plugins directory not found. Checked: $($muRootCandidates -join ', ')"
+}
 $loaderPath = Join-Path $muRoot '00-dtb-loader.php'
 
 $expectedBootstraps = @(
@@ -107,44 +115,50 @@ foreach ($bootstrap in $expectedBootstraps) {
 
 # ─── Root shim checks ─────────────────────────────────────────────────────────
 
-$seenTargets = @{}
-foreach ($rootFile in $rootShimMap.Keys) {
-  $rootPath = Join-Path $muRoot $rootFile
-  if (-not (Test-Path $rootPath)) {
-    throw "Missing root shim file: $rootFile"
-  }
-
-  $shimContent = Get-Content -Path $rootPath -Raw
-  $shimLines = (Get-Content -Path $rootPath).Count
-  if ($shimLines -gt 30) {
-    throw "Root shim exceeds line threshold (30): $rootFile has $shimLines lines"
-  }
-
-  if ($shimContent -notmatch 'Legacy shim\. Real implementation moved to') {
-    throw "Root DTB file is not a documented shim: $rootFile"
-  }
-
-  if ($shimContent -match "register_rest_route|add_action\(|add_filter\(|register_post_type\(|dbDelta\(|wpdb|function\s+dtb_") {
-    throw "Root shim contains business logic indicators: $rootFile"
-  }
-
-  $targetRel = $rootShimMap[$rootFile]
-
-  if ($targetRel -ne '') {
-    # Transitional shim — legacy file must still exist and be referenced.
-    $targetAbs = Join-Path $muRoot $targetRel
-    if (-not (Test-Path $targetAbs)) {
-      throw "Missing migrated legacy implementation for $rootFile at $targetRel"
+$rootShimFiles = Get-ChildItem -Path $muRoot -File -Filter 'dtb-*.php'
+if ($rootShimFiles.Count -eq 0) {
+  Write-Host 'No root shim files present; migration is fully module-native.'
+}
+else {
+  $seenTargets = @{}
+  foreach ($rootFile in $rootShimMap.Keys) {
+    $rootPath = Join-Path $muRoot $rootFile
+    if (-not (Test-Path $rootPath)) {
+      throw "Missing root shim file: $rootFile"
     }
-    if ($shimContent -notmatch [regex]::Escape($targetRel)) {
-      throw "Root shim does not point to mapped module implementation: $rootFile => $targetRel"
+
+    $shimContent = Get-Content -Path $rootPath -Raw
+    $shimLines = (Get-Content -Path $rootPath).Count
+    if ($shimLines -gt 30) {
+      throw "Root shim exceeds line threshold (30): $rootFile has $shimLines lines"
     }
-    if ($seenTargets.ContainsKey($targetRel)) {
-      throw "Duplicate shim target registration: $rootFile and $($seenTargets[$targetRel]) both point to $targetRel"
+
+    if ($shimContent -notmatch 'Legacy shim\. Real implementation moved to') {
+      throw "Root DTB file is not a documented shim: $rootFile"
     }
-    $seenTargets[$targetRel] = $rootFile
+
+    if ($shimContent -match "register_rest_route|add_action\(|add_filter\(|register_post_type\(|dbDelta\(|wpdb|function\s+dtb_") {
+      throw "Root shim contains business logic indicators: $rootFile"
+    }
+
+    $targetRel = $rootShimMap[$rootFile]
+
+    if ($targetRel -ne '') {
+      # Transitional shim — legacy file must still exist and be referenced.
+      $targetAbs = Join-Path $muRoot $targetRel
+      if (-not (Test-Path $targetAbs)) {
+        throw "Missing migrated legacy implementation for $rootFile at $targetRel"
+      }
+      if ($shimContent -notmatch [regex]::Escape($targetRel)) {
+        throw "Root shim does not point to mapped module implementation: $rootFile => $targetRel"
+      }
+      if ($seenTargets.ContainsKey($targetRel)) {
+        throw "Duplicate shim target registration: $rootFile and $($seenTargets[$targetRel]) both point to $targetRel"
+      }
+      $seenTargets[$targetRel] = $rootFile
+    }
+    # Completed no-op shims (targetRel == '') need no target check.
   }
-  # Completed no-op shims (targetRel == '') need no target check.
 }
 
 # ─── Bootstrap must not load Legacy/ files ────────────────────────────────────
