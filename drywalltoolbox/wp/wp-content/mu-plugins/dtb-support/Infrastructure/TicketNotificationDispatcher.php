@@ -349,11 +349,9 @@ function dtb_support_notify_staff_reply( object $ticket, string $reply_body ): v
 	// Generate an expiring token so the customer can reply via the REST endpoint
 	// from their email client without needing to be logged in.
 	$reply_token = dtb_support_generate_public_reply_token( (int) $ticket->id, $ticket->customer_email );
+	// The ticket ID is already in the REST URL path; only the token is a query parameter.
 	$reply_link  = add_query_arg(
-		[
-			'ticket_id' => $ticket->id,
-			'token'     => $reply_token,
-		],
+		[ 'token' => $reply_token ],
 		rest_url( 'dtb/v1/support/tickets/' . $ticket->id . '/reply/public' )
 	);
 

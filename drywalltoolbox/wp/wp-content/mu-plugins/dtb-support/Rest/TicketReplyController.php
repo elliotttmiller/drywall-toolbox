@@ -84,13 +84,22 @@ function dtb_support_rest_customer_reply( WP_REST_Request $request ): WP_REST_Re
 		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
 	}
 
-	// Verify expiring token: format "{expires}:{hmac}".
+	// Verify expiring token: format "{expires}:{hmac-sha256}".
+	// The expires component must be a positive integer string (Unix timestamp),
+	// and the HMAC must be a 64-character lowercase hex string (SHA-256 output).
 	$parts = explode( ':', $token, 2 );
 	if ( 2 !== count( $parts ) ) {
 		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
 	}
 
 	[ $expires_str, $provided_hmac ] = $parts;
+
+	// Validate formats before use to prevent type-coercion edge cases and
+	// length-based timing discrimination.
+	if ( ! ctype_digit( $expires_str ) || 64 !== strlen( $provided_hmac ) || ! ctype_xdigit( $provided_hmac ) ) {
+		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
+	}
+
 	$expires = (int) $expires_str;
 
 	if ( $expires < time() ) {
@@ -129,19 +138,19 @@ function dtb_support_rest_customer_reply( WP_REST_Request $request ): WP_REST_Re
  * Token format: "{expires}:{hmac-sha256}"
  * The HMAC covers "ticket_id:customer_email:expires" using AUTH_KEY.
  *
- * @param int    $ticket_id
- * @param string $customer_email
- * @param int    $ttl  Token lifetime in seconds. Default: 30 days.
+ * @param int      $ticket_id
+ * @param string   $customer_email
+ * @param int|null $ttl  Token lifetime in seconds. null = use system default (30 days).
  * @return string
  */
-function dtb_support_generate_public_reply_token( int $ticket_id, string $customer_email, int $ttl = 0 ): string {
-	if ( $ttl <= 0 ) {
+function dtb_support_generate_public_reply_token( int $ticket_id, string $customer_email, ?int $ttl = null ): string {
+	if ( null === $ttl ) {
 		$ttl = (int) apply_filters(
 			'dtb_support_public_reply_token_ttl',
 			defined( 'DTB_SUPPORT_PUBLIC_REPLY_TOKEN_TTL' ) ? DTB_SUPPORT_PUBLIC_REPLY_TOKEN_TTL : ( 30 * DAY_IN_SECONDS )
 		);
 	}
-	$expires = time() + $ttl;
+	$expires = time() + max( 1, $ttl );
 	$hmac    = hash_hmac( 'sha256', $ticket_id . ':' . $customer_email . ':' . $expires, AUTH_KEY );
 	return $expires . ':' . $hmac;
 }

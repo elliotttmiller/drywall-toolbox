@@ -26,33 +26,43 @@ function dtb_support_tickets_table(): string {
  *
  * Uses a GET_LOCK / RELEASE_LOCK guard to prevent sequence collisions under
  * concurrent submissions on shared MySQL hosts that lack SEQUENCE support.
+ * If the lock cannot be acquired (timeout or MySQL error) the function falls
+ * back to a random 5-digit suffix so ticket creation is never blocked.
  *
  * @return string
  */
 function dtb_support_generate_ticket_number(): string {
 	global $wpdb;
-	$table = dtb_support_tickets_table();
-	$date  = gmdate( 'Ymd' );
+	$table    = dtb_support_tickets_table();
+	$date     = gmdate( 'Ymd' );
+	$acquired = false;
 
-	// Acquire a named lock (waits up to 3 s before giving up and using a random fallback).
-	$wpdb->get_var( "SELECT GET_LOCK('dtb_ticket_num', 3)" );
-
-	// Find today's highest sequence.
-	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$last = $wpdb->get_var( $wpdb->prepare(
-		"SELECT ticket_number FROM {$table} WHERE ticket_number LIKE %s ORDER BY id DESC LIMIT 1",
-		"DTB-{$date}-%"
-	) );
-
-	$seq = 1;
-	if ( $last ) {
-		$parts = explode( '-', $last );
-		$seq   = ( (int) end( $parts ) ) + 1;
+	// Attempt to acquire a named lock (waits up to 3 s).
+	$lock_result = $wpdb->get_var( "SELECT GET_LOCK('dtb_ticket_num', 3)" );
+	if ( '1' === (string) $lock_result ) {
+		$acquired = true;
 	}
 
-	$number = sprintf( 'DTB-%s-%05d', $date, $seq );
+	try {
+		// Find today's highest sequence.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$last = $wpdb->get_var( $wpdb->prepare(
+			"SELECT ticket_number FROM {$table} WHERE ticket_number LIKE %s ORDER BY id DESC LIMIT 1",
+			"DTB-{$date}-%"
+		) );
 
-	$wpdb->get_var( "SELECT RELEASE_LOCK('dtb_ticket_num')" );
+		$seq = 1;
+		if ( $last ) {
+			$parts = explode( '-', $last );
+			$seq   = ( (int) end( $parts ) ) + 1;
+		}
+
+		$number = sprintf( 'DTB-%s-%05d', $date, $seq );
+	} finally {
+		if ( $acquired ) {
+			$wpdb->get_var( "SELECT RELEASE_LOCK('dtb_ticket_num')" );
+		}
+	}
 
 	return $number;
 }
