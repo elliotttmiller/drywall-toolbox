@@ -248,11 +248,11 @@ function dtb_support_render_ticket_detail_page( int $ticket_id ): void {
 						<strong>Age:</strong>
 						<?php echo esc_html( $projected['age_label'] ?? '—' ); ?>
 					</p>
-					<?php if ( ! empty( $projected['sla_state'] ) ) : ?>
+					<?php if ( ! empty( $projected['action_state'] ) ) : ?>
 						<p class="dtb-sidebar-card__row">
-							<strong>SLA:</strong>
-							<span class="dtb-sla dtb-sla--<?php echo esc_attr( $projected['sla_state'] ); ?>">
-								<?php echo esc_html( strtoupper( $projected['sla_state'] ) ); ?>
+							<strong>Action Due:</strong>
+							<span class="dtb-action-state dtb-action-state--<?php echo esc_attr( $projected['action_state'] ); ?>">
+								<?php echo esc_html( $projected['action_state_label'] ?? $projected['action_state'] ); ?>
 							</span>
 						</p>
 					<?php endif; ?>

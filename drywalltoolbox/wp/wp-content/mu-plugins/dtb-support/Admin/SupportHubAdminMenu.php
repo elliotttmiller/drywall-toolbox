@@ -85,11 +85,12 @@ function dtb_support_enqueue_admin_assets( string $hook ): void {
 	// Enqueue versioned CSS from file when it exists; otherwise fall back to inline.
 	$css_file = $assets_dir . '/dtb-support.css';
 	if ( file_exists( $css_file ) ) {
+		$css_ver = filemtime( $css_file );
 		wp_enqueue_style(
 			'dtb-support-admin',
 			$assets_url . '/dtb-support.css',
 			[ 'wp-admin' ],
-			(string) filemtime( $css_file )
+			$css_ver !== false ? (string) $css_ver : DTB_SUPPORT_DB_VERSION
 		);
 	} else {
 		wp_add_inline_style( 'wp-admin', dtb_support_admin_css() );
@@ -98,11 +99,12 @@ function dtb_support_enqueue_admin_assets( string $hook ): void {
 	// Enqueue versioned JS from file when it exists; otherwise fall back to inline.
 	$js_file = $assets_dir . '/dtb-support.js';
 	if ( file_exists( $js_file ) ) {
+		$js_ver = filemtime( $js_file );
 		wp_enqueue_script(
 			'dtb-support-admin',
 			$assets_url . '/dtb-support.js',
 			[ 'wp-util' ],
-			(string) filemtime( $js_file ),
+			$js_ver !== false ? (string) $js_ver : DTB_SUPPORT_DB_VERSION,
 			true
 		);
 		wp_localize_script( 'dtb-support-admin', 'dtbSupportConfig', [
