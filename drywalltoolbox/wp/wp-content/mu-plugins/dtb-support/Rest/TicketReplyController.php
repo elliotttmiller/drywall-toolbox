@@ -59,7 +59,7 @@ function dtb_support_staff_reply_permission( WP_REST_Request $request ): bool|WP
 	}
 
 	if ( ! is_user_logged_in() ) {
-		return new WP_Error( 'rest_forbidden', __( 'Authentication required.', 'drywall-toolbox' ), [ 'status' => 401 ] );
+		return new WP_Error( 'rest_not_logged_in', __( 'Authentication required.', 'drywall-toolbox' ), [ 'status' => 401 ] );
 	}
 
 	if ( current_user_can( 'manage_options' ) ) {
