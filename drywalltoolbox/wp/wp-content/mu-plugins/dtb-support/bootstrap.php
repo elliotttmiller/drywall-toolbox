@@ -28,9 +28,15 @@ _dtb_require( $_dtb_support_dir . '/Domain/TicketEvent.php' );
 _dtb_require( $_dtb_support_dir . '/Infrastructure/SupportSchemaInstaller.php' );
 _dtb_require( $_dtb_support_dir . '/Infrastructure/TicketRepository.php' );
 _dtb_require( $_dtb_support_dir . '/Infrastructure/TicketEventRepository.php' );
+_dtb_require( $_dtb_support_dir . '/Infrastructure/EmailOutboxRepository.php' );
+_dtb_require( $_dtb_support_dir . '/Infrastructure/EmailOutboxProcessor.php' );
 _dtb_require( $_dtb_support_dir . '/Infrastructure/TicketNotificationDispatcher.php' );
 
 // ── 3. Services ───────────────────────────────────────────────────────────────
+_dtb_require( $_dtb_support_dir . '/Services/TicketSlaService.php' );
+_dtb_require( $_dtb_support_dir . '/Services/TicketPriorityScoreService.php' );
+_dtb_require( $_dtb_support_dir . '/Services/TicketSnoozeService.php' );
+_dtb_require( $_dtb_support_dir . '/Services/TicketMacroService.php' );
 _dtb_require( $_dtb_support_dir . '/Services/TicketQueryService.php' );
 _dtb_require( $_dtb_support_dir . '/Services/TicketWorkflowService.php' );
 _dtb_require( $_dtb_support_dir . '/Services/TicketAutoAssignService.php' );

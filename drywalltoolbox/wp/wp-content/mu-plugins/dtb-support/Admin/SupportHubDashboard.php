@@ -185,7 +185,7 @@ function dtb_support_render_dashboard_page(): void {
 					<th style="width:100px">Type</th>
 					<th style="width:140px">Customer</th>
 					<th style="width:120px">Assigned</th>
-					<th style="width:62px">SLA</th>
+					<th style="width:62px">Action Due</th>
 					<th style="width:72px">Age</th>
 					<th style="width:34px"></th>
 				</tr>
@@ -217,7 +217,8 @@ function dtb_support_render_dashboard_page(): void {
 					<?php foreach ( $tickets as $t ) :
 						$detail_url    = add_query_arg( 'ticket_id', $t['id'], $base_url );
 						$assigned_name = $t['assigned_user']['display_name'] ?? '&#8212;';
-						$sla_state     = $t['sla_state'] ?? '';
+						$action_state  = $t['action_state'] ?? '';
+						$action_label  = $t['action_state_label'] ?? '';
 						?>
 						<tr id="dtb-row-<?php echo absint( $t['id'] ); ?>">
 							<td>
@@ -250,9 +251,13 @@ function dtb_support_render_dashboard_page(): void {
 							<td><?php echo esc_html( $t['customer_name'] ); ?></td>
 							<td><?php echo esc_html( $assigned_name ); ?></td>
 							<td>
-								<?php if ( $sla_state ) : ?>
-									<span class="dtb-sla dtb-sla--<?php echo esc_attr( $sla_state ); ?>">
-										<?php echo esc_html( strtoupper( $sla_state ) ); ?>
+								<?php if ( $action_state && 'ok' !== $action_state ) : ?>
+									<span class="dtb-action-state dtb-action-state--<?php echo esc_attr( $action_state ); ?>">
+										<?php echo esc_html( $action_label ); ?>
+									</span>
+								<?php elseif ( $action_state ) : ?>
+									<span class="dtb-action-state dtb-action-state--ok">
+										<?php echo esc_html( $action_label ); ?>
 									</span>
 								<?php else : ?>&mdash;<?php endif; ?>
 							</td>
@@ -343,12 +348,15 @@ function dtb_support_render_dashboard_page(): void {
 
 		function dtbBuildKpiStrip(k){
 			var cards = [
-				{l:'Total',         v: k.total         || 0, w: false},
-				{l:'Open',          v: k.open          || 0, w: (k.open||0) > 0},
-				{l:'Pending Staff', v: k.pending_staff || 0, w: (k.pending_staff||0) > 0},
-				{l:'In Progress',   v: k.in_progress   || 0, w: false},
-				{l:'Urgent',        v: k.urgent        || 0, w: (k.urgent||0) > 0},
-				{l:'SLA Breached',  v: k.sla_breach    || 0, w: (k.sla_breach||0) > 0},
+				{l:'Total',           v: k.total          || 0, w: false},
+				{l:'Open',            v: k.open           || 0, w: (k.open||0) > 0},
+				{l:'Pending Staff',   v: k.pending_staff  || 0, w: (k.pending_staff||0) > 0},
+				{l:'In Progress',     v: k.in_progress    || 0, w: false},
+				{l:'Urgent',          v: k.urgent         || 0, w: (k.urgent||0) > 0},
+				{l:'Overdue',         v: k.overdue_count  || 0, w: (k.overdue_count||0) > 0},
+				{l:'Due Soon',        v: k.due_soon_count || 0, w: (k.due_soon_count||0) > 0},
+				{l:'Needs Reply',     v: k.needs_reply    || 0, w: (k.needs_reply||0) > 0},
+				{l:'Email Issues',    v: k.email_failures || 0, w: (k.email_failures||0) > 0},
 			];
 			return cards.map(function(c){
 				var cls = 'dtb-kpi-card' + (c.w && c.v > 0 ? ' dtb-kpi-card--warn' : '');
@@ -370,12 +378,15 @@ function dtb_support_render_dashboard_page(): void {
 
 function dtb_support_render_kpi_strip( array $kpis ): void {
 	$cards = [
-		[ 'label' => 'Total',          'value' => $kpis['total']          ?? 0,   'warn' => false ],
-		[ 'label' => 'Open',           'value' => $kpis['open']           ?? 0,   'warn' => ( $kpis['open'] ?? 0 ) > 0 ],
-		[ 'label' => 'Pending Staff',  'value' => $kpis['pending_staff']  ?? 0,   'warn' => ( $kpis['pending_staff'] ?? 0 ) > 0 ],
-		[ 'label' => 'In Progress',    'value' => $kpis['in_progress']    ?? 0,   'warn' => false ],
-		[ 'label' => 'Urgent',         'value' => $kpis['urgent']         ?? 0,   'warn' => ( $kpis['urgent'] ?? 0 ) > 0 ],
-		[ 'label' => 'SLA Breached',   'value' => $kpis['sla_breach']     ?? 0,   'warn' => ( $kpis['sla_breach'] ?? 0 ) > 0 ],
+		[ 'label' => 'Total',          'value' => $kpis['total']          ?? 0, 'warn' => false ],
+		[ 'label' => 'Open',           'value' => $kpis['open']           ?? 0, 'warn' => ( $kpis['open'] ?? 0 ) > 0 ],
+		[ 'label' => 'Pending Staff',  'value' => $kpis['pending_staff']  ?? 0, 'warn' => ( $kpis['pending_staff'] ?? 0 ) > 0 ],
+		[ 'label' => 'In Progress',    'value' => $kpis['in_progress']    ?? 0, 'warn' => false ],
+		[ 'label' => 'Urgent',         'value' => $kpis['urgent']         ?? 0, 'warn' => ( $kpis['urgent'] ?? 0 ) > 0 ],
+		[ 'label' => 'Overdue',        'value' => $kpis['overdue_count']  ?? 0, 'warn' => ( $kpis['overdue_count'] ?? 0 ) > 0 ],
+		[ 'label' => 'Due Soon',       'value' => $kpis['due_soon_count'] ?? 0, 'warn' => ( $kpis['due_soon_count'] ?? 0 ) > 0 ],
+		[ 'label' => 'Needs Reply',    'value' => $kpis['needs_reply']    ?? 0, 'warn' => ( $kpis['needs_reply'] ?? 0 ) > 0 ],
+		[ 'label' => 'Email Issues',   'value' => $kpis['email_failures'] ?? 0, 'warn' => ( $kpis['email_failures'] ?? 0 ) > 0 ],
 		[
 			'label' => 'Avg Response',
 			'value' => isset( $kpis['avg_first_response_h'] )
@@ -383,7 +394,7 @@ function dtb_support_render_kpi_strip( array $kpis ): void {
 				: '&mdash;',
 			'warn' => false,
 		],
-		[ 'label' => 'Resolved Today', 'value' => $kpis['resolved_today'] ?? 0,   'warn' => false ],
+		[ 'label' => 'Resolved Today', 'value' => $kpis['today_resolved'] ?? ( $kpis['resolved_today'] ?? 0 ), 'warn' => false ],
 	];
 
 	foreach ( $cards as $card ) {

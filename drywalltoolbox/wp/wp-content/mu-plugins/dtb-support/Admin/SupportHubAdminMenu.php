@@ -79,9 +79,40 @@ function dtb_support_enqueue_admin_assets( string $hook ): void {
 		return;
 	}
 
-	wp_add_inline_style( 'wp-admin', dtb_support_admin_css() );
-	wp_enqueue_script( 'wp-util' );
-	wp_add_inline_script( 'wp-util', dtb_support_admin_js(), 'after' );
+	$assets_dir = __DIR__ . '/assets';
+	$assets_url = plugin_dir_url( __FILE__ ) . 'assets';
+
+	// Enqueue versioned CSS from file when it exists; otherwise fall back to inline.
+	$css_file = $assets_dir . '/dtb-support.css';
+	if ( file_exists( $css_file ) ) {
+		wp_enqueue_style(
+			'dtb-support-admin',
+			$assets_url . '/dtb-support.css',
+			[ 'wp-admin' ],
+			(string) filemtime( $css_file )
+		);
+	} else {
+		wp_add_inline_style( 'wp-admin', dtb_support_admin_css() );
+	}
+
+	// Enqueue versioned JS from file when it exists; otherwise fall back to inline.
+	$js_file = $assets_dir . '/dtb-support.js';
+	if ( file_exists( $js_file ) ) {
+		wp_enqueue_script(
+			'dtb-support-admin',
+			$assets_url . '/dtb-support.js',
+			[ 'wp-util' ],
+			(string) filemtime( $js_file ),
+			true
+		);
+		wp_localize_script( 'dtb-support-admin', 'dtbSupportConfig', [
+			'restUrl' => esc_url_raw( rest_url( 'dtb/v1' ) ),
+			'nonce'   => wp_create_nonce( 'wp_rest' ),
+		] );
+	} else {
+		wp_enqueue_script( 'wp-util' );
+		wp_add_inline_script( 'wp-util', dtb_support_admin_js(), 'after' );
+	}
 }
 add_action( 'admin_enqueue_scripts', 'dtb_support_enqueue_admin_assets' );
 
@@ -508,8 +539,8 @@ function dtb_support_admin_css(): string { return <<<'CSS'
 	color: var(--dtb-text-md);
 	white-space: nowrap;
 }
-/* SLA pill */
-.dtb-sla {
+/* Action-state pill (operational target / due-soon / overdue) */
+.dtb-action-state {
 	display: inline-flex;
 	align-items: center;
 	gap: 3px;
@@ -521,9 +552,9 @@ function dtb_support_admin_css(): string { return <<<'CSS'
 	letter-spacing: .4px;
 	white-space: nowrap;
 }
-.dtb-sla--ok      { background: #dcfce7; color: #15803d; }
-.dtb-sla--warning { background: #fff7ed; color: #c2410c; }
-.dtb-sla--breach  { background: #fee2e2; color: #dc2626; }
+.dtb-action-state--ok       { background: #dcfce7; color: #15803d; }
+.dtb-action-state--due-soon { background: #fff7ed; color: #c2410c; }
+.dtb-action-state--overdue  { background: #fee2e2; color: #dc2626; }
 /* Expand chevron */
 .dtb-expand-btn {
 	background: none;
