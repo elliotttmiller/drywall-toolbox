@@ -63,7 +63,7 @@ function dtb_support_project_ticket( object $ticket ): array {
 		'closed_at'      => $ticket->closed_at,
 		'created_at'     => $ticket->created_at,
 		'updated_at'     => $ticket->updated_at,
-		'edit_url'       => admin_url( 'admin.php?page=dtb-support-detail&ticket_id=' . $ticket->id ),
+		'edit_url'       => admin_url( 'admin.php?page=dtb-support&ticket_id=' . $ticket->id ),
 	];
 }
 

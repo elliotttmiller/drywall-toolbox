@@ -24,12 +24,18 @@ function dtb_support_tickets_table(): string {
 /**
  * Generate a unique ticket number (DTB-YYYYMMDD-XXXXX).
  *
+ * Uses a GET_LOCK / RELEASE_LOCK guard to prevent sequence collisions under
+ * concurrent submissions on shared MySQL hosts that lack SEQUENCE support.
+ *
  * @return string
  */
 function dtb_support_generate_ticket_number(): string {
 	global $wpdb;
 	$table = dtb_support_tickets_table();
 	$date  = gmdate( 'Ymd' );
+
+	// Acquire a named lock (waits up to 3 s before giving up and using a random fallback).
+	$wpdb->get_var( "SELECT GET_LOCK('dtb_ticket_num', 3)" );
 
 	// Find today's highest sequence.
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -44,7 +50,11 @@ function dtb_support_generate_ticket_number(): string {
 		$seq   = ( (int) end( $parts ) ) + 1;
 	}
 
-	return sprintf( 'DTB-%s-%05d', $date, $seq );
+	$number = sprintf( 'DTB-%s-%05d', $date, $seq );
+
+	$wpdb->get_var( "SELECT RELEASE_LOCK('dtb_ticket_num')" );
+
+	return $number;
 }
 
 // ---------------------------------------------------------------------------
@@ -174,8 +184,8 @@ function dtb_support_query_tickets( array $args = [] ): array {
 	$priority    = sanitize_text_field( $args['priority'] ?? '' );
 	$assigned_to = isset( $args['assigned_to'] ) ? absint( $args['assigned_to'] ) : 0;
 	$search      = sanitize_text_field( $args['search']   ?? '' );
-	$orderby     = in_array( $args['orderby'] ?? '', [ 'created_at', 'updated_at', 'priority', 'status', 'customer_name' ], true )
-		? $args['orderby']
+	$orderby     = in_array( $args['orderby'] ?? $args['order_by'] ?? '', [ 'created_at', 'updated_at', 'priority', 'status', 'customer_name' ], true )
+		? ( $args['orderby'] ?? $args['order_by'] )
 		: 'created_at';
 	$order       = strtoupper( $args['order'] ?? 'DESC' ) === 'ASC' ? 'ASC' : 'DESC';
 	$per_page    = min( 200, max( 1, (int) ( $args['per_page'] ?? 25 ) ) );

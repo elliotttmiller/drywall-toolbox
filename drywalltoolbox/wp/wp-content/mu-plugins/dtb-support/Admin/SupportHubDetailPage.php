@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin — SupportHubDetailPage
  *
@@ -110,8 +110,7 @@ function dtb_support_render_ticket_detail_page( int $ticket_id ): void {
 				<!-- Reply composer -->
 				<form id="dtb-reply-form"
 					class="dtb-compose"
-					data-ticket-id="<?php echo absint( $ticket_id ); ?>"
-					onsubmit="event.preventDefault(); dtbSupport.submitReply(this);">
+					data-ticket-id="<?php echo absint( $ticket_id ); ?>">
 					<div class="dtb-compose__header">Reply to Customer</div>
 					<textarea
 						name="message"
@@ -124,7 +123,7 @@ function dtb_support_render_ticket_detail_page( int $ticket_id ): void {
 							Send Reply
 						</button>
 						<label class="dtb-compose__internal">
-							<input type="checkbox" name="internal" value="1">
+							<input type="checkbox" name="is_internal" value="1">
 							Internal note
 						</label>
 					</div>
@@ -153,7 +152,7 @@ function dtb_support_render_ticket_detail_page( int $ticket_id ): void {
 								<?php endforeach; ?>
 							</select>
 							<button class="dtb-btn dtb-btn--sm dtb-btn--ghost"
-								onclick="dtbSupport.transitionTicket(<?php echo absint( $ticket_id ); ?>, document.getElementById('dtb-status-select').value)">
+								onclick="dtbSupport.transitionTicket(<?php echo absint( $ticket_id ); ?>, document.getElementById('dtb-status-select').value, this)">
 								Apply
 							</button>
 						</div>
@@ -199,7 +198,7 @@ function dtb_support_render_ticket_detail_page( int $ticket_id ): void {
 								if ( ! $u ) continue;
 								?>
 								<option value="<?php echo absint( $agent_id ); ?>"
-									<?php selected( (int) ( $ticket['assigned_to'] ?? 0 ), $agent_id ); ?>>
+									<?php selected( (int) ( $ticket['assigned_user_id'] ?? 0 ), $agent_id ); ?>>
 									<?php echo esc_html( $u->display_name ); ?>
 								</option>
 							<?php endforeach; ?>

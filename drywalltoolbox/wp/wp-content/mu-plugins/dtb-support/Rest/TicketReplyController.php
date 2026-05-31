@@ -66,7 +66,9 @@ function dtb_support_rest_staff_reply( WP_REST_Request $request ): WP_REST_Respo
 /**
  * POST /dtb/v1/support/tickets/{id}/reply/public   (customer, token-gated)
  *
- * The token is a HMAC-SHA256 of "ticket_id:customer_email" using AUTH_KEY.
+ * The token is a signed, expiring HMAC-SHA256 of "ticket_id:customer_email:expires"
+ * using AUTH_KEY. Tokens are valid for DTB_SUPPORT_PUBLIC_REPLY_TOKEN_TTL seconds
+ * (default: 30 days). Verification uses constant-time comparison.
  *
  * @param WP_REST_Request $request
  * @return WP_REST_Response|WP_Error
@@ -78,13 +80,31 @@ function dtb_support_rest_customer_reply( WP_REST_Request $request ): WP_REST_Re
 
 	$ticket = dtb_support_get_ticket( $ticket_id );
 	if ( ! $ticket ) {
-		return new WP_Error( 'dtb_support_not_found', __( 'Ticket not found.', 'drywall-toolbox' ), [ 'status' => 404 ] );
+		// Return generic 403 to avoid leaking ticket existence to unauthenticated callers.
+		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
 	}
 
-	// Verify token.
-	$expected = hash_hmac( 'sha256', $ticket_id . ':' . $ticket->customer_email, AUTH_KEY );
-	if ( ! hash_equals( $expected, $token ) ) {
-		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid reply token.', 'drywall-toolbox' ), [ 'status' => 403 ] );
+	// Verify expiring token: format "{expires}:{hmac}".
+	$parts = explode( ':', $token, 2 );
+	if ( 2 !== count( $parts ) ) {
+		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
+	}
+
+	[ $expires_str, $provided_hmac ] = $parts;
+	$expires = (int) $expires_str;
+
+	if ( $expires < time() ) {
+		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
+	}
+
+	$expected_hmac = hash_hmac(
+		'sha256',
+		$ticket_id . ':' . $ticket->customer_email . ':' . $expires,
+		AUTH_KEY
+	);
+
+	if ( ! hash_equals( $expected_hmac, $provided_hmac ) ) {
+		return new WP_Error( 'dtb_support_forbidden', __( 'Invalid or expired reply link.', 'drywall-toolbox' ), [ 'status' => 403 ] );
 	}
 
 	if ( '' === $message ) {
@@ -101,4 +121,27 @@ function dtb_support_rest_customer_reply( WP_REST_Request $request ): WP_REST_Re
 		'event_id' => $event_id,
 		'message'  => __( 'Your reply has been sent.', 'drywall-toolbox' ),
 	], 201 );
+}
+
+/**
+ * Generate an expiring signed token for the public customer reply endpoint.
+ *
+ * Token format: "{expires}:{hmac-sha256}"
+ * The HMAC covers "ticket_id:customer_email:expires" using AUTH_KEY.
+ *
+ * @param int    $ticket_id
+ * @param string $customer_email
+ * @param int    $ttl  Token lifetime in seconds. Default: 30 days.
+ * @return string
+ */
+function dtb_support_generate_public_reply_token( int $ticket_id, string $customer_email, int $ttl = 0 ): string {
+	if ( $ttl <= 0 ) {
+		$ttl = (int) apply_filters(
+			'dtb_support_public_reply_token_ttl',
+			defined( 'DTB_SUPPORT_PUBLIC_REPLY_TOKEN_TTL' ) ? DTB_SUPPORT_PUBLIC_REPLY_TOKEN_TTL : ( 30 * DAY_IN_SECONDS )
+		);
+	}
+	$expires = time() + $ttl;
+	$hmac    = hash_hmac( 'sha256', $ticket_id . ':' . $customer_email . ':' . $expires, AUTH_KEY );
+	return $expires . ':' . $hmac;
 }

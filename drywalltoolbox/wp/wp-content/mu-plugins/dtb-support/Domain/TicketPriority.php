@@ -33,6 +33,16 @@ function dtb_support_priority_label( string $priority ): string {
 }
 
 /**
+ * Return whether a given priority slug is valid.
+ *
+ * @param string $priority
+ * @return bool
+ */
+function dtb_support_is_valid_priority( string $priority ): bool {
+	return array_key_exists( $priority, dtb_support_all_priorities() );
+}
+
+/**
  * Return the default priority slug for new tickets.
  *
  * @return string

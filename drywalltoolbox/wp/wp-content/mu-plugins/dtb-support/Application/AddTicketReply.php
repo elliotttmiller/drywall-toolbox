@@ -43,7 +43,8 @@ function dtb_support_add_reply(
 	// Visibility: internal notes are operator-only; customer replies are public.
 	$visibility = 'customer' === $actor_type ? 'all' : ( $is_internal ? 'operator' : 'all' );
 
-	$event_type = 'customer' === $actor_type ? 'reply.customer' : ( $is_internal ? 'note.added' : 'reply.staff' );
+	// Use canonical event names: customer reply goes to staff; staff reply goes to customer.
+	$event_type = 'customer' === $actor_type ? 'ticket.reply_staff' : ( $is_internal ? 'ticket.note_added' : 'ticket.reply_customer' );
 
 	$event = dtb_support_build_event( $ticket_id, $event_type, [
 		'actor_type' => $actor_type,

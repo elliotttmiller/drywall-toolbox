@@ -37,7 +37,7 @@ function dtb_support_do_transition( int $ticket_id, string $new_status, string $
 
 	// Append an internal note if provided.
 	if ( '' !== trim( $note ) ) {
-		dtb_support_append_event( dtb_support_build_event( $ticket_id, 'note.added', [
+		dtb_support_append_event( dtb_support_build_event( $ticket_id, 'ticket.note_added', [
 			'actor_type' => $actor_id ? 'staff' : 'system',
 			'actor_id'   => $actor_id ?: null,
 			'source'     => 'status_transition',
