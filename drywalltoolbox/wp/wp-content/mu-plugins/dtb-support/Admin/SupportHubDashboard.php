@@ -2,411 +2,194 @@
 /**
  * Admin — SupportHubDashboard
  *
- * Single-page Support Hub: KPI strip, status tabs, toolbar, ticket table
- * with inline expand rows and pagination.
- *
- * Routing: when ?ticket_id is present the detail page is rendered instead.
+ * Command center shell for the rebuilt support experience.
  *
  * @package drywall-toolbox
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ---------------------------------------------------------------------------
-// Dashboard page
-// ---------------------------------------------------------------------------
-
 function dtb_support_render_dashboard_page(): void {
-	if ( ! current_user_can( 'dtb_manage_support' ) && ! current_user_can( 'manage_options' ) ) {
-		wp_die( 'You do not have permission to view this page.' );
-	}
-
-	// Route to detail page when a ticket_id param is present.
-	if ( ! empty( $_GET['ticket_id'] ) ) {
-		dtb_support_render_ticket_detail_page( absint( $_GET['ticket_id'] ) );
-		return;
-	}
-
-	// ── Query params ──────────────────────────────────────────────────────────
-	$status_filter   = sanitize_text_field( $_GET['status']   ?? '' );
-	$type_filter     = sanitize_text_field( $_GET['type']     ?? '' );
-	$priority_filter = sanitize_text_field( $_GET['priority'] ?? '' );
-	$search          = sanitize_text_field( $_GET['s']        ?? '' );
-	$current_page    = max( 1, (int) ( $_GET['paged'] ?? 1 ) );
-	$per_page        = 25;
-
-	// ── Data ──────────────────────────────────────────────────────────────────
-	$kpis   = dtb_support_get_kpis();
-	$counts = dtb_support_count_by_status();
-
-	$query = dtb_support_query_tickets( [
-		'status'   => $status_filter,
-		'type'     => $type_filter,
-		'priority' => $priority_filter,
-		'search'   => $search,
-		'page'     => $current_page,
-		'per_page' => $per_page,
-		'order_by' => 'created_at',
-		'order'    => 'DESC',
-	] );
-
-	$tickets    = array_map( 'dtb_support_project_ticket', $query['tickets'] );
-	$total      = (int) $query['total'];
-	$page_count = (int) $query['page_count'];
-	$statuses   = dtb_support_all_statuses();
-	$types      = dtb_support_all_types();
-	$priorities = dtb_support_all_priorities();
-
-	$base_url      = admin_url( 'admin.php?page=dtb-support' );
-	$settings_url  = admin_url( 'admin.php?page=dtb-support-settings' );
-	$total_all     = (int) array_sum( $counts );
-	$poll_interval = max( 0, (int) get_option( 'dtb_support_poll_interval', 60 ) );
-	?>
-<div class="dtb-wrap">
-
-	<!-- ── Top Bar ──────────────────────────────────────────────────────────── -->
-	<div class="dtb-topbar">
-		<div class="dtb-topbar__left">
-			<h1 class="dtb-topbar__title">Support Hub</h1>
-			<p class="dtb-topbar__sub"><?php echo esc_html( sprintf( '%d tickets total', $total_all ) ); ?></p>
-		</div>
-		<div class="dtb-topbar__actions">
-			<a href="<?php echo esc_url( $settings_url ); ?>" class="dtb-btn dtb-btn--ghost dtb-btn--sm">Settings</a>
-		</div>
-	</div>
-
-	<!-- ── KPI Strip ────────────────────────────────────────────────────────── -->
-	<div class="dtb-kpi-strip" id="dtb-kpi-strip">
-		<?php dtb_support_render_kpi_strip( $kpis ); ?>
-	</div>
-
-	<!-- ── Main card ────────────────────────────────────────────────────────── -->
-	<div class="dtb-card">
-
-		<!-- Status tabs -->
-		<div class="dtb-tabs">
-			<?php
-			$all_url = $base_url;
-			if ( $type_filter )     $all_url = add_query_arg( 'type',     $type_filter,     $all_url );
-			if ( $priority_filter ) $all_url = add_query_arg( 'priority', $priority_filter, $all_url );
-			if ( $search )          $all_url = add_query_arg( 's',        $search,          $all_url );
-			?>
-			<a href="<?php echo esc_url( $all_url ); ?>"
-				class="dtb-tab <?php echo '' === $status_filter ? 'dtb-tab--active' : ''; ?>">
-				All <span class="dtb-tab__count"><?php echo esc_html( $total_all ); ?></span>
-			</a>
-			<?php foreach ( $statuses as $slug => $label ) :
-				$cnt     = (int) ( $counts[ $slug ] ?? 0 );
-				$tab_url = add_query_arg(
-					array_filter( [
-						'status'   => $slug,
-						'type'     => $type_filter     ?: null,
-						'priority' => $priority_filter ?: null,
-						's'        => $search          ?: null,
-					] ),
-					$base_url
-				);
-				?>
-				<a href="<?php echo esc_url( $tab_url ); ?>"
-					class="dtb-tab <?php echo $status_filter === $slug ? 'dtb-tab--active' : ''; ?>">
-					<span class="dtb-tab__dot dtb-tab__dot--<?php echo esc_attr( $slug ); ?>"></span>
-					<?php echo esc_html( $label ); ?>
-					<span class="dtb-tab__count"><?php echo esc_html( $cnt ); ?></span>
-				</a>
-			<?php endforeach; ?>
-		</div>
-
-		<!-- Toolbar: search + filters -->
-		<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
-			<input type="hidden" name="page" value="dtb-support">
-			<?php if ( $status_filter ) : ?>
-				<input type="hidden" name="status" value="<?php echo esc_attr( $status_filter ); ?>">
-			<?php endif; ?>
-			<div class="dtb-toolbar">
-				<div class="dtb-toolbar__search-wrap">
-					<span class="dtb-toolbar__search-icon">
-						<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-							<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-						</svg>
-					</span>
-					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>"
-						class="dtb-search" placeholder="Search tickets...">
-				</div>
-
-				<select name="type" class="dtb-select">
-					<option value="">All Types</option>
-					<?php foreach ( $types as $slug => $label ) : ?>
-						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $type_filter, $slug ); ?>>
-							<?php echo esc_html( $label ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-
-				<select name="priority" class="dtb-select">
-					<option value="">All Priorities</option>
-					<?php foreach ( $priorities as $slug => $label ) : ?>
-						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $priority_filter, $slug ); ?>>
-							<?php echo esc_html( $label ); ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-
-				<button type="submit" class="dtb-btn dtb-btn--ghost dtb-btn--sm">Filter</button>
-
-				<?php if ( $search || $type_filter || $priority_filter ) : ?>
-					<a href="<?php echo esc_url( $status_filter ? add_query_arg( 'status', $status_filter, $base_url ) : $base_url ); ?>"
-						class="dtb-btn dtb-btn--ghost dtb-btn--sm">Clear</a>
-				<?php endif; ?>
-
-				<div class="dtb-toolbar__spacer"></div>
-
-				<span class="dtb-toolbar__count">
-					<?php
-					if ( $total > 0 ) {
-						$from = ( ( $current_page - 1 ) * $per_page ) + 1;
-						$to   = min( $current_page * $per_page, $total );
-						echo esc_html( sprintf( '%d-%d of %d', $from, $to, $total ) );
-					} else {
-						echo '0 results';
-					}
-					?>
-				</span>
-			</div>
-		</form>
-
-		<!-- Tickets table -->
-		<table class="dtb-table" id="dtb-tickets-table">
-			<thead>
-				<tr>
-					<th style="width:128px">Ticket ID</th>
-					<th>Subject</th>
-					<th style="width:130px">Status</th>
-					<th style="width:90px">Priority</th>
-					<th style="width:100px">Type</th>
-					<th style="width:140px">Customer</th>
-					<th style="width:120px">Assigned</th>
-					<th style="width:62px">Action Due</th>
-					<th style="width:72px">Age</th>
-					<th style="width:34px"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php if ( empty( $tickets ) ) : ?>
-					<tr>
-						<td colspan="10">
-							<div class="dtb-empty">
-								<span class="dtb-empty__icon">&#127881;</span>
-								<p class="dtb-empty__msg">
-									<?php if ( $search || $status_filter || $type_filter || $priority_filter ) : ?>
-										No tickets match your filters.
-									<?php else : ?>
-										No tickets yet &#8212; you're all caught up!
-									<?php endif; ?>
-								</p>
-								<?php if ( $search || $type_filter || $priority_filter ) : ?>
-									<p class="dtb-empty__sub">
-										<a href="<?php echo esc_url( $status_filter ? add_query_arg( 'status', $status_filter, $base_url ) : $base_url ); ?>">
-											Clear filters
-										</a>
-									</p>
-								<?php endif; ?>
-							</div>
-						</td>
-					</tr>
-				<?php else : ?>
-					<?php foreach ( $tickets as $t ) :
-						$detail_url    = add_query_arg( 'ticket_id', $t['id'], $base_url );
-						$assigned_name = $t['assigned_user']['display_name'] ?? '&#8212;';
-						$action_state  = $t['action_state'] ?? '';
-						$action_label  = $t['action_state_label'] ?? '';
-						?>
-						<tr id="dtb-row-<?php echo absint( $t['id'] ); ?>">
-							<td>
-								<a href="<?php echo esc_url( $detail_url ); ?>" class="dtb-tid">
-									<?php echo esc_html( $t['ticket_number'] ); ?>
-								</a>
-							</td>
-							<td>
-								<a href="<?php echo esc_url( $detail_url ); ?>" class="dtb-subject">
-									<?php echo esc_html( $t['subject'] ); ?>
-								</a>
-								<div class="dtb-subject-meta"><?php echo esc_html( $t['customer_email'] ); ?></div>
-							</td>
-							<td>
-								<span class="dtb-status">
-									<span class="dtb-status__dot dtb-status__dot--<?php echo esc_attr( $t['status'] ); ?>"></span>
-									<?php echo esc_html( $t['status_label'] ?? $t['status'] ); ?>
-								</span>
-							</td>
-							<td>
-								<span class="dtb-pri dtb-pri--<?php echo esc_attr( $t['priority'] ); ?>">
-									<?php echo esc_html( $t['priority_label'] ?? $t['priority'] ); ?>
-								</span>
-							</td>
-							<td>
-								<span class="dtb-type">
-									<?php echo esc_html( $t['type_label'] ?? ( $t['ticket_type'] ?? '' ) ); ?>
-								</span>
-							</td>
-							<td><?php echo esc_html( $t['customer_name'] ); ?></td>
-							<td><?php echo esc_html( $assigned_name ); ?></td>
-							<td>
-								<?php if ( $action_state && 'ok' !== $action_state ) : ?>
-									<span class="dtb-action-state dtb-action-state--<?php echo esc_attr( $action_state ); ?>">
-										<?php echo esc_html( $action_label ); ?>
-									</span>
-								<?php elseif ( $action_state ) : ?>
-									<span class="dtb-action-state dtb-action-state--ok">
-										<?php echo esc_html( $action_label ); ?>
-									</span>
-								<?php else : ?>&mdash;<?php endif; ?>
-							</td>
-							<td><?php echo esc_html( $t['age_label'] ?? '&mdash;' ); ?></td>
-							<td>
-								<button
-									id="dtb-expbtn-<?php echo absint( $t['id'] ); ?>"
-									class="dtb-expand-btn"
-									onclick="dtbSupport.toggleRow(<?php echo absint( $t['id'] ); ?>)"
-									title="Preview">
-									<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-										<polyline points="6 9 12 15 18 9"/>
-									</svg>
-								</button>
-							</td>
-						</tr>
-
-						<!-- Inline expand row -->
-						<tr id="dtb-exp-<?php echo absint( $t['id'] ); ?>" class="dtb-expand-row">
-							<td colspan="10">
-								<div class="dtb-expand-inner">
-									<div>
-										<div class="dtb-mini-thread">
-											<!-- Populated by dtbSupport.loadMiniThread() -->
-										</div>
-									</div>
-									<div class="dtb-quick-actions">
-										<a href="<?php echo esc_url( $detail_url ); ?>" class="dtb-view-full-btn">
-											View Full Ticket &rarr;
-										</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</tbody>
-		</table>
-
-		<!-- Pagination footer -->
-		<?php if ( $page_count > 1 || $total > 0 ) : ?>
-			<div class="dtb-table-footer">
-				<span>
-					<?php
-					if ( $total > 0 ) {
-						$from = ( ( $current_page - 1 ) * $per_page ) + 1;
-						$to   = min( $current_page * $per_page, $total );
-						echo esc_html( sprintf( 'Showing %d-%d of %d tickets', $from, $to, $total ) );
-					}
-					?>
-				</span>
-				<?php if ( $page_count > 1 ) : ?>
-					<div class="dtb-pager">
-						<?php
-						$q_args = array_filter( [
-							'page'     => 'dtb-support',
-							'status'   => $status_filter   ?: null,
-							'type'     => $type_filter     ?: null,
-							'priority' => $priority_filter ?: null,
-							's'        => $search          ?: null,
-						] );
-						for ( $p = 1; $p <= $page_count; $p++ ) :
-							$page_url = add_query_arg( array_merge( $q_args, [ 'paged' => $p ] ), admin_url( 'admin.php' ) );
-							?>
-							<a href="<?php echo esc_url( $page_url ); ?>"
-								class="dtb-page-btn <?php echo $p === $current_page ? 'dtb-page-btn--active' : ''; ?>">
-								<?php echo esc_html( $p ); ?>
-							</a>
-						<?php endfor; ?>
-					</div>
-				<?php endif; ?>
-			</div>
-		<?php endif; ?>
-
-	</div><!-- .dtb-card -->
-
-	<?php if ( $poll_interval >= 30 ) : ?>
-	<script>
-	(function(){
-		var iv = <?php echo absint( $poll_interval ); ?> * 1000;
-		setInterval(async function(){
-			var d = await dtbSupport.request('/support/kpis');
-			if (!d) return;
-			var strip = document.getElementById('dtb-kpi-strip');
-			if (strip) strip.innerHTML = dtbBuildKpiStrip(d);
-		}, iv);
-
-		function dtbBuildKpiStrip(k){
-			var cards = [
-				{l:'Total',           v: k.total          || 0, w: false},
-				{l:'Open',            v: k.open           || 0, w: (k.open||0) > 0},
-				{l:'Pending Staff',   v: k.pending_staff  || 0, w: (k.pending_staff||0) > 0},
-				{l:'In Progress',     v: k.in_progress    || 0, w: false},
-				{l:'Urgent',          v: k.urgent         || 0, w: (k.urgent||0) > 0},
-				{l:'Overdue',         v: k.overdue_count  || 0, w: (k.overdue_count||0) > 0},
-				{l:'Due Soon',        v: k.due_soon_count || 0, w: (k.due_soon_count||0) > 0},
-				{l:'Needs Reply',     v: k.needs_reply    || 0, w: (k.needs_reply||0) > 0},
-				{l:'Email Issues',    v: k.email_failures || 0, w: (k.email_failures||0) > 0},
-			];
-			return cards.map(function(c){
-				var cls = 'dtb-kpi-card' + (c.w && c.v > 0 ? ' dtb-kpi-card--warn' : '');
-				return '<div class="' + cls + '"><div class="dtb-kpi-val">' + c.v
-					+ '</div><div class="dtb-kpi-lbl">' + c.l + '</div></div>';
-			}).join('');
-		}
-	}());
-	</script>
-	<?php endif; ?>
-
-</div><!-- .dtb-wrap -->
-	<?php
+if ( ! current_user_can( 'dtb_manage_support' ) && ! current_user_can( 'manage_options' ) ) {
+wp_die( 'You do not have permission to view this page.' );
 }
 
-// ---------------------------------------------------------------------------
-// KPI strip helper (shared by PHP render + JS rebuild poll)
-// ---------------------------------------------------------------------------
+if ( ! empty( $_GET['ticket_id'] ) ) {
+dtb_support_render_ticket_detail_page( absint( $_GET['ticket_id'] ) );
+return;
+}
 
-function dtb_support_render_kpi_strip( array $kpis ): void {
-	$cards = [
-		[ 'label' => 'Total',          'value' => $kpis['total']          ?? 0, 'warn' => false ],
-		[ 'label' => 'Open',           'value' => $kpis['open']           ?? 0, 'warn' => ( $kpis['open'] ?? 0 ) > 0 ],
-		[ 'label' => 'Pending Staff',  'value' => $kpis['pending_staff']  ?? 0, 'warn' => ( $kpis['pending_staff'] ?? 0 ) > 0 ],
-		[ 'label' => 'In Progress',    'value' => $kpis['in_progress']    ?? 0, 'warn' => false ],
-		[ 'label' => 'Urgent',         'value' => $kpis['urgent']         ?? 0, 'warn' => ( $kpis['urgent'] ?? 0 ) > 0 ],
-		[ 'label' => 'Overdue',        'value' => $kpis['overdue_count']  ?? 0, 'warn' => ( $kpis['overdue_count'] ?? 0 ) > 0 ],
-		[ 'label' => 'Due Soon',       'value' => $kpis['due_soon_count'] ?? 0, 'warn' => ( $kpis['due_soon_count'] ?? 0 ) > 0 ],
-		[ 'label' => 'Needs Reply',    'value' => $kpis['needs_reply']    ?? 0, 'warn' => ( $kpis['needs_reply'] ?? 0 ) > 0 ],
-		[ 'label' => 'Email Issues',   'value' => $kpis['email_failures'] ?? 0, 'warn' => ( $kpis['email_failures'] ?? 0 ) > 0 ],
-		[
-			'label' => 'Avg Response',
-			'value' => isset( $kpis['avg_first_response_h'] )
-				? number_format_i18n( $kpis['avg_first_response_h'], 1 ) . 'h'
-				: '&mdash;',
-			'warn' => false,
-		],
-		[ 'label' => 'Resolved Today', 'value' => $kpis['today_resolved'] ?? ( $kpis['resolved_today'] ?? 0 ), 'warn' => false ],
-	];
+$initial_queue = (string) get_option( 'dtb_support_default_queue', 'needs_reply' );
+$queue_counts  = function_exists( 'dtb_support_get_queue_counts' ) ? dtb_support_get_queue_counts() : [];
+$kpis          = dtb_support_get_kpis();
+$settings_url  = admin_url( 'admin.php?page=dtb-support-settings' );
+?>
+<div class="dtb-wrap">
+<div class="dtb-cc-shell">
+<aside class="dtb-cc-rail">
+<?php dtb_support_render_queue_rail( $queue_counts, $initial_queue ); ?>
+</aside>
 
-	foreach ( $cards as $card ) {
-		$cls = 'dtb-kpi-card';
-		if ( $card['warn'] && $card['value'] > 0 ) {
-			$cls .= ' dtb-kpi-card--warn';
-		}
-		printf(
-			'<div class="%s"><div class="dtb-kpi-val">%s</div><div class="dtb-kpi-lbl">%s</div></div>',
-			esc_attr( $cls ),
-			esc_html( (string) $card['value'] ),
-			esc_html( $card['label'] )
-		);
-	}
+<main class="dtb-cc-main">
+<div class="dtb-topbar">
+<h1 class="dtb-topbar__title">Support Command Center</h1>
+<p class="dtb-topbar__queue">Queue: <strong id="dtb-active-queue-label"><?php echo esc_html( dtb_support_queue_label( $initial_queue ) ); ?></strong></p>
+<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+<button type="button" class="dtb-btn dtb-btn--ghost dtb-btn--sm" onclick="dtbSupport.refresh()">Refresh</button>
+<a href="<?php echo esc_url( $settings_url ); ?>" class="dtb-btn dtb-btn--ghost dtb-btn--sm">Settings</a>
+</div>
+</div>
+
+<div class="dtb-kpi-strip" id="dtb-kpi-strip">
+<?php dtb_support_render_command_center_kpis( $kpis ); ?>
+</div>
+
+<div class="dtb-toolbar">
+<input type="search" id="dtb-search" class="dtb-search" placeholder="Search subject, email, ticket #" oninput="dtbSupport.applyFilters()">
+<select id="dtb-filter-type" class="dtb-select" onchange="dtbSupport.applyFilters()">
+<option value="">All Types</option>
+<?php foreach ( dtb_support_all_types() as $slug => $label ) : ?>
+<option value="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $label ); ?></option>
+<?php endforeach; ?>
+</select>
+<select id="dtb-filter-priority" class="dtb-select" onchange="dtbSupport.applyFilters()">
+<option value="">All Priorities</option>
+<?php foreach ( dtb_support_all_priorities() as $slug => $label ) : ?>
+<option value="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $label ); ?></option>
+<?php endforeach; ?>
+</select>
+<button type="button" class="dtb-btn dtb-btn--ghost dtb-btn--sm" id="dtb-clear-filters" onclick="dtbSupport.clearFilters()" style="display:none;">Clear</button>
+<div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+<span id="dtb-ticket-count" style="font-size:12px;color:#718096;">Loading…</span>
+</div>
+</div>
+
+<div class="dtb-toolbar" id="dtb-bulk-bar" style="display:none;border-top:1px solid #f0f2f5;">
+<strong id="dtb-bulk-count">0 selected</strong>
+<select id="dtb-bulk-action" class="dtb-select">
+<option value="">Bulk action…</option>
+<option value="assign_me">Assign to me</option>
+<option value="set_status:in_progress">Set status: In Progress</option>
+<option value="set_status:resolved">Set status: Resolved</option>
+<option value="set_priority:urgent">Set priority: Urgent</option>
+<option value="set_priority:high">Set priority: High</option>
+<option value="unsnooze">Unsnooze</option>
+</select>
+<button type="button" class="dtb-btn dtb-btn--primary dtb-btn--sm" onclick="dtbSupport.executeBulkAction()">Apply</button>
+<button type="button" class="dtb-btn dtb-btn--ghost dtb-btn--sm" onclick="dtbSupport.clearSelection()">Clear</button>
+</div>
+
+<section class="dtb-ticket-list">
+<div class="dtb-loading" id="dtb-list-loading"><div class="dtb-spinner"></div>Loading queue…</div>
+<div class="dtb-empty" id="dtb-empty-state" style="display:none;">
+<span class="dtb-empty__icon">📭</span>
+<p class="dtb-empty__msg">No tickets in this queue.</p>
+<p class="dtb-empty__sub">Try another queue or clear filters.</p>
+</div>
+<table class="dtb-table" id="dtb-tickets-table" style="display:none;">
+<thead>
+<tr>
+<th style="width:36px"><input id="dtb-select-all" type="checkbox" onchange="dtbSupport.selectAll(this.checked)"></th>
+<th style="width:120px">Ticket #</th>
+<th>Subject</th>
+<th style="width:120px">Status</th>
+<th style="width:90px">Priority</th>
+<th style="width:110px">Type</th>
+<th style="width:120px">Assigned</th>
+<th style="width:120px">SLA</th>
+<th style="width:80px">Age</th>
+<th style="width:110px"></th>
+</tr>
+</thead>
+<tbody id="dtb-tickets-tbody"></tbody>
+</table>
+</section>
+
+<div class="dtb-table-footer" id="dtb-pagination" style="display:none;">
+<div class="dtb-pager">
+<button type="button" class="dtb-btn dtb-btn--ghost dtb-btn--sm" id="dtb-prev-page" onclick="dtbSupport.prevPage()">← Prev</button>
+<span id="dtb-page-info">Page 1 of 1</span>
+<button type="button" class="dtb-btn dtb-btn--ghost dtb-btn--sm" id="dtb-next-page" onclick="dtbSupport.nextPage()">Next →</button>
+</div>
+<div id="dtb-last-refresh">Waiting for first refresh…</div>
+</div>
+</main>
+
+<aside class="dtb-cc-context" id="dtb-context-panel">
+<div class="dtb-ctx-section">
+<div class="dtb-ctx-section__title">Command Center</div>
+<div class="dtb-ctx-row"><span class="dtb-ctx-label">Selected queue</span><span class="dtb-ctx-value" id="dtb-context-queue"><?php echo esc_html( dtb_support_queue_label( $initial_queue ) ); ?></span></div>
+<div class="dtb-ctx-row"><span class="dtb-ctx-label">Auto-refresh</span><span class="dtb-ctx-value"><?php echo esc_html( max( 30, (int) get_option( 'dtb_support_poll_interval', 60 ) ) ); ?>s</span></div>
+<div class="dtb-ctx-row"><span class="dtb-ctx-label">Shortcuts</span><span class="dtb-ctx-value">/ search · r refresh · esc close</span></div>
+</div>
+<div class="dtb-ctx-section">
+<div class="dtb-ctx-section__title">Queue summary</div>
+<?php foreach ( dtb_support_queue_rail_items() as $queue => $meta ) : ?>
+<div class="dtb-ctx-row"><span class="dtb-ctx-label"><?php echo esc_html( $meta['label'] ); ?></span><span class="dtb-ctx-value"><?php echo esc_html( (string) ( $queue_counts[ $queue ] ?? 0 ) ); ?></span></div>
+<?php endforeach; ?>
+</div>
+<div class="dtb-ctx-section">
+<div class="dtb-ctx-section__title">Selected ticket</div>
+<p class="dtb-empty__sub" style="margin:0;">Open a ticket to load customer context, actions, and reply tools.</p>
+</div>
+</aside>
+</div>
+
+<div id="dtb-detail-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:99998;" onclick="dtbSupport.closeDetail(event)">
+<div id="dtb-detail-panel" style="position:absolute;inset:32px 32px 32px 180px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 80px rgba(15,23,42,.35);" onclick="event.stopPropagation()">
+<div class="dtb-loading" id="dtb-detail-loading"><div class="dtb-spinner"></div>Loading ticket…</div>
+<div id="dtb-detail-content" style="display:none;height:100%;"></div>
+</div>
+</div>
+<div id="dtb-toast-container" style="position:fixed;right:24px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:99999;"></div>
+</div>
+<?php
+}
+
+function dtb_support_queue_rail_items(): array {
+return [
+'needs_reply'          => [ 'label' => 'Needs Reply', 'badge_class' => '' ],
+'sla_breached'        => [ 'label' => 'SLA Breached', 'badge_class' => 'dtb-rail-badge--urgent' ],
+'sla_at_risk'         => [ 'label' => 'SLA At Risk', 'badge_class' => 'dtb-rail-badge--warning' ],
+'unassigned'          => [ 'label' => 'Unassigned', 'badge_class' => '' ],
+'urgent'              => [ 'label' => 'Urgent', 'badge_class' => 'dtb-rail-badge--urgent' ],
+'in_progress'         => [ 'label' => 'In Progress', 'badge_class' => '' ],
+'waiting_on_customer' => [ 'label' => 'Waiting on Customer', 'badge_class' => '' ],
+'snoozed'             => [ 'label' => 'Snoozed', 'badge_class' => '' ],
+'resolved_pending_close' => [ 'label' => 'Resolved', 'badge_class' => '' ],
+'all_active'          => [ 'label' => 'All Active', 'badge_class' => '' ],
+];
+}
+
+function dtb_support_queue_label( string $queue ): string {
+$items = dtb_support_queue_rail_items();
+return $items[ $queue ]['label'] ?? ucfirst( str_replace( '_', ' ', $queue ) );
+}
+
+function dtb_support_render_queue_rail( array $queue_counts, string $active_queue ): void {
+?>
+<div class="dtb-rail-header">Queues</div>
+<?php foreach ( dtb_support_queue_rail_items() as $queue => $meta ) : ?>
+<a href="#" class="dtb-rail-item <?php echo $queue === $active_queue ? 'is-active' : ''; ?>" data-queue="<?php echo esc_attr( $queue ); ?>">
+<span><?php echo esc_html( $meta['label'] ); ?></span>
+<span class="dtb-rail-badge <?php echo esc_attr( $meta['badge_class'] ); ?>"><?php echo esc_html( (string) ( $queue_counts[ $queue ] ?? 0 ) ); ?></span>
+</a>
+<?php endforeach; ?>
+<?php
+}
+
+function dtb_support_render_command_center_kpis( array $kpis ): void {
+$cards = [
+[ 'label' => 'Active', 'value' => $kpis['active_total'] ?? $kpis['total'] ?? 0, 'class' => 'ok' ],
+[ 'label' => 'Needs Reply', 'value' => $kpis['needs_reply'] ?? 0, 'class' => ( (int) ( $kpis['needs_reply'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+[ 'label' => 'SLA Breached', 'value' => $kpis['sla_breached'] ?? $kpis['sla_breach'] ?? 0, 'class' => ( (int) ( $kpis['sla_breached'] ?? $kpis['sla_breach'] ?? 0 ) > 0 ) ? 'breach' : 'ok' ],
+[ 'label' => 'SLA At Risk', 'value' => $kpis['sla_at_risk'] ?? 0, 'class' => ( (int) ( $kpis['sla_at_risk'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+[ 'label' => 'Unassigned', 'value' => $kpis['unassigned'] ?? 0, 'class' => ( (int) ( $kpis['unassigned'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+[ 'label' => 'Urgent', 'value' => $kpis['urgent'] ?? 0, 'class' => ( (int) ( $kpis['urgent'] ?? 0 ) > 0 ) ? 'breach' : 'ok' ],
+[ 'label' => 'Email Failures', 'value' => $kpis['email_failures'] ?? 0, 'class' => ( (int) ( $kpis['email_failures'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+];
+
+foreach ( $cards as $card ) {
+echo '<div class="dtb-kpi dtb-kpi--' . esc_attr( $card['class'] ) . '"><div class="dtb-kpi__val">' . esc_html( (string) $card['value'] ) . '</div><div class="dtb-kpi__label">' . esc_html( $card['label'] ) . '</div></div>';
+}
 }
