@@ -268,6 +268,7 @@ function dtb_support_get_kpis(): array {
 		'unassigned'       => $unassigned,
 		'needs_reply'      => $needs_reply,
 		'overdue_count'    => $overdue_count,
+		'sla_breach'       => $overdue_count,
 		'due_soon_count'   => $due_soon_count,
 		'email_failures'   => $email_failures,
 		'today_new'        => $today_new,

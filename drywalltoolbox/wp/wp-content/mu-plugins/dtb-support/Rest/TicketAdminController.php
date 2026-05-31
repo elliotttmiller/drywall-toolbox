@@ -132,7 +132,6 @@ function dtb_support_register_admin_ticket_routes(): void {
 				'macro_name'       => [ 'type' => 'string', 'required' => false ],
 				'subject_template' => [ 'type' => 'string', 'required' => false, 'default' => '' ],
 				'body_template'    => [ 'type' => 'string', 'required' => false ],
-				'variables'        => [ 'required' => false ],
 				'category'         => [ 'type' => 'string', 'required' => false, 'default' => 'general' ],
 				'is_active'        => [ 'type' => 'boolean', 'required' => false, 'default' => true ],
 				'sort_order'       => [ 'type' => 'integer', 'required' => false, 'default' => 0 ],
@@ -151,7 +150,6 @@ function dtb_support_register_admin_ticket_routes(): void {
 				'macro_name'       => [ 'type' => 'string', 'required' => false ],
 				'subject_template' => [ 'type' => 'string', 'required' => false ],
 				'body_template'    => [ 'type' => 'string', 'required' => false ],
-				'variables'        => [ 'required' => false ],
 				'category'         => [ 'type' => 'string', 'required' => false ],
 				'is_active'        => [ 'type' => 'boolean', 'required' => false ],
 				'sort_order'       => [ 'type' => 'integer', 'required' => false ],
@@ -518,12 +516,14 @@ function dtb_support_rest_get_queues(): WP_REST_Response {
 	$raw = function_exists( 'dtb_support_get_queue_counts' )
 		? dtb_support_get_queue_counts()
 		: [];
+	$counts = function_exists( 'dtb_support_normalize_queue_counts' )
+		? dtb_support_normalize_queue_counts( $raw )
+		: $raw;
 
-	return new WP_REST_Response( [
-		'counts' => function_exists( 'dtb_support_normalize_queue_counts' )
-			? dtb_support_normalize_queue_counts( $raw )
-			: $raw,
-	], 200 );
+	$payload = $counts;
+	$payload['counts'] = $counts;
+
+	return new WP_REST_Response( $payload, 200 );
 }
 
 /**
@@ -941,7 +941,14 @@ function dtb_support_rest_get_health(): WP_REST_Response {
 		);
 	}
 
-	$next_scan = wp_next_scheduled( 'dtb_support_hourly_sla_scan' );
+	$next_scan = 0;
+	foreach ( [ 'dtb_support_hourly_sla_scan', 'dtb_support_sla_hourly_scan', 'dtb_support_sla_scan_hourly' ] as $scan_hook ) {
+		$scheduled = wp_next_scheduled( $scan_hook );
+		if ( $scheduled ) {
+			$next_scan = (int) $scheduled;
+			break;
+		}
+	}
 	$last_scan = get_option( 'dtb_support_last_sla_scan', '' );
 
 	return new WP_REST_Response( [

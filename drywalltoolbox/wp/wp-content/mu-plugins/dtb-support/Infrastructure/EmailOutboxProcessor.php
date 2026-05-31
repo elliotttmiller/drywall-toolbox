@@ -38,9 +38,12 @@ function dtb_support_process_email_outbox(): void {
 	if ( empty( $items ) ) {
 		return;
 	}
+	if ( ! function_exists( 'dtb_support_outbox_claim' ) ) {
+		return;
+	}
 
 	foreach ( $items as $item ) {
-		if ( function_exists( 'dtb_support_outbox_claim' ) && ! dtb_support_outbox_claim( (int) $item->id ) ) {
+		if ( ! dtb_support_outbox_claim( (int) $item->id ) ) {
 			continue;
 		}
 

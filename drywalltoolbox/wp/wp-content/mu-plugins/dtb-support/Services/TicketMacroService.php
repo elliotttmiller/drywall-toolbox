@@ -70,7 +70,7 @@ function dtb_support_save_macro( array $data, int $macro_id = 0 ): int|WP_Error 
 	$macro_name = sanitize_text_field( $data['macro_name'] ?? ( $existing->macro_name ?? '' ) );
 	$body       = wp_kses_post( $data['body_template'] ?? ( $existing->body_template ?? '' ) );
 	if ( '' === $macro_name || '' === trim( wp_strip_all_tags( $body ) ) ) {
-		return new WP_Error( 'dtb_support_invalid_macro', __( 'Macro name and body template are required.', 'drywall-toolbox' ) );
+		return new WP_Error( 'dtb_support_invalid_macro', __( 'Macro name and body template are required.', 'drywall-toolbox' ), [ 'status' => 400 ] );
 	}
 
 	$subject_template = sanitize_text_field( $data['subject_template'] ?? ( $existing->subject_template ?? '' ) );

@@ -357,7 +357,9 @@ function dtb_support_query_queue( string $queue, array $args = [] ): array {
 	$rows_sql  = "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY {$order_by} LIMIT %d OFFSET %d";
 	// phpcs:enable
 
-	$total   = (int) $wpdb->get_var( $wpdb->prepare( $total_sql, ...$params ) );
+	$total   = empty( $params )
+		? (int) $wpdb->get_var( $total_sql )
+		: (int) $wpdb->get_var( $wpdb->prepare( $total_sql, ...$params ) );
 	$tickets = $wpdb->get_results( $wpdb->prepare( $rows_sql, ...array_merge( $params, [ $per_page, $offset ] ) ) );
 
 	return [

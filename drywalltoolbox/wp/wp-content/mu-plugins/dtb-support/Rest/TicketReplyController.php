@@ -44,16 +44,34 @@ add_action( 'rest_api_init', 'dtb_support_register_reply_routes' );
  */
 function dtb_support_staff_reply_permission( WP_REST_Request $request ): bool|WP_Error {
 	$is_internal = (bool) $request->get_param( 'is_internal' );
+	$message     = $is_internal
+		? __( 'You do not have permission to add internal support notes.', 'drywall-toolbox' )
+		: __( 'You do not have permission to reply to support tickets.', 'drywall-toolbox' );
 
-	return dtb_support_rest_require_capabilities(
-		[
-			$is_internal ? 'dtb_add_support_notes' : 'dtb_reply_support_tickets',
-			'dtb_manage_support',
-		],
-		$is_internal
-			? __( 'You do not have permission to add internal support notes.', 'drywall-toolbox' )
-			: __( 'You do not have permission to reply to support tickets.', 'drywall-toolbox' )
-	);
+	if ( function_exists( 'dtb_support_rest_require_capabilities' ) ) {
+		return dtb_support_rest_require_capabilities(
+			[
+				$is_internal ? 'dtb_add_support_notes' : 'dtb_reply_support_tickets',
+				'dtb_manage_support',
+			],
+			$message
+		);
+	}
+
+	if ( ! is_user_logged_in() ) {
+		return new WP_Error( 'rest_forbidden', __( 'Authentication required.', 'drywall-toolbox' ), [ 'status' => 401 ] );
+	}
+
+	if ( current_user_can( 'manage_options' ) ) {
+		return true;
+	}
+
+	$cap = $is_internal ? 'dtb_add_support_notes' : 'dtb_reply_support_tickets';
+	if ( current_user_can( $cap ) || current_user_can( 'dtb_manage_support' ) ) {
+		return true;
+	}
+
+	return new WP_Error( 'rest_forbidden', $message, [ 'status' => 403 ] );
 }
 
 /**
