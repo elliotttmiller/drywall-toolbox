@@ -34,17 +34,14 @@ add_action( 'plugins_loaded', 'dtb_support_schedule_outbox_processor' );
  * Process pending outbox items. Called by WP-Cron every 5 minutes.
  */
 function dtb_support_process_email_outbox(): void {
-	global $wpdb;
-
 	$items = function_exists( 'dtb_support_outbox_get_pending' ) ? dtb_support_outbox_get_pending( 10 ) : [];
 	if ( empty( $items ) ) {
 		return;
 	}
 
-	$table = function_exists( 'dtb_support_outbox_table' ) ? dtb_support_outbox_table() : '';
 	foreach ( $items as $item ) {
-		if ( $table ) {
-			$wpdb->update( $table, [ 'status' => 'sending', 'updated_at' => gmdate( 'Y-m-d H:i:s' ) ], [ 'id' => (int) $item->id ] );
+		if ( function_exists( 'dtb_support_outbox_claim' ) && ! dtb_support_outbox_claim( (int) $item->id ) ) {
+			continue;
 		}
 
 		$headers = [];

@@ -8,6 +8,23 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Return the current action due-at timestamp for a ticket.
+ */
+function dtb_support_action_due_at( object $ticket ): ?string {
+	$due_at = empty( $ticket->first_reply_at )
+		? ( $ticket->sla_first_response_due ?? null )
+		: ( $ticket->sla_resolution_due ?? null );
+
+	if ( empty( $due_at ) ) {
+		$due_at = empty( $ticket->first_reply_at )
+			? dtb_support_compute_first_response_due( (string) $ticket->created_at, (string) $ticket->priority )
+			: dtb_support_compute_resolution_due( (string) $ticket->created_at, (string) $ticket->priority );
+	}
+
+	return ! empty( $due_at ) ? (string) $due_at : null;
+}
+
+/**
  * Project a raw DB ticket row into a fully-enriched admin view model.
  *
  * v2: includes action_due_at, action_state (not "sla"), priority_score,
@@ -46,7 +63,7 @@ function dtb_support_project_ticket( object $ticket ): array {
 	];
 
 	// Seconds until the action due time (negative = already overdue).
-	$action_due_at = ! empty( $ticket->sla_first_response_due ) ? (string) $ticket->sla_first_response_due : null;
+	$action_due_at = dtb_support_action_due_at( $ticket );
 	$seconds_until_due = null;
 	if ( $action_due_at && ! $is_resolved ) {
 		$seconds_until_due = strtotime( $action_due_at ) - time();
@@ -233,6 +250,12 @@ function dtb_support_get_kpis(): array {
 
 	return [
 		'total'            => $total,
+		'active_total'     => (int) (
+			( $by_status['open'] ?? 0 ) +
+			( $by_status['pending_customer'] ?? 0 ) +
+			( $by_status['pending_staff'] ?? 0 ) +
+			( $by_status['in_progress'] ?? 0 )
+		),
 		'open'             => $by_status['open']             ?? 0,
 		'pending_customer' => $by_status['pending_customer'] ?? 0,
 		'pending_staff'    => $by_status['pending_staff']    ?? 0,
@@ -250,7 +273,5 @@ function dtb_support_get_kpis(): array {
 		'today_new'        => $today_new,
 		'today_resolved'   => $today_resolved,
 		'schema_version'   => function_exists( 'dtb_support_db_version' ) ? dtb_support_db_version() : '0',
-		// Alias kept for backward-compat with any cached JS that reads sla_breach.
-		'sla_breach'       => $overdue_count,
 	];
 }

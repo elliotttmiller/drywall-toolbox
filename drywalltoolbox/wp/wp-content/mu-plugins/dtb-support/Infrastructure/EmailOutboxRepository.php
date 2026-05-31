@@ -16,6 +16,13 @@ function dtb_support_outbox_table(): string {
 }
 
 /**
+ * Return the stale sending timeout in seconds.
+ */
+function dtb_support_outbox_sending_timeout(): int {
+	return (int) apply_filters( 'dtb_support_outbox_sending_timeout', 15 * MINUTE_IN_SECONDS );
+}
+
+/**
  * Enqueue an outgoing message.
  *
  * @param array $message Message payload.
@@ -66,14 +73,49 @@ function dtb_support_outbox_get_pending( int $limit = 10 ): array {
 	global $wpdb;
 	$table = dtb_support_outbox_table();
 	$limit = max( 1, min( 100, $limit ) );
+	$stale_before = gmdate( 'Y-m-d H:i:s', time() - dtb_support_outbox_sending_timeout() );
 
 	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$rows = $wpdb->get_results( $wpdb->prepare(
-		"SELECT * FROM {$table} WHERE status = 'pending' AND (next_attempt_at IS NULL OR next_attempt_at <= UTC_TIMESTAMP()) ORDER BY created_at ASC LIMIT %d",
+		"SELECT * FROM {$table}
+			WHERE (
+				(status = 'pending' AND (next_attempt_at IS NULL OR next_attempt_at <= UTC_TIMESTAMP()))
+				OR (status = 'sending' AND updated_at <= %s)
+			)
+			ORDER BY COALESCE(next_attempt_at, created_at) ASC, created_at ASC
+			LIMIT %d",
+		$stale_before,
 		$limit
 	) );
 
 	return $rows ?: [];
+}
+
+/**
+ * Claim an outbox item for sending.
+ */
+function dtb_support_outbox_claim( int $outbox_id ): bool {
+	global $wpdb;
+	$table        = dtb_support_outbox_table();
+	$now          = gmdate( 'Y-m-d H:i:s' );
+	$stale_before = gmdate( 'Y-m-d H:i:s', time() - dtb_support_outbox_sending_timeout() );
+
+	$result = $wpdb->query(
+		$wpdb->prepare(
+			"UPDATE {$table}
+				SET status = 'sending', updated_at = %s
+				WHERE id = %d
+				AND (
+					(status = 'pending' AND (next_attempt_at IS NULL OR next_attempt_at <= UTC_TIMESTAMP()))
+					OR (status = 'sending' AND updated_at <= %s)
+				)",
+			$now,
+			$outbox_id,
+			$stale_before
+		)
+	);
+
+	return $result > 0;
 }
 
 /**
@@ -83,9 +125,11 @@ function dtb_support_outbox_mark_sent( int $outbox_id ): void {
 	global $wpdb;
 	$now = gmdate( 'Y-m-d H:i:s' );
 	$wpdb->update( dtb_support_outbox_table(), [
-		'status'     => 'sent',
-		'sent_at'    => $now,
-		'updated_at' => $now,
+		'status'          => 'sent',
+		'sent_at'         => $now,
+		'next_attempt_at' => null,
+		'last_error'      => null,
+		'updated_at'      => $now,
 	], [ 'id' => $outbox_id ] );
 }
 

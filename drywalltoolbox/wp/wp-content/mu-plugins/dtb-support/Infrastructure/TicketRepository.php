@@ -260,6 +260,40 @@ function dtb_support_query_tickets( array $args = [] ): array {
 }
 
 /**
+ * Normalize an operator-facing queue slug to the underlying smart queue key.
+ */
+function dtb_support_normalize_queue_name( string $queue ): string {
+	$queue = sanitize_key( $queue );
+
+	$aliases = [
+		'overdue'  => 'sla_breached',
+		'due_soon' => 'sla_at_risk',
+	];
+
+	return $aliases[ $queue ] ?? $queue;
+}
+
+/**
+ * Normalize smart queue count keys for admin-facing responses.
+ *
+ * @param array<string,int> $counts Raw queue counts.
+ * @return array<string,int>
+ */
+function dtb_support_normalize_queue_counts( array $counts ): array {
+	$key_map = [
+		'sla_at_risk'  => 'due_soon',
+		'sla_breached' => 'overdue',
+	];
+
+	$normalized = [];
+	foreach ( $counts as $key => $value ) {
+		$normalized[ $key_map[ $key ] ?? $key ] = (int) $value;
+	}
+
+	return $normalized;
+}
+
+/**
  * Return tickets for a named smart queue, sorted by priority score.
  *
  * Queues: needs_reply, sla_at_risk, sla_breached, unassigned, urgent,
@@ -268,9 +302,13 @@ function dtb_support_query_tickets( array $args = [] ): array {
 function dtb_support_query_queue( string $queue, array $args = [] ): array {
 	global $wpdb;
 	$table    = dtb_support_tickets_table();
+	$queue    = dtb_support_normalize_queue_name( $queue );
 	$per_page = min( 200, max( 1, (int) ( $args['per_page'] ?? 25 ) ) );
 	$page     = max( 1, (int) ( $args['page'] ?? 1 ) );
 	$offset   = ( $page - 1 ) * $per_page;
+	$type     = sanitize_text_field( $args['type'] ?? '' );
+	$priority = sanitize_text_field( $args['priority'] ?? '' );
+	$search   = sanitize_text_field( $args['search'] ?? '' );
 	$active   = "(snooze_until IS NULL OR snooze_until <= UTC_TIMESTAMP())";
 
 	$map = [
@@ -286,15 +324,41 @@ function dtb_support_query_queue( string $queue, array $args = [] ): array {
 		'all_active'             => "status NOT IN ('resolved','closed','spam') AND {$active}",
 	];
 
-	$where_sql = $map[ $queue ] ?? $map['needs_reply'];
+	$where   = [ $map[ $queue ] ?? $map['needs_reply'] ];
+	$params  = [];
+
+	if ( '' !== $type ) {
+		$where[]  = 'ticket_type = %s';
+		$params[] = $type;
+	}
+	if ( '' !== $priority ) {
+		$where[]  = 'priority = %s';
+		$params[] = $priority;
+	}
+	if ( '' !== $search ) {
+		$like     = '%' . $wpdb->esc_like( $search ) . '%';
+		$where[]  = '(subject LIKE %s OR customer_name LIKE %s OR customer_email LIKE %s OR ticket_number LIKE %s)';
+		$params[] = $like;
+		$params[] = $like;
+		$params[] = $like;
+		$params[] = $like;
+	}
+
+	$where_sql = implode( ' AND ', $where );
+	$action_due_expr = "CASE
+		WHEN first_reply_at IS NULL THEN COALESCE(sla_first_response_due, created_at)
+		ELSE COALESCE(sla_resolution_due, created_at)
+	END";
+	$order_by = in_array( $queue, [ 'sla_at_risk', 'sla_breached' ], true )
+		? "{$action_due_expr} ASC, priority_score DESC, created_at ASC"
+		: "priority_score DESC, {$action_due_expr} ASC, created_at ASC";
 	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$total     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}" );
-	$tickets   = $wpdb->get_results( $wpdb->prepare(
-		"SELECT * FROM {$table} WHERE {$where_sql} ORDER BY priority_score DESC, created_at ASC LIMIT %d OFFSET %d",
-		$per_page,
-		$offset
-	) );
+	$total_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
+	$rows_sql  = "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY {$order_by} LIMIT %d OFFSET %d";
 	// phpcs:enable
+
+	$total   = (int) $wpdb->get_var( $wpdb->prepare( $total_sql, ...$params ) );
+	$tickets = $wpdb->get_results( $wpdb->prepare( $rows_sql, ...array_merge( $params, [ $per_page, $offset ] ) ) );
 
 	return [
 		'tickets'    => $tickets ?: [],

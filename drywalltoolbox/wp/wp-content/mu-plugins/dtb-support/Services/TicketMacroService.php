@@ -65,24 +65,26 @@ function dtb_support_save_macro( array $data, int $macro_id = 0 ): int|WP_Error 
 	global $wpdb;
 	$table = dtb_support_macros_table();
 	$now   = gmdate( 'Y-m-d H:i:s' );
+	$existing = $macro_id > 0 ? dtb_support_get_macro( $macro_id ) : null;
 
-	$macro_name = sanitize_text_field( $data['macro_name'] ?? '' );
-	$body       = wp_kses_post( $data['body_template'] ?? '' );
+	$macro_name = sanitize_text_field( $data['macro_name'] ?? ( $existing->macro_name ?? '' ) );
+	$body       = wp_kses_post( $data['body_template'] ?? ( $existing->body_template ?? '' ) );
 	if ( '' === $macro_name || '' === trim( wp_strip_all_tags( $body ) ) ) {
 		return new WP_Error( 'dtb_support_invalid_macro', __( 'Macro name and body template are required.', 'drywall-toolbox' ) );
 	}
 
-	preg_match_all( '/\{\{\s*([a-z0-9_]+)\s*\}\}/i', (string) ( $data['subject_template'] ?? '' ) . "\n" . $body, $matches );
+	$subject_template = sanitize_text_field( $data['subject_template'] ?? ( $existing->subject_template ?? '' ) );
+	preg_match_all( '/\{\{\s*([a-z0-9_]+)\s*\}\}/i', $subject_template . "\n" . $body, $matches );
 	$variables = array_values( array_unique( array_map( 'strtolower', $matches[1] ?? [] ) ) );
 
 	$row = [
 		'macro_name'       => $macro_name,
-		'category'         => sanitize_text_field( $data['category'] ?? 'general' ),
-		'subject_template' => sanitize_text_field( $data['subject_template'] ?? '' ),
+		'category'         => sanitize_text_field( $data['category'] ?? ( $existing->category ?? 'general' ) ),
+		'subject_template' => $subject_template,
 		'body_template'    => $body,
 		'variables'        => wp_json_encode( $variables ),
-		'is_active'        => isset( $data['is_active'] ) ? (int) (bool) $data['is_active'] : 1,
-		'sort_order'       => isset( $data['sort_order'] ) ? (int) $data['sort_order'] : 0,
+		'is_active'        => isset( $data['is_active'] ) ? (int) (bool) $data['is_active'] : ( isset( $existing->is_active ) ? (int) $existing->is_active : 1 ),
+		'sort_order'       => isset( $data['sort_order'] ) ? (int) $data['sort_order'] : ( isset( $existing->sort_order ) ? (int) $existing->sort_order : 0 ),
 		'updated_at'       => $now,
 	];
 
@@ -102,6 +104,33 @@ function dtb_support_save_macro( array $data, int $macro_id = 0 ): int|WP_Error 
 	}
 
 	return (int) $wpdb->insert_id;
+}
+
+/**
+ * Deactivate a macro.
+ */
+function dtb_support_delete_macro( int $macro_id ): bool|WP_Error {
+	global $wpdb;
+	$table = dtb_support_macros_table();
+
+	if ( ! dtb_support_get_macro( $macro_id ) ) {
+		return new WP_Error( 'dtb_support_not_found', __( 'Macro not found.', 'drywall-toolbox' ) );
+	}
+
+	$result = $wpdb->update(
+		$table,
+		[
+			'is_active'  => 0,
+			'updated_at' => gmdate( 'Y-m-d H:i:s' ),
+		],
+		[ 'id' => $macro_id ]
+	);
+
+	if ( false === $result ) {
+		return new WP_Error( 'dtb_support_macro_delete_failed', __( 'Could not delete macro.', 'drywall-toolbox' ) );
+	}
+
+	return true;
 }
 
 /**

@@ -10,7 +10,7 @@
 defined( 'ABSPATH' ) || exit;
 
 function dtb_support_render_dashboard_page(): void {
-if ( ! current_user_can( 'dtb_manage_support' ) && ! current_user_can( 'manage_options' ) ) {
+if ( ! current_user_can( 'dtb_read_support_tickets' ) && ! current_user_can( 'dtb_manage_support' ) && ! current_user_can( 'manage_options' ) ) {
 wp_die( 'You do not have permission to view this page.' );
 }
 
@@ -21,8 +21,10 @@ return;
 
 $initial_queue = (string) get_option( 'dtb_support_default_queue', 'needs_reply' );
 $queue_counts  = function_exists( 'dtb_support_get_queue_counts' ) ? dtb_support_get_queue_counts() : [];
+$queue_counts  = function_exists( 'dtb_support_normalize_queue_counts' ) ? dtb_support_normalize_queue_counts( $queue_counts ) : $queue_counts;
 $kpis          = dtb_support_get_kpis();
 $settings_url  = admin_url( 'admin.php?page=dtb-support-settings' );
+$can_manage_settings = current_user_can( 'dtb_manage_support_settings' ) || current_user_can( 'manage_options' );
 ?>
 <div class="dtb-wrap">
 <div class="dtb-cc-shell">
@@ -36,7 +38,9 @@ $settings_url  = admin_url( 'admin.php?page=dtb-support-settings' );
 <p class="dtb-topbar__queue">Queue: <strong id="dtb-active-queue-label"><?php echo esc_html( dtb_support_queue_label( $initial_queue ) ); ?></strong></p>
 <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
 <button type="button" class="dtb-btn dtb-btn--ghost dtb-btn--sm" onclick="dtbSupport.refresh()">Refresh</button>
+<?php if ( $can_manage_settings ) : ?>
 <a href="<?php echo esc_url( $settings_url ); ?>" class="dtb-btn dtb-btn--ghost dtb-btn--sm">Settings</a>
+<?php endif; ?>
 </div>
 </div>
 

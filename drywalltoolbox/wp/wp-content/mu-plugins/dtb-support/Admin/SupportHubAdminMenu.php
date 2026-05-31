@@ -16,7 +16,7 @@ $label = $badge ? sprintf( 'Support %s', $badge ) : __( 'Support', 'drywall-tool
 add_menu_page(
 __( 'Support Hub', 'drywall-toolbox' ),
 $label,
-'dtb_manage_support',
+'dtb_read_support_tickets',
 'dtb-support',
 'dtb_support_render_dashboard_page',
 'dashicons-format-chat',
@@ -27,7 +27,7 @@ add_submenu_page(
 'dtb-support',
 __( 'Dashboard', 'drywall-toolbox' ),
 __( 'Dashboard', 'drywall-toolbox' ),
-'dtb_manage_support',
+'dtb_read_support_tickets',
 'dtb-support',
 'dtb_support_render_dashboard_page'
 );
@@ -36,7 +36,7 @@ add_submenu_page(
 'dtb-support',
 __( 'Settings', 'drywall-toolbox' ),
 __( 'Settings', 'drywall-toolbox' ),
-'manage_options',
+'dtb_manage_support_settings',
 'dtb-support-settings',
 'dtb_support_render_settings_page'
 );
@@ -84,6 +84,8 @@ wp_localize_script(
 'changeStatus'   => current_user_can( 'dtb_change_support_status' ),
 'changePriority' => current_user_can( 'dtb_change_support_priority' ),
 'manageMacros'   => current_user_can( 'dtb_manage_support_macros' ),
+'viewReports'    => current_user_can( 'dtb_view_support_reports' ),
+'manageSettings' => current_user_can( 'dtb_manage_support_settings' ) || current_user_can( 'manage_options' ),
 ],
 ]
 );
@@ -91,7 +93,7 @@ wp_localize_script(
 add_action( 'admin_enqueue_scripts', 'dtb_support_enqueue_admin_assets' );
 
 function dtb_support_render_settings_page(): void {
-if ( ! current_user_can( 'manage_options' ) ) {
+if ( ! current_user_can( 'dtb_manage_support_settings' ) && ! current_user_can( 'manage_options' ) ) {
 wp_die( __( 'Insufficient permissions.', 'drywall-toolbox' ) );
 }
 

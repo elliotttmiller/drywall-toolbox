@@ -13,7 +13,7 @@
 defined( 'ABSPATH' ) || exit;
 
 function dtb_support_render_ticket_detail_page( int $ticket_id ): void {
-	if ( ! current_user_can( 'dtb_manage_support' ) && ! current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'dtb_read_support_tickets' ) && ! current_user_can( 'dtb_manage_support' ) && ! current_user_can( 'manage_options' ) ) {
 		wp_die( 'You do not have permission to view this page.' );
 	}
 

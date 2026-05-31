@@ -19,7 +19,7 @@ function dtb_support_register_reply_routes(): void {
 	register_rest_route( 'dtb/v1', '/support/tickets/(?P<id>\d+)/reply', [
 		'methods'             => WP_REST_Server::CREATABLE,
 		'callback'            => 'dtb_support_rest_staff_reply',
-		'permission_callback' => 'dtb_support_admin_permission',
+		'permission_callback' => 'dtb_support_staff_reply_permission',
 		'args'                => [
 			'message'     => [ 'type' => 'string', 'required' => true ],
 			'is_internal' => [ 'type' => 'boolean', 'required' => false, 'default' => false ],
@@ -38,6 +38,23 @@ function dtb_support_register_reply_routes(): void {
 	] );
 }
 add_action( 'rest_api_init', 'dtb_support_register_reply_routes' );
+
+/**
+ * Check reply vs internal-note capability.
+ */
+function dtb_support_staff_reply_permission( WP_REST_Request $request ): bool|WP_Error {
+	$is_internal = (bool) $request->get_param( 'is_internal' );
+
+	return dtb_support_rest_require_capabilities(
+		[
+			$is_internal ? 'dtb_add_support_notes' : 'dtb_reply_support_tickets',
+			'dtb_manage_support',
+		],
+		$is_internal
+			? __( 'You do not have permission to add internal support notes.', 'drywall-toolbox' )
+			: __( 'You do not have permission to reply to support tickets.', 'drywall-toolbox' )
+	);
+}
 
 /**
  * POST /dtb/v1/support/tickets/{id}/reply   (staff)
