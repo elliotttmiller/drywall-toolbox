@@ -271,7 +271,6 @@ function dtb_support_send_email( string $to, string $template, array $ctx ): boo
 		return $result;
 	}
 
-	// Set flag so wp_mail_from / wp_mail_from_name filters use our configured address.
 	if ( ! defined( 'DTB_SUPPORT_SENDING' ) ) {
 		define( 'DTB_SUPPORT_SENDING', true );
 	}
@@ -302,6 +301,33 @@ function dtb_support_send_email( string $to, string $template, array $ctx ): boo
 }
 
 /**
+ * Queue a support email in the outbox when available, falling back to direct delivery.
+ */
+function dtb_support_queue_email_notification( ?object $ticket, string $to, string $recipient_name, string $template, array $ctx ): bool|WP_Error {
+	$result = dtb_support_get_email_template( $template, $ctx );
+	if ( is_wp_error( $result ) ) {
+		return $result;
+	}
+
+	$is_html = ! empty( $result['html'] );
+	if ( function_exists( 'dtb_support_outbox_enqueue' ) ) {
+		$enqueued = dtb_support_outbox_enqueue( [
+			'ticket_id'       => $ticket ? (int) $ticket->id : null,
+			'recipient_email' => $to,
+			'recipient_name'  => $recipient_name,
+			'subject'         => (string) $result['subject'],
+			'body_html'       => $is_html ? (string) $result['html'] : '',
+			'body_text'       => (string) $result['body'],
+			'headers'         => dtb_support_email_headers( $is_html ? 'text/html' : 'text/plain' ),
+		] );
+
+		return is_wp_error( $enqueued ) ? $enqueued : true;
+	}
+
+	return dtb_support_send_email( $to, $template, $ctx );
+}
+
+/**
  * Fire all standard notifications for a newly-opened ticket.
  *
  * @param object $ticket  Full ticket row from the DB.
@@ -322,16 +348,16 @@ function dtb_support_notify_ticket_opened( object $ticket ): void {
 
 	// Notify customer.
 	if ( is_email( $ticket->customer_email ) ) {
-		dtb_support_send_email( $ticket->customer_email, 'ticket-opened-customer', $ctx );
+		dtb_support_queue_email_notification( $ticket, $ticket->customer_email, (string) $ticket->customer_name, 'ticket-opened-customer', $ctx );
 	}
 
 	// Notify staff (admin email or assigned agent).
-	$staff_email = $ticket->assigned_user_id
-		? get_userdata( (int) $ticket->assigned_user_id )->user_email ?? dtb_support_admin_email()
-		: dtb_support_admin_email();
+	$assigned_user = $ticket->assigned_user_id ? get_userdata( (int) $ticket->assigned_user_id ) : null;
+	$staff_email   = $assigned_user->user_email ?? dtb_support_admin_email();
+	$staff_name    = $assigned_user->display_name ?? __( 'Support Team', 'drywall-toolbox' );
 
 	if ( is_email( $staff_email ) ) {
-		dtb_support_send_email( $staff_email, 'ticket-opened-admin', $ctx );
+		dtb_support_queue_email_notification( $ticket, $staff_email, $staff_name, 'ticket-opened-admin', $ctx );
 	}
 }
 
@@ -364,7 +390,7 @@ function dtb_support_notify_staff_reply( object $ticket, string $reply_body ): v
 		'reply_link'     => esc_url_raw( $reply_link ),
 	];
 
-	dtb_support_send_email( $ticket->customer_email, 'ticket-reply-customer', $ctx );
+	dtb_support_queue_email_notification( $ticket, $ticket->customer_email, (string) $ticket->customer_name, 'ticket-reply-customer', $ctx );
 }
 
 /**
@@ -374,9 +400,9 @@ function dtb_support_notify_staff_reply( object $ticket, string $reply_body ): v
  * @param string $reply_body
  */
 function dtb_support_notify_customer_reply( object $ticket, string $reply_body ): void {
-	$staff_email = $ticket->assigned_user_id
-		? ( get_userdata( (int) $ticket->assigned_user_id )->user_email ?? dtb_support_admin_email() )
-		: dtb_support_admin_email();
+	$assigned_user = $ticket->assigned_user_id ? get_userdata( (int) $ticket->assigned_user_id ) : null;
+	$staff_email   = $assigned_user->user_email ?? dtb_support_admin_email();
+	$staff_name    = $assigned_user->display_name ?? __( 'Support Team', 'drywall-toolbox' );
 
 	if ( ! is_email( $staff_email ) ) {
 		return;
@@ -391,5 +417,5 @@ function dtb_support_notify_customer_reply( object $ticket, string $reply_body )
 		'admin_url'     => $admin_url,
 	];
 
-	dtb_support_send_email( $staff_email, 'ticket-reply-staff', $ctx );
+	dtb_support_queue_email_notification( $ticket, $staff_email, $staff_name, 'ticket-reply-staff', $ctx );
 }
