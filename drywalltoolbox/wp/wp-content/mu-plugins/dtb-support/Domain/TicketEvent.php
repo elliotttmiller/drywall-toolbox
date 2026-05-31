@@ -23,10 +23,13 @@ function dtb_support_all_event_types(): array {
 		'ticket.assigned',
 		'ticket.unassigned',
 		'ticket.priority_changed',
-		'ticket.note_added',           // internal staff note
-		'ticket.reply_customer',       // customer-facing reply from staff
-		'ticket.reply_staff',          // reply submitted by customer
+		'ticket.note_added',
+		'ticket.reply_customer',
+		'ticket.reply_staff',
+		'ticket.snoozed',
+		'ticket.unsnoozed',
 		'ticket.email_sent',
+		'ticket.email_failed',
 		'ticket.tag_added',
 		'ticket.tag_removed',
 		'ticket.resolved',
@@ -34,6 +37,11 @@ function dtb_support_all_event_types(): array {
 		'ticket.closed',
 		'ticket.merged',
 		'ticket.spam_flagged',
+		'ticket.macro_applied',
+		'ticket.automation_applied',
+		'ticket.bulk_updated',
+		'ticket.followup_set',
+		'ticket.score_updated',
 	];
 }
 
@@ -42,8 +50,8 @@ function dtb_support_all_event_types(): array {
  *
  * @param int    $ticket_id
  * @param string $event_type
- * @param array  $context  Optional keys: from_status, to_status, actor_type, actor_id,
- *                          source, visibility, payload (array).
+ * @param array  $context Optional keys: from_status, to_status, actor_type, actor_id,
+ *                        source, visibility, body, payload.
  * @return array
  */
 function dtb_support_build_event( int $ticket_id, string $event_type, array $context = [] ): array {
@@ -56,6 +64,7 @@ function dtb_support_build_event( int $ticket_id, string $event_type, array $con
 		'actor_id'    => isset( $context['actor_id'] ) ? absint( $context['actor_id'] ) : null,
 		'source'      => sanitize_text_field( (string) ( $context['source'] ?? 'system' ) ),
 		'visibility'  => sanitize_text_field( (string) ( $context['visibility'] ?? 'operator' ) ),
+		'body'        => (string) ( $context['body'] ?? '' ),
 		'payload'     => is_array( $context['payload'] ?? null ) ? $context['payload'] : [],
 		'created_at'  => gmdate( 'Y-m-d H:i:s' ),
 	];
@@ -63,15 +72,12 @@ function dtb_support_build_event( int $ticket_id, string $event_type, array $con
 
 /**
  * Return whether an event type should be visible to the customer.
- *
- * @param string $event_type
- * @param string $visibility  Value stored on the event row.
- * @return bool
  */
 function dtb_support_event_is_public( string $event_type, string $visibility = '' ): bool {
-	if ( 'customer' === $visibility ) {
+	if ( in_array( $visibility, [ 'all', 'customer' ], true ) ) {
 		return true;
 	}
+
 	$always_public = [
 		'ticket.created',
 		'ticket.status_changed',
@@ -80,6 +86,8 @@ function dtb_support_event_is_public( string $event_type, string $visibility = '
 		'ticket.resolved',
 		'ticket.reopened',
 		'ticket.closed',
+		'ticket.email_sent',
 	];
+
 	return in_array( $event_type, $always_public, true );
 }
