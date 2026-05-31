@@ -96,7 +96,7 @@ $settings_url  = admin_url( 'admin.php?page=dtb-support-settings' );
 <th style="width:90px">Priority</th>
 <th style="width:110px">Type</th>
 <th style="width:120px">Assigned</th>
-<th style="width:120px">SLA</th>
+<th style="width:120px">Action Due</th>
 <th style="width:80px">Age</th>
 <th style="width:110px"></th>
 </tr>
@@ -148,16 +148,16 @@ $settings_url  = admin_url( 'admin.php?page=dtb-support-settings' );
 
 function dtb_support_queue_rail_items(): array {
 return [
-'needs_reply'          => [ 'label' => 'Needs Reply', 'badge_class' => '' ],
-'sla_breached'        => [ 'label' => 'SLA Breached', 'badge_class' => 'dtb-rail-badge--urgent' ],
-'sla_at_risk'         => [ 'label' => 'SLA At Risk', 'badge_class' => 'dtb-rail-badge--warning' ],
-'unassigned'          => [ 'label' => 'Unassigned', 'badge_class' => '' ],
-'urgent'              => [ 'label' => 'Urgent', 'badge_class' => 'dtb-rail-badge--urgent' ],
-'in_progress'         => [ 'label' => 'In Progress', 'badge_class' => '' ],
-'waiting_on_customer' => [ 'label' => 'Waiting on Customer', 'badge_class' => '' ],
-'snoozed'             => [ 'label' => 'Snoozed', 'badge_class' => '' ],
-'resolved_pending_close' => [ 'label' => 'Resolved', 'badge_class' => '' ],
-'all_active'          => [ 'label' => 'All Active', 'badge_class' => '' ],
+'needs_reply'          => [ 'label' => 'Needs Reply',         'badge_class' => '' ],
+'overdue'              => [ 'label' => 'Overdue',             'badge_class' => 'dtb-rail-badge--urgent' ],
+'due_soon'             => [ 'label' => 'Due Soon',            'badge_class' => 'dtb-rail-badge--warning' ],
+'unassigned'           => [ 'label' => 'Unassigned',          'badge_class' => '' ],
+'urgent'               => [ 'label' => 'Urgent',              'badge_class' => 'dtb-rail-badge--urgent' ],
+'in_progress'          => [ 'label' => 'In Progress',         'badge_class' => '' ],
+'waiting_on_customer'  => [ 'label' => 'Waiting on Customer', 'badge_class' => '' ],
+'snoozed'              => [ 'label' => 'Snoozed',             'badge_class' => '' ],
+'resolved_pending_close' => [ 'label' => 'Resolved',          'badge_class' => '' ],
+'all_active'           => [ 'label' => 'All Active',          'badge_class' => '' ],
 ];
 }
 
@@ -180,12 +180,12 @@ function dtb_support_render_queue_rail( array $queue_counts, string $active_queu
 
 function dtb_support_render_command_center_kpis( array $kpis ): void {
 $cards = [
-[ 'label' => 'Active', 'value' => $kpis['active_total'] ?? $kpis['total'] ?? 0, 'class' => 'ok' ],
-[ 'label' => 'Needs Reply', 'value' => $kpis['needs_reply'] ?? 0, 'class' => ( (int) ( $kpis['needs_reply'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
-[ 'label' => 'SLA Breached', 'value' => $kpis['sla_breached'] ?? $kpis['sla_breach'] ?? 0, 'class' => ( (int) ( $kpis['sla_breached'] ?? $kpis['sla_breach'] ?? 0 ) > 0 ) ? 'breach' : 'ok' ],
-[ 'label' => 'SLA At Risk', 'value' => $kpis['sla_at_risk'] ?? 0, 'class' => ( (int) ( $kpis['sla_at_risk'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
-[ 'label' => 'Unassigned', 'value' => $kpis['unassigned'] ?? 0, 'class' => ( (int) ( $kpis['unassigned'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
-[ 'label' => 'Urgent', 'value' => $kpis['urgent'] ?? 0, 'class' => ( (int) ( $kpis['urgent'] ?? 0 ) > 0 ) ? 'breach' : 'ok' ],
+[ 'label' => 'Active',         'value' => $kpis['active_total'] ?? $kpis['total'] ?? 0, 'class' => 'ok' ],
+[ 'label' => 'Needs Reply',    'value' => $kpis['needs_reply']    ?? 0, 'class' => ( (int) ( $kpis['needs_reply']    ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+[ 'label' => 'Overdue',        'value' => $kpis['overdue_count']  ?? 0, 'class' => ( (int) ( $kpis['overdue_count']  ?? 0 ) > 0 ) ? 'breach'  : 'ok' ],
+[ 'label' => 'Due Soon',       'value' => $kpis['due_soon_count'] ?? 0, 'class' => ( (int) ( $kpis['due_soon_count'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+[ 'label' => 'Unassigned',     'value' => $kpis['unassigned']     ?? 0, 'class' => ( (int) ( $kpis['unassigned']     ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
+[ 'label' => 'Urgent',         'value' => $kpis['urgent']         ?? 0, 'class' => ( (int) ( $kpis['urgent']         ?? 0 ) > 0 ) ? 'breach'  : 'ok' ],
 [ 'label' => 'Email Failures', 'value' => $kpis['email_failures'] ?? 0, 'class' => ( (int) ( $kpis['email_failures'] ?? 0 ) > 0 ) ? 'warning' : 'ok' ],
 ];
 
