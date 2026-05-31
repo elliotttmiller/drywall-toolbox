@@ -56,22 +56,47 @@ function dtb_support_add_reply(
 
 	$event_id = dtb_support_append_event( $event );
 
-	// Auto-reopen if a customer replies to a resolved/closed ticket.
 	if ( 'customer' === $actor_type ) {
 		dtb_support_maybe_reopen_on_customer_reply( $ticket_id );
-		// Refresh ticket after possible status change.
 		$ticket = dtb_support_get_ticket( $ticket_id );
+	}
+
+	$now = gmdate( 'Y-m-d H:i:s' );
+	if ( 'staff' === $actor_type && ! $is_internal && function_exists( 'dtb_support_update_ticket' ) ) {
+		$update = [ 'last_staff_reply_at' => $now ];
+		if ( empty( $ticket->first_reply_at ) ) {
+			$update['first_reply_at'] = $now;
+		}
+		dtb_support_update_ticket( $ticket_id, $update );
+		if ( function_exists( 'dtb_support_refresh_ticket_sla_state' ) ) {
+			dtb_support_refresh_ticket_sla_state( $ticket_id );
+		}
+		$ticket = dtb_support_get_ticket( $ticket_id );
+	}
+
+	if ( 'customer' === $actor_type && function_exists( 'dtb_support_update_ticket' ) ) {
+		dtb_support_update_ticket( $ticket_id, [ 'last_customer_reply_at' => $now ] );
+		$ticket = dtb_support_get_ticket( $ticket_id );
+		if ( ! empty( $ticket->snooze_until ) && strtotime( (string) $ticket->snooze_until ) > time() && function_exists( 'dtb_support_unsnooze_ticket' ) ) {
+			dtb_support_unsnooze_ticket( $ticket_id, [
+				'actor_type' => 'system',
+				'source'     => 'customer_reply',
+			] );
+			$ticket = dtb_support_get_ticket( $ticket_id );
+		}
 	}
 
 	// Dispatch notifications (skip internal notes — those never go to customer).
 	if ( ! $is_internal ) {
 		if ( 'customer' === $actor_type ) {
-			// Notify assigned staff.
 			dtb_support_notify_customer_reply( $ticket, $sanitised_body );
 		} else {
-			// Notify the customer.
 			dtb_support_notify_staff_reply( $ticket, $sanitised_body );
 		}
+	}
+
+	if ( function_exists( 'dtb_support_update_ticket_priority_score' ) ) {
+		dtb_support_update_ticket_priority_score( $ticket_id );
 	}
 
 	/**

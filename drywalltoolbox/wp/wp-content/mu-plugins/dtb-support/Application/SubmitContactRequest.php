@@ -50,6 +50,13 @@ function dtb_support_submit_contact_request( array $data ): array|WP_Error {
 		return $ticket_id;
 	}
 
+	if ( function_exists( 'dtb_support_stamp_ticket_sla' ) ) {
+		dtb_support_stamp_ticket_sla( $ticket_id );
+	}
+	if ( function_exists( 'dtb_support_update_ticket_priority_score' ) ) {
+		dtb_support_update_ticket_priority_score( $ticket_id );
+	}
+
 	$ticket = dtb_support_get_ticket( $ticket_id );
 	if ( ! $ticket ) {
 		return new WP_Error( 'dtb_support_not_found', __( 'Ticket could not be retrieved after creation.', 'drywall-toolbox' ) );
