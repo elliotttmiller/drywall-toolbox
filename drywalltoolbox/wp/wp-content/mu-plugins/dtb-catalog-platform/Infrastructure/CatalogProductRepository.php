@@ -101,8 +101,8 @@ final class DTB_CatalogProductRepository {
 			} else {
 				// Build all normalised forms of the display-category key so products
 				// imported with hyphens, underscores, spaces, or title-case are matched.
-				$space_form    = str_replace( '_', ' ', $display_category_key );
-				$title_form    = ucwords( $space_form );
+				$space_form   = str_replace( '_', ' ', $display_category_key );
+				$title_form   = ucwords( $space_form );
 				$meta_query[] = [
 					'key'     => DTB_ProductMeta::DISPLAY_CATEGORY_KEY,
 					'value'   => array_values( array_unique( array_filter( [
