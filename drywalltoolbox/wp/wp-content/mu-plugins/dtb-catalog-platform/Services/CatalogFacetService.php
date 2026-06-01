@@ -252,8 +252,12 @@ final class DTB_CatalogFacetService {
 		}
 
 		if ( isset( $scope['display_category'] ) && '' !== $scope['display_category'] ) {
-			$display = self::customer_display_category( $dto );
-			if ( ! in_array( $scope['display_category'], [ $display['key'] ?? '', $display['slug'] ?? '' ], true ) ) {
+			$display      = self::customer_display_category( $dto );
+			$scope_slug   = sanitize_title( (string) $scope['display_category'] );
+			// Normalise the stored key to a slug so comparisons work regardless of
+			// whether the meta was saved with hyphens, underscores, spaces, or title case.
+			$display_slug = sanitize_title( (string) ( $display['key'] ?? '' ) );
+			if ( '' === $display_slug || $scope_slug !== $display_slug ) {
 				return false;
 			}
 		}

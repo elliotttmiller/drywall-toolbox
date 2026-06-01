@@ -100,18 +100,36 @@ final class DTB_CatalogProductRepository {
 				];
 				$is_parts_constrained = true;
 			} else {
+				// Build all normalised forms of the display-category key so products
+				// imported with hyphens, underscores, spaces, or title-case are matched.
+				$space_form   = str_replace( '_', ' ', $display_category_key );
+				$title_form   = ucwords( $space_form );
 				$meta_query[] = [
 					'key'     => DTB_ProductMeta::DISPLAY_CATEGORY_KEY,
-					'value'   => array_values( array_unique( array_filter( [ $display_category_key, $display_category_slug ] ) ) ),
+					'value'   => array_values( array_unique( array_filter( [
+						$display_category_key,
+						$display_category_slug,
+						$space_form,
+						$title_form,
+					] ) ) ),
 					'compare' => 'IN',
 				];
 
 				// Tool/category filters must not leak schematic replacement parts.
+				// Use NOT EXISTS OR != '1' so products whose meta is absent are
+				// treated as non-parts (handles legacy imports without this key).
 				if ( ! array_key_exists( 'is_parts', $filters ) || null === $filters['is_parts'] ) {
 					$meta_query[] = [
-						'key'     => DTB_ProductMeta::IS_PARTS,
-						'value'   => '0',
-						'compare' => '=',
+						'relation' => 'OR',
+						[
+							'key'     => DTB_ProductMeta::IS_PARTS,
+							'value'   => '1',
+							'compare' => '!=',
+						],
+						[
+							'key'     => DTB_ProductMeta::IS_PARTS,
+							'compare' => 'NOT EXISTS',
+						],
 					];
 					$is_parts_constrained = true;
 				}
@@ -145,11 +163,29 @@ final class DTB_CatalogProductRepository {
 		}
 
 		if ( ! $is_parts_constrained && isset( $filters['is_parts'] ) && null !== $filters['is_parts'] ) {
-			$meta_query[] = [
-				'key'     => DTB_ProductMeta::IS_PARTS,
-				'value'   => (int) $filters['is_parts'] ? '1' : '0',
-				'compare' => '=',
-			];
+			if ( (int) $filters['is_parts'] ) {
+				// Requesting parts: require the flag to be explicitly set to '1'.
+				$meta_query[] = [
+					'key'     => DTB_ProductMeta::IS_PARTS,
+					'value'   => '1',
+					'compare' => '=',
+				];
+			} else {
+				// Requesting non-parts: include products whose meta is absent
+				// (legacy imports) as well as those explicitly set to a non-'1' value.
+				$meta_query[] = [
+					'relation' => 'OR',
+					[
+						'key'     => DTB_ProductMeta::IS_PARTS,
+						'value'   => '1',
+						'compare' => '!=',
+					],
+					[
+						'key'     => DTB_ProductMeta::IS_PARTS,
+						'compare' => 'NOT EXISTS',
+					],
+				];
+			}
 		}
 
 		$builder_slot = (string) ( $filters['builder_slot'] ?? '' );
@@ -186,7 +222,7 @@ final class DTB_CatalogProductRepository {
 	 * replacement parts bucket.
 	 */
 	private static function is_parts_display_category( string $display_category ): bool {
-		return in_array( sanitize_title( $display_category ), [ 'parts', 'repair_parts', 'replacement_parts' ], true );
+		return in_array( sanitize_title( $display_category ), [ 'parts', 'repair-parts', 'replacement-parts' ], true );
 	}
 
 	/**
