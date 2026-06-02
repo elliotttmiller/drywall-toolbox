@@ -23,6 +23,9 @@
 		return modal ? modal.querySelector( '.dtb-modal__footer' ) : null;
 	}
 
+	// Returns the WooCommerce post.php edit URL for fallback use only.
+	// The linked-records URL fallback was intentionally removed; order URLs are
+	// available inside the linked records panel, not as a primary footer CTA.
 	function editUrl( record ) {
 		if ( record && record.id ) {
 			var adminUrl = ( window.dtbAdminConfig && window.dtbAdminConfig.adminUrl ) || '/wp-admin/admin.php';
@@ -80,7 +83,7 @@
 	}
 
 	function renderRecordIssues( integrations ) {
-		var blockerKeys = { sync_failed: 1, notification_failed: 1, payment_failed: 1, shipping_blocked: 1, refund_unavailable: 1 };
+		var blockerKeys = [ 'sync_failed', 'notification_failed', 'payment_failed', 'shipping_blocked', 'refund_unavailable' ];
 		var issues = [];
 		var sysUrl = ( window.dtbAdminConfig && window.dtbAdminConfig.adminUrl
 			? window.dtbAdminConfig.adminUrl.replace( /admin\.php.*$/, 'admin.php' )
@@ -89,7 +92,7 @@
 		Object.keys( integrations || {} ).forEach( function ( key ) {
 			var item = integrations[ key ] || {};
 			var status = item.status || item.state || '';
-			if ( status !== 'error' && status !== 'failed' && ! blockerKeys[ key ] ) { return; }
+			if ( status !== 'error' && status !== 'failed' && blockerKeys.indexOf( key ) === -1 ) { return; }
 			var err = item.last_error || item.error || item.last_error_code || null;
 			issues.push( { label: item.label || key, error: err, url: sysUrl } );
 		} );
@@ -196,7 +199,7 @@
 			method: 'POST',
 			body: {
 				action_type: action,
-				idempotency_key: 'orders-' + state.orderId + '-' + action + '-' + Date.now(),
+				idempotency_key: 'orders-' + state.orderId + '-' + action,
 			},
 		} ).then( function ( data ) {
 			WB.showToast( data.message || 'Order action queued.', 'success' );

@@ -286,16 +286,11 @@
 	// ── Compact record-issues helper (integration blockers only) ─────────────
 
 	function renderRepairRecordIssues( integrations ) {
-		var BLOCKER_KEYS = [ 'sync_failed', 'notification_failed', 'payment_failed',
-		                     'shipping_blocked', 'refund_unavailable', 'missing_linked_order',
-		                     'quote_notification_failed' ];
 		var issues = [];
 		Object.keys( integrations || {} ).forEach( function ( key ) {
 			var svc = integrations[ key ] || {};
-			var isBlocker = svc.status === 'error' || svc.status === 'failed' || BLOCKER_KEYS.indexOf( key ) !== -1;
-			if ( isBlocker && ( svc.status === 'error' || svc.status === 'failed' ) ) {
-				issues.push( svc.label || key );
-			}
+			if ( svc.status !== 'error' && svc.status !== 'failed' ) { return; }
+			issues.push( svc.label || key );
 		} );
 		if ( ! issues.length ) { return ''; }
 		var adminUrl = ( CONFIG.adminUrl || '/wp-admin/admin.php' ).replace( /admin\.php.*$/, 'admin.php' );

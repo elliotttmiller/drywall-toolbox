@@ -679,11 +679,21 @@ function dtb_returns_format_order_snapshot( WC_Order $order ): array {
  * @return WP_REST_Response
  */
 function dtb_returns_rest_admin_action( WP_REST_Request $request ): WP_REST_Response {
-	$id          = (int) $request->get_param( 'id' );
-	$action_type = sanitize_key( (string) ( $request->get_param( 'action_type' ) ?? '' ) );
+	$id              = (int) $request->get_param( 'id' );
+	$action_type     = sanitize_key( (string) ( $request->get_param( 'action_type' ) ?? '' ) );
+	$idempotency_key = sanitize_text_field( (string) ( $request->get_param( 'idempotency_key' ) ?? '' ) );
 
 	if ( ! $id || ! $action_type ) {
 		return new WP_REST_Response( [ 'ok' => false, 'message' => 'Missing id or action_type.' ], 400 );
+	}
+
+	// Idempotency guard: return the cached success result if this exact request already succeeded.
+	if ( $idempotency_key ) {
+		$transient_key = 'dtb_ret_idem_' . md5( $idempotency_key );
+		$cached        = get_transient( $transient_key );
+		if ( $cached ) {
+			return new WP_REST_Response( $cached, 200 );
+		}
 	}
 
 	$entity = dtb_returns_get( $id );
@@ -694,6 +704,9 @@ function dtb_returns_rest_admin_action( WP_REST_Request $request ): WP_REST_Resp
 	$current_status = sanitize_key( (string) $entity->status->value() );
 
 	// Transition map — action_type → target status.
+	// Note: this intentionally mirrors the inverse of the client-side actionMap in dtb-returns-page.js.
+	// Keep both in sync when adding new actions; a future refactor can source this from
+	// dtb_admin_get_workflow_definition('return') once the registry exposes named-action mappings.
 	$transition_map = [
 		'approve'            => 'approved',
 		'reject'             => 'rejected',
@@ -790,10 +803,18 @@ function dtb_returns_rest_admin_action( WP_REST_Request $request ): WP_REST_Resp
 	$detail_response = dtb_returns_rest_admin_detail( $detail_request );
 	$detail = $detail_response instanceof WP_REST_Response ? $detail_response->get_data() : [];
 
-	return new WP_REST_Response( array_merge(
+	$result = array_merge(
 		[ 'ok' => true, 'message' => 'Action applied.' ],
 		is_array( $detail ) ? $detail : []
-	) );
+	);
+
+	// Cache success result for idempotency replay (TTL: 60 s — enough to cover network retries).
+	if ( $idempotency_key ) {
+		$transient_key = 'dtb_ret_idem_' . md5( $idempotency_key );
+		set_transient( $transient_key, $result, 60 );
+	}
+
+	return new WP_REST_Response( $result );
 }
 
 

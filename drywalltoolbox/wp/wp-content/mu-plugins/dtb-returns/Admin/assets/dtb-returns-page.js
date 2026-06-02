@@ -422,13 +422,14 @@
 	// ── Compact record-level issues (blockers only, no integration dashboard) ──
 	function buildRecordIssues( integrations ) {
 		var issues = [];
-		var blockerKeys = { sync_failed: 1, notification_failed: 1, payment_failed: 1, shipping_blocked: 1, refund_unavailable: 1, missing_linked_order: 1 };
+		var blockerKeys = [ 'sync_failed', 'notification_failed', 'payment_failed',
+		                    'shipping_blocked', 'refund_unavailable', 'missing_linked_order' ];
 		var cfg = window.dtbAdminConfig || {};
 		var sysUrl = ( cfg.adminUrl ? cfg.adminUrl.replace( /admin\.php.*$/, 'admin.php' ) : '/wp-admin/admin.php' ) + '?page=dtb-system-manager';
 		Object.keys( integrations || {} ).forEach( function ( key ) {
 			var item = integrations[ key ] || {};
 			var status = item.status || item.state || '';
-			if ( status !== 'error' && status !== 'failed' && ! blockerKeys[ key ] ) { return; }
+			if ( status !== 'error' && status !== 'failed' && blockerKeys.indexOf( key ) === -1 ) { return; }
 			issues.push( { label: item.label || key, error: item.last_error || item.error || null, url: sysUrl } );
 		} );
 		if ( ! issues.length ) { return ''; }
@@ -748,7 +749,9 @@
 			var sectionEl = btn.closest( '.dtb-returns-section' );
 			var statusEl  = sectionEl ? qs( '.dtb-returns-form-status', sectionEl ) : null;
 			btn.disabled  = true;
-			// Map target status to canonical action_type.
+			// Maps target status (from data-dtb-returns-value) to canonical action_type.
+			// Mirrors the inverse of the PHP transition_map in ReturnsController.php.
+			// Keep both in sync when adding new status transitions.
 			var actionMap = {
 				approved:       'approve',
 				rejected:       'reject',
@@ -760,7 +763,7 @@
 			};
 			var actionType = actionMap[ newStatus ] || newStatus;
 			apiFetch( 'POST', '/admin/returns/' + state.currentReturnId + '/actions',
-				{ action_type: actionType, idempotency_key: 'returns-' + state.currentReturnId + '-' + actionType + '-' + Date.now() },
+				{ action_type: actionType, idempotency_key: 'returns-' + state.currentReturnId + '-' + actionType },
 				function ( err, data ) {
 					btn.disabled = false;
 					if ( err || ! data || ! data.ok ) {
