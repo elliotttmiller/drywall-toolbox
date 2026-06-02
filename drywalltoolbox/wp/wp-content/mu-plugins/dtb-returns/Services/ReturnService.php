@@ -27,16 +27,34 @@ function dtb_return_transition_status( int $return_id, string $new_status ) {
 		return new WP_Error( 'invalid_status', __( 'Invalid status.', 'drywall-toolbox' ), [ 'status' => 400 ] );
 	}
 
+	$current_status = $entity->status->value();
+
+	// Enforce transition-map rules when the map is loaded.
+	if ( function_exists( 'dtb_return_is_valid_transition' ) ) {
+		if ( ! dtb_return_is_valid_transition( $current_status, $new_status ) ) {
+			return new WP_Error(
+				'invalid_transition',
+				sprintf(
+					/* translators: 1 = current status, 2 = requested status */
+					__( 'Cannot transition a return from "%1$s" to "%2$s".', 'drywall-toolbox' ),
+					$current_status,
+					$new_status
+				),
+				[ 'status' => 409 ]
+			);
+		}
+	}
+
 	$result = dtb_returns_save( [ 'id' => $return_id, 'status' => $new_status ] );
 	if ( is_wp_error( $result ) ) {
 		return $result;
 	}
 
-	do_action( 'dtb_return_status_changed', $return_id, $entity->status->value(), $new_status );
+	do_action( 'dtb_return_status_changed', $return_id, $current_status, $new_status );
 
 	dtb_audit_log_write( 'return.status_changed', [
 		'return_id'  => $return_id,
-		'from'       => $entity->status->value(),
+		'from'       => $current_status,
 		'to'         => $new_status,
 		'user_id'    => get_current_user_id(),
 	] );

@@ -55,6 +55,17 @@ function dtb_admin_assets_enqueue(): void {
 		$css_ver
 	);
 
+	// ── Workbench shared CSS (loads after dtb-admin) ──
+	$wb_css_file = $assets_dir . 'dtb-admin-workbench.css';
+	if ( file_exists( $wb_css_file ) ) {
+		wp_enqueue_style(
+			'dtb-admin-workbench',
+			$assets_url . 'dtb-admin-workbench.css',
+			[ 'dtb-admin' ],
+			(string) filemtime( $wb_css_file )
+		);
+	}
+
 	// ── Shared JS ──
 	$js_file = $assets_dir . 'dtb-admin.js';
 	$js_ver  = file_exists( $js_file ) ? (string) filemtime( $js_file ) : '2.0.0';
@@ -66,6 +77,18 @@ function dtb_admin_assets_enqueue(): void {
 		$js_ver,
 		true
 	);
+
+	// ── Workbench shared JS (loads after dtb-admin, before module scripts) ──
+	$wb_js_file = $assets_dir . 'dtb-admin-workbench.js';
+	if ( file_exists( $wb_js_file ) ) {
+		wp_enqueue_script(
+			'dtb-admin-workbench',
+			$assets_url . 'dtb-admin-workbench.js',
+			[ 'dtb-admin' ],
+			(string) filemtime( $wb_js_file ),
+			true
+		);
+	}
 
 	$current_user = wp_get_current_user();
 
@@ -104,10 +127,16 @@ function dtb_admin_assets_enqueue(): void {
 		$mod_file = $mod['dir'] . $mod['file'];
 		$mod_ver  = file_exists( $mod_file ) ? (string) filemtime( $mod_file ) : '1.0.0';
 
+		// Build CSS deps: always dtb-admin; add workbench if file exists.
+		$css_deps = [ 'dtb-admin' ];
+		if ( file_exists( $assets_dir . 'dtb-admin-workbench.css' ) ) {
+			$css_deps[] = 'dtb-admin-workbench';
+		}
+
 		wp_enqueue_style(
 			$mod['id'],
 			$mod['url'] . $mod['file'],
-			[ 'dtb-admin' ],  // Always loads after the shared stylesheet.
+			$css_deps,
 			$mod_ver
 		);
 	}
@@ -126,6 +155,12 @@ function dtb_admin_assets_enqueue(): void {
 			'url'  => content_url( '/mu-plugins/dtb-returns/Admin/assets/' ),
 			'file' => 'dtb-returns-page.js',
 		],
+		'dtb-repairs' => [
+			'id'   => 'dtb-repairs-page-script',
+			'dir'  => WP_CONTENT_DIR . '/mu-plugins/dtb-repair-service/Admin/assets/',
+			'url'  => content_url( '/mu-plugins/dtb-repair-service/Admin/assets/' ),
+			'file' => 'dtb-repairs-page.js',
+		],
 	];
 
 	if ( isset( $module_js_map[ $page_slug ] ) ) {
@@ -134,10 +169,16 @@ function dtb_admin_assets_enqueue(): void {
 		$mod_js_ver  = file_exists( $mod_js_file ) ? (string) filemtime( $mod_js_file ) : '1.0.0';
 
 		if ( file_exists( $mod_js_file ) ) {
+			// Build deps: always include dtb-admin; add workbench if it was enqueued.
+			$js_deps = [ 'dtb-admin' ];
+			if ( wp_script_is( 'dtb-admin-workbench', 'enqueued' ) ) {
+				$js_deps[] = 'dtb-admin-workbench';
+			}
+
 			wp_enqueue_script(
 				$mod_js['id'],
 				$mod_js['url'] . $mod_js['file'],
-				[ 'dtb-admin' ],
+				$js_deps,
 				$mod_js_ver,
 				true
 			);

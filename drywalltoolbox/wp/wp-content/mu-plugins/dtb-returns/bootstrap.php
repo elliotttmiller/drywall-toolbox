@@ -14,6 +14,7 @@ $_dtb_returns_dir = __DIR__;
 require_once $_dtb_returns_dir . '/Domain/ReturnStatus.php';
 require_once $_dtb_returns_dir . '/Domain/ReturnEntity.php';
 require_once $_dtb_returns_dir . '/Infrastructure/ReturnRepository.php';
+require_once $_dtb_returns_dir . '/Services/ReturnWorkflowTransitionMap.php';
 require_once $_dtb_returns_dir . '/Services/ReturnService.php';
 require_once $_dtb_returns_dir . '/Admin/ReturnsPage.php';
 require_once $_dtb_returns_dir . '/Rest/ReturnsController.php';

@@ -366,7 +366,7 @@
 			notes.forEach( function ( n ) {
 				html += '<div class="dtb-returns-staff-note">';
 				html += '<p class="dtb-returns-staff-note__body">' + esc( n.note ) + '</p>';
-				html += '<p class="dtb-returns-staff-note__meta">' + esc( n.author || 'Staff' ) + ' &middot; ' + formatDateFull( n.date ) + '</p>';
+		html += '<p class="dtb-returns-staff-note__meta">' + esc( n.user_label || 'Staff' ) + ' &middot; ' + formatDateFull( n.created_at ) + '</p>';
 				html += '</div>';
 			} );
 			html += '</div>';
@@ -398,7 +398,7 @@
 
 	// ── Tab builder: Actions ───────────────────────────────────────────────────
 	function buildActionsTab( ret ) {
-		var allStatuses = [ 'pending', 'approved', 'processing', 'resolved', 'rejected', 'cancelled' ];
+		var allStatuses = [ 'pending_review', 'approved', 'rejected', 'awaiting_item', 'item_received', 'refund_issued', 'exchange_sent', 'closed' ];
 		var html = '';
 
 		// Status transitions

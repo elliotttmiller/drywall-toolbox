@@ -120,6 +120,14 @@ require_once $_dtb_platform . '/Rest/OpsSettingsController.php';
 require_once $_dtb_platform . '/Rest/ProxyRoutes.php';
 
 // =============================================================================
+// 8b. ADMIN WORKBENCH SERVICES
+// =============================================================================
+require_once $_dtb_platform . '/Services/AdminCustomerContextService.php';
+require_once $_dtb_platform . '/Services/AdminLinkedRecordService.php';
+require_once $_dtb_platform . '/Services/AdminWorkloadIntelligenceService.php';
+require_once $_dtb_platform . '/Services/AdminActionAuditService.php';
+
+// =============================================================================
 // 9. ADMIN UI
 // =============================================================================
 require_once $_dtb_platform . '/Admin/AdminCapabilities.php';

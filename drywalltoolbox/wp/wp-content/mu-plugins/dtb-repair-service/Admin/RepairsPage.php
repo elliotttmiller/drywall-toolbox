@@ -355,9 +355,7 @@ function dtb_repairs_render_queue_row( int $repair_id ): void {
 	[ $na_label, $na_type ] = $next_action_map[ $status ] ?? [ ucwords( str_replace( '_', ' ', $status ) ), 'muted' ];
 
 	echo '<tr class="dtb-table__row dtb-table__row--clickable"'
-		. ' data-dtb-drawer="dtb-repairs-detail-drawer"'
-		. ' data-dtb-drawer-title="' . esc_attr( sprintf( __( 'Repair #%d', 'drywall-toolbox' ), $repair_id ) ) . '"'
-		. ' data-dtb-field-repair-id="' . esc_attr( (string) $repair_id ) . '"'
+		. ' data-dtb-open-repair="' . esc_attr( (string) $repair_id ) . '"'
 		. ' data-dtb-field-customer="' . esc_attr( $customer ) . '"'
 		. ' data-dtb-field-device="' . esc_attr( $device ) . '"'
 		. ' data-dtb-field-status="' . esc_attr( $status ) . '"'
