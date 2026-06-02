@@ -27,6 +27,24 @@ $map = dtb_order_get_status_map();
 return $map[ $wc_status ]['label'] ?? ucwords( str_replace( '-', ' ', $wc_status ) );
 }
 
+function dtb_order_get_allowed_transitions( string $status ): array {
+	static $map = null;
+
+	if ( null === $map ) {
+		$map = [
+			'pending'    => [ 'on-hold', 'processing', 'cancelled', 'failed' ],
+			'on-hold'    => [ 'processing', 'cancelled' ],
+			'processing' => [ 'completed', 'on-hold', 'cancelled', 'refunded' ],
+			'completed'  => [],
+			'cancelled'  => [],
+			'refunded'   => [],
+			'failed'     => [],
+		];
+	}
+
+	return $map[ $status ] ?? [];
+}
+
 function dtb_order_fulfillment_substates(): array {
 return [
 'pending'            => __( 'Preparing', 'drywall-toolbox' ),

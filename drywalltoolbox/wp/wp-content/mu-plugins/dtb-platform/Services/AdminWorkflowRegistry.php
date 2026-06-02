@@ -64,10 +64,14 @@ function dtb_admin_get_workflow_definitions(): array {
 	}
 	$repair_transitions = function_exists( 'dtb_get_allowed_transitions' ) ? dtb_get_allowed_transitions() : [];
 
-	$order_map    = function_exists( 'dtb_order_get_status_map' ) ? dtb_order_get_status_map() : [];
-	$order_labels = [];
+	$order_map         = function_exists( 'dtb_order_get_status_map' ) ? dtb_order_get_status_map() : [];
+	$order_labels      = [];
+	$order_transitions = [];
 	foreach ( $order_map as $status => $meta ) {
-		$order_labels[ $status ] = (string) ( $meta['label'] ?? ucwords( str_replace( '-', ' ', $status ) ) );
+		$order_labels[ $status ]      = (string) ( $meta['label'] ?? ucwords( str_replace( '-', ' ', $status ) ) );
+		$order_transitions[ $status ] = function_exists( 'dtb_order_get_allowed_transitions' )
+			? dtb_order_get_allowed_transitions( $status )
+			: [];
 	}
 
 	$defs = [
@@ -180,7 +184,7 @@ function dtb_admin_get_workflow_definitions(): array {
 			'statuses'                  => array_keys( $order_map ),
 			'labels'                    => $order_labels,
 			'terminal_statuses'         => function_exists( 'dtb_order_terminal_statuses' ) ? dtb_order_terminal_statuses() : [],
-			'allowed_transitions'       => [],
+			'allowed_transitions'       => $order_transitions,
 			'queue_filters'             => [
 				'attention'  => [
 					'label'    => __( 'Attention', 'drywall-toolbox' ),
@@ -215,7 +219,7 @@ function dtb_admin_get_workflow_definitions(): array {
 			'statuses'                  => array_keys( $order_map ),
 			'labels'                    => $order_labels,
 			'terminal_statuses'         => function_exists( 'dtb_order_terminal_statuses' ) ? dtb_order_terminal_statuses() : [],
-			'allowed_transitions'       => [],
+			'allowed_transitions'       => $order_transitions,
 			'queue_filters'             => [],
 			'next_best_action_defaults' => [],
 			'risk_states'               => [ 'on-hold', 'failed' ],
