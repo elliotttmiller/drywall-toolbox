@@ -5,7 +5,7 @@
  * Localized:   window.dtbAdminConfig  { nonce, restUrl, adminUrl, ... }
  *
  * Tabs: overview | intake | quote | parts | technician |
- *        conversation | timeline | shipping | integrations | actions
+ *        conversation | timeline | shipping | actions
  */
 /* global DtbWorkbench, dtbAdminConfig */
 ( function () {
@@ -15,7 +15,7 @@
 	var CONFIG = window.dtbAdminConfig || {};
 	var REST   = ( CONFIG.restUrl || '' ).replace( /\/$/, '' );
 	var TABS   = [ 'overview', 'intake', 'quote', 'parts', 'technician',
-	               'conversation', 'timeline', 'shipping', 'integrations', 'actions' ];
+	               'conversation', 'timeline', 'shipping', 'actions' ];
 
 	// ── State ─────────────────────────────────────────────────────────────────
 
@@ -115,12 +115,18 @@
 
 		var editLink = document.createElement( 'a' );
 		editLink.id        = 'dtb-repair-modal-edit-link';
-		editLink.className = 'button button-primary';
-		editLink.textContent = 'Edit Record';
+		editLink.className = 'button button-small dtb-wb-fallback-link';
+		editLink.textContent = 'Edit post ↗';
 		editLink.target    = '_blank';
+		editLink.title     = 'Fallback: open raw post editor';
+
+		var fallbackSpan = document.createElement( 'span' );
+		fallbackSpan.className = 'dtb-wb-fallback-links';
+		fallbackSpan.textContent = 'Fallback: ';
+		fallbackSpan.appendChild( editLink );
 
 		footerEl.appendChild( refreshBtn );
-		footerEl.appendChild( editLink );
+		footerEl.appendChild( fallbackSpan );
 
 		modal.appendChild( header );
 		modal.appendChild( body );
@@ -271,11 +277,34 @@
 		renderConversation( d );
 		renderTimeline( d );
 		renderShipping( d );
-		renderIntegrations( d );
 		renderActions( d );
 
 		// Activate correct tab.
 		switchTab( state.activeTab );
+	}
+
+	// ── Compact record-issues helper (integration blockers only) ─────────────
+
+	function renderRepairRecordIssues( integrations ) {
+		var BLOCKER_KEYS = [ 'sync_failed', 'notification_failed', 'payment_failed',
+		                     'shipping_blocked', 'refund_unavailable', 'missing_linked_order',
+		                     'quote_notification_failed' ];
+		var issues = [];
+		Object.keys( integrations || {} ).forEach( function ( key ) {
+			var svc = integrations[ key ] || {};
+			var isBlocker = svc.status === 'error' || svc.status === 'failed' || BLOCKER_KEYS.indexOf( key ) !== -1;
+			if ( isBlocker && ( svc.status === 'error' || svc.status === 'failed' ) ) {
+				issues.push( svc.label || key );
+			}
+		} );
+		if ( ! issues.length ) { return ''; }
+		var adminUrl = ( CONFIG.adminUrl || '/wp-admin/admin.php' ).replace( /admin\.php.*$/, 'admin.php' );
+		var sysUrl   = adminUrl + '?page=dtb-system-manager';
+		var chips    = issues.map( function ( label ) {
+			return '<span class="dtb-wb-blocker-chip">' + WB.escapeHtml( label ) + '</span>';
+		} ).join( ' ' );
+		return '<div class="dtb-wb-record-issues">' + chips
+		     + ' <a href="' + WB.escapeHtml( sysUrl ) + '" class="dtb-wb-record-issues__link">System Manager ↗</a></div>';
 	}
 
 	// ── Panel: Overview ───────────────────────────────────────────────────────
@@ -286,6 +315,12 @@
 		var intel = d.intelligence || d.intel || {};
 
 		var html = '<div class="dtb-modal__body">';
+
+		// Compact record-level blocker signals (integration errors only)
+		var issuesHtml = renderRepairRecordIssues( d.integrations || d.integration || {} );
+		if ( issuesHtml ) {
+			html += issuesHtml;
+		}
 
 		// Left: core KVs + linked records
 		html += '<div class="dtb-wb-main dtb-modal-tab-panel" data-panel-inner="overview-main">';
@@ -666,14 +701,6 @@
 				} );
 			} );
 		}
-	}
-
-	// ── Panel: Integrations ───────────────────────────────────────────────────
-
-	function renderIntegrations( d ) {
-		var panel = getOrCreatePanel( 'integrations' );
-		var intg  = d.integrations || d.integration || {};
-		panel.innerHTML = WB.renderIntegrationHealth ? WB.renderIntegrationHealth( intg ) : '';
 	}
 
 	// ── Panel: Actions ────────────────────────────────────────────────────────

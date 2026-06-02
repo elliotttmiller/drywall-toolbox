@@ -23,17 +23,10 @@
 		return modal ? modal.querySelector( '.dtb-modal__footer' ) : null;
 	}
 
-	function editUrl( record, linked ) {
+	function editUrl( record ) {
 		if ( record && record.id ) {
 			var adminUrl = ( window.dtbAdminConfig && window.dtbAdminConfig.adminUrl ) || '/wp-admin/admin.php';
 			return adminUrl.replace( /admin\.php.*$/, '' ) + 'post.php?post=' + encodeURIComponent( record.id ) + '&action=edit';
-		}
-		if ( linked && Array.isArray( linked.records ) ) {
-			for ( var i = 0; i < linked.records.length; i++ ) {
-				if ( linked.records[ i ].module === 'order' && linked.records[ i ].url ) {
-					return linked.records[ i ].url;
-				}
-			}
 		}
 		return '';
 	}
@@ -165,8 +158,10 @@
 
 		body.innerHTML = html;
 		if ( footer ) {
-			var url = editUrl( record, linked );
-			footer.innerHTML = url ? '<a class="button button-primary" href="' + WB.escapeHtml( url ) + '">Open WooCommerce Order</a>' : '';
+			var url = editUrl( record );
+			footer.innerHTML = url
+				? '<span class="dtb-wb-fallback-links">Fallback: <a class="button button-small" href="' + WB.escapeHtml( url ) + '" target="_blank">WooCommerce order ↗</a></span>'
+				: '';
 		}
 	}
 
