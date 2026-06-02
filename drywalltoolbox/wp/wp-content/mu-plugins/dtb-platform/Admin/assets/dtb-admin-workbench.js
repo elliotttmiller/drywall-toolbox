@@ -191,6 +191,56 @@
 	}
 
 	/**
+	 * Render compact record-level issue chips for errors/failures only.
+	 *
+	 * Shows only integration keys with status 'error', 'failed', or 'sync_failed',
+	 * or keys matching a canonical blocker name regardless of status. Each chip
+	 * links to System Manager for diagnostics. Use this in module modals instead of
+	 * renderIntegrationHealth — system-level diagnostics belong in System Manager.
+	 *
+	 * @param {Object} integrations  integrations/intel block from the canonical payload.
+	 * @param {string} [sysUrl]      Override System Manager URL (auto-derived if absent).
+	 * @return {string}
+	 */
+	function renderRecordIssueChips( integrations, sysUrl ) {
+		integrations = integrations || {};
+		var blockerKeys = [
+			'sync_failed', 'notification_failed', 'payment_failed', 'fulfillment_blocked',
+			'shipping_blocked', 'refund_unavailable', 'quote_notification_failed',
+			'parts_allocation_unavailable', 'missing_linked_order',
+		];
+		var adminBase = ( window.dtbAdminConfig && window.dtbAdminConfig.adminUrl )
+			? window.dtbAdminConfig.adminUrl.replace( /admin\.php.*$/, 'admin.php' )
+			: '/wp-admin/admin.php';
+		var resolvedSysUrl = sysUrl || ( adminBase + '?page=dtb-system-manager' );
+		var chips = [];
+		Object.keys( integrations ).forEach( function ( key ) {
+			var item = integrations[ key ] || {};
+			var status = item.status || item.state || '';
+			var isError = status === 'error' || status === 'failed' || status === 'sync_failed';
+			var isBlocker = blockerKeys.indexOf( key ) !== -1;
+			if ( ! isError && ! isBlocker ) { return; }
+			chips.push( {
+				label: item.label || key.replace( /_/g, ' ' ),
+				error: item.last_error || item.error || null,
+				url:   resolvedSysUrl,
+			} );
+		} );
+		if ( ! chips.length ) { return ''; }
+		var html = '<div class="dtb-wb-record-issues">';
+		html += '<div class="dtb-wb-record-issues__title">Record Issues</div>';
+		chips.forEach( function ( chip ) {
+			html += '<div class="dtb-wb-note dtb-wb-note--error">';
+			html += escapeHtml( chip.label );
+			if ( chip.error ) { html += ' — ' + escapeHtml( chip.error ); }
+			html += ' <a href="' + escapeHtml( chip.url ) + '" target="_blank" rel="noopener">System Manager ↗</a>';
+			html += '</div>';
+		} );
+		html += '</div>';
+		return html;
+	}
+
+	/**
 	 * Render canonical integration health.
 	 *
 	 * @param {Object} integrations
@@ -679,6 +729,7 @@
 		renderCustomerRail: renderCustomerRail,
 		renderLinkedRecords: renderLinkedRecords,
 		renderIntegrationHealth: renderIntegrationHealth,
+		renderRecordIssueChips: renderRecordIssueChips,
 		renderTimeline:    renderTimeline,
 	};
 

@@ -574,8 +574,12 @@
 		if ( WB.renderLinkedRecords ) {
 			html += '<div class="dtb-support-ticket-card"><h4>Linked Records</h4>' + WB.renderLinkedRecords( linked ) + '</div>';
 		}
-		if ( WB.renderIntegrationHealth ) {
-			html += '<div class="dtb-support-ticket-card"><h4>Integrations</h4>' + WB.renderIntegrationHealth( integrations ) + '</div>';
+		// Compact record-level issue chips only — full integration diagnostics belong in System Manager.
+		if ( WB.renderRecordIssueChips ) {
+			var issueChips = WB.renderRecordIssueChips( integrations );
+			if ( issueChips ) {
+				html += '<div class="dtb-support-ticket-card">' + issueChips + '</div>';
+			}
 		}
 		if ( macros.length ) {
 			html += '<div class="dtb-support-ticket-card"><h4>Recommended Macros</h4><ul class="dtb-support-rail-list">';

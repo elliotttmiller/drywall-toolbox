@@ -88,7 +88,9 @@ function dtb_order_rest_get_admin_detail( WP_REST_Request $request ): WP_REST_Re
 			'all_statuses'        => array_values( (array) ( $workflow_def['statuses'] ?? [] ) ),
 			'labels'              => (array) ( $workflow_def['labels'] ?? [] ),
 			'terminal_statuses'   => array_values( (array) ( $workflow_def['terminal_statuses'] ?? [] ) ),
-			'allowed_transitions' => [],
+			'allowed_transitions' => function_exists( 'dtb_admin_get_allowed_workflow_transitions' )
+				? array_values( dtb_admin_get_allowed_workflow_transitions( $workflow_key, $status ) )
+				: [],
 		],
 		'intelligence'   => [
 			'next_best_action' => (string) ( $next_best_action_defaults[ $status ] ?? '' ),
@@ -100,6 +102,7 @@ function dtb_order_rest_get_admin_detail( WP_REST_Request $request ): WP_REST_Re
 		'actions'        => [],
 		'permissions'    => [
 			'can_refresh'        => current_user_can( 'dtb_manage_orders' ) || current_user_can( 'manage_woocommerce' ),
+			'can_manage_status'  => current_user_can( 'dtb_manage_orders' ) || current_user_can( 'manage_woocommerce' ),
 			'can_retry_sync'     => current_user_can( 'dtb_manage_integrations' ) || current_user_can( 'manage_woocommerce' ),
 			'can_open_wc_order'  => current_user_can( 'manage_woocommerce' ),
 		],
@@ -159,6 +162,46 @@ function dtb_order_rest_admin_action( WP_REST_Request $request ): WP_REST_Respon
 					'source'     => 'admin',
 					'actor_type' => 'admin',
 					'visibility' => 'operator',
+				] );
+			}
+			break;
+
+		case 'transition':
+			if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'dtb_manage_orders' ) ) {
+				return new WP_Error( 'dtb_forbidden', __( 'You do not have permission to transition this order.', 'drywall-toolbox' ), [ 'status' => 403 ] );
+			}
+			$to_status = sanitize_key( (string) $request->get_param( 'to_status' ) );
+			if ( ! $to_status ) {
+				return new WP_Error( 'dtb_invalid_action', __( 'to_status is required.', 'drywall-toolbox' ), [ 'status' => 400 ] );
+			}
+			// Validate against allowed_transitions if AdminWorkflowRegistry is available.
+			$workflow_key   = 'order';
+			$current_status = '';
+			if ( function_exists( 'wc_get_order' ) ) {
+				$order = wc_get_order( $order_id );
+				if ( $order ) {
+					$current_status = $order->get_status();
+				}
+			}
+			if ( function_exists( 'dtb_admin_get_allowed_workflow_transitions' ) && $current_status ) {
+				$allowed = dtb_admin_get_allowed_workflow_transitions( $workflow_key, $current_status );
+				if ( ! empty( $allowed ) && ! in_array( $to_status, $allowed, true ) ) {
+					return new WP_Error( 'dtb_invalid_transition', __( 'Status transition not allowed.', 'drywall-toolbox' ), [ 'status' => 422 ] );
+				}
+			}
+			if ( function_exists( 'wc_get_order' ) ) {
+				$order = wc_get_order( $order_id );
+				if ( $order ) {
+					$order->update_status( $to_status, __( 'Status updated from admin workbench.', 'drywall-toolbox' ), true );
+				}
+			}
+			if ( function_exists( 'dtb_order_append_event' ) ) {
+				dtb_order_append_event( $order_id, 'order.status_changed', [
+					'from_status' => $current_status,
+					'to_status'   => $to_status,
+					'source'      => 'admin',
+					'actor_type'  => 'admin',
+					'visibility'  => 'operator',
 				] );
 			}
 			break;

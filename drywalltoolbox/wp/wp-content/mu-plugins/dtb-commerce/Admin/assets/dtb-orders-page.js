@@ -70,15 +70,57 @@
 
 	function renderActions( payload ) {
 		var perms = payload.permissions || {};
+		var linked = payload.linked_records || {};
+		var workflow = payload.workflow || {};
 		var html = '<div class="dtb-wb-command-bar dtb-orders-command-bar">';
 		if ( perms.can_refresh ) {
 			html += '<button type="button" class="button" data-dtb-order-action="refresh_snapshot">Refresh Snapshot</button>';
 		}
-		if ( perms.can_retry_sync ) {
-			html += '<button type="button" class="button" data-dtb-order-action="retry_veeqo">Retry Veeqo</button>';
-			html += '<button type="button" class="button" data-dtb-order-action="retry_quickbooks">Retry QuickBooks</button>';
-		}
 		html += '</div>';
+
+		// Workflow transitions (server-provided, not hardcoded).
+		var allowed = Array.isArray( workflow.allowed_transitions ) ? workflow.allowed_transitions : [];
+		var labels = workflow.labels || {};
+		if ( perms.can_manage_status && allowed.length ) {
+			html += '<div class="dtb-wb-section" style="padding:1rem">';
+			html += '<h3 class="dtb-wb-section__title">Transition status</h3>';
+			html += '<div style="display:flex;flex-wrap:wrap;gap:.5rem">';
+			allowed.forEach( function ( s ) {
+				var label = labels[ s ] || s.replace( /_/g, ' ' );
+				html += '<button type="button" class="button dtb-orders-transition-btn" data-status="' + WB.escapeHtml( s ) + '">' + WB.escapeHtml( label ) + '</button>';
+			} );
+			html += '</div></div>';
+		}
+
+		// Linked records — quick-open buttons.
+		var ticketIds = Array.isArray( linked.ticket_ids ) ? linked.ticket_ids : [];
+		var returnIds = Array.isArray( linked.return_ids ) ? linked.return_ids : [];
+		var repairIds = Array.isArray( linked.repair_ids ) ? linked.repair_ids : [];
+		if ( ticketIds.length || returnIds.length || repairIds.length ) {
+			html += '<div class="dtb-wb-section" style="padding:1rem">';
+			html += '<h3 class="dtb-wb-section__title">Linked records</h3>';
+			html += '<div style="display:flex;flex-wrap:wrap;gap:.5rem">';
+			ticketIds.forEach( function ( id ) {
+				html += '<button type="button" class="button dtb-wb-open-record-btn" data-dtb-open-module="support" data-dtb-open-record-id="' + WB.escapeHtml( String( id ) ) + '">Support #' + WB.escapeHtml( String( id ) ) + '</button>';
+			} );
+			returnIds.forEach( function ( id ) {
+				html += '<button type="button" class="button dtb-wb-open-record-btn" data-dtb-open-module="returns" data-dtb-open-record-id="' + WB.escapeHtml( String( id ) ) + '">Return #' + WB.escapeHtml( String( id ) ) + '</button>';
+			} );
+			repairIds.forEach( function ( id ) {
+				html += '<button type="button" class="button dtb-wb-open-record-btn" data-dtb-open-module="repair" data-dtb-open-record-id="' + WB.escapeHtml( String( id ) ) + '">Repair #' + WB.escapeHtml( String( id ) ) + '</button>';
+			} );
+			html += '</div></div>';
+		}
+
+		// Integration retries are available via System Manager only (not primary actions).
+		if ( perms.can_retry_sync ) {
+			var sysUrl = ( ( window.dtbAdminConfig && window.dtbAdminConfig.adminUrl ) || '/wp-admin/admin.php' )
+				.replace( /admin\.php.*$/, 'admin.php' ) + '?page=dtb-system-manager';
+			html += '<div class="dtb-wb-section" style="padding:.5rem 1rem">';
+			html += '<p class="dtb-wb-note dtb-wb-note--info">Integration retries (Veeqo, QuickBooks) are available in <a href="' + WB.escapeHtml( sysUrl ) + '" target="_blank" rel="noopener">System Manager ↗</a>.</p>';
+			html += '</div>';
+		}
+
 		return html;
 	}
 
@@ -192,14 +234,38 @@
 		fetchOrder( orderId );
 	}
 
+	function runTransition( toStatus, button ) {
+		if ( ! state.orderId || ! toStatus ) { return; }
+		WB.lockAction( button, 'Working…' );
+		var opNonce = Math.random().toString( 36 ).slice( 2, 8 );
+		WB.apiFetch( 'dtb/v1/admin/orders/' + encodeURIComponent( state.orderId ) + '/actions', {
+			method: 'POST',
+			body: {
+				action_type: 'transition',
+				to_status:   toStatus,
+				idempotency_key: 'orders-' + state.orderId + '-transition-' + toStatus,
+			},
+		} ).then( function ( data ) {
+			WB.showToast( data.message || 'Order status updated.', 'success' );
+			renderWorkbench( data.detail || state.payload || {} );
+		} ).catch( function ( err ) {
+			WB.showToast( err.message || 'Transition failed.', 'error' );
+		} ).finally( function () {
+			WB.unlockAction( button );
+		} );
+	}
+
 	function runAction( action, button ) {
 		if ( ! state.orderId || ! action ) { return; }
 		WB.lockAction( button, 'Working…' );
+		// Derive idempotency key: record + action + short per-click nonce so the same
+		// action can be repeated without being blocked by the server-side idempotency cache.
+		var opNonce = Math.random().toString( 36 ).slice( 2, 8 );
 		WB.apiFetch( 'dtb/v1/admin/orders/' + encodeURIComponent( state.orderId ) + '/actions', {
 			method: 'POST',
 			body: {
 				action_type: action,
-				idempotency_key: 'orders-' + state.orderId + '-' + action,
+				idempotency_key: 'orders-' + state.orderId + '-' + action + '-' + opNonce,
 			},
 		} ).then( function ( data ) {
 			WB.showToast( data.message || 'Order action queued.', 'success' );
@@ -216,6 +282,27 @@
 		if ( actionButton ) {
 			event.preventDefault();
 			runAction( actionButton.getAttribute( 'data-dtb-order-action' ), actionButton );
+			return;
+		}
+
+		// Transition button inside the modal actions panel.
+		var transBtn = event.target.closest ? event.target.closest( '#' + MODAL_ID + ' .dtb-orders-transition-btn' ) : null;
+		if ( transBtn ) {
+			event.preventDefault();
+			var toStatus = transBtn.getAttribute( 'data-status' );
+			WB.confirmDanger( 'Transition order to "' + toStatus.replace( /_/g, ' ' ) + '"?', function () {
+				runTransition( toStatus, transBtn );
+			} );
+			return;
+		}
+
+		// Open linked record buttons (dispatch module-specific deeplink event).
+		var openBtn = event.target.closest ? event.target.closest( '#' + MODAL_ID + ' .dtb-wb-open-record-btn' ) : null;
+		if ( openBtn ) {
+			event.preventDefault();
+			var mod = openBtn.getAttribute( 'data-dtb-open-module' );
+			var rid = openBtn.getAttribute( 'data-dtb-open-record-id' );
+			document.dispatchEvent( new CustomEvent( 'dtb:deeplink', { detail: { module: mod, id: rid } } ) );
 			return;
 		}
 
