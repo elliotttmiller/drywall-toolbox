@@ -9,6 +9,24 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/*
+ * Probe-version guard — invalidates the dtb_system_health transient when
+ * the probe functions change so stale "Missing" statuses are cleared on next
+ * page load.  Bump DTB_HEALTH_PROBE_VER whenever probe logic is updated.
+ */
+add_action(
+	'init',
+	static function (): void {
+		// phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		$version = 'dtb-probe-v2-2025-06-02';
+		if ( get_option( 'dtb_health_probe_ver' ) !== $version ) {
+			delete_transient( 'dtb_system_health' );
+			update_option( 'dtb_health_probe_ver', $version, false );
+		}
+	},
+	1
+);
+
 /**
  * Returns a summary of system health indicators.
  *
@@ -134,24 +152,92 @@ function dtb_system_projection_health_summary(): array {
 }
 
 function dtb_system_catalog_health_summary(): array {
+	/*
+	 * Probe current catalog-platform symbols.
+	 * Legacy stubs dtb_catalog_get_product / dtb_catalog_get_products were
+	 * removed when catalog-platform was refactored. Probe the current
+	 * canonical surface instead.
+	 */
+	$dtb_catalog_available =
+		function_exists( 'dtb_catalog_lookup_product_detail_by_id' ) ||
+		function_exists( 'dtb_catalog_lookup_product_detail_by_slug' ) ||
+		function_exists( 'dtb_catalog_platform_register_routes' ) ||
+		class_exists( 'DTB_CatalogProductsController' ) ||
+		class_exists( 'DTB_ProductDetailController' );
+
+	// Route-level check: safe only after rest_api_init has fired.
+	$catalog_routes_registered = false;
+	if ( did_action( 'rest_api_init' ) && function_exists( 'rest_get_server' ) ) {
+		$routes                    = rest_get_server()->get_routes();
+		$catalog_routes_registered = isset( $routes['/dtb/v1/catalog/products'] );
+	}
+
 	return [
-		'product_lookup_available' => function_exists( 'wc_get_products' ),
-		'dtb_catalog_available'    => function_exists( 'dtb_catalog_get_product' ) || function_exists( 'dtb_catalog_get_products' ),
-		'parts_available'          => post_type_exists( 'dtb_part' ) || post_type_exists( 'product' ),
+		'product_lookup_available'  => function_exists( 'wc_get_products' ),
+		'dtb_catalog_available'     => $dtb_catalog_available,
+		'catalog_routes_registered' => $catalog_routes_registered,
+		'parts_available'           => post_type_exists( 'dtb_part' ) || post_type_exists( 'product' ),
 	];
 }
 
 function dtb_system_media_health_summary(): array {
+	/*
+	 * Probe current image-sync symbols.
+	 * Legacy dtb_image_sync_status() was replaced by dtb_image_sync_get_status()
+	 * and the route callback dtb_route_sync_images_status(). Probe the current
+	 * canonical surface instead.
+	 */
+	$image_sync_available =
+		function_exists( 'dtb_image_sync_register_routes' ) ||
+		function_exists( 'dtb_build_image_sync_snapshot' ) ||
+		function_exists( 'dtb_image_sync_get_status' ) ||
+		function_exists( 'dtb_route_sync_images_status' ) ||
+		function_exists( 'dtb_route_link_registered_images' ) ||
+		function_exists( 'dtb_register_image_attachment' ) ||
+		function_exists( 'dtb_link_images_to_product' );
+
+	// Route-level check.
+	$sync_routes_registered = false;
+	if ( did_action( 'rest_api_init' ) && function_exists( 'rest_get_server' ) ) {
+		$routes                 = rest_get_server()->get_routes();
+		$sync_routes_registered =
+			isset( $routes['/dtb/v1/sync-images'] ) &&
+			isset( $routes['/dtb/v1/sync-images/status'] );
+	}
+
 	return [
-		'uploads_writable'       => wp_is_writable( wp_get_upload_dir()['basedir'] ?? WP_CONTENT_DIR ),
-		'image_sync_available'   => function_exists( 'dtb_image_sync_status' ),
-		'attachment_post_type'   => post_type_exists( 'attachment' ),
+		'uploads_writable'        => wp_is_writable( wp_get_upload_dir()['basedir'] ?? WP_CONTENT_DIR ),
+		'image_sync_available'    => $image_sync_available,
+		'sync_routes_registered'  => $sync_routes_registered,
+		'attachment_post_type'    => post_type_exists( 'attachment' ),
 	];
 }
 
 function dtb_system_schematic_health_summary(): array {
+	/*
+	 * Probe current schematics symbols.
+	 * Legacy dtb_schematics_get() and the dtb_schematic CPT no longer represent
+	 * schematic availability — schematics now live as attachment meta. Probe the
+	 * current canonical surface instead.
+	 */
+	$schematics_available =
+		function_exists( 'dtb_register_schematics_endpoint' ) ||
+		function_exists( 'dtb_get_schematics' ) ||
+		function_exists( 'dtb_schematics_resolve_product_ids_for_schematic' ) ||
+		function_exists( 'dtb_get_schematic_media_manifest' ) ||
+		function_exists( 'dtb_schematic_supported_brands' );
+
+	// Route-level check.
+	$schematic_routes_registered = false;
+	if ( did_action( 'rest_api_init' ) && function_exists( 'rest_get_server' ) ) {
+		$routes                      = rest_get_server()->get_routes();
+		$schematic_routes_registered =
+			isset( $routes['/dtb/v1/schematics/media'] ) ||
+			isset( $routes['/dtb/v1/schematics/manifest'] );
+	}
+
 	return [
-		'schematics_available' => function_exists( 'dtb_schematics_get' ) || post_type_exists( 'dtb_schematic' ),
-		'post_type_exists'    => post_type_exists( 'dtb_schematic' ),
+		'schematics_available'       => $schematics_available,
+		'schematic_routes_registered'=> $schematic_routes_registered,
 	];
 }
