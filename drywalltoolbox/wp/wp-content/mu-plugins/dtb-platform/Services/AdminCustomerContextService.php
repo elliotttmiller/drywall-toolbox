@@ -242,8 +242,6 @@ function dtb_admin_count_support_tickets( string $email, int $user_id ): array {
 		$vals[]  = $user_id;
 	}
 
-	$open_statuses = "'open','needs_reply','in_progress','snoozed'";
-
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	$rows = $wpdb->get_results( $wpdb->prepare( "SELECT status FROM {$table} WHERE {$where}", ...$vals ) );
 	$total = is_array( $rows ) ? count( $rows ) : 0;

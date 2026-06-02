@@ -192,11 +192,16 @@
 	 * Show a danger-confirmation dialog.
 	 *
 	 * @param {string} message
-	 * @return {boolean}
+	 * Show a native confirmation dialog and invoke callback on accept.
+	 *
+	 * @param {string}   message   Confirmation prompt text.
+	 * @param {Function} callback  Called if the user confirms (no arguments).
 	 */
-	function confirmDanger( message ) {
+	function confirmDanger( message, callback ) {
 		// eslint-disable-next-line no-alert
-		return window.confirm( message );
+		if ( window.confirm( message ) && typeof callback === 'function' ) {
+			callback();
+		}
 	}
 
 	// ── API fetch ──────────────────────────────────────────────────────────────
@@ -204,21 +209,25 @@
 	/**
 	 * Shared authenticated fetch.
 	 *
-	 * @param {string}   method   HTTP verb.
-	 * @param {string}   path     Relative to /wp-json/  (leading slash optional).
-	 * @param {Object=}  body     Request body (JSON-serialised).
-	 * @param {Object=}  options  { timeout: number }
+	 * @param {string}  url      Full URL or a path relative to the WP REST base.
+	 * @param {Object=} options  Fetch init overrides: { method, body, timeout }.
+	 *                           `body` may be a pre-serialised string or an object.
 	 * @return {Promise<Object>}  Resolves with parsed JSON or rejects with Error.
 	 */
-	function apiFetch( method, path, body, options ) {
+	function apiFetch( url, options ) {
 		options = options || {};
 		var cfg   = window.dtbAdminConfig || {};
-		var base  = ( cfg.restUrl || '/wp-json/' ).replace( /\/$/, '' );
 		var nonce = cfg.nonce || '';
-		var url   = base + '/' + path.replace( /^\//, '' );
 
+		// If url is a relative path (no protocol) build the absolute URL.
+		if ( url.indexOf( 'http' ) !== 0 ) {
+			var base = ( cfg.restUrl || '/wp-json/' ).replace( /\/$/, '' );
+			url = base + '/' + url.replace( /^\//, '' );
+		}
+
+		var method = ( options.method || 'GET' ).toUpperCase();
 		var init = {
-			method:  method.toUpperCase(),
+			method:  method,
 			headers: {
 				'Content-Type': 'application/json',
 				'X-WP-Nonce':   nonce,
@@ -226,8 +235,8 @@
 			credentials: 'same-origin',
 		};
 
-		if ( body && method.toUpperCase() !== 'GET' && method.toUpperCase() !== 'HEAD' ) {
-			init.body = JSON.stringify( body );
+		if ( options.body && method !== 'GET' && method !== 'HEAD' ) {
+			init.body = typeof options.body === 'string' ? options.body : JSON.stringify( options.body );
 		}
 
 		var timeoutMs = options.timeout || 20000;
@@ -428,6 +437,11 @@
 	 */
 	function switchTabs( root, tabKey ) {
 		if ( ! root ) { return; }
+
+		// Guard: only allow safe alphanumeric/dash/underscore tab keys.
+		if ( typeof tabKey !== 'string' || ! /^[a-z0-9_-]+$/i.test( tabKey ) ) {
+			return;
+		}
 
 		root.querySelectorAll( '.dtb-modal-tab' ).forEach( function ( btn ) {
 			var isActive = btn.getAttribute( 'data-dtb-tab' ) === tabKey;

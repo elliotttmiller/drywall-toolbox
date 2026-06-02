@@ -100,14 +100,32 @@ function dtb_repair_admin_detail_handler( WP_REST_Request $request ): WP_REST_Re
 	// ── Workload intelligence ──
 	$intel = [];
 	if ( function_exists( 'dtb_admin_compute_workload_score' ) ) {
+		// Build a record snapshot for the intelligence helpers.
+		$intel_record = array_merge( $proj, [
+			'id'     => $repair_id,
+			'status' => $status,
+		] );
+
+		// Collect free-text for sentiment / intent analysis.
+		$intel_text = implode( ' ', array_filter( [
+			(string) get_post_meta( $repair_id, '_repair_issue', true ),
+			(string) get_post_meta( $repair_id, '_repair_customer_name', true ),
+		] ) );
+
 		$intel = [
-			'age_bucket'       => function_exists( 'dtb_admin_compute_age_bucket' )        ? dtb_admin_compute_age_bucket( $post->post_date )            : '',
-			'sla_state'        => function_exists( 'dtb_admin_compute_sla_state' )         ? dtb_admin_compute_sla_state( $post->post_date, $status )     : '',
-			'intent_flags'     => function_exists( 'dtb_admin_detect_intent_flags' )       ? dtb_admin_detect_intent_flags( $repair_id, 'repair' )        : [],
-			'sentiment_flags'  => function_exists( 'dtb_admin_detect_customer_sentiment_flags' ) ? dtb_admin_detect_customer_sentiment_flags( $repair_id, 'repair' ) : [],
-			'next_best_action' => function_exists( 'dtb_admin_compute_next_best_action' )  ? dtb_admin_compute_next_best_action( $repair_id, 'repair' )   : '',
-			'blockers'         => function_exists( 'dtb_admin_compute_blockers' )          ? dtb_admin_compute_blockers( $repair_id, 'repair' )            : [],
-			'workload_score'   => dtb_admin_compute_workload_score( $repair_id, 'repair' ),
+			'age_bucket'      => function_exists( 'dtb_admin_compute_age_bucket' )
+				? dtb_admin_compute_age_bucket( $post->post_date ) : '',
+			'sla_state'       => function_exists( 'dtb_admin_compute_sla_state' )
+				? dtb_admin_compute_sla_state( $post->post_date, $status, 'repair' ) : '',
+			'intent_flags'    => function_exists( 'dtb_admin_detect_intent_flags' )
+				? dtb_admin_detect_intent_flags( $intel_text ) : [],
+			'sentiment_flags' => function_exists( 'dtb_admin_detect_customer_sentiment_flags' )
+				? dtb_admin_detect_customer_sentiment_flags( $intel_text ) : [],
+			'next_best_action' => function_exists( 'dtb_admin_compute_next_best_action' )
+				? dtb_admin_compute_next_best_action( 'repair', $intel_record ) : '',
+			'blockers'        => function_exists( 'dtb_admin_compute_blockers' )
+				? dtb_admin_compute_blockers( 'repair', $intel_record ) : [],
+			'workload_score'  => dtb_admin_compute_workload_score( 'repair', $intel_record ),
 		];
 	}
 

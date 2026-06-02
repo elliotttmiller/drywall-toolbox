@@ -53,9 +53,9 @@ function dtb_admin_audit_ensure_table(): void {
 /**
  * Write an audit event.
  *
- * @param string $event_type  Dot-namespaced: e.g. 'support.status_changed'
  * @param string $module      'support' | 'returns' | 'repair'
  * @param int    $record_id
+ * @param string $event_type  Dot-namespaced: e.g. 'support.status_changed'
  * @param array  $payload     Arbitrary key/value data.
  * @param array  $opts {
  *   visibility string  'internal'|'customer'|'system'
@@ -63,7 +63,7 @@ function dtb_admin_audit_ensure_table(): void {
  * }
  * @return int|false  Inserted row ID, or false on failure.
  */
-function dtb_admin_audit_write( string $event_type, string $module, int $record_id, array $payload = [], array $opts = [] ) {
+function dtb_admin_audit_write( string $module, int $record_id, string $event_type, array $payload = [], array $opts = [] ) {
 	global $wpdb;
 
 	$actor_id    = get_current_user_id();

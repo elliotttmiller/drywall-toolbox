@@ -216,6 +216,8 @@
 	}
 
 	function getOrCreatePanel( tab ) {
+		// Validate tab name against the known-safe TABS list before using in selector.
+		if ( ! TABS.includes( tab ) ) { tab = 'overview'; }
 		var existing = panelContainer.querySelector( '[data-panel="' + tab + '"]' );
 		if ( existing ) { return existing; }
 		var panel = document.createElement( 'div' );
@@ -418,11 +420,6 @@
 		var panel = getOrCreatePanel( 'parts' );
 		var perms = d.permissions || {};
 		var parts = [];
-		try {
-			parts = JSON.parse( '' ); // placeholder — real data from meta via detail
-		} catch ( e ) {
-			parts = [];
-		}
 		var html = '<p style="color:#64748b;padding:1rem">Parts allocation coming from record meta.</p>';
 		if ( perms.can_allocate_parts ) {
 			html += '<div class="dtb-wb-command-bar">';

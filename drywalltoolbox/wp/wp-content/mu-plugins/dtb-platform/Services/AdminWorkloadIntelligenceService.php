@@ -48,7 +48,7 @@ function dtb_admin_compute_age_bucket( string $created_at ): string {
  * @param string $module  'support' | 'returns' | 'repair'
  * @return string  'ok' | 'warning' | 'breach' | 'exempt'
  */
-function dtb_admin_compute_sla_state( string $created_at, string $status, string $module ): string {
+function dtb_admin_compute_sla_state( string $created_at, string $status, string $module = 'repair' ): string {
 	$exempt_statuses = [
 		'support' => [ 'closed', 'resolved' ],
 		'returns' => [ 'closed', 'refund_issued', 'exchange_sent', 'rejected' ],
@@ -90,6 +90,7 @@ function dtb_admin_detect_customer_sentiment_flags( string $text ): array {
 	$text  = strtolower( $text );
 	$flags = [];
 
+	// Each category loop breaks on first match — only one flag per category needed.
 	$urgent_phrases = [
 		'urgent', 'asap', 'immediately', 'right now', 'as soon as possible',
 		'frustrated', 'unacceptable', 'ridiculous', 'furious', 'terrible',

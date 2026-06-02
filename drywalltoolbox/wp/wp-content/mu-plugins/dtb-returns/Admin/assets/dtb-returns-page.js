@@ -366,7 +366,7 @@
 			notes.forEach( function ( n ) {
 				html += '<div class="dtb-returns-staff-note">';
 				html += '<p class="dtb-returns-staff-note__body">' + esc( n.note ) + '</p>';
-		html += '<p class="dtb-returns-staff-note__meta">' + esc( n.user_label || 'Staff' ) + ' &middot; ' + formatDateFull( n.created_at ) + '</p>';
+				html += '<p class="dtb-returns-staff-note__meta">' + esc( n.user_label || 'Staff' ) + ' &middot; ' + formatDateFull( n.created_at ) + '</p>';
 				html += '</div>';
 			} );
 			html += '</div>';
