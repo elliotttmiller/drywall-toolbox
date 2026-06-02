@@ -86,6 +86,34 @@
 		return html;
 	}
 
+	function renderRecordIssues( integrations ) {
+		var blockerKeys = { sync_failed: 1, notification_failed: 1, payment_failed: 1, shipping_blocked: 1, refund_unavailable: 1 };
+		var issues = [];
+		var sysUrl = ( window.dtbAdminConfig && window.dtbAdminConfig.adminUrl
+			? window.dtbAdminConfig.adminUrl.replace( /admin\.php.*$/, 'admin.php' )
+			: '/wp-admin/admin.php' )
+			+ '?page=dtb-system-manager';
+		Object.keys( integrations || {} ).forEach( function ( key ) {
+			var item = integrations[ key ] || {};
+			var status = item.status || item.state || '';
+			if ( status !== 'error' && status !== 'failed' && ! blockerKeys[ key ] ) { return; }
+			var err = item.last_error || item.error || item.last_error_code || null;
+			issues.push( { label: item.label || key, error: err, url: sysUrl } );
+		} );
+		if ( ! issues.length ) { return ''; }
+		var html = '<div class="dtb-wb-record-issues">';
+		html += '<div class="dtb-wb-record-issues__title">Record Issues</div>';
+		issues.forEach( function ( issue ) {
+			html += '<div class="dtb-wb-note dtb-wb-note--error">';
+			html += WB.escapeHtml( issue.label );
+			if ( issue.error ) { html += ' — ' + WB.escapeHtml( issue.error ); }
+			html += ' <a href="' + WB.escapeHtml( issue.url ) + '">System Manager ↗</a>';
+			html += '</div>';
+		} );
+		html += '</div>';
+		return html;
+	}
+
 	function renderWorkbench( payload ) {
 		payload = payload || {};
 		state.payload = payload;
@@ -98,15 +126,21 @@
 		var footer = footerEl();
 		if ( ! body ) { return; }
 
+		var tabs = [ 'overview', 'customer', 'linked', 'timeline', 'actions' ];
+		var tabLabels = { overview: 'Overview', customer: 'Customer', linked: 'Linked', timeline: 'Timeline', actions: 'Actions' };
+
 		var html = '<div class="dtb-orders-workbench">';
 		html += '<nav class="dtb-modal-tabs" role="tablist">';
-		[ 'overview', 'customer', 'linked', 'integrations', 'timeline', 'actions' ].forEach( function ( tab, index ) {
-			html += '<button type="button" class="dtb-modal-tab' + ( index === 0 ? ' dtb-modal-tab--active' : '' ) + '" data-dtb-tab="' + tab + '" aria-selected="' + ( index === 0 ? 'true' : 'false' ) + '">' + WB.escapeHtml( tab.charAt( 0 ).toUpperCase() + tab.slice( 1 ) ) + '</button>';
+		tabs.forEach( function ( tab, index ) {
+			html += '<button type="button" class="dtb-modal-tab' + ( index === 0 ? ' dtb-modal-tab--active' : '' ) + '" data-dtb-tab="' + tab + '" aria-selected="' + ( index === 0 ? 'true' : 'false' ) + '">' + WB.escapeHtml( tabLabels[ tab ] ) + '</button>';
 		} );
 		html += '</nav>';
 
+		var issuesHtml = renderRecordIssues( payload.integrations || {} );
+
 		html += '<div class="dtb-modal-tab-panel dtb-modal-tab-panel--active" data-dtb-tab="overview">';
 		html += '<div class="dtb-orders-overview-grid">';
+		if ( issuesHtml ) { html += issuesHtml; }
 		html += '<div class="dtb-wb-card"><div class="dtb-wb-card__title">Order</div><div class="dtb-wb-card__body">';
 		html += WB.renderKeyValue( 'Order', '#' + WB.escapeHtml( record.id || '' ) );
 		html += WB.renderKeyValue( 'Status', WB.renderStatusBadge( workflow.status || record.status, workflow.label || record.status_label ) );
@@ -125,7 +159,6 @@
 
 		html += '<div class="dtb-modal-tab-panel" data-dtb-tab="customer" hidden>' + WB.renderCustomerRail( payload.customer || {} ) + '</div>';
 		html += '<div class="dtb-modal-tab-panel" data-dtb-tab="linked" hidden>' + WB.renderLinkedRecords( linked ) + '</div>';
-		html += '<div class="dtb-modal-tab-panel" data-dtb-tab="integrations" hidden>' + WB.renderIntegrationHealth( payload.integrations || {} ) + '</div>';
 		html += '<div class="dtb-modal-tab-panel" data-dtb-tab="timeline" hidden>' + WB.renderTimeline( payload.timeline || [] ) + '</div>';
 		html += '<div class="dtb-modal-tab-panel" data-dtb-tab="actions" hidden>' + renderActions( payload ) + '</div>';
 		html += '</div>';

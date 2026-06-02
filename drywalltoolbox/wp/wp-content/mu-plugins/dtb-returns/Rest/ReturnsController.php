@@ -74,6 +74,28 @@ function dtb_returns_rest_register_routes(): void {
 		'args'                => [ 'id' => [ 'type' => 'integer', 'minimum' => 1 ] ],
 	] );
 
+	// ── Admin namespace aliases — canonical workbench routes ──────────────────
+	register_rest_route( 'dtb/v1', '/admin/returns/(?P<id>\d+)/detail', [
+		'methods'             => WP_REST_Server::READABLE,
+		'callback'            => 'dtb_returns_rest_admin_detail',
+		'permission_callback' => fn() => is_user_logged_in() && current_user_can( 'dtb_manage_returns' ),
+		'args'                => [ 'id' => [ 'type' => 'integer', 'minimum' => 1 ] ],
+	] );
+
+	register_rest_route( 'dtb/v1', '/admin/returns/(?P<id>\d+)/actions', [
+		'methods'             => WP_REST_Server::CREATABLE,
+		'callback'            => 'dtb_returns_rest_admin_action',
+		'permission_callback' => fn() => is_user_logged_in() && current_user_can( 'dtb_manage_returns' ),
+		'args'                => [
+			'id'              => [ 'type' => 'integer', 'minimum' => 1 ],
+			'action_type'     => [ 'type' => 'string', 'required' => true, 'sanitize_callback' => 'sanitize_key' ],
+			'status'          => [ 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_key' ],
+			'resolution'      => [ 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_key' ],
+			'note'            => [ 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_textarea_field' ],
+			'idempotency_key' => [ 'type' => 'string', 'required' => false, 'sanitize_callback' => 'sanitize_text_field' ],
+		],
+	] );
+
 	// ── Admin: PATCH update (status / resolution / note) ─────────────────────
 	register_rest_route( 'dtb/v1', '/returns/(?P<id>\d+)', [
 		[
@@ -629,6 +651,149 @@ function dtb_returns_format_order_snapshot( WC_Order $order ): array {
 		'customer_note'        => wp_strip_all_tags( $order->get_customer_note() ),
 		'admin_url'            => admin_url( 'post.php?post=' . $order->get_id() . '&action=edit' ),
 	];
+}
+
+// =============================================================================
+// ADMIN: CANONICAL WORKBENCH ACTIONS — POST /dtb/v1/admin/returns/{id}/actions
+// =============================================================================
+
+/**
+ * Canonical workbench action dispatcher for Returns.
+ *
+ * Accepted action_type values:
+ *   approve            — transition to approved
+ *   reject             — transition to rejected
+ *   mark_awaiting_item — transition to awaiting_item
+ *   mark_item_received — transition to item_received
+ *   issue_refund       — transition to refund_issued (requires resolution=refund)
+ *   send_exchange      — transition to exchange_sent (requires resolution=exchange)
+ *   set_resolution     — update resolution field
+ *   add_note           — append a staff note
+ *   close              — transition to closed
+ *
+ * Every action: validates capability + nonce (via REST permission_callback +
+ * X-WP-Nonce), enforces allowed transitions, writes an audit event, and returns
+ * the refreshed canonical workbench detail payload.
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
+function dtb_returns_rest_admin_action( WP_REST_Request $request ): WP_REST_Response {
+	$id          = (int) $request->get_param( 'id' );
+	$action_type = sanitize_key( (string) ( $request->get_param( 'action_type' ) ?? '' ) );
+
+	if ( ! $id || ! $action_type ) {
+		return new WP_REST_Response( [ 'ok' => false, 'message' => 'Missing id or action_type.' ], 400 );
+	}
+
+	$entity = dtb_returns_get( $id );
+	if ( ! $entity ) {
+		return new WP_REST_Response( [ 'ok' => false, 'message' => 'Return not found.' ], 404 );
+	}
+
+	$current_status = sanitize_key( (string) $entity->status->value() );
+
+	// Transition map — action_type → target status.
+	$transition_map = [
+		'approve'            => 'approved',
+		'reject'             => 'rejected',
+		'mark_awaiting_item' => 'awaiting_item',
+		'mark_item_received' => 'item_received',
+		'issue_refund'       => 'refund_issued',
+		'send_exchange'      => 'exchange_sent',
+		'close'              => 'closed',
+	];
+
+	$changed = false;
+
+	if ( isset( $transition_map[ $action_type ] ) ) {
+		$target = $transition_map[ $action_type ];
+
+		// Enforce allowed transitions.
+		$allowed = function_exists( 'dtb_return_get_allowed_transitions' )
+			? dtb_return_get_allowed_transitions( $current_status )
+			: [];
+
+		if ( ! in_array( $target, (array) $allowed, true ) ) {
+			return new WP_REST_Response( [
+				'ok'      => false,
+				'message' => sprintf(
+					'Transition %s → %s is not allowed from the current status.',
+					$current_status,
+					$target
+				),
+			], 422 );
+		}
+
+		$result = dtb_return_transition_status( $id, $target );
+		if ( is_wp_error( $result ) ) {
+			return new WP_REST_Response( [ 'ok' => false, 'message' => $result->get_error_message() ], 400 );
+		}
+
+		dtb_audit_log_write( 'return.status_changed', [
+			'return_id' => $id,
+			'from'      => $current_status,
+			'to'        => $target,
+			'user_id'   => get_current_user_id(),
+			'via'       => 'workbench_action:' . $action_type,
+		] );
+		$changed = true;
+
+	} elseif ( 'set_resolution' === $action_type ) {
+		$resolution = sanitize_key( (string) ( $request->get_param( 'resolution' ) ?? '' ) );
+		$valid_resolutions = [ 'refund', 'exchange', 'store_credit', 'replacement' ];
+		if ( ! in_array( $resolution, $valid_resolutions, true ) ) {
+			return new WP_REST_Response( [ 'ok' => false, 'message' => 'Invalid resolution value.' ], 400 );
+		}
+		update_post_meta( $id, '_dtb_return_resolution', $resolution );
+		dtb_audit_log_write( 'return.resolution_set', [
+			'return_id'  => $id,
+			'resolution' => $resolution,
+			'user_id'    => get_current_user_id(),
+		] );
+		$changed = true;
+
+	} elseif ( 'add_note' === $action_type ) {
+		$note = sanitize_textarea_field( wp_unslash( (string) ( $request->get_param( 'note' ) ?? '' ) ) );
+		if ( '' === trim( $note ) ) {
+			return new WP_REST_Response( [ 'ok' => false, 'message' => 'Note cannot be empty.' ], 400 );
+		}
+		$raw_notes = get_post_meta( $id, '_dtb_return_staff_notes', true );
+		$notes     = is_array( $raw_notes ) ? $raw_notes : ( $raw_notes ? json_decode( $raw_notes, true ) : [] );
+		if ( ! is_array( $notes ) ) {
+			$notes = [];
+		}
+		$notes[] = [
+			'note'       => $note,
+			'user_id'    => get_current_user_id(),
+			'user_label' => wp_get_current_user()->display_name ?? 'Admin',
+			'created_at' => current_time( 'mysql', true ),
+		];
+		update_post_meta( $id, '_dtb_return_staff_notes', $notes );
+		dtb_audit_log_write( 'return.note_added', [
+			'return_id' => $id,
+			'user_id'   => get_current_user_id(),
+		] );
+		$changed = true;
+
+	} else {
+		return new WP_REST_Response( [ 'ok' => false, 'message' => 'Unknown action_type: ' . $action_type ], 400 );
+	}
+
+	if ( ! $changed ) {
+		return new WP_REST_Response( [ 'ok' => false, 'message' => 'No changes applied.' ], 400 );
+	}
+
+	// Return refreshed canonical workbench detail payload.
+	$detail_request = new WP_REST_Request( 'GET', '/dtb/v1/admin/returns/' . $id . '/detail' );
+	$detail_request->set_param( 'id', $id );
+	$detail_response = dtb_returns_rest_admin_detail( $detail_request );
+	$detail = $detail_response instanceof WP_REST_Response ? $detail_response->get_data() : [];
+
+	return new WP_REST_Response( array_merge(
+		[ 'ok' => true, 'message' => 'Action applied.' ],
+		is_array( $detail ) ? $detail : []
+	) );
 }
 
 

@@ -419,13 +419,27 @@
 		return html;
 	}
 
-	// ── Tab builder: Integrations ──────────────────────────────────────────────
-	function buildIntegrationsTab( integrations ) {
-		var WB = window.DtbWorkbench || {};
-		var html = sectionOpen( 'Integration Health' );
-		html += WB.renderIntegrationHealth
-			? WB.renderIntegrationHealth( integrations || {} )
-			: '<p class="dtb-returns-activity-empty">No integration state available.</p>';
+	// ── Compact record-level issues (blockers only, no integration dashboard) ──
+	function buildRecordIssues( integrations ) {
+		var issues = [];
+		var blockerKeys = { sync_failed: 1, notification_failed: 1, payment_failed: 1, shipping_blocked: 1, refund_unavailable: 1, missing_linked_order: 1 };
+		var cfg = window.dtbAdminConfig || {};
+		var sysUrl = ( cfg.adminUrl ? cfg.adminUrl.replace( /admin\.php.*$/, 'admin.php' ) : '/wp-admin/admin.php' ) + '?page=dtb-system-manager';
+		Object.keys( integrations || {} ).forEach( function ( key ) {
+			var item = integrations[ key ] || {};
+			var status = item.status || item.state || '';
+			if ( status !== 'error' && status !== 'failed' && ! blockerKeys[ key ] ) { return; }
+			issues.push( { label: item.label || key, error: item.last_error || item.error || null, url: sysUrl } );
+		} );
+		if ( ! issues.length ) { return ''; }
+		var html = sectionOpen( 'Record Issues' );
+		issues.forEach( function ( issue ) {
+			html += '<div class="dtb-returns-issue-chip">';
+			html += '<span class="dtb-returns-issue-chip__label">' + esc( issue.label ) + '</span>';
+			if ( issue.error ) { html += ' <span class="dtb-returns-issue-chip__err">' + esc( issue.error ) + '</span>'; }
+			html += ' <a href="' + esc( issue.url ) + '" class="dtb-returns-issue-chip__link">System Manager \u2197</a>';
+			html += '</div>';
+		} );
 		html += sectionClose();
 		return html;
 	}
@@ -549,18 +563,17 @@
 		html += '<button class="dtb-returns-modal-tab"           role="tab" aria-selected="false" data-dtb-returns-tab="decision">Decision</button>';
 		html += '<button class="dtb-returns-modal-tab"           role="tab" aria-selected="false" data-dtb-returns-tab="activity">Activity</button>';
 		html += '<button class="dtb-returns-modal-tab"           role="tab" aria-selected="false" data-dtb-returns-tab="customer">Customer</button>';
-		html += '<button class="dtb-returns-modal-tab"           role="tab" aria-selected="false" data-dtb-returns-tab="integrations">Integrations</button>';
 		html += '<button class="dtb-returns-modal-tab"           role="tab" aria-selected="false" data-dtb-returns-tab="actions">Actions</button>';
 		html += '</nav>';
 
 		// Tab panels container — CSS class .dtb-returns-modal-body manages scroll
 		html += '<div class="dtb-returns-modal-body">';
-		html += '<div data-dtb-returns-panel="overview" class="dtb-returns-modal-panel is-active">' + buildOverviewTab( ret, order )  + '</div>';
+		var overviewHtml = buildRecordIssues( integrations ) + buildOverviewTab( ret, order );
+		html += '<div data-dtb-returns-panel="overview" class="dtb-returns-modal-panel is-active">' + overviewHtml                  + '</div>';
 		html += '<div data-dtb-returns-panel="order"    class="dtb-returns-modal-panel">'           + buildOrderTab( order, ret )     + '</div>';
 		html += '<div data-dtb-returns-panel="decision" class="dtb-returns-modal-panel">'           + buildDecisionTab( ret, order, linked ) + '</div>';
 		html += '<div data-dtb-returns-panel="activity" class="dtb-returns-modal-panel">'           + buildActivityTab( ret, events ) + '</div>';
 		html += '<div data-dtb-returns-panel="customer" class="dtb-returns-modal-panel">'           + buildCustomerTab( customer, linked ) + '</div>';
-		html += '<div data-dtb-returns-panel="integrations" class="dtb-returns-modal-panel">'       + buildIntegrationsTab( integrations ) + '</div>';
 		html += '<div data-dtb-returns-panel="actions"  class="dtb-returns-modal-panel">'           + buildActionsTab( ret )          + '</div>';
 		html += '</div>';
 
@@ -601,7 +614,7 @@
 
 	// ── Fetch detail ───────────────────────────────────────────────────────────
 	function fetchDetail( returnId, onDone ) {
-		apiFetch( 'GET', '/returns/' + returnId + '/detail', null, onDone );
+		apiFetch( 'GET', '/admin/returns/' + returnId + '/detail', null, onDone );
 	}
 
 	function openModal( returnId ) {
@@ -732,16 +745,32 @@
 			var btn = e.target.closest( '[data-dtb-returns-action="status"]' );
 			if ( ! btn || ! state.currentReturnId ) { return; }
 			var newStatus = btn.getAttribute( 'data-dtb-returns-value' );
-			var statusEl  = btn.closest( '.dtb-returns-section' ) && qs( '.dtb-returns-form-status', btn.closest( '.dtb-returns-section' ) );
+			var sectionEl = btn.closest( '.dtb-returns-section' );
+			var statusEl  = sectionEl ? qs( '.dtb-returns-form-status', sectionEl ) : null;
 			btn.disabled  = true;
-			apiFetch( 'PATCH', '/returns/' + state.currentReturnId, { status: newStatus }, function ( err, data ) {
-				btn.disabled = false;
-				if ( err || ! data || ! data.success ) {
-					if ( statusEl ) { statusEl.textContent = 'Save failed.'; statusEl.classList.add( 'is-error' ); }
-					return;
+			// Map target status to canonical action_type.
+			var actionMap = {
+				approved:       'approve',
+				rejected:       'reject',
+				awaiting_item:  'mark_awaiting_item',
+				item_received:  'mark_item_received',
+				refund_issued:  'issue_refund',
+				exchange_sent:  'send_exchange',
+				closed:         'close',
+			};
+			var actionType = actionMap[ newStatus ] || newStatus;
+			apiFetch( 'POST', '/admin/returns/' + state.currentReturnId + '/actions',
+				{ action_type: actionType, idempotency_key: 'returns-' + state.currentReturnId + '-' + actionType + '-' + Date.now() },
+				function ( err, data ) {
+					btn.disabled = false;
+					if ( err || ! data || ! data.ok ) {
+						var msg = ( data && data.message ) || 'Action failed.';
+						if ( statusEl ) { statusEl.textContent = msg; statusEl.classList.add( 'is-error' ); }
+						return;
+					}
+					reloadModal();
 				}
-				reloadModal();
-			} );
+			);
 		} );
 	}
 
@@ -757,18 +786,21 @@
 			var select   = qs( 'select[name="resolution"]', form );
 			var submit   = qs( 'button[type="submit"]', form );
 			var statusEl = qs( '.dtb-returns-form-status', form );
-			if ( ! select ) { return; }
+			if ( ! select || ! select.value ) { return; }
 			if ( submit ) { submit.disabled = true; }
 			if ( statusEl ) { statusEl.textContent = ''; statusEl.className = 'dtb-returns-form-status'; }
-			apiFetch( 'PATCH', '/returns/' + state.currentReturnId, { resolution: select.value }, function ( err, data ) {
-				if ( submit ) { submit.disabled = false; }
-				if ( err || ! data || ! data.success ) {
-					if ( statusEl ) { statusEl.textContent = 'Save failed.'; statusEl.classList.add( 'is-error' ); }
-					return;
+			apiFetch( 'POST', '/admin/returns/' + state.currentReturnId + '/actions',
+				{ action_type: 'set_resolution', resolution: select.value },
+				function ( err, data ) {
+					if ( submit ) { submit.disabled = false; }
+					if ( err || ! data || ! data.ok ) {
+						if ( statusEl ) { statusEl.textContent = 'Save failed.'; statusEl.classList.add( 'is-error' ); }
+						return;
+					}
+					if ( statusEl ) { statusEl.textContent = '\u2713 Saved'; statusEl.classList.add( 'is-success' ); }
+					reloadModal();
 				}
-				if ( statusEl ) { statusEl.textContent = '\u2713 Saved'; statusEl.classList.add( 'is-success' ); }
-				reloadModal();
-			} );
+			);
 		} );
 	}
 
@@ -787,16 +819,19 @@
 			if ( ! textarea || ! textarea.value.trim() ) { return; }
 			if ( submit ) { submit.disabled = true; }
 			if ( statusEl ) { statusEl.textContent = ''; statusEl.className = 'dtb-returns-form-status'; }
-			apiFetch( 'PATCH', '/returns/' + state.currentReturnId, { note: textarea.value.trim() }, function ( err, data ) {
-				if ( submit ) { submit.disabled = false; }
-				if ( err || ! data || ! data.success ) {
-					if ( statusEl ) { statusEl.textContent = 'Save failed.'; statusEl.classList.add( 'is-error' ); }
-					return;
+			apiFetch( 'POST', '/admin/returns/' + state.currentReturnId + '/actions',
+				{ action_type: 'add_note', note: textarea.value.trim() },
+				function ( err, data ) {
+					if ( submit ) { submit.disabled = false; }
+					if ( err || ! data || ! data.ok ) {
+						if ( statusEl ) { statusEl.textContent = 'Save failed.'; statusEl.classList.add( 'is-error' ); }
+						return;
+					}
+					textarea.value = '';
+					if ( statusEl ) { statusEl.textContent = '\u2713 Note added'; statusEl.classList.add( 'is-success' ); }
+					reloadModal();
 				}
-				textarea.value = '';
-				if ( statusEl ) { statusEl.textContent = '\u2713 Note added'; statusEl.classList.add( 'is-success' ); }
-				reloadModal();
-			} );
+			);
 		} );
 	}
 

@@ -17,21 +17,17 @@ function dtb_returns_render_page(): void {
 
 	$active_tab = sanitize_key( $_GET['tab'] ?? 'all' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$status_arg = sanitize_key( $_GET['status'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	$status_to_tab = [
-		'pending_review'     => 'pending_review',
-		'approved'           => 'approved',
-		'awaiting_item'      => 'awaiting_item',
-		'item_received'      => 'item_received',
-		'refund_issued'      => 'refund_issued',
-		'exchange_sent'      => 'exchange_sent',
-		'closed'             => 'closed',
-		'under_review'       => 'pending_review',
-		'inspection_pending' => 'item_received',
-		'refund_pending'     => 'refund_issued',
-	];
-	if ( 'all' === $active_tab && isset( $status_to_tab[ $status_arg ] ) ) {
-		$active_tab = $status_to_tab[ $status_arg ];
+
+	// Resolve a raw status URL param to the canonical queue-filter tab via the registry.
+	if ( 'all' === $active_tab && '' !== $status_arg ) {
+		$resolved = function_exists( 'dtb_admin_normalize_workflow_queue_filter' )
+			? dtb_admin_normalize_workflow_queue_filter( 'return', $status_arg )
+			: '';
+		if ( '' !== $resolved ) {
+			$active_tab = $resolved;
+		}
 	}
+
 	$search      = sanitize_text_field( $_GET['s'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$live_search = sanitize_text_field( $_GET['search'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( '' === $search && '' !== $live_search ) {
@@ -39,16 +35,25 @@ function dtb_returns_render_page(): void {
 	}
 	$base_url = admin_url( 'admin.php?page=dtb-returns' );
 
-	$status_labels = [
-		'all'            => __( 'All',            'drywall-toolbox' ),
-		'pending_review' => __( 'Pending Review', 'drywall-toolbox' ),
-		'approved'       => __( 'Approved',       'drywall-toolbox' ),
-		'awaiting_item'  => __( 'Awaiting Item',  'drywall-toolbox' ),
-		'item_received'  => __( 'Item Received',  'drywall-toolbox' ),
-		'refund_issued'  => __( 'Refund Issued',  'drywall-toolbox' ),
-		'exchange_sent'  => __( 'Exchange Sent',  'drywall-toolbox' ),
-		'closed'         => __( 'Closed',         'drywall-toolbox' ),
-	];
+	// Build status labels from the workflow registry; fall back to a static list if
+	// the registry is unavailable (e.g. during early bootstrap).
+	$registry_def    = function_exists( 'dtb_admin_get_workflow_definition' )
+		? dtb_admin_get_workflow_definition( 'return' )
+		: [];
+	$registry_labels = (array) ( $registry_def['labels'] ?? [] );
+
+	$status_labels = array_merge(
+		[ 'all' => __( 'All', 'drywall-toolbox' ) ],
+		$registry_labels ?: [
+			'pending_review' => __( 'Pending Review', 'drywall-toolbox' ),
+			'approved'       => __( 'Approved',       'drywall-toolbox' ),
+			'awaiting_item'  => __( 'Awaiting Item',  'drywall-toolbox' ),
+			'item_received'  => __( 'Item Received',  'drywall-toolbox' ),
+			'refund_issued'  => __( 'Refund Issued',  'drywall-toolbox' ),
+			'exchange_sent'  => __( 'Exchange Sent',  'drywall-toolbox' ),
+			'closed'         => __( 'Closed',         'drywall-toolbox' ),
+		]
+	);
 
 	$counts = dtb_returns_count_by_status();
 	$tabs   = [];
