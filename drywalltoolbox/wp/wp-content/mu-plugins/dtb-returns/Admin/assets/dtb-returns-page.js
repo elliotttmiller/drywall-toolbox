@@ -762,8 +762,12 @@
 				closed:         'close',
 			};
 			var actionType = actionMap[ newStatus ] || newStatus;
+			// Per-click nonce appended so the same transition can be retried if the first
+			// attempt produced no visible response (e.g. network error). Server-side
+			// allowed-transitions validation still prevents invalid state changes.
+			var opNonce = Math.random().toString( 36 ).slice( 2, 8 );
 			apiFetch( 'POST', '/admin/returns/' + state.currentReturnId + '/actions',
-				{ action_type: actionType, idempotency_key: 'returns-' + state.currentReturnId + '-' + actionType },
+				{ action_type: actionType, idempotency_key: 'returns-' + state.currentReturnId + '-' + actionType + '-' + opNonce },
 				function ( err, data ) {
 					btn.disabled = false;
 					if ( err || ! data || ! data.ok ) {
