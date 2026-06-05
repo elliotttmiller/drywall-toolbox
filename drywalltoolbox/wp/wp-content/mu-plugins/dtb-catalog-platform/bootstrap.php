@@ -71,6 +71,7 @@ require_once $_dtb_cp . '/Rest/CompatiblePartsController.php';
 require_once $_dtb_cp . '/Rest/ToolsetTemplatesController.php';
 require_once $_dtb_cp . '/Rest/ToolsetOptionsController.php';
 require_once $_dtb_cp . '/Rest/ToolsetValidationController.php';
+require_once $_dtb_cp . '/Rest/InventoryIntelligenceController.php';
 
 // Validation.
 require_once $_dtb_cp . '/Validation/CatalogValidationService.php';
