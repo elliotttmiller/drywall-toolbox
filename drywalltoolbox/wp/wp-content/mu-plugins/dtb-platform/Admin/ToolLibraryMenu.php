@@ -9,16 +9,17 @@
  * Library: 'tools'
  * Menus:
  *   DTB Tool Library
- *     ├─ Schematics       (position 10)
- *     ├─ Image Sync       (position 20)
- *     ├─ Product Mapping  (position 30)
- *     ├─ Catalog Health   (position 40)
- *     ├─ Parts Manager    (position 45)
- *     ├─ Cache Tools      (position 50)
- *     ├─ API Health       (position 55)
- *     ├─ SEO Tools        (position 60)
- *     ├─ Import / Export  (position 65)
- *     └─ Config Reference (position 70)
+ *     ├─ Schematics              (position 10)
+ *     ├─ Image Sync              (position 20)
+ *     ├─ Product Mapping         (position 30)
+ *     ├─ Catalog Health          (position 40)
+ *     ├─ Parts Manager           (position 45)
+ *     ├─ Inventory Intelligence  (position 47)
+ *     ├─ Cache Tools             (position 50)
+ *     ├─ API Health              (position 55)
+ *     ├─ SEO Tools               (position 60)
+ *     ├─ Import / Export         (position 65)
+ *     └─ Config Reference        (position 70)
  *
  * @package drywall-toolbox
  */
@@ -90,6 +91,19 @@ function dtb_tool_library_menu_register_pages(): void {
 		'capability' => 'dtb_manage_parts',
 		'callback'   => 'dtb_parts_manager_render_page',
 		'position'   => 45,
+		'template'   => 'tool',
+		'section'    => 'Catalog Maintenance',
+	] );
+
+	// Inventory Intelligence.
+	dtb_register_admin_page( [
+		'library'    => 'tools',
+		'slug'       => 'dtb-inventory-intelligence',
+		'title'      => __( 'Inventory Intelligence', 'drywall-toolbox' ),
+		'menu_title' => __( 'Inventory Intelligence', 'drywall-toolbox' ),
+		'capability' => 'dtb_manage_inventory_intelligence',
+		'callback'   => 'dtb_inventory_intelligence_render_page',
+		'position'   => 47,
 		'template'   => 'tool',
 		'section'    => 'Catalog Maintenance',
 	] );
