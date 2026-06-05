@@ -898,6 +898,7 @@ function dtb_ajax_parts_universal_sync(): void {
 				],
 				true
 			);
+			update_post_meta( $post_id, DTB_ProductMeta::UNIVERSAL_PART_SYNCED_AT, gmdate( 'c' ) );
 			$updated++;
 		}
 
