@@ -17,9 +17,8 @@ final class DTB_InventoryIntelligenceService {
 	}
 
 	public function health(): array {
-		$latest_stock_sync  = $this->rollup_repository->latest_sync_run( 'dtb_woo_stock_projection_sync' );
+		$latest_stock_sync  = $this->rollup_repository->latest_sync_run( 'dtb_inventory_stock_projection_sync' );
 		$latest_rollup_sync = $this->rollup_repository->latest_sync_run( 'dtb_inventory_rollup_recompute' );
-
 		return [
 			'stock_rows'         => $this->stock_repository->count_stock_rows(),
 			'rollup_rows'        => $this->rollup_repository->count_rollups(),
