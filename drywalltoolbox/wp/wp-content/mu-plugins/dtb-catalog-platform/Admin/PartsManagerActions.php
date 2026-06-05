@@ -748,11 +748,17 @@ function dtb_parts_universal_stats(): array {
 		'parts'         => count( $parts ),
 		'members'       => count( $members ),
 		'compatibility' => count( $compatibility ),
-		'active'        => 0,
-		'review'        => 0,
-		'quarantine'    => 0,
-		'high'          => 0,
-		'medium'        => 0,
+
+		// Status counts.
+		'active'     => 0,
+		'review'     => 0,
+		'quarantine' => 0,
+
+		// Confidence counts.
+		'verified' => 0,
+		'high'     => 0,
+		'medium'   => 0,
+		'low'      => 0,
 	];
 
 	foreach ( $parts as $row ) {
