@@ -40,7 +40,8 @@
 
   function badge(value, fallback) {
     var text = value || fallback || 'none';
-    return '<span class="dtb-pm-badge dtb-pm-badge--' + esc(String(text).toLowerCase()) + '">' + esc(text) + '</span>';
+    var slug = String(text).toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    return '<span class="dtb-pm-badge dtb-pm-badge--' + slug + '">' + esc(text) + '</span>';
   }
 
   function loadSummary() {

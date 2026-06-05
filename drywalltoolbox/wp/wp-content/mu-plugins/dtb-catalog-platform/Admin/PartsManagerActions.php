@@ -143,7 +143,7 @@ function dtb_ajax_parts_get(): void {
 	);
 }
 
-function dtb_parts_apply_universal_meta( int $post_id, array $payload ): void {
+function dtb_parts_apply_universal_meta( int $post_id, array $payload, bool $is_sync = false ): void {
 	$universal_id = sanitize_text_field( (string) ( $payload['universal_part_id'] ?? '' ) );
 	$status       = sanitize_key( (string) ( $payload['universal_part_status'] ?? '' ) );
 	$confidence   = sanitize_key( (string) ( $payload['universal_part_confidence'] ?? '' ) );
@@ -172,7 +172,9 @@ function dtb_parts_apply_universal_meta( int $post_id, array $payload ): void {
 	update_post_meta( $post_id, DTB_ProductMeta::UNIVERSAL_PART_CONFIDENCE, $confidence );
 	update_post_meta( $post_id, DTB_ProductMeta::UNIVERSAL_PART_FAMILY, $family );
 	update_post_meta( $post_id, DTB_ProductMeta::UNIVERSAL_PART_SIGNATURE, $signature );
-	update_post_meta( $post_id, DTB_ProductMeta::UNIVERSAL_PART_SYNCED_AT, gmdate( 'c' ) );
+	if ( $is_sync ) {
+		update_post_meta( $post_id, DTB_ProductMeta::UNIVERSAL_PART_SYNCED_AT, gmdate( 'c' ) );
+	}
 }
 
 function dtb_ajax_parts_save(): void {
@@ -893,7 +895,8 @@ function dtb_ajax_parts_universal_sync(): void {
 					'universal_part_confidence' => (string) ( $row['confidence'] ?? $part_row['confidence'] ?? 'review' ),
 					'universal_part_family'     => (string) ( $part_row['part_family'] ?? '' ),
 					'universal_part_signature'  => (string) ( $part_row['source_audit_key'] ?? '' ),
-				]
+				],
+				true
 			);
 			$updated++;
 		}
