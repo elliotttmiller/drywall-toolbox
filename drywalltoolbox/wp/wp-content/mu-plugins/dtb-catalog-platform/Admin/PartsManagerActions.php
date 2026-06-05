@@ -688,7 +688,7 @@ function dtb_ajax_parts_export(): void {
 }
 
 function dtb_parts_universal_data_dir(): string {
-	$repo_root = dirname( __DIR__, 6 );
+	$repo_root = dirname( __DIR__, 7 );
 	return $repo_root . '/products/Production/launch/universal_parts';
 }
 
