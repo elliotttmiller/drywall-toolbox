@@ -14,7 +14,11 @@ if ( defined( 'DTB_CATALOG_PLATFORM_ENABLED' ) && ! DTB_CATALOG_PLATFORM_ENABLED
 	return;
 }
 
-if ( ! dtb_is_admin_or_rest_request() && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+if (
+	! dtb_is_admin_or_rest_request()
+	&& ! ( defined( 'WP_CLI' ) && WP_CLI )
+	&& ! ( defined( 'DOING_CRON' ) && DOING_CRON )
+) {
 	return;
 }
 
@@ -42,6 +46,9 @@ require_once $_dtb_cp . '/Infrastructure/WooProductRepository.php';
 require_once $_dtb_cp . '/Infrastructure/WordPressProductMetaStore.php';
 require_once $_dtb_cp . '/Infrastructure/ProductVariationRepository.php';
 require_once $_dtb_cp . '/Infrastructure/ProductRelationshipRepository.php';
+require_once $_dtb_cp . '/Infrastructure/InventoryIntelligenceSchema.php';
+require_once $_dtb_cp . '/Infrastructure/InventoryStockRepository.php';
+require_once $_dtb_cp . '/Infrastructure/InventoryRollupRepository.php';
 require_once $_dtb_cp . '/Services/VariationReadModelService.php';
 require_once $_dtb_cp . '/Services/DefaultVariationResolver.php';
 require_once $_dtb_cp . '/Services/CatalogFacetService.php';
@@ -52,6 +59,9 @@ require_once $_dtb_cp . '/Services/ToolsetValidationService.php';
 require_once $_dtb_cp . '/Services/ProductMappingService.php';
 require_once $_dtb_cp . '/Services/CompatiblePartsService.php';
 require_once $_dtb_cp . '/Services/ProductRelationshipService.php';
+require_once $_dtb_cp . '/Services/VeeqoStockSyncService.php';
+require_once $_dtb_cp . '/Services/InventoryRollupService.php';
+require_once $_dtb_cp . '/Services/InventoryIntelligenceService.php';
 
 // REST controllers.
 require_once $_dtb_cp . '/Rest/CatalogFacetsController.php';
@@ -84,6 +94,7 @@ require_once $_dtb_cp . '/Application/RunCatalogHealthScan.php';
 require_once $_dtb_cp . '/Application/BackfillProductMeta.php';
 require_once $_dtb_cp . '/Application/RunProductMappingMutation.php';
 require_once $_dtb_cp . '/Application/ResolveCompatibleParts.php';
+require_once $_dtb_cp . '/Application/RunInventoryIntelligenceJobs.php';
 
 // Admin / CLI tools.
 if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
@@ -102,7 +113,8 @@ if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 	require_once $_dtb_cp . '/Admin/ProductMappingActions.php';
 	require_once $_dtb_cp . '/Admin/PartsManagerPage.php';
 	require_once $_dtb_cp . '/Admin/PartsManagerActions.php';
+	require_once $_dtb_cp . '/Admin/InventoryIntelligencePage.php';
+	require_once $_dtb_cp . '/Admin/InventoryIntelligenceActions.php';
 }
 
 unset( $_dtb_cp );
-
