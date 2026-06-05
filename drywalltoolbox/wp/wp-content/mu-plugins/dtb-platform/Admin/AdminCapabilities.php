@@ -45,6 +45,7 @@ function dtb_admin_all_capabilities(): array {
 		'dtb_manage_import_export',
 		'dtb_view_config_reference',
 		'dtb_manage_parts',
+		'dtb_manage_inventory_intelligence',
 	];
 }
 
@@ -98,6 +99,7 @@ function dtb_admin_role_capability_map(): array {
 			'dtb_manage_seo_tools',
 			'dtb_manage_import_export',
 			'dtb_manage_parts',
+			'dtb_manage_inventory_intelligence',
 		],
 
 		'dtb_technical_admin' => [
