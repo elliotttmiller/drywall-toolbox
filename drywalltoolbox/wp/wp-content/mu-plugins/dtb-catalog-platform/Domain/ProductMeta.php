@@ -137,6 +137,26 @@ final class DTB_ProductMeta {
 	/** Position number on the schematic diagram. */
 	const SCHEMATIC_POSITION = '_dtb_schematic_position';
 
+	// ── Universal parts keys ───────────────────────────────────────────────────
+
+	/** Backend-only universal physical part identifier. */
+	const UNIVERSAL_PART_ID = '_dtb_universal_part_id';
+
+	/** Universal part import/sync status: active | review | quarantine. */
+	const UNIVERSAL_PART_STATUS = '_dtb_universal_part_status';
+
+	/** Universal part confidence: verified | high | medium | low | review. */
+	const UNIVERSAL_PART_CONFIDENCE = '_dtb_universal_part_confidence';
+
+	/** Universal part family: screw | nut | washer | pin | o-ring | bolt | set screw. */
+	const UNIVERSAL_PART_FAMILY = '_dtb_universal_part_family';
+
+	/** Canonical title/spec signature used during universal-part matching. */
+	const UNIVERSAL_PART_SIGNATURE = '_dtb_universal_part_signature';
+
+	/** Timestamp of the most recent universal-parts sync touching this product. */
+	const UNIVERSAL_PART_SYNCED_AT = '_dtb_universal_part_synced_at';
+
 	// ── Field registry ─────────────────────────────────────────────────────────
 
 	/**
@@ -182,6 +202,12 @@ final class DTB_ProductMeta {
 		self::SCHEMATIC_GROUP       => [ 'type' => 'string',  'description' => 'Schematics tool group identifier.' ],
 		self::SCHEMATIC_POSITION    => [ 'type' => 'integer', 'description' => 'Position number on schematic diagram.' ],
 		self::COMMERCE_MODE         => [ 'type' => 'string',  'description' => 'Commerce mode: purchasable | quote_only | hidden_reference | repair_only | included_item.' ],
+		self::UNIVERSAL_PART_ID         => [ 'type' => 'string', 'description' => 'Backend-only universal physical part identifier.' ],
+		self::UNIVERSAL_PART_STATUS     => [ 'type' => 'string', 'description' => 'Universal part import/sync status.' ],
+		self::UNIVERSAL_PART_CONFIDENCE => [ 'type' => 'string', 'description' => 'Universal part confidence.' ],
+		self::UNIVERSAL_PART_FAMILY     => [ 'type' => 'string', 'description' => 'Universal part family.' ],
+		self::UNIVERSAL_PART_SIGNATURE  => [ 'type' => 'string', 'description' => 'Canonical universal matching signature.' ],
+		self::UNIVERSAL_PART_SYNCED_AT  => [ 'type' => 'string', 'description' => 'Universal-parts sync timestamp.' ],
 	];
 
 	/** Return all array-type meta keys. */
