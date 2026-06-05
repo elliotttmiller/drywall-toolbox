@@ -97,11 +97,9 @@ final class DTB_VeeqoStockSyncService {
 		$duration_ms = (int) round( ( microtime( true ) - $start_ms ) * 1000 );
 		$this->rollup_repository->log_sync_run(
 			[
-				'job_key'         => 'dtb_woo_stock_projection_sync',
+				'job_key'         => 'dtb_inventory_stock_projection_sync',
 				'status'          => 0 === $failed ? 'completed' : 'completed_with_errors',
 				'started_at'      => $started_at,
-				'finished_at'     => current_time( 'mysql', true ),
-				'duration_ms'     => $duration_ms,
 				'records_seen'    => $seen,
 				'records_updated' => $updated,
 				'records_failed'  => $failed,
