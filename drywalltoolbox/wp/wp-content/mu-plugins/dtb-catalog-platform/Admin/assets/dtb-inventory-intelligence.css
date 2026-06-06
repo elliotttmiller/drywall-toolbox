@@ -78,6 +78,10 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.dtb-ii-health--seed .dtb-ii-health-item {
+  background: linear-gradient(180deg, #fff, #f8fbff);
+}
+
 .dtb-ii-health-item {
   padding: 18px;
 }
@@ -112,6 +116,10 @@
   grid-row: span 2;
 }
 
+.dtb-ii-card--workflow {
+  border-left: 5px solid var(--dtb-ii-primary);
+}
+
 .dtb-ii-card-header {
   align-items: flex-start;
   display: flex;
@@ -124,6 +132,51 @@
   font-size: 18px;
   line-height: 1.25;
   margin: 0 0 6px;
+}
+
+.dtb-ii-sequence {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.dtb-ii-sequence li {
+  background: var(--dtb-ii-soft);
+  border: 1px solid var(--dtb-ii-border);
+  border-radius: 12px;
+  counter-increment: dtb-ii-step;
+  padding: 14px;
+  position: relative;
+}
+
+.dtb-ii-sequence li::before {
+  background: var(--dtb-ii-primary);
+  border-radius: 999px;
+  color: #fff;
+  content: counter(dtb-ii-step);
+  display: inline-grid;
+  font-size: 12px;
+  font-weight: 800;
+  height: 24px;
+  margin-bottom: 10px;
+  place-items: center;
+  width: 24px;
+}
+
+.dtb-ii-sequence strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.dtb-ii-sequence span {
+  color: var(--dtb-ii-muted);
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .dtb-ii-toolbar {
@@ -353,7 +406,8 @@
 }
 
 @media (max-width: 1180px) {
-  .dtb-ii-grid {
+  .dtb-ii-grid,
+  .dtb-ii-sequence {
     grid-template-columns: 1fr;
   }
 
