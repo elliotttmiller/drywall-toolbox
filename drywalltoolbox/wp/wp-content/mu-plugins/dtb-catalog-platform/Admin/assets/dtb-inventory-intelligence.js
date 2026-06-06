@@ -33,6 +33,10 @@
     return String(value).replace('T', ' ').replace('+00:00', '');
   }
 
+  function setBusy(selector, busy) {
+    $(selector).prop('disabled', !!busy);
+  }
+
   function loadHealth() {
     post('dtb_inventory_health').done(function (res) {
       if (!res || !res.success) return;
@@ -42,6 +46,15 @@
       $('[data-dtb-ii-metric="critical_rollups"]').text(d.critical_rollups || 0);
       var latest = d.latest_stock_sync || {};
       $('[data-dtb-ii-metric="latest_sync"]').text(latest.finished_at ? formatDate(latest.finished_at) : 'Never');
+
+      var seed = d.universal_seed || {};
+      var counts = seed.counts || {};
+      var files = seed.files || {};
+      var readable = ['parts', 'members', 'compatibility'].filter(function (key) { return !!files[key]; }).length;
+      $('[data-dtb-ii-metric="seed_parts"]').text(counts.parts || 0);
+      $('[data-dtb-ii-metric="seed_members"]').text(counts.members || 0);
+      $('[data-dtb-ii-metric="seed_compatibility"]').text(counts.compatibility || 0);
+      $('[data-dtb-ii-metric="seed_files"]').text(readable + '/3');
     });
   }
 
@@ -124,11 +137,34 @@
     });
   }
 
+  function projectUniversal(mode) {
+    var apply = mode === 'apply';
+    if (apply && !window.confirm('Apply universal seed projection to matching WooCommerce part products? This writes _dtb_universal_part_* metadata.')) {
+      return;
+    }
+    setMessage(apply ? 'Applying universal seed projection…' : 'Running universal seed dry run…', 'warning');
+    $('#dtb-ii-projection-output').text('');
+    setBusy('[data-dtb-ii-project-universal]', true);
+    post('dtb_inventory_project_universal_parts', { mode: mode }).done(function (res) {
+      setBusy('[data-dtb-ii-project-universal]', false);
+      if (!res || !res.success) {
+        setMessage((res && res.data && res.data.message) || 'Universal projection failed.', 'error');
+        return;
+      }
+      setMessage((res.data || {}).message || 'Universal projection complete.', 'success');
+      $('#dtb-ii-projection-output').text(JSON.stringify(res.data || {}, null, 2));
+      loadHealth();
+    }).fail(function () {
+      setBusy('[data-dtb-ii-project-universal]', false);
+      setMessage('Universal projection request failed.', 'error');
+    });
+  }
+
   function runStockSync() {
     setMessage('Syncing WooCommerce stock projection into the local inventory cache…', 'warning');
-    $('[data-dtb-ii-sync-stock]').prop('disabled', true);
+    setBusy('[data-dtb-ii-sync-stock]', true);
     post('dtb_inventory_sync_stock').done(function (res) {
-      $('[data-dtb-ii-sync-stock]').prop('disabled', false);
+      setBusy('[data-dtb-ii-sync-stock]', false);
       if (!res || !res.success) {
         setMessage((res && res.data && res.data.message) || 'Stock sync failed.', 'error');
         return;
@@ -136,16 +172,16 @@
       setMessage((res.data || {}).message || 'Stock cache synced.', 'success');
       loadHealth();
     }).fail(function () {
-      $('[data-dtb-ii-sync-stock]').prop('disabled', false);
+      setBusy('[data-dtb-ii-sync-stock]', false);
       setMessage('Stock sync request failed.', 'error');
     });
   }
 
   function recomputeRollups() {
     setMessage('Recomputing universal inventory rollups…', 'warning');
-    $('[data-dtb-ii-recompute]').prop('disabled', true);
+    setBusy('[data-dtb-ii-recompute]', true);
     post('dtb_inventory_recompute_rollups').done(function (res) {
-      $('[data-dtb-ii-recompute]').prop('disabled', false);
+      setBusy('[data-dtb-ii-recompute]', false);
       if (!res || !res.success) {
         setMessage((res && res.data && res.data.message) || 'Rollup recompute failed.', 'error');
         return;
@@ -155,8 +191,32 @@
       loadRollups(1);
       loadStockouts();
     }).fail(function () {
-      $('[data-dtb-ii-recompute]').prop('disabled', false);
+      setBusy('[data-dtb-ii-recompute]', false);
       setMessage('Rollup recompute request failed.', 'error');
+    });
+  }
+
+  function fullRebuild() {
+    if (!window.confirm('Run full rebuild now? This applies universal projection, syncs stock cache, and recomputes rollups.')) {
+      return;
+    }
+    setMessage('Running full inventory intelligence rebuild…', 'warning');
+    $('#dtb-ii-projection-output').text('');
+    setBusy('[data-dtb-ii-full-rebuild]', true);
+    post('dtb_inventory_full_rebuild').done(function (res) {
+      setBusy('[data-dtb-ii-full-rebuild]', false);
+      if (!res || !res.success) {
+        setMessage((res && res.data && res.data.message) || 'Full rebuild failed.', 'error');
+        return;
+      }
+      setMessage((res.data || {}).message || 'Full rebuild complete.', 'success');
+      $('#dtb-ii-projection-output').text(JSON.stringify(res.data || {}, null, 2));
+      loadHealth();
+      loadRollups(1);
+      loadStockouts();
+    }).fail(function () {
+      setBusy('[data-dtb-ii-full-rebuild]', false);
+      setMessage('Full rebuild request failed.', 'error');
     });
   }
 
@@ -179,8 +239,10 @@
   }
 
   $(function () {
+    $('[data-dtb-ii-project-universal]').on('click', function () { projectUniversal($(this).data('dtb-ii-project-universal')); });
     $('[data-dtb-ii-sync-stock]').on('click', runStockSync);
     $('[data-dtb-ii-recompute]').on('click', recomputeRollups);
+    $('[data-dtb-ii-full-rebuild]').on('click', fullRebuild);
     $('[data-dtb-ii-load-rollups]').on('click', function () { loadRollups(1); });
     $('#dtb-ii-search').on('keydown', function (e) { if (e.key === 'Enter') loadRollups(1); });
     $('#dtb-ii-signal').on('change', function () { loadRollups(1); });
