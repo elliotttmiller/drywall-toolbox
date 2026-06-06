@@ -78,11 +78,14 @@ function dtb_inventory_intelligence_render_page(): void {
 			<div>
 				<p class="dtb-ii-eyebrow"><?php esc_html_e( 'Universal Parts × Stock', 'drywall-toolbox' ); ?></p>
 				<h1><?php esc_html_e( 'Inventory Intelligence', 'drywall-toolbox' ); ?></h1>
-				<p><?php esc_html_e( 'Turn brand-specific stock counts into physical-part availability. This page uses universal-part metadata to identify true stockouts and safe cross-brand substitute availability.', 'drywall-toolbox' ); ?></p>
+				<p><?php esc_html_e( 'Turn brand-specific stock counts into physical-part availability. Start by projecting universal parts into Woo part metadata, then sync stock and recompute rollups.', 'drywall-toolbox' ); ?></p>
 			</div>
 			<div class="dtb-ii-hero-actions">
+				<button type="button" class="dtb-ii-btn dtb-ii-btn-secondary" data-dtb-ii-project-universal="dry_run"><?php esc_html_e( 'Dry Run Universal Import', 'drywall-toolbox' ); ?></button>
+				<button type="button" class="dtb-ii-btn dtb-ii-btn-secondary" data-dtb-ii-project-universal="apply"><?php esc_html_e( 'Apply Universal Import', 'drywall-toolbox' ); ?></button>
 				<button type="button" class="dtb-ii-btn dtb-ii-btn-secondary" data-dtb-ii-sync-stock><?php esc_html_e( 'Sync Stock Cache', 'drywall-toolbox' ); ?></button>
 				<button type="button" class="dtb-ii-btn dtb-ii-btn-primary" data-dtb-ii-recompute><?php esc_html_e( 'Recompute Rollups', 'drywall-toolbox' ); ?></button>
+				<button type="button" class="dtb-ii-btn dtb-ii-btn-primary" data-dtb-ii-full-rebuild><?php esc_html_e( 'Full Rebuild', 'drywall-toolbox' ); ?></button>
 			</div>
 		</section>
 
@@ -90,10 +93,29 @@ function dtb_inventory_intelligence_render_page(): void {
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="stock_rows">—</span><label><?php esc_html_e( 'Tracked SKUs', 'drywall-toolbox' ); ?></label></div>
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="rollup_rows">—</span><label><?php esc_html_e( 'Universal Rollups', 'drywall-toolbox' ); ?></label></div>
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="critical_rollups">—</span><label><?php esc_html_e( 'True Stockouts', 'drywall-toolbox' ); ?></label></div>
-			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="latest_sync">—</span><label><?php esc_html_e( 'Last Sync', 'drywall-toolbox' ); ?></label></div>
+			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="latest_sync">—</span><label><?php esc_html_e( 'Last Stock Sync', 'drywall-toolbox' ); ?></label></div>
+		</section>
+
+		<section class="dtb-ii-health dtb-ii-health--seed" aria-label="Universal seed import health">
+			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_parts">—</span><label><?php esc_html_e( 'Seed Parts', 'drywall-toolbox' ); ?></label></div>
+			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_members">—</span><label><?php esc_html_e( 'Seed Members', 'drywall-toolbox' ); ?></label></div>
+			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_compatibility">—</span><label><?php esc_html_e( 'Compatibility Rows', 'drywall-toolbox' ); ?></label></div>
+			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_files">—</span><label><?php esc_html_e( 'Seed Files', 'drywall-toolbox' ); ?></label></div>
 		</section>
 
 		<div id="dtb-ii-message" class="dtb-ii-message" role="status"></div>
+
+		<section class="dtb-ii-card dtb-ii-card--workflow">
+			<h2><?php esc_html_e( 'Required Build Sequence', 'drywall-toolbox' ); ?></h2>
+			<p><?php esc_html_e( 'If rollups show zero, the universal seed members have not been projected onto Woo part products yet. Run the sequence below or use Full Rebuild.', 'drywall-toolbox' ); ?></p>
+			<ol class="dtb-ii-sequence">
+				<li><strong><?php esc_html_e( 'Dry Run Universal Import', 'drywall-toolbox' ); ?></strong><span><?php esc_html_e( 'Resolves members.csv rows to Woo SKUs/manufacturer SKUs without writing metadata.', 'drywall-toolbox' ); ?></span></li>
+				<li><strong><?php esc_html_e( 'Apply Universal Import', 'drywall-toolbox' ); ?></strong><span><?php esc_html_e( 'Writes _dtb_universal_part_* metadata to resolved Woo part products.', 'drywall-toolbox' ); ?></span></li>
+				<li><strong><?php esc_html_e( 'Sync Stock Cache', 'drywall-toolbox' ); ?></strong><span><?php esc_html_e( 'Copies Woo/Veeqo stock projection into the local inventory cache.', 'drywall-toolbox' ); ?></span></li>
+				<li><strong><?php esc_html_e( 'Recompute Rollups', 'drywall-toolbox' ); ?></strong><span><?php esc_html_e( 'Aggregates effective stock by universal physical part.', 'drywall-toolbox' ); ?></span></li>
+			</ol>
+			<pre id="dtb-ii-projection-output" class="dtb-ii-output"></pre>
+		</section>
 
 		<section class="dtb-ii-grid">
 			<div class="dtb-ii-card dtb-ii-card--wide">
@@ -121,7 +143,7 @@ function dtb_inventory_intelligence_render_page(): void {
 						<tbody id="dtb-ii-rollup-body"></tbody>
 					</table>
 				</div>
-				<div id="dtb-ii-rollup-empty" class="dtb-ii-empty"><?php esc_html_e( 'No rollups computed yet. Sync stock cache, then recompute rollups.', 'drywall-toolbox' ); ?></div>
+				<div id="dtb-ii-rollup-empty" class="dtb-ii-empty"><?php esc_html_e( 'No rollups computed yet. Apply universal import, sync stock cache, then recompute rollups.', 'drywall-toolbox' ); ?></div>
 				<div id="dtb-ii-rollup-pagination" class="dtb-ii-pagination"></div>
 			</div>
 
