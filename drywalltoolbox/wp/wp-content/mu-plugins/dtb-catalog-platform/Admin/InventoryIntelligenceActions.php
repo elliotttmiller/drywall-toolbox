@@ -14,6 +14,9 @@ if ( ! dtb_is_admin_or_ajax_request() ) {
 add_action( 'wp_ajax_dtb_inventory_health', 'dtb_ajax_inventory_health' );
 add_action( 'wp_ajax_dtb_inventory_sync_stock', 'dtb_ajax_inventory_sync_stock' );
 add_action( 'wp_ajax_dtb_inventory_recompute_rollups', 'dtb_ajax_inventory_recompute_rollups' );
+add_action( 'wp_ajax_dtb_inventory_full_rebuild', 'dtb_ajax_inventory_full_rebuild' );
+add_action( 'wp_ajax_dtb_inventory_project_universal_parts', 'dtb_ajax_inventory_project_universal_parts' );
+add_action( 'wp_ajax_dtb_inventory_universal_seed_summary', 'dtb_ajax_inventory_universal_seed_summary' );
 add_action( 'wp_ajax_dtb_inventory_list_rollups', 'dtb_ajax_inventory_list_rollups' );
 add_action( 'wp_ajax_dtb_inventory_true_stockouts', 'dtb_ajax_inventory_true_stockouts' );
 add_action( 'wp_ajax_dtb_inventory_substitute_preview', 'dtb_ajax_inventory_substitute_preview' );
@@ -33,8 +36,37 @@ function dtb_inventory_validate_ajax_request(): void {
  */
 function dtb_ajax_inventory_health(): void {
 	dtb_inventory_validate_ajax_request();
-	$service = new DTB_InventoryIntelligenceService();
-	wp_send_json_success( $service->health() );
+	$service            = new DTB_InventoryIntelligenceService();
+	$projection_service = new DTB_UniversalPartsProjectionService();
+	wp_send_json_success(
+		array_merge(
+			$service->health(),
+			[ 'universal_seed' => $projection_service->summary() ]
+		)
+	);
+}
+
+/**
+ * AJAX: committed universal seed summary.
+ */
+function dtb_ajax_inventory_universal_seed_summary(): void {
+	dtb_inventory_validate_ajax_request();
+	$projection_service = new DTB_UniversalPartsProjectionService();
+	wp_send_json_success( $projection_service->summary() );
+}
+
+/**
+ * AJAX: project committed universal-parts seed members onto Woo part products.
+ */
+function dtb_ajax_inventory_project_universal_parts(): void {
+	dtb_inventory_validate_ajax_request();
+	$mode = sanitize_key( $_POST['mode'] ?? 'dry_run' );
+	if ( ! in_array( $mode, [ 'dry_run', 'apply' ], true ) ) {
+		$mode = 'dry_run';
+	}
+
+	$projection_service = new DTB_UniversalPartsProjectionService();
+	wp_send_json_success( $projection_service->sync_members( $mode ) );
 }
 
 /**
@@ -64,6 +96,35 @@ function dtb_ajax_inventory_recompute_rollups(): void {
 			$result,
 			[ 'message' => sprintf( 'Inventory rollups recomputed. %d universal groups updated.', (int) ( $result['updated'] ?? 0 ) ) ]
 		)
+	);
+}
+
+/**
+ * AJAX: run full safe rebuild sequence.
+ */
+function dtb_ajax_inventory_full_rebuild(): void {
+	dtb_inventory_validate_ajax_request();
+
+	$projection_service = new DTB_UniversalPartsProjectionService();
+	$stock_service      = new DTB_VeeqoStockSyncService();
+	$rollup_service     = new DTB_InventoryRollupService();
+
+	$projection_result = $projection_service->sync_members( 'apply' );
+	$stock_result      = $stock_service->sync_from_woocommerce( true );
+	$rollup_result     = $rollup_service->recompute_all();
+
+	wp_send_json_success(
+		[
+			'projection' => $projection_result,
+			'stock'      => $stock_result,
+			'rollup'     => $rollup_result,
+			'message'    => sprintf(
+				'Full rebuild complete. %d universal products projected, %d stock rows updated, %d rollups recomputed.',
+				(int) ( $projection_result['updated'] ?? 0 ),
+				(int) ( $stock_result['updated'] ?? 0 ),
+				(int) ( $rollup_result['updated'] ?? 0 )
+			),
+		]
 	);
 }
 
