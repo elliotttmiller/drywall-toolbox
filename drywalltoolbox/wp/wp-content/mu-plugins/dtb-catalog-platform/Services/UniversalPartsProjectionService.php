@@ -344,12 +344,18 @@ final class DTB_UniversalPartsProjectionService {
 				'post_status'    => 'any',
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
-				'meta_query'     => [
-					[
-						'key'   => DTB_ProductMeta::MANUFACTURER_SKU,
-						'value' => $manufacturer_sku,
-					],
+			'meta_query'     => [
+				[
+					'key'     => DTB_ProductMeta::MANUFACTURER_SKU,
+					'value'   => $manufacturer_sku,
+					'compare' => '=',
 				],
+				[
+					'key'     => DTB_ProductMeta::IS_PARTS,
+					'value'   => '1',
+					'compare' => '=',
+				],
+			],
 			]
 		);
 
