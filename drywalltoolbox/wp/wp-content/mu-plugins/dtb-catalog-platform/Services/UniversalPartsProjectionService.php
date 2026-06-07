@@ -327,7 +327,10 @@ final class DTB_UniversalPartsProjectionService {
 			return 0;
 		}
 		$product_id = wc_get_product_id_by_sku( $sku );
-		return $product_id > 0 ? (int) $product_id : 0;
+		if ( $product_id <= 0 || 'product' !== get_post_type( $product_id ) ) {
+			return 0;
+		}
+		return '1' === (string) get_post_meta( $product_id, DTB_ProductMeta::IS_PARTS, true ) ? (int) $product_id : 0;
 	}
 
 	private function find_part_id_by_manufacturer_sku( string $manufacturer_sku ): int {
