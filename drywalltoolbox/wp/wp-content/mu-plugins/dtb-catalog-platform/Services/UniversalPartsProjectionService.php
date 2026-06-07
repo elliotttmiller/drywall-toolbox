@@ -93,8 +93,10 @@ final class DTB_UniversalPartsProjectionService {
 			'active'        => 0,
 			'review'        => 0,
 			'quarantine'    => 0,
+			'verified'      => 0,
 			'high'          => 0,
 			'medium'        => 0,
+			'low'           => 0,
 		];
 
 		foreach ( $parts as $row ) {
