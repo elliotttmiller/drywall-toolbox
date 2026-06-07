@@ -231,8 +231,8 @@ final class DTB_UniversalPartsProjectionService {
 					$post_id,
 					[
 						'universal_part_id'         => $universal_id,
-						'universal_part_status'     => (string) ( $row['status'] ?? $part_row['status'] ?? 'review' ),
-						'universal_part_confidence' => (string) ( $row['confidence'] ?? $part_row['confidence'] ?? 'review' ),
+						'universal_part_status'     => '' !== trim( (string) ( $row['status'] ?? '' ) ) ? (string) $row['status'] : (string) ( $part_row['status'] ?? 'review' ),
+						'universal_part_confidence' => '' !== trim( (string) ( $row['confidence'] ?? '' ) ) ? (string) $row['confidence'] : (string) ( $part_row['confidence'] ?? 'review' ),
 						'universal_part_family'     => (string) ( $part_row['part_family'] ?? '' ),
 						'universal_part_signature'  => (string) ( $part_row['source_audit_key'] ?? '' ),
 					]
