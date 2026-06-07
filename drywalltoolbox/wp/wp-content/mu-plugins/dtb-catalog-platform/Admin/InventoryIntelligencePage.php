@@ -96,7 +96,7 @@ function dtb_inventory_intelligence_render_page(): void {
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="latest_sync">—</span><label><?php esc_html_e( 'Last Stock Sync', 'drywall-toolbox' ); ?></label></div>
 		</section>
 
-		<section class="dtb-ii-health dtb-ii-health--seed" aria-label="Universal seed import health">
+		<section class="dtb-ii-health dtb-ii-health--seed" aria-label="<?php esc_attr_e( 'Universal seed import health', 'drywall-toolbox' ); ?>">
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_parts">—</span><label><?php esc_html_e( 'Seed Parts', 'drywall-toolbox' ); ?></label></div>
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_members">—</span><label><?php esc_html_e( 'Seed Members', 'drywall-toolbox' ); ?></label></div>
 			<div class="dtb-ii-health-item"><span data-dtb-ii-metric="seed_compatibility">—</span><label><?php esc_html_e( 'Compatibility Rows', 'drywall-toolbox' ); ?></label></div>
