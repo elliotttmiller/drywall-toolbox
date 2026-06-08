@@ -37802,5 +37802,87 @@
     "parts_missing_hotspots_count": 611,
     "hotspots_missing_part_catalog_entries_count": 1,
     "parts_with_unresolved_generic_names_count": 312
+  },
+  "production_catalog_build_plan": {
+    "objective": "Build a production-grade official TapeTech parts catalog from the frontend schematics library with deterministic, auditable SKU integrity.",
+    "readiness_assessment": {
+      "status": "blocked",
+      "hotspot_coverage_percent": 57.8,
+      "resolved_name_coverage_percent": 78.45,
+      "blocking_metrics": {
+        "parts_missing_hotspots_count": 611,
+        "hotspots_missing_part_catalog_entries_count": 1,
+        "parts_with_unresolved_generic_names_count": 312
+      }
+    },
+    "priority_workstreams": [
+      {
+        "id": "hotspot-backfill",
+        "goal": "Eliminate all parts missing hotspots, prioritizing models where hotspot coverage is 0%.",
+        "highest_priority_schematics": [
+          "PAHC12/schematic_data.json",
+          "PAHC07/schematic_data.json",
+          "PAHC10/schematic_data.json",
+          "EHC12/schematic_data.json",
+          "EHC10/schematic_data.json",
+          "EZ07TT/schematic_data.json",
+          "EZ10TT/schematic_data.json",
+          "EZ12TT/schematic_data.json",
+          "EZ15TT/schematic_data.json"
+        ],
+        "release_gate": "parts_missing_hotspots_count == 0"
+      },
+      {
+        "id": "name-normalization",
+        "goal": "Resolve generic part names using researched references and controlled manual overrides.",
+        "highest_priority_schematics": [
+          "EHC07/schematic_data.json",
+          "EZ15TT/schematic_data.json",
+          "07TT/schematic_data_004.json",
+          "EZ07TT/schematic_data.json",
+          "EZ10TT/schematic_data.json",
+          "EZ12TT/schematic_data.json",
+          "QB08-QSX/schematic_data.json",
+          "CA07TT/schematic_data.json"
+        ],
+        "release_gate": "parts_with_unresolved_generic_names_count == 0 (or approved exception ledger)"
+      },
+      {
+        "id": "referential-integrity",
+        "goal": "Ensure every hotspot references a valid catalog part and every catalog part retains canonical SKU identity.",
+        "known_blockers": [
+          {
+            "schematic_key": "48TT/schematic_data.json",
+            "issue": "hotspot_refs_missing_part_catalog",
+            "part_ref": "480001F"
+          }
+        ],
+        "release_gate": "hotspots_missing_part_catalog_entries_count == 0"
+      }
+    ],
+    "canonical_catalog_contract": {
+      "authoritative_input_scope": "primary frontend schematics only",
+      "exclude_file_roles": [
+        "backup"
+      ],
+      "canonical_sku_rule": "normalized_sku = upper(trim(part_id))",
+      "required_fields": [
+        "brand",
+        "model",
+        "schematic_key",
+        "normalized_sku",
+        "display_id",
+        "part_name",
+        "quantity",
+        "notes",
+        "source_confidence"
+      ],
+      "core_outputs": [
+        "tapetech_parts_master.csv",
+        "tapetech_parts_fitment_map.csv",
+        "tapetech_official_brand_catalog.csv",
+        "tapetech_official_brand_catalog_audit_issues.csv"
+      ]
+    }
   }
 }

@@ -53,3 +53,67 @@ Generated: 2026-06-08T18:29:20.222208+00:00
 - `QB06-QSX/schematic_data.json` (primary, schema=2.x) :: pages=1 parts=23 labels=20 missing_part_hotspots=3 orphan_labels=0
 - `QB08-QSX/schematic_data.json` (primary, schema=2.x) :: pages=1 parts=24 labels=24 missing_part_hotspots=0 orphan_labels=0
 - `XHTT/schematic_data.json` (primary, schema=2.x) :: pages=1 parts=18 labels=18 missing_part_hotspots=0 orphan_labels=0
+
+## Production Readiness Assessment
+- status: **not production ready**
+- hotspot coverage: **57.80%** (`(1448 - 611) / 1448`)
+- resolved part-name coverage: **78.45%** (`(1448 - 312) / 1448`)
+- blocking issues:
+  - 611 parts cannot be linked to interactive hotspots (cannot support diagram-driven purchase UX)
+  - 312 parts still use unresolved generic names (risk of duplicate/ambiguous SKU listings)
+  - 1 hotspot references a part not present in the parts list (`48TT/schematic_data.json`)
+
+## Priority Gap Concentration (Where to Fix First)
+### Missing hotspot coverage (largest blockers)
+- `PAHC12`: 84/84 missing hotspots
+- `PAHC07`: 81/81 missing hotspots
+- `PAHC10`: 76/76 missing hotspots
+- `EHC12`: 72/72 missing hotspots
+- `EHC10`: 68/68 missing hotspots
+- `EZ07TT`: 54/54 missing hotspots
+- `EZ10TT`: 54/54 missing hotspots
+- `EZ12TT`: 54/54 missing hotspots
+- `EZ15TT`: 54/54 missing hotspots
+
+### Unresolved part naming (largest blockers)
+- `EHC07`: 47 unresolved names
+- `EZ15TT`: 32 unresolved names
+- `07TT/schematic_data_004`: 31 unresolved names
+- `EZ07TT`: 29 unresolved names
+- `EZ10TT`: 27 unresolved names
+- `EZ12TT`: 27 unresolved names
+- `QB08-QSX`: 19 unresolved names
+- `CA07TT`: 16 unresolved names
+
+## Production-Grade Official TapeTech Parts Catalog Build Plan
+1. **Normalize and lock the schematic source set**
+   - Use only `primary` schematic files as authoritative inputs for production output.
+   - Exclude `backup` files from all production transforms.
+   - Treat each `(model, schematic_key, part_id)` as a unique source record.
+
+2. **Run deterministic quality repair passes before catalog export**
+   - Pass A (hotspots): close all `parts_missing_hotspots`, starting with PAHC/EHC/EZ families.
+   - Pass B (naming): resolve `parts_with_unresolved_generic_names` using researched references (`scrape_manifest.json`, `wp-catalog.csv`), then human review for unresolved remainder.
+   - Pass C (referential integrity): resolve all `hotspots_missing_part_catalog_entries` so every hotspot maps to a valid part row.
+
+3. **Build canonical parts master from schematics**
+   - Canonical key: `normalized_sku = upper(trim(part_id))`.
+   - Required fields: `brand`, `model`, `schematic_key`, `normalized_sku`, `display_id`, `part_name`, `quantity`, `notes`, `source_confidence`.
+   - Deduplicate by `(normalized_sku, model)` while preserving schematic-level fitment mapping.
+
+4. **Generate commerce-ready official catalog rows**
+   - Build one purchasable parent SKU row per normalized part, then model compatibility/fits metadata from schematic membership.
+   - Enforce naming precedence: `frontend_name` -> researched normalized name -> manual override dictionary.
+   - Keep an explicit exception ledger for SKUs requiring manual adjudication.
+
+5. **Gate release with hard acceptance criteria**
+   - `parts_missing_hotspots_count == 0`
+   - `hotspots_missing_part_catalog_entries_count == 0`
+   - `parts_with_unresolved_generic_names_count == 0` (or approved exception list with sign-off)
+   - deterministic rebuild checksum parity across two consecutive runs
+
+## Recommended Deliverables
+- `tapetech_parts_master.csv` (canonical schematic-derived parts inventory)
+- `tapetech_parts_fitment_map.csv` (model-to-part compatibility map)
+- `tapetech_official_brand_catalog.csv` (commerce import target)
+- `tapetech_official_brand_catalog_audit_issues.csv` (exceptions + manual adjudications)
