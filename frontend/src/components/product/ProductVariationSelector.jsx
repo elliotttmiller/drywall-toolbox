@@ -68,7 +68,11 @@ export default function ProductVariationSelector({
                   <Motion.button
                     key={`${attr.name}-${option.value}`}
                     type="button"
-                    onClick={() => setSelectedAttrs((prev) => ({ ...prev, [attr.name]: option.value }))}
+                    onClick={() => {
+                      if (!disabled) {
+                        setSelectedAttrs((prev) => ({ ...prev, [attr.name]: option.value }));
+                      }
+                    }}
                     disabled={disabled}
                     aria-pressed={selected}
                     aria-disabled={disabled || soldOut}
@@ -104,13 +108,23 @@ export default function ProductVariationSelector({
 
       <AnimatePresence>
         {selectedVariation?.stock_status === 'outofstock' && (
-          <Motion.p className="product-variation-alert" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}>
+          <Motion.p 
+            className="product-variation-alert product-variation-alert--out-of-stock" 
+            initial={{ opacity: 0, y: -4 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -4 }}
+          >
             This option is currently out of stock.
           </Motion.p>
         )}
         {!variationsLoading && hasCompleteSelection && !selectedVariation && (
-          <Motion.p className="product-variation-alert" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}>
-            This option combination is not available.
+          <Motion.p 
+            className="product-variation-alert product-variation-alert--unavailable" 
+            initial={{ opacity: 0, y: -4 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -4 }}
+          >
+            This option combination is not available. Please try a different selection.
           </Motion.p>
         )}
       </AnimatePresence>
