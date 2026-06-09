@@ -511,6 +511,7 @@ export default function ProductDetail({
       // Try to preserve the current selection if it exists and is valid
       if (Object.keys(currentInitialAttrs || {}).length > 0) {
         // Validate that the initial selection matches a variation
+        // Match is determined by comparing normalized attribute keys and values (see variationSelection.js)
         const matchedVariation = findMatchingVariation(vars, currentInitialAttrs);
         if (matchedVariation) {
           // Valid selection - use it
@@ -709,6 +710,7 @@ export default function ProductDetail({
   const needsVariation = product.is_variable && variationAttributes.length > 0;
   
   // Check if all required variation attributes have been selected
+  // Allows numeric values like 0, booleans like false, but rejects null/undefined and empty strings
   const hasCompleteSelection = !needsVariation || variationAttributes.every((attr) => {
     const value = selectedAttrs?.[attr.name];
     // Check for null/undefined and empty strings, but allow 0, false, etc.
