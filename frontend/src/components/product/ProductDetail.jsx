@@ -507,11 +507,34 @@ export default function ProductDetail({
     const applyVariations = (vars) => {
       if (!mounted || !Array.isArray(vars) || vars.length === 0) return false;
       setVariations(vars);
+      
+      // Try to preserve the current selection if it exists and is valid
       if (Object.keys(currentInitialAttrs || {}).length > 0) {
-        setSelectedAttrs(currentInitialAttrs);
+        // Validate that the initial selection matches a variation
+        const matchedVariation = findMatchingVariation(vars, currentInitialAttrs);
+        if (matchedVariation) {
+          // Valid selection - use it
+          setSelectedAttrs(currentInitialAttrs);
+        } else if (autoSelectDefaultVariation) {
+          // Selection doesn't match - fall back to default/first in stock
+          const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
+          if (firstInStock) {
+            setSelectedAttrs(getVariationSelectionMap(firstInStock));
+          } else {
+            setSelectedAttrs({});
+          }
+        } else {
+          // No auto-select, but preserve the attrs even if they don't match (user might be building selection)
+          setSelectedAttrs(currentInitialAttrs);
+        }
       } else if (autoSelectDefaultVariation) {
+        // No initial selection - auto-select first available
         const firstInStock = vars.find((v) => v.stock_status !== 'outofstock') || vars[0];
-        setSelectedAttrs(getVariationSelectionMap(firstInStock));
+        if (firstInStock) {
+          setSelectedAttrs(getVariationSelectionMap(firstInStock));
+        } else {
+          setSelectedAttrs({});
+        }
       } else {
         setSelectedAttrs({});
       }
@@ -684,7 +707,14 @@ export default function ProductDetail({
     ? `/products/${product.slug}${selectedVariation?.id ? `/variations/${encodeURIComponent(selectedVariation.id)}` : ''}`
     : '';
   const needsVariation = product.is_variable && variationAttributes.length > 0;
-  const hasCompleteSelection = !needsVariation || variationAttributes.every((attr) => selectedAttrs?.[attr.name]);
+  
+  // Check if all required variation attributes have been selected
+  const hasCompleteSelection = !needsVariation || variationAttributes.every((attr) => {
+    const value = selectedAttrs?.[attr.name];
+    return value != null && String(value).trim() !== '';
+  });
+  
+  // Only allow add to cart if: not out of stock AND either not variable OR has valid matching variation
   const canAddToCart = !isOutOfStock && (!needsVariation || Boolean(selectedVariation && hasCompleteSelection));
 
   const handleAddToCart = async () => {
