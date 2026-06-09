@@ -1,0 +1,1277 @@
+brand,model,schematic_key,normalized_sku,display_id,part_name,quantity,notes,source_confidence
+TapeTech,07TT,07TT/schematic_data.json,050003,050003,"Wiper, Control Valve",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050004,050004,"Wiper, Retainer",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050017,050017,Collar Bushing,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050019,050019,Disengaging Cam,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050023F,050023F,Spacer Bar,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050027,050027,"Lock, Needle Holder",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050030,050030,Magnet,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050034F,050034F,Disengaging Rod,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050041F,050041F,Disengaging Rod Bearing,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050043F,050043F,Anvil,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050046,050046,"Support, Right Chain Roller",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050050F,050050F,Needle Holder,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050053,050053,Cam Gooser Release,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050058,050058,Control Valve,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050063,050063,Cut Off Spring Cover,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050064F,050064F,Valve,1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,050068,050068,Gooser & Cutter Chain Stop,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050070F,050070F,Creaser Axle,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050071F,050071F,Front Support,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050072F,050072F,Rear Support,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050073,050073,Creaser Wheel,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050079,050079,Creaser Crank,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050080F,050080F,Screw Block,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050081F,050081F,Spring,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050083F,050083F,Cable Drum,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050086F,050086F,Head Bushing,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050090F,050090F,Spacer Bar,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050093F,050093F,Taper Wheel,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050094F,050094F,Spool,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050098F,050098F,050098F,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050099F,050099F,Head Bushing,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050109F,050109F,Hub,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050110F,050110F,050110F,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050113F,050113F,Cutter Block Tube,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050115F,050115F,"Spring, Drive Dog",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050123,050123,Cam,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050128F,050128F,"Bushing, Chain Roller",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050132F,050132F,"Spring, Cut Off",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050134,050134,Chain Roller,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050137F,050137F,Cutter Block Clamp,1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,050140F,050140F,"Screw, 6.52 X 5.09",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050141,050141,"Support, Left Chain Roller",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050144F,050144F,Link Tube,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050145,050145,Creaser Chain,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050150F,050150F,Hub,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050154,050154,Bearing Bracket,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050163,050163,"Guide, Main Chain",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050200,050200,Plastic Piston,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050203,050203,Plunger Cup,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050204,050204,Cup Washer,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050205,050205,"Cup Bolt, 1/4-20 X 7/8 Hex Head",1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050212F,050212F,Nut,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050229,050229,Band,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050244,050244,Spool,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050249,050249,Creaser Connector,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050402B,050402B,"Band Clamp, Black",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data_004.json,050403B,050403B,050403B,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050405B,050405B,"Keeper Axle, Black",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050410B,050410B,"Control Tube Flange, Black",2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050412,050412,Wheel Keeper Wireform,4,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050413,050413,Control Tube Wheel,8,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,050418,050418,Roller Axle,8,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,"050422 RUBBER
+PAD, TYP.
+(REPAIR ONLY)","050422 Rubber
+Pad, Typ.
+(Repair Only)","050422 Rubber
+Pad, Typ.
+(Repair Only)",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050500,050500,Brake Roller,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050577,050577,Brake Torsion Spring,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,050599,050599,Main Shaft Washer,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,051001,051001,Outlet Valve Handle,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,051089,051089,"Side Plate, SST",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,051105,051105,"Side Plate, SST",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,051135,051135,"Cutter Block, Taper",1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,051243,051243,Stub Shaft,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data_004.json,051248,051248,051248,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data_004.json,051250,051250,051250,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data_004.json,051251,051251,051251,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data_004.json,051252,051252,051252,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data_004.json,051415,051415,051415,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,052011,052011,Drip Guard,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052036,052036,Base Bracket,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052051,052051,Key,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052052,052052,Lock,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052055,052055,Taper Head Enclosure,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052080,052080,Snap Out Cover,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052121F,052121F,Shaft,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052125,052125,052125,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,052148,052148,"Bushing, Plastic",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052149,052149,Sprocket Bushing,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052150,052150,Brake Adjuster,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052152,052152,Side Plate Spacer,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052214,052214,Wheel Enclosure,4,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052221,052221,Control Arm Boss,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052226,052226,"Control Arm Guide, Molded",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052400B,052400B,Spool Mount,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052401B,052401B,"Plunger Stop, Small",1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052403,052403,Plunger Stop Locking Strap,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052404B,052404B,Keeper Yoke,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052407B,052407B,Keeper Tube Cradle,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,052408,052408,Spool Post,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052409,052409,Keeper Wireform,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data_004.json,05240B,05240B,05240B,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052415A,052415A,"Control Tube, Anodized",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,052576,052576,Brake Spring Mount,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data_004.json,054002B,054002B,054002B,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054028,054028,Gooser Assembly,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data_004.json,05402FF,05402FF,05402FF,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054032F,054032F,Push Rod Assy,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054048F,054048F,Baffle Plate Ass'Y,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054059F,054059F,Filler Tube Assy,1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,054075,054075,"Tape Runner Assy, Right",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054095F,054095F,Creaser Arm Assy,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054096F,054096F,Creaser Arm Assy,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054101,054101,Tape Guide Assy.,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054104,054104,"Tape Runner Assy, Left",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054111F,054111F,Gooser Guide,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054114F,054114F,Sprocket Assembly,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054116F,054116F,Drive Dog Assy,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054118F,054118F,Drive Dog Holder Assembly,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054209F,054209F,Main Cable Assy,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,054219,054219,Control Arm Assy.,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,"054245F
+(051262 BUSHING)
+(NOT SHOWN)
+(REPAIR ONLY)","054245F
+(051262 BUSHING)
+(NOT SHOWN)
+(REPAIR ONLY)",Trigger Assembly,1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,056022,056022,Gooser Spring,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,056100F,056100F,"Taper Head, No Logo",1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,056133,056133,"Pyramid Blade, SST",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,056142,056142,"Cutter Chain, SST.",1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,056142F,056142F,056142F,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,056248G,056248G,Gold Taper Tube,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,058126F,058126F,Drive Chain - S.S.,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059005,059005,Nut 4-40 Hex S.S.,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059012,059012,Screw 6-32 X 3/8 Fil. Hd. S.S.,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059013,059013,Screw 6-32 X 5/16 Rd. Hd. S.S.,4,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059014,059014,Screw 4-40 X 3/16 Truss Hd. S.S,1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,059015,059015,Screw 6-32 X 1/4 Fil. Hd. S.S.,8,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059016,059016,"Lockwasher, #6 Medium Spring",7,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059018,059018,Stopnut 6-32 Thin Pat.,3,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059020,059020,Screw 6-32 X 3/8 Bind Hd.,3,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059021,059021,"Screw, 4-40 X 5/32",4,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059024,059024,Chain Keeper,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059025,059025,Cotter Pin. 5/64 X 1/2 S.S,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059029,059029,Screw 6-32 X 5/8 Fl. Hd. S.S,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059037,059037,Screw 4-40 X 1/4 Bind Hd. S.S,9,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059038,059038,Lockwasher 4 Med. Spring,7,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059040,059040,"O Ring, 568-006 Buna",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059044,059044,Insert,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059047,059047,Screw 2-56 X 1/8 Bind Hd. S.S,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059049,059049,"Needle, Gooser",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059051,059051,Screw 6-32 X 3/16 Fil. Hd. S.S,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059056,059056,"Machine Screw, 2-56 X 3/16 Fillister Hea",4,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059057,059057,Screw 4-40 x 3/16 Bind Hd. S.S,19,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,"059057, LOCTITE AND
+TORQUE SECURELY","059057, LOCTITE AND
+TORQUE SECURELY","059057, LOCTITE AND
+TORQUE SECURELY",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059060,059060,"Stopnut 3-48 Hex., Nyloc, S.S.",1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,059061F,059061F,Valve Spring,1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,059067,059067,"Key Ring, .875 Diameter",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059074,059074,"Stopnut, 8-32 Hex, Elas., S.S.",4,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059078,059078,Bearing Nyliner,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059082,059082,Drum Washer,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059084,059084,Setscrew,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059085,059085,Screw 8-32 X 1/4 Fil. Hd. S.S,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059087,059087,"Nut 3-48 Hex, Miniature S.S.",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059091,059091,"Screw 6-32 X 1/2 Slotted Fil. Hd., S.S.",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059092,059092,"Screw 8-32 X 1-1/2, Slotted Rd. Hd., S.S",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059098,059098,"Shim, Side Plate",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059102,059102,Screw 4-40 X .225/.235 Fl.Hd.SST.,12,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059106,059106,Screw 4-40 X 1/8 Sltd Fl Hd SST.,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059107,059107,Screw 6-32 X 1/4 Fl. Hd. SST.,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059108,059108,059108,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,059117,059117,059117,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,059119,059119,"Pin, Drive Dog Holder",1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,059120,059120,"Axle, Drive Dog",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059123,059123,059123,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,059127,059127,Screw 8-32 X 5/8 Truss Hd. S.S,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059129,059129,"Pin, Cutter Block",1,name_source=researched,high
+TapeTech,07TT,07TT/schematic_data.json,059143,059143,Cotter Pin 1/16 X 1/2 SST.,5,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059156,059156,Screw 4-40 X 5/16 Bind. Hd. S.S,3,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059161,059161,Screw 4-40 X 3/8 Fil. Hd. S.S,4,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059164,059164,#6 Ext. Washer,5,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059201,059201,"1/4-20 Hex Nut, Slotted",1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059206,059206,Nut 1/4 - 20 Heavy Hex. S.S 303,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data_004.json,059226,059226,059226,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,059230,059230,Screw 5-40 X 7/16 Bind,2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059238,059238,1/4-20 X 1/2 Screw Fl Hd Socket Cap,2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059264,059264,4-40 X 7/16 Binding Head Screw,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059323,059323,10-32X5/8 Button Hd Soc Cap Screw,2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059328,059328,"O-Ring, 1-3/4 ID x 1-7/8 OD x 1/16 wide",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059329,059329,"Screw, 10-32 x 1, Phillips FH Undercut",2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059330,059330,"Jam Nut, 10-32 x 1/8",2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059331,059331,10-32 x 5/16 Hex Soc Set TY A Cup Pt,2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,059332,059332,"O-Ring, 1mm x 11mm",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059333,059333,O Ring - 5/32 ID x 9/16 OD x 1/16 Wide,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059426,059426,6-32 X 5/8 Soc. Hd. Cap Screw,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,059429,059429,"O Ring, 5/16 ID x 9/16 OD x .139 Wide",1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data_004.json,059436,059436,059436,1,name_source=frontend; generic_name=true,medium
+TapeTech,07TT,07TT/schematic_data.json,209042,209042,#10 Brass Washer,2,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",3,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,209058,209058,6-32 Brass Nut,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,219095,219095,Washer,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,509010,509010,Screw: 4-40 X 5/16 Fl. Hd. S.S.,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,609012,609012,Stopnut 4-40 S.S,1,name_source=frontend,high
+TapeTech,07TT,07TT/schematic_data.json,709034,709034,O'Ring 568-210 Buna,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,709043,709043,"#63 ""S"" Hook 18-8 S.S.",1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data.json,889009,889009,5/32 X 1'' Spring Pin. 18-8 S.S.,2,name_source=frontend; duplicate_schematic_keys=07TT/schematic_data.json|07TT/schematic_data_004.json,high
+TapeTech,07TT,07TT/schematic_data_004.json,DETAILS,Details,Details,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,059025,059025,Cotter Pin. 5/64 X 1/2 S.S,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,059143,059143,Cotter Pin 1/16 X 1/2 SST.,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,150003F,150003F,Coupling,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,150004F,150004F,"Pin, Swivel Coupling",1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,150009,150009,Swivel Axle,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,154007,154007,Swivel Ass'Y,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,164348,164348,"Corner Roller Handle Assembly, Sold",1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,170002,170002,Block,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,170003,170003,Axle,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,171005,171005,Universal Roller,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,176001,176001,"Bracket, No Logo, Serialized",1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,179004,179004,6-32 X 3/16 Hex Soc Setscrew Cup Pt 18-8,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,179006,179006,#10 Medium Lockwasher 18-8 S.S.,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,179007,179007,"#10 Flat Washer, 18-8 S.S.",1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,179008,179008,5/16 Flat Washer,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,179009,179009,5L10-Fk Type 6 Nyliner,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,179010,179010,".312 Ext. Retainer ""E"" Ring, 18-8 S.S.",1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,359005,359005,Screw: 6-32 X 1/4 Bind Hd.,1,name_source=frontend,high
+TapeTech,17TT,17TT/schematic_data.json,359046,359046,"Nut, Hex 10-32",1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,059037,059037,Screw 4-40 X 1/4 Bind Hd. S.S,4,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,059084,059084,Setscrew,2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,059091,059091,"Screw 6-32 X 1/2 Slotted Fil. Hd., S.S.",1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,359005,359005,Screw: 6-32 X 1/4 Bind Hd.,2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,"359005
+X 2","359005
+X 2",Screw: 6-32 X 1/4 Bind Hd.,1,name_source=researched,high
+TapeTech,42TT,42TT/schematic_data.json,402002F,402002F,Spring Retainer,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,402006,402006,Insert Socket,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,402012,402012,Ball Retainer,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,402019,402019,Frame Stop,2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,409010,409010,Spring,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,409011,409011,Skid,2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,420009,420009,"Blade, Carbide, 2.5"" C.F.",2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,420015,420015,"EasyRoll Frame, 2.5"", Left",1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,420016,420016,"EasyRoll Frame, 2.5"", Right",1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,426001,426001,"EasyRoll Head, 2.5"", Universal",1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,480002F,480002F,Wear Pad,2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,480017F,480017F,Center Clip,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,480021,480021,Inside Tension Spring,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,480230,480230,Head Frame Stop,2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,484014F,484014F,Center Clip Ass'Y,1,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,489013,489013,6-32 X 1/8 Setscrew,12,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,489022,489022,"Screw, 4-40 X 31/64",2,name_source=frontend,high
+TapeTech,42TT,42TT/schematic_data.json,"489037
+X 4","489037
+X 4","Part (489037
+X 4)",1,name_source=frontend; generic_name=true,medium
+TapeTech,48TT,48TT/schematic_data.json,059037,059037,Screw 4-40 X 1/4 Bind Hd. S.S,2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,059084,059084,Setscrew,2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,059091,059091,"Screw 6-32 X 1/2 Slotted Fil. Hd., S.S.",1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,359005,359005,Screw: 6-32 X 1/4 Bind Hd.,2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,402002F,402002F,4800Spring Retainer,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,402006,402006,Insert Socket,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,402012,402012,Ball Retainer,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,409010,409010,Spring,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,409011,409011,Skid,2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,450009F,450009F,"Blade, Carbide, 3"" C.F.",2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480002F,480002F,4040Wear Pad,2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480005,480005,Outside Tension Spring,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480007F,480007F,"Adjust Arm, Right",1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480008F,480008F,"Adjust Arm, Left",1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480015F,480015F,"Easyroll Frame, Left",1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480016F,480016F,"Easyroll Frame, Right",1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480017E,480017E,Center Clip,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480021,480021,Inside Tension Spring,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480026,480026,"Wheel, Grooved",2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,480027,480027,Bushing,2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,484014F,484014F,Center Clip Ass'Y,1,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,486001F,486001F,"3"" Cf Head Easyroll, No Logo",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,48TT,48TT/schematic_data.json,489013,489013,6-32 X 1/8 Setscrew,12,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,489020,489020,"Screw, 4-40 X 5/16 Nylock Pan Hd.",2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,489022,489022,"Screw, 4-40 X 31/64",2,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",4,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,489028,489028,"O""Ring 568-108",4,name_source=frontend,high
+TapeTech,48TT,48TT/schematic_data.json,489029,489029,"Screw, 6-32 X 5/8 Soc. Hd. S.S.",2,name_source=frontend,high
+TapeTech,76TT,76TT/schematic_data.json,209030,209030,Part (209030),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,700002F,700002F,Piston Rod S.S.,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,700004F,700004F,Gland,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,700005,700005,Part (700005),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,700010F,700010F,Valve Disk,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,700015F,700015F,Link,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,700029,700029,Part (700029),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,700036,700036,Stud 5/16-24 1-7/16,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,700037,700037,"Nut, Special",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,706030B,706030B,Part (706030B),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,709006,709006,1/4-20 x 5 /8 Capscrew Socket Hd.,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,709007,709007,Part (709007),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,709012,709012,Part (709012),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,709023,709023,5/16-18 x 7/8 Capsrew Hex Hd. 18-8,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,709024,709024,"Lockwasher, Med",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,709052 X 2,709052 X 2,Stopnut 1/4-20 Elastic Thin Pat,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,709055,709055,Part (709055),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,709056,709056,Hex Nut 10-24 S.S.,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,720045,720045,Part (720045),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,722003G,722003G,"Pump Cylinder, Universal, Gold",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,722070,722070,Pump Foot Wireform,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,724001,724001,"Pump Head Replacement, Universal",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,724061F,724061F,Draw Latch Assembly,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,724065,724065,Part (724065),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,726018,726018,Pump Handle Assembly,1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,729009,729009,"Wiper, U-Cup",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,729027,729027,Part (729027),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,729061,729061,Part (729061),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,729063,729063,Part (729063),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,729064,729064,"8-32 X 3/8 Slotted Binding Head Screw, S",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,729071,729071,"Flange O-Ring, -322",1,name_source=researched,high
+TapeTech,76TT,76TT/schematic_data.json,729072,729072,Part (729072),1,name_source=frontend; generic_name=true,medium
+TapeTech,76TT,76TT/schematic_data.json,762011,762011,"Foot Valve, Universal",1,name_source=researched,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,000280,000280,Part (000280),1,name_source=frontend; generic_name=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,059012,059012,Screw 6-32 X 3/8 Fil. Hd. S.S.,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,059143,059143,Cotter Pin 1/16 X 1/2 SST.,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,059217,059217,Screw 4-40 X 3/8 Bind. Hd. S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,059260,059260,Nut 8-32 Hex. H.D. S.S,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,609012,609012,Stopnut 4-40 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,702031F,702031F,Handle Ball,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,800008,800008,Pivot Arm,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,800016,800016,Quadrant,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,800018F,800018F,"Connector Plate, Notched",1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,800021F,800021F,Pin,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,800027,800027,"Connector, Short",1,name_source=researched,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,800037,800037,Part (800037),1,name_source=frontend; generic_name=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,801000,801000,Part (801000),1,name_source=frontend; generic_name=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,801009,801009,Coupling Pin,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,8034TT= 800134G 8042TT= 800142G 8054TT= 800154G 8072TT= 800172G,8034TT= 800134G 8042TT= 800142G 8054TT= 800154G 8072TT= 800172G,Handle Tube,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,8034TT= 804234 8042TT= 804242 8054TT= 804254 8072TT= 804272,8034TT= 804234 8042TT= 804242 8054TT= 804254 8072TT= 804272,Connector Assy.,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,804003F,804003F,Grip Assembly,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,804024,804024,Part (804024),1,name_source=frontend; generic_name=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,808015F,808015F,Hinge Assy,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,808017,808017,Part (808017),1,name_source=frontend; generic_name=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,809004,809004,8-32 x 3/4 Hex Soc Set Screw,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,809011,809011,Thumbscrew 5/16 - 18 X 3/4 Dog Point,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,809012,809012,8-32 X 3/8 Hex Socket Capscrew 18-8 S.S.,4,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,809017,809017,"#8 Reg. Spring Helical Lockwasher, Sst.",4,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,809024,809024,Stscrew 1/4-28X1/4,2,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,809025,809025,Slotted Spring Pin 1/8 X 3/4 Sst.,1,name_source=frontend,high
+TapeTech,80XXTT,80XXTT/schematic_data.json,810027,810027,Short Connector,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,810028,810028,Swivel Axle,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,80XXTT,80XXTT/schematic_data.json,810029,810029,Connector Coupling,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,81XXTT,81XXTT/schematic_data.json,059012,059012,Screw 6-32 X 3/8 Fil. Hd. S.S.,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,059143,059143,Cotter Pin 1/16 X 1/2 SST.,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,059217,059217,Screw 4-40 X 3/8 Bind. Hd. S.S,2,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,059260,059260,Nut 8-32 Hex. H.D. S.S,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,609012,609012,Stopnut 4-40 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,81XXTT,81XXTT/schematic_data.json,702031F,702031F,Handle Ball,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,800008,800008,Pivot Arm,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,800012,800012,Part (800012),1,name_source=frontend; generic_name=true,medium
+TapeTech,81XXTT,81XXTT/schematic_data.json,800016,800016,Quadrant,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,800018F,800018F,"Connector Plate, Notched",1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,800021F,800021F,Pin,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,801009,801009,Coupling Pin,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,81XXTT,81XXTT/schematic_data.json,804003F,804003F,Grip Assembly,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,808015F,808015F,Hinge Assy,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,809004,809004,8-32 x 3/4 Hex Soc Set Screw,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,809011,809011,Thumbscrew 5/16 - 18 X 3/4 Dog Point,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,809012,809012,8-32 X 3/8 Hex Socket Capscrew 18-8 S.S.,4,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,809017,809017,"#8 Reg. Spring Helical Lockwasher, Sst.",4,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,809024,809024,Stscrew 1/4-28X1/4,2,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,809025,809025,Slotted Spring Pin 1/8 X 3/4 Sst.,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,810027,810027,Short Connector,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,810028,810028,Swivel Axle,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,810029,810029,Connector Coupling,2,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,8134TT= 814234 8142TT= 814242 8154TT= 814254 8172TT= 814272,8134TT= 814234 8142TT= 814242 8154TT= 814254 8172TT= 814272,Connector Assy.,1,name_source=frontend,high
+TapeTech,81XXTT,81XXTT/schematic_data.json,8134TT= 818134G 8142TT= 818142G 8154TT= 818154G 8172TT= 818172G,8134TT= 818134G 8142TT= 818142G 8154TT= 818154G 8172TT= 818172G,"Curved Handle Tube, Gold",1,name_source=frontend,high
+TapeTech,85T,85T/schematic_data.json,709034,709034,Part (709034),1,name_source=frontend; generic_name=true,medium
+TapeTech,85T,85T/schematic_data.json,856003F,856003F,Part (856003F),1,name_source=frontend; generic_name=true,medium
+TapeTech,85T,85T/schematic_data.json,859016 X 2,859016 X 2,Part (859016 X 2),1,name_source=frontend; generic_name=true,medium
+TapeTech,85T,85T/schematic_data.json,861014,861014,Gooseneck Spacer,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,059018,059018,Part (059018),1,name_source=frontend; generic_name=true; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,medium
+TapeTech,88TTE,88TTE/schematic_data_1.json,190002,190002,Block,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,190033,190033,Adjuster,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,190034,190034,Coupler,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,190036,190036,Pin,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,191001,191001,Lever,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,191006,191006,Pin,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,191007,191007,Rod,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,196002,196002,Part (196002),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data.json,196003,196003,"Hinge Casting, No-Logo",1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,199010,199010,8-32 X 3/8 Set Screw Fl. Point Hex. Soc.,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,199011,199011,Part (199011),1,name_source=frontend; generic_name=true; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,medium
+TapeTech,88TTE,88TTE/schematic_data.json,219080,219080,"Screw, 6-32 X 5/8 Binder hd 18-8 SS",1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,"2X 059037
+LOCTITE 243","2X 059037
+LOCTITE 243","Part (2X 059037
+LOCTITE 243)",1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data.json,"2X 059127
+LOCTITE 243","2X 059127
+LOCTITE 243","Part (2X 059127
+LOCTITE 243)",1,name_source=frontend; generic_name=true; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,medium
+TapeTech,88TTE,88TTE/schematic_data.json,"2X 889033
+LOCTITE 243","2X 889033
+LOCTITE 243","Part (2X 889033
+LOCTITE 243)",1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_1.json,"2X 889035
+LOCTITE 243","2X 889035
+LOCTITE 243",6-32 X 1/4 Pan Head Screw 18-8 S.S.,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,2X 889055,2X 889055,Nylon Spacer,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,"2X 889062
+LOCTITE 243","2X 889062
+LOCTITE 243","10-32 x 3/4 Hex Soc Cap Scr, SST",1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,499023,499023,4-40 X 3/16 Flat Head Screw 18-8,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,"4X 889035
+LOCTITE 243","4X 889035
+LOCTITE 243",6-32 X 1/4 Pan Head Screw 18-8 S.S.,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,811018,811018,"Connector Plate, Notched",1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,819038,819038,Grip Adjuster Spring,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,880004,880004,Rear Brake Lever Bracket,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,880006F,880006F,Master Link,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json|88TTE/schematic_data_2.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,880028,880028,Compression Spring,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,880038,880038,Connecting Rod,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,880042,880042,Rubber Grip Handle,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,880053,880053,Lock Block,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,881005,881005,Rear Brake Lever,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,882001G,882001G,"Exterior Tube, TapeTech",1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,882002,882002,Profile Extrusion,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,882013,882013,Locking Pin,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,882016,882016,Guide Plug,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,882039,882039,Spring Housing,1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,883003,883003,Part (883003),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_2.json,883011,883011,Part (883011),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_2.json,883014,883014,Part (883014),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_2.json,"889015
+LOCTITE 243","889015
+LOCTITE 243","Part (889015
+LOCTITE 243)",1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_2.json,889016,889016,"1/4 X 1-1/4 Spring Pin, 18-8 S.S.",1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,889017,889017,Conical Spring,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data.json,889027,889027,"Lockwasher, Special",1,name_source=researched; duplicate_schematic_keys=88TTE/schematic_data.json|88TTE/schematic_data_1.json,high
+TapeTech,88TTE,88TTE/schematic_data.json,"889035 SECURED WITH
+039018 LOCKNUT ON
+INTERIOR OF 882002","889035 SECURED WITH
+039018 LOCKNUT ON
+INTERIOR OF 882002",Profile Extrusion,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_1.json,"889035 SECURED WITH
+059018 LOCKNUT ON
+INTERIOR OF 882002","889035 SECURED WITH
+059018 LOCKNUT ON
+INTERIOR OF 882002",Profile Extrusion,1,name_source=researched,high
+TapeTech,88TTE,88TTE/schematic_data_2.json,889057,889057,Part (889057),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_1.json,A,A,Part (A),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_1.json,B,B,Part (B),1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_2.json,"DETAIL A
+SCALE 3 : 4","DETAIL A
+SCALE 3 : 4","Part (DETAIL A
+SCALE 3 : 4)",1,name_source=frontend; generic_name=true,medium
+TapeTech,88TTE,88TTE/schematic_data_2.json,"DETAIL B
+SCALE 3 : 4","DETAIL B
+SCALE 3 : 4","Part (DETAIL B
+SCALE 3 : 4)",1,name_source=frontend; generic_name=true,medium
+TapeTech,90T,90T/schematic_data.json,700042,700042,Lanyard,1,name_source=frontend,high
+TapeTech,90T,90T/schematic_data.json,704040,704040,"Filler Tube, Assy.",1,name_source=frontend,high
+TapeTech,90T,90T/schematic_data.json,709034,709034,O'Ring 568-210 Buna,1,name_source=frontend,high
+TapeTech,90T,90T/schematic_data.json,709043,709043,"#63 ""S"" Hook 18-8 S.S.",2,name_source=frontend,high
+TapeTech,90T,90T/schematic_data.json,722039,722039,Discharge Tube,1,name_source=frontend,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,050064,050064,Part (050064),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"059012
+X 4","059012
+x 4","Part (059012
+x 4)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"059051
+X 2","059051
+x 2","Part (059051
+x 2)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,059061F,059061F,Valve Spring,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,059084,059084,Part (059084),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"059156
+X 3","059156
+x 3","Part (059156
+x 3)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,352002F,352002F,Valve Holder,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,354003F,354003F,Part (354003F),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"359005
+X 2","359005
+x 2",Screw: 6-32 X 1/4 Bind Hd.,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,359060,359060,Part (359060),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,500003F,500003F,Part (500003F),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,500018,500018,Pressure Plate,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,500028,500028,"Wiper, 7"" Wiper",1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,502005F,502005F,Pivot,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,"502006
+X 2","502006
+x 2","Bearing, Pivot",1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,"502007
+X 2","502007
+x 2",5L7D-Type 4 Nyliner,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,502019,502019,Part (502019),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,502034,502034,Part (502034),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,506001G,506001G,"7"" Housing",1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,506009,506009,"Cone, Stainless Steel",1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,"509008
+X 2","509008
+x 2","Screw, 10-32 X 1/2 Bind Hd S.S.",1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,551005,551005,Part (551005),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"559005
+X 2","559005
+x 2","Part (559005
+x 2)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"559017
+X 2","559017
+x 2","Screw, Hex Head",1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,"609010
+X 2","609010
+x 2","Part (609010
+x 2)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"609012
+X 2","609012
+x 2","Part (609012
+x 2)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,"609012
+X 3","609012
+x 3","Part (609012
+x 3)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,609018,609018,Part (609018),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA07TT,CA07TT/schematic_data.json,609020,609020,Friction Washer,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,609021,609021,Screw 10-32 X 5/8 Rd. Hd.,1,name_source=researched,high
+TapeTech,CA07TT,CA07TT/schematic_data.json,809011,809011,Thumbscrew 5/16 - 18 X 3/4 Dog Point,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,050064,050064,Part (050064),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,"059012
+X 4","059012
+x 4","Part (059012
+x 4)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,"059051
+X 2","059051
+x 2","Part (059051
+x 2)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,059060,059060,"Stopnut 3-48 Hex., Nyloc, S.S.",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,059061F,059061F,Valve Spring,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,059084,059084,Part (059084),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,"059156
+X 3","059156
+x 3","Part (059156
+x 3)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,350008,350008,"Wiper, 8"" Applicator",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,350033F,350033F,Seal Block,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,350034,350034,Pressure Plate,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,352002F,352002F,Valve Holder,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,354003F,354003F,Part (354003F),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,356001G,356001G,"8"" Housing",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,"359005
+X 2","359005
+x 2",Screw: 6-32 X 1/4 Bind Hd.,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,502005F,502005F,Pivot,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,"502006
+X 2","502006
+x 2","Bearing, Pivot",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,"502007
+X 2","502007
+x 2",5L7D-Type 4 Nyliner,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,502019,502019,Part (502019),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,502034,502034,Part (502034),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,506009,506009,"Cone, Stainless Steel",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,"509008
+X 2","509008
+x 2","Screw, 10-32 X 1/2 Bind Hd S.S.",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,"509010
+X 2","509010
+x 2",Screw: 4-40 X 5/16 Fl. Hd. S.S.,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,551005,551005,Part (551005),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,"559017
+X 2","559017
+x 2","Screw, Hex Head",1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,"609012
+X 2","609012
+x 2","Part (609012
+x 2)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,"609012
+X 3","609012
+x 3","Part (609012
+x 3)",1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,609018,609018,Part (609018),1,name_source=frontend; generic_name=true,medium
+TapeTech,CA08TT,CA08TT/schematic_data.json,609020,609020,Friction Washer,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,609021,609021,Screw 10-32 X 5/8 Rd. Hd.,1,name_source=researched,high
+TapeTech,CA08TT,CA08TT/schematic_data.json,809011,809011,Thumbscrew 5/16 - 18 X 3/4 Dog Point,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,050038,050038,050038,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,059015,059015,059015,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,059016,059016,059016,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,059020,059020,059020,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,059029,059029,Screw 6-32 X 5/8 Fl. Hd. S.S,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,059038,059038,059038,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,059102,059102,059102,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,059120,059120,"Axle, Drive Dog",1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,059161,059161,Screw 4-40 X 3/8 Fil. Hd. S.S,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,179008,179008,179008,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,200001,200001,200001,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,200039,200039,200039,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,200196,200196,200196,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,202020,202020,Spring Anchor,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,202022,202022,202022,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,202028,202028,Threaded Washer,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,202044F,202044F,202044F,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,204002,204002,Blade Holder Assy.,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,206003,206003,Dial Assy.,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,206058,206058,206058,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,208021,208021,208021,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209006,209006,Skid Cover,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,209016,209016,209016,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209017,209017,209017,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209020,209020,209020,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209022,209022,209022,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209030,209030,209030,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209042,209042,209042,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,209058,209058,6-32 Brass Nut,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,209148,209148,209148,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,210024F,210024F,"7"" Wiper",1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,210027G,210027G,210027G,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,210031G,210031G,"7"" Bottom Plate",1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,210042,210042,210042,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,210056F,210056F,210056F,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,210058,210058,210058,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,210059,210059,Shoulder Screw,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,210071,210071,Spacer Rod,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,210073,210073,210073,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,210081,210081,210081,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,210096,210096,"Seal, 7""",1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,210097,210097,"Seal Plate, 7""",1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,210864,210864,210864,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,213051,213051,213051,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,215045G,215045G,215045G,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,240009G,240009G,240009G,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,240050G,240050G,240050G,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,240123G,240123G,240123G,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,240125G,240125G,240125G,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,339073,339073,339073,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,459018,459018,459018,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,469028,469028,469028,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=researched,high
+TapeTech,EHC07,EHC07/schematic_data.json,899051,899051,899051,1,name_source=frontend; generic_name=true,medium
+TapeTech,EHC07,EHC07/schematic_data.json,X4,X4,X4,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,X5,X5,X5,1,name_source=frontend,high
+TapeTech,EHC07,EHC07/schematic_data.json,X6,X6,X6,1,name_source=frontend,high
+TapeTech,EHC10,EHC10/schematic_data.json,059015,059015,Screw 6-32 X 1/4 Fil. Hd. S.S.,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059016,059016,"Lockwasher, #6 Medium Spring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059018,059018,Stopnut 6-32 Thin Pat.,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059020,059020,Screw 6-32 X 3/8 Bind Hd.,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059029,059029,Screw 6-32 X 5/8 Fl. Hd. S.S,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059038,059038,Lockwasher 4 Med. Spring,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059051,059051,Screw 6-32 X 3/16 Fil. Hd. S.S,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059102,059102,Screw 4-40 X .225/.235 Fl.Hd.SST.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059161,059161,Screw 4-40 X 3/8 Fil. Hd. S.S,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,179009,179009,5L10-Fk Type 6 Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202007,202007,"Push Rod, Crown Adj.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202020,202020,Spring Anchor,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202021,202021,"Nut, Special",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202022,202022,Repair Clip,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202028,202028,Threaded Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,202044F,202044F,Spring,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,206003,206003,Dial Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209006,209006,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209016,209016,Screw 4-40 X 7/32 Bind Hd.,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209017,209017,10-24 Locknut 18-18 S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209030,209030,Wing Nut: 10-24,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209039,209039,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209042,209042,#10 Brass Washer,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209058,209058,6-32 Brass Nut,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,209148,209148,Bearing Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,210058F,210058F,Latch,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,210059,210059,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,210060,210060,Pivot Bearing,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,210073,210073,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,213051,213051,"Box Wheel, Side Guide",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,219064,219064,Spring Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,219067,219067,"# 310 Buna""O""Ring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,219081,219081,Screw - 6-32 X 7/16 Flat Head S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,240023G,240023G,"7"" Side Plate, Right",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,240025G,240025G,"7"" Side Plate, Generic, Left",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,250001,250001,"Blade, S.S. 10""",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,254002,254002,Blade Holder Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,254005,254005,Clamp Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260024F,260024F,"10"" Wiper",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260027G,260027G,"10"" Pressure Plate, Universal",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260031G,260031G,"10"" Bottom Plate",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260033G,260033G,"10"" Axle Support",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260071,260071,"10"" Spacer Rod",4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260096,260096,"Seal, 10""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,260097,260097,"Seal Plate, 10""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,265045G,265045G,"Axle, 10"" Maxx, EasyRoll Wheels",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,280009G,280009G,"10"" Pivot Axle",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,280032G,280032G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,280050G,280050G,"10"" Power Assist Pivot Retainer,Anodized",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,280132G,280132G,"10"" Radius Plate, High Cap, Gold",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,339073,339073,10-24 X 1 1/4 Sl. Fillister Hd.Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC10,EHC10/schematic_data.json,889030,889030,"4-40 X 3/16 Fillister Head, 18-8 S.S/",4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059015,059015,Screw 6-32 X 1/4 Fil. Hd. S.S.,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059016,059016,"Lockwasher, #6 Medium Spring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059018,059018,Stopnut 6-32 Thin Pat.,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059020,059020,Screw 6-32 X 3/8 Bind Hd.,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059029,059029,Screw 6-32 X 5/8 Fl. Hd. S.S,5,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059038,059038,Lockwasher 4 Med. Spring,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059051,059051,Screw 6-32 X 3/16 Fil. Hd. S.S,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059161,059161,Screw 4-40 X 3/8 Fil. Hd. S.S,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,179009,179009,5L10-Fk Type 6 Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202007,202007,"Push Rod, Crown Adj.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202020,202020,Spring Anchor,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202021,202021,"Nut, Special",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202022,202022,Repair Clip,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202028,202028,Threaded Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,202044F,202044F,Spring,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,206003,206003,Dial Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209006,209006,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209016,209016,Screw 4-40 X 7/32 Bind Hd.,10,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209017,209017,10-24 Locknut 18-18 S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209030,209030,Wing Nut: 10-24,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209039,209039,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209042,209042,#10 Brass Washer,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209058,209058,6-32 Brass Nut,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,209148,209148,Bearing Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,210058F,210058F,Latch,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,210059,210059,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,210060,210060,Pivot Bearing,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,210073,210073,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,213051,213051,"Box Wheel, Side Guide",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,219064,219064,Spring Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,219067,219067,"# 310 Buna""O""Ring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,219081,219081,Screw - 6-32 X 7/16 Flat Head S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,280023G,280023G,"10"" Side Plate, Left",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,280025G,280025G,"10"" Side Plate, Generic, Right",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,300001,300001,"Blade, S.S. 12""",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,303010,303010,12 Inch Crown Spring,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,304002,304002,Blade Holder Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,304005,304005,Clamp Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,310024F,310024F,"12"" Wiper",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,310027G,310027G,"12"" Pressure Plate, Universal",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,310033G,310033G,"12"" Support",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,310071,310071,"12"" Spacer Rod",3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,310096,310096,"Seal, 12""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,310097,310097,"Seal Plate, 12""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,315045G,315045G,"Axle, 12"" Maxx, EasyRoll Wheels",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,330009G,330009G,"12"" Pivot Axle",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,330031G,330031G,"12"" Bottom Plate (Tapetech)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,330052,330052,4-40 Standoff,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,330132G,330132G,"12"" Radius Plate, High Cap, Gold",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,339073,339073,10-24 X 1 1/4 Sl. Fillister Hd.Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,509010,509010,Screw: 4-40 X 5/16 Fl. Hd. S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EHC12,EHC12/schematic_data.json,889030,889030,"4-40 X 3/16 Fillister Head, 18-8 S.S/",6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,059012,059012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,059015,059015,Unknown Part,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,059018,059018,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,179009,179009,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,200001,200001,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,200009,200009,Shim,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,200026F,200026F,"7"" Wiper",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,200040F,200040F,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,201032G,201032G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202007,202007,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202020,202020,Spring Anchor,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202021,202021,"Nut, Special",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202022,202022,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202028,202028,Threaded Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,202044F,202044F,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,203010,203010,7 and 10 Inch Crown Spring,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,204002,204002,Blade Holder Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,204005,204005,Blade Clamp Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,205033G,205033G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,205045G,205045G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,206003,206003,Dial Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,206027G,206027G,"7"" Pressure Plate",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209006,209006,Skid Cover,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209016,209016,Unknown Part,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209017,209017,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209030,209030,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209039,209039,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209041,209041,Spring Clip,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209042,209042,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209046,209046,Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209049,209049,Screw 6-32 X 5/16 Bind. Hd. S.S.,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209050,209050,Unknown Part,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,209058,209058,6-32 Brass Nut,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,210058F,210058F,Latch,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,210059,210059,Shoulder Screw,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,210073,210073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,213051,213051,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,219064,219064,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,219067,219067,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,251023G,251023G,"Side Plate, Universal",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,251025G,251025G,"Side Plate, TT",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,339073,339073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,489023,489023,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,609012,609012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ07TT,EZ07TT/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,059012,059012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,059015,059015,Unknown Part,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,059018,059018,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,179009,179009,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202007,202007,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202020,202020,Spring Anchor,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202021,202021,"Nut, Special",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202022,202022,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202028,202028,Threaded Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,202044F,202044F,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,203010,203010,7 and 10 Inch Crown Spring,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,206003,206003,Dial Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209006,209006,Skid Cover,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209016,209016,Unknown Part,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209017,209017,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209030,209030,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209039,209039,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209041,209041,Spring Clip,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209042,209042,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209046,209046,Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209049,209049,Screw 6-32 X 5/16 Bind. Hd. S.S.,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209050,209050,Unknown Part,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,209058,209058,6-32 Brass Nut,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,210058F,210058F,Latch,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,210059,210059,Shoulder Screw,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,210073,210073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,213051,213051,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,219064,219064,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,219067,219067,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,250001,250001,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,250009,250009,Shim,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,250026F,250026F,"10"" Wiper",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,250040F,250040F,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,251023G,251023G,"Side Plate, Universal",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,251025G,251025G,"Side Plate, TT",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,251032G,251032G,"Extruded Radius Plate, 10""",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,254002,254002,Blade Holder Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,254005,254005,Clamp Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,255033G,255033G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,255045G,255045G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,256027G,256027G,"10"" Pressure Plate",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,339073,339073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,489023,489023,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ10TT,EZ10TT/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,059012,059012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,059015,059015,Unknown Part,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,059018,059018,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,179009,179009,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202007,202007,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202020,202020,Spring Anchor,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202021,202021,"Nut, Special",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202022,202022,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202028,202028,Threaded Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,202044F,202044F,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,206003,206003,Dial Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209006,209006,Skid Cover,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209016,209016,Unknown Part,10,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209017,209017,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209030,209030,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209039,209039,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209041,209041,Spring Clip,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209042,209042,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209046,209046,Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209049,209049,Screw 6-32 X 5/16 Bind. Hd. S.S.,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209050,209050,Unknown Part,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,209058,209058,6-32 Brass Nut,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,210058F,210058F,Latch,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,210059,210059,Shoulder Screw,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,210073,210073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,213051,213051,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,219064,219064,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,219067,219067,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,251023G,251023G,"Side Plate, Universal",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,251025G,251025G,"Side Plate, TT",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,300001,300001,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,300009,300009,Shim,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,300026F,300026F,"12"" Wiper",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,300040F,300040F,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,301032G,301032G,"Extruded Radius Plate, 12""",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,303010,303010,12 Inch Crown Spring,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,304002,304002,Blade Holder Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,304005,304005,Clamp Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,305033G,305033G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,305045G,305045G,"Axle, 12"" Standard, EasyRoll Wheels",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,306027G,306027G,"12"" Pressure Plate",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,339073,339073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,489023,489023,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,609012,609012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ12TT,EZ12TT/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,059012,059012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,059015,059015,Unknown Part,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,059018,059018,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,059225,059225,Nut 10-32 Elastic,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,179009,179009,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202007,202007,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202020,202020,Spring Anchor,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202021,202021,"Nut, Special",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202022,202022,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202028,202028,Threaded Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,202044F,202044F,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,206003,206003,Dial Assy.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209006,209006,Skid Cover,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209016,209016,Unknown Part,14,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209017,209017,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209030,209030,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209039,209039,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209041,209041,Spring Clip,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209042,209042,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209046,209046,Washer,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209048,209048,"Screw, 4-40 X 1/8 Bind. Hd. S.S.",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209049,209049,Screw 6-32 X 5/16 Bind. Hd. S.S.,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209050,209050,Unknown Part,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,209058,209058,6-32 Brass Nut,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,210058F,210058F,Latch,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,210059,210059,Shoulder Screw,2,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,210073,210073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,213051,213051,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,219064,219064,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,219067,219067,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,251023G,251023G,"Side Plate, Universal",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,251025G,251025G,"Side Plate, TT",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,303010,303010,12 Inch Crown Spring,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,339073,339073,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,340001,340001,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,340009,340009,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,340026,340026,"15"" Wiper",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,340040,340040,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,341032G,341032G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,344002,344002,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,344005,344005,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,345033G,345033G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,345045G,345045G,"Axle, 15"" Standard, EasyRoll Wheels",1,name_source=researched; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,346027G,346027G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,489023,489023,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,609012,609012,Unknown Part,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,EZ15TT,EZ15TT/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059012,059012,Screw 6-32 X 3/8 Fil. Hd. S.S.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059015,059015,Screw 6-32 X 1/4 Fil. Hd. S.S.,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059016,059016,"Lockwasher, #6 Medium Spring",8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059018,059018,Stopnut 6-32 Thin Pat.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059020,059020,Screw 6-32 X 3/8 Bind Hd.,14,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059038,059038,Lockwasher 4 Med. Spring,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059051,059051,Screw 6-32 X 3/16 Fil. Hd. S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059102,059102,Screw 4-40 X .225/.235 Fl.Hd.SST.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,059161,059161,Screw 4-40 X 3/8 Fil. Hd. S.S,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,179009,179009,5L10-Fk Type 6 Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,200001,200001,"Blade, S.S. 7""",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,202007,202007,"Push Rod, Crown Adj.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,202020,202020,Spring Anchor,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,202021,202021,"Nut, Special",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,202022,202022,Repair Clip,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,202028,202028,Threaded Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,203010,203010,7 and 10 Inch Crown Spring,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,204002,204002,Blade Holder Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,204005,204005,Blade Clamp Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,206003,206003,Dial Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209006,209006,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209016,209016,Screw 4-40 X 7/32 Bind Hd.,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209017,209017,10-24 Locknut 18-18 S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209030,209030,Wing Nut: 10-24,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209038,209038,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209039,209039,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209042,209042,#10 Brass Washer,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209046,209046,Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209058,209058,6-32 Brass Nut,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,209148,209148,Bearing Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210024F,210024F,"7"" Wiper",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210031G,210031G,"7"" Bottom Plate",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210060,210060,Pivot Bearing,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210071,210071,Spacer Rod,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210073,210073,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210096,210096,"Seal, 7""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,210097,210097,"Seal Plate, 7""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212081,212081,Arm (Power Assist),2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212082,212082,Bushing (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212084,212084,"Flange, Left (Power Assist)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212085,212085,"Flange, Right (Power Assist)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212086,212086,Hook (Power Assist),2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212087,212087,Lock (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212088,212088,Prawl (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212089,212089,Spacer (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,212090,212090,Spring (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,213051,213051,"Box Wheel, Side Guide",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,213083,213083,Cog (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,215045G,215045G,"Axle, 7"" Maxx, EasyRoll Wheels",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,219067,219067,"# 310 Buna""O""Ring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,219081,219081,Screw - 6-32 X 7/16 Flat Head S.S.,5,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,219091,219091,Spring,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,219092,219092,"Screw 4-40 X 1"" Bind Hd 18-8",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,219093,219093,6-32 X 3/4 Fl Hd Slotted Sst,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,219095,219095,Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,240009G,240009G,"7"" Pivot Axle",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,240027G,240027G,"7"" Pressure Plate",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,240050G,240050G,"7"" Power Assist Pivot Retainer,Anodized",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,240125G,240125G,"7"" Side Plate, Left, High Cap, Gold",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,240132G,240132G,"7"" Radius Plate, High Cap, Gold",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,241023G,241023G,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,339073,339073,10-24 X 1 1/4 Sl. Fillister Hd.Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,609012,609012,Stopnut 4-40 S.S,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC07,PAHC07/schematic_data.json,889030,889030,"4-40 X 3/16 Fillister Head, 18-8 S.S/",4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059012,059012,Screw 6-32 X 3/8 Fil. Hd. S.S.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059015,059015,Screw 6-32 X 1/4 Fil. Hd. S.S.,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059016,059016,"Lockwasher, #6 Medium Spring",8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059018,059018,Stopnut 6-32 Thin Pat.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059020,059020,Screw 6-32 X 3/8 Bind Hd.,14,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059038,059038,Lockwasher 4 Med. Spring,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059051,059051,Screw 6-32 X 3/16 Fil. Hd. S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059102,059102,Screw 4-40 X .225/.235 Fl.Hd.SST.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,059107,059107,Screw 6-32 X 1/4 Fl. Hd. SST.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,179009,179009,5L10-Fk Type 6 Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,202007,202007,"Push Rod, Crown Adj.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,202020,202020,Spring Anchor,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,202021,202021,"Nut, Special",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,202022,202022,Repair Clip,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,202028,202028,Threaded Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,203010,203010,7 and 10 Inch Crown Spring,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,206003,206003,Dial Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209006,209006,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209016,209016,Screw 4-40 X 7/32 Bind Hd.,8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209017,209017,10-24 Locknut 18-18 S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209030,209030,Wing Nut: 10-24,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209039,209039,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209042,209042,#10 Brass Washer,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209046,209046,Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209058,209058,6-32 Brass Nut,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,209148,209148,Bearing Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,210060,210060,Pivot Bearing,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,210073,210073,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212081,212081,Arm (Power Assist),2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212082,212082,Bushing (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212084,212084,"Flange, Left (Power Assist)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212085,212085,"Flange, Right (Power Assist)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212086,212086,Hook (Power Assist),2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212087,212087,Lock (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212088,212088,Prawl (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212089,212089,Spacer (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,212090,212090,Spring (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,213051,213051,"Box Wheel, Side Guide",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,213083,213083,Cog (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,219067,219067,"# 310 Buna""O""Ring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,219081,219081,Screw - 6-32 X 7/16 Flat Head S.S.,5,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,219091,219091,Spring,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,219092,219092,"Screw 4-40 X 1"" Bind Hd 18-8",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,219093,219093,6-32 X 3/4 Fl Hd Slotted Sst,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,219095,219095,Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,240023G,240023G,"7"" Side Plate, Right",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,240025G,240025G,"7"" Side Plate, Generic, Left",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,250001,250001,"Blade, S.S. 10""",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,254002,254002,Blade Holder Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,254005,254005,Clamp Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,260024F,260024F,"10"" Wiper",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,260031G,260031G,"10"" Bottom Plate",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,260071,260071,"10"" Spacer Rod",4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,260096,260096,"Seal, 10""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,260097,260097,"Seal Plate, 10""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,265045G,265045G,"Axle, 10"" Maxx, EasyRoll Wheels",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,280009G,280009G,"10"" Pivot Axle",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,280027G,280027G,"10"" Pressure Plate",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,280050G,280050G,"10"" Power Assist Pivot Retainer,Anodized",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,280132G,280132G,"10"" Radius Plate, High Cap, Gold",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,339073,339073,10-24 X 1 1/4 Sl. Fillister Hd.Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,609012,609012,Stopnut 4-40 S.S,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC10,PAHC10/schematic_data.json,889030,889030,"4-40 X 3/16 Fillister Head, 18-8 S.S/",4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059012,059012,Screw 6-32 X 3/8 Fil. Hd. S.S.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059015,059015,Screw 6-32 X 1/4 Fil. Hd. S.S.,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059016,059016,"Lockwasher, #6 Medium Spring",8,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059018,059018,Stopnut 6-32 Thin Pat.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059020,059020,Screw 6-32 X 3/8 Bind Hd.,16,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059038,059038,Lockwasher 4 Med. Spring,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059051,059051,Screw 6-32 X 3/16 Fil. Hd. S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059107,059107,Screw 6-32 X 1/4 Fl. Hd. SST.,1,name_source=researched; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,059161,059161,Screw 4-40 X 3/8 Fil. Hd. S.S,6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,179009,179009,5L10-Fk Type 6 Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,202007,202007,"Push Rod, Crown Adj.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,202020,202020,Spring Anchor,4,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,202021,202021,"Nut, Special",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,202022,202022,Repair Clip,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,202028,202028,Threaded Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,202036,202036,Shoulder Screw,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,206003,206003,Dial Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209006,209006,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209012,209012,Screw 4-40 X 1/4 Fillister Head 18-8 S.S,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209016,209016,Screw 4-40 X 7/32 Bind Hd.,10,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209017,209017,10-24 Locknut 18-8 S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209030,209030,Wing Nut: 10-24,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209039,209039,Skid Cover,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209042,209042,#10 Brass Washer,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209046,209046,Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209047,209047,Bearing Nyliner,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209058,209058,6-32 Brass Nut,3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,209148,209148,Bearing Nyliner,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,210060,210060,Pivot Bearing,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,210073,210073,Shoulder Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212081,212081,Arm (Power Assist),2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212082,212082,Bushing (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212084,212084,"Flange, Left (Power Assist)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212085,212085,"Flange, Right (Power Assist)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212086,212086,Hook (Power Assist),2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212087,212087,Lock (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212088,212088,Prawl (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212089,212089,Spacer (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,212090,212090,Spring (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,213051,213051,"Box Wheel, Side Guide",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,213083,213083,Cog (Power Assist),1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,219067,219067,"# 310 Buna""O""Ring",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,219081,219081,Screw - 6-32 X 7/16 Flat Head S.S.,5,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,219091,219091,Spring,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,219092,219092,"Screw 4-40 X 1"" Bind Hd 18-8",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,219093,219093,6-32 X 3/4 Fl Hd Slotted Sst,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,219095,219095,Washer,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,280023G,280023G,"Side Plate, Right",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,280025G,280025G,"Side Plate, Left",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,300001,300001,"Blade, S.S. 12""",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,303010,303010,12 Inch Crown Spring,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,304002,304002,Blade Holder Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,304005,304005,Clamp Assy.,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,310024F,310024F,"12"" Wiper",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,310071,310071,"12"" Spacer Rod",3,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,310096,310096,"Seal, 12""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,310097,310097,"Seal Plate, 12""",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,315045G,315045G,"Axle, 12"" Maxx, EasyRoll Wheels",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,330009G,330009G,"12"" Pivot Axle",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,330027G,330027G,"12"" Pressure Plate",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,330031G,330031G,"12"" Bottom Plate (Tapetech)",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,330050G,330050G,"12"" Power Assist Pivot Retainer,Anodized",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,330052,330052,4-40 Standoff,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,330132G,330132G,"12"" Radius Plate, High Cap, Gold",1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,339073,339073,10-24 X 1 1/4 Sl. Fillister Hd.Screw,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,509010,509010,Screw: 4-40 X 5/16 Fl. Hd. S.S.,2,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,609012,609012,Stopnut 4-40 S.S,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,809006,809006,Washer:#14 Brass,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,PAHC12,PAHC12/schematic_data.json,889030,889030,"4-40 X 3/16 Fillister Head, 18-8 S.S/",6,name_source=frontend; missing_hotspot=true,medium
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,149029,149029,"Washer, Nas620C 1/4 L, Sst",2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,202028,202028,Threaded Washer,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,209017,209017,10-24 Locknut 18-18 S.S.,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,209030,209030,Wing Nut: 10-24,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,209046,209046,Washer,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,210058F,210058F,Latch,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,210059,210059,Shoulder Screw,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,219064,219064,Spring Washer,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,339073,339073,10-24 X 1 1/4 Sl. Fillister Hd.Screw,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,489023,489023,"Flat Washer, #6 S.S.",1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,499023,499023,4-40 X 3/16 Flat Head Screw 18-8,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB0005,QB0005,"Screw, #8 x 1/2 Fl Hd Self Tapping",3,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB0006,QB0006,Axle,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB0008,QB0008,Wheel,2,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6001,QB6001,Shell,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6002,QB6002,Pressure Plate,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6003-5,QB6003-5,Unknown Part,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6004,QB6004,Blade Holder,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6010,QB6010,Wiper,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6011,QB6011,Seal,1,name_source=frontend,high
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6023-5,QB6023-5,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6033-5,QB6033-5,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,QB06-QSX,QB06-QSX/schematic_data.json,QB6043-5,QB6043-5,Unknown Part,1,name_source=frontend; missing_hotspot=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,"149029
+TYP","149029
+TYP","Part (149029
+TYP)",1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,202028,202028,Threaded Washer,1,name_source=researched,high
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,209017,209017,Part (209017),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,209030,209030,Part (209030),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,209046,209046,Washer,1,name_source=researched,high
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,210058F,210058F,Latch,1,name_source=researched,high
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,"210059
+INSTALL W LOCTITE 425","210059
+INSTALL W LOCTITE 425",Shoulder Screw,1,name_source=researched,high
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,219064,219064,Part (219064),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,339073,339073,Part (339073),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,489023,489023,Part (489023),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,499023,499023,4-40 X 3/16 Flat Head Screw 18-8,1,name_source=researched,high
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,DETAILS,Details,Part (Details),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB0006,QB0006,Part (QB0006),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB0008,QB0008,Part (QB0008),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB0013,QB0013,Part (QB0013),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8001,QB8001,Part (QB8001),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8002,QB8002,Part (QB8002),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8004,QB8004,Part (QB8004),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,"QB8005
+TYP","QB8005
+TYP","Part (QB8005
+TYP)",1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8010,QB8010,Part (QB8010),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8012,QB8012,Part (QB8012),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8015,QB8015,Part (QB8015),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,QB8016,QB8016,Part (QB8016),1,name_source=frontend; generic_name=true,medium
+TapeTech,QB08-QSX,QB08-QSX/schematic_data.json,"QB8111
+INSTALL W
+RTV","QB8111
+INSTALL W
+RTV","Part (QB8111
+INSTALL W
+RTV)",1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,"059037
+X 2 W
+LOCTITE 425","059037
+X 2 W
+LOCTITE 425","Part (059037
+X 2 W
+LOCTITE 425)",1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,"059619
+X 2 W
+LOCTITE 263
+(RED)","059619
+X 2 W
+LOCTITE 263
+(RED)","Part (059619
+X 2 W
+LOCTITE 263
+(RED))",1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,"059619
+X 2 W
+LOCTITE 425","059619
+X 2 W
+LOCTITE 425","Part (059619
+X 2 W
+LOCTITE 425)",1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,499023,499023,4-40 X 3/16 Flat Head Screw 18-8,1,name_source=researched,high
+TapeTech,XHTT,XHTT/schematic_data.json,880003,880003,Part (880003),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,8800060,8800060,Part (8800060),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,880053,880053,Lock Block,1,name_source=researched,high
+TapeTech,XHTT,XHTT/schematic_data.json,880061,880061,Part (880061),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,882013,882013,Locking Pin,1,name_source=researched,high
+TapeTech,XHTT,XHTT/schematic_data.json,882039,882039,Spring Housing,1,name_source=researched,high
+TapeTech,XHTT,XHTT/schematic_data.json,883001G,883001G,Part (883001G),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,883002,883002,Part (883002),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,883005,883005,Part (883005),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,883011,883011,Part (883011),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,883014,883014,Part (883014),1,name_source=frontend; generic_name=true,medium
+TapeTech,XHTT,XHTT/schematic_data.json,883020,883020,Extrusion Insert,1,name_source=researched,high
+TapeTech,XHTT,XHTT/schematic_data.json,889017,889017,Conical Spring,1,name_source=researched,high
+TapeTech,XHTT,XHTT/schematic_data.json,889057,889057,Part (889057),1,name_source=frontend; generic_name=true,medium
