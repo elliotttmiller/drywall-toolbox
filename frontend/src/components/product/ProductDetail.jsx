@@ -711,7 +711,8 @@ export default function ProductDetail({
   // Check if all required variation attributes have been selected
   const hasCompleteSelection = !needsVariation || variationAttributes.every((attr) => {
     const value = selectedAttrs?.[attr.name];
-    return value != null && String(value).trim() !== '';
+    // Check for null/undefined and empty strings, but allow 0, false, etc.
+    return value != null && (typeof value !== 'string' || value.trim() !== '');
   });
   
   // Only allow add to cart if: not out of stock AND either not variable OR has valid matching variation

@@ -68,11 +68,7 @@ export default function ProductVariationSelector({
                   <Motion.button
                     key={`${attr.name}-${option.value}`}
                     type="button"
-                    onClick={() => {
-                      if (!disabled) {
-                        setSelectedAttrs((prev) => ({ ...prev, [attr.name]: option.value }));
-                      }
-                    }}
+                    onClick={() => setSelectedAttrs((prev) => ({ ...prev, [attr.name]: option.value }))}
                     disabled={disabled}
                     aria-pressed={selected}
                     aria-disabled={disabled || soldOut}
