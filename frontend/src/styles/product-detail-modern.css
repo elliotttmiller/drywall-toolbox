@@ -471,9 +471,36 @@
 }
 
 .product-variation-alert {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: #475569;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
+  animation: fadeSlideIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.product-variation-alert--out-of-stock {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #991b1b;
+}
+
+.product-variation-alert--unavailable {
+  background: rgba(251, 146, 60, 0.08);
+  border: 1px solid rgba(251, 146, 60, 0.2);
+  color: #9a3412;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Purchase panel ───────────────────────────────────────────────────────── */
