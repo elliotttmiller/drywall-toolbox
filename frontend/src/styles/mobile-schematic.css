@@ -817,6 +817,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: stretch;
+  /* Increased top padding for optimal back button placement */
+  padding-top: clamp(8px, 2.5vw, 16px);
 }
 
 /* Image transform wrapper: must not grow/shrink as a flex item so its
