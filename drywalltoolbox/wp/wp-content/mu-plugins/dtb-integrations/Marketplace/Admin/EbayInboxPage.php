@@ -61,9 +61,10 @@ function dtb_marketplace_render_ebay_inbox_page(): void {
 
 	// Conversations for eBay only.
 	$conversations = DTB_MarketplaceReadModels::conversations( [
-		'channel' => DTB_CHANNEL_EBAY,
-		'status'  => $msg_status,
-		'limit'   => 100,
+		'channel_key' => DTB_CHANNEL_EBAY,
+		'status'      => $msg_status,
+		'needs_reply' => 'needs_reply' === $msg_status ? true : false,
+		'limit'       => 100,
 	] );
 
 	if ( empty( $conversations ) ) {
@@ -98,7 +99,7 @@ function dtb_marketplace_render_ebay_inbox_page(): void {
 
 			echo '<tr>';
 			echo '<td>' . esc_html( $c['subject'] ?? '—' ) . '</td>';
-			echo '<td><code>' . esc_html( substr( $c['buyer_hash'] ?? '—', 0, 8 ) . '…' ) . '</code></td>';
+			echo '<td><code>' . esc_html( substr( $c['buyer_ref_hash'] ?? '—', 0, 8 ) . '…' ) . '</code></td>';
 			echo '<td>' . esc_html( $c['external_item_id'] ?? '—' ) . '</td>';
 			echo '<td>' . esc_html( $c['external_order_id'] ?? '—' ) . '</td>';
 			echo '<td>' . esc_html( $c['status'] ?? '' ) . '</td>';

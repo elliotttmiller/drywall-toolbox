@@ -3,7 +3,7 @@
  * eBay — EbayRestClient
  *
  * Low-level HTTP client for eBay REST APIs.
- * Injects ****** handles 401 retry, 429 back-off, and structured errors.
+ * Injects ****** authentication and handles 401 retry, 429 back-off, and structured errors.
  *
  * @package drywall-toolbox
  */

@@ -184,7 +184,7 @@ if ( ! class_exists( 'DTB_MarketplaceReadModels' ) ) {
 				$params[] = sanitize_key( $filters['status'] );
 			}
 			if ( ! empty( $filters['needs_reply'] ) ) {
-				$where[] = "status = 'open' AND last_inbound_at > last_outbound_at OR last_outbound_at IS NULL";
+				$where[] = "(status = 'open' AND (last_inbound_at > last_outbound_at OR last_outbound_at IS NULL))";
 			}
 			if ( ! empty( $filters['sla_breach'] ) ) {
 				$where[]  = 'sla_due_at < %s';

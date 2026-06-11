@@ -64,10 +64,11 @@ function dtb_marketplace_render_messages_page(): void {
 	echo '</form>';
 
 	$conversations = DTB_MarketplaceReadModels::conversations( [
-		'channel'    => $channel,
-		'status'     => $msg_status,
-		'sla_filter' => $sla_filter,
-		'limit'      => 100,
+		'channel_key' => $channel,
+		'status'      => $msg_status,
+		'needs_reply' => 'needs_reply' === $msg_status ? true : false,
+		'sla_breach'  => 'breached' === $sla_filter ? true : false,
+		'limit'       => 100,
 	] );
 
 	if ( empty( $conversations ) ) {
@@ -107,7 +108,7 @@ function dtb_marketplace_render_messages_page(): void {
 			echo '<tr>';
 			echo '<td>' . dtb_marketplace_channel_badge( $c['channel_key'] ) . '</td>'; // phpcs:ignore
 			echo '<td>' . esc_html( $c['subject'] ?? '—' ) . '</td>';
-			echo '<td><code>' . esc_html( substr( $c['buyer_hash'] ?? '—', 0, 8 ) . '…' ) . '</code></td>';
+			echo '<td><code>' . esc_html( substr( $c['buyer_ref_hash'] ?? '—', 0, 8 ) . '…' ) . '</code></td>';
 			echo '<td>' . $woo_link . '</td>'; // phpcs:ignore
 			echo '<td>' . esc_html( $c['status'] ?? '' ) . '</td>';
 			echo '<td class="' . esc_attr( $sla_class ) . '">' . esc_html( $c['sla_due_at'] ?? '—' ) . '</td>';

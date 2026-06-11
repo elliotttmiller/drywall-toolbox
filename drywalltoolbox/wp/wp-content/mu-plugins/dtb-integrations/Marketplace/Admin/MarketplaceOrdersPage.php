@@ -70,9 +70,9 @@ function dtb_marketplace_render_orders_page(): void {
 
 	// Table.
 	$orders = DTB_MarketplaceReadModels::orders( [
-		'channel' => $channel,
-		'status'  => $status,
-		'limit'   => 100,
+		'channel_key' => $channel,
+		'status'      => $status,
+		'limit'       => 100,
 	] );
 
 	if ( empty( $orders ) ) {
@@ -100,11 +100,11 @@ function dtb_marketplace_render_orders_page(): void {
 		echo '</tr></thead><tbody>';
 
 		foreach ( $orders as $o ) {
-			$age       = dtb_marketplace_relative_time( $o['purchased_at'] ?? '' );
+			$age       = dtb_marketplace_relative_time( $o['order_placed_at'] ?? '' );
 			$woo_link  = $o['woo_order_id']   ? '<a href="' . esc_url( get_edit_post_link( (int) $o['woo_order_id'] ) ) . '">#' . esc_html( (string) $o['woo_order_id'] ) . '</a>' : '<em>' . esc_html__( 'unlinked', 'drywall-toolbox' ) . '</em>';
 			$veeqo     = $o['veeqo_order_id'] ? '<span class="dtb-badge dtb-badge--info">' . esc_html( (string) $o['veeqo_order_id'] ) . '</span>' : '<span class="dtb-badge dtb-badge--muted">—</span>';
 			$ch_badge  = dtb_marketplace_channel_badge( $o['channel_key'] );
-			$buyer     = '<span class="dtb-buyer-hash" title="' . esc_attr( $o['buyer_hash'] ?? '' ) . '">' . esc_html( substr( $o['buyer_hash'] ?? '—', 0, 8 ) . '…' ) . '</span>';
+			$buyer     = '<span class="dtb-buyer-hash" title="' . esc_attr( $o['buyer_ref_hash'] ?? '' ) . '">' . esc_html( substr( $o['buyer_ref_hash'] ?? '—', 0, 8 ) . '…' ) . '</span>';
 			$exc_badge = $o['exception_count'] > 0 ? '<span class="dtb-badge dtb-badge--danger">' . esc_html( (string) $o['exception_count'] ) . '</span>' : '—';
 
 			echo '<tr>';

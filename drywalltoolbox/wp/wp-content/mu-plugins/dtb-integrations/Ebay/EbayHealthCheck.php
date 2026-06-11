@@ -49,7 +49,7 @@ if ( ! class_exists( 'DTB_EbayHealthCheck' ) ) {
 
 			// Light ping — list recent orders (limit 1).
 			$response = DTB_EbayRestClient::request( 'GET', '/sell/fulfillment/v1/order', [
-				'filter' => 'creationdate:[' . gmdate( 'Y-m-d\TH:i:s.\0\0\0\Z', strtotime( '-1 hour' ) ) . '..]',
+				'filter' => 'creationdate:[' . gmdate( 'Y-m-d\TH:i:s.000\Z', strtotime( '-1 hour' ) ) . '..]',
 				'limit'  => 1,
 			] );
 
