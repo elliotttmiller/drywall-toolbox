@@ -37,8 +37,11 @@ export default function StorefrontShopMegaMenu({
     closeAndFocusTrigger();
   };
 
+  const wrapperClassName = ['header-mega', 'storefront-shop-mega', isOpen ? 'is-open' : ''].filter(Boolean).join(' ');
+  const panelClassName = ['shop-dropdown-menu', 'header-mega-panel', 'storefront-shop-mega__panel', isOpen ? 'is-open' : ''].filter(Boolean).join(' ');
+
   return (
-    <div className={`header-mega storefront-shop-mega${isOpen ? ' is-open' : ''}`} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div className={wrapperClassName} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <button
         ref={triggerRef}
         id={triggerId}
@@ -60,7 +63,7 @@ export default function StorefrontShopMegaMenu({
 
       <div
         id={panelId}
-        className={`shop-dropdown-menu header-mega-panel storefront-shop-mega__panel${isOpen ? ' is-open' : ''}`}
+        className={panelClassName}
         role="region"
         aria-labelledby={triggerId}
         onKeyDown={handlePanelKeyDown}
