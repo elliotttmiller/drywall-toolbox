@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuthContext } from '../../auth/AuthContext.js';
-import { ShoppingCart, X, ChevronDown, ChevronRight, User, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { ShoppingCart, X, ChevronRight, User, LogIn, UserPlus, LogOut } from 'lucide-react';
 import LogoWhite from '/logo-white.svg';
 import NotificationsBell from '../shell/NotificationsBell';
 import StorefrontSearchOverlay from './StorefrontSearchOverlay';
@@ -10,6 +10,7 @@ import StorefrontMobileDrawer from './StorefrontMobileDrawer';
 import AccountHubSheet from '../account/AccountHubSheet.jsx';
 import { searchProducts } from '../../services/catalog';
 import StorefrontSearchDock from './StorefrontSearchDock';
+import StorefrontShopMegaMenu from './StorefrontShopMegaMenu.jsx';
 import { useCatalogFacets } from '../../hooks/useCatalogFacets.js';
 import '../../styles/mobile-hamburger.css';
 import {
@@ -25,12 +26,6 @@ const PRIMARY_NAV_LINKS = [
   { to: '/repairs', label: 'Repairs' },
   { to: '/faq', label: 'FAQ' },
   { to: '/contact', label: 'Contact' },
-];
-
-const SHOP_FEATURE_LINKS = [
-  { to: '/products', label: 'All Products', sub: 'Full drywall catalog' },
-  { to: '/products/brands', label: 'Shop by Brand', sub: 'TapeTech, Columbia, Level 5, and more' },
-  { to: '/parts', label: 'Replacement Parts', sub: 'Parts, kits, and schematics' },
 ];
 
 const MAX_DRAWER_CATEGORIES = 12;
@@ -150,6 +145,10 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
   const desktopCategoryLinks = useMemo(
     () => drawerCategoryLinks.slice(0, MAX_DRAWER_CATEGORIES),
     [drawerCategoryLinks]
+  );
+  const desktopBrandLinks = useMemo(
+    () => drawerBrands.slice(0, 8).map((brand) => ({ ...brand, to: buildProductsBrandRoute(brand.slug) })),
+    [drawerBrands]
   );
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -441,17 +440,17 @@ export default function Header({ onCartToggle, hasTopTicker = false }) {
             <div className="header-left"><Link to="/" className="header-logo-link" aria-label="Drywall Toolbox home"><img src={LogoWhite} alt="Drywall Toolbox Logo" className="logo-image" /></Link></div>
             <div className="header-center">
               <nav className="nav-links header-desktop-nav" aria-label="Primary">
-                <div className={`header-mega${shopDropdownOpen ? ' is-open' : ''}`} onMouseEnter={handleDropdownMouseEnter} onMouseLeave={handleDropdownMouseLeave}>
-                  <button className={`nav-link header-nav-trigger ${shopActive ? 'active' : ''}`} type="button" aria-expanded={shopDropdownOpen}><span>Shop</span><ChevronDown size={14} className="header-nav-trigger__chevron" /></button>
-                  <div className={`shop-dropdown-menu header-mega-panel${shopDropdownOpen ? ' is-open' : ''}`}>
-                    <div className="header-mega-accent" />
-                    <div className="header-mega-grid">
-                      <div className="header-mega-section"><p className="header-mega-section-title">Shop Navigation</p><div className="header-mega-links">{SHOP_FEATURE_LINKS.map(({ to, label, sub }) => <Link key={to} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-link"><span className="header-mega-link-copy"><span className="header-mega-link-title">{label}</span><span className="header-mega-link-sub">{sub}</span></span></Link>)}</div></div>
-                      <div className="header-mega-section"><p className="header-mega-section-title">Drywall Industry Categories</p><div className="header-mega-category-grid">{desktopCategoryLinks.map(({ slug, to, label }) => <Link key={slug} to={to} onClick={() => setShopDropdownOpen(false)} className="header-mega-category-link">{label}</Link>)}</div></div>
-                    </div>
-                    <div className="header-mega-footer"><div className="header-mega-footer-actions"><Link to="/products" onClick={() => setShopDropdownOpen(false)} className="header-mega-footer-link">View All Products</Link><Link to="/products/brands" onClick={() => setShopDropdownOpen(false)} className="header-mega-footer-link header-mega-footer-link--secondary">Shop by Brand</Link></div></div>
-                  </div>
-                </div>
+                <StorefrontShopMegaMenu
+                  isOpen={shopDropdownOpen}
+                  isActive={shopActive}
+                  onOpen={() => setShopDropdownOpen(true)}
+                  onClose={() => setShopDropdownOpen(false)}
+                  onMouseEnter={handleDropdownMouseEnter}
+                  onMouseLeave={handleDropdownMouseLeave}
+                  onNavigate={() => setShopDropdownOpen(false)}
+                  categoryLinks={desktopCategoryLinks}
+                  brandLinks={desktopBrandLinks}
+                />
                 {PRIMARY_NAV_LINKS.map(({ to, label }) => <Link key={to} to={to} className={`nav-link ${isActive(to) ? 'active' : ''}`}>{label}</Link>)}
               </nav>
             </div>
