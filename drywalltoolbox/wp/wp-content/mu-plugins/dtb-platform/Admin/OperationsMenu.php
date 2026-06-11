@@ -192,10 +192,106 @@ function dtb_operations_menu_register_pages(): void {
 		'icon'       => 'dashicons-format-chat',
 	] );
 
-	// System Manager.
+	// Marketplace (top-level entry + sub-pages).
 	dtb_register_admin_page( [
 		'library'    => 'operations',
-		'slug'       => 'dtb-system-manager',
+		'slug'       => 'dtb-marketplace',
+		'title'      => __( 'Marketplace', 'drywall-toolbox' ),
+		'menu_title' => __( 'Marketplace', 'drywall-toolbox' ),
+		'capability' => 'dtb_view_marketplace',
+		'callback'   => 'dtb_marketplace_render_overview_page',
+		'position'   => 55,
+		'template'   => 'dashboard',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-store',
+	] );
+
+	dtb_register_admin_page( [
+		'library'    => 'operations',
+		'slug'       => 'dtb-marketplace-orders',
+		'title'      => __( 'Marketplace Orders', 'drywall-toolbox' ),
+		'menu_title' => __( 'Orders', 'drywall-toolbox' ),
+		'capability' => 'dtb_view_marketplace',
+		'callback'   => 'dtb_marketplace_render_orders_page',
+		'parent'     => 'dtb-marketplace',
+		'position'   => 56,
+		'template'   => 'list',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-store',
+	] );
+
+	dtb_register_admin_page( [
+		'library'    => 'operations',
+		'slug'       => 'dtb-marketplace-messages',
+		'title'      => __( 'Marketplace Messages', 'drywall-toolbox' ),
+		'menu_title' => __( 'Messages', 'drywall-toolbox' ),
+		'capability' => 'dtb_manage_marketplace',
+		'callback'   => 'dtb_marketplace_render_messages_page',
+		'parent'     => 'dtb-marketplace',
+		'position'   => 57,
+		'template'   => 'list',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-email',
+	] );
+
+	dtb_register_admin_page( [
+		'library'    => 'operations',
+		'slug'       => 'dtb-marketplace-amazon-comms',
+		'title'      => __( 'Amazon Buyer Communication', 'drywall-toolbox' ),
+		'menu_title' => __( 'Amazon Comms', 'drywall-toolbox' ),
+		'capability' => 'dtb_manage_marketplace',
+		'callback'   => 'dtb_marketplace_render_amazon_comms_page',
+		'parent'     => 'dtb-marketplace',
+		'position'   => 58,
+		'template'   => 'list',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-email',
+	] );
+
+	dtb_register_admin_page( [
+		'library'    => 'operations',
+		'slug'       => 'dtb-marketplace-ebay-inbox',
+		'title'      => __( 'eBay Inbox', 'drywall-toolbox' ),
+		'menu_title' => __( 'eBay Inbox', 'drywall-toolbox' ),
+		'capability' => 'dtb_manage_marketplace',
+		'callback'   => 'dtb_marketplace_render_ebay_inbox_page',
+		'parent'     => 'dtb-marketplace',
+		'position'   => 59,
+		'template'   => 'list',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-email',
+	] );
+
+	dtb_register_admin_page( [
+		'library'    => 'operations',
+		'slug'       => 'dtb-marketplace-exceptions',
+		'title'      => __( 'Marketplace Exceptions', 'drywall-toolbox' ),
+		'menu_title' => __( 'Exceptions', 'drywall-toolbox' ),
+		'capability' => 'dtb_manage_marketplace',
+		'callback'   => 'dtb_marketplace_render_exceptions_page',
+		'parent'     => 'dtb-marketplace',
+		'position'   => 60,
+		'template'   => 'queue',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-warning',
+	] );
+
+	dtb_register_admin_page( [
+		'library'    => 'operations',
+		'slug'       => 'dtb-marketplace-settings',
+		'title'      => __( 'Marketplace Settings', 'drywall-toolbox' ),
+		'menu_title' => __( 'Settings', 'drywall-toolbox' ),
+		'capability' => 'dtb_manage_marketplace_settings',
+		'callback'   => 'dtb_marketplace_render_settings_page',
+		'parent'     => 'dtb-marketplace',
+		'position'   => 61,
+		'template'   => 'settings',
+		'section'    => 'Operations',
+		'icon'       => 'dashicons-admin-settings',
+	] );
+
+	// System Manager.
+	dtb_register_admin_page( [
 		'title'      => __( 'System Manager', 'drywall-toolbox' ),
 		'menu_title' => __( 'System Manager', 'drywall-toolbox' ),
 		'capability' => 'dtb_manage_system',

@@ -34,6 +34,11 @@ function dtb_admin_all_capabilities(): array {
 		'dtb_manage_system',
 		'dtb_manage_settings',
 
+		// Marketplace
+		'dtb_view_marketplace',
+		'dtb_manage_marketplace',
+		'dtb_manage_marketplace_settings',
+
 		// Tool Library
 		'dtb_manage_schematics',
 		'dtb_manage_image_sync',
@@ -69,6 +74,8 @@ function dtb_admin_role_capability_map(): array {
 			'dtb_read_support_tickets',
 			'dtb_manage_support',
 			'dtb_manage_settings',
+			'dtb_view_marketplace',
+			'dtb_manage_marketplace',
 		],
 
 		'dtb_support_agent' => [

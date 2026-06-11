@@ -43,6 +43,12 @@ if ( ! function_exists( 'dtb_integrations_register_health_checks' ) ) {
 		if ( class_exists( 'DTB_RewardsHealthCheck' ) ) {
 			DTB_RewardsHealthCheck::register();
 		}
+		if ( class_exists( 'DTB_AmazonHealthCheck' ) ) {
+			DTB_AmazonHealthCheck::register();
+		}
+		if ( class_exists( 'DTB_EbayHealthCheck' ) ) {
+			DTB_EbayHealthCheck::register();
+		}
 	}
 }
 
@@ -98,6 +104,72 @@ dtb_integrations_require_files( [
 	'dtb-integrations/Notifications/NotificationDispatcher.php',
 	'dtb-integrations/Notifications/NotificationJob.php',
 	'dtb-integrations/Notifications/SmsGateway.php',
+] );
+
+// 7) Marketplace shared infrastructure (schema + contracts + credentials).
+dtb_integrations_require_files( [
+	'dtb-integrations/Marketplace/Schema/MarketplaceSchemaInstaller.php',
+	'dtb-integrations/Marketplace/ChannelContract.php',
+	'dtb-integrations/Marketplace/CredentialFacade.php',
+	'dtb-integrations/Marketplace/RateLimitState.php',
+	'dtb-integrations/Marketplace/OrderNormalizer.php',
+	'dtb-integrations/Marketplace/MessageNormalizer.php',
+	'dtb-integrations/Marketplace/ActionPolicyValidator.php',
+	'dtb-integrations/Marketplace/ExceptionService.php',
+	'dtb-integrations/Marketplace/EventService.php',
+	'dtb-integrations/Marketplace/AuditService.php',
+	'dtb-integrations/Marketplace/ReadModels.php',
+] );
+
+// 8) Amazon module.
+dtb_integrations_require_files( [
+	'dtb-integrations/Amazon/AmazonConfig.php',
+	'dtb-integrations/Amazon/AmazonLwaTokenService.php',
+	'dtb-integrations/Amazon/AmazonSpApiClient.php',
+	'dtb-integrations/Amazon/AmazonOrdersService.php',
+	'dtb-integrations/Amazon/AmazonMessagingService.php',
+	'dtb-integrations/Amazon/AmazonNotificationsService.php',
+	'dtb-integrations/Amazon/AmazonHealthCheck.php',
+	'dtb-integrations/Amazon/AmazonWebhookController.php',
+] );
+
+// 9) eBay module.
+dtb_integrations_require_files( [
+	'dtb-integrations/Ebay/EbayConfig.php',
+	'dtb-integrations/Ebay/EbayOAuthTokenService.php',
+	'dtb-integrations/Ebay/EbayRestClient.php',
+	'dtb-integrations/Ebay/EbayFulfillmentService.php',
+	'dtb-integrations/Ebay/EbayMessageService.php',
+	'dtb-integrations/Ebay/EbayDeletionController.php',
+	'dtb-integrations/Ebay/EbayHealthCheck.php',
+] );
+
+// 10) Marketplace queue jobs.
+dtb_integrations_require_files( [
+	'dtb-integrations/Marketplace/Jobs/MarketplaceQueueJobs.php',
+] );
+
+// 11) Marketplace REST controllers.
+dtb_integrations_require_files( [
+	'dtb-integrations/Marketplace/Rest/MarketplaceOverviewController.php',
+	'dtb-integrations/Marketplace/Rest/MarketplaceOrdersController.php',
+	'dtb-integrations/Marketplace/Rest/MarketplaceMessagesController.php',
+	'dtb-integrations/Marketplace/Rest/AmazonMessagingController.php',
+	'dtb-integrations/Marketplace/Rest/EbayInboxController.php',
+	'dtb-integrations/Marketplace/Rest/MarketplaceExceptionsController.php',
+	'dtb-integrations/Marketplace/Rest/MarketplaceSettingsController.php',
+] );
+
+// 12) Marketplace admin helpers + pages.
+dtb_integrations_require_files( [
+	'dtb-integrations/Marketplace/Admin/MarketplaceAdminHelpers.php',
+	'dtb-integrations/Marketplace/Admin/MarketplaceOverviewPage.php',
+	'dtb-integrations/Marketplace/Admin/MarketplaceOrdersPage.php',
+	'dtb-integrations/Marketplace/Admin/MarketplaceMessagesPage.php',
+	'dtb-integrations/Marketplace/Admin/AmazonCommunicationPage.php',
+	'dtb-integrations/Marketplace/Admin/EbayInboxPage.php',
+	'dtb-integrations/Marketplace/Admin/MarketplaceExceptionsPage.php',
+	'dtb-integrations/Marketplace/Admin/MarketplaceSettingsPage.php',
 ] );
 
 // Register structured integration diagnostics with platform health registry.
