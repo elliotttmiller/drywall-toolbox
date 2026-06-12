@@ -68,7 +68,7 @@ if ( ! function_exists( 'dtb_email_palette' ) ) {
 	/**
 	 * Resolve shared color palette for modern branded email templates.
 	 *
-	 * Modern design with turquoise/teal accent inspired by professional email templates.
+	 * Uses the brand's global blue primary color theme matching frontend design tokens.
 	 *
 	 * @param string $theme light|dark.
 	 * @return array<string,string>
@@ -78,60 +78,60 @@ if ( ! function_exists( 'dtb_email_palette' ) ) {
 
 		if ( 'dark' === $theme ) {
 			return [
-				'shell_bg'       => '#0f172a',
-				'preheader'      => '#0f172a',
-				'hero_bg'        => '#1e293b',
+				'shell_bg'       => '#0a1020',
+				'preheader'      => '#0a1020',
+				'hero_bg'        => '#0f172a',
 				'hero_overlay'   => 'rgba(15, 23, 42, 0.95)',
-				'card_bg'        => '#1e293b',
-				'card_border'    => '#334155',
-				'accent'         => '#06b6d4', // Cyan/turquoise accent
-				'accent_hover'   => '#0891b2',
-				'accent_soft_bg' => '#164e63',
-				'accent_soft_tx' => '#a5f3fc',
+				'card_bg'        => '#0f172a',
+				'card_border'    => '#1e293b',
+				'accent'         => '#3b82f6', // Brand primary blue
+				'accent_hover'   => '#2563eb',
+				'accent_soft_bg' => '#1e3a8a',
+				'accent_soft_tx' => '#93c5fd',
 				'title'          => '#f8fafc',
 				'greeting'       => '#e2e8f0',
 				'intro'          => '#cbd5e1',
 				'text'           => '#94a3b8',
-				'details_border' => '#334155',
-				'details_bg'     => '#1e293b',
+				'details_border' => '#1e293b',
+				'details_bg'     => '#0c1220',
 				'details_label'  => '#94a3b8',
 				'details_value'  => '#e2e8f0',
-				'button_bg'      => '#06b6d4',
+				'button_bg'      => '#3b82f6',
 				'button_text'    => '#ffffff',
-				'button_hover'   => '#0891b2',
-				'footer_bg'      => '#0f172a',
+				'button_hover'   => '#2563eb',
+				'footer_bg'      => '#0c1220',
 				'footer_text'    => '#94a3b8',
-				'footer_link'    => '#cbd5e1',
-				'footer_sep'     => '#334155',
+				'footer_link'    => '#60a5fa',
+				'footer_sep'     => '#475569',
 				'copyright'      => '#64748b',
 			];
 		}
 
 		return [
-			'shell_bg'       => '#f8fafc',
-			'preheader'      => '#f8fafc',
-			'hero_bg'        => '#0f172a',
-			'hero_overlay'   => 'rgba(15, 23, 42, 0.95)',
+			'shell_bg'       => '#f4f6fb',
+			'preheader'      => '#f4f6fb',
+			'hero_bg'        => '#0a1020',
+			'hero_overlay'   => 'rgba(10, 16, 32, 0.95)',
 			'card_bg'        => '#ffffff',
-			'card_border'    => '#e2e8f0',
-			'accent'         => '#06b6d4', // Cyan/turquoise accent
-			'accent_hover'   => '#0891b2',
-			'accent_soft_bg' => '#ecfeff',
-			'accent_soft_tx' => '#0e7490',
+			'card_border'    => '#dbe3f1',
+			'accent'         => '#2563eb', // Brand primary blue
+			'accent_hover'   => '#1d4ed8',
+			'accent_soft_bg' => '#dbeafe',
+			'accent_soft_tx' => '#1d4ed8',
 			'title'          => '#0f172a',
 			'greeting'       => '#1e293b',
-			'intro'          => '#475569',
+			'intro'          => '#334155',
 			'text'           => '#64748b',
-			'details_border' => '#e2e8f0',
+			'details_border' => '#dbe3f1',
 			'details_bg'     => '#f8fafc',
 			'details_label'  => '#64748b',
 			'details_value'  => '#0f172a',
-			'button_bg'      => '#06b6d4',
+			'button_bg'      => '#2563eb',
 			'button_text'    => '#ffffff',
-			'button_hover'   => '#0891b2',
-			'footer_bg'      => '#f1f5f9',
+			'button_hover'   => '#1d4ed8',
+			'footer_bg'      => '#f8fafc',
 			'footer_text'    => '#64748b',
-			'footer_link'    => '#475569',
+			'footer_link'    => '#2563eb',
 			'footer_sep'     => '#cbd5e1',
 			'copyright'      => '#94a3b8',
 		];
@@ -150,9 +150,9 @@ if ( ! function_exists( 'dtb_email_button' ) ) {
 	function dtb_email_button( string $url, string $label, array $style = [] ): string {
 		$url   = esc_url( $url );
 		$label = esc_html( $label );
-		$bg    = sanitize_hex_color( (string) ( $style['bg'] ?? '#06b6d4' ) ) ?: '#06b6d4';
+		$bg    = sanitize_hex_color( (string) ( $style['bg'] ?? '#2563eb' ) ) ?: '#2563eb';
 		$text  = sanitize_hex_color( (string) ( $style['text'] ?? '#ffffff' ) ) ?: '#ffffff';
-		$hover = sanitize_hex_color( (string) ( $style['hover'] ?? '#0891b2' ) ) ?: '#0891b2';
+		$hover = sanitize_hex_color( (string) ( $style['hover'] ?? '#1d4ed8' ) ) ?: '#1d4ed8';
 
 		if ( '' === $url || '' === $label ) {
 			return '';
