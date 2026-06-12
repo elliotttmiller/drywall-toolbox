@@ -249,15 +249,40 @@ function dtb_returns_rest_public_submit( WP_REST_Request $request ): WP_REST_Res
 
 	$status_url = add_query_arg( [ 'token' => $public_token ], home_url( '/returns/status/' . $return_id ) );
 	$customer_subject = sprintf( '[%s] Return request received — #%d', $site_name, $return_id );
-	$customer_body  = "Hi {$customer_name},\n\n";
-	$customer_body .= "We received your return request for order {$order_number}.\n\n";
-	$customer_body .= "Return reference: #{$return_id}\n";
-	$customer_body .= "Current status: Pending Review\n\n";
-	$customer_body .= "Track your return status here:\n{$status_url}\n\n";
-	$customer_body .= "Please do not ship items back until our team sends your RMA instructions.\n\n";
-	$customer_body .= "{$site_name} Support Team\n";
+	
+	// Plain text version for fallback
+	$customer_body_plain  = "Hi {$customer_name},\n\n";
+	$customer_body_plain .= "We received your return request for order {$order_number}.\n\n";
+	$customer_body_plain .= "Return reference: #{$return_id}\n";
+	$customer_body_plain .= "Current status: Pending Review\n\n";
+	$customer_body_plain .= "Track your return status here:\n{$status_url}\n\n";
+	$customer_body_plain .= "Please do not ship items back until our team sends your RMA instructions.\n\n";
+	$customer_body_plain .= "{$site_name} Support Team\n";
+	
+	// HTML version with branded template
+	$customer_body_html = '';
+	if ( function_exists( 'dtb_render_branded_email' ) ) {
+		$customer_body_html = dtb_render_branded_email( [
+			'title'       => 'Return Request Received',
+			'preheader'   => "Return request #{ $return_id} received and under review",
+			'eyebrow'     => 'Return Request',
+			'greeting'    => "Hi {$customer_name},",
+			'intro'       => "We've received your return request for order {$order_number}. Our team will review it and send you RMA instructions soon.",
+			'details'     => [
+				[ 'label' => 'Return Reference', 'value' => "#{$return_id}" ],
+				[ 'label' => 'Order Number', 'value' => $order_number ],
+				[ 'label' => 'Status', 'value' => 'Pending Review' ],
+			],
+			'body_html'   => '<p><strong>Important:</strong> Please do not ship items back until our team sends your RMA instructions.</p>',
+			'cta_url'     => $status_url,
+			'cta_label'   => 'Track Return Status',
+			'signoff'     => 'The Drywall Toolbox Team',
+			'footer_note' => 'Questions about your return? Reply to this email and our support team will help.',
+			'theme'       => 'auto',
+		] );
+	}
+	
 	$customer_headers = [
-		'Content-Type: text/plain; charset=UTF-8',
 		'Reply-To: ' . $site_name . ' Support <info@drywalltoolbox.com>',
 	];
 
@@ -266,13 +291,15 @@ function dtb_returns_rest_public_submit( WP_REST_Request $request ): WP_REST_Res
 			dtb_send_email( [
 				'to'           => $customer_email,
 				'subject'      => $customer_subject,
-				'message'      => $customer_body,
+				'message'      => $customer_body_html ?: $customer_body_plain,
+				'content_type' => $customer_body_html ? 'text/html' : 'text/plain',
+				'is_html'      => (bool) $customer_body_html,
+				'alt_body'     => $customer_body_html ? $customer_body_plain : '',
 				'headers'      => $customer_headers,
-				'content_type' => 'text/plain',
 				'context'      => [ 'module' => 'dtb-returns', 'route' => 'public-submit-customer' ],
 			] );
 		} else {
-			wp_mail( $customer_email, $customer_subject, $customer_body, $customer_headers );
+			wp_mail( $customer_email, $customer_subject, $customer_body_plain, array_merge( $customer_headers, [ 'Content-Type: text/plain; charset=UTF-8' ] ) );
 		}
 	}
 

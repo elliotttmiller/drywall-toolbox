@@ -834,13 +834,7 @@ function dtb_notify_admin( string $email ): void {
 /**
  * Send a confirmation e-mail to the new subscriber.
  *
- * Delivers an HTML email (with plain-text fallback) through WP Mail SMTP Pro.
- * The template is self-contained inline-CSS so it renders correctly in Gmail,
- * Outlook, Apple Mail, and Yahoo without requiring an external stylesheet.
- *
- * Logo is served as a hosted <img> from the live site using logo-white.png —
- * a 2× retina PNG (280px wide, displayed at 140px) for sharp rendering on
- * all screens. SVG is not reliably supported in Gmail, Outlook, or Yahoo.
+ * Delivers branded HTML email (with plain-text fallback) using the DTB branded template system.
  *
  * @param string $email The new subscriber's validated e-mail address.
  */
@@ -849,7 +843,6 @@ function dtb_send_confirmation_email( string $email ): void {
 	$site_url    = home_url();
 	$admin_email = get_option( 'admin_email' );
 	$from_email  = 'no-reply@' . wp_parse_url( home_url(), PHP_URL_HOST );
-	$logo_url    = 'https://drywalltoolbox.com/logo-white-email.png';
 
 	// One-click unsubscribe — signed HMAC link, no stored state needed.
 	$unsub_url = add_query_arg(
@@ -866,140 +859,49 @@ function dtb_send_confirmation_email( string $email ): void {
 		$site_name
 	);
 
-	// ── HTML body ─────────────────────────────────────────────────────────────
-	// Clean white design — works correctly on all email clients including
-	// iOS Gmail, Outlook, Apple Mail, Gmail desktop, and Yahoo.
-	$html_message = sprintf(
-		'<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>%1$s</title>
-  <style>
-    @media only screen and (max-width: 600px) {
-      .dtb-card { width: 100%% !important; }
-      .dtb-body { padding: 32px 24px 24px !important; }
-      .dtb-foot { padding: 20px 24px 28px !important; }
-    }
-  </style>
-</head>
-<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,\'Helvetica Neue\',Arial,sans-serif;">
-
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%%" bgcolor="#f4f4f5"
-         style="background-color:#f4f4f5;">
-    <tr>
-      <td align="center" bgcolor="#f4f4f5" style="padding:48px 16px;background-color:#f4f4f5;">
-
-        <!-- Card -->
-        <table role="presentation" class="dtb-card" cellspacing="0" cellpadding="0" border="0" width="560" bgcolor="#ffffff"
-               style="max-width:560px;width:100%%;background-color:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e4e4e7;">
-
-          <!-- Blue accent bar -->
-          <tr>
-            <td bgcolor="#2563eb" height="4"
-                style="height:4px;background:linear-gradient(90deg,#1d4ed8 0%%,#2563eb 100%%);font-size:0;line-height:0;">&nbsp;</td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td class="dtb-body" bgcolor="#ffffff"
-                style="padding:48px 48px 32px;background-color:#ffffff;">
-
-              <p style="margin:0 0 24px;font-size:16px;line-height:1.7;color:#18181b;">
-                Hi there,
-              </p>
-
-              <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#09090b;letter-spacing:-0.3px;">
-                Thanks for signing up &mdash; you&rsquo;re officially on the list.
-              </h1>
-
-              <div style="height:1px;background-color:#e4e4e7;margin:28px 0;"></div>
-
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#18181b;">
-                We&rsquo;ve reserved your spot and will notify you at
-                <span style="color:#2563eb;font-weight:600;">%3$s</span>
-                the moment Drywall Toolbox goes live. You&rsquo;ll be among the first to know.
-              </p>
-              <p style="margin:0 0 32px;font-size:16px;line-height:1.7;color:#18181b;">
-                Big things are on the way &mdash; the wait won&rsquo;t be long, and it&rsquo;ll be well worth the wait.
-              </p>
-
-              <p style="margin:0 0 4px;font-size:16px;line-height:1.7;color:#18181b;">
-                Talk soon,
-              </p>
-              <p style="margin:0;font-size:16px;font-weight:600;color:#09090b;">
-                The %2$s Team
-              </p>
-
-            </td>
-          </tr>
-
-          <!-- Divider -->
-          <tr>
-            <td bgcolor="#ffffff" style="padding:0 48px;background-color:#ffffff;">
-              <div style="height:1px;background-color:#e4e4e7;"></div>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td class="dtb-foot" bgcolor="#f4f4f5"
-                style="padding:28px 48px 36px;background-color:#f4f4f5;text-align:center;">
-
-              <img src="https://drywalltoolbox.com/logo-black-email.png"
-                   alt="%2$s" width="320" height="167"
-                   style="display:block;border:0;width:320px;height:auto;margin:0 auto 16px auto;">
-
-              <p style="margin:0;font-size:12px;color:#71717a;line-height:1.6;text-align:center;">
-                You received this because you signed up at<br>
-                <a href="%4$s" style="color:#2563eb;text-decoration:underline;">drywalltoolbox.com</a>
-              </p>
-              <p style="margin:10px 0 0;font-size:11px;color:#71717a;text-align:center;">
-                <a href="%6$s" style="color:#2563eb;text-decoration:underline;">Unsubscribe</a>
-              </p>
-
-            </td>
-          </tr>
-
-        </table><!-- /Card -->
-
-      </td>
-    </tr>
-  </table>
-
-</body>
-</html>',
-		esc_attr( $subject ),        // %1$s — <title>
-		esc_html( $site_name ),      // %2$s — site name
-		esc_html( $email ),          // %3$s — subscriber email address
-		esc_url( $site_url ),        // %4$s — footer link
-		esc_url( $logo_url ),        // %5$s — unused, kept for compat
-		esc_url( $unsub_url )        // %6$s — one-click unsubscribe link
-	);
-
 	// ── Plain-text fallback ───────────────────────────────────────────────────
 	$plain_message = sprintf(
 		__(
 			"Hi there,\n\n" .
 			"Thanks for signing up - you're officially on the list.\n\n" .
-			"We've reserved your spot and will notify you at %1\$s the moment Drywall Toolbox goes live. You'll be among the first to know.\n\n" .
+			"We've reserved your spot and will notify you at %s the moment Drywall Toolbox goes live. You'll be among the first to know.\n\n" .
 			"Big things are on the way - the wait won't be long, and it'll be well worth the wait.\n\n" .
 			"Talk soon,\n" .
-			"The %2\$s Team\n\n" .
-			"%3\$s",
+			"The %s Team\n\n" .
+			"Unsubscribe: %s",
 			'dtb'
 		),
-		$email,
-		$site_name,
-		$site_url
+		esc_html( $email ),
+		esc_html( $site_name ),
+		$unsub_url
 	);
 
+	// ── HTML body using branded template ──────────────────────────────────────
+	$html_message = '';
+	if ( function_exists( 'dtb_render_branded_email' ) ) {
+		$html_message = dtb_render_branded_email( [
+			'title'       => 'You\'re on the List!',
+			'preheader'   => 'Thanks for signing up — you\'re officially on the list',
+			'eyebrow'     => 'Drywall Toolbox',
+			'greeting'    => 'Hi there,',
+			'intro'       => 'Thanks for signing up — you\'re officially on the list.',
+			'body_html'   => sprintf(
+				'<p>We\'ve reserved your spot and will notify you at <strong style="color:#2563eb;">%s</strong> the moment Drywall Toolbox goes live. You\'ll be among the first to know.</p><p>Big things are on the way — the wait won\'t be long, and it\'ll be well worth the wait.</p>',
+				esc_html( $email )
+			),
+			'cta_url'     => home_url( '/' ),
+			'cta_label'   => 'Visit Drywall Toolbox',
+			'signoff'     => 'The Drywall Toolbox Team',
+			'footer_note' => sprintf(
+				'You received this because you signed up at drywalltoolbox.com. <a href="%s" style="color:#2563eb;text-decoration:underline;">Unsubscribe</a>',
+				esc_url( $unsub_url )
+			),
+			'theme'       => 'auto',
+		] );
+	}
+
 	$headers = array(
-		'Content-Type: text/html; charset=UTF-8',
-		// From address must exactly match the domain authorised in SPF/DKIM.
 		'From: ' . $site_name . ' <' . $from_email . '>',
-		// Replies go to the real admin inbox, not the no-reply address.
 		'Reply-To: ' . $site_name . ' <' . $admin_email . '>',
 	);
 
@@ -1008,11 +910,11 @@ function dtb_send_confirmation_email( string $email ): void {
 			[
 				'to'           => $email,
 				'subject'      => $subject,
-				'message'      => $html_message,
+				'message'      => $html_message ?: $plain_message,
 				'headers'      => $headers,
-				'is_html'      => true,
-				'content_type' => 'text/html',
-				'alt_body'     => $plain_message,
+				'is_html'      => (bool) $html_message,
+				'content_type' => $html_message ? 'text/html' : 'text/plain',
+				'alt_body'     => $html_message ? $plain_message : '',
 				'context'      => [
 					'module' => 'dtb-marketing',
 					'event'  => 'coming-soon-confirmation',
@@ -1021,27 +923,28 @@ function dtb_send_confirmation_email( string $email ): void {
 		);
 	} else {
 		// Hook phpmailer_init once to inject the plain-text AltBody.
-		// PHPMailer then sends a proper multipart/alternative message automatically.
-		// The hook is removed immediately after wp_mail() returns so it never
-		// affects any other email sent during the same request.
 		$set_alt_body = static function ( $phpmailer ) use ( $plain_message ) {
 			$phpmailer->AltBody = $plain_message;
 		};
 		add_action( 'phpmailer_init', $set_alt_body );
 
-		$sent = wp_mail( $email, $subject, $html_message, $headers );
+		$sent = wp_mail(
+			$email,
+			$subject,
+			$html_message ?: $plain_message,
+			array_merge( $headers, $html_message ? [ 'Content-Type: text/html; charset=UTF-8' ] : [ 'Content-Type: text/plain; charset=UTF-8' ] )
+		);
 
-		// Always remove the one-shot hook regardless of send result.
 		remove_action( 'phpmailer_init', $set_alt_body );
 	}
 
-	if ( ! $sent ) {
-		error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			sprintf(
-				'[DTB] dtb_send_confirmation_email: wp_mail() failed for subscriber %s',
-				$email
-			)
-		);
+	// Log confirmation send.
+	if ( $sent ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( sprintf( '[DTB Marketing] Confirmation email sent to %s', $email ) );
+	} else {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( sprintf( '[DTB Marketing] FAILED to send confirmation email to %s', $email ) );
 	}
 }
 // dtb_get_client_ip() and dtb_anonymise_ip() are provided by dtb-utils.php.
