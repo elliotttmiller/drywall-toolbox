@@ -602,6 +602,7 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
 
 	$subject = sprintf( '[%s] Welcome! Your Account is Ready', $site_name );
 
+	// Plain text version for email clients that don't support HTML
 	$message  = sprintf( "Hi %s,\r\n\r\n", $display_name );
 	$message .= "Welcome to Drywall Toolbox! Your account has been created successfully.\r\n\r\n";
 	$message .= "You're already logged in and ready to start shopping. Visit your account dashboard to:\r\n\r\n";
@@ -616,13 +617,46 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
 	$message .= "Need help? Contact us: " . $support_url . "\r\n\r\n";
 	$message .= '— The ' . $site_name . ' Team';
 
+	// Build branded HTML email if template renderer is available
+	$html_message = '';
+	if ( function_exists( 'dtb_render_branded_email' ) ) {
+		$html_message = dtb_render_branded_email(
+			[
+				'title'       => 'Welcome to ' . $site_name,
+				'preheader'   => 'Your account has been created successfully.',
+				'eyebrow'     => 'Welcome',
+				'greeting'    => sprintf( 'Hi %s,', esc_html( $display_name ) ),
+				'intro'       => 'Welcome to Drywall Toolbox! Your account has been created successfully and you\'re already logged in. We\'re excited to have you on board.',
+				'body_html'   => '<p style="margin:0 0 12px;">Visit your account dashboard to:</p>'
+					. '<ul style="margin:0 0 20px;padding-left:20px;">'
+					. '<li style="margin:0 0 8px;">View and track your orders</li>'
+					. '<li style="margin:0 0 8px;">Manage your addresses and payment methods</li>'
+					. '<li style="margin:0 0 8px;">Update your account settings</li>'
+					. '<li style="margin:0;">Access exclusive rewards and offers</li>'
+					. '</ul>',
+				'details'     => [
+					[ 'label' => 'Your Dashboard', 'value' => $dashboard_url ],
+					[ 'label' => 'Shop Now', 'value' => $shop_url ],
+					[ 'label' => 'Need Help?', 'value' => $support_url ],
+				],
+				'cta_url'     => $dashboard_url,
+				'cta_label'   => 'Visit Your Dashboard',
+				'signoff'     => 'The ' . $site_name . ' Team',
+				'footer_note' => 'If you ever need to reset your password, you can do so from the login page.',
+				'theme'       => 'auto',
+			]
+		);
+	}
+
 	if ( function_exists( 'dtb_send_email' ) ) {
 		dtb_send_email(
 			[
 				'to'           => (string) $user->user_email,
 				'subject'      => $subject,
-				'message'      => $message,
-				'content_type' => 'text/plain',
+				'message'      => '' !== $html_message ? $html_message : $message,
+				'content_type' => '' !== $html_message ? 'text/html' : 'text/plain',
+				'is_html'      => '' !== $html_message,
+				'alt_body'     => '' !== $html_message ? $message : '',
 				'context'      => [
 					'module' => 'dtb-platform-auth',
 					'event'  => 'new-user-welcome',
@@ -726,23 +760,47 @@ function dtb_auth_forgot_password( WP_REST_Request $request ): WP_REST_Response 
 		$spa_base . '/reset-password'
 	);
 
-	$site_name = get_bloginfo( 'name' ) ?: 'Drywall Toolbox';
-	$subject   = sprintf( '[%s] Password Reset Request', $site_name );
+	$site_name    = get_bloginfo( 'name' ) ?: 'Drywall Toolbox';
+	$subject      = sprintf( '[%s] Password Reset Request', $site_name );
+	$display_name = $user->display_name ?: $user->user_login;
 
-	$message  = sprintf( "Hi %s,\r\n\r\n", $user->display_name ?: $user->user_login );
+	// Plain text version for email clients that don't support HTML
+	$message  = sprintf( "Hi %s,\r\n\r\n", $display_name );
 	$message .= "We received a request to reset the password for your account.\r\n\r\n";
 	$message .= "Click the link below to set a new password. This link expires in 24 hours.\r\n\r\n";
 	$message .= $reset_url . "\r\n\r\n";
 	$message .= "If you did not request this, you can safely ignore this email.\r\n\r\n";
 	$message .= '— ' . $site_name;
 
+	// Build branded HTML email if template renderer is available
+	$html_message = '';
+	if ( function_exists( 'dtb_render_branded_email' ) ) {
+		$html_message = dtb_render_branded_email(
+			[
+				'title'       => 'Password Reset Request',
+				'preheader'   => 'Reset your password for ' . esc_attr( $site_name ),
+				'eyebrow'     => 'Account Security',
+				'greeting'    => sprintf( 'Hi %s,', esc_html( $display_name ) ),
+				'intro'       => 'We received a request to reset the password for your account. Click the button below to set a new password.',
+				'body_html'   => '<p style="margin:0;font-size:14px;color:#64748b;">This link expires in 24 hours. If you did not request this, you can safely ignore this email and your password will remain unchanged.</p>',
+				'cta_url'     => $reset_url,
+				'cta_label'   => 'Reset Your Password',
+				'signoff'     => 'The ' . $site_name . ' Team',
+				'footer_note' => 'This password reset link can only be used once and expires in 24 hours for your security.',
+				'theme'       => 'auto',
+			]
+		);
+	}
+
 	if ( function_exists( 'dtb_send_email' ) ) {
 		dtb_send_email(
 			[
 				'to'           => (string) $user->user_email,
 				'subject'      => $subject,
-				'message'      => $message,
-				'content_type' => 'text/plain',
+				'message'      => '' !== $html_message ? $html_message : $message,
+				'content_type' => '' !== $html_message ? 'text/html' : 'text/plain',
+				'is_html'      => '' !== $html_message,
+				'alt_body'     => '' !== $html_message ? $message : '',
 				'context'      => [
 					'module' => 'dtb-platform-auth',
 					'event'  => 'password-reset-request',
