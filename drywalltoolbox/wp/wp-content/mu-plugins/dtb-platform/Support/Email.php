@@ -66,7 +66,9 @@ if ( ! function_exists( 'dtb_email_support_url' ) ) {
 
 if ( ! function_exists( 'dtb_email_palette' ) ) {
 	/**
-	 * Resolve shared color palette for branded email templates.
+	 * Resolve shared color palette for modern branded email templates.
+	 *
+	 * Modern design with turquoise/teal accent inspired by professional email templates.
 	 *
 	 * @param string $theme light|dark.
 	 * @return array<string,string>
@@ -76,71 +78,69 @@ if ( ! function_exists( 'dtb_email_palette' ) ) {
 
 		if ( 'dark' === $theme ) {
 			return [
-				'shell_bg'       => '#05070d',
-				'preheader'      => '#05070d',
-				'card_bg'        => '#0b1220',
-				'card_border'    => '#223049',
-				'header_bg'      => '#030712',
-				'accent'         => '#3b82f6',
-				'accent_soft_bg' => '#1e3a8a',
-				'accent_soft_tx' => '#bfdbfe',
+				'shell_bg'       => '#0f172a',
+				'preheader'      => '#0f172a',
+				'hero_bg'        => '#1e293b',
+				'hero_overlay'   => 'rgba(15, 23, 42, 0.95)',
+				'card_bg'        => '#1e293b',
+				'card_border'    => '#334155',
+				'accent'         => '#06b6d4', // Cyan/turquoise accent
+				'accent_hover'   => '#0891b2',
+				'accent_soft_bg' => '#164e63',
+				'accent_soft_tx' => '#a5f3fc',
 				'title'          => '#f8fafc',
 				'greeting'       => '#e2e8f0',
-				'intro'          => '#9fb2cc',
-				'details_border' => '#2a3a57',
-				'details_even'   => '#111a2d',
-				'details_odd'    => '#0d1526',
-				'details_label'  => '#93a8c4',
+				'intro'          => '#cbd5e1',
+				'text'           => '#94a3b8',
+				'details_border' => '#334155',
+				'details_bg'     => '#1e293b',
+				'details_label'  => '#94a3b8',
 				'details_value'  => '#e2e8f0',
-				'reply_bg'       => '#111a2d',
-				'reply_border'   => '#2a3a57',
-				'reply_text'     => '#d6e0ee',
-				'button_bg'      => '#3b82f6',
+				'button_bg'      => '#06b6d4',
 				'button_text'    => '#ffffff',
-				'footer_bg'      => '#090f1b',
-				'footer_border'  => '#223049',
-				'footer_note'    => '#8ba1bd',
-				'footer_link'    => '#d2dff1',
-				'footer_sep'     => '#3a4a67',
-				'copyright'      => '#7f92ad',
+				'button_hover'   => '#0891b2',
+				'footer_bg'      => '#0f172a',
+				'footer_text'    => '#94a3b8',
+				'footer_link'    => '#cbd5e1',
+				'footer_sep'     => '#334155',
+				'copyright'      => '#64748b',
 			];
 		}
 
 		return [
-			'shell_bg'       => '#f1f5f9',
-			'preheader'      => '#f1f5f9',
+			'shell_bg'       => '#f8fafc',
+			'preheader'      => '#f8fafc',
+			'hero_bg'        => '#0f172a',
+			'hero_overlay'   => 'rgba(15, 23, 42, 0.95)',
 			'card_bg'        => '#ffffff',
-			'card_border'    => '#d9e2ef',
-			'header_bg'      => '#0b1220',
-			'accent'         => '#2563eb',
-			'accent_soft_bg' => '#e8f0ff',
-			'accent_soft_tx' => '#1e40af',
+			'card_border'    => '#e2e8f0',
+			'accent'         => '#06b6d4', // Cyan/turquoise accent
+			'accent_hover'   => '#0891b2',
+			'accent_soft_bg' => '#ecfeff',
+			'accent_soft_tx' => '#0e7490',
 			'title'          => '#0f172a',
-			'greeting'       => '#1f2937',
+			'greeting'       => '#1e293b',
 			'intro'          => '#475569',
-			'details_border' => '#dbe5f2',
-			'details_even'   => '#f8fafc',
-			'details_odd'    => '#ffffff',
+			'text'           => '#64748b',
+			'details_border' => '#e2e8f0',
+			'details_bg'     => '#f8fafc',
 			'details_label'  => '#64748b',
 			'details_value'  => '#0f172a',
-			'reply_bg'       => '#f8fafc',
-			'reply_border'   => '#dbe5f2',
-			'reply_text'     => '#334155',
-			'button_bg'      => '#2563eb',
+			'button_bg'      => '#06b6d4',
 			'button_text'    => '#ffffff',
-			'footer_bg'      => '#f8fafc',
-			'footer_border'  => '#dbe5f2',
-			'footer_note'    => '#64748b',
-			'footer_link'    => '#334155',
+			'button_hover'   => '#0891b2',
+			'footer_bg'      => '#f1f5f9',
+			'footer_text'    => '#64748b',
+			'footer_link'    => '#475569',
 			'footer_sep'     => '#cbd5e1',
-			'copyright'      => '#8fa2bb',
+			'copyright'      => '#94a3b8',
 		];
 	}
 }
 
 if ( ! function_exists( 'dtb_email_button' ) ) {
 	/**
-	 * Render a bulletproof-ish email CTA button.
+	 * Render a modern, responsive email CTA button.
 	 *
 	 * @param string $url   Target URL.
 	 * @param string $label Button label.
@@ -150,32 +150,41 @@ if ( ! function_exists( 'dtb_email_button' ) ) {
 	function dtb_email_button( string $url, string $label, array $style = [] ): string {
 		$url   = esc_url( $url );
 		$label = esc_html( $label );
-		$bg    = sanitize_hex_color( (string) ( $style['bg'] ?? '#2563eb' ) ) ?: '#2563eb';
+		$bg    = sanitize_hex_color( (string) ( $style['bg'] ?? '#06b6d4' ) ) ?: '#06b6d4';
 		$text  = sanitize_hex_color( (string) ( $style['text'] ?? '#ffffff' ) ) ?: '#ffffff';
+		$hover = sanitize_hex_color( (string) ( $style['hover'] ?? '#0891b2' ) ) ?: '#0891b2';
 
 		if ( '' === $url || '' === $label ) {
 			return '';
 		}
 
-		return '<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:34px 0 0;">
+		return '
+		<!--[if mso]>
+		<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="' . $url . '" style="height:54px;v-text-anchor:middle;width:200px;" arcsize="15%" stroke="f" fillcolor="' . esc_attr( $bg ) . '">
+		<w:anchorlock/>
+		<center style="color:' . esc_attr( $text ) . ';font-family:sans-serif;font-size:16px;font-weight:700;">
+		' . $label . '
+		</center>
+		</v:roundrect>
+		<![endif]-->
+		<!--[if !mso]><!-->
+		<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:32px 0 0;">
 			<tr>
 				<td align="center">
-					<table role="presentation" cellspacing="0" cellpadding="0" border="0">
-						<tr>
-							<td class="dtb-btn-td" bgcolor="' . esc_attr( $bg ) . '" style="background:' . esc_attr( $bg ) . ';border-radius:12px;">
-								<a href="' . $url . '" style="display:inline-block;padding:14px 30px;color:' . esc_attr( $text ) . ';font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;text-decoration:none;border-radius:12px;">' . $label . ' &rarr;</a>
-							</td>
-						</tr>
-					</table>
+					<a href="' . $url . '" class="dtb-btn" style="display:inline-block;background:' . esc_attr( $bg ) . ';color:' . esc_attr( $text ) . ';font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',\'Helvetica Neue\',Arial,sans-serif;font-size:16px;font-weight:700;line-height:1.5;text-decoration:none;text-align:center;padding:15px 40px;border-radius:8px;min-width:160px;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+						' . $label . '
+					</a>
 				</td>
 			</tr>
-		</table>';
+		</table>
+		<!--<![endif]-->
+		';
 	}
 }
 
 if ( ! function_exists( 'dtb_email_details_table' ) ) {
 	/**
-	 * Render label/value rows for email details.
+	 * Render modern label/value rows for email details.
 	 *
 	 * @param array<int,array{label:string,value:string}> $rows Detail rows.
 	 * @param array<string,mixed>                          $style Optional style values.
@@ -183,10 +192,8 @@ if ( ! function_exists( 'dtb_email_details_table' ) ) {
 	 */
 	function dtb_email_details_table( array $rows, array $style = [] ): string {
 		$body = '';
-		$i    = 0;
-		$border      = sanitize_hex_color( (string) ( $style['border'] ?? '#dbe5f2' ) ) ?: '#dbe5f2';
-		$even_bg     = sanitize_hex_color( (string) ( $style['even_bg'] ?? '#f8fafc' ) ) ?: '#f8fafc';
-		$odd_bg      = sanitize_hex_color( (string) ( $style['odd_bg'] ?? '#ffffff' ) ) ?: '#ffffff';
+		$bg          = sanitize_hex_color( (string) ( $style['bg'] ?? '#f8fafc' ) ) ?: '#f8fafc';
+		$border      = sanitize_hex_color( (string) ( $style['border'] ?? '#e2e8f0' ) ) ?: '#e2e8f0';
 		$label_color = sanitize_hex_color( (string) ( $style['label'] ?? '#64748b' ) ) ?: '#64748b';
 		$value_color = sanitize_hex_color( (string) ( $style['value'] ?? '#0f172a' ) ) ?: '#0f172a';
 
@@ -198,13 +205,9 @@ if ( ! function_exists( 'dtb_email_details_table' ) ) {
 				continue;
 			}
 
-			$bg          = ( 0 === $i % 2 ) ? $even_bg : $odd_bg;
-			$row_class   = ( 0 === $i % 2 ) ? 'dtb-dt-even' : 'dtb-dt-odd';
-			++$i;
-
 			$body .= '<tr>
-				<td class="dtb-dt-label ' . $row_class . '" style="padding:11px 14px;background:' . esc_attr( $bg ) . ';color:' . esc_attr( $label_color ) . ';font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;font-size:11px;line-height:17px;vertical-align:middle;width:34%;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;white-space:nowrap;">' . esc_html( $label ) . '</td>
-				<td class="dtb-dt-val ' . $row_class . '" style="padding:11px 14px;background:' . esc_attr( $bg ) . ';color:' . esc_attr( $value_color ) . ';font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;font-size:14px;font-weight:600;line-height:21px;vertical-align:middle;">' . wp_kses_post( nl2br( esc_html( $value ) ) ) . '</td>
+				<td style="padding:16px 20px;background:' . esc_attr( $bg ) . ';color:' . esc_attr( $label_color ) . ';font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',\'Helvetica Neue\',Arial,sans-serif;font-size:13px;line-height:1.5;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid ' . esc_attr( $border ) . ';">' . esc_html( $label ) . '</td>
+				<td style="padding:16px 20px;background:' . esc_attr( $bg ) . ';color:' . esc_attr( $value_color ) . ';font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',\'Helvetica Neue\',Arial,sans-serif;font-size:15px;font-weight:600;line-height:1.5;border-bottom:1px solid ' . esc_attr( $border ) . ';text-align:right;">' . wp_kses_post( nl2br( esc_html( $value ) ) ) . '</td>
 			</tr>';
 		}
 
@@ -212,7 +215,10 @@ if ( ! function_exists( 'dtb_email_details_table' ) ) {
 			return '';
 		}
 
-		return '<table class="dtb-details-table" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:30px 0 0;border-collapse:collapse;border-radius:10px;overflow:hidden;border:1px solid ' . esc_attr( $border ) . ';">' . $body . '</table>';
+		// Remove border from last row
+		$body = preg_replace( '/border-bottom:[^;]+;([^"]*")([^>]*>)([^<]*<\/td>[^<]*<\/tr>)$/', '$1$2$3', $body );
+
+		return '<table class="dtb-details-table" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:24px 0;border-collapse:collapse;border:1px solid ' . esc_attr( $border ) . ';border-radius:12px;overflow:hidden;">' . $body . '</table>';
 	}
 }
 
