@@ -1733,7 +1733,7 @@ function dtb_veeqo_send_repair_confirmation( WC_Order $order, string $tool_desc,
 		$priority
 	);
 
-	$from_email = (string) ( get_option( 'admin_email' ) ?: 'noreply@drywalltoolbox.com' );
+	$from_email = function_exists( 'dtb_platform_from_email' ) ? dtb_platform_from_email() : 'info@drywalltoolbox.com';
 	$headers    = [
 		'Content-Type: text/plain; charset=UTF-8',
 		'From: Drywall Toolbox Service <' . $from_email . '>',
