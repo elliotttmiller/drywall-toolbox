@@ -594,7 +594,8 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
 	dtb_set_auth_cookie( $jwt, 7 * DAY_IN_SECONDS );
 
 	// ── Send professional welcome email ──────────────────────────────────────
-	$site_name    = get_bloginfo( 'name' ) ?: 'Drywall Toolbox';
+	$site_name    = get_bloginfo( 'name' );
+	$site_name    = ( $site_name && '' !== $site_name ) ? $site_name : 'Drywall Toolbox';
 	$dashboard_url = home_url( '/dashboard' );
 	$shop_url      = home_url( '/shop' );
 	$support_url   = home_url( '/contact' );
