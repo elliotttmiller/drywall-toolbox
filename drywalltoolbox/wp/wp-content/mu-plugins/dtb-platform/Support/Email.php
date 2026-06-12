@@ -265,11 +265,10 @@ if ( ! function_exists( 'dtb_render_branded_email' ) ) {
 		$details_html = dtb_email_details_table(
 			$details,
 			[
-				'border'  => $palette['details_border'],
-				'even_bg' => $palette['details_even'],
-				'odd_bg'  => $palette['details_odd'],
-				'label'   => $palette['details_label'],
-				'value'   => $palette['details_value'],
+				'border' => $palette['details_border'],
+				'bg'     => $palette['details_bg'],
+				'label'  => $palette['details_label'],
+				'value'  => $palette['details_value'],
 			]
 		);
 		$button_html  = dtb_email_button(
@@ -286,34 +285,32 @@ if ( ! function_exists( 'dtb_render_branded_email' ) ) {
 			$dark = dtb_email_palette( 'dark' );
 			$auto_dark_css = '
 				@media (prefers-color-scheme: dark) {
-					.dtb-preheader { color:' . esc_attr( $dark['preheader'] ) . ' !important; }
+					.dtb-preheader { color:' . esc_attr( $dark['shell_bg'] ) . ' !important; }
 					.dtb-shell { background:' . esc_attr( $dark['shell_bg'] ) . ' !important; }
 					.dtb-card { background:' . esc_attr( $dark['card_bg'] ) . ' !important; border-color:' . esc_attr( $dark['card_border'] ) . ' !important; }
-					.dtb-header { background:' . esc_attr( $dark['header_bg'] ) . ' !important; }
+					.dtb-header { background:' . esc_attr( $dark['card_bg'] ) . ' !important; }
 					.dtb-body { background:' . esc_attr( $dark['card_bg'] ) . ' !important; }
 					.dtb-eyebrow-td { background:' . esc_attr( $dark['accent_soft_bg'] ) . ' !important; }
 					.dtb-eyebrow-lbl { color:' . esc_attr( $dark['accent_soft_tx'] ) . ' !important; }
 					.dtb-title { color:' . esc_attr( $dark['title'] ) . ' !important; }
 					.dtb-greeting { color:' . esc_attr( $dark['greeting'] ) . ' !important; }
 					.dtb-intro { color:' . esc_attr( $dark['intro'] ) . ' !important; }
-					.dtb-details-table { border-color:' . esc_attr( $dark['details_border'] ) . ' !important; }
-					.dtb-dt-label.dtb-dt-even, .dtb-dt-val.dtb-dt-even { background:' . esc_attr( $dark['details_even'] ) . ' !important; }
-					.dtb-dt-label.dtb-dt-odd, .dtb-dt-val.dtb-dt-odd { background:' . esc_attr( $dark['details_odd'] ) . ' !important; }
-					.dtb-dt-label { color:' . esc_attr( $dark['details_label'] ) . ' !important; }
-					.dtb-dt-val { color:' . esc_attr( $dark['details_value'] ) . ' !important; }
-					.dtb-reply-body { background:' . esc_attr( $dark['reply_bg'] ) . ' !important; border-color:' . esc_attr( $dark['reply_border'] ) . ' !important; color:' . esc_attr( $dark['reply_text'] ) . ' !important; }
-					.dtb-btn-td { background:' . esc_attr( $dark['button_bg'] ) . ' !important; }
+					.dtb-details-table { border-color:' . esc_attr( $dark['details_border'] ) . ' !important; background:' . esc_attr( $dark['details_bg'] ) . ' !important; }
+					.dtb-details-table td { background:' . esc_attr( $dark['details_bg'] ) . ' !important; color:' . esc_attr( $dark['details_value'] ) . ' !important; }
+					.dtb-details-table td:first-child { color:' . esc_attr( $dark['details_label'] ) . ' !important; }
+					.dtb-reply-body { background:' . esc_attr( $dark['details_bg'] ) . ' !important; border-color:' . esc_attr( $dark['details_border'] ) . ' !important; color:' . esc_attr( $dark['intro'] ) . ' !important; }
+					.dtb-btn { background:' . esc_attr( $dark['button_bg'] ) . ' !important; }
 					.dtb-signoff { color:' . esc_attr( $dark['intro'] ) . ' !important; }
 					.dtb-signoff-name { color:' . esc_attr( $dark['title'] ) . ' !important; }
-					.dtb-footer { background:' . esc_attr( $dark['footer_bg'] ) . ' !important; border-top-color:' . esc_attr( $dark['footer_border'] ) . ' !important; }
-					.dtb-footer-note { color:' . esc_attr( $dark['footer_note'] ) . ' !important; }
+					.dtb-footer { background:' . esc_attr( $dark['footer_bg'] ) . ' !important; border-top-color:' . esc_attr( $dark['details_border'] ) . ' !important; }
+					.dtb-footer-note { color:' . esc_attr( $dark['footer_text'] ) . ' !important; }
 					.dtb-footer-link { color:' . esc_attr( $dark['footer_link'] ) . ' !important; }
 					.dtb-footer-sep { color:' . esc_attr( $dark['footer_sep'] ) . ' !important; }
 					.dtb-copyright { color:' . esc_attr( $dark['copyright'] ) . ' !important; }
 					.dtb-rich .dtb-quote-table { border-color:' . esc_attr( $dark['details_border'] ) . ' !important; }
-					.dtb-rich .dtb-quote-table th { background:' . esc_attr( $dark['details_even'] ) . ' !important; color:' . esc_attr( $dark['details_label'] ) . ' !important; }
+					.dtb-rich .dtb-quote-table th { background:' . esc_attr( $dark['details_bg'] ) . ' !important; color:' . esc_attr( $dark['details_label'] ) . ' !important; }
 					.dtb-rich .dtb-quote-table td { border-top-color:' . esc_attr( $dark['details_border'] ) . ' !important; color:' . esc_attr( $dark['details_value'] ) . ' !important; }
-					.dtb-rich .dtb-quote-note { background:' . esc_attr( $dark['details_even'] ) . ' !important; border-color:' . esc_attr( $dark['details_border'] ) . ' !important; color:' . esc_attr( $dark['details_value'] ) . ' !important; }
+					.dtb-rich .dtb-quote-note { background:' . esc_attr( $dark['details_bg'] ) . ' !important; border-color:' . esc_attr( $dark['details_border'] ) . ' !important; color:' . esc_attr( $dark['details_value'] ) . ' !important; }
 					.dtb-rich .dtb-quote-total, .dtb-rich .dtb-quote-expiry { color:' . esc_attr( $dark['details_value'] ) . ' !important; }
 				}
 			';
@@ -335,13 +332,13 @@ if ( ! function_exists( 'dtb_render_branded_email' ) ) {
 		table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
 		img { -ms-interpolation-mode:bicubic; border:0; outline:0; text-decoration:none; }
 		a { text-decoration:none; }
-		.dtb-rich p { margin:0 0 12px; }
+		.dtb-rich p { margin:0 0 14px; }
 		.dtb-rich p:last-child { margin-bottom:0; }
 		.dtb-rich table { border-collapse:collapse; width:100%; }
-		.dtb-rich .dtb-quote-table { border:1px solid ' . esc_attr( $palette['details_border'] ) . '; border-radius:10px; overflow:hidden; }
-		.dtb-rich .dtb-quote-table th { background:' . esc_attr( $palette['details_even'] ) . '; color:' . esc_attr( $palette['details_label'] ) . '; font-weight:700; letter-spacing:0.02em; }
+		.dtb-rich .dtb-quote-table { border:1px solid ' . esc_attr( $palette['details_border'] ) . '; border-radius:12px; overflow:hidden; }
+		.dtb-rich .dtb-quote-table th { background:' . esc_attr( $palette['details_bg'] ) . '; color:' . esc_attr( $palette['details_label'] ) . '; font-weight:700; letter-spacing:0.03em; }
 		.dtb-rich .dtb-quote-table td { color:' . esc_attr( $palette['details_value'] ) . '; border-top:1px solid ' . esc_attr( $palette['details_border'] ) . '; }
-		.dtb-rich .dtb-quote-note { background:' . esc_attr( $palette['details_even'] ) . '; border-color:' . esc_attr( $palette['details_border'] ) . '; color:' . esc_attr( $palette['details_value'] ) . '; }
+		.dtb-rich .dtb-quote-note { background:' . esc_attr( $palette['details_bg'] ) . '; border-color:' . esc_attr( $palette['details_border'] ) . '; color:' . esc_attr( $palette['details_value'] ) . '; }
 		.dtb-rich .dtb-quote-total, .dtb-rich .dtb-quote-expiry { color:' . esc_attr( $palette['details_value'] ) . '; }
 		@media only screen and (max-width: 620px) {
 			.dtb-shell { padding: 0 !important; }
@@ -391,7 +388,7 @@ if ( ! function_exists( 'dtb_render_branded_email' ) ) {
 							' . ( '' !== $body_html ? '
 							<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:28px 0 0;border-collapse:separate;">
 								<tr>
-									<td class="dtb-reply-body dtb-rich" style="padding:18px 20px;border:1px solid ' . esc_attr( $palette['reply_border'] ) . ';border-radius:10px;background:' . esc_attr( $palette['reply_bg'] ) . ';color:' . esc_attr( $palette['reply_text'] ) . ';font-size:14px;line-height:23px;">' . $body_html . '</td>
+									<td class="dtb-reply-body dtb-rich" style="padding:20px 24px;border:1px solid ' . esc_attr( $palette['details_border'] ) . ';border-radius:12px;background:' . esc_attr( $palette['details_bg'] ) . ';color:' . esc_attr( $palette['intro'] ) . ';font-size:15px;line-height:24px;">' . $body_html . '</td>
 								</tr>
 							</table>' : '' ) . '
 							' . $button_html . '
@@ -399,12 +396,12 @@ if ( ! function_exists( 'dtb_render_branded_email' ) ) {
 						</td>
 					</tr>
 					<tr>
-						<td class="dtb-footer" style="padding:22px 44px;background:' . esc_attr( $palette['footer_bg'] ) . ';border-top:1px solid ' . esc_attr( $palette['footer_border'] ) . ';text-align:center;">
-							<p class="dtb-footer-note" style="margin:0 0 10px;color:' . esc_attr( $palette['footer_note'] ) . ';font-size:12px;line-height:18px;">' . esc_html( $footer_note ) . '</p>
-							<p style="margin:0;font-size:12px;line-height:18px;">
-								<a class="dtb-footer-link" href="' . $home_url . '" style="color:' . esc_attr( $palette['footer_link'] ) . ';font-weight:600;">drywalltoolbox.com</a>
+						<td class="dtb-footer" style="padding:28px 44px;background:' . esc_attr( $palette['footer_bg'] ) . ';border-top:1px solid ' . esc_attr( $palette['details_border'] ) . ';text-align:center;">
+							<p class="dtb-footer-note" style="margin:0 0 12px;color:' . esc_attr( $palette['footer_text'] ) . ';font-size:13px;line-height:20px;">' . esc_html( $footer_note ) . '</p>
+							<p style="margin:0;font-size:13px;line-height:20px;">
+								<a class="dtb-footer-link" href="' . $home_url . '" style="color:' . esc_attr( $palette['footer_link'] ) . ';font-weight:600;text-decoration:none;">drywalltoolbox.com</a>
 								<span class="dtb-footer-sep" style="color:' . esc_attr( $palette['footer_sep'] ) . ';">&nbsp;&middot;&nbsp;</span>
-								<a class="dtb-footer-link" href="' . $support_url . '" style="color:' . esc_attr( $palette['footer_link'] ) . ';font-weight:600;">Contact support</a>
+								<a class="dtb-footer-link" href="' . $support_url . '" style="color:' . esc_attr( $palette['footer_link'] ) . ';font-weight:600;text-decoration:none;">Contact support</a>
 							</p>
 						</td>
 					</tr>
