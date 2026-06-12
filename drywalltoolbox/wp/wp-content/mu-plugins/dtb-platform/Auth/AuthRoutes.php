@@ -593,8 +593,44 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
 	$jwt  = dtb_generate_jwt( $user );
 	dtb_set_auth_cookie( $jwt, 7 * DAY_IN_SECONDS );
 
-	// ── Send WordPress new-user notification email ──────────────────────────
-	wp_new_user_notification( $user_id, null, 'user' );
+	// ── Send professional welcome email ──────────────────────────────────────
+	$site_name    = get_bloginfo( 'name' ) ?: 'Drywall Toolbox';
+	$dashboard_url = home_url( '/dashboard' );
+	$shop_url      = home_url( '/shop' );
+	$support_url   = home_url( '/contact' );
+
+	$subject = sprintf( '[%s] Welcome! Your Account is Ready', $site_name );
+
+	$message  = sprintf( "Hi %s,\r\n\r\n", $display_name ?: $user->user_login );
+	$message .= "Welcome to Drywall Toolbox! Your account has been created successfully.\r\n\r\n";
+	$message .= "You're already logged in and ready to start shopping. Visit your account dashboard to:\r\n\r\n";
+	$message .= "• View and track your orders\r\n";
+	$message .= "• Manage your addresses and payment methods\r\n";
+	$message .= "• Update your account settings\r\n";
+	$message .= "• Access exclusive rewards and offers\r\n\r\n";
+	$message .= "Get Started:\r\n";
+	$message .= "Dashboard: " . $dashboard_url . "\r\n";
+	$message .= "Shop: " . $shop_url . "\r\n\r\n";
+	$message .= "If you ever need to reset your password, you can do so from the login page.\r\n\r\n";
+	$message .= "Need help? Contact us: " . $support_url . "\r\n\r\n";
+	$message .= '— The ' . $site_name . ' Team';
+
+	if ( function_exists( 'dtb_send_email' ) ) {
+		dtb_send_email(
+			[
+				'to'           => (string) $user->user_email,
+				'subject'      => $subject,
+				'message'      => $message,
+				'content_type' => 'text/plain',
+				'context'      => [
+					'module' => 'dtb-platform-auth',
+					'event'  => 'new-user-welcome',
+				],
+			]
+		);
+	} else {
+		wp_mail( $user->user_email, $subject, $message );
+	}
 
 	$response = new WP_REST_Response( [
 		'success' => true,
