@@ -601,7 +601,7 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
 
 	$subject = sprintf( '[%s] Welcome! Your Account is Ready', $site_name );
 
-	$message  = sprintf( "Hi %s,\r\n\r\n", $display_name ?: $user->user_login );
+	$message  = sprintf( "Hi %s,\r\n\r\n", $display_name );
 	$message .= "Welcome to Drywall Toolbox! Your account has been created successfully.\r\n\r\n";
 	$message .= "You're already logged in and ready to start shopping. Visit your account dashboard to:\r\n\r\n";
 	$message .= "• View and track your orders\r\n";
