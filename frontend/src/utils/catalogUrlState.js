@@ -148,10 +148,9 @@ export function parseCatalogQuery(searchParams, pathParams = {}) {
     }
   }
 
-  const pathDisplayCategory = pathParams.categorySlug && !isAllProductsCategorySlug(pathParams.categorySlug)
+  const rawDisplayCategory = pathParams.categorySlug
     ? pathParams.categorySlug
-    : '';
-  const rawDisplayCategory = pathDisplayCategory || searchParams.get('display_category') || '';
+    : (searchParams.get('display_category') || '');
 
   const search = searchParams.get('search')
     ? decodeURIComponent(searchParams.get('search'))
@@ -161,9 +160,9 @@ export function parseCatalogQuery(searchParams, pathParams = {}) {
   // them together which always produces zero results.  If both are present in
   // the URL (e.g. from a stale/shared link), search takes priority and the
   // display_category is silently cleared so the query makes sense.
-  // The synthetic All Products category is a brand-wide view, not a real
-  // display-category constraint, so it must never be serialized into the query.
-  const displayCategory = search || isAllProductsCategorySlug(rawDisplayCategory) ? '' : rawDisplayCategory;
+  // The synthetic All Products slug is preserved here as view state so the page
+  // can still render the correct heading; lower data layers strip it from API filters.
+  const displayCategory = search ? '' : rawDisplayCategory;
 
   return {
     brands,
