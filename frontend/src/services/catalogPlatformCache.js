@@ -1,5 +1,5 @@
 import { apiClient } from '../api/client.js';
-import { brandToSlug, parseCatalogQuery } from '../utils/catalogUrlState.js';
+import { brandToSlug, isAllProductsCategorySlug, parseCatalogQuery } from '../utils/catalogUrlState.js';
 
 const FRESH_CACHE_TTL = 5 * 60 * 1000;
 const STALE_CACHE_TTL = 24 * 60 * 60 * 1000;
@@ -111,7 +111,9 @@ export function normalizeCatalogScope(scope = {}) {
 
   if (scope.brand) normalized.brand = String(scope.brand);
   if (scope.category) normalized.category = String(scope.category);
-  if (scope.displayCategory) normalized.display_category = String(scope.displayCategory);
+  if (scope.displayCategory && !isAllProductsCategorySlug(scope.displayCategory)) {
+    normalized.display_category = String(scope.displayCategory);
+  }
   if (scope.productKind) normalized.product_kind = String(scope.productKind);
   if (scope.isParts !== undefined && scope.isParts !== null && scope.isParts !== '') {
     normalized.is_parts = String(scope.isParts);
@@ -162,7 +164,9 @@ export function buildCatalogProductParams(query = {}) {
     params.brand = brandToSlug(query.brands[0]);
   }
   if (query.category) params.category = query.category;
-  if (!query.search && query.displayCategory) params.display_category = query.displayCategory;
+  if (!query.search && query.displayCategory && !isAllProductsCategorySlug(query.displayCategory)) {
+    params.display_category = query.displayCategory;
+  }
   if (query.toolFamily) params.tool_family = query.toolFamily;
   if (query.productKind) params.product_kind = query.productKind;
   if (query.builderSlot) params.builder_slot = query.builderSlot;
@@ -264,11 +268,11 @@ export function fetchCatalogProductSnapshot(query = {}) {
   return snapshotInflight.get(key);
 }
 
-export function fetchCatalogProducts(query = {}, options = {}) {
+export function fetchCatalogProducts(query = {}) {
   const params = buildCatalogProductParams(query);
   const key = sortedKey(params);
   const cached = getCacheEntry(productCache, key, PRODUCT_STORAGE_PREFIX);
-  if (!options.forceNetwork && cached?.data) return Promise.resolve(cached.data);
+  if (cached?.data) return Promise.resolve(cached.data);
 
   if (!productInflight.has(key)) {
     productInflight.set(
@@ -284,36 +288,8 @@ export function fetchCatalogProducts(query = {}, options = {}) {
   return productInflight.get(key);
 }
 
-export function invalidateCatalogPlatformCache() {
-  productCache.clear();
-  productInflight.clear();
-  facetsCache.clear();
-  facetsInflight.clear();
-  snapshotInflight.clear();
-}
-
-export function prewarmCatalogPlatformForCurrentRoute() {
-  if (typeof window === 'undefined') return;
-
-  const pathname = window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') || '/';
-  if (!pathname.startsWith('/products') && !pathname.startsWith('/parts')) return;
-
-  const pathParts = pathname.split('/').filter(Boolean);
-  const isParts = pathname.startsWith('/parts') ? 1 : 0;
-  const pathParams = {};
-
-  if (pathParts[0] === 'products' && pathParts[1] === 'brands' && pathParts[2]) {
-    pathParams.brandSlug = pathParts[2];
-    if (pathParts[3] === 'categories' && pathParts[4]) {
-      pathParams.categorySlug = pathParts[4];
-    }
-  }
-
-  const query = parseCatalogQuery(new URLSearchParams(window.location.search), pathParams);
-  const productQuery = { ...query, isParts };
-  const facetScope = { isParts, brand: query.brands?.[0] || '' };
-
-  fetchCatalogProductSnapshot(productQuery).catch(() => {});
-  fetchCatalogFacets(facetScope).catch(() => {});
-  fetchCatalogProducts(productQuery, { forceNetwork: true }).catch(() => {});
+export function primeCatalogFromLocation(search = '', pathParams = {}) {
+  const query = parseCatalogQuery(new URLSearchParams(search), pathParams);
+  fetchCatalogProductSnapshot(query);
+  fetchCatalogProducts(query).catch(() => {});
 }
