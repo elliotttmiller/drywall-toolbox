@@ -268,28 +268,35 @@ export function fetchCatalogProductSnapshot(query = {}) {
   return snapshotInflight.get(key);
 }
 
-export function fetchCatalogProducts(query = {}) {
+export function fetchCatalogProducts(query = {}, options = {}) {
+  const forceNetwork = Boolean(options?.forceNetwork);
   const params = buildCatalogProductParams(query);
   const key = sortedKey(params);
-  const cached = getCacheEntry(productCache, key, PRODUCT_STORAGE_PREFIX);
-  if (cached?.data) return Promise.resolve(cached.data);
 
-  if (!productInflight.has(key)) {
-    productInflight.set(
-      key,
-      apiClient(buildCatalogProductsUrl(query))
-        .then((data) => setCacheEntry(productCache, key, PRODUCT_STORAGE_PREFIX, data))
-        .finally(() => {
-          productInflight.delete(key);
-        }),
-    );
+  if (!forceNetwork) {
+    const cached = getCacheEntry(productCache, key, PRODUCT_STORAGE_PREFIX);
+    if (cached?.data) return Promise.resolve(cached.data);
+
+    if (!productInflight.has(key)) {
+      productInflight.set(
+        key,
+        apiClient(buildCatalogProductsUrl(query))
+          .then((data) => setCacheEntry(productCache, key, PRODUCT_STORAGE_PREFIX, data))
+          .finally(() => {
+            productInflight.delete(key);
+          }),
+      );
+    }
+
+    return productInflight.get(key);
   }
 
-  return productInflight.get(key);
+  return apiClient(buildCatalogProductsUrl(query))
+    .then((data) => setCacheEntry(productCache, key, PRODUCT_STORAGE_PREFIX, data));
 }
 
 export function primeCatalogFromLocation(search = '', pathParams = {}) {
   const query = parseCatalogQuery(new URLSearchParams(search), pathParams);
-  fetchCatalogProductSnapshot(query);
-  fetchCatalogProducts(query).catch(() => {});
+  fetchCatalogProductSnapshot(query).catch(() => {});
+  fetchCatalogProducts(query, { forceNetwork: true }).catch(() => {});
 }
