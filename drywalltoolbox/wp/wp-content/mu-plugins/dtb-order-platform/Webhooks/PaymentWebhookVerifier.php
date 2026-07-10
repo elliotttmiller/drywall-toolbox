@@ -34,13 +34,18 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 	 *
 	 * Filter callbacks must return true only after successful verification, or
 	 * return a WP_Error when verification cannot be completed or fails.
+	 *
+	 * @param true|WP_Error    $result     Default verification result.
+	 * @param string           $raw_body   Unmodified webhook request body.
+	 * @param WP_REST_Request  $request    Webhook request, including headers.
+	 * @param string           $webhook_id Configured PayPal webhook ID.
 	 */
 	$result = apply_filters(
 		'dtb_payment_webhook_verify_paypal',
 		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'PayPal webhook verification requires a gateway integration.', [ 'status' => 500 ] ),
 		$raw_body,
 		$request,
-		(string) $webhook_id
+		$webhook_id
 	);
 
 	if ( true === $result ) {
