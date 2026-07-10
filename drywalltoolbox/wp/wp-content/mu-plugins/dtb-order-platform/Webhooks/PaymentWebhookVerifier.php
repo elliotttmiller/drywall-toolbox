@@ -42,7 +42,7 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 	 */
 	$result = apply_filters(
 		'dtb_paypal_webhook_verify_signature',
-		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'Register a PayPal webhook verifier via the dtb_paypal_webhook_verify_signature filter.', [ 'status' => 500 ] ),
+		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'Register a PayPal webhook verifier via the dtb_paypal_webhook_verify_signature filter that returns true or a WP_Error.', [ 'status' => 500 ] ),
 		$raw_body,
 		$request,
 		$webhook_id
@@ -55,6 +55,8 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 	if ( is_wp_error( $result ) ) {
 		return $result;
 	}
+
+	dtb_security_log( 'paypal_webhook_verifier_invalid_response', [ 'response_type' => gettype( $result ) ] );
 
 	return new WP_Error( 'dtb_webhook_invalid_paypal_verifier_response', 'PayPal webhook verifier must return true or a WP_Error.', [ 'status' => 500 ] );
 }
