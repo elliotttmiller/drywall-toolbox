@@ -24,11 +24,7 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 		: (string) get_option( 'dtb_paypal_webhook_id', '' );
 
 	if ( '' === $webhook_id ) {
-		if ( ! dtb_is_production() ) {
-			return true;
-		}
-
-		return new WP_Error( 'dtb_webhook_no_paypal_webhook_id', 'PayPal webhook ID not configured.', [ 'status' => 503 ] );
+		return new WP_Error( 'dtb_webhook_no_paypal_webhook_id', 'PayPal webhook ID not configured.', [ 'status' => 500 ] );
 	}
 
 	/**
@@ -38,7 +34,7 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 	 */
 	$result = apply_filters(
 		'dtb_payment_webhook_verify_paypal',
-		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'PayPal webhook verification is unavailable.', [ 'status' => 503 ] ),
+		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'PayPal webhook verification requires a gateway integration.', [ 'status' => 500 ] ),
 		$raw_body,
 		$request,
 		(string) $webhook_id
