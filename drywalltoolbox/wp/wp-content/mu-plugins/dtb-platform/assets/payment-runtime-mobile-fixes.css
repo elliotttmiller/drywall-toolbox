@@ -95,14 +95,14 @@
 	}
 
 	.dtb-payment-runtime .dtb-payment-shell {
-		padding: 14px 12px calc(22px + env(safe-area-inset-bottom)) !important;
+		padding: 12px 8px calc(22px + env(safe-area-inset-bottom)) !important;
 	}
 
 	.dtb-payment-runtime .dtb-payment-card,
 	.dtb-payment-runtime form#order_review {
-		max-width: 430px !important;
 		width: 100% !important;
-		margin-inline: auto !important;
+		max-width: none !important;
+		margin-inline: 0 !important;
 	}
 
 	.dtb-payment-runtime .dtb-payment-intro {
@@ -121,8 +121,22 @@
 
 	.dtb-payment-runtime .dtb-order-summary-card {
 		border-color: #e2e8f0 !important;
-		border-radius: 18px !important;
-		box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08) !important;
+		border-radius: 16px !important;
+		box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07) !important;
+	}
+
+	/* Express checkout top on mobile: full-width, side-by-side buttons */
+	.dtb-payment-runtime .dtb-express-checkout-top {
+		margin-bottom: 14px !important;
+	}
+
+	.dtb-payment-runtime .dtb-express-buttons {
+		gap: 8px !important;
+	}
+
+	.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved > label {
+		min-height: 48px !important;
+		border-radius: 11px !important;
 	}
 
 	.dtb-payment-runtime #payment,
@@ -132,7 +146,7 @@
 		max-width: none !important;
 		position: relative !important;
 		overflow: visible !important;
-		margin: 10px -12px 0 !important;
+		margin: 10px -8px 0 !important;
 		border: 0 !important;
 		border-radius: 26px 26px 0 0 !important;
 		background: #fff !important;

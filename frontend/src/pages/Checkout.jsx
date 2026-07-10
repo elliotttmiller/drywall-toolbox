@@ -1269,10 +1269,6 @@ export default function Checkout() {
           <div className="dtb-co-mobile-cta__logos">
             <PaymentMethodLogos compact />
           </div>
-          <InlineSubmitStatus status={submitStatus} />
-          <p className="dtb-co-mobile-cta__note">
-            Encrypted checkout · Secure card processing · Order confirmation by email
-          </p>
         </div>
       </div>
 

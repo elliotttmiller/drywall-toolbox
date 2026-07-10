@@ -614,18 +614,9 @@
 
       var totalCell = row.querySelector('td.product-total');
       if (totalCell && item.line_total_html) totalCell.innerHTML = item.line_total_html;
-
-      var quantityCell = quantityTargetForRow(row);
-      if (quantityCell) {
-        quantityCell.dataset.dtbOrderQtyReady = '';
-        quantityCell.innerHTML = String(item.quantity || 1);
-      }
-
-      renderOrderQuantityControls(row, true);
     });
 
     updateOrderTotalRows(data.totals);
-    enhanceOrderQuantityControls();
   }
 
   function updateOrderItemQuantity(row, nextQuantity) {
@@ -729,8 +720,66 @@
     Array.prototype.forEach.call(table.querySelectorAll('tfoot tr'), function (row) {
       row.classList.add('dtb-order-total-row');
     });
+  }
 
-    enhanceOrderQuantityControls();
+  function mountExpressCheckoutTop() {
+    var methods = document.querySelector('#payment ul.payment_methods');
+    if (!methods) return;
+
+    // Collect Apple Pay and Google Pay rows that are still in the payment list
+    var expressRows = [];
+    Array.prototype.forEach.call(methods.querySelectorAll('li'), function (row) {
+      var key = walletKeyFor(row);
+      if (key === 'apple-pay' || key === 'google-pay') {
+        expressRows.push({ row: row, key: key });
+      }
+    });
+
+    if (expressRows.length === 0) return;
+
+    // Cache the form — it is stable for the lifetime of this page.
+    var form = document.querySelector('form#order_review');
+    if (!form) return;
+
+    // Create or reuse the express checkout top section (may be a pre-rendered placeholder div)
+    var topSection = form.querySelector('.dtb-express-checkout-top');
+    if (!topSection) {
+      topSection = document.createElement('section');
+      topSection.className = 'dtb-express-checkout-top';
+      // Insert as the very first child of the form
+      form.insertBefore(topSection, form.firstChild);
+    }
+
+    // Populate the section if it hasn't been set up yet
+    if (!topSection.querySelector('.dtb-express-checkout-top__label')) {
+      topSection.setAttribute('aria-label', 'Express checkout');
+      topSection.removeAttribute('aria-hidden');
+
+      var headerEl = document.createElement('p');
+      headerEl.className = 'dtb-express-checkout-top__label';
+      headerEl.setAttribute('aria-hidden', 'true');
+      headerEl.textContent = 'Express Checkout';
+      topSection.insertBefore(headerEl, topSection.firstChild);
+
+      var buttonsUl = document.createElement('ul');
+      buttonsUl.className = 'dtb-express-buttons';
+      topSection.appendChild(buttonsUl);
+    }
+
+    // Reveal the section now that it has content
+    topSection.style.display = '';
+
+    var expressButtonsUl = topSection.querySelector('.dtb-express-buttons');
+    if (!expressButtonsUl) return;
+
+    // Move each express row into the top section
+    expressRows.forEach(function (item) {
+      var expressRow = item.row;
+      // Skip if already in the top section
+      if (expressRow.closest('.dtb-express-checkout-top')) return;
+      expressRow.classList.add('dtb-express-moved', 'dtb-express-moved--' + item.key);
+      expressButtonsUl.appendChild(expressRow);
+    });
   }
 
   function dedupeWalletButtons() {
@@ -779,6 +828,7 @@
 
   function enhancePaymentRuntime() {
     normalizePaymentLayout();
+    mountExpressCheckoutTop();
     hideOrderSummaryPaymentMethodRows();
     normalizePaymentMethodRows();
     hideDuplicateCardMethodRows();
@@ -844,11 +894,11 @@
       observer._dtbTimer = window.setTimeout(enhancePaymentRuntime, 220);
     });
 
-    var paymentRoot = document.querySelector('#payment ul.payment_methods, form#order_review');
+    var paymentRoot = document.querySelector('form#order_review');
     if (paymentRoot) {
       observer.observe(paymentRoot, {
         childList: true,
-        subtree: false
+        subtree: true
       });
     }
   }

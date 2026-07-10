@@ -29,11 +29,6 @@ body.dtb-payment-runtime {
 	width: min(1120px, 100%);
 }
 
-.dtb-payment-runtime .dtb-payment-intro {
-	max-width: 620px;
-	margin-bottom: 18px;
-}
-
 .dtb-payment-runtime .dtb-payment-title {
 	margin: 0;
 	color: #071126;
@@ -48,6 +43,96 @@ body.dtb-payment-runtime {
 	color: #526173;
 	font-size: 14px;
 	line-height: 1.45;
+}
+
+/* ── Express Checkout Top Section ── */
+
+.dtb-payment-runtime .dtb-express-checkout-top {
+	width: 100%;
+	margin: 0 0 20px;
+}
+
+.dtb-payment-runtime .dtb-express-checkout-top__label {
+	margin: 0 0 10px;
+	color: #6b7280;
+	font-size: 11px;
+	font-weight: 750;
+	letter-spacing: 0.06em;
+	line-height: 1.2;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.dtb-payment-runtime .dtb-express-buttons {
+	display: flex;
+	gap: 10px;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved > input[type="radio"] {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved > label {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100% !important;
+	min-height: 50px !important;
+	border: 1px solid rgba(15, 23, 42, 0.12) !important;
+	border-radius: 12px !important;
+	background: #050505 !important;
+	padding: 10px 16px !important;
+	color: #ffffff !important;
+	cursor: pointer !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+	transition: opacity 120ms ease !important;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved > label:hover {
+	opacity: 0.88 !important;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved > label:active {
+	opacity: 0.72 !important;
+	transform: translateY(1px) !important;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved .dtb-payment-method-radio,
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved .dtb-payment-provider-text,
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved label > span:not(:has(img)):not(:has(svg)) {
+	display: none !important;
+}
+
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved .dtb-payment-provider-label--logo-only img,
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved .dtb-payment-provider-label--logo-only svg,
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved label img,
+.dtb-payment-runtime .dtb-express-buttons .dtb-express-moved label svg {
+	display: block !important;
+	max-width: 100px !important;
+	max-height: 26px !important;
+	object-fit: contain !important;
+	filter: brightness(0) invert(1) !important;
+}
+
+/* Hide quantity stepper */
+.dtb-payment-runtime .dtb-order-qty-row,
+.dtb-payment-runtime td.dtb-order-product-quantity-cell,
+.dtb-payment-runtime td.product-quantity {
+	display: none !important;
 }
 
 .dtb-payment-runtime form#order_review {
@@ -359,6 +444,12 @@ body.dtb-payment-runtime {
 		column-gap: 56px;
 	}
 
+	.dtb-payment-runtime .dtb-express-checkout-top {
+		order: 0;
+		grid-column: 1 / -1;
+		margin-bottom: 24px;
+	}
+
 	.dtb-payment-runtime #payment,
 	.dtb-payment-runtime .woocommerce-checkout-payment {
 		order: 1;
@@ -400,12 +491,9 @@ body.dtb-payment-runtime {
 	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		grid-template-areas:
-			"product total"
-			"qty total";
+		grid-template-areas: "product total";
 		align-items: start;
 		column-gap: 14px;
-		row-gap: 8px;
 		padding: 0;
 		background: transparent;
 	}
@@ -421,13 +509,13 @@ body.dtb-payment-runtime {
 		min-width: 0;
 	}
 
-	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row td:nth-child(2) {
-		grid-area: qty;
-		width: auto;
-		text-align: left;
+	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row td:nth-child(2),
+	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row td.product-quantity {
+		display: none !important;
 	}
 
-	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row td:nth-child(3) {
+	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row td:nth-child(3),
+	.dtb-payment-runtime table.shop_table tbody tr.dtb-order-product-row td.product-total {
 		grid-area: total;
 		width: auto;
 		min-width: 88px;
