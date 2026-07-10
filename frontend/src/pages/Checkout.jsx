@@ -184,10 +184,10 @@ function normalizeWooPaymentUrl(value) {
   try {
     const url = new URL(value.trim(), fallbackBase);
 
-    if (/^\/checkout\/order-pay(?:\/|$)/.test(url.pathname)) {
-      url.pathname = `/wp${url.pathname}`;
+    if (/^\/wp\/checkout\/order-pay(?:\/|$)/.test(url.pathname)) {
+      url.pathname = url.pathname.replace(/^\/wp/, '');
     } else if (/^\/order-pay(?:\/|$)/.test(url.pathname)) {
-      url.pathname = `/wp/checkout${url.pathname}`;
+      url.pathname = `/checkout${url.pathname}`;
     }
 
     return url.toString();
@@ -205,7 +205,7 @@ function resolvePaymentUrl(orderPayload) {
   const key = order.order_key || order.key || order.orderKey;
   const base = getPaymentBaseUrl();
   if (!id || !key || !base) return '';
-  return normalizeWooPaymentUrl(`${base}/wp/checkout/order-pay/${encodeURIComponent(id)}/?pay_for_order=true&key=${encodeURIComponent(key)}`);
+  return normalizeWooPaymentUrl(`${base}/checkout/order-pay/${encodeURIComponent(id)}/?pay_for_order=true&key=${encodeURIComponent(key)}`);
 }
 
 function resolveOrderPayload(response) {

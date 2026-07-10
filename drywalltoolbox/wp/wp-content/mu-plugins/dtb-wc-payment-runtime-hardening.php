@@ -355,10 +355,12 @@ add_filter(
 		}
 
 		$path = (string) ( $parts['path'] ?? '' );
-		if ( preg_match( '#^/checkout/order-pay(?:/|$)#', $path ) ) {
-			$path = '/wp' . $path;
+		if ( preg_match( '#^/wp/checkout/order-pay(?:/|$)#', $path ) ) {
+			$path = substr( $path, 3 );
+		} elseif ( preg_match( '#^/wp/order-pay(?:/|$)#', $path ) ) {
+			$path = '/checkout' . substr( $path, 3 );
 		} elseif ( preg_match( '#^/order-pay(?:/|$)#', $path ) ) {
-			$path = '/wp/checkout' . $path;
+			$path = '/checkout' . $path;
 		} else {
 			return $url;
 		}
