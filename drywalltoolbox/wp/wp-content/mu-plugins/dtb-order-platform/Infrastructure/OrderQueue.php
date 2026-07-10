@@ -69,6 +69,20 @@ function dtb_order_job_result_is_locked( array $result ): bool {
 	return 'locked' === dtb_order_job_result_status( $result );
 }
 
+function dtb_order_claim_notification_send( int $order_id, string $template ): bool {
+	if ( $order_id <= 0 || '' === $template ) {
+		return false;
+	}
+
+	return add_option( 'dtb_order_notification_' . md5( $order_id . ':' . $template ), (string) time(), '', 'no' );
+}
+
+function dtb_order_release_notification_send( int $order_id, string $template ): void {
+	if ( $order_id > 0 && '' !== $template ) {
+		delete_option( 'dtb_order_notification_' . md5( $order_id . ':' . $template ) );
+	}
+}
+
 function dtb_order_job_exception_retryable( Throwable $e ): bool {
 	if ( method_exists( $e, 'is_retryable' ) ) {
 		return (bool) $e->is_retryable();
@@ -311,6 +325,9 @@ function dtb_order_job_send_notification( int $order_id, array $args = [] ): voi
 	if ( ! $order ) {
 		return;
 	}
+	if ( ! dtb_order_claim_notification_send( $order_id, $template ) ) {
+		return;
+	}
 	try {
 		$sent         = false;
 		$wc_email_map = [ 'order-confirmation' => 'WC_Email_Customer_Processing_Order', 'order-shipped' => 'WC_Email_Customer_Completed_Order', 'order-cancelled' => 'WC_Email_Customer_Note' ];
@@ -329,6 +346,7 @@ function dtb_order_job_send_notification( int $order_id, array $args = [] ): voi
 		dtb_order_append_event( $order_id, $notification_type, [ 'source' => 'cron', 'actor_type' => 'system', 'visibility' => 'customer', 'payload' => [ 'template' => $template, 'sent' => $sent ] ] );
 		dtb_order_update_integration_state( $order_id, 'notifications', [ 'template' => $template, 'sent' => $sent ] );
 	} catch ( Throwable $e ) {
+		dtb_order_release_notification_send( $order_id, $template );
 		error_log( "[DTB Orders] Notification '{$template}' failed for order {$order_id}: " . $e->getMessage() );
 		dtb_order_retry_job( 'dtb_order_send_notification', $order_id, $args );
 	}

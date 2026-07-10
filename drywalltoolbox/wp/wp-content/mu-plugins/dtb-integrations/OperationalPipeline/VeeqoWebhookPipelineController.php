@@ -244,9 +244,6 @@ if ( ! function_exists( 'dtb_operational_pipeline_veeqo_webhook_order' ) ) {
 
 		if ( function_exists( 'dtb_order_enqueue_job' ) ) {
 			dtb_order_enqueue_job( 'dtb_order_refresh_tracking_projection', $order_id );
-			if ( '' !== $tracking['tracking_number'] ) {
-				dtb_order_enqueue_job( 'dtb_order_send_notification', $order_id, [ 'template' => 'order-shipped', 'trigger' => 'veeqo_webhook' ] );
-			}
 		}
 
 		if ( function_exists( 'dtb_veeqo_log_sync_timestamp' ) ) {
