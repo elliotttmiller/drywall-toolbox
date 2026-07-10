@@ -74,12 +74,12 @@ function dtb_order_claim_notification_send( int $order_id, string $template ): b
 		return false;
 	}
 
-	return add_option( 'dtb_order_notification_' . md5( $order_id . ':' . $template ), (string) time(), '', 'no' );
+	return add_option( 'dtb_order_notification_' . hash( 'sha256', $order_id . ':' . $template ), (string) time(), '', 'no' );
 }
 
 function dtb_order_release_notification_send( int $order_id, string $template ): void {
 	if ( $order_id > 0 && '' !== $template ) {
-		delete_option( 'dtb_order_notification_' . md5( $order_id . ':' . $template ) );
+		delete_option( 'dtb_order_notification_' . hash( 'sha256', $order_id . ':' . $template ) );
 	}
 }
 
@@ -326,6 +326,7 @@ function dtb_order_job_send_notification( int $order_id, array $args = [] ): voi
 		return;
 	}
 	if ( ! dtb_order_claim_notification_send( $order_id, $template ) ) {
+		error_log( "[DTB Orders] Skipping duplicate notification '{$template}' for order {$order_id}." );
 		return;
 	}
 	try {

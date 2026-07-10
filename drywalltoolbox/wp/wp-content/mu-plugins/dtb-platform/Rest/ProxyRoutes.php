@@ -451,8 +451,9 @@ function dtb_checkout_find_order_by_idempotency_key( string $idempotency_key ): 
 		'order'      => 'DESC',
 		'meta_query' => [
 			[
-				'key'   => '_dtb_checkout_idempotency_key',
-				'value' => $idempotency_key,
+				'key'     => '_dtb_checkout_idempotency_key',
+				'value'   => $idempotency_key,
+				'compare' => '=',
 			],
 		],
 	] );
@@ -476,14 +477,25 @@ function dtb_checkout_acquire_idempotency_lock( string $idempotency_key ): bool 
 		return false;
 	}
 
-	delete_option( $option_name );
-	return add_option( $option_name, (string) time(), '', 'no' );
+	global $wpdb;
+	$claimed = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", (string) time(), $option_name, (string) $locked_at ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	return 1 === $claimed;
 }
 
 function dtb_checkout_release_idempotency_lock( string $idempotency_key ): void {
 	if ( '' !== $idempotency_key ) {
 		delete_option( 'dtb_checkout_lock_' . md5( $idempotency_key ) );
 	}
+}
+
+function dtb_checkout_existing_order_response( string $idempotency_key ): ?array {
+	$existing_order = dtb_checkout_find_order_by_idempotency_key( $idempotency_key );
+	if ( ! $existing_order instanceof WC_Order ) {
+		return null;
+	}
+
+	set_transient( 'dtb_checkout_idem_' . md5( $idempotency_key ), (int) $existing_order->get_id(), DAY_IN_SECONDS );
+	return dtb_checkout_order_response( $existing_order, true );
 }
 
 function dtb_checkout_line_signature_from_context( array $context ): array {
@@ -1205,27 +1217,24 @@ function dtb_checkout_woo_native_finalize( array $context, WP_REST_Request $requ
 		}
 	}
 
-	$existing_order = dtb_checkout_find_order_by_idempotency_key( $idempotency_key );
-	if ( $existing_order instanceof WC_Order ) {
-		set_transient( 'dtb_checkout_idem_' . md5( $idempotency_key ), (int) $existing_order->get_id(), DAY_IN_SECONDS );
-		return dtb_checkout_order_response( $existing_order, true );
+	$existing_response = dtb_checkout_existing_order_response( $idempotency_key );
+	if ( null !== $existing_response ) {
+		return $existing_response;
 	}
 
 	if ( ! dtb_checkout_acquire_idempotency_lock( $idempotency_key ) ) {
-		$existing_order = dtb_checkout_find_order_by_idempotency_key( $idempotency_key );
-		if ( $existing_order instanceof WC_Order ) {
-			set_transient( 'dtb_checkout_idem_' . md5( $idempotency_key ), (int) $existing_order->get_id(), DAY_IN_SECONDS );
-			return dtb_checkout_order_response( $existing_order, true );
+		$existing_response = dtb_checkout_existing_order_response( $idempotency_key );
+		if ( null !== $existing_response ) {
+			return $existing_response;
 		}
 
 		return new WP_Error( 'dtb_checkout_in_progress', 'Checkout is already being finalized. Please retry shortly.', [ 'status' => 409 ] );
 	}
 
 	try {
-		$existing_order = dtb_checkout_find_order_by_idempotency_key( $idempotency_key );
-		if ( $existing_order instanceof WC_Order ) {
-			set_transient( 'dtb_checkout_idem_' . md5( $idempotency_key ), (int) $existing_order->get_id(), DAY_IN_SECONDS );
-			return dtb_checkout_order_response( $existing_order, true );
+		$existing_response = dtb_checkout_existing_order_response( $idempotency_key );
+		if ( null !== $existing_response ) {
+			return $existing_response;
 		}
 
 	$checkout_fingerprint = dtb_checkout_build_fingerprint( $context );

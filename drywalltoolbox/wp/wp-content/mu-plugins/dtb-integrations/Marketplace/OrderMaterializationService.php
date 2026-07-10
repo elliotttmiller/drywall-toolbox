@@ -366,7 +366,7 @@ if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 			}
 
 			global $wpdb;
-			$keys = [ '_dtb_marketplace_order_id', '_' . sanitize_key( $channel_key ) . '_order_id', '_' . sanitize_key( $channel_key ) . '_order_id' ];
+			$keys = [ '_dtb_marketplace_order_id', '_' . sanitize_key( $channel_key ) . '_order_id' ];
 			foreach ( array_unique( $keys ) as $key ) {
 				$found = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s LIMIT 1", $key, $external_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				if ( $found ) {
@@ -398,8 +398,9 @@ if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 				return false;
 			}
 
-			delete_option( $option_name );
-			return add_option( $option_name, (string) time(), '', 'no' );
+			global $wpdb;
+			$claimed = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", (string) time(), $option_name, (string) $locked_at ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			return 1 === $claimed;
 		}
 
 		private static function release_lock( string $lock_key ): void {
