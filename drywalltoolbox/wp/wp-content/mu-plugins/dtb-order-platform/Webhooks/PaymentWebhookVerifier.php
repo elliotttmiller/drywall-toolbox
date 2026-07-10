@@ -42,7 +42,7 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 	 */
 	$result = apply_filters(
 		'dtb_paypal_webhook_verify_signature',
-		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'PayPal webhook verification requires a gateway integration.', [ 'status' => 500 ] ),
+		new WP_Error( 'dtb_webhook_paypal_verifier_unavailable', 'Register a PayPal webhook verifier via the dtb_paypal_webhook_verify_signature filter.', [ 'status' => 500 ] ),
 		$raw_body,
 		$request,
 		$webhook_id
