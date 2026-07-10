@@ -31,6 +31,9 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 	 * PayPal webhook signatures require server-side verification with PayPal.
 	 * A gateway integration must provide that verification through this filter;
 	 * accepting a configured webhook ID alone would allow forged events.
+	 *
+	 * Filter callbacks must return true only after successful verification, or
+	 * return a WP_Error when verification cannot be completed or fails.
 	 */
 	$result = apply_filters(
 		'dtb_payment_webhook_verify_paypal',
