@@ -358,7 +358,7 @@ add_filter(
 		if ( preg_match( '#^/wp/checkout/order-pay(?:/|$)#', $path ) ) {
 			$path = (string) preg_replace( '#^/wp#', '', $path );
 		} elseif ( preg_match( '#^/wp/order-pay(?:/|$)#', $path ) ) {
-			$path = '/checkout' . (string) preg_replace( '#^/wp#', '', $path );
+			$path = (string) preg_replace( '#^/wp/order-pay#', '/checkout/order-pay', $path );
 		} elseif ( preg_match( '#^/order-pay(?:/|$)#', $path ) ) {
 			$path = '/checkout' . $path;
 		} else {
