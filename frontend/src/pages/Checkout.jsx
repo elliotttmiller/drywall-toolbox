@@ -18,10 +18,7 @@ import {
   CreditCard,
   ExternalLink,
   Loader2,
-  Lock,
-  ShoppingBag,
   ShoppingCart,
-  Tag,
   Truck,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
@@ -320,7 +317,6 @@ function MobileSummaryStrip({ cartItems, subtotal, shipping, total, taxAmount, t
         aria-controls="dtb-co-msummary-body"
       >
         <span className="dtb-co-msummary__toggle-left">
-          <ShoppingBag size={15} style={{ color: 'var(--co-primary)' }} />
           Order Summary
           <span className="dtb-co-msummary__count">({totalQty} item{totalQty === 1 ? '' : 's'})</span>
         </span>
@@ -767,12 +763,10 @@ export default function Checkout() {
       {/* Trust bar */}
       <div className="dtb-co-trustbar">
         <span className="dtb-co-trustbar__item">
-          <Truck size={13} />
           Free shipping on orders ${FREE_SHIP_THRESHOLD}+
         </span>
         <span className="dtb-co-trustbar__sep" aria-hidden="true">|</span>
         <span className="dtb-co-trustbar__item">
-          <Lock size={12} />
           Secure, encrypted checkout
         </span>
         <span className="dtb-co-trustbar__sep" aria-hidden="true">|</span>
@@ -795,10 +789,7 @@ export default function Checkout() {
           {!isAuthenticated && (
             <Link to="/login" className="dtb-co-header__signin">Sign in</Link>
           )}
-          <span className="dtb-co-header__secure">
-            <Lock size={11} />
-            Secure
-          </span>
+          <span className="dtb-co-header__secure">Secure checkout</span>
         </div>
       </header>
 
@@ -986,9 +977,7 @@ export default function Checkout() {
 
               {subtotal > 0 && subtotal < FREE_SHIP_THRESHOLD && (
                 <div className="dtb-co-ship-nudge">
-                  <Truck size={13} style={{ flexShrink: 0 }} />
-                  Spend <strong style={{ marginLeft: 4 }}>${(FREE_SHIP_THRESHOLD - subtotal).toFixed(2)}</strong>
-                  &nbsp;more for free shipping
+                  Spend <strong>${(FREE_SHIP_THRESHOLD - subtotal).toFixed(2)}</strong> more for free shipping
                 </div>
               )}
             </Motion.section>
@@ -1082,7 +1071,6 @@ export default function Checkout() {
                       className="dtb-co-coupon__tag"
                       aria-label={`Remove coupon ${code}`}
                     >
-                      <Tag size={9} />
                       {code} ×
                     </button>
                   ))}
@@ -1197,7 +1185,6 @@ export default function Checkout() {
                     className="dtb-co-coupon__tag"
                     aria-label={`Remove coupon ${code}`}
                   >
-                    <Tag size={9} />
                     {code} ×
                   </button>
                 ))}
@@ -1254,22 +1241,6 @@ export default function Checkout() {
           <div className="dtb-co-payment-section">
             <p className="dtb-co-payment-label">We accept</p>
             <PaymentMethodLogos />
-          </div>
-
-          {/* Trust row */}
-          <div className="dtb-co-trust">
-            <span className="dtb-co-trust__item">
-              <Lock size={13} />
-              Secure checkout
-            </span>
-            <span className="dtb-co-trust__item">
-              <Truck size={13} />
-              Fast shipping
-            </span>
-            <span className="dtb-co-trust__item">
-              <Lock size={12} />
-              Encrypted
-            </span>
           </div>
 
         </aside>
