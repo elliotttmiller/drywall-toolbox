@@ -702,9 +702,9 @@ function dtb_checkout_payment_url( WC_Order $order ): string {
 
 	$path = (string) ( $parts['path'] ?? '' );
 	if ( preg_match( '#^/wp/checkout/order-pay(?:/|$)#', $path ) ) {
-		$path = substr( $path, 3 );
+		$path = (string) preg_replace( '#^/wp#', '', $path );
 	} elseif ( preg_match( '#^/wp/order-pay(?:/|$)#', $path ) ) {
-		$path = '/checkout' . substr( $path, 3 );
+		$path = '/checkout' . (string) preg_replace( '#^/wp#', '', $path );
 	} elseif ( preg_match( '#^/order-pay(?:/|$)#', $path ) ) {
 		$path = '/checkout' . $path;
 	} else {
