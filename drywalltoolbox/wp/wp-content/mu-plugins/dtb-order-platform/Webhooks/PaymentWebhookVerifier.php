@@ -56,7 +56,7 @@ function dtb_payment_webhook_verify_paypal( string $raw_body, WP_REST_Request $r
 		return $result;
 	}
 
-	return new WP_Error( 'dtb_webhook_invalid_paypal_signature', 'PayPal webhook verification failed.', [ 'status' => 401 ] );
+	return new WP_Error( 'dtb_webhook_invalid_paypal_verifier_response', 'PayPal webhook verifier returned an invalid response.', [ 'status' => 500 ] );
 }
 
 function dtb_is_production(): bool {
