@@ -48,10 +48,9 @@ if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 			}
 
 			$lock_key = self::lock_key( $channel_key, $external_id );
-			if ( get_transient( $lock_key ) ) {
+			if ( ! self::acquire_lock( $lock_key ) ) {
 				return [ 'status' => 'locked', 'woo_order_id' => 0, 'message' => 'Marketplace order materialization is already in progress.' ];
 			}
-			set_transient( $lock_key, '1', self::LOCK_TTL );
 
 			try {
 				// Re-check after acquiring lock to avoid duplicate Woo orders under concurrent imports.
@@ -140,7 +139,7 @@ if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 			} catch ( Throwable $e ) {
 				return self::fail( $channel_key, $marketplace_row_id, 'materialization_exception', $e->getMessage(), true );
 			} finally {
-				delete_transient( $lock_key );
+				self::release_lock( $lock_key );
 			}
 		}
 
@@ -347,6 +346,25 @@ if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 		}
 
 		private static function find_existing_woo_order( string $channel_key, string $external_id ): int {
+			if ( function_exists( 'wc_get_orders' ) ) {
+				$keys = [ '_dtb_marketplace_order_id', '_' . sanitize_key( $channel_key ) . '_order_id' ];
+				foreach ( array_unique( $keys ) as $key ) {
+					$orders = wc_get_orders( [
+						'limit'      => 1,
+						'return'     => 'ids',
+						'meta_query' => [
+							[
+								'key'   => $key,
+								'value' => $external_id,
+							],
+						],
+					] );
+					if ( ! empty( $orders[0] ) ) {
+						return absint( $orders[0] );
+					}
+				}
+			}
+
 			global $wpdb;
 			$keys = [ '_dtb_marketplace_order_id', '_' . sanitize_key( $channel_key ) . '_order_id', '_' . sanitize_key( $channel_key ) . '_order_id' ];
 			foreach ( array_unique( $keys ) as $key ) {
@@ -367,6 +385,25 @@ if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 
 		private static function lock_key( string $channel_key, string $external_id ): string {
 			return 'dtb_marketplace_materialize_' . sanitize_key( $channel_key ) . '_' . md5( $external_id );
+		}
+
+		private static function acquire_lock( string $lock_key ): bool {
+			$option_name = $lock_key . '_lock';
+			if ( add_option( $option_name, (string) time(), '', 'no' ) ) {
+				return true;
+			}
+
+			$locked_at = (int) get_option( $option_name, 0 );
+			if ( $locked_at > 0 && ( time() - $locked_at ) < self::LOCK_TTL ) {
+				return false;
+			}
+
+			delete_option( $option_name );
+			return add_option( $option_name, (string) time(), '', 'no' );
+		}
+
+		private static function release_lock( string $lock_key ): void {
+			delete_option( $lock_key . '_lock' );
 		}
 
 		private static function external_order_id( string $channel_key, array $raw_order ): string {
