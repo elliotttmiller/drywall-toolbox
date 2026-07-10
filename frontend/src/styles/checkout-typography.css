@@ -802,12 +802,11 @@
 }
 
 .dtb-co-total-currency {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--co-text-500);
   margin-right: 3px;
   vertical-align: super;
-  font-size: 11px;
 }
 
 /* ─── Sidebar CTA ─────────────────────────────────────────── */

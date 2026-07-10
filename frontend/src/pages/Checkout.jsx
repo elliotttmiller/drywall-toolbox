@@ -19,7 +19,6 @@ import {
   ExternalLink,
   Loader2,
   Lock,
-  ShieldCheck,
   ShoppingBag,
   ShoppingCart,
   Tag,
@@ -1136,15 +1135,6 @@ export default function Checkout() {
                 <ChevronLeft size={14} />
                 Return to cart
               </Link>
-              {/* Desktop submit lives in sidebar; tablet-only submit here */}
-              <button
-                type="button"
-                onClick={handlePlaceOrder}
-                disabled={!canSubmitCheckout || processing}
-                className="dtb-co-btn-primary hidden lg:hidden"
-                style={{ display: 'none' }}
-                aria-hidden="true"
-              />
             </div>
 
           </div>
@@ -1269,7 +1259,7 @@ export default function Checkout() {
           {/* Trust row */}
           <div className="dtb-co-trust">
             <span className="dtb-co-trust__item">
-              <ShieldCheck size={13} />
+              <Lock size={13} />
               Secure checkout
             </span>
             <span className="dtb-co-trust__item">
