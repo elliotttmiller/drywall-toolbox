@@ -722,6 +722,12 @@
     });
   }
 
+  /**
+   * Identifies Apple Pay and Google Pay payment-method rows rendered by WooPayments,
+   * physically moves them into a dedicated "Express Checkout" section as the first
+   * child of form#order_review, and reveals that section. Safe to call multiple times
+   * (idempotent — rows already inside the section are skipped).
+   */
   function mountExpressCheckoutTop() {
     var methods = document.querySelector('#payment ul.payment_methods');
     if (!methods) return;
@@ -737,7 +743,7 @@
 
     if (expressRows.length === 0) return;
 
-    // Cache the form — it is stable for the lifetime of this page.
+    // Locate the form on each call — it is a stable, singleton element.
     var form = document.querySelector('form#order_review');
     if (!form) return;
 
@@ -896,6 +902,10 @@
 
     var paymentRoot = document.querySelector('form#order_review');
     if (paymentRoot) {
+      // subtree:true is required because WooPayments re-injects payment-method <li> rows
+      // at arbitrary depths inside form#order_review (e.g. inside #payment > ul), not
+      // just as direct children. Without deep observation the debounce would miss those
+      // injections and express buttons would never be moved.
       observer.observe(paymentRoot, {
         childList: true,
         subtree: true
