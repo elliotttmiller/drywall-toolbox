@@ -29,7 +29,7 @@ The WooCommerce method ID is `dtb_veeqo_rates`. The shipping-zone bootstrap is v
 
 WooCommerce normally calculates rates from the first zone matching a package. A method configured only in Rest of World or another nonmatching zone is insufficient. The versioned bootstrap repairs existing US-related zones and Rest of World without relying on browser input.
 
-Interactive public quote requests remain read-only. If the active matching zone has no DTB instance, the `woocommerce_package_rates` fallback calculates the same DTB policy rates in memory through `DTB_Shipping_Method::get_rates_for_package()`. It does not add, enable, disable, or reorder shipping-zone methods.
+Interactive public quote requests remain read-only. If the active matching zone has no DTB instance, the `woocommerce_package_rates` fallback calculates the same DTB policy rates in memory through `DTB_Shipping_Method::get_rates_for_package()`. It does not add, enable, disable, or reorder shipping-zone methods. An existing disabled DTB instance is treated as explicit operator intent: no duplicate instance is created and the fallback does not bypass the disabled state.
 
 WooCommerce's `shipping_for_package_*` session cache is invalidated after a destination change so rates are recalculated against the current address instead of a previous package result.
 
@@ -52,7 +52,7 @@ Each public checkout rate contains:
 
 A nonempty selected rate ID must match one of the rates returned by the current authoritative quote. The backend returns `dtb_checkout_shipping_rate_changed` with HTTP 409 when the selection is stale or unavailable; it never silently substitutes another rate.
 
-While a new quote is being calculated, the React checkout invalidates the prior quote. Submission is allowed only when the visible selected rate equals `quote.selected_rate_id`. The exact selected rate is then persisted in the quote/session context and included in the checkout fingerprint.
+While a new quote is being calculated, the React checkout invalidates the prior quote and prior rates. Submission is allowed only when the visible selected rate equals `quote.selected_rate_id`. The exact selected rate is then persisted in the quote/session context and included in the checkout fingerprint.
 
 This preserves checkout idempotency and prevents a visible express or overnight selection from producing an order with the previous/default rate.
 
@@ -68,7 +68,7 @@ After deployment:
 4. Select a nondefault rate and confirm the displayed shipping and total refresh before Place Order becomes usable.
 5. Complete `/checkout/quote -> /session -> /confirm -> /finalize` and verify the WooCommerce order has one shipping line with the selected rate ID and pre-tax cost.
 6. Verify order total equals the final quote within the checkout tolerance and payment handoff is returned.
-7. Confirm a zone missing the persisted DTB method still receives rates without any shipping-zone database mutation during the quote request.
+7. Confirm a zone missing the persisted DTB method still receives rates without any shipping-zone database mutation during the quote request; confirm a deliberately disabled instance remains disabled.
 8. Verify the order continues through the `dtb-orders` queue without duplicate Veeqo, QuickBooks, notification, or tracking side effects.
 
 Rollback consists of reverting the code deployment. Shipping method instances created by the versioned bootstrap are safe to leave in place; removing them during rollback is optional and should be done only through WooCommerce Shipping Zones after confirming another valid method covers each destination.
