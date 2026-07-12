@@ -1,132 +1,186 @@
 # Tech
 
-Last verified against source: 2026-07-11.
+Last verified against source: 2026-07-12.
 
 ## Runtime stack
 
 ### Frontend (`frontend/`)
 
-- React 19 + React Router 7
-- Axios + fetch wrappers for API calls
-- Framer Motion (motion config centralized in `frontend/src/motion/`)
-- React Helmet Async
-- React Markdown + `remark-gfm`
-- DOMPurify
-- Stripe client libs (`@stripe/react-stripe-js`, `@stripe/stripe-js`)
-- `lucide-react` for icons
+- React 19 and React Router 7;
+- Axios and typed-by-contract fetch wrappers;
+- Framer Motion with centralized motion configuration;
+- React Helmet Async;
+- React Markdown, `remark-gfm`, and DOMPurify;
+- Stripe browser libraries for publishable-key/payment UI integration;
+- `lucide-react` icons.
 
 ### Backend (`drywalltoolbox/wp/`)
 
-- WordPress (headless usage) + WooCommerce (WooPayments for checkout)
-- Custom DTB mu-plugin suite in `drywalltoolbox/wp/wp-content/mu-plugins/`
-- Composition root `00-dtb-loader.php` loading 11 module bootstraps
-  (platform, catalog-platform, commerce, order-platform, schematics, media,
-  marketing, repair-service, integrations, support, returns)
-- Headless support themes: `headless-base/` and `drywall-toolbox/`
-- Action Scheduler used for async order/integration jobs (`dtb-orders` group)
+- WordPress in headless usage;
+- WooCommerce and WooPayments;
+- custom DTB must-use plugin suite under `drywalltoolbox/wp/wp-content/mu-plugins/`;
+- composition root `00-dtb-loader.php` loading 11 module bootstraps;
+- Action Scheduler for order, integration, import, and other asynchronous jobs;
+- headless/backend-support themes `headless-base/` and `drywall-toolbox/`.
 
-### Integrations
+### Integration authorities
 
-- Veeqo: inventory authority, fulfillment, labels, shipment/tracking
-  (`dtb-integrations`, inventory boundary in `VeeqoInventoryBoundary.php`)
-- QuickBooks: accounting projection after payment/refund events
-- Order write boundary: `dtb-order-platform/Infrastructure/OrderWriteBoundary.php`
-  blocks raw WC REST order creation, dedupes orders, gates side-effect jobs
-  (see `docs/architecture/order-veeqo-permanent-architecture.md`)
+- WooCommerce: product/customer/order/payment record system;
+- DTB order platform: lifecycle events, idempotency, integration state, write boundary, queue, and customer/operator projections;
+- Veeqo: inventory, allocation, fulfillment, labels, shipment status, and tracking;
+- QuickBooks: accounting projection after eligible payment/refund events;
+- marketplace modules: normalized Amazon/eBay operational ingestion and exception handling.
 
-### Operations / data
+Checkout shipping rates are currently computed by DTB policy. They are not live carrier quotes returned by Veeqo.
 
-- Python scripts for catalog validation, normalization, image sync, audits
-- PowerShell smoke scripts: `scripts/smoke-dtb-mu-modules.ps1`, `scripts/smoke-dtb-catalog-api.ps1`
-- Production catalog policy JSON + CSV pipeline assets in `products/Production/`
+## Backend module chain
+
+1. `dtb-platform`
+2. `dtb-catalog-platform`
+3. `dtb-commerce`
+4. `dtb-order-platform`
+5. `dtb-schematics`
+6. `dtb-media`
+7. `dtb-marketing`
+8. `dtb-repair-service`
+9. `dtb-integrations`
+10. `dtb-support`
+11. `dtb-returns`
+
+New business logic belongs inside the owning module subtree, not a root-level legacy wrapper.
 
 ## Build and tooling
 
-- Node.js 20 (CI); dependencies installed via `npm ci --include=dev` from `frontend/package-lock.json`
-- Webpack 5 (`frontend/webpack.config.cjs`)
-- Babel (`babel-loader`, `@babel/preset-env`, `@babel/preset-react`)
-- Tailwind v4 + PostCSS + Autoprefixer (`@tailwindcss/postcss`, `@tailwindcss/typography`)
-- ESLint 9 flat config (`frontend/eslint.config.js`) — no `test` script exists; lint + build are the validation gates
-- Workbox (`GenerateSW`) for production service worker
-- `cross-env`, `sharp`, `dotenv` in dev tooling
-- Optional bundle analysis via `ANALYZE=true`
+- Node.js 20 in CI;
+- locked dependency installation via `npm ci --include=dev`;
+- Webpack 5 and Babel;
+- Tailwind CSS v4, PostCSS, and Autoprefixer;
+- ESLint 9 flat configuration;
+- Workbox `GenerateSW` for production service worker generation;
+- Terser and CSS minimization;
+- optional bundle analysis with `ANALYZE=true`;
+- Python scripts for catalog validation, normalization, pricing, image sync, and audits;
+- PowerShell endpoint/module smoke tests.
 
-### Frontend scripts
+Frontend validation gates are lint and production build. The package currently has no standalone automated test script.
 
-- `npm run dev` — webpack dev server
-- `npm run build` — production build to repo-root `dist/`
-- `npm run build:staging` — staging build with `PUBLIC_URL=/staging/2972`
-- `npm run preview` — production-mode serve
-- `npm run lint` — ESLint over `src`
-- `npm run reviews-server` — local Express reviews server (`server/index.js`)
+## Frontend build contract
 
-## Frontend runtime/compile contract
+`frontend/webpack.config.cjs` controls:
 
-`webpack.config.cjs` drives:
+- environment-specific `.env` loading;
+- compile-time injection of public `REACT_APP_*` values;
+- production output to repository `dist/` and staging output to `dist-staging/`;
+- stable JS/CSS entry names, deterministic chunks, and asset manifests;
+- static public asset copying with operational-data exclusions;
+- generated HTTP error pages;
+- service-worker precache/runtime caching;
+- development proxying to the WordPress backend.
 
-- compile-time env injection via `DefinePlugin` (`process.env.*` / `import.meta.env.*` shims)
-- dev/prod output split (dev local `frontend/dist/`, prod to repo-root `dist/`)
-- hashed asset emission + `asset-manifest.json`
-- static public copy from `frontend/public/` with targeted exclusions
-- production service worker with runtime caching strategies
-- runtime asset base bootstrap (`bootstrapRuntimeAssetBase.js`, `setWebpackPublicPath.js`)
+Only public configuration may use a `REACT_APP_*` variable. Forbidden browser values include WooCommerce application passwords, consumer keys/secrets, Veeqo keys, webhook secrets, private keys, and server integration credentials.
 
 ## Environment model
 
-### Frontend
+### Browser-safe values
 
-- variables use `REACT_APP_*`; secrets injected by environment/CI, never committed
+Examples include:
 
-### WordPress (`wp-config.php` contract)
+- public site/API base URLs;
+- Store API path;
+- feature flags;
+- environment identifier;
+- Stripe publishable key;
+- public launch dates.
 
-Defined constants include (see mu-plugins README section 7 for authority):
+### Server-only values
 
-- WC proxy/auth/import: `WC_PROXY_CONSUMER_KEY/SECRET`, `DTB_WC_AUTH_USER/PASS`, `WC_WEBHOOK_SECRET`, `DTB_IMPORT_SECRET`
-- Auth/origin: `DRYWALL_JWT_SECRET`, `DRYWALL_ALLOWED_ORIGIN`
-- Veeqo: `DTB_VEEQO_API_KEY`, `DTB_VEEQO_WEBHOOK_SECRET`, warehouse/channel/delivery IDs, `DTB_VEEQO_DEBUG`
-- Order write boundary: `DTB_ORDER_WRITE_BOUNDARY_*` runtime switches, `DTB_EXTERNAL_ORDER_WRITE_SECRET` (explicit reviewed exception only)
-- Optional: QuickBooks (`DTB_QBO_*`), feature flags (`DTB_CATALOG_PLATFORM_ENABLED`, `DTB_ENABLE_CSP`, etc.)
+Defined in `wp-config.php` or secure hosting/CI configuration:
 
-`wp-config.php` exists in the local mirror but must never be committed to deploy payloads.
+- `WC_PROXY_CONSUMER_KEY`, `WC_PROXY_CONSUMER_SECRET`;
+- `DTB_WC_AUTH_USER`, `DTB_WC_AUTH_PASS`;
+- `WC_WEBHOOK_SECRET`, `DTB_IMPORT_SECRET`;
+- `DRYWALL_JWT_SECRET`;
+- `DTB_VEEQO_*` secrets and authority IDs;
+- `DTB_QBO_*` credentials;
+- marketplace credentials;
+- `DTB_EXTERNAL_ORDER_WRITE_SECRET`.
 
-## Backend API surface model
+`wp-config.php`, uploads, cache, and runtime secrets are never included in deploy payloads.
 
-Active namespaces:
+## Frontend API model
 
-- `dtb/v1` — DTB platform: auth, account, catalog/import, schematics media, image sync, rewards, Veeqo (status/shipping-rates/cart-availability/webhooks), QuickBooks, repairs, returns (`/returns/mine`), support (`/support/mine`), payment runtime, subscribe, cache/health
-- `drywall/v1` — public commerce proxy: products, variations, categories, attributes, search, orders (JWT), coupons, customers, product webhooks
-- `headless/v1` — theme-level headless support routes
-- `wc/store/v1` — WooCommerce Store API (cart/checkout)
+Canonical browser communication uses:
 
-Storefront inventory checks must use `POST /dtb/v1/veeqo/cart-availability`, not the bulk inventory endpoint (admin-only per the Veeqo inventory boundary).
+- `frontend/src/api/client.js` for DTB/proxy requests;
+- `frontend/src/api/cart.js` for WooCommerce Store API cart/session operations;
+- domain-specific modules under `frontend/src/api/`;
+- cookie credentials for same-origin authenticated requests;
+- optional bearer tokens from the in-memory `tokenStore` only.
 
-## Security posture (code-level)
+Legacy frontend service facades must call DTB proxy/Store API endpoints and must not collect or persist WooCommerce credentials in localStorage, sessionStorage, source, environment bundles, or UI settings forms.
 
-- in-memory token storage only (`frontend/src/auth/tokenStore.js`); token cleared on 401 with `auth:expired` event fan-out (`frontend/src/api/client.js`)
-- JWT: HS256 signed with `DRYWALL_JWT_SECRET`; HttpOnly cookie `dtb_auth` + Bearer fallback
-- centralized origin allowlist via `dtb_allowed_origins()` / `dtb_check_origin()` in loader
-- endpoint gating: public read-safe, `dtb_jwt_permission` for customer flows, `manage_options`/`manage_woocommerce` for admin
-- webhook HMAC validation (WC product webhooks, Veeqo order webhooks)
-- hardened headers/routing in `drywalltoolbox/.htaccess` and `drywalltoolbox/wp/.htaccess`
+## Backend API surface
+
+### `dtb/v1`
+
+Platform and domain APIs including authentication, account, checkout orchestration, catalog/platform routes, schematics/media, repairs, returns, support, Veeqo availability/webhooks/admin operations, QuickBooks, health, cache, and operator endpoints.
+
+`GET /dtb/v1/config` is a public-safe capability/bootstrap endpoint only. It must never return WooCommerce credentials.
+
+### `drywall/v1`
+
+Server-side read proxy for public product/catalog data. Legacy authenticated order/customer read routes are customer-bound and deprecated. Legacy raw order creation is retired; new orders use the DTB checkout finalization contract.
+
+### `headless/v1`
+
+Theme-level headless support endpoints.
+
+### `wc/store/v1`
+
+Public WooCommerce Store API for cart/session operations. Storefront inventory validation additionally uses `POST /dtb/v1/veeqo/cart-availability`; bulk Veeqo inventory access is administrative.
+
+## Authentication and security posture
+
+- HS256 JWT signed with `DRYWALL_JWT_SECRET`;
+- preferred HttpOnly `dtb_auth` cookie with SameSite policy;
+- optional Authorization bearer fallback;
+- no JWT, application password, consumer secret, or API key persisted in browser storage;
+- centralized origin allowlist and CORS policy;
+- customer record reads bind requested records to the authenticated customer;
+- admin endpoints require explicit capabilities;
+- public endpoints are intentionally read-safe or protected by narrow signed-token/HMAC contracts;
+- WooCommerce and Veeqo webhook signature validation;
+- order write boundary blocks raw external order creation, duplicate side effects, and write loops;
+- root and WordPress `.htaccess` preserve authorization headers and enforce routing/security behavior.
+
+## Async and integration execution
+
+External order side effects use `dtb_order_enqueue_job()` and the `dtb-orders` Action Scheduler group. The queue provides deduplication, bounded exponential retry, integration-state persistence, event logging, and duplicate-order side-effect suppression.
+
+Heavy catalog imports use Action Scheduler with WP-Cron fallback. Operational health jobs and cleanup tasks use scheduled actions/cron according to their module contracts.
 
 ## CI/CD
 
-- `.github/workflows/ci-build.yml`: on `main` push + manual dispatch — Node 20, `npm ci --include=dev`, lint, build, deploy-payload shape verification
-- `.github/workflows/deploy.yml`: manual HostGator production deploy/restore; requires `workflow_dispatch`, `action=deploy`, `confirm=DEPLOY`, and `hostgator-production` environment approval
-- Deploy payload: `dist/`, `drywalltoolbox/logos`, both `.htaccess` files, `drywalltoolbox/wp/index.php`, `mu-plugins/`, `themes/`
-- Never packaged: `wp-config.php`, `uploads/`, `cache/`, runtime secrets
+- `.github/workflows/ci-build.yml` runs on `main` pushes and manual dispatch;
+- `.github/workflows/deploy.yml` provides protected manual deploy and restore;
+- production deploy requires explicit confirmation and protected environment approval;
+- remote state is backed up before deployment;
+- post-deployment smoke checks can trigger automatic rollback;
+- deploy payload includes frontend output, routing files, logos, mu-plugins, and themes only.
 
 ## Catalog technology constraints
 
-- policy authority: `products/Production/catalogs/config/production_taxonomy_policy.json`
-- display categories normalized to canonical slugs (see `docs/operations/catalog-display-categories-fix.md`)
-- controlled taxonomy/brand allowlists and alias normalization enforced before import
+- canonical taxonomy policy: `products/Production/catalogs/config/production_taxonomy_policy.json`;
+- controlled brand/category allowlists and alias normalization;
+- deterministic validation/audit scripts preferred over manual bulk edits;
+- SKU, MPN, part-number, product relationship, image, and schematic identifiers must remain stable through imports and synchronization.
 
-## Engineering conventions to preserve
+## Engineering conventions
 
-- keep backend business logic in mu-plugin modules, not React and not legacy root wrappers
-- prefer `frontend/src/api/*` + hooks/providers over legacy `services/`
-- maintain headless assumption (React public UI; WP backend API/admin)
-- route all external system writes through `dtb_order_enqueue_job()` / `dtb-orders` queue
-- keep environment secrets server/CI-side
-- run `npm run lint` + `npm run build` for frontend changes; run smoke scripts for loader/REST/catalog changes
+- backend business rules stay in bounded mu-plugin modules;
+- frontend data access stays in `frontend/src/api/` with credential-free service facades;
+- React remains the public renderer;
+- all order/integration writes use the canonical queue and write boundary;
+- public shipping language must distinguish DTB-calculated rates from Veeqo fulfillment data;
+- update `memory-bank/*` and the mu-plugin README whenever durable architecture changes;
+- run `npm run lint` and `npm run build` for frontend changes and relevant smoke scripts for backend route/loader changes.
