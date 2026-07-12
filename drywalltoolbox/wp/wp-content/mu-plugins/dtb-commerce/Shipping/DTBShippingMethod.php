@@ -150,10 +150,49 @@ add_filter( 'woocommerce_shipping_methods', function ( array $methods ): array {
 } );
 
 /**
+ * Add DTB policy rates in memory when the matching zone has no DTB instance.
+ *
+ * This keeps public quote requests read-only. The rate fallback uses the same
+ * server-authoritative method calculation without mutating WooCommerce shipping
+ * zone configuration during an interactive checkout request.
+ *
+ * @param array<string,WC_Shipping_Rate> $rates   Rates from the matching zone.
+ * @param array<string,mixed>            $package Active shipping package.
+ * @return array<string,WC_Shipping_Rate>
+ */
+function dtb_commerce_add_policy_rates_when_missing( array $rates, array $package ): array {
+	foreach ( $rates as $rate ) {
+		$method_id = is_object( $rate ) && method_exists( $rate, 'get_method_id' )
+			? (string) $rate->get_method_id()
+			: '';
+		if ( DTB_SHIPPING_METHOD_ID === $method_id ) {
+			return $rates;
+		}
+	}
+
+	if ( ! class_exists( 'DTB_Shipping_Method' ) && class_exists( 'WC_Shipping_Method' ) ) {
+		dtb_commerce_register_shipping_method();
+	}
+	if ( ! class_exists( 'DTB_Shipping_Method' ) ) {
+		return $rates;
+	}
+
+	$method = new DTB_Shipping_Method( 0 );
+	foreach ( (array) $method->get_rates_for_package( $package ) as $rate_id => $rate ) {
+		if ( $rate instanceof WC_Shipping_Rate && ! isset( $rates[ $rate_id ] ) ) {
+			$rates[ $rate_id ] = $rate;
+		}
+	}
+
+	return $rates;
+}
+add_filter( 'woocommerce_package_rates', 'dtb_commerce_add_policy_rates_when_missing', 100, 2 );
+
+/**
  * Return whether a shipping zone currently has an enabled DTB policy instance.
  */
 function dtb_commerce_zone_has_enabled_shipping_method( WC_Shipping_Zone $zone ): bool {
-	foreach ( (array) $zone->get_shipping_methods( true, 'values' ) as $method ) {
+	foreach ( (array) $zone->get_shipping_methods( true, 'admin' ) as $method ) {
 		if ( is_object( $method ) && DTB_SHIPPING_METHOD_ID === (string) ( $method->id ?? '' ) ) {
 			return true;
 		}
@@ -164,9 +203,6 @@ function dtb_commerce_zone_has_enabled_shipping_method( WC_Shipping_Zone $zone )
 
 /**
  * Clear WooCommerce's request/session package-rate cache.
- *
- * This is required after repairing a missing zone method; otherwise an empty
- * package-rate result can remain cached for the active checkout session.
  *
  * @param array<int,array<string,mixed>> $packages Current cart shipping packages.
  */
@@ -191,63 +227,6 @@ function dtb_commerce_invalidate_shipping_package_cache( array $packages = [] ):
 }
 
 /**
- * Ensure the DTB policy method exists in every zone matching the active cart.
- *
- * WooCommerce evaluates only the first matching shipping zone. A DTB method in
- * Rest of World or another nonmatching zone therefore does not make checkout
- * shippable. This repair is bounded, idempotent, and writes only when the
- * matching zone has no enabled DTB instance.
- *
- * @param array<int,array<string,mixed>> $packages Current cart shipping packages.
- * @return bool True when at least one zone was repaired.
- */
-function dtb_commerce_ensure_shipping_method_for_packages( array $packages ): bool {
-	if ( ! class_exists( 'WC_Shipping_Zones' ) || ! class_exists( 'WC_Shipping_Zone' ) ) {
-		return false;
-	}
-
-	$repaired_zone_ids = [];
-	foreach ( $packages as $package ) {
-		if ( ! is_array( $package ) ) {
-			continue;
-		}
-
-		$zone = WC_Shipping_Zones::get_zone_matching_package( $package );
-		if ( ! $zone instanceof WC_Shipping_Zone ) {
-			continue;
-		}
-
-		$zone_id = (int) $zone->get_id();
-		if ( isset( $repaired_zone_ids[ $zone_id ] ) || dtb_commerce_zone_has_enabled_shipping_method( $zone ) ) {
-			continue;
-		}
-
-		$instance_id = $zone->add_shipping_method( DTB_SHIPPING_METHOD_ID );
-		if ( ! $instance_id ) {
-			continue;
-		}
-
-		$repaired_zone_ids[ $zone_id ] = true;
-		if ( function_exists( 'wc_get_logger' ) ) {
-			wc_get_logger()->warning(
-				'Restored the DTB shipping policy in the active WooCommerce shipping zone.',
-				[
-					'source'      => 'dtb-checkout-shipping',
-					'zone_id'     => $zone_id,
-					'instance_id' => (int) $instance_id,
-				]
-			);
-		}
-	}
-
-	if ( ! empty( $repaired_zone_ids ) ) {
-		dtb_commerce_invalidate_shipping_package_cache( $packages );
-	}
-
-	return ! empty( $repaired_zone_ids );
-}
-
-/**
  * Return whether a zone location can match a United States destination.
  */
 function dtb_commerce_zone_matches_us( WC_Shipping_Zone $zone ): bool {
@@ -263,11 +242,11 @@ function dtb_commerce_zone_matches_us( WC_Shipping_Zone $zone ): bool {
 }
 
 /**
- * Bootstrap and repair the required policy instances.
+ * Bootstrap and repair the required persisted policy instances.
  *
- * Versioned bootstrap repairs installations that previously marked setup as
- * complete even though the method existed only in a nonmatching zone. Runtime
- * checkout reconciliation still protects newly added or reordered zones.
+ * This deterministic versioned migration is independent of request payloads.
+ * In-memory package-rate fallback protects checkout if a zone is later added,
+ * reordered, or misconfigured without requiring a public route to write config.
  */
 add_action( 'woocommerce_init', 'dtb_bootstrap_shipping_zones', 20 );
 
