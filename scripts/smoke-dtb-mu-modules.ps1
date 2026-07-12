@@ -160,10 +160,12 @@ if ($BaseUrl) {
     else {
         try {
             $config = $configProbe.Content | ConvertFrom-Json
+            $serializedConfig = $config | ConvertTo-Json -Depth 100 -Compress
             $unsafeProperties = @('wc_auth_user', 'wc_auth_pass', 'consumer_key', 'consumer_secret')
             foreach ($property in $unsafeProperties) {
-                if ($config.PSObject.Properties.Name -contains $property) {
-                    Add-Failure "Runtime config exposes forbidden property: $property"
+                $propertyPattern = '(?i)"' + [Regex]::Escape($property) + '"\s*:'
+                if ($serializedConfig -match $propertyPattern) {
+                    Add-Failure "Runtime config exposes forbidden property at any depth: $property"
                 }
             }
             if ($config.wc_credentials_exposed -eq $false) {
