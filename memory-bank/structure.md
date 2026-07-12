@@ -1,374 +1,251 @@
-# Structure# Structure
+# Structure
 
+Last verified against source: 2026-07-12.
 
+## Architecture truth
 
-Last verified against source: 2026-07-11.## High-level architecture
+Drywall Toolbox is a headless commerce and operations platform with four primary repository layers:
 
+1. `frontend/` — React SPA and customer-facing route/UI implementation.
+2. `drywalltoolbox/` — tracked production deployment mirror. WordPress/WooCommerce application code lives under `drywalltoolbox/wp/`.
+3. `products/` — production catalog, taxonomy, image, schematic, pricing, and audit data.
+4. `scripts/` — deterministic catalog, media, smoke-test, and operational tooling.
 
+There is no canonical root-level `wp/` application directory. Backend edits belong under `drywalltoolbox/wp/` unless a task explicitly targets deployment documentation or generated/runtime state.
 
-## High-level architectureDrywall Toolbox is a headless system with four primary layers:
+## Repository map
 
-
-
-Drywall Toolbox is a headless system with four primary layers:1. `frontend/` — public React SPA
-
-2. `wp/` — WordPress + WooCommerce backend and admin runtime
-
-1. `frontend/` — public React SPA (customer-facing storefront)3. `products/` — catalog/media/production data workspace
-
-2. `drywalltoolbox/` — tracked production deployment mirror containing the WordPress + WooCommerce backend (`drywalltoolbox/wp/`)4. `scripts/` — operational tooling for data/csv/image workflows
-
-3. `products/` — catalog/media/production data workspace
-
-4. `scripts/` — operational tooling for data/CSV/image/smoke-test workflows`README.md` is intentionally brief; this file is the deeper internal structure map.
-
-
-
-There is no root-level `wp/` directory. All backend code lives under `drywalltoolbox/wp/`.## Repository map (current)
-
-
-
-## Repository map (current)```text
-
+```text
 drywall-toolbox/
+├─ .github/
+│  ├─ copilot-instructions.md
+│  └─ workflows/
+│     ├─ ci-build.yml
+│     └─ deploy.yml
+├─ dist/                                  generated production frontend output
+├─ docs/                                  architecture, operations, plans, company, references
+├─ drywalltoolbox/                        tracked live-server deployment mirror
+│  ├─ .htaccess                           domain-root routing/security policy
+│  ├─ logos/
+│  └─ wp/
+│     ├─ .htaccess                        WordPress-subdirectory routing policy
+│     ├─ index.php
+│     └─ wp-content/
+│        ├─ mu-plugins/                    DTB backend platform
+│        └─ themes/                        headless/backend-support themes
+├─ frontend/                              React storefront source
+├─ memory-bank/                           durable architecture context
+│  ├─ product.md
+│  ├─ structure.md
+│  └─ tech.md
+├─ products/                              catalog/media/production operations workspace
+├─ scripts/                               Python and PowerShell operational tooling
+├─ AGENTS.md                              repository agent operating contract
+├─ coming-soon.html
+└─ README.md
+```
 
-```text├─ .github/                     CI workflows
+Generated build output is not a source-of-truth editing target. Modify `frontend/`, build into `dist/`, and deploy the generated payload.
 
-drywall-toolbox/│  └─ workflows/
+## Production topology
 
-├─ .github/│     ├─ validate-and-deploy.yml
+```text
+/public_html/drywalltoolbox/              public document root
+├─ index.html                             React application shell
+├─ assets/                                compiled React assets
+├─ .htaccess                              HTTPS, REST aliases, WP aliases, SPA fallback
+├─ logos/
+├─ staging/2972/                          staging SPA build target
+└─ wp/                                    WordPress + WooCommerce runtime
+   ├─ wp-admin/
+   ├─ wp-includes/
+   ├─ wp-content/
+   └─ wp-config.php                       runtime-only; never deployed from Git
+```
 
-│  ├─ copilot-instructions.md│     ├─ deploy.yml.archived
-
-│  └─ workflows/│     └─ performance.yml.archived
-
-│     ├─ ci-build.yml          frontend lint/build + deploy payload verification├─ frontend/                    React SPA (public UI)
-
-│     └─ deploy.yml            manual HostGator production deploy/restore├─ docs/memory-bank/            internal architecture docs
-
-├─ dist/                       production frontend build output (generated)├─ products/                    catalog/media/source data
-
-├─ docs/                       plans, architecture, operations, company, reference docs├─ scripts/                     operational scripts
-
-│  ├─ plans/                   implementation/rebuild plan blueprints├─ wp/                          WordPress installation
-
-│  ├─ architecture/            order/Veeqo permanent architecture + hardening├─ .htaccess                    root routing/security/caching policy
-
-│  ├─ operations/              checkout testing, fixtures, fix summaries├─ coming-soon.html             root page variant/asset
-
-│  ├─ company/                 operating agreement├─ index.php                    root passthrough note
-
-│  ├─ reference/               tax rate CSVs, TapeTech scrape notes├─ lighthouserc.json            Lighthouse assertion config
-
-│  └─ pricing_engine/          pricing imports/reports└─ README.md                    short internal workspace note
-
-├─ drywalltoolbox/             production live-server mirror (see below)```
-
-├─ frontend/                   React SPA source
-
-├─ memory-bank/                this durable context (product/structure/tech)## Request flow
-
-├─ products/                   catalogs, images, schematics, reports
-
-├─ scripts/                    Python/PowerShell operational tooling```text
-
-├─ AGENTS.md                   agent operating contractBrowser
-
-├─ coming-soon.html            static marketing fallback asset  -> React routes/components (frontend/src/App.jsx)
-
-└─ README.md                   short project summary  -> frontend/src/api/* (plus some legacy frontend/src/services/*)
-
-```  -> /wp-json/* REST endpoints
-
-  -> WooCommerce + DTB mu-plugin business logic
+The contents of repository `dist/` are uploaded to `/public_html/drywalltoolbox/`. The tracked `drywalltoolbox/wp/wp-content/mu-plugins/` and `themes/` trees are deployed into the live `/wp/wp-content/` runtime. Uploads, cache, WordPress core, and `wp-config.php` are server-owned runtime state and are excluded from deployment packages.
 
 ## Request flow
 
-WordPress runtime
-
-```text  -> custom namespaces (dtb/v1, drywall/v1, headless/v1)
-
-Browser  -> auth/security/cache policy
-
-  -> React routes (frontend/src/App.jsx)  -> catalog/rewards/repair/integration modules
-
-  -> frontend/src/api/* (plus legacy frontend/src/services/*)```
-
-  -> /wp-json/dtb/v1, /wp-json/drywall/v1, /wp-json/headless/v1, /wp-json/wc/store/v1
-
-  -> WooCommerce + DTB mu-plugin modules## Frontend structure (`frontend/`)
-
+```text
+Browser
+  -> domain-root .htaccess
+     -> existing static file / React application shell
+     -> /wp-json/* alias -> /wp/index.php
+     -> /wp-admin/* alias -> /wp/wp-admin/*
+     -> WooCommerce order-pay endpoint -> /wp/index.php
+  -> React route in frontend/src/App.jsx
+  -> frontend/src/api/*, hooks, and providers
+  -> /wp-json/dtb/v1/*
+     /wp-json/drywall/v1/*
+     /wp-json/headless/v1/*
+     /wp-json/wc/store/v1/*
+  -> WordPress REST server
+  -> DTB mu-plugin controller/service/repository or WooCommerce Store API
+  -> WooCommerce, DTB tables/post meta, Action Scheduler, Veeqo, QuickBooks
 ```
 
-### Core files
+React owns public rendering and interaction state. Backend modules own authorization, validation, persistence, lifecycle transitions, integration policy, and operational side effects.
 
-## Frontend structure (`frontend/`)
+## Frontend structure
 
-- `package.json` — scripts/dependencies
-
-### Core files- `webpack.config.cjs` — build/dev/prod/service-worker config
-
-- `eslint.config.js` — lint rules
-
-- `package.json` — scripts: `dev`, `build`, `build:staging`, `preview`, `lint`, `reviews-server`- `.env.example` — environment template
-
-- `webpack.config.cjs` — build/dev/prod/service-worker config- `.env.staging` — staging-specific env values
-
-- `eslint.config.js` — ESLint 9 flat config
-
-- `server/index.js` — local reviews-server dev support### Source layout (`frontend/src/`)
-
-
-
-### Source layout (`frontend/src/`)```text
-
-frontend/src/
-
-```text├─ api/           primary data access layer
-
-frontend/src/├─ auth/          auth context + in-memory token store
-
-├─ analytics/     analytics helpers├─ components/    shared UI + feature component trees
-
-├─ api/           canonical data access layer (account, auth, cart, checkout,├─ constants/     shared constants
-
-│                 client, coupons, customers, orders, products, repairs,├─ context/       app-level providers (cart, WooCommerce)
-
-│                 returns, schematics, statusTracking, support, wordpress)├─ data/          static mappings/datasets
-
-├─ assets/        bundled static assets├─ hooks/         reusable hooks
-
-├─ auth/          auth context + in-memory token store (tokenStore.js)├─ pages/         route-level pages
-
-├─ components/    account, calculators, catalog, cta, dashboard, errors,├─ services/      legacy compatibility service layer
-
-│                 motion, navigation, product, pwa, repairs, routing,├─ styles/        css modules/files
-
-│                 schematics, shared, shell, storefront, system, ui├─ utils/         utility helpers
-
-├─ constants/     shared constants├─ App.jsx        route map + providers
-
-├─ context/       app-level providers└─ main.jsx       bootstrap
-
-├─ data/          static mappings/datasets```
-
-├─ hooks/         reusable hooks
-
-├─ motion/        shared motion config### Route surface
-
-├─ pages/         route-level pages
-
-├─ services/      legacy compatibility service layer (do not grow)Primary pages include:
-
-├─ styles/        CSS files
-
-├─ utils/         utility helpers- commerce: `/products`, `/products/:slug`, `/cart`, `/checkout`, `/order/:id`
-
-├─ App.jsx        route map + providers- parts/schematics: `/parts`, `/schematics`, `/product/:partNumber`
-
-├─ main.jsx       bootstrap- auth/account: `/login`, `/register`, `/forgot-password`, `/reset-password`, `/dashboard`, `/orders`, `/rewards`, `/addresses`
-
-└─ bootstrapRuntimeAssetBase.js / setWebpackPublicPath.js  runtime asset base- service/content: `/repairs`, `/calculators`, `/faq`, `/shipping-policy`, `/returns`, `/policies`, `/toolset-builder`, `/contact`
-
+```text
+frontend/
+├─ public/                        copied static assets
+├─ scripts/                       frontend build-safety scripts
+├─ server/                        local reviews/dev support
+├─ src/
+│  ├─ analytics/
+│  ├─ api/                        canonical data-access layer
+│  ├─ assets/
+│  ├─ auth/                       auth provider and in-memory token store
+│  ├─ components/
+│  │  ├─ account/
+│  │  ├─ catalog/
+│  │  ├─ errors/
+│  │  ├─ product/
+│  │  ├─ repairs/
+│  │  ├─ routing/
+│  │  ├─ schematics/
+│  │  ├─ shared/
+│  │  ├─ shell/
+│  │  ├─ storefront/
+│  │  ├─ system/
+│  │  └─ ui/
+│  ├─ constants/
+│  ├─ context/
+│  ├─ data/
+│  ├─ hooks/
+│  ├─ motion/
+│  ├─ pages/                      route-level screens
+│  ├─ services/                   legacy compatibility/facade layer; do not expand
+│  ├─ styles/
+│  ├─ utils/
+│  ├─ App.jsx                     provider and route composition
+│  └─ main.jsx                    browser bootstrap
+├─ package.json
+└─ webpack.config.cjs
 ```
 
-## Backend structure (`wp/`)
+Frontend ownership rules:
 
-### Route surface (from `frontend/src/App.jsx`)
+- Place public route registration in `frontend/src/App.jsx`.
+- Place server communication in `frontend/src/api/`.
+- Keep optional legacy facades in `frontend/src/services/` credential-free and proxy-backed.
+- Use `frontend/src/auth/tokenStore.js` for optional in-memory bearer tokens; never persist credentials or JWTs in browser storage.
+- Use WooCommerce Store API only for public cart/session operations. WooCommerce admin REST credentials remain server-side.
 
-### Theme model
+## Public route groups
 
-- storefront: `/`, `/products`, `/products/brands[/:brandSlug[/categories/:categorySlug]]`, `/products/:slug`, `/products/:slug/variations/:variationId`, `/category/:slug`
+- Storefront: `/`, `/products`, brand/category selectors, product and variation detail.
+- Parts/schematics: `/parts`, `/product/:partNumber`, `/schematics`.
+- Repairs: intake, packages, tracking, status, authenticated dashboard detail.
+- Commerce: `/cart`, `/checkout`, checkout return states, order confirmation and tracking.
+- Returns/support: return portal/status and support contact/status.
+- Account: login, register, password recovery, dashboard tabs.
+- Content: calculators, FAQ, shipping policy, policies.
+- Disabled: toolset-builder public route remains commented out until explicitly launched.
 
-- parts/schematics: `/parts`, `/product/:partNumber`, `/schematics`- Active theme: `wp/wp-content/themes/headless-base/`
+## Backend composition
 
-- repairs: `/repairs`, `/repairs/start`, `/repairs/packages`, `/repairs/track`, `/repairs/status/:id`- Purpose: backend/headless support, REST enrichment, no public template UX ownership
+Composition root:
 
-- checkout/orders: `/cart`, `/checkout`, `/checkout/complete`, `/checkout/payment-failed`, `/checkout/payment-cancelled`, `/checkout/order-received/:id`, `/order/:id`, `/order-tracking/:id`
+```text
+drywalltoolbox/wp/wp-content/mu-plugins/00-dtb-loader.php
+```
 
-- returns/support: `/returns`, `/returns/status/:id`, `/return-policy`, `/contact`, `/support/status/:id`### MU plugin model
-
-- auth/account: `/login`, `/register`, `/forgot-password`, `/reset-password`, `/dashboard` (tabbed; `/orders`, `/rewards`, `/addresses`, `/account-settings`, `/notifications` redirect into dashboard tabs)
-
-- content: `/faq`, `/calculators`, `/shipping-policy`, `/policies`Composition root: `wp/wp-content/mu-plugins/00-dtb-loader.php`
-
-- errors: `/error/:code`, `*` → 404
-
-- notes: `/toolset-builder` route is currently commented out; rewards redirect is gated by a rewards-enabled flagThis file provides shared helpers and explicit load order for DTB modules.
-
-
-
-## Backend structure (`drywalltoolbox/wp/`)Confirmed loader chain includes:
-
-
-
-### Theme model- `dtb-utils.php`, `dtb-auth.php`, `dtb-cache.php`, `dtb-cache-admin.php`, `dtb-rest-api.php`
-
-- `dtb-catalog-platform/bootstrap.php`
-
-- Themes: `drywalltoolbox/wp/wp-content/themes/headless-base/` and `themes/drywall-toolbox/`- `dtb-api-security.php`, `dtb-frontend-security.php`, `dtb-admin-security.php`
-
-- Purpose: backend/headless support and REST enrichment only; no public storefront rendering- `dtb-rewards.php`, `dtb-image-sync.php`, `dtb-woocommerce.php`
-
-- `dtb-commerce/bootstrap.php`
-
-### MU plugin model- `dtb-veeqo.php`, `dtb-ops-dashboard.php`, `dtb-catalog-health.php`, `dtb-quickbooks.php`
-
-- `dtb-schematics-api.php`, `dtb-coming-soon.php`, `dtb-seo.php`, `dtb-config-reference.php`
-
-Composition root: `drywalltoolbox/wp/wp-content/mu-plugins/00-dtb-loader.php`
-
-Also present in `mu-plugins/` are additional auto-loaded/support files (`dtb-api-health-monitor.php`, `dtb-product-mapping.php`, `dtb-schematics-admin.php`, host-provided plugins, etc.).
-
-Loader-managed module bootstrap chain (`_dtb_require`, in order):
-
-### Key backend module subtrees
+Canonical loader-managed module order:
 
 1. `dtb-platform/`
-
-2. `dtb-catalog-platform/`- `mu-plugins/dtb-catalog-platform/` (`Domain/`, `Rest/`, `Services/`, `Validation/`, `Admin/`)
-
-3. `dtb-commerce/`- `mu-plugins/dtb-commerce/` (`Cart/`, `Orders/`)
-
+2. `dtb-catalog-platform/`
+3. `dtb-commerce/`
 4. `dtb-order-platform/`
-
-5. `dtb-schematics/`## Production live mirror (`drywalltoolbox/`)
-
+5. `dtb-schematics/`
 6. `dtb-media/`
-
-7. `dtb-marketing/``drywalltoolbox/` is the repository’s production live-server code mirror.
-
+7. `dtb-marketing/`
 8. `dtb-repair-service/`
-
-9. `dtb-integrations/`Current top-level structure:
-
+9. `dtb-integrations/`
 10. `dtb-support/`
+11. `dtb-returns/`
 
-11. `dtb-returns/````text
+### `dtb-platform/`
 
-drywalltoolbox/
+Shared configuration, support primitives, origin/CORS policy, API security, authentication, cache, health, observability, operator dashboards, account/history REST controllers, and platform administration.
 
-Module bootstraps load bounded module paths; where extraction is incomplete they load legacy root compatibility wrappers. Do not add new business logic to legacy root files.├─ .ftpquota
+### `dtb-catalog-platform/`
 
-├─ .htaccess
+Catalog domain models, Woo/product repositories, normalization, facets, variation read models, product relationships, compatible/universal parts, inventory intelligence, validation, REST controllers, and catalog admin tools.
 
-### Additional auto-loaded top-level mu-plugin files├─ .htaccess.nfd-backup
+### `dtb-commerce/`
 
-├─ .user.ini
+WooCommerce Store API cart extensions, toolset/order-line metadata, order type/query services, branded WooCommerce email integration, and commerce-facing order REST/admin surfaces.
 
-WordPress auto-loads remaining top-level `*.php` files alphabetically. Current notable ones:├─ logos/
+### `dtb-order-platform/`
 
-└─ wp/
+Order lifecycle domain, event ledger, integration state, Action Scheduler queue, write boundary, duplicate containment, payment webhooks, customer/operator tracking projections, order REST controllers, and operations UI.
 
-- checkout/payment runtime: `dtb-wc-payment-runtime.php`, `dtb-wc-payment-runtime-hardening.php`, `dtb-wc-payment-runtime-mobile-fixes.php`, `dtb-checkout-customer-association.php`, `dtb-checkout-payment-status-guard.php````
+### `dtb-schematics/` and `dtb-media/`
 
-- customer/order surfaces: `dtb-customer-orders-api.php`, `dtb-order-tracking-links.php`, `dtb-public-labels.php`
+Schematic mapping/editor/runtime APIs and image/media synchronization, validation, and operator workflows.
 
-- `zz-*` layered fix/guard files (checkout duplicate guard, handoff guard, order-pay UX polish, BNPL/cart finalization, rewards kill switch, variation gallery REST enricher, system manager live assets, etc.)Current WordPress subtree highlights:
+### `dtb-repair-service/`, `dtb-support/`, and `dtb-returns/`
 
-- `zzz-dtb-order-loop-containment.php` — compatibility shim only; permanent logic lives in `dtb-order-platform/Infrastructure/OrderWriteBoundary.php`
+Independent lifecycle modules for repair requests, support tickets, and returns. Each owns its domain statuses, persistence, validation, customer endpoints, operator queues, and admin workbench.
 
-- host-provided: `endurance-page-cache.php`, `sso.php````text
+### `dtb-integrations/`
 
-drywalltoolbox/wp/
+Server-side adapters and orchestration for WooCommerce, Veeqo, QuickBooks, notifications, and marketplace channels. External side effects are queued through the order platform where an order lifecycle is involved.
 
-Canonical backend documentation: `drywalltoolbox/wp/wp-content/mu-plugins/README.md` (source code wins if they diverge).├─ wp-content/
+## Order and fulfillment flow
 
-│  ├─ mu-plugins/
+```text
+React cart
+  -> WooCommerce Store API cart session
+  -> DTB checkout session / confirmation / finalization
+  -> WooCommerce order and payment runtime
+  -> DTB order event ledger
+  -> dtb-orders Action Scheduler queue
+  -> Veeqo inventory/fulfillment synchronization
+  -> QuickBooks accounting projection
+  -> notification and customer tracking projections
+```
 
-### Deployment mirror top level (`drywalltoolbox/`)│  │  ├─ 00-dtb-loader.php
+Only the DTB checkout/finalization pipeline may create storefront orders. Legacy raw WooCommerce order creation is blocked/retired. Customer order reads must bind requested records to the authenticated customer, not caller-supplied customer IDs.
 
-│  │  ├─ dtb-platform/bootstrap.php
+## Data and operations structure
 
-```text│  │  ├─ dtb-catalog-platform/bootstrap.php
+`products/` and `scripts/` are production-relevant application assets.
 
-drywalltoolbox/│  │  ├─ dtb-commerce/bootstrap.php
+Primary authorities:
 
-├─ .htaccess               production routing/security policy│  │  ├─ dtb-order-platform/bootstrap.php
+- Production catalog: `products/Production/catalogs/official/woocommerce_catalog_production_optimized.csv`
+- Taxonomy policy: `products/Production/catalogs/config/production_taxonomy_policy.json`
+- Catalog validation and SKU audits: `scripts/*.py`
+- Loader/API smoke checks: `scripts/smoke-dtb-mu-modules.ps1`, `scripts/smoke-dtb-catalog-api.ps1`
+- Veeqo and production-catalog tooling: `scripts/veeqo/`, `scripts/production_catalog/`
 
-├─ .user.ini│  │  ├─ dtb-schematics/bootstrap.php
+Treat SKUs, MPNs, part numbers, taxonomy slugs, image mappings, schematic paths, and external-system IDs as stable business identifiers.
 
-├─ logos/│  │  ├─ dtb-media/bootstrap.php
+## CI/CD structure
 
-├─ staging/2972/           staging build target (frontend build:staging PUBLIC_URL)│  │  ├─ dtb-marketing/bootstrap.php
+- `.github/workflows/ci-build.yml` validates the frontend and deployment payload on `main` and manual dispatch.
+- `.github/workflows/deploy.yml` performs controlled HostGator backup, deploy/restore, production smoke checks, and rollback.
+- Production deployment packages `dist/`, routing files, logos, mu-plugins, and themes.
+- Runtime secrets, `wp-config.php`, uploads, cache, upgrade state, and full WordPress core are forbidden in deployment payloads.
 
-└─ wp/                     WordPress install (wp-config.php present locally, never packaged)│  │  ├─ dtb-repair-service/bootstrap.php
+## Engineering navigation
 
-```│  │  ├─ dtb-integrations/bootstrap.php
+- UI/route issue: `frontend/src/pages/`, `frontend/src/components/`, `frontend/src/App.jsx`
+- Frontend API/session issue: `frontend/src/api/`, `frontend/src/auth/`, providers/hooks
+- Backend route/business rule: owning subtree in `drywalltoolbox/wp/wp-content/mu-plugins/`
+- Order side effect or duplicate issue: `dtb-order-platform/Infrastructure/OrderWriteBoundary.php`, `OrderQueue.php`, integration pipeline files
+- Catalog correctness: `dtb-catalog-platform/`, `products/Production/`, `scripts/`
+- Deployment/routing: `drywalltoolbox/.htaccess`, `drywalltoolbox/wp/.htaccess`, `.github/workflows/`
 
-│  │  └─ README.md (mu-plugin architecture source of truth)
+## Source precedence
 
-## Data and operations structure│  ├─ themes/
+When documentation and implementation disagree:
 
-│  │  ├─ drywall-toolbox/
-
-### `products/`│  │  └─ headless-base/
-
-│  └─ uploads/
-
-- `catalogs/` — source catalogs and mappings└─ index.php
-
-- `Production/` — production authority: `catalogs/`, `audit_reports/`, `launch/`, `refs/`, `reports/`, `tools/````
-
-- `reports/`, `scraped_results/`, `logos/`
-
-Engineering rule for maintenance work:
-
-### `scripts/`
-
-- treat `drywalltoolbox/wp/wp-content/mu-plugins/README.md` as canonical documentation for live mu-plugin runtime/load-order details
-
-- catalog validation/auditing and fix scripts (Python)- keep repository-level architecture memory in `docs/memory-bank/*` synchronized with live-directory structural reality when production topology changes
-
-- smoke checks: `smoke-dtb-mu-modules.ps1`, `smoke-dtb-catalog-api.ps1`
-
-- `production_catalog/`, `veeqo/` subtrees for domain tooling## Data and operations structure
-
-
-
-## Navigation model for engineers### `products/`
-
-
-
-- UI/UX bug: `frontend/src/pages/*` and `frontend/src/components/*`Primary folders:
-
-- frontend API behavior: `frontend/src/api/*` (then legacy `frontend/src/services/*`)
-
-- backend business logic/API: `drywalltoolbox/wp/wp-content/mu-plugins/*`- `catalogs/`
-
-- order/Veeqo write-boundary policy: `dtb-order-platform/Infrastructure/OrderWriteBoundary.php` and `docs/architecture/*`- `Production/`
-
-- operational data rules: `products/Production/*` and `scripts/*`- `reports/`
-
-- `scraped_results/`
-- `logos/`
-
-Production catalog authority currently centers around:
-
-- `products/Production/catalogs/official/woocommerce_catalog_production_optimized.csv`
-- taxonomy policy: `products/Production/catalogs/config/production_taxonomy_policy.json`
-
-### `scripts/`
-
-Operational scripts support:
-
-- catalog validation and auditing (`validate_catalog.py`, `sku_audit.py`)
-- image URL sync and media maintenance (`sync_catalog_image_urls.py`)
-- endpoint smoke checks (`smoke-dtb-catalog-api.ps1`)
-- environment/data cleanup utilities (`appdata_audit.py`, `appdata_cleanup.py`)
-- DB reset SQL (`scripts/production_catalog/phpmyadmin-production-full-reset.sql`)
-
-## Infrastructure and routing anchors
-
-- Root `.htaccess` controls HTTPS redirects, security headers, REST aliases, and SPA fallback behavior
-- Root `index.php` is intentionally minimal and delegates frontend serving to built output/routing policy
-- `lighthouserc.json` defines performance assertions used by CI validation workflow
-
-## Navigation model for engineers
-
-When locating logic quickly:
-
-- UI/UX bug: `frontend/src/pages/*` and `frontend/src/components/*`
-- frontend API behavior: `frontend/src/api/*` then `frontend/src/services/*`
-- backend business logic/API: `wp/wp-content/mu-plugins/*`
-- operational data rules: `products/Production/*` and `scripts/*`
+1. live source code and active workflow configuration win;
+2. `drywalltoolbox/wp/wp-content/mu-plugins/README.md` documents the backend runtime contract;
+3. `memory-bank/*` records durable cross-system context and must be updated when architecture changes.
