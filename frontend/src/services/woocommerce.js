@@ -11,11 +11,22 @@ import { apiClient } from '../api/client.js';
 
 class WooCommerceService {
   constructor() {
+    this.clearLegacyBrowserCredentials();
     this.config = Object.freeze({
       enabled: true,
       mode: 'server_proxy',
       storeUrl: typeof window !== 'undefined' ? window.location.origin : '',
     });
+  }
+
+  clearLegacyBrowserCredentials() {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.removeItem('woocommerce_config');
+      window.sessionStorage.removeItem('woocommerce_config');
+    } catch {
+      // Storage can be unavailable in private browsing or hardened browsers.
+    }
   }
 
   isEnabled() {
