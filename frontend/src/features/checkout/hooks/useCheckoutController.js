@@ -64,6 +64,15 @@ export function useCheckoutController({ quote, formData, couponCodes = [], payme
 			throw nextError;
 		}
 
+		const quoteRateId = String( quote.selected_rate_id || '' );
+		const requestedRateId = String( selectedRateId || quoteRateId );
+		if ( requestedRateId && quoteRateId !== requestedRateId ) {
+			const nextError = new Error( 'Shipping options are still refreshing. Wait for the selected rate to finish updating.' );
+			setError( nextError.message );
+			setState( CHECKOUT_STATES.RECOVERABLE );
+			throw nextError;
+		}
+
 		submittingRef.current = true;
 		channelRef.current?.postMessage( { type: 'start' } );
 		setError( null );
@@ -74,7 +83,7 @@ export function useCheckoutController({ quote, formData, couponCodes = [], payme
 				quote_id: quote.quote_id,
 				billing: address,
 				shipping: address,
-				shipping_rate_id: quote.selected_rate_id || selectedRateId,
+				shipping_rate_id: requestedRateId,
 				coupon_codes: couponCodes,
 				payment_method: paymentMethod,
 				customer_note: formData.customerNote || '',
