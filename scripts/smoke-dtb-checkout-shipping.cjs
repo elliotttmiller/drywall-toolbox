@@ -13,14 +13,18 @@ function read(relativePath) {
   return fs.readFileSync(absolutePath, 'utf8');
 }
 
+function normalizeWhitespace(value) {
+  return String(value).replace(/\s+/g, ' ').trim();
+}
+
 function assertContains(source, needle, message) {
-  if (!source.includes(needle)) {
+  if (!normalizeWhitespace(source).includes(normalizeWhitespace(needle))) {
     throw new Error(message);
   }
 }
 
 function assertNotContains(source, needle, message) {
-  if (source.includes(needle)) {
+  if (normalizeWhitespace(source).includes(normalizeWhitespace(needle))) {
     throw new Error(message);
   }
 }
@@ -50,6 +54,11 @@ assertContains(
   'DTB_SHIPPING_ZONE_BOOTSTRAP_VERSION',
   'Checkout shipping zone bootstrap must remain versioned and repairable.',
 );
+assertContains(
+  shippingMethod,
+  "get_shipping_methods( false, 'admin' )",
+  'Shipping-zone migration must detect disabled DTB instances instead of creating duplicates.',
+);
 assertNotContains(
   validator,
   'dtb_commerce_ensure_shipping_method_for_packages',
@@ -57,12 +66,12 @@ assertNotContains(
 );
 assertContains(
   validator,
-  "'price'       => $cost",
+  "'price' => $cost",
   'Shipping rate price must remain pre-tax so order tax calculation does not double-count shipping tax.',
 );
 assertContains(
   validator,
-  "'tax'         => (float) $taxes",
+  "'tax' => (float) $taxes",
   'Shipping rate tax must remain a separate server-authoritative field.',
 );
 assertContains(
@@ -77,8 +86,8 @@ assertContains(
 );
 assertContains(
   reducer,
-  'quote: null',
-  'Checkout quote refresh must invalidate the stale quote before submission.',
+  'quote: null, rates: []',
+  'Checkout quote refresh must invalidate stale quote and rate state before submission.',
 );
 assertContains(
   controller,
