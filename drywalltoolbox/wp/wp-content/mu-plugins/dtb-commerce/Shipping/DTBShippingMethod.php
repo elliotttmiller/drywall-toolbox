@@ -2,12 +2,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
+defined( 'DTB_SHIPPING_METHOD_ID' ) || define( 'DTB_SHIPPING_METHOD_ID', 'dtb_veeqo_rates' );
+defined( 'DTB_SHIPPING_ZONE_BOOTSTRAP_VERSION' ) || define( 'DTB_SHIPPING_ZONE_BOOTSTRAP_VERSION', '2' );
+
 // =============================================================================
 // SERVER-AUTHORITATIVE WOOCOMMERCE SHIPPING METHOD
 //
 // Registers the server-authoritative Drywall Toolbox shipping policy as a
-// WooCommerce shipping method
-// available in WooCommerce → Settings → Shipping → Shipping zones.
+// WooCommerce shipping method available in WooCommerce shipping zones.
 //
 // The method derives its inputs from WooCommerce's server-side cart package.
 // It is a policy method, not a live Veeqo carrier-rating adapter.
@@ -19,16 +21,16 @@ function dtb_commerce_register_shipping_method(): void {
 	if ( ! class_exists( 'DTB_Shipping_Method' ) ) {
 
 		/**
-		 * WooCommerce shipping method: DTB Shipping Policy
+		 * WooCommerce shipping method: DTB Shipping Policy.
 		 *
 		 * Shows Standard, Express, and Overnight options calculated from the
-		 * cart total and total weight.  Free shipping is applied automatically
-		 * for domestic orders ≥ $500.
+		 * cart total and total weight. Free shipping is applied automatically
+		 * for domestic orders >= $500.
 		 */
 		class DTB_Shipping_Method extends WC_Shipping_Method {
 
 			public function __construct( int $instance_id = 0 ) {
-				$this->id                 = 'dtb_veeqo_rates';
+				$this->id                 = DTB_SHIPPING_METHOD_ID;
 				$this->instance_id        = $instance_id;
 				$this->method_title       = __( 'Drywall Toolbox Shipping', 'woocommerce' );
 				$this->method_description = __( 'Server-authoritative Drywall Toolbox shipping policy.', 'woocommerce' );
@@ -65,17 +67,17 @@ function dtb_commerce_register_shipping_method(): void {
 			 */
 			public function calculate_shipping( $package = [] ): void {
 				$destination = $package['destination'] ?? [];
-				$contents    = $package['contents']    ?? [];
+				$contents    = $package['contents'] ?? [];
 
 				$subtotal     = 0.0;
 				$total_weight = 0.0;
 				$has_repair   = false;
 
 				foreach ( $contents as $cart_item ) {
-					$product  = $cart_item['data'] ?? null;
-					$qty      = (int) ( $cart_item['quantity'] ?? 1 );
-					$price    = $product ? (float) $product->get_price() : 0.0;
-					$weight   = $product ? (float) $product->get_weight() : 0.5;
+					$product = $cart_item['data'] ?? null;
+					$qty     = (int) ( $cart_item['quantity'] ?? 1 );
+					$price   = $product ? (float) $product->get_price() : 0.0;
+					$weight  = $product ? (float) $product->get_weight() : 0.5;
 
 					$subtotal     += $price * $qty;
 					$total_weight += $weight * $qty;
@@ -143,25 +145,134 @@ function dtb_commerce_register_shipping_method(): void {
 }
 
 add_filter( 'woocommerce_shipping_methods', function ( array $methods ): array {
-	$methods['dtb_veeqo_rates'] = 'DTB_Shipping_Method';
+	$methods[ DTB_SHIPPING_METHOD_ID ] = 'DTB_Shipping_Method';
 	return $methods;
 } );
 
 /**
- * Bootstrap the DTB shipping method into WooCommerce shipping zones on first
- * activation if no zone already contains an instance of it.
+ * Return whether a shipping zone currently has an enabled DTB policy instance.
+ */
+function dtb_commerce_zone_has_enabled_shipping_method( WC_Shipping_Zone $zone ): bool {
+	foreach ( (array) $zone->get_shipping_methods( true, 'values' ) as $method ) {
+		if ( is_object( $method ) && DTB_SHIPPING_METHOD_ID === (string) ( $method->id ?? '' ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Clear WooCommerce's request/session package-rate cache.
  *
- * Creates a "Rest of World" zone (zone_id=0) instance and a dedicated US zone
- * so domestic and international policy rates are always available without
- * manual WooCommerce admin configuration.
+ * This is required after repairing a missing zone method; otherwise an empty
+ * package-rate result can remain cached for the active checkout session.
  *
- * This runs once on 'woocommerce_init' and marks completion via an option so
- * it does not re-run on every request.
+ * @param array<int,array<string,mixed>> $packages Current cart shipping packages.
+ */
+function dtb_commerce_invalidate_shipping_package_cache( array $packages = [] ): void {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+
+	$package_keys = array_keys( $packages );
+	if ( empty( $package_keys ) ) {
+		$package_keys = [ 0 ];
+	}
+
+	foreach ( $package_keys as $package_key ) {
+		$session_key = 'shipping_for_package_' . absint( $package_key );
+		if ( method_exists( WC()->session, '__unset' ) ) {
+			WC()->session->__unset( $session_key );
+		} else {
+			WC()->session->set( $session_key, null );
+		}
+	}
+}
+
+/**
+ * Ensure the DTB policy method exists in every zone matching the active cart.
+ *
+ * WooCommerce evaluates only the first matching shipping zone. A DTB method in
+ * Rest of World or another nonmatching zone therefore does not make checkout
+ * shippable. This repair is bounded, idempotent, and writes only when the
+ * matching zone has no enabled DTB instance.
+ *
+ * @param array<int,array<string,mixed>> $packages Current cart shipping packages.
+ * @return bool True when at least one zone was repaired.
+ */
+function dtb_commerce_ensure_shipping_method_for_packages( array $packages ): bool {
+	if ( ! class_exists( 'WC_Shipping_Zones' ) || ! class_exists( 'WC_Shipping_Zone' ) ) {
+		return false;
+	}
+
+	$repaired_zone_ids = [];
+	foreach ( $packages as $package ) {
+		if ( ! is_array( $package ) ) {
+			continue;
+		}
+
+		$zone = WC_Shipping_Zones::get_zone_matching_package( $package );
+		if ( ! $zone instanceof WC_Shipping_Zone ) {
+			continue;
+		}
+
+		$zone_id = (int) $zone->get_id();
+		if ( isset( $repaired_zone_ids[ $zone_id ] ) || dtb_commerce_zone_has_enabled_shipping_method( $zone ) ) {
+			continue;
+		}
+
+		$instance_id = $zone->add_shipping_method( DTB_SHIPPING_METHOD_ID );
+		if ( ! $instance_id ) {
+			continue;
+		}
+
+		$repaired_zone_ids[ $zone_id ] = true;
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->warning(
+				'Restored the DTB shipping policy in the active WooCommerce shipping zone.',
+				[
+					'source'      => 'dtb-checkout-shipping',
+					'zone_id'     => $zone_id,
+					'instance_id' => (int) $instance_id,
+				]
+			);
+		}
+	}
+
+	if ( ! empty( $repaired_zone_ids ) ) {
+		dtb_commerce_invalidate_shipping_package_cache( $packages );
+	}
+
+	return ! empty( $repaired_zone_ids );
+}
+
+/**
+ * Return whether a zone location can match a United States destination.
+ */
+function dtb_commerce_zone_matches_us( WC_Shipping_Zone $zone ): bool {
+	foreach ( (array) $zone->get_zone_locations() as $location ) {
+		$type = sanitize_key( (string) ( $location->type ?? '' ) );
+		$code = strtoupper( sanitize_text_field( (string) ( $location->code ?? '' ) ) );
+		if ( ( 'country' === $type && 'US' === $code ) || str_starts_with( $code, 'US:' ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Bootstrap and repair the required policy instances.
+ *
+ * Versioned bootstrap repairs installations that previously marked setup as
+ * complete even though the method existed only in a nonmatching zone. Runtime
+ * checkout reconciliation still protects newly added or reordered zones.
  */
 add_action( 'woocommerce_init', 'dtb_bootstrap_shipping_zones', 20 );
 
 function dtb_bootstrap_shipping_zones(): void {
-	if ( get_option( 'dtb_shipping_zones_bootstrapped' ) ) {
+	if ( DTB_SHIPPING_ZONE_BOOTSTRAP_VERSION === (string) get_option( 'dtb_shipping_zones_bootstrapped' ) ) {
 		return;
 	}
 
@@ -169,49 +280,32 @@ function dtb_bootstrap_shipping_zones(): void {
 		return;
 	}
 
-	$method_id = 'dtb_veeqo_rates';
+	$has_us_zone = false;
+	foreach ( (array) WC_Shipping_Zones::get_zones() as $zone_data ) {
+		$zone = WC_Shipping_Zones::get_zone( (int) ( $zone_data['zone_id'] ?? 0 ) );
+		if ( ! $zone instanceof WC_Shipping_Zone || ! dtb_commerce_zone_matches_us( $zone ) ) {
+			continue;
+		}
 
-	// Check whether the method is already in any zone (including zone 0 = Rest of World).
-	$already_installed = false;
-	foreach ( WC_Shipping_Zones::get_zones() as $zone_data ) {
-		$zone    = WC_Shipping_Zones::get_zone( $zone_data['zone_id'] );
-		$methods = $zone->get_shipping_methods( false, 'values' );
-		foreach ( $methods as $m ) {
-			if ( isset( $m->id ) && $m->id === $method_id ) {
-				$already_installed = true;
-				break 2;
-			}
+		$has_us_zone = true;
+		if ( ! dtb_commerce_zone_has_enabled_shipping_method( $zone ) ) {
+			$zone->add_shipping_method( DTB_SHIPPING_METHOD_ID );
 		}
 	}
 
-	// Also check zone 0 (Rest of World) which is not returned by get_zones().
-	if ( ! $already_installed ) {
-		$zone_0  = new WC_Shipping_Zone( 0 );
-		$methods = $zone_0->get_shipping_methods( false, 'values' );
-		foreach ( $methods as $m ) {
-			if ( isset( $m->id ) && $m->id === $method_id ) {
-				$already_installed = true;
-				break;
-			}
-		}
+	if ( ! $has_us_zone ) {
+		$us_zone = new WC_Shipping_Zone();
+		$us_zone->set_zone_name( 'United States' );
+		$us_zone->set_zone_order( 1 );
+		$us_zone->add_location( 'US', 'country' );
+		$us_zone->save();
+		$us_zone->add_shipping_method( DTB_SHIPPING_METHOD_ID );
 	}
 
-	if ( $already_installed ) {
-		update_option( 'dtb_shipping_zones_bootstrapped', '1' );
-		return;
-	}
-
-	// Create a United States zone.
-	$us_zone = new WC_Shipping_Zone();
-	$us_zone->set_zone_name( 'United States' );
-	$us_zone->set_zone_order( 1 );
-	$us_zone->add_location( 'US', 'country' );
-	$us_zone->save();
-	$us_zone->add_shipping_method( $method_id );
-
-	// Add to Rest of World (zone 0) to catch all other destinations.
 	$row_zone = new WC_Shipping_Zone( 0 );
-	$row_zone->add_shipping_method( $method_id );
+	if ( ! dtb_commerce_zone_has_enabled_shipping_method( $row_zone ) ) {
+		$row_zone->add_shipping_method( DTB_SHIPPING_METHOD_ID );
+	}
 
-	update_option( 'dtb_shipping_zones_bootstrapped', '1' );
+	update_option( 'dtb_shipping_zones_bootstrapped', DTB_SHIPPING_ZONE_BOOTSTRAP_VERSION );
 }
