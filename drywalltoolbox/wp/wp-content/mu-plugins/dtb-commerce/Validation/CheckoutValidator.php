@@ -114,7 +114,7 @@ final class DTB_CheckoutValidator {
 			return $validated;
 		}
 
-		$customer        = WC()->customer;
+		$customer       = WC()->customer;
 		$billing_fields = [ 'first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'email', 'phone' ];
 		foreach ( $billing_fields as $field ) {
 			$method = 'set_billing_' . $field;
@@ -137,7 +137,7 @@ final class DTB_CheckoutValidator {
 
 		$requested = self::normalize_coupon_codes( $coupon_codes );
 		$current   = self::normalize_coupon_codes( WC()->cart->get_applied_coupons() );
-		foreach ( array_values( array_unique( array_merge( $current, $requested ) ) as $code ) ) {
+		foreach ( array_values( array_unique( array_merge( $current, $requested ) ) ) as $code ) {
 			if ( WC()->cart->has_discount( $code ) ) {
 				continue;
 			}
