@@ -103,7 +103,7 @@ final class DTB_CheckoutValidator {
 		}
 
 		return [
-			'customer_id'          => (int) $customer_id,
+			'customer_id'           => (int) $customer_id,
 			'customer_session_hash' => hash( 'sha256', $session_id ),
 		];
 	}
@@ -114,7 +114,7 @@ final class DTB_CheckoutValidator {
 			return $validated;
 		}
 
-		$customer = WC()->customer;
+		$customer        = WC()->customer;
 		$billing_fields = [ 'first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'email', 'phone' ];
 		foreach ( $billing_fields as $field ) {
 			$method = 'set_billing_' . $field;
@@ -127,6 +127,9 @@ final class DTB_CheckoutValidator {
 			if ( method_exists( $customer, $method ) ) {
 				$customer->{$method}( $shipping[ $field ] ?? '' );
 			}
+		}
+		if ( method_exists( $customer, 'set_calculated_shipping' ) ) {
+			$customer->set_calculated_shipping( true );
 		}
 		if ( method_exists( $customer, 'save' ) ) {
 			$customer->save();
@@ -144,6 +147,10 @@ final class DTB_CheckoutValidator {
 			}
 		}
 
+		$packages = (array) WC()->cart->get_shipping_packages();
+		if ( function_exists( 'dtb_commerce_invalidate_shipping_package_cache' ) ) {
+			dtb_commerce_invalidate_shipping_package_cache( $packages );
+		}
 		WC()->cart->calculate_totals();
 		return true;
 	}
@@ -151,7 +158,7 @@ final class DTB_CheckoutValidator {
 	public static function cart_snapshot(): array|WP_Error {
 		$items = [];
 		foreach ( (array) WC()->cart->get_cart() as $cart_item ) {
-			$product = $cart_item['data'] ?? null;
+			$product  = $cart_item['data'] ?? null;
 			$quantity = absint( $cart_item['quantity'] ?? 0 );
 			if ( ! $product instanceof WC_Product || $quantity < 1 ) {
 				continue;
@@ -161,14 +168,14 @@ final class DTB_CheckoutValidator {
 			}
 
 			$items[] = [
-				'product_id'   => absint( $cart_item['product_id'] ?? ( $product->get_parent_id() ?: $product->get_id() ) ),
-				'variation_id' => absint( $cart_item['variation_id'] ?? ( $product->is_type( 'variation' ) ? $product->get_id() : 0 ) ),
-				'quantity'     => $quantity,
-				'sku'          => sanitize_text_field( (string) $product->get_sku() ),
-				'name'         => sanitize_text_field( (string) $product->get_name() ),
+				'product_id'    => absint( $cart_item['product_id'] ?? ( $product->get_parent_id() ?: $product->get_id() ) ),
+				'variation_id'  => absint( $cart_item['variation_id'] ?? ( $product->is_type( 'variation' ) ? $product->get_id() : 0 ) ),
+				'quantity'      => $quantity,
+				'sku'           => sanitize_text_field( (string) $product->get_sku() ),
+				'name'          => sanitize_text_field( (string) $product->get_name() ),
 				'line_subtotal' => wc_format_decimal( (string) ( $cart_item['line_subtotal'] ?? 0 ), 2 ),
-				'line_total'   => wc_format_decimal( (string) ( $cart_item['line_total'] ?? 0 ), 2 ),
-				'product'      => $product,
+				'line_total'    => wc_format_decimal( (string) ( $cart_item['line_total'] ?? 0 ), 2 ),
+				'product'       => $product,
 			];
 		}
 
@@ -178,7 +185,9 @@ final class DTB_CheckoutValidator {
 
 		$cart_hash = method_exists( WC()->cart, 'get_cart_hash' ) ? (string) WC()->cart->get_cart_hash() : '';
 		if ( '' === $cart_hash ) {
-			$cart_hash = hash( 'sha256', wp_json_encode( array_map( static function ( array $item ): array { return array_intersect_key( $item, array_flip( [ 'product_id', 'variation_id', 'quantity', 'line_total' ] ) ); }, $items ) ) ?: '' );
+			$cart_hash = hash( 'sha256', wp_json_encode( array_map( static function ( array $item ): array {
+				return array_intersect_key( $item, array_flip( [ 'product_id', 'variation_id', 'quantity', 'line_total' ] ) );
+			}, $items ) ) ?: '' );
 		}
 
 		return [
@@ -191,12 +200,17 @@ final class DTB_CheckoutValidator {
 				'shipping' => (float) WC()->cart->get_shipping_total(),
 				'tax'      => (float) WC()->cart->get_total_tax(),
 				'total'    => (float) WC()->cart->get_total( 'edit' ),
-				'currency'  => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
+				'currency' => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
 			],
 		];
 	}
 
 	public static function shipping_rates(): array {
+		$packages = (array) WC()->cart->get_shipping_packages();
+		if ( function_exists( 'dtb_commerce_ensure_shipping_method_for_packages' ) ) {
+			dtb_commerce_ensure_shipping_method_for_packages( $packages );
+		}
+
 		WC()->cart->calculate_shipping();
 		$rates = [];
 		foreach ( (array) WC()->shipping()->get_packages() as $package ) {
@@ -204,13 +218,20 @@ final class DTB_CheckoutValidator {
 				if ( ! is_object( $rate ) || ! method_exists( $rate, 'get_id' ) ) {
 					continue;
 				}
-				$taxes = method_exists( $rate, 'get_taxes' ) ? array_sum( (array) $rate->get_taxes() ) : 0.0;
+
+				$cost  = (float) ( method_exists( $rate, 'get_cost' ) ? $rate->get_cost() : 0 );
+				$taxes = method_exists( $rate, 'get_taxes' )
+					? array_sum( array_map( 'floatval', (array) $rate->get_taxes() ) )
+					: 0.0;
 				$rates[] = [
-					'id'       => sanitize_text_field( (string) $rate->get_id() ),
-					'name'     => sanitize_text_field( (string) ( method_exists( $rate, 'get_label' ) ? $rate->get_label() : 'Shipping' ) ),
-					'price'    => (float) ( method_exists( $rate, 'get_cost' ) ? $rate->get_cost() : 0 ) + (float) $taxes,
-					'tax'      => (float) $taxes,
-					'currency' => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
+					'id'          => sanitize_text_field( (string) $rate->get_id() ),
+					'method_id'   => sanitize_key( (string) ( method_exists( $rate, 'get_method_id' ) ? $rate->get_method_id() : '' ) ),
+					'instance_id' => absint( method_exists( $rate, 'get_instance_id' ) ? $rate->get_instance_id() : 0 ),
+					'name'        => sanitize_text_field( (string) ( method_exists( $rate, 'get_label' ) ? $rate->get_label() : 'Shipping' ) ),
+					'price'       => $cost,
+					'tax'         => (float) $taxes,
+					'total'       => $cost + (float) $taxes,
+					'currency'    => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
 				];
 			}
 		}
@@ -236,8 +257,16 @@ final class DTB_CheckoutValidator {
 				$customer->{$method}( $shipping[ $field ] ?? '' );
 			}
 		}
+		if ( method_exists( $customer, 'set_calculated_shipping' ) ) {
+			$customer->set_calculated_shipping( true );
+		}
 		if ( method_exists( $customer, 'save' ) ) {
 			$customer->save();
+		}
+
+		$packages = (array) WC()->cart->get_shipping_packages();
+		if ( function_exists( 'dtb_commerce_invalidate_shipping_package_cache' ) ) {
+			dtb_commerce_invalidate_shipping_package_cache( $packages );
 		}
 		$rates = self::shipping_rates();
 		return empty( $rates )
@@ -272,11 +301,19 @@ final class DTB_CheckoutValidator {
 				break;
 			}
 		}
+
+		if ( '' !== $requested_rate && null === $selected ) {
+			return new WP_Error(
+				'dtb_checkout_shipping_rate_changed',
+				'The selected shipping method is no longer available. Refresh shipping options and try again.',
+				[ 'status' => 409 ]
+			);
+		}
 		if ( null === $selected ) {
 			$selected = $rates[0];
 		}
 
-		$chosen = (array) WC()->session->get( 'chosen_shipping_methods', [] );
+		$chosen    = (array) WC()->session->get( 'chosen_shipping_methods', [] );
 		$chosen[0] = $selected['id'];
 		WC()->session->set( 'chosen_shipping_methods', $chosen );
 		WC()->cart->calculate_totals();
@@ -305,14 +342,14 @@ final class DTB_CheckoutValidator {
 		}
 
 		return hash( 'sha256', wp_json_encode( [
-			'cart_hash'        => (string) ( $context['cart_hash'] ?? '' ),
-			'payment_method'   => sanitize_key( $payment_method ),
-			'billing'         => $context['billing'] ?? [],
-			'shipping'        => $context['shipping'] ?? [],
-			'coupon_codes'    => $context['coupon_codes'] ?? [],
-			'shipping_rate_id' => (string) ( $context['shipping_rate_id'] ?? '' ),
-			'items'           => $items,
-			'totals'          => $context['totals'] ?? [],
+			'cart_hash'         => (string) ( $context['cart_hash'] ?? '' ),
+			'payment_method'    => sanitize_key( $payment_method ),
+			'billing'           => $context['billing'] ?? [],
+			'shipping'          => $context['shipping'] ?? [],
+			'coupon_codes'      => $context['coupon_codes'] ?? [],
+			'shipping_rate_id'  => (string) ( $context['shipping_rate_id'] ?? '' ),
+			'items'             => $items,
+			'totals'            => $context['totals'] ?? [],
 		] ) ?: '' );
 	}
 
