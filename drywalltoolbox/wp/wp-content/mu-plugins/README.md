@@ -1,24 +1,22 @@
 <!-- markdownlint-disable MD013 MD032 -->
 
-# Drywall Toolbox MU Plugins — Architecture, Wiring, and Operations Blueprint
+# Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-This document is the **current source-of-truth** for the `wp/wp-content/mu-plugins/` system in this repository.
-It reflects the active code in:
-- `00-dtb-loader.php`
-- all `dtb-*.php` mu-plugins
-- `wp/wp-config.php` integration constants
+Last verified against source: 2026-07-12.
 
----
+This document is the canonical operational map for:
 
-## 1) Runtime model and load order
+```text
+drywalltoolbox/wp/wp-content/mu-plugins/
+```
 
-WordPress loads all files in `mu-plugins/` automatically (alphabetical order, no activation UI).
+Source code and the active loader remain authoritative. When this document and implementation diverge, correct this document in the same change.
 
-Drywall Toolbox additionally uses `00-dtb-loader.php` to enforce explicit dependency order via `_dtb_require(...)`.
+## 1. Runtime model
 
-### 1.1 Loader-managed chain (`00-dtb-loader.php`)
+WordPress automatically loads top-level PHP files in `mu-plugins/`. Drywall Toolbox uses `00-dtb-loader.php` as an explicit composition root so dependencies load in a deterministic order before WordPress reaches remaining top-level compatibility files.
 
-`00-dtb-loader.php` is now the composition root and loads only module bootstraps:
+Canonical module order:
 
 1. `dtb-platform/bootstrap.php`
 2. `dtb-catalog-platform/bootstrap.php`
@@ -29,401 +27,293 @@ Drywall Toolbox additionally uses `00-dtb-loader.php` to enforce explicit depend
 7. `dtb-marketing/bootstrap.php`
 8. `dtb-repair-service/bootstrap.php`
 9. `dtb-integrations/bootstrap.php`
+10. `dtb-support/bootstrap.php`
+11. `dtb-returns/bootstrap.php`
 
-Each module bootstrap now loads bounded module paths (for example `dtb-platform/Security/ApiSecurity.php` and `dtb-order-platform/Infrastructure/OrderEventRepository.php`).
-Where extraction is not yet complete, those module files are temporary compatibility wrappers that delegate to legacy root files.
-
-### 1.2 Compatibility wrappers (temporary)
-
-Wrapper files exist only to preserve runtime behavior while root-heavy files are being extracted into module internals.
-
-Removal criteria:
-- The wrapper’s legacy root dependency has been fully moved to module-native code.
-- Bootstrap wiring is updated to module-native implementation files.
-- Smoke checks confirm routes, admin pages, event ledgers, queues, and tracking projections still function.
-
-Current wrapper-backed legacy roots include:
-- `dtb-utils.php`, `dtb-auth.php`, `dtb-cache.php`, `dtb-cache-admin.php`, `dtb-rest-api.php`
-- `dtb-api-security.php`, `dtb-frontend-security.php`, `dtb-admin-security.php`
-- `dtb-api-health-monitor.php`, `dtb-admin-performance.php`, `dtb-ops-dashboard.php`, `dtb-config-reference.php`
-- `dtb-order-events.php`, `dtb-order-workflows.php`, `dtb-order-queue.php`, `dtb-order-tracking.php`, `dtb-payment-webhooks.php`, `dtb-order-admin.php`
-- `dtb-repair-events.php`, `dtb-repair-workflows.php`, `dtb-repair-queue.php`, `dtb-repair-notifications.php`, `dtb-repairs.php`, `dtb-repair-admin.php`
-- `dtb-image-sync.php`, `dtb-coming-soon.php`, `dtb-seo.php`
-- `dtb-woocommerce.php`, `dtb-veeqo.php`, `dtb-quickbooks.php`, `dtb-rewards.php`
-- `dtb-product-mapping.php`, `dtb-schematics-api.php`, `dtb-schematics-admin.php`, `dtb-catalog-health.php`
-### 1.3 Also auto-loaded by WordPress (outside `_dtb_require` list)
-
-WordPress still scans top-level `*.php` files in `mu-plugins/`. DTB relies on module bootstraps to include legacy files first; subsequent WordPress `include_once` passes are no-ops for already-loaded files.
-
-Host-provided mu-plugins still auto-load directly:
-
-- `endurance-page-cache.php`
-- `sso.php`
-
----
+`00-dtb-loader.php` also owns shared feature-flag, origin, and security-log helpers. New bounded business logic belongs inside the relevant module subtree. Root-level compatibility files may delegate to modules but must not become the home for new domain behavior.
 
-## 2) Core shared primitives
-
-### 2.1 `00-dtb-loader.php`
-
-Defines foundational shared helpers:
-- `dtb_feature_enabled(string $constant_name, bool $default = true)`
-- `dtb_security_log(string $event, array $context = [])`
-- `dtb_allowed_origins()`
-- `dtb_check_origin()`
-
-Allowed origins include production, localhost dev origins, and optional `DRYWALL_ALLOWED_ORIGIN` from `wp-config.php`.
-
-### 2.2 `dtb-utils.php`
-
-Primary configuration and helper bridge used throughout suite:
-- `dtb_get_config()`
-- `dtb_get_wc_credentials()`
-- request context helpers (`dtb_is_rest_api_request`, `dtb_is_admin_or_rest_request`, etc.)
-- client IP and anonymization helpers
-- CSV/catalog resolution (`DTB_WC_CSV_FILENAME` optional override + auto-discovery fallback)
-
-### 2.3 `dtb-cache.php`
-
-Caching and invalidation primitives:
-- `dtb_cached_proxy()` read-through transient cache
-- `dtb_invalidate_product_cache()`
-- cache logging (`dtb_log_cache_event`, `dtb_get_cache_log`)
-- ops module cache helpers (`dtb_ops_cache_get`, `dtb_ops_cache_flush`)
-- route: `GET /wp-json/dtb/v1/cache/status` (admin/JWT-gated)
-
----
-
-## 3) REST API surface (current)
-
-### 3.1 `drywall/v1` (from `dtb-rest-api.php`)
-
-Proxy/public-commerce namespace:
-- `GET /products`
-- `GET /products/slug/{slug}`
-- `GET /products/{id}`
-- `GET /products/{id}/variations`
-- `GET /products/{parent_id}/variations/{id}`
-- `GET /categories`
-- `GET /attributes`
-- `GET /search`
-- `POST /orders` (JWT)
-- `GET /orders`
-- `GET /orders/{id}` (JWT)
-- `GET /coupons/{code}`
-- `POST /customers`
-- `GET /customers/{id}` (JWT)
-- `POST /webhooks/products` (webhook receiver)
-
-### 3.2 `dtb/v1` platform routes (multi-module)
-
-From `dtb-rest-api.php`:
-- `GET /config`
-- `GET /catalog`
-- `GET /products-csv`
-- `POST /import-catalog`
-- `POST /create-app-password`
-- `GET|POST /webhooks/ensure`
-- `GET /cors-test`
-- `POST /contact`
-
-From `dtb-auth.php`:
-- `POST /auth/login`
-- `DELETE /auth/logout`
-- `POST /auth/validate`
-- `POST /auth/register`
-- `POST /auth/forgot-password`
-- `POST /auth/reset-password`
-
-From `dtb-platform/Rest/AccountController.php`:
-- `GET|PATCH /account` (authenticated customer profile and preferences)
-- `POST /account/password` (authenticated password change)
-
-From `dtb-returns/Rest/ReturnsController.php`:
-- `GET /returns/mine` (authenticated customer return history)
-
-From `dtb-support/Rest/SupportCustomerController.php`:
-- `GET /support/mine` (authenticated customer support ticket history)
-
-From `dtb-repair-service/Rest/RepairQuoteActionController.php`:
-- `POST /repairs/{id}/quote` (public-token/customer quote accept or decline)
-
-From `dtb-api-security.php`:
-- `GET /nonce`
-
-From `dtb-cache.php`:
-- `GET /cache/status`
-
-From `dtb-wc-payment-runtime.php`:
-- `POST /payment-runtime/orders/{order_id}/items/{item_id}` (keyed order-pay line quantity update)
-
-From `dtb-schematics-api.php`:
-- `GET /schematics/media`
-
-From `dtb-coming-soon.php`:
-- `POST /subscribe`
-- `GET /subscribe-nonce`
-- `GET /subscribers` (admin)
-- `GET /unsubscribe`
-- `POST /subscribe/delete` (admin)
-
-From `dtb-image-sync.php`:
-- `POST /sync-images`
-- `GET /sync-images/status`
-- `GET /sync-images/progress`
-- `POST /sync-images/link-only`
-- `POST /sync-images/reset`
-- `POST /sync-images/purge-unlinked`
-- `POST /sync-images/fix-renamed`
-- `POST /sync-images/release-lock`
-
-From `dtb-rewards.php`:
-- `GET /rewards/balance/{id}`
-- `GET /rewards/history/{id}`
-- `POST /rewards/redeem`
-- `POST /rewards/admin/adjust`
+## 2. Module responsibilities
 
-From `dtb-veeqo.php`:
-- `GET /veeqo/status` (admin/JWT-gated)
-- `POST /veeqo/shipping-rates` (public — storefront checkout)
-- `GET /veeqo/inventory` (public — storefront inventory check)
-- `POST /veeqo/webhooks/order` (public — Veeqo HMAC-signed webhook receiver)
-- `POST /repair-request` (public — repair form submission)
-- `POST /veeqo/sync-order/{order_id}` (admin — manual order re-sync to Veeqo; requires `manage_woocommerce`)
-- `POST /veeqo/inventory/pull` (admin — pull Veeqo stock into WC; requires `manage_woocommerce`)
-- `DELETE /veeqo/webhooks/ensure` (admin — force webhook re-registration; requires `manage_woocommerce`)
+### `dtb-platform`
 
-From `dtb-quickbooks.php`:
-- `GET /qbo/status`
-- `POST /qbo/sync`
+- runtime configuration and feature flags;
+- support primitives;
+- origin/CORS/API/admin security;
+- JWT/cookie authentication and account/session policy;
+- cache, health, logging, metrics, and diagnostics;
+- operator operations dashboards;
+- shared admin-workbench services;
+- account/history and shared platform REST controllers;
+- Command Center and System Manager.
 
-From `dtb-ops-dashboard.php`:
-- `GET /health`
+### `dtb-catalog-platform`
 
-Additional namespace shim:
-- `GET /wp-json/wc-admin/profile` (from `dtb-rest-api.php`)
+- catalog product, variation, brand, tool-family, and toolset domain models;
+- WooCommerce/product repositories and product meta;
+- category/brand normalization and catalog facets;
+- variation read models and default variation resolution;
+- product mapping and relationships;
+- compatible/universal parts projections;
+- inventory intelligence and Veeqo stock projection;
+- catalog validation, health, REST, CLI, and admin tools.
 
----
+### `dtb-commerce`
 
-## 4) wp-admin wiring blueprint
+- WooCommerce Store API cart extension data;
+- toolset/order-line metadata persistence;
+- order-type and order-admin query services;
+- branded WooCommerce email integration;
+- commerce-facing order REST/admin surfaces.
 
-### 4.1 Admin menus and pages
+### `dtb-order-platform`
 
-#### DTB Tools top-level (`dtb-toolbox`)
+- order lifecycle statuses and transitions;
+- append-only order event ledger;
+- integration-state persistence;
+- Action Scheduler queue and bounded retry;
+- order write boundary and duplicate containment;
+- payment webhook verification/idempotency;
+- customer/operator tracking projections;
+- order REST controllers and operator dashboards.
 
-Provided shared across these tools:
-- `dtb-api-health-monitor.php` → **API Health** submenu (`dtb-api-health`)
-- `dtb-product-mapping.php` → **Product Mapping** submenu (`dtb-product-mapping`)
-- `dtb-schematics-admin.php` → **Schematics** submenu (`dtb-schematics`)
+### `dtb-schematics` and `dtb-media`
 
-#### DTB Ops top-level (`dtb-ops`)
+- schematic mapping, editor, media-manifest, and product-linking workflows;
+- image/media synchronization, validation, registration, and repair tools.
 
-From `dtb-ops-dashboard.php`:
-- Dashboard (`dtb-ops`)
-- Audit Log (`dtb-ops-audit`)
-- QuickBooks submenu added by `dtb-quickbooks.php` (`dtb-ops-quickbooks`)
+### `dtb-marketing`
 
-#### Other admin pages
+- coming-soon/subscriber and SEO support surfaces.
 
-- `dtb-cache-admin.php` → Tools → **DTB Cache** (`dtb-cache-settings`)
-- `dtb-image-sync.php` → DTB Tools submenu (image sync UI; plus REST/AJAX workflow)
+### `dtb-repair-service`
 
-### 4.2 AJAX endpoints (key)
+- repair domain statuses/transitions/events;
+- repair persistence, media, public tokens, quotes, SLA, queue, and notifications;
+- customer and operator timelines;
+- repair REST controllers and wp-admin workbench.
 
-- `dtb-api-health-monitor.php`
-  - `wp_ajax_dtb_run_health_checks`
-  - `wp_ajax_dtb_test_jwt_roundtrip`
-  - `wp_ajax_dtb_save_wc_creds`
-
-- `dtb-product-mapping.php`
-  - `wp_ajax_dtb_pm_search_products`
-  - `wp_ajax_dtb_pm_get_variables`
-  - `wp_ajax_dtb_pm_save_variation`
-  - `wp_ajax_dtb_pm_delete_variation`
-  - compatibility/relationship endpoints (`dtb_pm_*`)
+### `dtb-integrations`
 
-- `dtb-schematics-admin.php`
-  - `wp_ajax_dtb_schematics_list`
-  - `wp_ajax_dtb_schematics_get`
-  - `wp_ajax_dtb_schematics_save`
-  - `wp_ajax_dtb_schematics_remove`
-  - `wp_ajax_dtb_schematics_purge`
-  - `wp_ajax_dtb_schematics_search_products`
+- WooCommerce integration adapters;
+- Veeqo inventory/fulfillment integration;
+- QuickBooks accounting projection;
+- order-pipeline contracts and webhook echo guards;
+- notification rendering/dispatch;
+- marketplace shared infrastructure, Amazon, and eBay modules.
 
-- `dtb-ops-dashboard.php`
-  - `wp_ajax_dtb_ops_kpis`
-  - `wp_ajax_dtb_ops_audit_log`
+Rewards integration files remain intentionally omitted from the launch bootstrap. Frontend feature flags do not make rewards operational unless the backend services/jobs/controllers are explicitly restored and validated.
 
-- `dtb-quickbooks.php`
-  - `wp_ajax_dtb_qbo_oauth_callback`
+### `dtb-support`
 
-- `dtb-coming-soon.php`
-  - `admin_post_dtb_subscribe`
-  - `admin_post_nopriv_dtb_subscribe`
+- support ticket domain, repository, SLA, priority, workflow, assignment, replies, email outbox, customer history, REST, and operator workbench.
 
----
+### `dtb-returns`
 
-## 5) Scheduled jobs / asynchronous workflows
+- return domain/status model, repository, workflow transition map, customer/admin REST, and wp-admin page.
 
-- `dtb-rest-api.php`
-  - Catalog import trigger `POST /dtb/v1/import-catalog`
-  - Uses Action Scheduler if available (`as_schedule_single_action`), with WP-Cron fallback (`dtb_run_catalog_import_wpcron`)
+## 3. Request and trust boundaries
 
-- `dtb-ops-dashboard.php`
-  - `dtb_ops_refresh_kpis` every 5 minutes
-  - `dtb_ops_audit_purge` daily
-
-- `dtb-veeqo.php`
-  - `dtb_veeqo_health_check` daily (API reachability; admin alert after 3 consecutive failures)
-  - `dtb_veeqo_inventory_sync` every 6 hours (pull Veeqo stock into WC product quantities via `dtb_veeqo_pull_inventory_into_wc()`)
-
-- `dtb-quickbooks.php`
-  - `dtb_qbo_daily_sync` daily (when integration configured)
-
----
-
-## 6) Security and trust boundaries
-
-- CORS/origin enforcement centralized via:
-  - `dtb_allowed_origins()`
-  - `dtb_check_origin()`
-  - `dtb-api-security.php` preflight/headers/REST policy
-
-- JWT auth handled by `dtb-auth.php`:
-  - HS256 JWT signed with `DRYWALL_JWT_SECRET`
-  - HttpOnly cookie `dtb_auth` + Bearer fallback
-
-- Endpoint gating styles in use:
-  - public (`__return_true`) for read-safe/public operations
-  - `dtb_jwt_permission` for authenticated customer/API flows
-  - capability checks (`manage_options`, `manage_woocommerce`) for admin operations
-
-- Webhook HMAC validation used in:
-  - Woo/DTB product webhook path (`WC_WEBHOOK_SECRET`)
-  - Veeqo webhook path (`DTB_VEEQO_WEBHOOK_SECRET`)
-
----
-
-## 7) `wp-config.php` contract + audit
-
-This section documents what the mu-plugin suite expects from `wp/wp-config.php`.
-
-### 7.1 Present and configured (current file)
-
-The following constants are currently defined in `drywalltoolbox/wp/wp-config.php`:
-
-- Core DTB/WC/JWT/import:
-  - `WC_PROXY_CONSUMER_KEY`
-  - `WC_PROXY_CONSUMER_SECRET`
-  - `DTB_WC_AUTH_USER`
-  - `DTB_WC_AUTH_PASS`
-  - `WC_WEBHOOK_SECRET`
-  - `DTB_IMPORT_SECRET`
-  - `DRYWALL_JWT_SECRET`
-  - `DRYWALL_ALLOWED_ORIGIN`
-  - `DTB_DISABLE_PRODUCT_WEBHOOKS`
-  - `DTB_ADMIN_EMAIL`
-
-- Veeqo:
-  - `DTB_VEEQO_API_KEY` ← **ACTION REQUIRED: fill in actual API key from Veeqo → Settings → API Keys**
-  - `DTB_VEEQO_WEBHOOK_SECRET` ← set to a default placeholder; update to match Veeqo webhook config
-  - `DTB_VEEQO_WAREHOUSE_ID` ← set to `0`; auto-discovered on first WC Settings → Integrations save
-  - `DTB_VEEQO_CHANNEL_ID` ← set to `0`; auto-discovered on first WC Settings → Integrations save
-  - `DTB_VEEQO_DELIVERY_METHOD_ID` ← optional Veeqo delivery method ID for API-created orders
-  - `DTB_VEEQO_DEBUG` ← `false` (set `true` for verbose logging)
-
-- Platform hardening/perf:
-  - `WP_ENVIRONMENT_TYPE`, `WP_DEBUG*`, memory limits, cron mode, SSL admin, file-edit constraints, cookie path overrides
-
-### 7.2 Optional / not currently defined in `wp-config.php`
-
-These are optional (module or feature flags), and plugin code has fallbacks/defaults:
-
-- QuickBooks credentials/constants:
-  - `DTB_QBO_CLIENT_ID`, `DTB_QBO_CLIENT_SECRET`, `DTB_QBO_REALM_ID`
-  - `DTB_QBO_SANDBOX` (feature flag)
-
-- Optional overrides/feature flags:
-  - `DTB_WC_CSV_FILENAME`
-  - `DTB_CATALOG_PLATFORM_ENABLED`
-  - `DTB_WEBHOOK_DELIVERY_URL`
-  - `DTB_ENABLE_CSP`
-  - `DTB_ADMIN_EMAIL`
-  - `DTB_ADMIN_PERF_DISABLE`
-  - `DTB_SECURITY_LOGGING`
-
-### 7.3 Audit findings
-
-1. **Configuration alignment:** Current `wp-config.php` aligns with active DTB proxy/auth/import/Veeqo wiring.
-2. **QuickBooks readiness:** QBO module is present in code; without QBO constants it remains effectively unconfigured (expected behavior).
-3. **Operational switch active:** `DTB_DISABLE_PRODUCT_WEBHOOKS` is set true; this intentionally suppresses auto-webhook creation in `dtb-woocommerce.php`.
-4. **Security risk note:** Secrets are present in plain text in `wp-config.php`. This is normal for WP runtime, but rotate immediately if ever exposed outside secure server boundaries.
-
----
-
-## 8) Module map (what lives where)
-
-- `dtb-platform/`
-  - shared config/auth/cache/security/REST wiring + ops/admin health utilities
-  - legacy bridge loads: `dtb-utils.php`, `dtb-auth.php`, `dtb-cache.php`, `dtb-cache-admin.php`, `dtb-rest-api.php`, `dtb-api-security.php`, `dtb-frontend-security.php`, `dtb-admin-security.php`, `dtb-api-health-monitor.php`, `dtb-admin-performance.php`, `dtb-ops-dashboard.php`, `dtb-config-reference.php`
-- `dtb-catalog-platform/`
-  - canonical catalog product model and toolset APIs
-  - legacy bridge also loads: `dtb-catalog-health.php`
-- `dtb-commerce/`
-  - cart/order line metadata persistence for Store API toolset flows
-- `dtb-order-platform/`
-  - order lifecycle/event ledger/queue/tracking/payment webhook/admin tooling
-  - legacy bridge loads: `dtb-order-events.php`, `dtb-order-workflows.php`, `dtb-order-queue.php`, `dtb-order-tracking.php`, `dtb-payment-webhooks.php`, `dtb-order-admin.php`
-- `dtb-schematics/`
-  - schematics and product mapping surfaces
-  - legacy bridge loads: `dtb-product-mapping.php`, `dtb-schematics-api.php`, `dtb-schematics-admin.php`
-- `dtb-media/`
-  - media sync operational workflows
-  - legacy bridge loads: `dtb-image-sync.php`
-- `dtb-marketing/`
-  - coming-soon and SEO surfaces
-  - legacy bridge loads: `dtb-coming-soon.php`, `dtb-seo.php`
-- `dtb-repair-service/`
-  - repair lifecycle/event queue/rest/admin tooling
-  - legacy bridge loads: `dtb-repair-events.php`, `dtb-repair-workflows.php`, `dtb-repair-queue.php`, `dtb-repair-notifications.php`, `dtb-repairs.php`, `dtb-repair-admin.php`
-- `dtb-integrations/`
-  - external commerce/integration adapters
-  - legacy bridge loads: `dtb-woocommerce.php`, `dtb-veeqo.php`, `dtb-quickbooks.php`, `dtb-rewards.php`
-
----
-
-## 9) High-value operational workflows
-
-1. **Catalog refresh pipeline**
-   - upload/replace CSV in uploads import path
-   - trigger `POST /dtb/v1/import-catalog`
-   - Action Scheduler/WP-Cron runs importer
-   - cache/webhook layers handle visibility consistency
-
-2. **Product invalidation path**
-   - Woo product change/webhook event
-   - DTB webhook receiver updates/invalidates cache
-   - storefront reads fresh proxy data
-
-3. **Auth lifecycle**
-   - SPA login → `/dtb/v1/auth/login`
-   - JWT HttpOnly cookie issued
-   - protected routes use cookie/Bearer validation via `dtb_jwt_permission`
-
-4. **Media sync path**
-   - image files scanned/registered by `dtb-image-sync`
-   - attachments linked by SKU to WC products
-   - admin + REST controls support dry-run/reset/purge/relock operations
-
----
-
-## 10) Maintenance rules for future edits
-
-- Keep `00-dtb-loader.php` load order comments in sync with actual `_dtb_require(...)` list.
-- Run `scripts/smoke-dtb-mu-modules.ps1` after loader/bootstrap edits to verify required module bootstraps and composition order.
-- Any new REST route must be documented in section 3.
-- Any new `wp-config.php` constant contract must be documented in section 7.
-- Any new admin page/AJAX endpoint should be added to section 4.
-- Any new cron/scheduler event should be added to section 5.
-
-When this file and source diverge, source code is authoritative and this README must be updated immediately.
+```text
+React SPA
+  -> domain-root /wp-json alias
+  -> WordPress REST server
+  -> permission callback and input validation
+  -> DTB controller/service/repository
+  -> WooCommerce or DTB persistence
+  -> queued external side effects
+```
+
+Security invariants:
+
+- WooCommerce consumer keys, application passwords, webhook secrets, Veeqo keys, QuickBooks credentials, and marketplace credentials are server-only.
+- `GET /dtb/v1/config` returns public capability/bootstrap data only; it never returns WooCommerce credentials.
+- Browser product/catalog reads use the server-side proxy.
+- Browser cart/session operations use WooCommerce Store API.
+- Storefront order creation uses the DTB checkout session/confirm/finalize contract only.
+- Legacy `POST /drywall/v1/orders` is retired.
+- Legacy order/customer reads are deprecated and bind records to the authenticated customer.
+- Public endpoints must be intentionally read-safe or protected by a signed token/HMAC/idempotency contract.
+- Admin routes require `manage_options`, `manage_woocommerce`, or the owning DTB capability.
+- Webhook routes preserve signature verification.
+
+## 4. API surface
+
+### `dtb/v1`
+
+Primary platform/domain namespace. Major route groups include:
+
+- authentication, account, password, and history;
+- checkout capabilities/session/confirm/finalize/tax preview;
+- catalog import/platform/facets/products/toolsets/inventory intelligence;
+- schematics and media synchronization;
+- orders, tracking, events, health, and operator actions;
+- repairs, quotes, media, comments, customer lists, and operator workbench;
+- returns and support customer/admin routes;
+- Veeqo status, cart availability, webhook, sync, mapping, and admin operations;
+- QuickBooks status/sync/OAuth;
+- cache, health, operations, Command Center, and System Manager;
+- marketing/subscriber routes.
+
+### `drywall/v1`
+
+Compatibility/read-proxy namespace:
+
+- public product list/detail/slug/variation/category/attribute/search/SKU resolution;
+- product cache-invalidation webhook;
+- public customer creation compatibility route;
+- deprecated, authenticated, customer-bound order/customer reads.
+
+No raw storefront order creation is permitted through this namespace.
+
+### `headless/v1`
+
+Theme-level headless support routes.
+
+### `wc/store/v1`
+
+WooCommerce Store API used for public cart/session operations. Administrative WC REST APIs are not called from browser code.
+
+## 5. Checkout, order, and integration flow
+
+```text
+Store API cart
+  -> POST /dtb/v1/checkout/session
+  -> POST /dtb/v1/checkout/confirm
+  -> POST /dtb/v1/checkout/finalize
+  -> WooCommerce order/payment runtime
+  -> DTB order event ledger
+  -> dtb-orders Action Scheduler queue
+  -> Veeqo / QuickBooks / notification / tracking jobs
+```
+
+The checkout contract uses an idempotency key. The order write boundary blocks raw external order creation, duplicate materialization, email/side-effect loops, and queue work for contained duplicate orders.
+
+External order side effects use `dtb_order_enqueue_job()` and the `dtb-orders` Action Scheduler group. Queue behavior includes scheduled-action deduplication, bounded exponential retry, integration-state recording, event logging, and duplicate side-effect suppression.
+
+## 6. Veeqo contract
+
+Veeqo is authoritative for:
+
+- sellable inventory and warehouse availability;
+- allocation and fulfillment;
+- labels and shipment execution;
+- shipment status, carrier, and tracking.
+
+The storefront uses `POST /dtb/v1/veeqo/cart-availability` for checkout availability. Bulk inventory routes are administrative.
+
+`POST /dtb/v1/veeqo/shipping-rates` currently applies DTB shipping policy based on destination, subtotal, product/service type, and weight. It does not return live Veeqo carrier quotes. Code, documentation, and customer copy must not describe these values as Veeqo live rates until a real rating adapter is implemented.
+
+Veeqo webhook processing must preserve HMAC validation, echo-loop containment, idempotency, order ownership/correlation, and tracking projection updates.
+
+## 7. QuickBooks contract
+
+QuickBooks receives accounting projections after qualifying payment/refund lifecycle events. It is not an order-creation authority. QBO calls are server-side, queued, idempotent, and recorded in order integration state.
+
+When QuickBooks constants are absent, the integration remains explicitly unconfigured and skips safely.
+
+## 8. Authentication and customer ownership
+
+DTB authentication uses an HS256 JWT signed with `DRYWALL_JWT_SECRET` and issued primarily as the HttpOnly `dtb_auth` cookie. Bearer tokens are supported for compatible API clients.
+
+Customer-facing record routes must:
+
+1. validate authentication;
+2. resolve the authenticated customer ID from the validated token/session;
+3. verify record ownership or use a customer-bound repository query;
+4. avoid trusting caller-supplied customer IDs;
+5. return non-enumerating 403/404 behavior consistent with the owning controller.
+
+A valid JWT alone is not sufficient authorization for an arbitrary order, customer, repair, return, or support-ticket ID.
+
+## 9. Configuration contract
+
+Server-only constants include:
+
+- WooCommerce proxy/application auth and webhook/import secrets;
+- JWT and origin configuration;
+- Veeqo API/webhook/warehouse/channel/delivery configuration;
+- order write-boundary and reviewed external-write exception configuration;
+- QuickBooks and marketplace credentials;
+- feature flags and operational switches.
+
+`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys.
+
+## 10. Scheduled and asynchronous work
+
+Examples include:
+
+- catalog import through Action Scheduler with WP-Cron fallback;
+- order integration/notification/tracking jobs;
+- repair queue and notification work;
+- Veeqo health/inventory jobs where enabled;
+- QuickBooks projection jobs;
+- marketplace ingestion/materialization jobs;
+- support email outbox processing;
+- operations KPI refresh and audit cleanup.
+
+Every new scheduled hook must document ownership, argument contract, queue group, idempotency behavior, retry policy, and operational visibility.
+
+## 11. Admin and observability surfaces
+
+DTB wp-admin provides:
+
+- Command Center and System Manager;
+- order operations and product-order dashboards;
+- catalog, product mapping, parts, inventory intelligence, schematics, and media tools;
+- repair, return, and support workbenches;
+- integration health/state and exception surfaces;
+- cache, API health, configuration reference, SEO, and cleanup tools.
+
+Operational actions require capability checks, nonces where applicable, input sanitization, escaped output, prepared SQL, and audit/event recording.
+
+## 12. Deployment contract
+
+Deployment packages:
+
+- generated frontend `dist/` contents;
+- `drywalltoolbox/.htaccess`;
+- `drywalltoolbox/logos/`;
+- `drywalltoolbox/wp/.htaccess` and `wp/index.php`;
+- DTB mu-plugins and themes.
+
+Deployment never packages:
+
+- `wp-config.php`;
+- WordPress core;
+- uploads, cache, or upgrade state;
+- runtime secrets;
+- database dumps unless an explicitly controlled operational task requires one.
+
+## 13. Validation
+
+Frontend changes:
+
+```powershell
+cd frontend
+npm ci
+npm run lint
+npm run build
+```
+
+Loader/module changes:
+
+```powershell
+.\scripts\smoke-dtb-mu-modules.ps1
+```
+
+Catalog/API changes:
+
+```powershell
+.\scripts\smoke-dtb-catalog-api.ps1
+```
+
+Security-sensitive route changes additionally require negative tests for unauthenticated access, cross-customer IDs, raw order creation, malformed inputs, and missing integration configuration.
+
+## 14. Maintenance rules
+
+- Keep the 11-module loader order synchronized across `00-dtb-loader.php`, this README, `AGENTS.md`, and `memory-bank/structure.md`.
+- Document durable route, constant, scheduler, and authority changes in the same pull request.
+- Do not expose credentials through browser environment variables, REST responses, localStorage, sessionStorage, logs, or generated artifacts.
+- Do not describe DTB-calculated shipping options as live Veeqo carrier rates.
+- Do not add new business logic to legacy root wrappers.
+- Preserve write-boundary, idempotency, queue, and webhook protections when modifying order/integration flows.
