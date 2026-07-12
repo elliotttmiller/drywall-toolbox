@@ -170,7 +170,15 @@ class WooCommerceService {
     try {
       let token = window.sessionStorage.getItem(key);
       if (!token) {
-        token = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const cryptoApi = globalThis.crypto;
+        if (typeof cryptoApi?.randomUUID === 'function') {
+          token = cryptoApi.randomUUID();
+        } else if (typeof cryptoApi?.getRandomValues === 'function') {
+          const bytes = cryptoApi.getRandomValues(new Uint8Array(16));
+          token = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+        } else {
+          return 'browser-session';
+        }
         window.sessionStorage.setItem(key, token);
       }
       return token;
