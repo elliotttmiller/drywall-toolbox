@@ -19,6 +19,12 @@ function assertContains(source, needle, message) {
   }
 }
 
+function assertNotContains(source, needle, message) {
+  if (source.includes(needle)) {
+    throw new Error(message);
+  }
+}
+
 const shippingMethod = read('drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Shipping/DTBShippingMethod.php');
 const validator = read('drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Validation/CheckoutValidator.php');
 const reducer = read('frontend/src/features/checkout/state/checkoutReducer.js');
@@ -26,28 +32,28 @@ const controller = read('frontend/src/features/checkout/hooks/useCheckoutControl
 
 assertContains(
   shippingMethod,
-  'dtb_commerce_ensure_shipping_method_for_packages',
-  'Checkout shipping must repair the exact WooCommerce zone matching the active package.',
+  "add_filter( 'woocommerce_package_rates'",
+  'Checkout shipping must provide an in-memory policy-rate fallback for the active package.',
 );
 assertContains(
   shippingMethod,
-  'WC_Shipping_Zones::get_zone_matching_package',
-  'Checkout shipping must resolve the active WooCommerce zone from the current package.',
+  'get_rates_for_package',
+  'Checkout shipping fallback must reuse the canonical WooCommerce shipping method calculation.',
 );
 assertContains(
   shippingMethod,
   "'shipping_for_package_'",
-  'Checkout shipping must invalidate WooCommerce package-rate cache after zone repair.',
+  'Checkout shipping must invalidate WooCommerce package-rate cache after an address change.',
 );
 assertContains(
   shippingMethod,
   'DTB_SHIPPING_ZONE_BOOTSTRAP_VERSION',
   'Checkout shipping zone bootstrap must remain versioned and repairable.',
 );
-assertContains(
+assertNotContains(
   validator,
   'dtb_commerce_ensure_shipping_method_for_packages',
-  'Checkout quote evaluation must reconcile the active shipping zone before calculating rates.',
+  'Public checkout quote evaluation must not mutate WooCommerce shipping-zone configuration.',
 );
 assertContains(
   validator,
