@@ -20,6 +20,7 @@ require_once $_dtb_order . '/Infrastructure/OrderEventRepository.php';
 require_once $_dtb_order . '/Infrastructure/WooOrderStatusStore.php';
 require_once $_dtb_order . '/Infrastructure/OrderIntegrationStateStore.php';
 require_once $_dtb_order . '/Infrastructure/OrderQueue.php';
+require_once $_dtb_order . '/Infrastructure/OrderWriteBoundary.php';
 require_once $_dtb_order . '/Services/OrderTrackingUrlService.php';
 require_once $_dtb_order . '/Services/OrderTypeService.php';
 require_once $_dtb_order . '/Services/OrderProjectionService.php';
