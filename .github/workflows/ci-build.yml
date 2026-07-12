@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -38,6 +41,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Validate MU-plugin composition and security boundaries
+        shell: pwsh
+        run: ./scripts/smoke-dtb-mu-modules.ps1
+
+      - name: Validate catalog platform structure
+        shell: pwsh
+        run: ./scripts/smoke-dtb-catalog-api.ps1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
