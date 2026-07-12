@@ -1,117 +1,131 @@
 # Product
 
-Last verified against source: 2026-07-11.
+Last verified against source: 2026-07-12.
 
 ## Product definition
 
-Drywall Toolbox (`drywalltoolbox.com`) is a contractor-focused headless commerce platform for professional drywall tools, parts, and services.
+Drywall Toolbox (`drywalltoolbox.com`) is a contractor-focused headless commerce and service-operations platform for professional drywall tools, replacement parts, and repair services.
 
 It combines:
 
-- multi-brand ecommerce (WooCommerce-backed, WooPayments checkout)
-- replacement-part discovery through schematics
-- repair intake, quoting, tracking, and repair-order workflows
-- returns and support ticket workflows with customer-facing status tracking
-- customer account/rewards experiences
-- catalog/media operations workflows inside the same repository
+- multi-brand ecommerce backed by WooCommerce and WooPayments;
+- schematic-driven part discovery and product compatibility;
+- repair intake, quoting, lifecycle tracking, and operator workflows;
+- returns and support-ticket workflows with customer-facing status views;
+- customer account, address, order-history, and preference experiences;
+- catalog, taxonomy, pricing, image, and schematic operations in the same repository.
 
-Public UX lives in `frontend/` (React SPA). WordPress/WooCommerce in `drywalltoolbox/wp/` is the backend system of record. Veeqo owns inventory/fulfillment; QuickBooks owns accounting projection.
+The public experience is the React SPA in `frontend/`. WordPress/WooCommerce under `drywalltoolbox/wp/` is the commerce and operational backend. Veeqo is the inventory and fulfillment authority. QuickBooks receives accounting projections.
 
 ## Primary users
 
 ### External
 
-- professional drywall contractors and crews
-- buyers ordering tools, parts, and accessories
-- customers submitting repair requests, returns, and support tickets
+- professional drywall contractors and crews;
+- buyers ordering tools, parts, accessories, and tool sets;
+- customers submitting repairs, returns, and support requests;
+- customers reviewing order, shipment, repair, return, and support status.
 
 ### Internal
 
-- a single operator/admin managing orders, repairs, returns, and support through mu-plugin admin workbenches
-- operators maintaining catalog taxonomy/metadata and images/schematics/media sync
-- admins managing integrations (Veeqo, QuickBooks) and platform health
+- operators managing orders, repairs, returns, support, and exceptions through wp-admin workbenches;
+- catalog operators maintaining taxonomy, product metadata, pricing, images, and schematics;
+- administrators managing platform health, Veeqo, QuickBooks, marketplace channels, and deployment operations.
 
-## Live capability map (confirmed in code)
+## Live capability map
 
 ### Storefront and checkout
 
-- catalog browsing, search, brand/category filtering (`/products`, `/products/brands/...`, `/category/:slug`)
-- product detail with variation selection (`/products/:slug`, `/products/:slug/variations/:variationId`)
-- cart + checkout + payment return states (`/cart`, `/checkout`, `/checkout/complete|payment-failed|payment-cancelled|order-received/:id`)
-- order confirmation and tracking (`/order/:id`, `/order-tracking/:id`)
-- Veeqo-backed shipping rates and cart availability checks at checkout
+- catalog browsing, search, brand/category filtering, and product detail/variation selection;
+- Store API-backed cart and a DTB checkout orchestration contract;
+- WooPayments/native WooCommerce payment handoff and payment-return states;
+- order confirmation, authenticated history, and customer tracking projections;
+- checkout shipping options calculated by DTB policy from destination, subtotal, product type, and weight;
+- Veeqo-backed cart availability and downstream inventory/fulfillment processing.
+
+The current checkout shipping-rate endpoint is not a live Veeqo carrier-rating API. Veeqo remains authoritative for inventory, allocation, fulfillment, labels, shipment state, and tracking.
 
 ### Parts and schematics
 
-- schematics browser and part lookup (`/schematics`, `/parts`, `/product/:partNumber`)
-- runtime schematic media manifest: `GET /wp-json/dtb/v1/schematics/media`
+- schematic browser and part lookup;
+- product/variation SKU resolution;
+- compatible and universal-parts projections;
+- runtime schematic media manifest and operator mapping/editor tools.
 
 ### Repairs
 
-- repair intake and packages (`/repairs`, `/repairs/start`, `/repairs/packages`)
-- customer repair tracking (`/repairs/track`, `/repairs/status/:id`, dashboard repair view)
-- quote accept/decline via public token (`POST /dtb/v1/repairs/{id}/quote`)
-- backend lifecycle in `dtb-repair-service` module
+- repair-service overview, package selection, intake, media upload, and tracking;
+- quote generation and public-token/customer accept or decline actions;
+- lifecycle event stream, SLA, notification, queue, and operator workbench implementation in `dtb-repair-service`.
 
 ### Returns and support
 
-- return portal and status tracking (`/returns`, `/returns/status/:id`, `/return-policy`)
-- support contact and ticket status (`/contact`, `/support/status/:id`)
-- authenticated history: `GET /dtb/v1/returns/mine`, `GET /dtb/v1/support/mine`
-- backend lifecycle in `dtb-returns` and `dtb-support` modules
+- return portal and customer return-status pages;
+- support/contact intake and ticket-status pages;
+- authenticated return and support histories;
+- backend lifecycle ownership in `dtb-returns` and `dtb-support`.
 
-### Account and auth
+### Account and authentication
 
-- login/register/forgot/reset flows
-- tabbed dashboard (orders, rewards, addresses, settings); legacy routes redirect into tabs
-- in-memory token policy (`frontend/src/auth/tokenStore.js`) with `auth:expired` fan-out on 401
-- account profile/password APIs (`GET|PATCH /dtb/v1/account`, `POST /dtb/v1/account/password`)
+- login, registration, logout, forgot/reset-password flows;
+- tabbed account dashboard for orders, repairs, addresses, and settings;
+- HttpOnly `dtb_auth` cookie with optional in-memory bearer-token compatibility;
+- account profile and password-change APIs;
+- application-wide `auth:expired` handling after confirmed authentication failure.
 
-### Rewards and retention
+### Rewards
 
-- rewards balance/history/redeem flows (frontend + `dtb-integrations` rewards APIs)
-- rewards UI is feature-flag gated; a rewards kill switch exists backend-side
+Rewards UI routes and historical compatibility code exist, but the integration bootstrap intentionally omits rewards service/job/controller loading for the initial production launch. Rewards must be treated as disabled unless the backend module is explicitly restored and validated.
 
-### Estimation tools and content
+### Content and tools
 
-- calculator hub (`/calculators`), FAQ, shipping policy, store policies
-- toolset builder route currently disabled (commented out in `App.jsx`)
+- calculator hub, FAQ, shipping policy, return policy, and store policies;
+- technical-specification preview tooling;
+- public toolset-builder route remains disabled until launch criteria are met.
 
 ## Backend product responsibilities
 
-The WordPress layer is a product backend and operator cockpit, not a public renderer:
+The WordPress layer is a headless product backend and operator cockpit, not the public storefront renderer. It owns:
 
-- custom REST APIs (`dtb/v1`, `drywall/v1`, `headless/v1`)
-- catalog read model + platform endpoints (`dtb-catalog-platform`)
-- order lifecycle platform: event ledger, queue, tracking projection, payment webhooks, write boundary and duplicate containment (`dtb-order-platform`)
-- repair/return/support operator workbenches with modal-first admin UX (rebuild plans in `docs/plans/`)
-- auth/session policy and API security (`dtb-platform`)
-- image and schematic media APIs/admin tooling (`dtb-media`, `dtb-schematics`)
-- external integrations: Veeqo (inventory/fulfillment authority), QuickBooks (accounting) via `dtb-integrations`
-- marketing surfaces (coming-soon, SEO) and ops diagnostics/health
+- custom REST APIs and Store API extension behavior;
+- catalog read models, variation normalization, compatibility, and inventory intelligence;
+- checkout finalization, order event ledger, queue, payment webhooks, write boundary, duplicate containment, and tracking projections;
+- repair, return, and support persistence and lifecycle policy;
+- authentication, authorization, origin policy, rate limiting, and operational health;
+- media and schematic administration;
+- Veeqo, QuickBooks, notification, and marketplace integrations;
+- wp-admin command-center, system-manager, and domain workbench surfaces.
 
 ## Operational product reality
 
 This repository is both:
 
-1. production application source, and
-2. operational workspace for the catalog/media lifecycle.
+1. the production application source for `drywalltoolbox.com`; and
+2. the controlled operations workspace for catalog and media lifecycle management.
 
-`products/` and `scripts/` are core product operations. SKUs, part numbers, brand names, image mappings, schematic paths, and taxonomy policy are business-critical identifiers.
+`products/` and `scripts/` are core product infrastructure. SKUs, part numbers, brand names, external IDs, image mappings, schematic paths, and taxonomy policy are business-critical identifiers.
 
-## Scope boundaries
+## Scope and authority boundaries
 
-- React owns customer-facing rendering; WordPress themes are backend/headless support only
-- mu-plugin modules are the canonical home for backend business logic
-- WooCommerce order creation happens only through the DTB checkout pipeline; external writes go through the order queue and write boundary
-- controlled catalog taxonomy is enforced operationally before import
+- React owns customer-facing rendering and interaction state.
+- WordPress themes provide backend/headless support and payment runtime templates, not the primary storefront.
+- Mu-plugin modules are the canonical home for backend business logic.
+- WooCommerce owns orders, payments, customers, products, and Store API cart state.
+- DTB owns checkout orchestration, domain workflows, eventing, projections, queues, and integration policy.
+- Veeqo owns inventory and fulfillment truth.
+- QuickBooks owns accounting projection after qualifying order/refund events.
+- Storefront order creation occurs only through the DTB checkout pipeline; raw external WooCommerce order creation is blocked or retired.
+- Browser code never receives WooCommerce admin credentials, application passwords, consumer secrets, or integration API keys.
+- Controlled catalog taxonomy is validated before production import.
 
-Non-goals implied by current architecture:
+## Non-goals
 
-- returning to classic WP theme-first storefront rendering
-- a separate admin SPA (admin tooling stays in mu-plugin workbenches)
-- treating catalog/media maintenance as out-of-band to product development
+- returning to a classic WordPress theme-first storefront;
+- building a separate admin SPA when wp-admin workbenches already own operations;
+- treating catalog/media maintenance as unrelated to application engineering;
+- using the browser as an integration credential store;
+- allowing multiple systems to create or mutate the same order without a write boundary and idempotency contract.
 
 ## One-line truth statement
 
-Drywall Toolbox is a headless React + WordPress/WooCommerce contractor platform that unifies ecommerce, schematics-driven parts lookup, repairs, returns, and support workflows — with Veeqo/QuickBooks integrations and first-class catalog/media operations tooling.
+Drywall Toolbox is a headless React and WordPress/WooCommerce contractor platform unifying ecommerce, schematic-driven parts, repairs, returns, support, and operator workflows, with Veeqo-controlled inventory/fulfillment, QuickBooks accounting projection, and first-class catalog/media operations.
