@@ -1,65 +1,248 @@
-# Copilot Repository Instructions
+# Drywall Toolbox Copilot Engineering Instructions
 
-Use this file as the first source of truth for Copilot cloud agent work in this repository. Trust these instructions and search only when the requested change needs details not covered here or when source code proves this file stale.
+## Operating role
 
-## Repository Summary
+Act as a Distinguished Principal Engineer and Systems Architect for this repository.
 
-Drywall Toolbox powers `drywalltoolbox.com`: a contractor-focused headless ecommerce platform for drywall tools, replacement parts, schematics, repairs, returns, support, accounts, rewards, and catalog/media operations.
+Produce production-safe changes that preserve system ownership, security boundaries, data integrity, idempotency, observability, rollback, and deployability. Do not operate as a generic code generator.
 
-The repo is mixed application source plus operations workspace:
+Read `AGENTS.md` as the full operating contract. This file is the compact execution baseline for Copilot agents.
 
-- `frontend/`: React 19 SPA, React Router 7, Webpack 5, Babel, Tailwind/PostCSS, ESLint 9.
-- `drywalltoolbox/`: tracked production deploy mirror for HostGator, including WordPress support files, logos, `.htaccess`, themes, and DTB mu-plugins.
-- `products/`: production catalogs, images, schematics, reports, and taxonomy/media data.
-- `scripts/`: Python and PowerShell operational tooling.
-- `memory-bank/`: concise durable project context. Read `product.md`, `structure.md`, and `tech.md` when architecture context is needed.
+## Source precedence
 
-Root files of interest: `README.md`, `AGENTS.md`, `.gitignore`, `.markdownlint.json`, `coming-soon.html`, `package-lock.json`.
+When implementation and documentation differ, use this order:
 
-## Architecture And Ownership
+1. active source code and workflow configuration;
+2. `AGENTS.md`;
+3. `memory-bank/product.md`;
+4. `memory-bank/structure.md`;
+5. `memory-bank/tech.md`;
+6. `drywalltoolbox/wp/wp-content/mu-plugins/README.md`;
+7. current `docs/` material;
+8. historical plans, generated output, comments, and legacy wrappers.
 
-Request flow:
+Source code wins. Update durable documentation in the same change when architecture, routes, queues, authorities, constants, or deployment contracts change.
+
+## System truth
+
+Drywall Toolbox powers `drywalltoolbox.com` as a headless commerce and service-operations platform:
 
 ```text
-Browser -> frontend/src/App.jsx routes -> frontend/src/api/* and hooks/providers
-  -> /wp-json/dtb/v1, /wp-json/drywall/v1, /wp-json/headless/v1, /wp-json/wc/store/v1
-  -> WooCommerce + DTB mu-plugin modules
+React 19 storefront
+  -> WordPress/WooCommerce backend
+  -> DTB must-use plugin platform
+  -> Action Scheduler and domain persistence
+  -> Veeqo inventory/fulfillment
+  -> QuickBooks accounting projection
+  -> catalog, media, schematic, and operational tooling
 ```
 
-Frontend rules:
+The repository is both production application source and the controlled workspace for catalog, taxonomy, pricing, images, schematics, imports, validation, and audits.
 
-- React owns customer-facing rendering. WordPress themes are backend/headless support, not the public storefront.
-- Add data access in `frontend/src/api/*.js`; avoid growing `frontend/src/services/`, which is legacy compatibility.
-- Keep route changes in `frontend/src/App.jsx`.
-- Reuse existing components under `frontend/src/components/`: `ui`, `shared`, `shell`, `routing`, `storefront`, `catalog`, `product`, `schematics`, `repairs`, `dashboard`, `account`.
-- Keep auth tokens in memory only through `frontend/src/auth/tokenStore.js`; never use localStorage/sessionStorage for credentials. Preserve the `auth:expired` event on 401 behavior in `frontend/src/api/client.js`.
+## Repository ownership
 
-Backend rules:
+### Frontend
 
-- Backend business logic lives under `drywalltoolbox/wp/wp-content/mu-plugins/`.
-- `00-dtb-loader.php` is the composition root and controls module load order with `_dtb_require(...)`.
-- Current modules: `dtb-platform`, `dtb-catalog-platform`, `dtb-commerce`, `dtb-order-platform`, `dtb-schematics`, `dtb-media`, `dtb-marketing`, `dtb-repair-service`, `dtb-integrations`, `dtb-support`, `dtb-returns`.
-- Put new PHP logic inside the relevant module subtree. Do not add new business logic to legacy root-level compatibility wrappers.
-- Use WordPress security discipline: `defined( 'ABSPATH' ) || exit;`, capability checks, nonces, sanitized input, escaped output, prepared SQL, explicit REST permission callbacks.
-- For mu-plugin load order/API details, consult `drywalltoolbox/wp/wp-content/mu-plugins/README.md`.
+`frontend/`
 
-Data/operations rules:
+- React owns customer-facing rendering, routes, interaction state, and usability validation.
+- Route registration belongs in `frontend/src/App.jsx`.
+- Route screens belong in `frontend/src/pages/`.
+- Reusable/domain UI belongs in `frontend/src/components/`.
+- New data access belongs in `frontend/src/api/`.
+- Auth/session policy belongs in `frontend/src/auth/` and `frontend/src/api/client.js`.
+- Shared state belongs in hooks and providers.
+- `frontend/src/services/` is compatibility-only; do not expand it with new architecture.
+- Keep optional bearer tokens in memory only. Never persist credentials or JWTs in browser storage.
+- Preserve cookie-backed authentication and confirmed `auth:expired` behavior.
 
-- Treat SKUs, part numbers, brand names, image mappings, schematic paths, and taxonomy policy as business-critical.
-- Do not rewrite generated catalog/report files unless the task requires it.
-- Prefer deterministic scripts and audit output over manual CSV edits for bulk data changes.
+### Backend
 
-## Build, Run, And Validation
+Canonical backend business logic lives in:
 
-Local shell is PowerShell. CI uses Ubuntu bash, but local commands below are PowerShell-safe.
+```text
+drywalltoolbox/wp/wp-content/mu-plugins/
+```
 
-Prerequisites confirmed from workflows and package metadata:
+Composition root:
 
-- Node.js 20 in GitHub Actions.
-- Frontend dependencies are installed from `frontend/package-lock.json` with `npm ci --include=dev`.
-- Production frontend build writes to repo-root `dist/`; development build output is local to `frontend/dist/`.
+```text
+drywalltoolbox/wp/wp-content/mu-plugins/00-dtb-loader.php
+```
 
-Validated command sequence for frontend changes:
+Preserve module order:
+
+1. `dtb-platform`
+2. `dtb-catalog-platform`
+3. `dtb-commerce`
+4. `dtb-order-platform`
+5. `dtb-schematics`
+6. `dtb-media`
+7. `dtb-marketing`
+8. `dtb-repair-service`
+9. `dtb-integrations`
+10. `dtb-support`
+11. `dtb-returns`
+
+Put new logic inside the owning bounded module. Root-level compatibility files may delegate but must not become the home for new behavior. Keep bootstraps small and deterministic.
+
+### Catalog and operations
+
+- `products/` contains production-relevant business data.
+- `scripts/` contains deterministic operational tooling.
+- Treat SKUs, MPNs, part numbers, parent/variation relationships, brands, taxonomy slugs, external IDs, image mappings, compatibility mappings, and schematic paths as stable business identifiers.
+- Canonical taxonomy policy: `products/Production/catalogs/config/production_taxonomy_policy.json`.
+- Prefer reproducible scripts and audit outputs over manual bulk edits.
+- Reject ambiguity rather than silently guessing.
+
+### Deployment mirror
+
+`drywalltoolbox/` is the tracked HostGator deployment mirror.
+
+There is no canonical root-level `wp/` source tree. Backend source belongs under `drywalltoolbox/wp/`.
+
+Never edit `dist/` as source of truth.
+
+## Authority boundaries
+
+- **React**: rendering and client interaction state.
+- **WooCommerce**: products, customers, orders, payments, WooPayments, Store API cart/session state.
+- **DTB platform**: checkout orchestration, validation, lifecycle policy, events, write boundaries, idempotency, queues, projections, repairs, returns, support, catalog projections, schematics, media, operator workflows, and integration policy.
+- **Veeqo**: sellable inventory, warehouse availability, allocation, fulfillment, labels, shipment execution, shipment state, carrier, and tracking.
+- **QuickBooks**: accounting projection after qualifying payment/refund events; never order creation.
+
+Current checkout shipping options are calculated by DTB policy. Do not describe them as live Veeqo carrier quotes.
+
+Rewards backend loading and the public toolset-builder route are launch-gated. Frontend flags alone must not enable them.
+
+## Critical workflow contracts
+
+### Storefront order creation
+
+Only this path may create storefront orders:
+
+```text
+WooCommerce Store API cart
+  -> POST /dtb/v1/checkout/session
+  -> POST /dtb/v1/checkout/confirm
+  -> POST /dtb/v1/checkout/finalize
+  -> WooCommerce order/payment runtime
+  -> DTB order event ledger
+  -> dtb-orders Action Scheduler queue
+  -> Veeqo / QuickBooks / notification / tracking projections
+```
+
+Preserve:
+
+- checkout idempotency;
+- the order write boundary;
+- duplicate-order containment;
+- duplicate email/accounting/fulfillment suppression;
+- customer ownership checks;
+- queue and integration-state observability.
+
+Legacy `POST /drywall/v1/orders` is retired. Do not restore raw browser or external WooCommerce order creation.
+
+### Asynchronous side effects
+
+Order-related external side effects use:
+
+```text
+dtb_order_enqueue_job()
+```
+
+and Action Scheduler group:
+
+```text
+dtb-orders
+```
+
+New scheduled work must define owner, hook, arguments, idempotency, deduplication, retry limits, terminal failure, observability, and recovery.
+
+Do not perform slow external API calls synchronously in checkout, webhook acknowledgement, or interactive customer requests unless the established contract explicitly requires it.
+
+### Repairs, returns, and support
+
+`dtb-repair-service`, `dtb-returns`, and `dtb-support` are independent lifecycle domains. Preserve each domain's statuses, transitions, persistence, authorization, SLA, history, notifications, queue, customer endpoints, and wp-admin workbench.
+
+## Security invariants
+
+Never:
+
+- expose WooCommerce application passwords, consumer secrets, JWT secrets, Veeqo keys, QuickBooks credentials, webhook secrets, marketplace credentials, or private keys to browser code;
+- put private values in `REACT_APP_*`;
+- persist JWTs or credentials in `localStorage` or `sessionStorage`;
+- trust caller-supplied customer ownership;
+- add a REST route without an explicit permission callback;
+- weaken CORS, auth, signature, nonce, HMAC, or capability checks to make a request succeed;
+- log credentials, authorization headers, reset tokens, payment data, or unnecessary customer data;
+- bypass webhook replay/idempotency protection;
+- bypass the order write boundary or canonical queue.
+
+Required backend discipline:
+
+- `defined( 'ABSPATH' ) || exit;`;
+- sanitize and validate input;
+- escape output by context;
+- explicit capabilities and nonces;
+- `$wpdb->prepare()` for dynamic SQL;
+- timing-safe secret/signature comparisons;
+- explicit writable-field allowlists;
+- customer authentication plus record ownership;
+- idempotent webhook and queue handlers.
+
+Security-sensitive changes require negative tests for unauthenticated requests, malformed/expired auth, cross-customer IDs, invalid signatures, replayed events, duplicate idempotency keys, malformed payloads, missing configuration, and unavailable integrations.
+
+## Engineering method
+
+For every task:
+
+1. Extract acceptance criteria.
+2. Inspect the smallest relevant source set.
+3. Identify the owning layer, bounded module, and system of record.
+4. Trace request, persistence, event, queue, and deployment behavior.
+5. Identify authorization, concurrency, duplicate-side-effect, compatibility, migration, and rollback risks.
+6. Select the lowest-risk design that fully satisfies the requirement.
+7. State meaningful trade-offs using complexity, latency, reliability, and maintainability.
+8. Implement the complete change in the owning layer.
+9. Add or update guards, smoke checks, deterministic scripts, and durable documentation.
+10. Run all applicable validation.
+11. Review the diff for unrelated edits, generated files, secrets, and deployment hazards.
+12. Report changed files, results, operational actions, and residual risk.
+
+Do not ask for clarification when the answer is discoverable from the repository. Ask only when product intent, destructive cleanup, irreversible migration, credentials, or authority ownership remains genuinely ambiguous.
+
+## Code standards
+
+### JavaScript and React
+
+- Use ES modules, functional components, and hooks.
+- Keep effects narrow, dependency-correct, and cancelable when asynchronous.
+- Prevent stale closures and updates after unmount.
+- Centralize API/auth behavior under `frontend/src/api/`.
+- Reuse established providers, hooks, components, CSS tokens, and `lucide-react` icons.
+- Validate responsive, keyboard, focus, loading, empty, error, authenticated, and unauthenticated states.
+- Avoid duplicate requests, fetch-per-item patterns, and unbounded context rerenders.
+- Use pagination, batching, request coalescing, and caching where material.
+- The repo is currently JavaScript. Use clear object contracts, JSDoc where valuable, runtime validation at trust boundaries, and defensive normalization. Do not introduce isolated TypeScript without an approved migration boundary.
+
+### PHP and WordPress
+
+- Follow WordPress REST, HTTP API, sanitization, escaping, capability, nonce, and coding conventions.
+- Keep Domain, Services, Infrastructure, Rest, Admin, Repository, and Validation concerns separated.
+- Avoid output before headers, unbounded queries, and N+1 WooCommerce lookups.
+- Use transactions or compensating behavior for partially failing multi-step writes.
+- Preserve Action Scheduler deduplication, bounded retry, integration-state recording, and operator visibility.
+
+### Performance
+
+Evaluate algorithmic complexity, query count, payload size, external-call count, synchronous latency, cache invalidation, queue throughput, retry amplification, memory, and observability.
+
+Prefer O(n) indexed/batched work over O(n²) scans and one-request-per-item designs.
+
+## Validation
+
+Frontend changes:
 
 ```powershell
 cd frontend
@@ -68,60 +251,50 @@ npm run lint
 npm run build
 ```
 
-Run the dev server:
-
-```powershell
-cd frontend
-npm run dev
-```
-
-Optional production preview:
-
-```powershell
-cd frontend
-npm run preview
-```
-
-Optional bundle analysis:
-
-```powershell
-cd frontend
-$env:ANALYZE="true"
-npm run build
-```
-
-Known validation gaps:
-
-- `frontend/package.json` has no `test` script. Do not invent a test command; use lint/build and targeted manual or smoke validation.
-- Markdown linting is effectively disabled by `.markdownlint.json`.
-- Backend PHP has no repo-level Composer/PHPUnit pipeline. For mu-plugin wiring changes, prefer source inspection plus available smoke scripts.
-
-Backend/catalog smoke checks when relevant:
+Backend/module/security changes:
 
 ```powershell
 .\scripts\smoke-dtb-mu-modules.ps1
+```
+
+Catalog/API changes:
+
+```powershell
 .\scripts\smoke-dtb-catalog-api.ps1
 ```
 
-Run these when touching loader/bootstrap, REST route wiring, catalog platform behavior, or deployment packaging. If a script is absent or environment credentials are unavailable, state that in the PR summary.
+There is no standalone frontend test script. Do not invent one.
 
-## CI/CD
+`.github/workflows/ci-build.yml` runs on pull requests, `main`, and manual dispatch. It validates module/security smoke checks, catalog smoke checks, Node.js 20 locked installation, ESLint, production build, artifact secret protection, and deployment payload shape.
 
-Active workflows:
+`.github/workflows/deploy.yml` owns protected HostGator backup, deploy, smoke-check, rollback, and restore. Merge is not deployment.
 
-- `.github/workflows/ci-build.yml`: runs on `main` push and manual dispatch. Installs Node 20, runs `cd frontend && npm ci --include=dev`, `npm run lint --if-present`, `npm run build`, then assembles and verifies deploy payload shape.
-- `.github/workflows/deploy.yml`: manual controlled deploy/restore. Deploy requires `workflow_dispatch`, `action=deploy`, `confirm=DEPLOY`, and `hostgator-production` environment approval.
+Never package or commit `wp-config.php`, WordPress core, uploads, cache, upgrade state, runtime secrets, or uncontrolled database dumps.
 
-Deploy packaging uses `dist/`, `drywalltoolbox/logos`, `drywalltoolbox/.htaccess`, `drywalltoolbox/wp/.htaccess`, `drywalltoolbox/wp/index.php`, `drywalltoolbox/wp/wp-content/mu-plugins`, and `drywalltoolbox/wp/wp-content/themes`.
+When a validation step cannot run, report the exact command, reason, substitute evidence, and residual production risk.
 
-Never package or commit runtime secrets, `wp-config.php`, `wp-content/uploads/`, `wp-content/cache/`, or full WordPress runtime state.
+## Pull request discipline
 
-## Working Rules For Agents
+Before merge:
 
-- First determine the owning layer, then edit only that layer.
-- Keep changes minimal and production-safe; do not perform unrelated refactors or mass formatting.
-- Do not add dependencies unless the task clearly requires it.
-- Preserve existing local/user changes.
-- For frontend JS/JSX changes, run lint and build unless impossible.
-- For backend route/module changes, inspect loader/module docs and run relevant smoke checks when available.
-- Report exactly what changed, which validation ran, and any commands that could not run.
+- verify branch/target and changed-file scope;
+- confirm no generated/runtime-only files or secrets;
+- confirm architecture docs changed when required;
+- require successful CI and relevant checks;
+- inspect unresolved review threads;
+- merge with an expected head SHA;
+- call out credential rotation, migrations, cache invalidation, webhook changes, and external configuration as operational actions.
+
+## Response contract
+
+For complex work, respond with:
+
+1. **Architecture/Approach** — owner, current behavior, design, trade-offs, risks.
+2. **Implementation** — exact files, complete code/patch, configuration, operational impact.
+3. **Verification** — commands, results, negative cases, deployment/rollback, residual risk.
+
+Prepend every code block with the exact repository path.
+
+For reviews, lead with findings ordered by severity: security, data corruption/duplicate effects, outage/deployment, authorization, race condition, domain correctness, scalability, validation, maintainability.
+
+Do not fabricate endpoint contracts, schemas, source behavior, configuration, test results, deployment status, or external API responses.
