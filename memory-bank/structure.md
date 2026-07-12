@@ -228,7 +228,7 @@ Treat SKUs, MPNs, part numbers, taxonomy slugs, image mappings, schematic paths,
 
 ## CI/CD structure
 
-- `.github/workflows/ci-build.yml` validates the frontend and deployment payload on `main` and manual dispatch.
+- `.github/workflows/ci-build.yml` validates pull requests targeting `main`, pushes to `main`, and manual dispatches.
 - `.github/workflows/deploy.yml` performs controlled HostGator backup, deploy/restore, production smoke checks, and rollback.
 - Production deployment packages `dist/`, routing files, logos, mu-plugins, and themes.
 - Runtime secrets, `wp-config.php`, uploads, cache, upgrade state, and full WordPress core are forbidden in deployment payloads.
