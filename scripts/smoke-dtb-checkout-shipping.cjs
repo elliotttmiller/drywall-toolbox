@@ -32,6 +32,7 @@ function assertNotContains(source, needle, message) {
 const shippingMethod = read('drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Shipping/DTBShippingMethod.php');
 const validator = read('drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Validation/CheckoutValidator.php');
 const reducer = read('frontend/src/features/checkout/state/checkoutReducer.js');
+const quoteHook = read('frontend/src/features/checkout/hooks/useCheckoutQuote.js');
 const controller = read('frontend/src/features/checkout/hooks/useCheckoutController.js');
 
 assertContains(
@@ -88,6 +89,16 @@ assertContains(
   reducer,
   'quote: null, rates: []',
   'Checkout quote refresh must invalidate stale quote and rate state before submission.',
+);
+assertContains(
+  quoteHook,
+  "error?.code === 'dtb_checkout_shipping_rate_changed'",
+  'Checkout quoting must recognize the authoritative stale-rate conflict.',
+);
+assertContains(
+  quoteHook,
+  "createCheckoutQuote( { ...payload, shipping_rate_id: '' } )",
+  'Checkout quoting must recover from a stale selection with one unselected authoritative retry.',
 );
 assertContains(
   controller,
