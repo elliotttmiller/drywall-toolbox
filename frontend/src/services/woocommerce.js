@@ -1,339 +1,173 @@
 /**
- * WooCommerce API Service
- * Handles authentication and API calls to WooCommerce for products, orders, and payment processing
- * Documentation: https://woocommerce.github.io/woocommerce-rest-api-docs/
+ * Credential-free WooCommerce facade.
+ *
+ * This compatibility service preserves the provider API while routing all
+ * browser operations through DTB REST or WooCommerce Store API contracts.
+ * WooCommerce administrative credentials are server-only and are never stored
+ * in localStorage or compiled into the frontend bundle.
  */
+
+import { apiClient } from '../api/client.js';
 
 class WooCommerceService {
   constructor() {
-    this.config = this.loadConfig();
+    this.config = Object.freeze({
+      enabled: true,
+      mode: 'server_proxy',
+      storeUrl: typeof window !== 'undefined' ? window.location.origin : '',
+    });
   }
 
-  /**
-   * Load WooCommerce configuration
-   */
-  loadConfig() {
-    try {
-      const config = localStorage.getItem('woocommerce_config');
-      return config ? JSON.parse(config) : {
-        storeUrl: process.env.REACT_APP_WOOCOMMERCE_STORE_URL || '',
-        consumerKey: process.env.REACT_APP_WOOCOMMERCE_CONSUMER_KEY || '',
-        consumerSecret: process.env.REACT_APP_WOOCOMMERCE_CONSUMER_SECRET || '',
-        version: 'wc/v3',
-        enabled: false
-      };
-    } catch (error) {
-      console.error('Failed to load WooCommerce config:', error);
-      return { enabled: false };
-    }
-  }
-
-  /**
-   * Save WooCommerce configuration
-   */
-  saveConfig(config) {
-    try {
-      localStorage.setItem('woocommerce_config', JSON.stringify(config));
-      this.config = config;
-    } catch (error) {
-      console.error('Failed to save WooCommerce config:', error);
-    }
-  }
-
-  /**
-   * Check if WooCommerce integration is enabled and configured
-   */
   isEnabled() {
-    return this.config.enabled && this.config.storeUrl && this.config.consumerKey && this.config.consumerSecret;
+    return true;
   }
 
-  /**
-   * Get base API URL
-   */
-  getBaseUrl() {
-    const url = this.config.storeUrl.replace(/\/$/, '');
-    return `${url}/wp-json/${this.config.version}`;
+  saveConfig() {
+    throw new Error('WooCommerce credentials are managed server-side and cannot be changed from the storefront.');
   }
 
-  /**
-   * Create basic auth header
-   */
-  getAuthHeader() {
-    const credentials = btoa(`${this.config.consumerKey}:${this.config.consumerSecret}`);
-    return `Basic ${credentials}`;
+  disconnect() {
+    throw new Error('The server-side WooCommerce integration cannot be disconnected from the storefront.');
   }
 
-  /**
-   * Make authenticated API request to WooCommerce
-   */
-  async apiRequest(endpoint, options = {}) {
-    if (!this.isEnabled()) {
-      throw new Error('WooCommerce integration not enabled or configured');
-    }
-
-    const url = `${this.getBaseUrl()}${endpoint}`;
-    const headers = {
-      'Authorization': this.getAuthHeader(),
-      'Content-Type': 'application/json',
-      ...options.headers
-    };
-
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || 
-          `WooCommerce API error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('WooCommerce API request failed:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Test API connection
-   */
   async testConnection() {
     try {
-      await this.apiRequest('/products?per_page=1');
-      return { success: true, message: 'Connection successful' };
+      await apiClient('/wp-json/drywall/v1/products?per_page=1&status=publish');
+      return { success: true, message: 'Server-side WooCommerce proxy is reachable.' };
     } catch (error) {
-      return { success: false, message: error.message };
+      return { success: false, message: error?.message || 'WooCommerce proxy is unavailable.' };
     }
   }
 
-  /**
-   * Get all products
-   */
   async getProducts(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.apiRequest(`/products?${queryString}`);
+    const query = new URLSearchParams(params).toString();
+    return apiClient(`/wp-json/drywall/v1/products${query ? `?${query}` : ''}`);
   }
 
-  /**
-   * Get product by ID
-   */
   async getProduct(productId) {
-    return this.apiRequest(`/products/${productId}`);
+    return apiClient(`/wp-json/drywall/v1/products/${encodeURIComponent(productId)}`);
   }
 
-  /**
-   * Create product
-   */
-  async createProduct(productData) {
-    return this.apiRequest('/products', {
-      method: 'POST',
-      body: JSON.stringify(productData)
-    });
+  async createProduct() {
+    throw new Error('Product mutations are restricted to authenticated server-side admin workflows.');
   }
 
-  /**
-   * Update product
-   */
-  async updateProduct(productId, productData) {
-    return this.apiRequest(`/products/${productId}`, {
-      method: 'PUT',
-      body: JSON.stringify(productData)
-    });
+  async updateProduct() {
+    throw new Error('Product mutations are restricted to authenticated server-side admin workflows.');
   }
 
-  /**
-   * Delete product
-   */
-  async deleteProduct(productId) {
-    return this.apiRequest(`/products/${productId}`, {
-      method: 'DELETE'
-    });
+  async deleteProduct() {
+    throw new Error('Product mutations are restricted to authenticated server-side admin workflows.');
   }
 
-  /**
-   * Get all orders
-   */
   async getOrders(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.apiRequest(`/orders?${queryString}`);
+    const safeParams = {
+      page: params.page || 1,
+      per_page: params.per_page || 20,
+      ...(params.status ? { status: params.status } : {}),
+      ...(params.orderby ? { orderby: params.orderby } : {}),
+      ...(params.order ? { order: params.order } : {}),
+    };
+    return apiClient(`/wp-json/drywall/v1/orders?${new URLSearchParams(safeParams).toString()}`);
   }
 
-  /**
-   * Get order by ID
-   */
   async getOrder(orderId) {
-    return this.apiRequest(`/orders/${orderId}`);
+    return apiClient(`/wp-json/drywall/v1/orders/${encodeURIComponent(orderId)}`);
   }
 
-  /**
-   * Get payment gateways
-   */
   async getPaymentGateways() {
-    return this.apiRequest('/payment_gateways');
+    const capabilities = await apiClient('/wp-json/dtb/v1/checkout/capabilities');
+    const gateways = Array.isArray(capabilities?.gateways) ? capabilities.gateways : [];
+    return gateways.flatMap((gateway) => {
+      if (Array.isArray(gateway?.payment_methods)) return gateway.payment_methods;
+      return gateway?.id ? [gateway] : [];
+    });
   }
 
-  /**
-   * Get payment gateway by ID
-   */
   async getPaymentGateway(gatewayId) {
-    return this.apiRequest(`/payment_gateways/${gatewayId}`);
+    const gateways = await this.getPaymentGateways();
+    return gateways.find((gateway) => String(gateway?.id) === String(gatewayId)) || null;
   }
 
-  /**
-   * Get shipping methods
-   */
   async getShippingMethods() {
-    return this.apiRequest('/shipping_methods');
+    throw new Error('Checkout shipping methods are calculated through the DTB shipping-rate endpoint.');
   }
 
-  /**
-   * Get shipping zones
-   */
   async getShippingZones() {
-    return this.apiRequest('/shipping/zones');
+    throw new Error('Shipping-zone administration is restricted to WooCommerce wp-admin.');
   }
 
-  /**
-   * Calculate shipping for order
-   */
-  async calculateShipping(orderData) {
-    // This typically requires a custom endpoint or plugin
-    // For now, return a basic calculation
-    const flatRate = 25;
-    const freeShippingThreshold = 500;
-    const subtotal = orderData.line_items.reduce(
-      (sum, item) => sum + (item.price * item.quantity), 
-      0
-    );
-    
+  async calculateShipping(orderData = {}) {
+    return apiClient('/wp-json/dtb/v1/veeqo/shipping-rates', {
+      method: 'POST',
+      body: JSON.stringify({
+        destination: orderData.destination || orderData.shipping || {},
+        items: Array.isArray(orderData.items) ? orderData.items : (orderData.line_items || []),
+      }),
+    });
+  }
+
+  async getCustomer(customerId) {
+    return apiClient(`/wp-json/drywall/v1/customers/${encodeURIComponent(customerId)}`);
+  }
+
+  async getCustomers() {
+    throw new Error('Customer-list access is restricted to authenticated wp-admin workflows.');
+  }
+
+  async createCustomer(customerData) {
+    return apiClient('/wp-json/drywall/v1/customers', {
+      method: 'POST',
+      body: JSON.stringify(customerData),
+    });
+  }
+
+  async syncProducts() {
+    const products = await this.getProducts({ per_page: 100, status: 'publish' });
+    return Array.isArray(products) ? products : (products?.products || []);
+  }
+
+  async getProductStock(productId) {
+    const product = await this.getProduct(productId);
     return {
-      total: subtotal >= freeShippingThreshold ? 0 : flatRate,
-      method: subtotal >= freeShippingThreshold ? 'Free Shipping' : 'Flat Rate'
+      inStock: product?.stock_status === 'instock',
+      quantity: product?.stock_quantity ?? null,
+      manageStock: Boolean(product?.manage_stock),
     };
   }
 
-  /**
-   * Get customers
-   */
-  async getCustomers(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.apiRequest(`/customers?${queryString}`);
-  }
+  async checkInventoryAvailability(cartItems = []) {
+    const items = cartItems.map((item) => ({
+      product_id: Number(item?.product_id || item?.parent_id || item?.id || 0),
+      variation_id: Number(item?.variation_id || (item?.parent_id ? item?.id : 0) || 0),
+      quantity: Math.max(1, Number(item?.quantity || 1)),
+      sku: String(item?.sku || ''),
+    }));
 
-  /**
-   * Get customer by ID
-   */
-  async getCustomer(customerId) {
-    return this.apiRequest(`/customers/${customerId}`);
-  }
-
-  /**
-   * Create customer
-   */
-  async createCustomer(customerData) {
-    return this.apiRequest('/customers', {
+    return apiClient('/wp-json/dtb/v1/veeqo/cart-availability', {
       method: 'POST',
-      body: JSON.stringify(customerData)
+      headers: {
+        'X-DTB-Cart-Session': this.getCartSessionToken(),
+      },
+      body: JSON.stringify({ items }),
     });
   }
 
-  /**
-   * Sync products from WooCommerce
-   */
-  async syncProducts() {
-    if (!this.isEnabled()) {
-      throw new Error('WooCommerce integration not enabled');
-    }
-
+  getCartSessionToken() {
+    if (typeof window === 'undefined') return 'server-render';
+    const key = 'dtb:cart-availability-session:v1';
     try {
-      const products = await this.getProducts({ per_page: 100 });
-      console.log(`Synced ${products.length} products from WooCommerce`);
-      return products;
-    } catch (error) {
-      console.error('Failed to sync products from WooCommerce:', error);
-      throw error;
+      let token = window.sessionStorage.getItem(key);
+      if (!token) {
+        token = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        window.sessionStorage.setItem(key, token);
+      }
+      return token;
+    } catch {
+      return 'browser-session';
     }
-  }
-
-  /**
-   * Get product stock status
-   */
-  async getProductStock(productId) {
-    try {
-      const product = await this.getProduct(productId);
-      return {
-        inStock: product.stock_status === 'instock',
-        quantity: product.stock_quantity,
-        manageStock: product.manage_stock
-      };
-    } catch (error) {
-      console.error(`Failed to get stock for product ${productId}:`, error);
-      return { inStock: true, quantity: null, manageStock: false };
-    }
-  }
-
-  /**
-   * Check inventory availability for cart items
-   */
-  async checkInventoryAvailability(cartItems) {
-    if (!this.isEnabled()) {
-      return { available: true, items: [] };
-    }
-
-    try {
-      const inventoryChecks = await Promise.all(
-        cartItems.map(async (item) => {
-          try {
-            const stock = await this.getProductStock(item.id);
-            const inStock = !stock.manageStock || 
-                          (stock.inStock && (!stock.quantity || stock.quantity >= item.quantity));
-            
-            return {
-              productId: item.id,
-              productName: item.name,
-              requested: item.quantity,
-              available: stock.quantity,
-              inStock
-            };
-          } catch (error) {
-            console.warn(`Could not check inventory for ${item.name}:`, error);
-            return {
-              productId: item.id,
-              productName: item.name,
-              requested: item.quantity,
-              available: null,
-              inStock: true
-            };
-          }
-        })
-      );
-
-      const outOfStock = inventoryChecks.filter(check => !check.inStock);
-      
-      return {
-        available: outOfStock.length === 0,
-        items: inventoryChecks,
-        outOfStock
-      };
-    } catch (error) {
-      console.error('Failed to check inventory availability:', error);
-      return { available: true, items: [], error: error.message };
-    }
-  }
-
-  /**
-   * Disconnect from WooCommerce
-   */
-  disconnect() {
-    this.saveConfig({ ...this.config, enabled: false });
   }
 }
 
-// Export singleton instance
 export const wooCommerceService = new WooCommerceService();
 export default wooCommerceService;
