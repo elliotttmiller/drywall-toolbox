@@ -21,12 +21,16 @@ function addressFromForm( form = {} ) {
 	};
 }
 
+function isStaleShippingRateError( error ) {
+	return Number( error?.status || 0 ) === 409 && error?.code === 'dtb_checkout_shipping_rate_changed';
+}
+
 export function useCheckoutQuote({ formData, couponCodes = [], selectedRateId = '', cartItems = [], isAddressComplete = false }) {
 	const [state, dispatch] = useReducer( checkoutReducer, checkoutInitialState );
 	const [loading, setLoading] = useState( false );
 	const requestSeq = useRef( 0 );
 
-	const refreshQuote = useCallback( async ( preferredRateId = selectedRateId ) => {
+	const refreshQuote = useCallback( async ( preferredRateId ) => {
 		const requestId = requestSeq.current + 1;
 		requestSeq.current = requestId;
 		if ( !isAddressComplete ) {
@@ -36,13 +40,21 @@ export function useCheckoutQuote({ formData, couponCodes = [], selectedRateId = 
 		setLoading( true );
 		dispatch( { type: 'QUOTE_START', requestId } );
 		const address = addressFromForm( formData );
+		const requestedRateId = preferredRateId === undefined ? selectedRateId : preferredRateId;
+		const payload = {
+			billing: address,
+			shipping: address,
+			coupon_codes: couponCodes,
+			shipping_rate_id: requestedRateId,
+		};
 		try {
-			const quote = await createCheckoutQuote( {
-				billing: address,
-				shipping: address,
-				coupon_codes: couponCodes,
-				shipping_rate_id: preferredRateId || selectedRateId,
-			} );
+			let quote;
+			try {
+				quote = await createCheckoutQuote( payload );
+			} catch ( error ) {
+				if ( !requestedRateId || !isStaleShippingRateError( error ) ) throw error;
+				quote = await createCheckoutQuote( { ...payload, shipping_rate_id: '' } );
+			}
 			if ( requestId !== requestSeq.current ) return null;
 			dispatch( { type: 'QUOTE_SUCCESS', quote, requestId } );
 			return quote;
