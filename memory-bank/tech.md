@@ -161,7 +161,7 @@ Heavy catalog imports use Action Scheduler with WP-Cron fallback. Operational he
 
 ## CI/CD
 
-- `.github/workflows/ci-build.yml` runs on `main` pushes and manual dispatch;
+- `.github/workflows/ci-build.yml` runs for pull requests targeting `main`, pushes to `main`, and manual dispatch;
 - `.github/workflows/deploy.yml` provides protected manual deploy and restore;
 - production deploy requires explicit confirmation and protected environment approval;
 - remote state is backed up before deployment;
