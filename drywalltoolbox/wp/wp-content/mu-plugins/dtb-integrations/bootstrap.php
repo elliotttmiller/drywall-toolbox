@@ -64,6 +64,7 @@ dtb_integrations_require_files( [
 dtb_integrations_require_files( [
 	'dtb-integrations/Veeqo/VeeqoConfig.php',
 	'dtb-integrations/Veeqo/VeeqoInventoryService.php',
+	'dtb-integrations/Veeqo/VeeqoInventoryBoundary.php',
 	'dtb-integrations/Veeqo/VeeqoShippingService.php',
 	'dtb-integrations/Veeqo/VeeqoSyncJob.php',
 	'dtb-integrations/Veeqo/VeeqoWebhookController.php',
