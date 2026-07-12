@@ -12,7 +12,7 @@
     "postbuild": "node scripts/assert-public-env-safe.cjs post",
     "prebuild:staging": "node scripts/assert-public-env-safe.cjs pre",
     "build:staging": "cross-env APP_ENV=staging PUBLIC_URL=/staging/2972 REACT_APP_WC_AUTH_USER= REACT_APP_WC_AUTH_PASS= REACT_APP_WOOCOMMERCE_CONSUMER_KEY= REACT_APP_WOOCOMMERCE_CONSUMER_SECRET= webpack --config webpack.config.cjs --mode production",
-    "postbuild:staging": "node scripts/assert-public-env-safe.cjs post",
+    "postbuild:staging": "cross-env APP_ENV=staging node scripts/assert-public-env-safe.cjs post",
     "reviews-server": "node server/index.js",
     "lint": "eslint src",
     "preview": "cross-env REACT_APP_WC_AUTH_USER= REACT_APP_WC_AUTH_PASS= REACT_APP_WOOCOMMERCE_CONSUMER_KEY= REACT_APP_WOOCOMMERCE_CONSUMER_SECRET= webpack serve --config webpack.config.cjs --mode production"
