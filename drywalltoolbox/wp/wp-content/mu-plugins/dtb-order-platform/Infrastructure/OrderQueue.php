@@ -24,6 +24,9 @@ function dtb_order_enqueue_job( string $job_type, int $order_id, array $args = [
 	if ( 'dtb_order_send_notification' === $job_type && empty( $args['template'] ) ) {
 		return false;
 	}
+	if ( function_exists( 'dtb_order_write_boundary_should_block_job' ) && dtb_order_write_boundary_should_block_job( $job_type, $order_id, $args ) ) {
+		return false;
+	}
 
 	$scheduled_args = [ $order_id, $args ];
 	$timestamp      = time() + max( 0, $delay );
@@ -44,6 +47,9 @@ function dtb_order_enqueue_job( string $job_type, int $order_id, array $args = [
 
 function dtb_order_retry_job( string $job_type, int $order_id, array $args = [] ): bool {
 	if ( 'dtb_order_issue_rewards' === $job_type ) {
+		return false;
+	}
+	if ( function_exists( 'dtb_order_write_boundary_should_block_job' ) && dtb_order_write_boundary_should_block_job( $job_type, $order_id, $args ) ) {
 		return false;
 	}
 
@@ -100,6 +106,11 @@ function dtb_order_job_exception_retryable( Throwable $e ): bool {
 	return ! preg_match( '/\b(400|401|403|404|409|410|422)\b/', $e->getMessage() );
 }
 
+function dtb_order_job_should_skip_order_side_effects( $order ): bool {
+	return function_exists( 'dtb_order_write_boundary_order_should_skip_side_effects' )
+		&& dtb_order_write_boundary_order_should_skip_side_effects( $order );
+}
+
 add_action( 'dtb_order_sync_veeqo', 'dtb_order_job_sync_veeqo', 10, 2 );
 function dtb_order_job_sync_veeqo( int $order_id, array $args = [] ): void {
 	$attempt = isset( $args['attempt'] ) ? max( 1, (int) $args['attempt'] ) : 1;
@@ -113,6 +124,10 @@ function dtb_order_job_sync_veeqo( int $order_id, array $args = [] ): void {
 	$order = wc_get_order( $order_id );
 	if ( ! $order ) {
 		error_log( "[DTB Orders] dtb_order_job_sync_veeqo: order {$order_id} not found." );
+		return;
+	}
+	if ( dtb_order_job_should_skip_order_side_effects( $order ) ) {
+		dtb_order_append_event( $order_id, 'integration.veeqo.skipped_duplicate', [ 'source' => 'cron', 'actor_type' => 'system', 'visibility' => 'operator', 'payload' => [ 'reason' => 'order_write_boundary' ] ] );
 		return;
 	}
 
@@ -223,6 +238,10 @@ function dtb_order_job_sync_quickbooks( int $order_id, array $args = [] ): void 
 	if ( ! $order ) {
 		return;
 	}
+	if ( dtb_order_job_should_skip_order_side_effects( $order ) ) {
+		dtb_order_append_event( $order_id, 'integration.quickbooks.skipped_duplicate', [ 'source' => 'cron', 'actor_type' => 'system', 'visibility' => 'operator', 'payload' => [ 'reason' => 'order_write_boundary' ] ] );
+		return;
+	}
 
 	try {
 		$result = function_exists( 'dtb_quickbooks_sync_order' )
@@ -307,7 +326,7 @@ function dtb_order_job_send_notification( int $order_id, array $args = [] ): voi
 		return;
 	}
 	$order = wc_get_order( $order_id );
-	if ( ! $order ) {
+	if ( ! $order || dtb_order_job_should_skip_order_side_effects( $order ) ) {
 		return;
 	}
 	if ( ! dtb_order_claim_notification_send( $order_id, $template ) ) {
@@ -340,6 +359,10 @@ function dtb_order_job_send_notification( int $order_id, array $args = [] ): voi
 
 add_action( 'dtb_order_refresh_tracking_projection', 'dtb_order_job_refresh_tracking_projection', 10, 2 );
 function dtb_order_job_refresh_tracking_projection( int $order_id, array $args = [] ): void {
+	$order = function_exists( 'wc_get_order' ) ? wc_get_order( $order_id ) : null;
+	if ( dtb_order_job_should_skip_order_side_effects( $order ) ) {
+		return;
+	}
 	if ( function_exists( 'dtb_order_build_tracking_projection' ) ) {
 		$projection = dtb_order_build_tracking_projection( $order_id );
 		update_post_meta( $order_id, '_dtb_tracking_projection', $projection );
@@ -351,7 +374,7 @@ function dtb_order_job_refresh_tracking_projection( int $order_id, array $args =
 add_action( 'dtb_order_reconcile_payment', 'dtb_order_job_reconcile_payment', 10, 2 );
 function dtb_order_job_reconcile_payment( int $order_id, array $args = [] ): void {
 	$order = wc_get_order( $order_id );
-	if ( ! $order ) {
+	if ( ! $order || dtb_order_job_should_skip_order_side_effects( $order ) ) {
 		return;
 	}
 	if ( 'pending' === $order->get_status() ) {
@@ -362,7 +385,7 @@ function dtb_order_job_reconcile_payment( int $order_id, array $args = [] ): voi
 add_action( 'dtb_order_handle_refund', 'dtb_order_job_handle_refund', 10, 2 );
 function dtb_order_job_handle_refund( int $order_id, array $args = [] ): void {
 	$order = wc_get_order( $order_id );
-	if ( ! $order ) {
+	if ( ! $order || dtb_order_job_should_skip_order_side_effects( $order ) ) {
 		return;
 	}
 	// Rewards are intentionally disabled until the account rewards program is fully implemented and audited.
@@ -371,6 +394,10 @@ function dtb_order_job_handle_refund( int $order_id, array $args = [] ): void {
 
 add_action( 'dtb_order_archive_completed', 'dtb_order_job_archive_completed', 10, 2 );
 function dtb_order_job_archive_completed( int $order_id, array $args = [] ): void {
+	$order = function_exists( 'wc_get_order' ) ? wc_get_order( $order_id ) : null;
+	if ( dtb_order_job_should_skip_order_side_effects( $order ) ) {
+		return;
+	}
 	update_post_meta( $order_id, '_dtb_order_archived', current_time( 'mysql', true ) );
 	delete_transient( 'dtb_order_tracking_' . $order_id );
 }
