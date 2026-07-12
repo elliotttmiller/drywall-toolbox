@@ -55,8 +55,6 @@ jobs:
       - name: Build frontend for drywalltoolbox.com
         run: cd frontend && npm run build
         env:
-          REACT_APP_WC_AUTH_USER: ${{ secrets.REACT_APP_WC_AUTH_USER }}
-          REACT_APP_WC_AUTH_PASS: ${{ secrets.REACT_APP_WC_AUTH_PASS }}
           REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.REACT_APP_STRIPE_PUBLISHABLE_KEY }}
 
       - name: Assemble deployment payload
