@@ -137,7 +137,7 @@ final class DTB_CheckoutValidator {
 
 		$requested = self::normalize_coupon_codes( $coupon_codes );
 		$current   = self::normalize_coupon_codes( WC()->cart->get_applied_coupons() );
-		foreach ( array_values( array_unique( array_merge( $current, $requested ) ) ) as $code ) {
+		foreach ( array_values( array_unique( array_merge( $current, $requested ) ) as $code ) ) {
 			if ( WC()->cart->has_discount( $code ) ) {
 				continue;
 			}
@@ -206,11 +206,6 @@ final class DTB_CheckoutValidator {
 	}
 
 	public static function shipping_rates(): array {
-		$packages = (array) WC()->cart->get_shipping_packages();
-		if ( function_exists( 'dtb_commerce_ensure_shipping_method_for_packages' ) ) {
-			dtb_commerce_ensure_shipping_method_for_packages( $packages );
-		}
-
 		WC()->cart->calculate_shipping();
 		$rates = [];
 		foreach ( (array) WC()->shipping()->get_packages() as $package ) {
@@ -342,14 +337,14 @@ final class DTB_CheckoutValidator {
 		}
 
 		return hash( 'sha256', wp_json_encode( [
-			'cart_hash'         => (string) ( $context['cart_hash'] ?? '' ),
-			'payment_method'    => sanitize_key( $payment_method ),
-			'billing'           => $context['billing'] ?? [],
-			'shipping'          => $context['shipping'] ?? [],
-			'coupon_codes'      => $context['coupon_codes'] ?? [],
-			'shipping_rate_id'  => (string) ( $context['shipping_rate_id'] ?? '' ),
-			'items'             => $items,
-			'totals'            => $context['totals'] ?? [],
+			'cart_hash'        => (string) ( $context['cart_hash'] ?? '' ),
+			'payment_method'   => sanitize_key( $payment_method ),
+			'billing'          => $context['billing'] ?? [],
+			'shipping'         => $context['shipping'] ?? [],
+			'coupon_codes'     => $context['coupon_codes'] ?? [],
+			'shipping_rate_id' => (string) ( $context['shipping_rate_id'] ?? '' ),
+			'items'            => $items,
+			'totals'           => $context['totals'] ?? [],
 		] ) ?: '' );
 	}
 
