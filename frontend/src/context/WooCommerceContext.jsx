@@ -1,143 +1,99 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import wooCommerceService from '../services/woocommerce';
 
-const WooCommerceContext = createContext();
-
+const WooCommerceContext = createContext(null);
 
 export function useWooCommerce() {
   const context = useContext(WooCommerceContext);
-  if (!context) {
-    throw new Error('useWooCommerce must be used within a WooCommerceProvider');
-  }
+  if (!context) throw new Error('useWooCommerce must be used within a WooCommerceProvider');
   return context;
 }
 
 export function WooCommerceProvider({ children }) {
-  const [isEnabled, setIsEnabled] = useState(() => wooCommerceService.isEnabled());
-  const [config, setConfig] = useState(wooCommerceService.config);
-  const [syncStatus, setSyncStatus] = useState({
-    syncing: false,
-    lastSync: null,
-    error: null
+  const [connectionStatus, setConnectionStatus] = useState({
+    checking: true,
+    success: false,
+    message: 'Checking server-side WooCommerce proxy…',
   });
+  const [syncStatus, setSyncStatus] = useState({ syncing: false, lastSync: null, error: null });
   const [paymentGateways, setPaymentGateways] = useState([]);
+
+  const testConnection = useCallback(async () => {
+    const result = await wooCommerceService.testConnection();
+    setConnectionStatus({ checking: false, ...result });
+    return result;
+  }, []);
 
   const loadPaymentGateways = useCallback(async () => {
     try {
       const gateways = await wooCommerceService.getPaymentGateways();
-      setPaymentGateways(gateways.filter(g => g.enabled));
-    } catch (error) {
-      console.error('Failed to load payment gateways:', error);
+      setPaymentGateways((Array.isArray(gateways) ? gateways : []).filter((gateway) => gateway?.enabled !== false));
+    } catch {
+      setPaymentGateways([]);
     }
   }, []);
 
   useEffect(() => {
-    // Load payment gateways if enabled on mount
-    // This is async data fetching, which is a standard pattern for useEffect
-    async function fetchPaymentGateways() {
-      if (wooCommerceService.isEnabled()) {
-        try {
-          const gateways = await wooCommerceService.getPaymentGateways();
-          setPaymentGateways(gateways.filter(g => g.enabled));
-        } catch (error) {
-          console.error('Failed to load payment gateways:', error);
-        }
-      }
-    }
-    
-    fetchPaymentGateways();
-  }, []);
-
-  const updateConfig = useCallback((newConfig) => {
-    wooCommerceService.saveConfig(newConfig);
-    setConfig(newConfig);
-    setIsEnabled(wooCommerceService.isEnabled());
-    
-    if (newConfig.enabled) {
-      loadPaymentGateways();
-    }
+    let cancelled = false;
+    (async () => {
+      const result = await wooCommerceService.testConnection();
+      if (cancelled) return;
+      setConnectionStatus({ checking: false, ...result });
+      if (result.success) await loadPaymentGateways();
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [loadPaymentGateways]);
 
-  const testConnection = useCallback(async () => {
-    try {
-      return await wooCommerceService.testConnection();
-    } catch (error) {
-      console.error('Connection test failed:', error);
-      return { success: false, message: error.message };
-    }
-  }, []);
-
-  const disconnect = useCallback(() => {
-    wooCommerceService.disconnect();
-    setIsEnabled(false);
-    setConfig(wooCommerceService.config);
-    setPaymentGateways([]);
-  }, []);
-
   const syncProducts = useCallback(async () => {
-    if (!isEnabled) {
-      throw new Error('WooCommerce integration not enabled');
-    }
-
     setSyncStatus({ syncing: true, lastSync: null, error: null });
-    
     try {
       const products = await wooCommerceService.syncProducts();
-      setSyncStatus({
-        syncing: false,
-        lastSync: new Date().toISOString(),
-        error: null
-      });
+      setSyncStatus({ syncing: false, lastSync: new Date().toISOString(), error: null });
       return products;
     } catch (error) {
-      setSyncStatus({
-        syncing: false,
-        lastSync: null,
-        error: error.message
-      });
+      setSyncStatus({ syncing: false, lastSync: null, error: error?.message || 'Product sync failed.' });
       throw error;
     }
-  }, [isEnabled]);
+  }, []);
 
-  const checkInventory = useCallback(async (cartItems) => {
-    if (!isEnabled) {
-      return { available: true, items: [] };
-    }
+  const checkInventory = useCallback(
+    (cartItems) => wooCommerceService.checkInventoryAvailability(cartItems),
+    [],
+  );
 
-    try {
-      return await wooCommerceService.checkInventoryAvailability(cartItems);
-    } catch (error) {
-      console.error('Inventory check failed:', error);
-      return { available: true, items: [], error: error.message };
-    }
-  }, [isEnabled]);
+  const getOrder = useCallback(
+    (orderId) => wooCommerceService.getOrder(orderId),
+    [],
+  );
 
-  const getOrder = useCallback(async (orderId) => {
-    if (!isEnabled) {
-      return null;
-    }
-
-    try {
-      return await wooCommerceService.getOrder(orderId);
-    } catch (error) {
-      console.error('Failed to get order:', error);
-      throw error;
-    }
-  }, [isEnabled]);
+  const unsupportedConfigMutation = useCallback(() => {
+    throw new Error('WooCommerce credentials are managed server-side in WordPress configuration.');
+  }, []);
 
   const value = useMemo(() => ({
-    isEnabled,
-    config,
+    isEnabled: connectionStatus.success,
+    config: wooCommerceService.config,
+    connectionStatus,
     syncStatus,
     paymentGateways,
-    updateConfig,
+    updateConfig: unsupportedConfigMutation,
+    disconnect: unsupportedConfigMutation,
     testConnection,
-    disconnect,
     syncProducts,
     checkInventory,
-    getOrder
-  }), [isEnabled, config, syncStatus, paymentGateways, updateConfig, testConnection,
-       disconnect, syncProducts, checkInventory, getOrder]);
+    getOrder,
+  }), [
+    connectionStatus,
+    syncStatus,
+    paymentGateways,
+    unsupportedConfigMutation,
+    testConnection,
+    syncProducts,
+    checkInventory,
+    getOrder,
+  ]);
 
   return <WooCommerceContext.Provider value={value}>{children}</WooCommerceContext.Provider>;
 }
