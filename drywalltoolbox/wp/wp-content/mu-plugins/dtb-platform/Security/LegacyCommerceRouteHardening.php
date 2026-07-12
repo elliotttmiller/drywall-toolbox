@@ -104,6 +104,14 @@ function dtb_public_runtime_config_route(): WP_REST_Response {
 }
 
 /**
+ * Mark a legacy response as deprecated using an HTTP-date value.
+ */
+function dtb_legacy_mark_deprecated( WP_REST_Response $response ): WP_REST_Response {
+	$response->header( 'Deprecation', 'Sun, 12 Jul 2026 00:00:00 GMT' );
+	return $response;
+}
+
+/**
  * Require either a normal WordPress commerce administrator or a valid DTB JWT.
  *
  * @return true|WP_Error
@@ -170,9 +178,7 @@ function dtb_legacy_customer_orders_route( WP_REST_Request $request ): WP_REST_R
 		$params['customer'] = $customer_id;
 	}
 
-	$response = dtb_wc_get( 'wc/v3/orders', $params );
-	$response->header( 'Deprecation', 'true' );
-	return $response;
+	return dtb_legacy_mark_deprecated( dtb_wc_get( 'wc/v3/orders', $params ) );
 }
 
 /**
@@ -200,7 +206,7 @@ function dtb_legacy_customer_order_route( WP_REST_Request $request ): WP_REST_Re
 		}
 
 		if ( ! $owns_order ) {
-			return new WP_REST_Response( dtb_error_envelope( 'forbidden_order', 'You do not have access to this order.', 403 ), 403 );
+			return new WP_REST_Response( dtb_error_envelope( 'order_not_found', 'Order not found.', 404 ), 404 );
 		}
 	}
 
@@ -208,9 +214,7 @@ function dtb_legacy_customer_order_route( WP_REST_Request $request ): WP_REST_Re
 		return new WP_REST_Response( dtb_error_envelope( 'proxy_unavailable', 'Order service is unavailable.', 503 ), 503 );
 	}
 
-	$response = dtb_wc_get( 'wc/v3/orders/' . $order_id );
-	$response->header( 'Deprecation', 'true' );
-	return $response;
+	return dtb_legacy_mark_deprecated( dtb_wc_get( 'wc/v3/orders/' . $order_id ) );
 }
 
 /**
@@ -222,7 +226,7 @@ function dtb_legacy_customer_profile_route( WP_REST_Request $request ): WP_REST_
 	if ( ! dtb_legacy_request_is_commerce_admin() ) {
 		$customer_id = dtb_legacy_authenticated_customer_id();
 		if ( $customer_id <= 0 || $requested_id !== $customer_id ) {
-			return new WP_REST_Response( dtb_error_envelope( 'forbidden_customer', 'You do not have access to this customer.', 403 ), 403 );
+			return new WP_REST_Response( dtb_error_envelope( 'customer_not_found', 'Customer not found.', 404 ), 404 );
 		}
 	}
 
@@ -230,7 +234,5 @@ function dtb_legacy_customer_profile_route( WP_REST_Request $request ): WP_REST_
 		return new WP_REST_Response( dtb_error_envelope( 'proxy_unavailable', 'Customer service is unavailable.', 503 ), 503 );
 	}
 
-	$response = dtb_wc_get( 'wc/v3/customers/' . $requested_id );
-	$response->header( 'Deprecation', 'true' );
-	return $response;
+	return dtb_legacy_mark_deprecated( dtb_wc_get( 'wc/v3/customers/' . $requested_id ) );
 }
