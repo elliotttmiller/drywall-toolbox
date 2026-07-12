@@ -5,20 +5,68 @@
  * Retries Woo order materialization for unlinked marketplace orders, including
  * records imported before the materialization service existed.
  *
+ * Safety contract:
+ * - Marketplace imports may build read models by default.
+ * - Marketplace read models must NOT materialize into WooCommerce orders unless
+ *   DTB_MARKETPLACE_MATERIALIZATION_ENABLED is explicitly enabled.
+ * - WooCommerce order creation is a side-effect boundary and must remain
+ *   feature-gated because Veeqo/API2Cart/marketplace polling can otherwise
+ *   create recurring duplicate order batches.
+ *
  * @package drywall-toolbox
  */
 
 defined( 'ABSPATH' ) || exit;
+
+if ( ! defined( 'DTB_MARKETPLACE_MATERIALIZATION_ENABLED' ) ) {
+	define( 'DTB_MARKETPLACE_MATERIALIZATION_ENABLED', false );
+}
+
+if ( ! defined( 'DTB_MARKETPLACE_MATERIALIZATION_BATCH_LIMIT' ) ) {
+	define( 'DTB_MARKETPLACE_MATERIALIZATION_BATCH_LIMIT', 10 );
+}
+
+if ( ! function_exists( 'dtb_marketplace_materialization_enabled' ) ) {
+	/** Return whether marketplace read models may be converted into Woo orders. */
+	function dtb_marketplace_materialization_enabled(): bool {
+		return filter_var( DTB_MARKETPLACE_MATERIALIZATION_ENABLED, FILTER_VALIDATE_BOOLEAN );
+	}
+}
 
 add_action( 'dtb_marketplace_materialize_unlinked', 'dtb_marketplace_materialize_unlinked_orders' );
 add_action( 'dtb_marketplace_reconcile', 'dtb_marketplace_materialize_unlinked_orders', 20 );
 add_action( 'wp', 'dtb_marketplace_schedule_materialization_jobs' );
 
 if ( ! function_exists( 'dtb_marketplace_schedule_materialization_jobs' ) ) {
-	/** Schedule recurring materialization retry job. */
+	/** Schedule recurring materialization retry job only when explicit side effects are enabled. */
 	function dtb_marketplace_schedule_materialization_jobs(): void {
+		if ( ! dtb_marketplace_materialization_enabled() ) {
+			if ( function_exists( 'wp_clear_scheduled_hook' ) ) {
+				wp_clear_scheduled_hook( 'dtb_marketplace_materialize_unlinked' );
+			}
+			return;
+		}
+
 		if ( ! wp_next_scheduled( 'dtb_marketplace_materialize_unlinked' ) ) {
 			wp_schedule_event( time() + 300, 'hourly', 'dtb_marketplace_materialize_unlinked' );
+		}
+	}
+}
+
+if ( ! function_exists( 'dtb_marketplace_materialization_log_disabled' ) ) {
+	/** Log a disabled materialization attempt once per hour. */
+	function dtb_marketplace_materialization_log_disabled( string $source ): void {
+		$transient_key = 'dtb_marketplace_materialization_disabled_notice_' . sanitize_key( $source );
+		if ( get_transient( $transient_key ) ) {
+			return;
+		}
+		set_transient( $transient_key, 1, HOUR_IN_SECONDS );
+
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->warning(
+				'Marketplace order materialization skipped because DTB_MARKETPLACE_MATERIALIZATION_ENABLED is false.',
+				[ 'source' => 'dtb-marketplace-materialization', 'trigger' => $source ]
+			);
 		}
 	}
 }
@@ -26,20 +74,29 @@ if ( ! function_exists( 'dtb_marketplace_schedule_materialization_jobs' ) ) {
 if ( ! function_exists( 'dtb_marketplace_materialize_unlinked_orders' ) ) {
 	/** Retry materialization for unlinked marketplace orders. */
 	function dtb_marketplace_materialize_unlinked_orders(): void {
+		if ( ! dtb_marketplace_materialization_enabled() ) {
+			dtb_marketplace_materialization_log_disabled( 'scheduled_retry' );
+			return;
+		}
+
 		if ( ! class_exists( 'DTB_MarketplaceOrderMaterializationService' ) ) {
 			return;
 		}
 
 		global $wpdb;
 		$table = $wpdb->prefix . 'dtb_marketplace_orders';
+		$limit = max( 1, min( 25, (int) DTB_MARKETPLACE_MATERIALIZATION_BATCH_LIMIT ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$orders = (array) $wpdb->get_results(
-			"SELECT * FROM {$table}
-			 WHERE woo_order_id IS NULL
-			   AND payment_state IN ('paid','pending')
-			 ORDER BY created_at ASC
-			 LIMIT 25",
+			$wpdb->prepare(
+				"SELECT * FROM {$table}
+				 WHERE woo_order_id IS NULL
+				   AND payment_state IN ('paid','pending')
+				 ORDER BY created_at ASC
+				 LIMIT %d",
+				$limit
+			),
 			ARRAY_A
 		);
 
@@ -52,9 +109,9 @@ if ( ! function_exists( 'dtb_marketplace_materialize_unlinked_orders' ) ) {
 			}
 
 			try {
-				if ( DTB_CHANNEL_AMAZON === $channel ) {
+				if ( defined( 'DTB_CHANNEL_AMAZON' ) && DTB_CHANNEL_AMAZON === $channel ) {
 					dtb_marketplace_materialize_amazon_order_by_id( $row_id, $ext_id );
-				} elseif ( DTB_CHANNEL_EBAY === $channel ) {
+				} elseif ( defined( 'DTB_CHANNEL_EBAY' ) && DTB_CHANNEL_EBAY === $channel ) {
 					dtb_marketplace_materialize_ebay_order_by_id( $row_id, $ext_id );
 				}
 			} catch ( Throwable $e ) {
@@ -80,6 +137,11 @@ if ( ! function_exists( 'dtb_marketplace_materialize_amazon_order_by_id' ) ) {
 	 * @param string $amazon_order_id Amazon order ID.
 	 */
 	function dtb_marketplace_materialize_amazon_order_by_id( int $row_id, string $amazon_order_id ): void {
+		if ( ! dtb_marketplace_materialization_enabled() ) {
+			dtb_marketplace_materialization_log_disabled( 'amazon_direct' );
+			return;
+		}
+
 		if ( ! class_exists( 'DTB_AmazonSpApiClient' ) || ! class_exists( 'DTB_MarketplaceOrderNormalizer' ) ) {
 			return;
 		}
@@ -108,6 +170,11 @@ if ( ! function_exists( 'dtb_marketplace_materialize_ebay_order_by_id' ) ) {
 	 * @param string $ebay_order_id eBay order ID.
 	 */
 	function dtb_marketplace_materialize_ebay_order_by_id( int $row_id, string $ebay_order_id ): void {
+		if ( ! dtb_marketplace_materialization_enabled() ) {
+			dtb_marketplace_materialization_log_disabled( 'ebay_direct' );
+			return;
+		}
+
 		if ( ! class_exists( 'DTB_EbayFulfillmentService' ) || ! class_exists( 'DTB_MarketplaceOrderNormalizer' ) ) {
 			return;
 		}
