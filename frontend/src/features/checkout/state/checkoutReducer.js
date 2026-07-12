@@ -7,6 +7,7 @@ export function checkoutReducer(state = checkoutInitialState, action = {}) {
 				...state,
 				state: CHECKOUT_STATES.QUOTING,
 				quote: null,
+				rates: [],
 				error: null,
 				requestId: action.requestId,
 			};
