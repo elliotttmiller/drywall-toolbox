@@ -1,11 +1,10 @@
 <?php
 /**
- * DTB Variation Gallery REST Enricher
+ * DTB Variation Gallery REST Enricher compatibility bridge.
  *
- * Ensures frontend product detail pages/modals receive the complete SKU-specific
- * image gallery for the selected variation, not only WooCommerce's single
- * variation thumbnail. This runs as a narrow REST response post-processor for
- * product-detail payloads only.
+ * Product-detail responses are normalized after their route callbacks so legacy
+ * and canonical detail envelopes expose the same complete variation gallery.
+ * Gallery resolution is owned by DTB_VariationGalleryResolver in dtb-media.
  *
  * @package drywall-toolbox
  */
@@ -38,9 +37,7 @@ function dtb_variation_gallery_enrich_rest_response( $response, $handler, $reque
 		return $response;
 	}
 
-	$enriched = dtb_variation_gallery_enrich_payload( $data );
-	$rest_response->set_data( $enriched );
-
+	$rest_response->set_data( dtb_variation_gallery_enrich_payload( $data ) );
 	return $rest_response;
 }
 
@@ -61,7 +58,7 @@ function dtb_variation_gallery_should_enrich_route( string $route ): bool {
 }
 
 /**
- * Recursively enrich any variation arrays in a product payload.
+ * Recursively enrich variation arrays in a product payload.
  *
  * @param array<string,mixed> $payload REST payload.
  * @return array<string,mixed>
@@ -84,7 +81,7 @@ function dtb_variation_gallery_enrich_payload( array $payload ): array {
 }
 
 /**
- * Enrich one variation DTO.
+ * Enrich one variation DTO without discarding a larger existing gallery.
  *
  * @param mixed $variation Variation DTO.
  * @return mixed
@@ -99,19 +96,12 @@ function dtb_variation_gallery_enrich_variation( $variation ) {
 		return $variation;
 	}
 
-	$existing = [];
-	if ( isset( $variation['variationGalleryImages'] ) && is_array( $variation['variationGalleryImages'] ) ) {
-		$existing = $variation['variationGalleryImages'];
-	} elseif ( isset( $variation['media']['variationImages'] ) && is_array( $variation['media']['variationImages'] ) ) {
-		$existing = $variation['media']['variationImages'];
-	}
-	if ( count( $existing ) > 1 ) {
-		return $variation;
-	}
-
+	$existing     = dtb_variation_gallery_collect_existing( $variation );
 	$variation_id = (int) ( $variation['id'] ?? 0 );
-	$gallery      = dtb_variation_gallery_find_for_sku( $sku, $variation_id );
-	if ( count( $gallery ) <= 1 ) {
+	$resolved     = dtb_variation_gallery_find_for_sku( $sku, $variation_id );
+	$gallery      = dtb_variation_gallery_normalize( array_merge( $resolved, $existing ) );
+
+	if ( empty( $gallery ) || dtb_variation_gallery_signature( $gallery ) === dtb_variation_gallery_signature( $existing ) ) {
 		return $variation;
 	}
 
@@ -131,264 +121,65 @@ function dtb_variation_gallery_enrich_variation( $variation ) {
 }
 
 /**
- * Find ordered gallery images for a variation SKU.
+ * Delegate SKU gallery resolution to the owning dtb-media service.
  *
  * @param string $sku          Variation SKU.
  * @param int    $variation_id WooCommerce variation post ID.
- * @return array<int,array{src:string}>
+ * @return array<int,array<string,mixed>>
  */
 function dtb_variation_gallery_find_for_sku( string $sku, int $variation_id = 0 ): array {
-	static $cache = [];
-
-	$key = strtolower( trim( $sku ) );
-	if ( '' === $key ) {
+	if ( ! class_exists( 'DTB_VariationGalleryResolver' ) ) {
 		return [];
 	}
 
-	$cache_key = $key . ':' . $variation_id;
-	if ( isset( $cache[ $cache_key ] ) ) {
-		return $cache[ $cache_key ];
-	}
-
-	$gallery = dtb_variation_gallery_find_from_catalog_manifest( $key );
-	if ( empty( $gallery ) ) {
-		$gallery = dtb_variation_gallery_find_from_uploads( $key );
-	}
-	if ( count( $gallery ) <= 1 && $variation_id > 0 ) {
-		$gallery = dtb_variation_gallery_find_from_woocommerce_media( $key, $variation_id, $gallery );
-	}
-
-	$cache[ $cache_key ] = dtb_variation_gallery_unique_gallery( $gallery );
-	return $cache[ $cache_key ];
+	return DTB_VariationGalleryResolver::resolve( $sku, $variation_id );
 }
 
 /**
- * Resolve gallery from DTB's catalog image manifest when available.
+ * Collect explicit variation gallery aliases already present in a DTO.
  *
- * @param string $sku_key Lowercase SKU.
- * @return array<int,array{src:string}>
+ * Generic images/media.images are intentionally excluded because legacy payloads
+ * may fill them with the parent gallery.
+ *
+ * @param array<string,mixed> $variation Variation DTO.
+ * @return array<int,array<string,mixed>>
  */
-function dtb_variation_gallery_find_from_catalog_manifest( string $sku_key ): array {
-	if (
-		! function_exists( 'dtb_get_catalog_image_filenames_by_sku' )
-		|| ! function_exists( 'dtb_get_image_file_index' )
-		|| ! function_exists( 'dtb_image_sync_resolve_upload_directory' )
-	) {
-		return [];
-	}
-
-	$csv_sku_files = dtb_get_catalog_image_filenames_by_sku();
-	$basenames     = $csv_sku_files[ $sku_key ] ?? [];
-	if ( ! is_array( $basenames ) || empty( $basenames ) ) {
-		return [];
-	}
-
-	$relative_path = defined( 'DTB_IMAGE_SYNC_DEFAULT_UPLOAD_RELATIVE_PATH' )
-		? (string) DTB_IMAGE_SYNC_DEFAULT_UPLOAD_RELATIVE_PATH
-		: '2026/media';
-	$upload        = dtb_image_sync_resolve_upload_directory( $relative_path );
-	$scan_dir      = (string) ( $upload['basedir'] ?? '' );
-	$scan_url      = (string) ( $upload['baseurl'] ?? '' );
-	if ( '' === $scan_dir || ! is_dir( $scan_dir ) ) {
-		return [];
-	}
-
-	$extensions = [ 'webp', 'jpg', 'jpeg', 'png', 'avif', 'gif' ];
-	$disk_index = [];
-	foreach ( dtb_get_image_file_index( $scan_dir, $scan_url, $extensions ) as $file ) {
-		if ( empty( $file['filename'] ) || empty( $file['url'] ) ) {
-			continue;
-		}
-		$disk_index[ strtolower( (string) $file['filename'] ) ] = (string) $file['url'];
-	}
-
-	$gallery = [];
-	foreach ( $basenames as $basename ) {
-		$basename = strtolower( basename( (string) $basename ) );
-		if ( isset( $disk_index[ $basename ] ) ) {
-			$gallery[] = [ 'src' => $disk_index[ $basename ] ];
-		}
-	}
-
-	return $gallery;
-}
-
-/**
- * Fallback resolver: scan the uploads media directory for exact SKU-token files.
- *
- * @param string $sku_key Lowercase SKU.
- * @return array<int,array{src:string}>
- */
-function dtb_variation_gallery_find_from_uploads( string $sku_key ): array {
-	$upload = wp_upload_dir();
-	$dir    = trailingslashit( (string) ( $upload['basedir'] ?? '' ) ) . '2026/media';
-	$url    = trailingslashit( (string) ( $upload['baseurl'] ?? '' ) ) . '2026/media';
-	if ( ! is_dir( $dir ) || ! is_readable( $dir ) ) {
-		return [];
-	}
-
-	$sku_token = dtb_variation_gallery_tokenize( $sku_key );
-	if ( strlen( $sku_token ) < 3 ) {
-		return [];
-	}
-
-	$files = scandir( $dir );
-	if ( ! is_array( $files ) ) {
-		return [];
-	}
-
-	$matches = [];
-	foreach ( $files as $file ) {
-		if ( ! is_string( $file ) || ! preg_match( '/\.(webp|jpe?g|png|avif|gif)$/i', $file ) ) {
-			continue;
-		}
-		$file_token = dtb_variation_gallery_tokenize( pathinfo( $file, PATHINFO_FILENAME ) );
-		if ( ! str_contains( $file_token, $sku_token ) ) {
-			continue;
-		}
-		$matches[] = $file;
-	}
-
-	natcasesort( $matches );
-
-	return array_map(
-		static fn( string $file ): array => [ 'src' => trailingslashit( $url ) . rawurlencode( $file ) ],
-		array_values( $matches )
-	);
-}
-
-/**
- * Fallback resolver: scan the selected variation + parent WooCommerce media.
- *
- * This catches real production cases where all SKU-specific images are attached
- * to the parent variable product gallery and only one thumbnail is copied onto
- * the selected variation object.
- *
- * @param string                   $sku_key          Lowercase SKU.
- * @param int                      $variation_id     WooCommerce variation post ID.
- * @param array<int,array{src:string}> $seed_gallery Existing gallery entries.
- * @return array<int,array{src:string}>
- */
-function dtb_variation_gallery_find_from_woocommerce_media( string $sku_key, int $variation_id, array $seed_gallery = [] ): array {
-	if ( ! function_exists( 'wc_get_product' ) ) {
-		return $seed_gallery;
-	}
-
-	$variation = wc_get_product( $variation_id );
-	if ( ! $variation ) {
-		return $seed_gallery;
-	}
-
-	$sku_token = dtb_variation_gallery_tokenize( $sku_key );
-	if ( strlen( $sku_token ) < 3 ) {
-		return $seed_gallery;
-	}
-
-	$primary = [];
-	if ( method_exists( $variation, 'get_image_id' ) ) {
-		$primary = dtb_variation_gallery_image_entry_from_attachment_id( (int) $variation->get_image_id() );
-	}
-
-	$matches   = [];
-	$parent_id = method_exists( $variation, 'get_parent_id' ) ? (int) $variation->get_parent_id() : 0;
-	$parent    = $parent_id > 0 ? wc_get_product( $parent_id ) : null;
-	$ids       = [];
-
-	if ( $parent && method_exists( $parent, 'get_image_id' ) ) {
-		$ids[] = (int) $parent->get_image_id();
-	}
-	if ( $parent && method_exists( $parent, 'get_gallery_image_ids' ) ) {
-		$ids = array_merge( $ids, array_map( 'intval', (array) $parent->get_gallery_image_ids() ) );
-	}
-	if ( method_exists( $variation, 'get_image_id' ) ) {
-		array_unshift( $ids, (int) $variation->get_image_id() );
-	}
-
-	foreach ( array_values( array_unique( array_filter( $ids ) ) ) as $attachment_id ) {
-		$entry = dtb_variation_gallery_image_entry_from_attachment_id( $attachment_id );
-		if ( empty( $entry['src'] ) ) {
-			continue;
-		}
-
-		$haystack = dtb_variation_gallery_attachment_match_text( $attachment_id, $entry['src'] );
-		if ( str_contains( $haystack, $sku_token ) ) {
-			$matches[] = $entry;
-		}
-	}
-
-	$gallery = [];
-	if ( ! empty( $primary ) ) {
-		$gallery[] = $primary;
-	}
-	$gallery = array_merge( $gallery, $matches, $seed_gallery );
-
-	return dtb_variation_gallery_unique_gallery( $gallery );
-}
-
-/**
- * Build an image gallery entry from a WordPress attachment ID.
- *
- * @param int $attachment_id Attachment ID.
- * @return array{src:string}|array{}
- */
-function dtb_variation_gallery_image_entry_from_attachment_id( int $attachment_id ): array {
-	if ( $attachment_id <= 0 ) {
-		return [];
-	}
-
-	$src = wp_get_attachment_image_url( $attachment_id, 'full' );
-	if ( ! $src ) {
-		return [];
-	}
-
-	$entry = [ 'src' => (string) $src ];
-	$alt   = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
-	if ( is_string( $alt ) && '' !== trim( $alt ) ) {
-		$entry['alt'] = trim( $alt );
-	}
-
-	return $entry;
-}
-
-/**
- * Build normalized attachment match text from URL, filename, title, caption, and alt text.
- *
- * @param int    $attachment_id Attachment ID.
- * @param string $src           Attachment URL.
- * @return string
- */
-function dtb_variation_gallery_attachment_match_text( int $attachment_id, string $src ): string {
-	$parts = [
-		basename( (string) wp_parse_url( $src, PHP_URL_PATH ) ),
-		(string) get_the_title( $attachment_id ),
-		(string) wp_get_attachment_caption( $attachment_id ),
-		(string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+function dtb_variation_gallery_collect_existing( array $variation ): array {
+	$sets = [
+		$variation['variationGalleryImages'] ?? [],
+		$variation['variationImages'] ?? [],
+		$variation['variation_gallery_images'] ?? [],
+		$variation['media']['variationImages'] ?? [],
+		$variation['media']['variation_images'] ?? [],
 	];
 
-	return dtb_variation_gallery_tokenize( implode( ' ', array_filter( $parts ) ) );
+	return dtb_variation_gallery_normalize( array_merge( ...array_map(
+		static fn( $images ): array => is_array( $images ) ? $images : [],
+		$sets
+	) ) );
 }
 
 /**
- * Tokenize file/SKU values for matching.
+ * Normalize gallery entries through the canonical resolver when available.
  *
- * @param string $value Raw value.
- * @return string
+ * @param array<int,mixed> $gallery Raw gallery entries.
+ * @return array<int,array<string,mixed>>
  */
-function dtb_variation_gallery_tokenize( string $value ): string {
-	return strtolower( preg_replace( '/[^a-z0-9]+/i', '', $value ) ?? '' );
-}
+function dtb_variation_gallery_normalize( array $gallery ): array {
+	if ( class_exists( 'DTB_VariationGalleryResolver' ) ) {
+		return DTB_VariationGalleryResolver::normalize_gallery( $gallery );
+	}
 
-/**
- * Deduplicate gallery entries while preserving order.
- *
- * @param array<int,array{src:string}> $gallery Gallery entries.
- * @return array<int,array{src:string}>
- */
-function dtb_variation_gallery_unique_gallery( array $gallery ): array {
 	$out  = [];
 	$seen = [];
 	foreach ( $gallery as $image ) {
-		$src = trim( (string) ( $image['src'] ?? '' ) );
+		if ( is_string( $image ) ) {
+			$image = [ 'src' => $image ];
+		}
+		if ( ! is_array( $image ) ) {
+			continue;
+		}
+		$src = trim( (string) ( $image['src'] ?? $image['url'] ?? '' ) );
 		if ( '' === $src ) {
 			continue;
 		}
@@ -397,7 +188,22 @@ function dtb_variation_gallery_unique_gallery( array $gallery ): array {
 			continue;
 		}
 		$seen[ $key ] = true;
-		$out[]        = [ 'src' => $src ];
+		$image['src']  = $src;
+		$out[]         = $image;
 	}
+
 	return $out;
+}
+
+/**
+ * Build a stable URL signature for change detection.
+ *
+ * @param array<int,array<string,mixed>> $gallery Gallery entries.
+ * @return string
+ */
+function dtb_variation_gallery_signature( array $gallery ): string {
+	return implode( '|', array_map(
+		static fn( array $image ): string => strtolower( rtrim( strtok( (string) ( $image['src'] ?? '' ), '?' ) ?: (string) ( $image['src'] ?? '' ), '/' ) ),
+		dtb_variation_gallery_normalize( $gallery )
+	) );
 }
