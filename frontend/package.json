@@ -55,7 +55,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^16.5.0",
     "html-webpack-plugin": "^5.6.6",
-    "mini-css-extract-plugin": "^2.10.0",
+    "mini-css-extract-plugin": "^10.0.0",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.2.1",
     "sharp": "^0.34.5",
@@ -64,7 +64,7 @@
     "terser-webpack-plugin": "^5.4.0",
     "webpack": "^5.106.1",
     "webpack-bundle-analyzer": "^5.3.0",
-    "webpack-cli": "^6.0.1",
+    "webpack-cli": "^5.4.0",
     "webpack-dev-server": "^5.2.2",
     "workbox-webpack-plugin": "^7.4.1"
   }
