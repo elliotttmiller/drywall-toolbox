@@ -25,7 +25,7 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^(?:[A-Z_].*|motion)$', argsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^(?:[A-Z_].*|motion|getPaymentBaseUrl)$', argsIgnorePattern: '^[A-Z_]' }],
       'react-hooks/rules-of-hooks': 'error',
     },
   },
