@@ -101,7 +101,7 @@ function dtb_variation_gallery_enrich_variation( $variation ) {
 	$resolved     = dtb_variation_gallery_find_for_sku( $sku, $variation_id );
 	$gallery      = dtb_variation_gallery_normalize( array_merge( $resolved, $existing ) );
 
-	if ( empty( $gallery ) || dtb_variation_gallery_signature( $gallery ) === dtb_variation_gallery_signature( $existing ) ) {
+	if ( empty( $gallery ) ) {
 		return $variation;
 	}
 
@@ -110,6 +110,9 @@ function dtb_variation_gallery_enrich_variation( $variation ) {
 	$media['images']          = $gallery;
 	$media['image']           = (string) ( $gallery[0]['src'] ?? $media['image'] ?? '' );
 
+	// Always synchronize all canonical and compatibility aliases. Even when the
+	// URL set is unchanged, the resolver may contribute attachment metadata and a
+	// payload may expose the gallery under only one legacy alias.
 	$variation['media']                    = $media;
 	$variation['images']                   = $gallery;
 	$variation['image']                    = $gallery[0] ?? ( $variation['image'] ?? null );
@@ -145,12 +148,13 @@ function dtb_variation_gallery_find_for_sku( string $sku, int $variation_id = 0 
  * @return array<int,array<string,mixed>>
  */
 function dtb_variation_gallery_collect_existing( array $variation ): array {
-	$sets = [
+	$media = is_array( $variation['media'] ?? null ) ? $variation['media'] : [];
+	$sets  = [
 		$variation['variationGalleryImages'] ?? [],
 		$variation['variationImages'] ?? [],
 		$variation['variation_gallery_images'] ?? [],
-		$variation['media']['variationImages'] ?? [],
-		$variation['media']['variation_images'] ?? [],
+		$media['variationImages'] ?? [],
+		$media['variation_images'] ?? [],
 	];
 
 	return dtb_variation_gallery_normalize( array_merge( ...array_map(
@@ -193,17 +197,4 @@ function dtb_variation_gallery_normalize( array $gallery ): array {
 	}
 
 	return $out;
-}
-
-/**
- * Build a stable URL signature for change detection.
- *
- * @param array<int,array<string,mixed>> $gallery Gallery entries.
- * @return string
- */
-function dtb_variation_gallery_signature( array $gallery ): string {
-	return implode( '|', array_map(
-		static fn( array $image ): string => strtolower( rtrim( strtok( (string) ( $image['src'] ?? '' ), '?' ) ?: (string) ( $image['src'] ?? '' ), '/' ) ),
-		dtb_variation_gallery_normalize( $gallery )
-	) );
 }
