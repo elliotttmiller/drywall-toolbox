@@ -7,11 +7,14 @@
  * PUBLIC PROXY METHODS (no authentication required from the browser):
  *   getShippingRates(destination, items)  → POST /wp-json/dtb/v1/veeqo/shipping-rates
  *   submitRepairRequest(formData)         → POST /wp-json/dtb/v1/repairs/submit
- *   checkInventoryAvailability(cartItems) → GET  /wp-json/dtb/v1/veeqo/inventory
+ *   checkInventoryAvailability(cartItems) → POST /wp-json/dtb/v1/veeqo/cart-availability
  *
- * Documentation: https://developers.veeqo.com/
+ * Inventory source-of-truth contract:
+ *   Veeqo owns inventory/fulfillment data; WooCommerce stores the checkout-safe
+ *   stock projection. The storefront must never fetch the bulk Veeqo inventory
+ *   endpoint directly.
  */
-
+ 
 import { FREE_SHIP_THRESHOLD } from '../constants/shipping.js';
 import { submitRepair } from '../api/repairs.js';
 
@@ -71,15 +74,23 @@ function normalizeFreeShippingRates( rates = [], destination = {}, items = [] ) 
   } );
 }
 
+function normalizeAvailabilityItem( item = {} ) {
+  return {
+    id: item.id || item.product_id || item.productId || null,
+    product_id: item.product_id || item.productId || item.id || null,
+    sku: String( item.sku || item.sku_code || '' ).trim(),
+    name: item.name || item.productName || '',
+    quantity: Math.max( 1, Number( item.quantity || item.qty || 1 ) ),
+  };
+}
+
 class VeeqoService {
   /**
-   * Fetch real-time shipping rates for a destination address and item list.
+   * Fetch shipping rates for a destination address and item list.
    *
-   * The rate calculation runs on the WordPress server via dtb-veeqo.php and
-   * returns tiered domestic / international rates (or a prepaid-label option
-   * for repair service orders). Standard ground rates are normalized on the
-   * storefront to honor DTB's free-shipping threshold before checkout totals and
-   * order shipping lines are finalized.
+   * The rate calculation runs on the WordPress server via dtb/v1. Current
+   * checkout rates are DTB tiered/normalized rates; post-order label/carrier
+   * and tracking workflows are owned by Veeqo.
    *
    * @param {{ address: string, city: string, state: string, zip: string, country: string }} destination
    * @param {Array<{ id: number, sku: string, name: string, quantity: number, price: number, weight: number, category: string }>} items
@@ -111,7 +122,7 @@ class VeeqoService {
    * workflow so the request is created in WP-Admin and queued for WooCommerce.
    *
    * @param {Object} formData  All fields from the 5-step repair form.
-   * @returns {Promise<{ success: boolean, repair_id: number, public_token: string, status: string, message: string }>} 
+   * @returns {Promise<{ success: boolean, repair_id: number, public_token: string, status: string, message: string }>}
    */
   async submitRepairRequest( formData ) {
     return submitRepair( formData );
@@ -120,52 +131,48 @@ class VeeqoService {
   /**
    * Check inventory availability for cart items via the server-side proxy.
    *
-   * Routes through GET /wp-json/dtb/v1/veeqo/inventory (JWT-authenticated).
+   * Routes through POST /wp-json/dtb/v1/veeqo/cart-availability. The endpoint
+   * checks the WooCommerce stock projection that is synchronized from Veeqo and
+   * never exposes the full Veeqo inventory feed to the browser.
+   *
    * Falls back to available=true on any error so checkout is never blocked by
-   * a Veeqo API outage — WooCommerce enforces stock limits server-side anyway.
+   * an availability-check outage; WooCommerce still enforces stock server-side.
    *
    * @param {Array<{ id: number, sku: string, name: string, quantity: number }>} cartItems
    * @returns {Promise<{ available: boolean, items: Array, outOfStock: Array }>}
    */
   async checkInventoryAvailability( cartItems ) {
     try {
-      const url = `${ DTB_PROXY_BASE }/veeqo/inventory`;
+      const items = ( Array.isArray( cartItems ) ? cartItems : [] )
+        .map( normalizeAvailabilityItem )
+        .filter( ( item ) => item.sku );
+
+      if ( items.length === 0 ) {
+        return { available: true, items: [], outOfStock: [] };
+      }
+
+      const url = `${ DTB_PROXY_BASE }/veeqo/cart-availability`;
       const res = await fetch( url, {
+        method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { items } ),
       } );
 
       if ( !res.ok ) {
-        // Non-fatal: WooCommerce enforces stock on the server.
-        return { available: true, items: [], error: `HTTP ${ res.status }` };
+        return { available: true, items: [], outOfStock: [], error: `HTTP ${ res.status }` };
       }
 
       const data = await res.json();
-      const inventory = data.inventory || [];
-
-      // Build a sku→available map from the server response.
-      const stockBySku = {};
-      for ( const entry of inventory ) {
-        if ( entry.sku ) stockBySku[ entry.sku ] = entry.available ?? 0;
-      }
-
-      const checks = cartItems.map( ( item ) => {
-        const available = stockBySku[ item.sku ] ?? null;
-        return {
-          productId:   item.id,
-          productName: item.name,
-          sku:         item.sku || '',
-          requested:   item.quantity,
-          available,
-          inStock:     available === null || available >= item.quantity,
-        };
-      } );
-
-      const outOfStock = checks.filter( ( c ) => !c.inStock );
-      return { available: outOfStock.length === 0, items: checks, outOfStock };
+      return {
+        available: Boolean( data.available ),
+        items: Array.isArray( data.items ) ? data.items : [],
+        outOfStock: Array.isArray( data.outOfStock ) ? data.outOfStock : [],
+        source: data.source || 'cart-availability',
+      };
     } catch ( error ) {
       console.warn( 'Inventory check failed (non-fatal):', error.message );
-      return { available: true, items: [], error: error.message };
+      return { available: true, items: [], outOfStock: [], error: error.message };
     }
   }
 }
