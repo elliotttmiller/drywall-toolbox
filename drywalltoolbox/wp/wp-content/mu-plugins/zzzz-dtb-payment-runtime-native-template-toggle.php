@@ -3,10 +3,11 @@
  * Compatibility toggle: native WooCommerce order-pay template.
  *
  * The DTB custom/branded payment runtime is temporarily disabled by default so
- * the official WooCommerce order-pay page can be evaluated directly while the
- * custom desktop/mobile UI is rebuilt. Routing, canonical-redirect suppression,
- * order-key validation, payable-order preparation, and gateway scripts remain
- * owned by the existing payment runtime.
+ * WooCommerce's native order-pay shortcode/gateway runtime can be evaluated
+ * directly while the custom desktop/mobile UI is rebuilt. Routing,
+ * canonical-redirect suppression, order-key validation, payable-order
+ * preparation, and gateway scripts remain owned by the existing payment
+ * runtime.
  *
  * Re-enable the custom DTB payment template only after it is rebuilt and tested:
  * define( 'DTB_PAYMENT_RUNTIME_CUSTOM_TEMPLATE_ENABLED', true );
@@ -46,17 +47,12 @@ if ( ! function_exists( 'dtb_payment_runtime_native_toggle_custom_enabled' ) ) {
 	}
 }
 
-add_filter(
-	'template_include',
-	static function ( string $template ): string {
-		if ( dtb_payment_runtime_native_toggle_request() && ! dtb_payment_runtime_native_toggle_custom_enabled() ) {
-			$GLOBALS['dtb_payment_runtime_native_original_template'] = $template;
-		}
-
-		return $template;
-	},
-	-999999
-);
+if ( ! function_exists( 'dtb_payment_runtime_native_template_path' ) ) {
+	/** Return the native WooCommerce order-pay template path. */
+	function dtb_payment_runtime_native_template_path(): string {
+		return __DIR__ . '/dtb-platform/Templates/WooNativeOrderPayRuntime.php';
+	}
+}
 
 add_filter(
 	'template_include',
@@ -65,21 +61,8 @@ add_filter(
 			return $template;
 		}
 
-		$original = isset( $GLOBALS['dtb_payment_runtime_native_original_template'] )
-			? (string) $GLOBALS['dtb_payment_runtime_native_original_template']
-			: '';
-
-		if ( '' !== $original && file_exists( $original ) ) {
-			return $original;
-		}
-
-		$page_template = function_exists( 'get_page_template' ) ? (string) get_page_template() : '';
-		if ( '' !== $page_template && file_exists( $page_template ) ) {
-			return $page_template;
-		}
-
-		$index_template = function_exists( 'get_index_template' ) ? (string) get_index_template() : '';
-		return '' !== $index_template && file_exists( $index_template ) ? $index_template : $template;
+		$native_template = dtb_payment_runtime_native_template_path();
+		return file_exists( $native_template ) ? $native_template : $template;
 	},
 	PHP_INT_MAX
 );
