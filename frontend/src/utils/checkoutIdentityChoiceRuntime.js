@@ -39,10 +39,6 @@ function isGuestCheckout(checkout) {
   return Boolean(contact && q(contact, '.dtb-co-section__subheader a[href*="/login"]'));
 }
 
-function routeTo(path) {
-  window.location.assign(path);
-}
-
 function continueAsGuest() {
   const firstName = document.getElementById('field-firstName');
   const contact = findContactSection(document.querySelector('.dtb-checkout'));
