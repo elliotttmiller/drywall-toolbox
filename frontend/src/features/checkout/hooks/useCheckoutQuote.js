@@ -21,6 +21,19 @@ function addressFromForm( form = {} ) {
 	};
 }
 
+function hasRequiredQuoteFields( form = {} ) {
+	const email = String( form.email || '' ).trim();
+	return Boolean(
+		String( form.firstName || '' ).trim()
+		&& String( form.lastName || '' ).trim()
+		&& String( form.address || '' ).trim()
+		&& String( form.city || '' ).trim()
+		&& String( form.state || '' ).trim()
+		&& String( form.zip || '' ).trim()
+		&& /\S+@\S+\.\S+/.test( email )
+	);
+}
+
 function isStaleShippingRateError( error ) {
 	return Number( error?.status || 0 ) === 409 && error?.code === 'dtb_checkout_shipping_rate_changed';
 }
@@ -29,7 +42,10 @@ export function useCheckoutQuote({ formData, couponCodes = [], selectedRateId = 
 	const [state, dispatch] = useReducer( checkoutReducer, checkoutInitialState );
 	const [loading, setLoading] = useState( false );
 	const requestSeq = useRef( 0 );
-	const canQuote = cartReady && isAddressComplete && Array.isArray( cartItems ) && cartItems.length > 0;
+	// Match the backend quote contract instead of waiting for every final-submit
+	// field.  The server requires name, email, and destination fields for quote
+	// calculation; phone remains a final-submit delivery/update requirement.
+	const canQuote = cartReady && ( isAddressComplete || hasRequiredQuoteFields( formData ) ) && Array.isArray( cartItems ) && cartItems.length > 0;
 
 	const refreshQuote = useCallback( async ( preferredRateId ) => {
 		const requestId = requestSeq.current + 1;
