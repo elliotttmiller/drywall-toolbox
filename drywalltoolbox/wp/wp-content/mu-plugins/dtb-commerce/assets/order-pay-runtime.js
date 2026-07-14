@@ -6,13 +6,15 @@
 	var frame = 0;
 	var observer = null;
 	var syncing = false;
+	var submitting = false;
+	var lastNoticeSignature = '';
 	var mobileQuery = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
 
 	function root() {
 		return document.querySelector(rootSelector);
 	}
 
-	function form() {
+	function orderForm() {
 		return document.querySelector('.dtb-op-card form#order_review');
 	}
 
@@ -26,6 +28,13 @@
 
 	function isMobile() {
 		return !mobileQuery || mobileQuery.matches;
+	}
+
+	function el(tag, className, textValue) {
+		var node = document.createElement(tag);
+		if (className) node.className = className;
+		if (textValue !== undefined && textValue !== null) node.textContent = textValue;
+		return node;
 	}
 
 	function methodKey(method) {
@@ -61,17 +70,18 @@
 		if (/apple|google|paypal|wallet|shop pay|woopay/.test(key)) {
 			method.classList.add('dtb-op-gateway-express');
 			method.setAttribute('data-dtb-gateway-kind', 'express');
-			return;
+			return 'express';
 		}
 
 		if (/affirm|klarna|afterpay|cash app|pay later|paylater/.test(key)) {
 			method.classList.add('dtb-op-gateway-paylater');
 			method.setAttribute('data-dtb-gateway-kind', 'paylater');
-			return;
+			return 'paylater';
 		}
 
 		method.classList.add('dtb-op-gateway-card');
 		method.setAttribute('data-dtb-gateway-kind', 'card');
+		return 'card';
 	}
 
 	function currencyText(value) {
@@ -82,9 +92,7 @@
 
 	function orderTotalText() {
 		var total = document.querySelector('.dtb-op-card table.shop_table tfoot tr.order-total td');
-		if (!total) {
-			total = document.querySelector('.dtb-op-card table.shop_table tfoot tr:last-child td');
-		}
+		if (!total) total = document.querySelector('.dtb-op-card table.shop_table tfoot tr:last-child td');
 		return currencyText(compactText(total));
 	}
 
@@ -99,26 +107,22 @@
 		return { name: raw.replace(/\s+/g, ' ').trim(), sku: sku };
 	}
 
-	function el(tag, className, textValue) {
-		var node = document.createElement(tag);
-		if (className) node.className = className;
-		if (textValue !== undefined && textValue !== null) node.textContent = textValue;
-		return node;
-	}
-
 	function tableSignature(table) {
 		return compactText(table).slice(0, 2000);
 	}
 
 	function buildSummaryCard() {
-		var currentForm = form();
+		var currentForm = orderForm();
 		var table = currentForm ? currentForm.querySelector('table.shop_table') : null;
 		if (!currentForm || !table) return;
 
 		var signature = tableSignature(table);
 		var previous = currentForm.querySelector('.dtb-op-summary-card');
 		var wasOpen = previous ? previous.classList.contains('is-open') : !isMobile();
+
 		if (previous && previous.getAttribute('data-dtb-signature') === signature) {
+			var amount = previous.querySelector('.dtb-op-summary-card__amount');
+			if (amount) amount.textContent = orderTotalText();
 			document.body.classList.add('dtb-op-summary-enhanced');
 			return;
 		}
@@ -195,14 +199,66 @@
 		document.body.classList.add('dtb-op-summary-enhanced');
 	}
 
+	function syncPaymentLead(counts) {
+		var payment = document.querySelector('.dtb-op-card #payment');
+		var methods = payment ? payment.querySelector('.wc_payment_methods') : null;
+		if (!payment || !methods) return;
+
+		var lead = payment.querySelector('.dtb-op-payment-lead');
+		if (!lead) {
+			lead = el('div', 'dtb-op-payment-lead');
+			lead.append(el('div', 'dtb-op-payment-lead__title'));
+			lead.append(el('div', 'dtb-op-payment-lead__copy'));
+			payment.insertBefore(lead, methods);
+		}
+
+		var title = lead.querySelector('.dtb-op-payment-lead__title');
+		var copy = lead.querySelector('.dtb-op-payment-lead__copy');
+		var hasFastOptions = counts.express > 0 || counts.paylater > 0;
+		if (title) title.textContent = hasFastOptions ? 'Express checkout' : 'Payment method';
+		if (copy) {
+			copy.textContent = hasFastOptions
+				? 'Use a wallet or pay-later option for the fastest checkout, or choose card below.'
+				: 'Choose a secure payment method to complete this order.';
+		}
+	}
+
+	function syncMethods() {
+		var host = paymentRoot();
+		if (!host) return;
+
+		var counts = { express: 0, paylater: 0, card: 0 };
+		Array.prototype.slice.call(host.querySelectorAll('.wc_payment_method')).forEach(function (method) {
+			var kind = classifyGateway(method);
+			counts[kind] += 1;
+
+			var input = method.querySelector('input[type="radio"]');
+			var label = method.querySelector('label');
+			var active = Boolean(input && input.checked);
+			var hasDetail = paymentBoxHasDetail(method);
+
+			method.classList.toggle('dtb-op-payment-active', active);
+			method.classList.toggle('dtb-op-payment-has-detail', hasDetail);
+			method.setAttribute('data-dtb-payment-active', active ? 'true' : 'false');
+			method.setAttribute('data-dtb-payment-has-detail', hasDetail ? 'true' : 'false');
+
+			if (label && !label.getAttribute('aria-label')) {
+				var name = compactText(label);
+				if (name) label.setAttribute('aria-label', name);
+			}
+		});
+
+		syncPaymentLead(counts);
+	}
+
 	function syncPayButton() {
 		var button = document.querySelector('.dtb-op-card #place_order');
 		if (!button) return;
 
 		var total = orderTotalText();
-		var label = total ? 'Pay ' + total + ' securely' : 'Pay securely';
+		var label = total ? 'Pay ' + total : 'Pay securely';
 		if (!button.dataset.dtbOriginalText) button.dataset.dtbOriginalText = compactText(button);
-		if (compactText(button) !== label) button.textContent = label;
+		if (!submitting && compactText(button) !== label) button.textContent = label;
 		button.setAttribute('aria-label', label);
 
 		var placeOrder = button.closest('.place-order');
@@ -218,9 +274,51 @@
 		var value = amountRow.querySelector('.dtb-op-pay-total__value');
 		if (value) value.textContent = total || '';
 
+		if (!placeOrder.querySelector('.dtb-op-verify-hint')) {
+			placeOrder.append(el('div', 'dtb-op-verify-hint', 'Your bank or wallet may ask for secure verification after you tap Pay.'));
+		}
 		if (!placeOrder.querySelector('.dtb-op-cta-trust')) {
-			var trust = el('div', 'dtb-op-cta-trust', 'Encrypted payment. No charge until gateway confirmation.');
-			placeOrder.append(trust);
+			placeOrder.append(el('div', 'dtb-op-cta-trust', 'Encrypted payment. No charge is completed until your gateway confirms it.'));
+		}
+	}
+
+	function setSubmitting(next) {
+		var body = root();
+		var button = document.querySelector('.dtb-op-card #place_order');
+		submitting = Boolean(next);
+		if (body) body.classList.toggle('dtb-op-payment-submitting', submitting);
+		if (button) {
+			if (submitting) {
+				button.dataset.dtbProcessingText = compactText(button) || button.dataset.dtbOriginalText || '';
+				button.textContent = 'Processing payment…';
+				button.setAttribute('aria-busy', 'true');
+			} else {
+				button.removeAttribute('aria-busy');
+				syncPayButton();
+			}
+		}
+	}
+
+	function enhanceNotices() {
+		var notices = Array.prototype.slice.call(document.querySelectorAll('.dtb-op-card .woocommerce-error, .dtb-op-card .woocommerce-info, .dtb-op-card .woocommerce-message'));
+		if (!notices.length) return;
+
+		var signature = notices.map(compactText).join('|').slice(0, 1200);
+		notices.forEach(function (notice) {
+			if (!notice.querySelector('.dtb-op-notice-title')) {
+				var title = notice.classList.contains('woocommerce-error') ? 'Payment could not be completed' : 'Checkout update';
+				notice.insertBefore(el('strong', 'dtb-op-notice-title', title), notice.firstChild);
+			}
+		});
+
+		if (submitting) setSubmitting(false);
+		if (signature && signature !== lastNoticeSignature) {
+			lastNoticeSignature = signature;
+			if (notices[0] && notices[0].scrollIntoView) {
+				window.setTimeout(function () {
+					notices[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+				}, 80);
+			}
 		}
 	}
 
@@ -247,29 +345,6 @@
 		});
 	}
 
-	function syncMethods() {
-		var host = paymentRoot();
-		if (!host) return;
-
-		Array.prototype.slice.call(host.querySelectorAll('.wc_payment_method')).forEach(function (method) {
-			classifyGateway(method);
-			var input = method.querySelector('input[type="radio"]');
-			var label = method.querySelector('label');
-			var active = Boolean(input && input.checked);
-			var hasDetail = paymentBoxHasDetail(method);
-
-			method.classList.toggle('dtb-op-payment-active', active);
-			method.classList.toggle('dtb-op-payment-has-detail', hasDetail);
-			method.setAttribute('data-dtb-payment-active', active ? 'true' : 'false');
-			method.setAttribute('data-dtb-payment-has-detail', hasDetail ? 'true' : 'false');
-
-			if (label && !label.getAttribute('aria-label')) {
-				var name = compactText(label);
-				if (name) label.setAttribute('aria-label', name);
-			}
-		});
-	}
-
 	function sync() {
 		if (syncing) return;
 		syncing = true;
@@ -281,6 +356,7 @@
 			buildSummaryCard();
 			syncMethods();
 			syncPayButton();
+			enhanceNotices();
 		} finally {
 			syncing = false;
 		}
@@ -289,6 +365,28 @@
 	function schedule() {
 		if (frame) return;
 		frame = window.requestAnimationFrame(sync);
+	}
+
+	function bindGatewayFeedback() {
+		document.addEventListener('submit', function (event) {
+			if (event.target && event.target.matches('.dtb-op-card form#order_review')) {
+				setSubmitting(true);
+			}
+		}, true);
+
+		document.addEventListener('click', function (event) {
+			var target = event.target;
+			if (target && target.closest && target.closest('.dtb-op-card #place_order')) {
+				window.setTimeout(function () { setSubmitting(true); }, 0);
+			}
+		});
+
+		if (window.jQuery) {
+			window.jQuery(document.body).on('updated_checkout checkout_error payment_method_selected', function () {
+				setSubmitting(false);
+				schedule();
+			});
+		}
 	}
 
 	function bind() {
@@ -304,19 +402,20 @@
 			}
 		});
 
+		bindGatewayFeedback();
 		window.addEventListener('load', schedule, { passive: true });
 		window.addEventListener('resize', schedule, { passive: true });
 		if (mobileQuery && mobileQuery.addEventListener) mobileQuery.addEventListener('change', schedule);
 		window.setTimeout(schedule, 450);
 
-		var observed = paymentRoot() || document.body;
+		var observed = orderForm() || paymentRoot() || document.body;
 		if (observed && typeof MutationObserver !== 'undefined') {
 			observer = new MutationObserver(schedule);
 			observer.observe(observed, {
 				childList: true,
 				subtree: true,
 				attributes: true,
-				attributeFilter: ['class', 'checked'],
+				attributeFilter: ['class', 'checked', 'disabled'],
 			});
 		}
 
