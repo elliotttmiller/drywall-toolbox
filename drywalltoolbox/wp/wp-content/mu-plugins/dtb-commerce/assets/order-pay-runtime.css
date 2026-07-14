@@ -1,5 +1,5 @@
 /*
- * DTB order-pay runtime: single authoritative mobile-first presentation layer.
+ * DTB order-pay runtime: compact mobile-first checkout presentation.
  * WooCommerce/WooPayments retain ownership of gateway fields, nonces, iframes,
  * tokenization, callbacks, and payment lifecycle behavior.
  */
@@ -8,25 +8,29 @@
 	--dtb-op-blue: #2563eb;
 	--dtb-op-blue-dark: #1d4ed8;
 	--dtb-op-navy: #071226;
-	--dtb-op-ink: #0f172a;
-	--dtb-op-text: #26324b;
+	--dtb-op-ink: #111827;
+	--dtb-op-text: #334155;
 	--dtb-op-muted: #64748b;
-	--dtb-op-line: #dbe4f0;
-	--dtb-op-soft-line: #e8eef7;
-	--dtb-op-soft: #f8fbff;
-	--dtb-op-page: #eef4fb;
+	--dtb-op-line: #dfe5ee;
+	--dtb-op-soft-line: #edf1f6;
+	--dtb-op-soft: #f7f9fc;
+	--dtb-op-page: #f6f8fb;
 	--dtb-op-card: #ffffff;
-	--dtb-op-radius: 22px;
-	--dtb-op-shadow: 0 22px 58px rgba(15, 23, 42, 0.1);
+	--dtb-op-radius-sm: 12px;
+	--dtb-op-radius: 16px;
+	--dtb-op-radius-lg: 20px;
+	--dtb-op-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
 }
 
 html:has(body.dtb-order-pay-runtime),
 body.dtb-order-pay-runtime {
 	min-width: 0;
+	margin: 0;
 	overflow-x: hidden;
-	background: linear-gradient(180deg, #eef4fb 0%, #ffffff 260px, #ffffff 100%);
+	background: var(--dtb-op-page);
 	color: var(--dtb-op-ink);
 	font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 15px;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }
@@ -36,51 +40,57 @@ body.dtb-order-pay-runtime * {
 	box-sizing: border-box;
 }
 
+body.dtb-order-pay-runtime a {
+	color: inherit;
+}
+
+body.dtb-order-pay-runtime button,
+body.dtb-order-pay-runtime input,
+body.dtb-order-pay-runtime select,
+body.dtb-order-pay-runtime textarea {
+	font: inherit;
+}
+
 body.dtb-order-pay-runtime.dtb-payment-sheet-open {
 	overflow: auto !important;
 }
 
-body.dtb-order-pay-runtime.dtb-payment-sheet-open::before {
+body.dtb-order-pay-runtime.dtb-payment-sheet-open::before,
+body.dtb-order-pay-runtime .dtb-sheet-close {
 	display: none !important;
 	content: none !important;
 }
 
-.dtb-order-pay-runtime a {
-	color: var(--dtb-op-blue-dark);
-}
-
+/* Header */
 .dtb-op-header {
-	position: relative;
-	z-index: 20;
-	min-height: 74px;
-	padding: 0 max(16px, env(safe-area-inset-left)) 0 max(16px, env(safe-area-inset-right));
-	background: linear-gradient(135deg, #071329 0%, #0d2452 58%, #1d4ed8 100%);
-	box-shadow: 0 12px 28px rgba(7, 19, 41, 0.2);
+	background: linear-gradient(135deg, #071226 0%, #0b1d3b 58%, #123f95 100%);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow: 0 8px 24px rgba(7, 18, 38, 0.16);
 }
 
 .dtb-op-header__inner {
-	width: min(1180px, 100%);
-	min-height: 74px;
+	width: min(1180px, calc(100vw - 32px));
+	min-height: 68px;
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
 	align-items: center;
-	gap: 12px;
+	gap: 20px;
 }
 
 .dtb-op-brand {
 	display: inline-flex;
 	align-items: center;
+	justify-self: start;
 	min-width: 0;
-	min-height: 52px;
 	text-decoration: none;
 }
 
 .dtb-op-logo {
 	display: block;
 	width: auto;
-	height: 42px;
-	max-width: min(188px, 54vw);
+	height: 38px;
+	max-width: 190px;
 	object-fit: contain;
 }
 
@@ -88,143 +98,442 @@ body.dtb-order-pay-runtime.dtb-payment-sheet-open::before {
 	display: none;
 	align-items: baseline;
 	gap: 3px;
-	color: #ffffff;
-	font-size: 24px;
-	font-weight: 950;
-	letter-spacing: -0.055em;
-	line-height: 1;
+	color: #fff;
+	font-size: 22px;
+	font-weight: 900;
+	letter-spacing: -0.045em;
 }
 
 .dtb-op-wordmark strong {
 	color: #60a5fa;
-	font-weight: 950;
-}
-
-.dtb-op-logo:not([src]),
-.dtb-op-logo[src=""] {
-	display: none;
-}
-
-.dtb-op-logo:not([src]) + .dtb-op-wordmark,
-.dtb-op-logo[src=""] + .dtb-op-wordmark {
-	display: inline-flex;
 }
 
 .dtb-op-steps {
-	display: none;
+	justify-self: center;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: rgba(219, 234, 254, 0.72);
+	font-size: 11px;
+	font-weight: 800;
+}
+
+.dtb-op-step {
+	display: grid;
+	justify-items: center;
+	gap: 4px;
+	min-width: 52px;
+	line-height: 1;
+}
+
+.dtb-op-step__mark {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border: 1px solid rgba(219, 234, 254, 0.26);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.07);
+}
+
+.dtb-op-step--done .dtb-op-step__mark,
+.dtb-op-step--current .dtb-op-step__mark {
+	border-color: rgba(191, 219, 254, 0.75);
+	background: #fff;
+	color: var(--dtb-op-blue);
+}
+
+.dtb-op-step--current {
+	color: #fff;
+}
+
+.dtb-op-step__line {
+	width: 34px;
+	height: 1px;
+	background: rgba(219, 234, 254, 0.24);
+}
+
+.dtb-op-step__line--done {
+	background: rgba(96, 165, 250, 0.72);
 }
 
 .dtb-op-secure-pill {
 	justify-self: end;
-	color: rgba(255, 255, 255, 0.92);
-	font-size: 10.5px;
+	color: #dbeafe;
+	font-size: 10px;
 	font-weight: 900;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
 
+/* Page frame */
 .dtb-op-main {
-	width: min(100%, calc(100vw - 16px));
+	width: min(1180px, calc(100vw - 32px));
 	margin: 0 auto;
-	padding: 10px 0 calc(28px + env(safe-area-inset-bottom));
+	padding: 18px 0 42px;
 }
 
 .dtb-op-topline {
-	display: grid;
-	gap: 6px;
-	padding: 4px 4px 10px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	margin: 0 2px 12px;
 }
 
 .dtb-op-back {
-	display: inline-flex;
-	width: fit-content;
-	align-items: center;
-	font-size: 14px;
-	font-weight: 850;
+	font-size: 13px;
+	font-weight: 800;
 	text-decoration: none;
 }
 
 .dtb-op-back:hover,
-.dtb-op-back:focus {
+.dtb-op-back:focus-visible {
 	text-decoration: underline;
 }
 
 .dtb-op-microcopy {
 	margin: 0;
 	color: var(--dtb-op-muted);
-	font-size: 12.5px;
-	font-weight: 650;
+	font-size: 12px;
 	line-height: 1.4;
+	text-align: right;
 }
 
 .dtb-op-card {
-	width: 100%;
 	min-width: 0;
-	padding: 8px;
-	border: 1px solid rgba(219, 228, 240, 0.96);
-	border-radius: 22px;
+	padding: 18px;
+	border: 1px solid var(--dtb-op-line);
+	border-radius: var(--dtb-op-radius-lg);
 	background: rgba(255, 255, 255, 0.97);
-	box-shadow: 0 18px 46px rgba(15, 23, 42, 0.09);
-	overflow: visible;
+	box-shadow: var(--dtb-op-shadow);
 }
 
 .dtb-op-card .woocommerce,
-.dtb-op-card form#order_review,
-.dtb-op-card #payment,
-.dtb-op-card table.shop_table,
-.dtb-op-card .wc_payment_methods,
-.dtb-op-card .wc_payment_method,
-.dtb-op-card .payment_box,
-.dtb-op-card .place-order {
-	max-width: 100%;
+.dtb-op-card form#order_review {
 	min-width: 0;
+	max-width: 100%;
 }
 
 .dtb-op-card .woocommerce-error,
 .dtb-op-card .woocommerce-info,
 .dtb-op-card .woocommerce-message {
-	margin: 0 0 12px;
-	padding: 13px 14px;
-	border-radius: 16px;
-	font-size: 14px;
+	margin: 0 0 14px;
+	padding: 12px 14px 12px 42px;
+	border-radius: 12px;
+	font-size: 13px;
 	line-height: 1.4;
 }
 
+/* Core layout */
 .dtb-op-card form#order_review {
-	display: grid !important;
-	grid-template-columns: minmax(0, 1fr) !important;
-	grid-template-areas:
-		"summary"
-		"payment" !important;
-	gap: 12px !important;
-	align-items: start !important;
-	margin: 0 !important;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(330px, 390px);
+	grid-template-areas: "payment summary";
+	gap: 22px;
+	align-items: start;
 }
 
+.dtb-op-card #payment {
+	grid-area: payment;
+	min-width: 0;
+	margin: 0 !important;
+	padding: 20px !important;
+	border: 1px solid var(--dtb-op-line) !important;
+	border-radius: var(--dtb-op-radius) !important;
+	background: #fff !important;
+	box-shadow: none !important;
+}
+
+.dtb-op-card #payment::before {
+	content: "Payment";
+	display: block;
+	margin: 0 0 14px;
+	font-size: 23px;
+	font-weight: 900;
+	letter-spacing: -0.035em;
+	line-height: 1.05;
+}
+
+.dtb-op-card #payment::after {
+	content: "Secure checkout powered by WooCommerce and your selected payment provider.";
+	display: block;
+	margin-top: 14px;
+	color: var(--dtb-op-muted);
+	font-size: 12px;
+	line-height: 1.4;
+}
+
+/* Payment method list */
+.dtb-op-card .wc_payment_methods {
+	display: grid !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	list-style: none !important;
+}
+
+.dtb-op-card .wc_payment_method {
+	position: relative;
+	min-width: 0;
+	margin: 0 !important;
+	padding: 0 !important;
+	overflow: hidden;
+	border: 1px solid var(--dtb-op-line);
+	border-radius: 14px;
+	background: #fff;
+	box-shadow: none;
+	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.dtb-op-card .wc_payment_method.dtb-op-gateway-card,
+.dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
+	grid-column: 1 / -1;
+}
+
+.dtb-op-card .wc_payment_method > input[type="radio"] {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	opacity: 0 !important;
+	clip: rect(0 0 0 0) !important;
+	clip-path: inset(50%) !important;
+	overflow: hidden !important;
+	white-space: nowrap !important;
+}
+
+.dtb-op-card .wc_payment_method > label {
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	width: 100%;
+	min-height: 54px;
+	margin: 0 !important;
+	padding: 10px 38px 10px 12px !important;
+	border: 0 !important;
+	border-radius: 14px;
+	background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+	color: var(--dtb-op-ink);
+	font-size: 13px;
+	font-weight: 800;
+	line-height: 1.15;
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.dtb-op-card .wc_payment_method > label img,
+.dtb-op-card .wc_payment_method > label svg {
+	display: block !important;
+	width: auto !important;
+	max-width: min(118px, 72%) !important;
+	max-height: 26px !important;
+	margin: 0 !important;
+	object-fit: contain !important;
+}
+
+.dtb-op-card .wc_payment_method::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: 12px;
+	width: 16px;
+	height: 16px;
+	border: 1.5px solid #cbd5e1;
+	border-radius: 999px;
+	background: #fff;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.dtb-op-card .wc_payment_method.dtb-op-payment-active {
+	border-color: var(--dtb-op-blue);
+	background: #f8fbff;
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.dtb-op-card .wc_payment_method.dtb-op-payment-active::after {
+	border-color: var(--dtb-op-blue);
+	background: radial-gradient(circle, var(--dtb-op-blue) 0 43%, #fff 47% 100%);
+}
+
+.dtb-op-card .wc_payment_method > input:focus-visible + label {
+	outline: 3px solid rgba(37, 99, 235, 0.24);
+	outline-offset: -3px;
+}
+
+.dtb-op-card .wc_payment_method:not(.dtb-op-payment-active) > .payment_box {
+	display: none !important;
+}
+
+.dtb-op-card .wc_payment_method.dtb-op-payment-active > .payment_box {
+	display: block !important;
+	position: static !important;
+	inset: auto !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+	margin: 0 !important;
+	padding: 16px !important;
+	border: 0 !important;
+	border-top: 1px solid var(--dtb-op-soft-line) !important;
+	border-radius: 0 !important;
+	background: var(--dtb-op-soft) !important;
+	box-shadow: none !important;
+	color: var(--dtb-op-text) !important;
+	overflow: visible !important;
+}
+
+.dtb-op-card .payment_box::before {
+	display: none !important;
+}
+
+.dtb-op-card .payment_box > *,
+.dtb-op-card .payment_box form,
+.dtb-op-card .payment_box fieldset,
+.dtb-op-card .payment_box .wc-payment-form,
+.dtb-op-card .payment_box .wcpay-upe-form,
+.dtb-op-card .payment_box .wcpay-upe-element,
+.dtb-op-card .payment_box .wcpay-payment-element,
+.dtb-op-card .payment_box .StripeElement,
+.dtb-op-card .payment_box .__PrivateStripeElement {
+	box-sizing: border-box !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+}
+
+.dtb-op-card .payment_box fieldset {
+	margin: 0 !important;
+	padding: 14px !important;
+	border: 1px solid var(--dtb-op-line) !important;
+	border-radius: 12px !important;
+	background: #fff !important;
+}
+
+.dtb-op-card .payment_box .form-row {
+	margin: 0 0 10px !important;
+}
+
+.dtb-op-card .payment_box .form-row-first,
+.dtb-op-card .payment_box .form-row-last {
+	float: none !important;
+	display: inline-block !important;
+	width: calc(50% - 6px) !important;
+	max-width: calc(50% - 6px) !important;
+	vertical-align: top !important;
+}
+
+.dtb-op-card .payment_box .form-row-first {
+	margin-right: 12px !important;
+}
+
+.dtb-op-card .payment_box label {
+	color: #475569 !important;
+	font-size: 12px !important;
+	font-weight: 800 !important;
+}
+
+.dtb-op-card .payment_box input,
+.dtb-op-card .payment_box select,
+.dtb-op-card .payment_box textarea,
+.dtb-op-card .payment_box .input-text {
+	width: 100% !important;
+	max-width: 100% !important;
+	min-height: 46px !important;
+	padding: 10px 12px !important;
+	border: 1px solid #cbd5e1 !important;
+	border-radius: 10px !important;
+	background: #fff !important;
+	color: var(--dtb-op-ink) !important;
+	font-size: 16px !important;
+}
+
+.dtb-op-card .payment_box iframe {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+/* Place order */
+.dtb-op-card .place-order {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 12px;
+	margin: 16px 0 0 !important;
+	padding: 14px 0 0 !important;
+	border-top: 1px solid var(--dtb-op-soft-line) !important;
+}
+
+.dtb-op-card .woocommerce-privacy-policy-text {
+	margin: 0 !important;
+	color: var(--dtb-op-muted) !important;
+	font-size: 11.5px !important;
+	line-height: 1.4 !important;
+}
+
+.dtb-op-card #place_order,
+.dtb-op-card button.button,
+.dtb-op-card .button {
+	min-width: 190px;
+	min-height: 50px;
+	margin: 0 !important;
+	padding: 12px 20px !important;
+	border: 0 !important;
+	border-radius: 12px !important;
+	background: linear-gradient(135deg, var(--dtb-op-blue), #3b82f6) !important;
+	box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2) !important;
+	color: #fff !important;
+	font-size: 14px !important;
+	font-weight: 900 !important;
+	line-height: 1.2 !important;
+	text-align: center !important;
+}
+
+.dtb-op-card #place_order:hover,
+.dtb-op-card #place_order:focus-visible {
+	filter: brightness(0.98);
+}
+
+.dtb-op-cta-trust {
+	grid-column: 1 / -1;
+	justify-self: end;
+	margin-top: -2px;
+	color: var(--dtb-op-muted);
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.35;
+	text-align: right;
+}
+
+/* Order summary */
 .dtb-op-card table.shop_table {
 	grid-area: summary;
+	position: sticky;
+	top: 18px;
 	display: block !important;
 	width: 100% !important;
+	min-width: 0 !important;
 	margin: 0 !important;
 	border: 1px solid var(--dtb-op-line) !important;
-	border-radius: 20px !important;
+	border-radius: var(--dtb-op-radius) !important;
 	border-collapse: separate !important;
 	border-spacing: 0 !important;
-	background: #ffffff !important;
-	box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055) !important;
+	background: #fff !important;
+	box-shadow: none !important;
 	overflow: hidden !important;
 }
 
 .dtb-op-card table.shop_table::before {
 	content: "Order summary";
 	display: block;
-	padding: 16px 16px 10px;
-	color: var(--dtb-op-ink);
-	font-size: 18px;
-	font-weight: 950;
-	letter-spacing: -0.04em;
-	line-height: 1.08;
+	padding: 17px 18px 12px;
+	font-size: 19px;
+	font-weight: 900;
+	letter-spacing: -0.025em;
 }
 
 .dtb-op-card table.shop_table thead {
@@ -246,652 +555,320 @@ body.dtb-order-pay-runtime.dtb-payment-sheet-open::before {
 
 .dtb-op-card table.shop_table tbody tr.cart_item,
 .dtb-op-card table.shop_table tbody tr.order_item {
-	grid-template-columns: minmax(0, 1fr) auto !important;
-	grid-template-areas:
-		"name total"
-		"qty total" !important;
-	gap: 7px 12px !important;
-	align-items: start !important;
-	padding: 14px 16px !important;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 12px;
+	align-items: center;
+	padding: 13px 18px !important;
 }
 
 .dtb-op-card table.shop_table th,
 .dtb-op-card table.shop_table td {
 	display: block !important;
 	min-width: 0 !important;
-	border: 0 !important;
 	padding: 0 !important;
+	border: 0 !important;
 	background: transparent !important;
-	color: var(--dtb-op-ink) !important;
-	vertical-align: middle !important;
+	color: var(--dtb-op-text) !important;
 }
 
 .dtb-op-card table.shop_table td.product-name {
-	grid-area: name;
 	display: flex !important;
-	align-items: flex-start !important;
-	gap: 10px !important;
-	font-size: 14px !important;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px !important;
 	font-weight: 760 !important;
 	line-height: 1.32 !important;
-	color: var(--dtb-op-text) !important;
 	overflow-wrap: anywhere;
 }
 
 .dtb-op-card table.shop_table td.product-name img {
-	flex: 0 0 auto !important;
-	width: 54px !important;
-	height: 54px !important;
+	flex: 0 0 auto;
+	width: 48px !important;
+	height: 48px !important;
 	margin: 0 !important;
+	border: 1px solid var(--dtb-op-soft-line) !important;
+	border-radius: 10px !important;
+	background: #fff !important;
 	object-fit: contain !important;
-	border: 1px solid #e5edf7 !important;
-	border-radius: 14px !important;
-	background: #ffffff !important;
 }
 
-.dtb-op-card table.shop_table td.product-name .product-quantity,
-.dtb-op-card table.shop_table td.product-quantity {
-	grid-area: qty;
+.dtb-op-card table.shop_table td.product-quantity,
+.dtb-op-card table.shop_table td.product-name .product-quantity {
+	font-size: 11.5px !important;
+	font-weight: 800 !important;
 	white-space: nowrap !important;
-	font-size: 12.5px !important;
-	font-weight: 850 !important;
-	color: var(--dtb-op-muted) !important;
-}
-
-.dtb-op-card table.shop_table td.product-quantity {
-	padding-left: 64px !important;
 }
 
 .dtb-op-card table.shop_table td.product-total {
-	grid-area: total;
-	align-self: start;
-	white-space: nowrap !important;
-	text-align: right !important;
-	font-size: 13.5px !important;
+	font-size: 13px !important;
 	font-weight: 850 !important;
-	color: var(--dtb-op-text) !important;
+	text-align: right !important;
+	white-space: nowrap !important;
 }
 
 .dtb-op-card table.shop_table tfoot tr {
-	grid-template-columns: minmax(0, 1fr) auto !important;
-	gap: 12px !important;
-	align-items: baseline !important;
-	padding: 13px 16px !important;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: baseline;
+	gap: 14px;
+	padding: 11px 18px !important;
 }
 
 .dtb-op-card table.shop_table tfoot th,
 .dtb-op-card table.shop_table tfoot td {
-	font-size: 14px !important;
-	font-weight: 850 !important;
+	font-size: 13px !important;
+	font-weight: 800 !important;
 }
 
 .dtb-op-card table.shop_table tfoot td {
 	text-align: right !important;
 }
 
-.dtb-op-card table.shop_table tfoot tr.order-total,
-.dtb-op-card table.shop_table tfoot tr:last-child {
+.dtb-op-card table.shop_table tfoot tr.order-total {
+	padding-top: 14px !important;
+	padding-bottom: 14px !important;
 	background: var(--dtb-op-soft) !important;
 }
 
 .dtb-op-card table.shop_table tfoot tr.order-total th,
-.dtb-op-card table.shop_table tfoot tr.order-total td,
-.dtb-op-card table.shop_table tfoot tr:last-child th,
-.dtb-op-card table.shop_table tfoot tr:last-child td {
-	font-size: 18px !important;
-	font-weight: 950 !important;
-	letter-spacing: -0.02em !important;
-	color: var(--dtb-op-blue-dark) !important;
-}
-
-.dtb-op-card #payment {
-	grid-area: payment;
-	padding: 16px !important;
-	border: 1px solid var(--dtb-op-line) !important;
-	border-radius: 20px !important;
-	background: #ffffff !important;
-	box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055) !important;
-}
-
-.dtb-op-card #payment::before {
-	content: "Payment method";
-	display: block;
-	margin: 0 0 12px;
-	color: var(--dtb-op-ink);
-	font-size: 20px;
-	font-weight: 950;
-	letter-spacing: -0.045em;
-	line-height: 1.06;
-	text-align: center;
-}
-
-.dtb-op-card #payment::after {
-	content: "Card and pay-later details stay inside the secure WooCommerce gateway frame.";
-	display: block;
-	margin-top: 14px;
-	color: var(--dtb-op-muted);
-	font-size: 12.5px;
-	line-height: 1.45;
-	text-align: center;
-}
-
-.dtb-op-card .wc_payment_methods {
-	display: grid !important;
-	grid-template-columns: minmax(0, 1fr) !important;
-	gap: 10px !important;
-	align-items: stretch !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	border: 0 !important;
-	list-style: none !important;
-}
-
-.dtb-op-card .wc_payment_method {
-	position: relative !important;
-	display: block !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	border: 1px solid var(--dtb-op-line) !important;
-	border-radius: 17px !important;
-	background: #ffffff !important;
-	box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045) !important;
-	overflow: hidden !important;
-	transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease !important;
-}
-
-.dtb-op-card .wc_payment_method > input[type='radio'] {
-	position: absolute !important;
-	width: 1px !important;
-	height: 1px !important;
-	opacity: 0 !important;
-	clip: rect(0 0 0 0) !important;
-	clip-path: inset(50%) !important;
-	overflow: hidden !important;
-	white-space: nowrap !important;
-}
-
-.dtb-op-card .wc_payment_method > label {
-	display: flex !important;
-	align-items: center !important;
-	justify-content: center !important;
-	gap: 10px !important;
-	width: 100% !important;
-	min-height: 56px !important;
-	margin: 0 !important;
-	padding: 11px 44px 11px 14px !important;
-	border: 0 !important;
-	border-radius: 17px !important;
-	background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%) !important;
+.dtb-op-card table.shop_table tfoot tr.order-total td {
 	color: var(--dtb-op-ink) !important;
-	font-size: 13px !important;
-	font-weight: 850 !important;
-	line-height: 1.1 !important;
-	cursor: pointer !important;
-	touch-action: manipulation;
-	-webkit-tap-highlight-color: transparent;
-}
-
-.dtb-op-card .wc_payment_method > label::before,
-.dtb-op-card .wc_payment_method > label::after {
-	display: none !important;
-	content: none !important;
-}
-
-.dtb-op-card .wc_payment_method > label img,
-.dtb-op-card .wc_payment_method > label svg {
-	display: block !important;
-	flex: 0 1 auto;
-	width: auto !important;
-	max-width: 112px !important;
-	max-height: 26px !important;
-	margin: 0 !important;
-	object-fit: contain !important;
-}
-
-.dtb-op-card .wc_payment_method::after {
-	content: '' !important;
-	position: absolute !important;
-	top: 13px !important;
-	right: 13px !important;
-	width: 20px !important;
-	height: 20px !important;
-	border: 2px solid #cbd5e1 !important;
-	border-radius: 999px !important;
-	background: #ffffff !important;
-	pointer-events: none !important;
-}
-
-.dtb-op-card .wc_payment_method:hover {
-	border-color: rgba(37, 99, 235, 0.35) !important;
-	box-shadow: 0 12px 30px rgba(37, 99, 235, 0.075) !important;
-}
-
-.dtb-op-card .wc_payment_method > input[type='radio']:focus-visible + label {
-	outline: 3px solid rgba(37, 99, 235, 0.24) !important;
-	outline-offset: 3px;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-payment-active {
-	border-color: rgba(37, 99, 235, 0.72) !important;
-	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.105), 0 16px 34px rgba(37, 99, 235, 0.1) !important;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-payment-active::after {
-	border-color: var(--dtb-op-blue) !important;
-	background: radial-gradient(circle at center, var(--dtb-op-blue) 0 42%, #ffffff 45% 62%, var(--dtb-op-blue) 65% 100%) !important;
-	box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.12) !important;
-}
-
-.dtb-op-card .wc_payment_method:not(.dtb-op-payment-active) > .payment_box {
-	display: none !important;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
-	grid-column: 1 / -1 !important;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-payment-active > .payment_box,
-.dtb-op-card .dtb-payment-sheet-current > .payment_box {
-	position: static !important;
-	inset: auto !important;
-	z-index: auto !important;
-	display: block !important;
-	width: 100% !important;
-	max-width: 100% !important;
-	max-height: none !important;
-	margin: 0 !important;
-	padding: 16px !important;
-	border: 0 !important;
-	border-top: 1px solid var(--dtb-op-line) !important;
-	border-radius: 0 !important;
-	background: linear-gradient(180deg, var(--dtb-op-soft) 0%, #ffffff 100%) !important;
-	box-shadow: none !important;
-	overflow: visible !important;
-	color: #334155 !important;
-}
-
-.dtb-sheet-close {
-	display: none !important;
-}
-
-.dtb-op-card .payment_box::before {
-	display: none !important;
-	content: none !important;
-}
-
-.dtb-op-card .payment_box > *,
-.dtb-op-card .payment_box form,
-.dtb-op-card .payment_box fieldset,
-.dtb-op-card .payment_box .wc-payment-form,
-.dtb-op-card .payment_box .woocommerce-SavedPaymentMethods,
-.dtb-op-card .payment_box .wcpay-upe-form,
-.dtb-op-card .payment_box .wcpay-upe-element,
-.dtb-op-card .payment_box .wcpay-payment-element,
-.dtb-op-card .payment_box #wcpay-card-element,
-.dtb-op-card .payment_box .StripeElement,
-.dtb-op-card .payment_box .__PrivateStripeElement,
-.dtb-op-card .payment_box .form-row-first,
-.dtb-op-card .payment_box .form-row-last {
-	box-sizing: border-box !important;
-	width: 100% !important;
-	max-width: 100% !important;
-	min-width: 0 !important;
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-}
-
-.dtb-op-card .payment_box fieldset {
-	border: 1px solid #d7e1ee !important;
-	border-radius: 16px !important;
-	background: #ffffff !important;
-	padding: 14px !important;
-}
-
-.dtb-op-card .payment_box p,
-.dtb-op-card .payment_box label,
-.dtb-op-card .payment_box div {
-	max-width: 100% !important;
-	line-height: 1.5 !important;
-	word-break: normal !important;
-	overflow-wrap: anywhere !important;
-}
-
-.dtb-op-card .payment_box iframe,
-.dtb-op-card .payment_box input,
-.dtb-op-card .payment_box select,
-.dtb-op-card .payment_box textarea,
-.dtb-op-card .payment_box .input-text {
-	width: 100% !important;
-	max-width: 100% !important;
-	min-height: 48px !important;
-	border-radius: 13px !important;
-	font-size: 16px !important;
-}
-
-.dtb-op-card .place-order {
-	display: grid !important;
-	grid-template-columns: minmax(0, 1fr) !important;
-	gap: 10px !important;
-	align-items: center !important;
-	margin: 14px 0 0 !important;
-	padding: 14px 0 0 !important;
-	border-top: 1px solid var(--dtb-op-soft-line) !important;
-}
-
-.dtb-op-card .woocommerce-privacy-policy-text {
-	color: var(--dtb-op-muted) !important;
-	font-size: 12px !important;
-	line-height: 1.45 !important;
-	text-align: center !important;
-}
-
-.dtb-op-card #place_order,
-.dtb-op-card button.button,
-.dtb-op-card .button {
-	justify-self: stretch !important;
-	width: 100% !important;
-	min-width: 0 !important;
-	min-height: 54px !important;
-	border: 0 !important;
-	border-radius: 17px !important;
-	background: linear-gradient(135deg, var(--dtb-op-blue), #3b82f6) !important;
-	box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24) !important;
-	color: #ffffff !important;
-	font-size: 15.5px !important;
+	font-size: 17px !important;
 	font-weight: 950 !important;
-	letter-spacing: -0.01em !important;
-	line-height: 1.15 !important;
-	padding: 15px 20px !important;
-	text-align: center !important;
-	touch-action: manipulation;
 }
 
-.dtb-op-card #place_order:hover,
-.dtb-op-card #place_order:focus {
-	filter: brightness(0.985);
-}
-
-.dtb-op-cta-trust {
-	display: flex;
+/* Mobile order summary toggle injected by runtime JS. */
+.dtb-op-summary-toggle {
+	display: none;
+	width: 100%;
+	min-height: 54px;
 	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	margin: 0 4px;
-	color: var(--dtb-op-muted);
-	font-size: 12px;
-	font-weight: 700;
-	line-height: 1.35;
-	text-align: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 0;
+	padding: 0 16px;
+	border: 0;
+	background: #fff;
+	color: var(--dtb-op-ink);
+	font-size: 15px;
+	font-weight: 850;
+	text-align: left;
+	cursor: pointer;
 }
 
-.dtb-op-cta-trust::before {
-	content: '✓';
-	display: inline-grid;
-	place-items: center;
-	flex: 0 0 auto;
-	width: 18px;
-	height: 18px;
-	border-radius: 999px;
-	background: #eff6ff;
-	color: var(--dtb-op-blue);
-	font-size: 12px;
-	font-weight: 900;
+.dtb-op-summary-toggle__amount {
+	font-size: 16px;
+	font-weight: 950;
 }
 
-@media (min-width: 520px) {
-	.dtb-op-card .wc_payment_methods {
-		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-	}
-
-	.dtb-op-card .wc_payment_method.dtb-op-gateway-card,
-	.dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
-		grid-column: 1 / -1 !important;
-	}
+.dtb-op-summary-toggle__chevron {
+	font-size: 16px;
+	transition: transform 160ms ease;
 }
 
-@media (min-width: 760px) {
-	.dtb-op-header {
-		min-height: 82px;
-		padding-inline: 22px;
-	}
-
-	.dtb-op-header__inner {
-		min-height: 82px;
-		grid-template-columns: minmax(160px, 260px) minmax(0, 1fr) minmax(130px, 220px);
-		gap: 22px;
-	}
-
-	.dtb-op-logo {
-		height: 46px;
-		max-width: 252px;
-	}
-
-	.dtb-op-steps {
-		justify-self: center;
-		display: flex;
-		align-items: center;
-		gap: 9px;
-		max-width: 380px;
-		color: rgba(219, 234, 254, 0.82);
-	}
-
-	.dtb-op-step {
-		display: grid;
-		justify-items: center;
-		gap: 5px;
-		min-width: 58px;
-		font-size: 11.5px;
-		font-weight: 800;
-		line-height: 1.1;
-	}
-
-	.dtb-op-step__mark {
-		display: inline-grid;
-		place-items: center;
-		width: 32px;
-		height: 32px;
-		border: 1px solid rgba(219, 234, 254, 0.28);
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.08);
-		color: rgba(219, 234, 254, 0.76);
-	}
-
-	.dtb-op-step--done .dtb-op-step__mark {
-		border-color: rgba(191, 219, 254, 0.72);
-		background: linear-gradient(135deg, var(--dtb-op-blue), #3b82f6);
-		color: #ffffff;
-	}
-
-	.dtb-op-step--current .dtb-op-step__mark {
-		border-color: rgba(191, 219, 254, 0.72);
-		background: #ffffff;
-		color: var(--dtb-op-blue);
-		box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18), 0 8px 20px rgba(7, 18, 38, 0.24);
-	}
-
-	.dtb-op-step--current span:last-child {
-		color: #ffffff;
-	}
-
-	.dtb-op-step__line {
-		width: clamp(28px, 4vw, 56px);
-		height: 2px;
-		border-radius: 999px;
-		background: rgba(219, 234, 254, 0.24);
-	}
-
-	.dtb-op-step__line--done {
-		background: rgba(96, 165, 250, 0.75);
-	}
-
-	.dtb-op-secure-pill {
-		font-size: 12px;
-		letter-spacing: 0.13em;
-	}
-
-	.dtb-op-main {
-		width: min(1180px, calc(100vw - 32px));
-		padding-top: clamp(18px, 3vw, 34px);
-		padding-bottom: clamp(40px, 5vw, 72px);
-	}
-
-	.dtb-op-topline {
-		grid-template-columns: auto minmax(0, 1fr);
-		align-items: center;
-		gap: 18px;
-		padding: 0 4px 14px;
-	}
-
-	.dtb-op-microcopy {
-		justify-self: end;
-		text-align: right;
-	}
-
-	.dtb-op-card {
-		padding: clamp(16px, 2.2vw, 22px);
-		border-radius: 28px;
-		box-shadow: var(--dtb-op-shadow);
-	}
-
-	.dtb-op-card table.shop_table,
-	.dtb-op-card #payment {
-		border-radius: 24px !important;
-	}
-
-	.dtb-op-card table.shop_table::before,
-	.dtb-op-card #payment::before {
-		font-size: clamp(24px, 2.1vw, 30px);
-		text-align: left;
-	}
-
-	.dtb-op-card #payment::after,
-	.dtb-op-card .woocommerce-privacy-policy-text {
-		text-align: left !important;
-	}
-
-	.dtb-op-card .wc_payment_methods {
-		grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
-		gap: 12px !important;
-	}
-
-	.dtb-op-card .wc_payment_method.dtb-op-gateway-express,
-	.dtb-op-card .wc_payment_method.dtb-op-gateway-paylater {
-		grid-column: span 6 !important;
-	}
-
-	.dtb-op-card .wc_payment_method.dtb-op-gateway-card,
-	.dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
-		grid-column: 1 / -1 !important;
-	}
-
-	.dtb-op-card .wc_payment_method > label {
-		min-height: 66px !important;
-		padding: 14px 48px 14px 18px !important;
-		font-size: 14px !important;
-	}
-
-	.dtb-op-card .wc_payment_method > label img,
-	.dtb-op-card .wc_payment_method > label svg {
-		max-width: 150px !important;
-		max-height: 30px !important;
-	}
-
-	.dtb-op-card .wc_payment_method.dtb-op-payment-active > .payment_box {
-		padding: clamp(22px, 3vw, 32px) !important;
-	}
-
-	.dtb-op-card .payment_box > *,
-	.dtb-op-card .payment_box form,
-	.dtb-op-card .payment_box fieldset,
-	.dtb-op-card .payment_box .wc-payment-form,
-	.dtb-op-card .payment_box .woocommerce-SavedPaymentMethods,
-	.dtb-op-card .payment_box .wcpay-upe-form,
-	.dtb-op-card .payment_box .wcpay-upe-element,
-	.dtb-op-card .payment_box .wcpay-payment-element,
-	.dtb-op-card .payment_box #wcpay-card-element,
-	.dtb-op-card .payment_box .StripeElement,
-	.dtb-op-card .payment_box .__PrivateStripeElement {
-		width: min(100%, 680px) !important;
-		margin-left: auto !important;
-		margin-right: auto !important;
-	}
-
-	.dtb-op-card .place-order {
-		grid-template-columns: minmax(0, 1fr) auto !important;
-		gap: 18px !important;
-	}
-
-	.dtb-op-card #place_order,
-	.dtb-op-card button.button,
-	.dtb-op-card .button {
-		justify-self: end !important;
-		width: auto !important;
-		min-width: 220px !important;
-	}
-
-	.dtb-op-cta-trust {
-		justify-content: flex-end;
-		text-align: right;
-	}
+.dtb-op-summary-collapsible.is-open .dtb-op-summary-toggle__chevron {
+	transform: rotate(180deg);
 }
 
-@media (min-width: 960px) {
+@media (max-width: 980px) {
 	.dtb-op-card form#order_review {
-		grid-template-columns: minmax(0, 1fr) minmax(340px, 420px) !important;
-		grid-template-areas: "payment summary" !important;
-		gap: clamp(22px, 3vw, 30px) !important;
+		grid-template-columns: 1fr;
+		grid-template-areas: "summary" "payment";
+		gap: 14px;
 	}
 
 	.dtb-op-card table.shop_table {
-		position: sticky !important;
-		top: 24px !important;
+		position: static;
 	}
 }
 
-@media (min-width: 1180px) {
-	.dtb-op-card form#order_review {
-		grid-template-columns: minmax(0, 1.08fr) minmax(380px, 440px) !important;
+@media (max-width: 720px) {
+	body.dtb-order-pay-runtime {
+		background: #fff;
+		font-size: 14px;
 	}
-}
 
-@media (max-width: 380px) {
+	.dtb-op-header__inner {
+		width: 100%;
+		min-height: 58px;
+		padding: 0 14px;
+		grid-template-columns: 1fr auto;
+		gap: 12px;
+	}
+
+	.dtb-op-logo {
+		height: 31px;
+		max-width: 160px;
+	}
+
+	.dtb-op-steps {
+		display: none;
+	}
+
+	.dtb-op-secure-pill {
+		font-size: 9px;
+		letter-spacing: 0.08em;
+	}
+
 	.dtb-op-main {
-		width: min(100%, calc(100vw - 12px));
+		width: 100%;
+		padding: 10px 10px calc(26px + env(safe-area-inset-bottom));
+	}
+
+	.dtb-op-topline {
+		margin: 0 2px 9px;
+	}
+
+	.dtb-op-back {
+		font-size: 12px;
+	}
+
+	.dtb-op-microcopy {
+		display: none;
 	}
 
 	.dtb-op-card {
-		padding: 6px;
-		border-radius: 20px;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
 	}
 
-	.dtb-op-card table.shop_table tbody tr.cart_item,
-	.dtb-op-card table.shop_table tbody tr.order_item {
-		grid-template-columns: minmax(0, 1fr) !important;
-		grid-template-areas:
-			"name"
-			"qty"
-			"total" !important;
+	.dtb-op-card form#order_review {
+		gap: 10px;
 	}
 
-	.dtb-op-card table.shop_table td.product-quantity {
-		padding-left: 0 !important;
+	.dtb-op-card #payment,
+	.dtb-op-card table.shop_table {
+		border-radius: 16px !important;
 	}
 
-	.dtb-op-card table.shop_table td.product-total {
-		text-align: left !important;
+	.dtb-op-card #payment {
+		padding: 15px !important;
+	}
+
+	.dtb-op-card #payment::before {
+		margin-bottom: 12px;
+		font-size: 20px;
+	}
+
+	.dtb-op-card #payment::after {
+		display: none;
+	}
+
+	.dtb-op-card .wc_payment_methods {
+		gap: 8px;
+	}
+
+	.dtb-op-card .wc_payment_method > label {
+		min-height: 50px;
+		padding: 9px 34px 9px 10px !important;
+		font-size: 12px;
 	}
 
 	.dtb-op-card .wc_payment_method > label img,
 	.dtb-op-card .wc_payment_method > label svg {
 		max-width: 96px !important;
+		max-height: 23px !important;
+	}
+
+	.dtb-op-card .wc_payment_method::after {
+		right: 10px;
+		width: 15px;
+		height: 15px;
+	}
+
+	.dtb-op-card .wc_payment_method.dtb-op-payment-active > .payment_box {
+		padding: 14px !important;
+	}
+
+	.dtb-op-card .payment_box .form-row-first,
+	.dtb-op-card .payment_box .form-row-last {
+		display: block !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		margin-right: 0 !important;
+	}
+
+	.dtb-op-card .place-order {
+		grid-template-columns: 1fr;
+		gap: 9px;
+		margin-top: 13px !important;
+		padding-top: 12px !important;
+	}
+
+	.dtb-op-card #place_order,
+	.dtb-op-card button.button,
+	.dtb-op-card .button {
+		width: 100% !important;
+		min-width: 0 !important;
+		min-height: 50px !important;
+		border-radius: 12px !important;
+	}
+
+	.dtb-op-card .woocommerce-privacy-policy-text,
+	.dtb-op-cta-trust {
+		font-size: 11px !important;
+		text-align: center !important;
+	}
+
+	.dtb-op-cta-trust {
+		justify-self: center;
+	}
+
+	.dtb-op-card table.shop_table::before {
+		display: none;
+	}
+
+	.dtb-op-summary-toggle {
+		display: flex;
+	}
+
+	.dtb-op-card table.shop_table tbody,
+	.dtb-op-card table.shop_table tfoot {
+		display: none !important;
+	}
+
+	.dtb-op-card table.shop_table.dtb-op-summary-collapsible.is-open tbody,
+	.dtb-op-card table.shop_table.dtb-op-summary-collapsible.is-open tfoot {
+		display: block !important;
+	}
+
+	.dtb-op-card table.shop_table tbody tr.cart_item,
+	.dtb-op-card table.shop_table tbody tr.order_item {
+		padding: 12px 16px !important;
+	}
+
+	.dtb-op-card table.shop_table td.product-name img {
+		width: 44px !important;
+		height: 44px !important;
+	}
+
+	.dtb-op-card table.shop_table tfoot tr {
+		padding: 10px 16px !important;
+	}
+}
+
+@media (max-width: 380px) {
+	.dtb-op-main {
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+
+	.dtb-op-card .wc_payment_methods {
+		grid-template-columns: 1fr;
+	}
+
+	.dtb-op-card .wc_payment_method,
+	.dtb-op-card .wc_payment_method.dtb-op-gateway-card,
+	.dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
+		grid-column: 1 / -1;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.dtb-op-card .wc_payment_method,
-	.dtb-op-card #place_order,
-	.dtb-op-card button.button,
-	.dtb-op-card .button {
+	.dtb-op-summary-toggle__chevron {
 		transition: none !important;
 	}
 }
