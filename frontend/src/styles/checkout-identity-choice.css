@@ -1,7 +1,7 @@
 /*
- * Checkout identity-choice component and CTA title polish.
- * Presentation-only: does not alter checkout validation, payment handoff, order
- * creation, or WooCommerce/WooPayments lifecycle behavior.
+ * Checkout identity-choice component, CTA title polish, and compact mobile
+ * totals sheet. Presentation-only: does not alter checkout validation, payment
+ * handoff, order creation, or WooCommerce/WooPayments lifecycle behavior.
  */
 
 .dtb-checkout .dtb-co-auth-choice {
@@ -162,10 +162,184 @@
   }
 
   .dtb-checkout .dtb-co-mobile-cta__stage {
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-formpane {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+    transition: padding-bottom .22s ease;
+  }
+
+  .dtb-checkout.dtb-co-mobile-cta-expanded .dtb-co-formpane {
+    padding-bottom: calc(218px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta {
+    padding: 8px 10px calc(9px + env(safe-area-inset-bottom)) !important;
+    border-radius: 20px 20px 0 0 !important;
+    background: rgba(255, 255, 255, .985) !important;
+    border: 1px solid rgba(218, 227, 240, .95) !important;
+    border-bottom: 0 !important;
+    box-shadow: 0 -10px 32px rgba(15, 23, 42, .12) !important;
+    backdrop-filter: blur(16px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.12) !important;
+    transition: box-shadow .22s ease, transform .22s ease;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__inner {
+    width: min(100%, 560px) !important;
+    gap: 7px !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     width: 100%;
-    max-width: 100%;
-    padding: 0 2px 1px;
-    text-align: center;
+    min-height: 34px;
+    padding: 0 2px 2px;
+    border: 0;
+    background: transparent;
+    color: var(--co-text-900, #0f172a);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-label {
+    color: var(--co-text-500, #64748b);
+    font-size: 12px;
+    font-weight: 820;
+    letter-spacing: .01em;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-amount {
+    margin-left: auto;
+    color: var(--co-primary, #2563eb);
+    font-size: 18px;
+    font-weight: 920;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.035em;
+    white-space: nowrap;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-chevron {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #eff5ff;
+    color: var(--co-primary, #2563eb);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    transform: rotate(0deg);
+    transition: transform .2s ease, background .2s ease;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta--expanded .dtb-co-mobile-cta__summary-chevron {
+    transform: rotate(180deg);
+    background: #dbeafe;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-row,
+  .dtb-checkout .dtb-co-mobile-cta__totals-heading {
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__totals {
+    display: grid !important;
+    gap: 0 !important;
+    max-height: 0;
+    margin: 0 !important;
+    padding: 0 2px !important;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: max-height .24s ease, opacity .18s ease, transform .22s ease, padding .22s ease;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta--expanded .dtb-co-mobile-cta__totals {
+    max-height: 128px;
+    padding: 4px 2px 6px !important;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line {
+    min-height: 21px !important;
+    padding: 2px 0 !important;
+    border: 0 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    color: var(--co-text-500, #64748b) !important;
+    font-size: 12px !important;
+    font-weight: 750 !important;
+    line-height: 1.12 !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line span:last-child,
+  .dtb-checkout .dtb-co-mobile-cta__total-line .dtb-co-total-row__value {
+    color: #172033 !important;
+    font-size: 12.5px !important;
+    font-weight: 840 !important;
+    white-space: nowrap !important;
+    text-align: right !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line--final {
+    margin-top: 4px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid #e5ebf5 !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line--final span:first-child {
+    color: var(--co-text-900, #0f172a) !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line--final span:last-child {
+    color: var(--co-primary, #2563eb) !important;
+    font-size: 18px !important;
+    font-weight: 920 !important;
+    letter-spacing: -.035em !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta .dtb-co-btn-primary {
+    min-height: 51px !important;
+    border-radius: 17px !important;
+    font-size: 15px !important;
+    font-weight: 880 !important;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, .22) !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__trust {
+    max-height: 0;
+    margin: 0 !important;
+    overflow: hidden;
+    opacity: 0;
+    color: var(--co-text-500, #64748b) !important;
+    font-size: 11px !important;
+    font-weight: 720 !important;
+    line-height: 1.22 !important;
+    text-align: center !important;
+    transition: max-height .2s ease, opacity .18s ease, margin .2s ease;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta--expanded .dtb-co-mobile-cta__trust {
+    max-height: 32px;
+    margin-top: 1px !important;
+    opacity: 1;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__logos {
+    display: none !important;
   }
 }
 
@@ -188,5 +362,13 @@
 
   .dtb-checkout .dtb-co-auth-choice__option {
     min-height: 62px;
+  }
+
+  .dtb-checkout .dtb-co-formpane {
+    padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout.dtb-co-mobile-cta-expanded .dtb-co-formpane {
+    padding-bottom: calc(212px + env(safe-area-inset-bottom)) !important;
   }
 }
