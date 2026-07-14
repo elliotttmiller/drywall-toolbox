@@ -41,12 +41,14 @@ RewriteRule . /wp/index.php [L]
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
-  # WordPress/WooCommerce admin, REST, cart, checkout, account, callback, and order-payment surfaces are dynamic.
-  <If "%{REQUEST_URI} =~ m#^/wp/(?:wp-admin|wp-login\.php|wp-json|index\.php|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/(?:cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_)#i">
-    Header set Cache-Control "no-cache, no-store, must-revalidate, private"
-    Header set Pragma "no-cache"
-    Header set Expires "0"
-    Header set X-Accel-Expires "0"
+  # WordPress/WooCommerce admin, login, REST, cart, checkout, account, callback, and order-payment surfaces are dynamic.
+  # Match both direct /wp/* requests and root-aliased /wp-admin, /wp-login.php, /wp-json, and /dtb requests.
+  <If "%{REQUEST_URI} =~ m#^/(?:wp/)?(?:wp-admin|wp-login\.php|wp-json|dtb|index\.php|wp-cron\.php|xmlrpc\.php|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/(?:cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_)#i">
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0, private"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+    Header always set X-Accel-Expires "0"
+    Header always set Vary "Cookie, Authorization"
   </If>
 </IfModule>
 # END WordPress
