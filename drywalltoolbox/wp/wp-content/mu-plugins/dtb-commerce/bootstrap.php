@@ -17,6 +17,7 @@ require_once __DIR__ . '/Services/OrderAdminQueryService.php';
 require_once __DIR__ . '/Validation/CheckoutValidator.php';
 require_once __DIR__ . '/Domain/PaymentState.php';
 require_once __DIR__ . '/Payment/PaymentRuntime.php';
+require_once __DIR__ . '/Payment/OrderPayPresentation.php';
 require_once __DIR__ . '/Payment/OrderPayHardening.php';
 require_once __DIR__ . '/Payment/UnpaidOrderPayGuard.php';
 require_once __DIR__ . '/Payment/PaymentBnplCartFinalization.php';
