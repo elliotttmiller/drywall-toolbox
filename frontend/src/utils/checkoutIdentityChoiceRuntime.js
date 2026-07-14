@@ -29,6 +29,13 @@ function isCheckoutRoute() {
   return window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') === '/checkout';
 }
 
+function appHref(path) {
+  const base = window.location.pathname.startsWith('/drywall-toolbox/')
+    ? '/drywall-toolbox'
+    : '';
+  return `${base}${path}`;
+}
+
 function findContactSection(checkout) {
   return qa(checkout, '.dtb-co-section').find((section) => {
     const title = text(q(section, '.dtb-co-section__title')).toLowerCase();
@@ -113,13 +120,6 @@ function buildChoiceCard() {
       copy: 'Fastest option. No account required.',
       action: continueAsGuest,
     }),
-function appHref(path) {
-  const base = window.location.pathname.startsWith('/drywall-toolbox/')
-    ? '/drywall-toolbox'
-    : '';
-  return `${base}${path}`;
-}
-
     makeOption({
       kind: 'login',
       title: 'Log in',
