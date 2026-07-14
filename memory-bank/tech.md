@@ -1,6 +1,6 @@
 # Tech
 
-Last verified against source: 2026-07-13.
+Last verified against source: 2026-07-14.
 
 ## Runtime stack
 
@@ -171,7 +171,7 @@ Live routing/cache policy:
 - root routing sends `/wp-json/*`, `/dtb/*`, WooCommerce `wc-api`, and checkout/order-pay requests into WordPress before the React SPA fallback;
 - WooCommerce/session-owned surfaces are explicitly no-cache: cart, checkout, account, my-account, dashboard, orders, addresses, rewards, login/register/password reset/logout, `wc-api`, and keyed order-pay requests;
 - WooCommerce cart/session cookies also trigger no-cache behavior: `woocommerce_cart_hash`, `woocommerce_items_in_cart`, and `wp_woocommerce_session_`;
-- order-pay presentation shims may add UI polish and trust microcopy only; gateway fields, nonces, tokenization, callbacks, and payment lifecycle remain WooCommerce/WooPayments-owned.
+- keyed order-pay presentation is centralized in `dtb-commerce/Payment/OrderPayPresentation.php` with one template and one CSS/JS asset pair under `dtb-commerce`; gateway fields, nonces, tokenization, callbacks, and payment lifecycle remain WooCommerce/WooPayments-owned.
 
 ## Async and integration execution
 
@@ -193,5 +193,6 @@ Heavy catalog imports use Action Scheduler with WP-Cron fallback. Operational he
 - React remains the public renderer;
 - all order/integration writes use the canonical queue and write boundary;
 - public shipping language must distinguish DTB-calculated rates from Veeqo fulfillment data;
+- order-pay presentation stays in `dtb-commerce`; do not restore root-level `zz*` order-pay shims or platform-owned payment-runtime assets;
 - update `memory-bank/*` and the mu-plugin README whenever durable architecture changes;
 - run `npm run lint` and `npm run build` for frontend changes, plus targeted operator validation only when a changed backend/module contract requires it.
