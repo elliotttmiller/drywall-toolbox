@@ -2,7 +2,7 @@
 
 # Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-Last verified against source: 2026-07-13.
+Last verified against source: 2026-07-14.
 
 This document is the canonical operational map for:
 
@@ -61,6 +61,7 @@ Canonical module order:
 
 - WooCommerce Store API cart extension data;
 - toolset/order-line metadata persistence;
+- native WooCommerce order-pay routing, document shell, and presentation assets;
 - order-type and order-admin query services;
 - branded WooCommerce email integration;
 - commerce-facing order REST/admin surfaces.
@@ -190,7 +191,7 @@ The checkout contract uses an idempotency key. The order write boundary blocks r
 
 External order side effects use `dtb_order_enqueue_job()` and the `dtb-orders` Action Scheduler group. Queue behavior includes scheduled-action deduplication, bounded exponential retry, integration-state recording, event logging, and duplicate side-effect suppression.
 
-Native order-pay is intentionally WooCommerce/WooPayments-owned. Root-level order-pay shims such as `zzzz-dtb-order-pay-official-conversion-polish.php`, `zzzzz-dtb-order-pay-trust-microcopy.php`, and `zzzzzz-dtb-order-pay-layout-repair.php` are presentation-only: they may style provider cards, bottom sheets, selected state, compact trust/support copy, and layout repair classes, but must not move gateway iframe fields, alter payment nonces, replace tokenization, bypass WooCommerce callbacks, or change order/payment lifecycle behavior.
+Native order-pay is intentionally WooCommerce/WooPayments-owned for gateway internals. DTB owns only the public document shell, routing handoff, mobile-first layout, and presentation behavior through `dtb-commerce/Payment/OrderPayPresentation.php`, `dtb-commerce/Templates/WooOrderPayRuntime.php`, `dtb-commerce/assets/order-pay-runtime.css`, and `dtb-commerce/assets/order-pay-runtime.js`. Gateway fields, iframes, wallet buttons, payment boxes, nonces, tokenization, callbacks, and order/payment lifecycle remain owned by WooCommerce/WooPayments. Root-level `zz*order-pay*` and `zz*payment-runtime*` presentation shims are retired and must not be restored.
 
 WooCommerce Settings > Payments compatibility is platform-owned by `dtb-platform/Security/WooAdminRestNonceCompatibility.php` and `dtb-platform/Admin/WooAdminPaymentsAssetGuard.php`. These files may narrowly restore authenticated same-site Woo Admin payment screen REST calls after stale admin nonce failures and suppress provider-specific settings bundles outside their own sections. They must not create gateways, alter gateway settings, expose credentials, or bypass WooCommerce capability checks.
 
@@ -306,6 +307,8 @@ Deployment never overwrites:
 - runtime secrets;
 - uncontrolled database dumps.
 
+Order-pay cleanup deployments must remove retired root-level `zz*order-pay*` and `zz*payment-runtime*` presentation files from the live `mu-plugins/` directory. `dtb-commerce/Payment/OrderPayPresentation.php` includes defensive hook removal for stale files, but the clean runtime state is deletion, not coexistence.
+
 ## 13. Validation
 
 Frontend changes:
@@ -339,3 +342,4 @@ Security-sensitive route changes additionally require negative tests for unauthe
 - Do not describe DTB-calculated shipping options as live Veeqo carrier rates.
 - Do not add new business logic to legacy root wrappers.
 - Preserve write-boundary, idempotency, queue, and webhook protections when modifying order/integration flows.
+- Keep order-pay presentation centralized in `dtb-commerce`; do not restore root-level `zz*` order-pay shims or platform-owned payment-runtime assets.
