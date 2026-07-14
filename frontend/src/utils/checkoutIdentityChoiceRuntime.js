@@ -113,17 +113,24 @@ function buildChoiceCard() {
       copy: 'Fastest option. No account required.',
       action: continueAsGuest,
     }),
+function appHref(path) {
+  const base = window.location.pathname.startsWith('/drywall-toolbox/')
+    ? '/drywall-toolbox'
+    : '';
+  return `${base}${path}`;
+}
+
     makeOption({
       kind: 'login',
       title: 'Log in',
       copy: 'Use saved account details.',
-      href: '/login',
+      href: appHref('/login'),
     }),
     makeOption({
       kind: 'register',
       title: 'Create account',
       copy: 'Track orders and speed up next time.',
-      href: '/register',
+      href: appHref('/register'),
     }),
   );
 
