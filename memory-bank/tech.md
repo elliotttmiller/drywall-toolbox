@@ -169,9 +169,13 @@ Live routing/cache policy:
 
 - root and `/wp` `.htaccess` preserve Authorization headers for REST, JWT, and WooCommerce handlers;
 - root routing sends `/wp-json/*`, `/dtb/*`, WooCommerce `wc-api`, and checkout/order-pay requests into WordPress before the React SPA fallback;
-- WooCommerce/session-owned surfaces are explicitly no-cache: cart, checkout, account, my-account, dashboard, orders, addresses, rewards, login/register/password reset/logout, `wc-api`, and keyed order-pay requests;
-- WooCommerce cart/session cookies also trigger no-cache behavior: `woocommerce_cart_hash`, `woocommerce_items_in_cart`, and `wp_woocommerce_session_`;
-- keyed order-pay presentation is centralized in `dtb-commerce/Payment/OrderPayPresentation.php` with one template and one CSS/JS asset pair under `dtb-commerce`; gateway fields, nonces, tokenization, callbacks, and payment lifecycle remain WooCommerce/WooPayments-owned.
+- runtime `wp-config.php` must root-scope native WordPress cookies with `COOKIEPATH`, `SITECOOKIEPATH`, and `ADMIN_COOKIE_PATH` set to `/` because `/wp-admin`, `/wp-login.php`, and `/wp-json` are exposed at the domain root while WordPress core lives under `/wp`;
+- WordPress admin/login, REST, cron/XML-RPC, WooCommerce/session-owned surfaces, callback URLs, and keyed order-pay requests are explicitly private/no-store;
+- native WordPress auth cookies (`wordpress_logged_in_`, `wordpress_sec_`, `wp-settings-`) and WooCommerce cart/session cookies (`woocommerce_cart_hash`, `woocommerce_items_in_cart`, `wp_woocommerce_session_`) also trigger no-cache behavior;
+- HostGator/Endurance cache is signaled with the short-lived `endurance-no-cache=1` cookie on admin, login, REST, WooCommerce session, callback, and order-payment surfaces;
+- React JS/CSS/manifest/JSON assets use short public revalidation; image/font/PDF assets use longer public cache; `index.html` and error HTML are no-store/revalidate;
+- keyed order-pay presentation is centralized in `dtb-commerce/Payment/OrderPayPresentation.php` with one template and one CSS/JS asset pair under `dtb-commerce`; gateway fields, nonces, tokenization, callbacks, and payment lifecycle remain WooCommerce/WooPayments-owned;
+- detailed live operator guidance lives in `docs/hostgator-cookie-cache-runtime.md`.
 
 ## Async and integration execution
 
