@@ -36,6 +36,7 @@ import './styles/checkout-official-conversion-overrides.css'
 import './styles/checkout-mobile-conversion-2026.css'
 import './styles/checkout-mobile-first-2026-next.css'
 import './styles/checkout-mobile-final-payment-sheet.css'
+import './styles/checkout-identity-choice.css'
 import './styles/checkout-field-validation-official.css'
 import App from './App.jsx'
 import './components/catalog/products-selector-overrides.css'
@@ -43,6 +44,7 @@ import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
 import { installSchematicPageLabelRuntime } from './utils/schematicPageLabelRuntime.js'
 import { installMobileCheckoutSummaryAutoOpen } from './utils/checkoutMobileSummaryRuntime.js'
 import { installOfficialMobileCheckoutTotalsRuntime } from './utils/checkoutOfficialMobileTotalsRuntime.js'
+import { installCheckoutIdentityChoiceRuntime } from './utils/checkoutIdentityChoiceRuntime.js'
 import { installMobileSchematicNavRuntime } from './utils/mobileSchematicNavRuntime.js'
 import { installRepairPackageSelectionRuntime } from './utils/repairPackageSelectionRuntime.js'
 import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRuntime.js'
@@ -55,6 +57,7 @@ import { prewarmCatalog } from './services/catalog.js';
 installSchematicPageLabelRuntime();
 installMobileCheckoutSummaryAutoOpen();
 installOfficialMobileCheckoutTotalsRuntime();
+installCheckoutIdentityChoiceRuntime();
 installMobileSchematicNavRuntime();
 installRepairPackageSelectionRuntime();
 installCustomerFacingCopyRuntime();
