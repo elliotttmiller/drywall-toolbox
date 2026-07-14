@@ -2,14 +2,16 @@
  * frontend/src/utils/checkoutIdentityChoiceRuntime.js
  *
  * Progressive checkout presentation enhancement for the dedicated checkout route.
- * React still owns checkout state and submission; this utility only mounts a
- * static, idempotent choice component into the existing checkout DOM so guests
- * have a clear path before entering contact details.
+ * React still owns checkout state, quote state, validation, and submission; this
+ * utility only mounts idempotent presentation controls into the existing checkout
+ * DOM so guests have a clear path and the mobile payment sheet remains compact.
  */
 
 const INSTALL_KEY = '__dtbCheckoutIdentityChoiceInstalled';
 const MOUNT_ATTR = 'data-dtb-checkout-identity-choice';
 const AUTH_REPLACED_CLASS = 'dtb-co-section__subheader--auth-choice-replaced';
+const SHEET_EXPANDED_CLASS = 'dtb-co-mobile-cta--expanded';
+const CHECKOUT_SHEET_EXPANDED_CLASS = 'dtb-co-mobile-cta-expanded';
 
 function q(root, selector) {
   return root?.querySelector?.(selector) || null;
@@ -171,6 +173,60 @@ function ensureSubmitTitles(checkout) {
   }
 }
 
+function findMobileTotal(inner) {
+  const finalTotal = text(q(inner, '.dtb-co-mobile-cta__total-line--final span:last-child'));
+  if (finalTotal) return finalTotal;
+
+  const amount = text(q(inner, '.dtb-co-mobile-cta__total-amount'));
+  if (amount) return amount;
+
+  const buttonText = text(q(inner, '.dtb-co-btn-primary'));
+  const match = buttonText.match(/\$\s?[\d,]+(?:\.\d{2})?/);
+  return match ? match[0].replace(/\$\s+/, '$') : '';
+}
+
+function setSheetExpanded(checkout, cta, expanded) {
+  cta.classList.toggle(SHEET_EXPANDED_CLASS, expanded);
+  checkout.classList.toggle(CHECKOUT_SHEET_EXPANDED_CLASS, expanded);
+
+  const toggle = q(cta, '.dtb-co-mobile-cta__summary-toggle');
+  const totals = q(cta, '.dtb-co-mobile-cta__totals');
+  if (toggle) toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  if (totals) totals.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+}
+
+function ensureMobileCtaSheet(checkout) {
+  const cta = q(checkout, '.dtb-co-mobile-cta');
+  const inner = q(cta, '.dtb-co-mobile-cta__inner');
+  const primaryButton = q(inner, '.dtb-co-btn-primary');
+  if (!cta || !inner || !primaryButton) return;
+
+  cta.classList.add('dtb-co-mobile-cta--collapsible');
+
+  const totals = q(inner, '.dtb-co-mobile-cta__totals');
+  if (totals && !totals.id) totals.id = 'dtb-co-mobile-cta-totals';
+
+  let toggle = q(inner, '.dtb-co-mobile-cta__summary-toggle');
+  if (!toggle) {
+    toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'dtb-co-mobile-cta__summary-toggle';
+    toggle.setAttribute('aria-controls', totals?.id || 'dtb-co-mobile-cta-totals');
+    toggle.innerHTML = '<span class="dtb-co-mobile-cta__summary-label">Estimated total</span><strong class="dtb-co-mobile-cta__summary-amount"></strong><span class="dtb-co-mobile-cta__summary-chevron" aria-hidden="true">⌃</span>';
+    toggle.addEventListener('click', () => {
+      setSheetExpanded(checkout, cta, !cta.classList.contains(SHEET_EXPANDED_CLASS));
+    });
+    inner.insertBefore(toggle, inner.firstChild);
+    setSheetExpanded(checkout, cta, false);
+  }
+
+  const amountNode = q(toggle, '.dtb-co-mobile-cta__summary-amount');
+  const total = findMobileTotal(inner);
+  if (amountNode && total) amountNode.textContent = total;
+
+  setSheetExpanded(checkout, cta, cta.classList.contains(SHEET_EXPANDED_CLASS));
+}
+
 function syncCheckoutIdentityChoice() {
   if (!isCheckoutRoute()) return;
   const checkout = document.querySelector('.dtb-checkout');
@@ -178,6 +234,7 @@ function syncCheckoutIdentityChoice() {
 
   ensureIdentityChoice(checkout);
   ensureSubmitTitles(checkout);
+  ensureMobileCtaSheet(checkout);
 }
 
 export function installCheckoutIdentityChoiceRuntime() {
