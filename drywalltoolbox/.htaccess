@@ -173,7 +173,7 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^staging/2972/checkout/?$ wp/index.php?pagename=checkout [QSA,L]
 
   # Signal Endurance/nginx cache to bypass WordPress admin/auth and customer/session-owned surfaces.
-  <If "%{REQUEST_URI} =~ m#^/(?:wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_)#i">
+  <If "%{REQUEST_URI} =~ m#^/(?:wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wordpress_test_cookie|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|dtb_auth)#i">
     Header always set Set-Cookie "endurance-no-cache=1; Path=/; Max-Age=60; SameSite=Strict; Secure"
   </If>
 
@@ -183,10 +183,12 @@ ErrorDocument 511 /errors/511.html
   # Conventional browser favicon path backed by the shared logo assets folder.
   RewriteRule ^favicon\.ico$ logos/favicon.ico [L]
 
-  # WordPress admin/login aliases from the root URL space.
-  RewriteRule ^wp-admin/?$ wp/wp-admin/ [L,QSA]
-  RewriteRule ^wp-admin/(.*)$ wp/wp-admin/$1 [L,QSA]
-  RewriteRule ^wp-login\.php$ wp/wp-login.php [L,QSA]
+  # WordPress admin/login aliases from the root URL space. Redirect to the real
+  # /wp/* subdirectory so native WordPress test/login cookies use the same path
+  # the browser submits back to wp-login.php and wp-admin.
+  RewriteRule ^wp-admin/?$ /wp/wp-admin/ [R=302,L,QSA]
+  RewriteRule ^wp-admin/(.*)$ /wp/wp-admin/$1 [R=302,L,QSA]
+  RewriteRule ^wp-login\.php$ /wp/wp-login.php [R=302,L,QSA]
 
   # Expose WordPress asset/core paths at root for compatibility.
   RewriteRule ^wp-content/(.*)$ wp/wp-content/$1 [L,QSA]
@@ -263,8 +265,8 @@ ErrorDocument 511 /errors/511.html
     Header set Cache-Control "public, max-age=2592000"
   </FilesMatch>
 
-  # WordPress admin/auth, REST, WooCommerce/session-owned surfaces, order-payment, and native WP auth cookies must never be page-cached.
-  <If "%{REQUEST_URI} =~ m#^/(?:wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_)#i">
+  # WordPress admin/auth, REST, WooCommerce/session-owned surfaces, order-payment, and native WP/DTB auth cookies must never be page-cached.
+  <If "%{REQUEST_URI} =~ m#^/(?:wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wordpress_test_cookie|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|dtb_auth)#i">
     Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0, private"
     Header always set Pragma "no-cache"
     Header always set Expires "0"
