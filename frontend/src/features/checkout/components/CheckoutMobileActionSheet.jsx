@@ -64,7 +64,7 @@ export function CheckoutMobileActionSheet({
           <ChevronRight className="dtb-co-mobile-cta__summary-chevron" size={17} aria-hidden="true" />
         </button>
 
-        <div className="dtb-co-mobile-cta__context" aria-label="Checkout total context">
+        <div className="dtb-co-mobile-cta__context" aria-label="Checkout total context" role="group">
           <span>
             <strong>Shipping</strong>
             {shippingCopy}
