@@ -46,6 +46,7 @@ Frontend:
 
 ```powershell
 cd frontend
+npm ci --include=dev
 npm run lint
 npm run build:staging
 npm run build
