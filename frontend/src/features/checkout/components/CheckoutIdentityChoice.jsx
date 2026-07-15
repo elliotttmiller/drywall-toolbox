@@ -5,16 +5,10 @@ const RETURN_TO = '/checkout';
 
 const EXPRESS_PROVIDERS = [
   {
-    id: 'shop',
-    label: 'Shop Pay',
-    envKeys: ['REACT_APP_SHOP_PAY_URL', 'REACT_APP_SHOPPAY_URL', 'REACT_APP_EXPRESS_SHOP_PAY_URL'],
-    mark: <span className="dtb-co-auth-choice__wallet-mark dtb-co-auth-choice__wallet-mark--shop" aria-hidden="true">shop</span>,
-  },
-  {
-    id: 'paypal',
-    label: 'PayPal',
-    envKeys: ['REACT_APP_PAYPAL_EXPRESS_URL', 'REACT_APP_PAYPAL_CHECKOUT_URL'],
-    mark: <span className="dtb-co-auth-choice__wallet-mark dtb-co-auth-choice__wallet-mark--paypal" aria-hidden="true">PayPal</span>,
+    id: 'apple_pay',
+    label: 'Apple Pay',
+    envKeys: ['REACT_APP_APPLE_PAY_URL', 'REACT_APP_EXPRESS_APPLE_PAY_URL'],
+    mark: <ApplePayMark />,
   },
   {
     id: 'google_pay',
@@ -23,10 +17,10 @@ const EXPRESS_PROVIDERS = [
     mark: <GooglePayMark />,
   },
   {
-    id: 'apple_pay',
-    label: 'Apple Pay',
-    envKeys: ['REACT_APP_APPLE_PAY_URL', 'REACT_APP_EXPRESS_APPLE_PAY_URL'],
-    mark: <ApplePayMark />,
+    id: 'paypal',
+    label: 'PayPal',
+    envKeys: ['REACT_APP_PAYPAL_EXPRESS_URL', 'REACT_APP_PAYPAL_CHECKOUT_URL'],
+    mark: <span className="dtb-co-auth-choice__wallet-mark dtb-co-auth-choice__wallet-mark--paypal" aria-hidden="true">PayPal</span>,
   },
 ];
 
@@ -114,12 +108,13 @@ function WalletAction({ provider }) {
   const title = href
     ? `${provider.label} express checkout`
     : `${provider.label} is available after the express wallet provider is configured.`;
+  const buttonClass = `dtb-co-auth-choice__sso-button dtb-co-auth-choice__wallet-button dtb-co-auth-choice__wallet-button--${provider.id}`;
 
   if (!href) {
     return (
       <button
         type="button"
-        className="dtb-co-auth-choice__sso-button dtb-co-auth-choice__sso-button--disabled"
+        className={`${buttonClass} dtb-co-auth-choice__sso-button--disabled`}
         disabled
         aria-disabled="true"
         title={title}
@@ -130,7 +125,7 @@ function WalletAction({ provider }) {
   }
 
   return (
-    <a className="dtb-co-auth-choice__sso-button" href={href} rel="nofollow noopener noreferrer" aria-label={title}>
+    <a className={buttonClass} href={href} rel="nofollow noopener noreferrer" aria-label={title} title={title}>
       {provider.mark}
     </a>
   );
@@ -197,6 +192,8 @@ export function CheckoutIdentityChoice({ isAuthenticated = false, selected = '',
     );
   }
 
+  const [applePayProvider, googlePayProvider, paypalProvider] = EXPRESS_PROVIDERS;
+
   return (
     <section className="dtb-co-auth-choice" aria-labelledby="dtb-co-auth-choice-title">
       <div className="dtb-co-auth-choice__header">
@@ -205,14 +202,24 @@ export function CheckoutIdentityChoice({ isAuthenticated = false, selected = '',
           Pay faster with a wallet
         </h2>
         <p className="dtb-co-auth-choice__copy">
-          Use a configured express wallet when eligible, or continue as guest and choose a wallet on the secure payment step.
+          Use Apple Pay, Google Pay, or PayPal when configured. Otherwise continue as guest and choose a wallet on the secure payment step.
         </p>
       </div>
 
-      <div className="dtb-co-auth-choice__sso" role="group" aria-label="Express digital wallet checkout options">
-        {EXPRESS_PROVIDERS.map((provider) => (
-          <WalletAction key={provider.id} provider={provider} />
-        ))}
+      <div className="dtb-co-auth-choice__express" role="group" aria-label="Express digital wallet checkout options">
+        <div
+          className="dtb-co-auth-choice__express-row dtb-co-auth-choice__express-row--split"
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}
+        >
+          <WalletAction provider={applePayProvider} />
+          <WalletAction provider={googlePayProvider} />
+        </div>
+        <div
+          className="dtb-co-auth-choice__express-row dtb-co-auth-choice__express-row--full"
+          style={{ display: 'grid', gap: '10px' }}
+        >
+          <WalletAction provider={paypalProvider} />
+        </div>
       </div>
 
       <div className="dtb-co-auth-choice__divider" aria-hidden="true">
