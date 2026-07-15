@@ -1,84 +1,70 @@
-# Checkout wallet-first identity and order-pay runtime
+# Checkout and order-pay runtime
 
-Drywall Toolbox checkout now leads unauthenticated customers with a wallet-first express checkout section before the guest/account choice, then preserves the same wallet-first hierarchy on the WooCommerce order-pay payment runtime.
+Drywall Toolbox checkout uses a two-page, official-boundary workflow:
+
+1. React `/checkout` collects customer identity, contact, delivery address, coupon code, order note, and DTB server-calculated quote context.
+2. DTB creates/finalizes the checkout session and hands the customer to the keyed WooCommerce `/checkout/order-pay/{order_id}` payment page.
+3. WooCommerce/WooPayments and the active gateway plugins collect payment fields, wallet authorization, tokenization, nonces, iframes, callbacks, and payment lifecycle state.
 
 ## Authority boundary
 
-React owns only checkout identity presentation and interaction state. DTB backend remains authoritative for quote/session/finalize, shipping, tax, coupons, idempotency, and order creation. WooCommerce/WooPayments remain authoritative for payment collection on the secure order-pay step.
+React owns checkout intake presentation and interaction state only. It must not create payment intents, payment tokens, gateway callbacks, wallet sessions, or parallel order-payment forms.
 
-The wallet buttons must not create orders, payment intents, gateway callbacks, or payment tokens in the React checkout. They may only link to configured, real express provider launch URLs. When no launch URL is configured, the wallet option renders disabled rather than pointing to a fake route.
+DTB backend remains authoritative for quote/session/finalize, shipping, tax, coupons, idempotency, duplicate containment, order creation, and secure payment handoff.
 
-## Checkout express layout
+WooCommerce/WooPayments remain authoritative for actual payment collection on the order-pay step.
 
-The checkout identity step intentionally exposes exactly three express wallet methods in this order:
+## Checkout intake UX
 
-```text
-[ Apple Pay ] [ Google Pay ]
-[            PayPal            ]
-```
+Unauthenticated checkout is guest-first. The primary CTA is `Continue as guest`. Sign-in remains secondary and optional. SSO options may render only when real auth provider launch URLs are configured; unconfigured SSO controls must not render as disabled dead-end buttons.
 
-Apple Pay and Google Pay are compact side-by-side wallet choices. PayPal is the full-width wallet choice beneath them. Shop Pay is not shown in the DTB checkout identity step unless a future backend/provider implementation explicitly adds it back.
+The React checkout page must not show fake Apple Pay, Google Pay, PayPal, Shop Pay, or other wallet buttons. Those providers belong on the official WooCommerce/WooPayments payment runtime unless a future provider-specific backend integration explicitly owns a real express launch contract.
 
-Guest checkout remains the default fallback and is shown as a full-width primary action. Login and SSO are secondary account conveniences, not blockers.
+Mobile checkout must stay fluid within the visual viewport:
 
-## Order-pay payment layout
+- top order summary is a compact, collapsible summary card;
+- product images are constrained and never expand to page width;
+- form sections use single-column mobile flow;
+- the sticky total/action sheet is compact by default and expandable for detailed totals;
+- the bottom CTA validates/finalizes checkout and opens the secure order-pay payment page.
 
-The order-pay runtime classifies gateway methods by provider and applies the same express-first layout where WooCommerce exposes matching methods:
+## Order-pay payment UX
 
-```text
-[ Apple Pay ] [ Google Pay ]
-[            PayPal            ]
-
-or continue below
-
-[ Pay later / card / other gateway methods ]
-```
-
-Order-pay styling must never move gateway iframes, nonces, tokenization elements, payment callbacks, or submit ownership out of WooCommerce gateway markup. Selected gateway details expand inline only.
-
-## Runtime configuration
-
-Express wallet URLs may be injected at runtime with these keys:
+The order-pay page may classify available WooCommerce gateway methods for presentation only:
 
 ```text
-window.DTB_EXPRESS_CHECKOUT_PROVIDERS.apple_pay
-window.DTB_EXPRESS_CHECKOUT_PROVIDERS.google_pay
-window.DTB_EXPRESS_CHECKOUT_PROVIDERS.paypal
+[ wallet / express gateways exposed by WooCommerce ]
+[ card gateway ]
+[ pay-later / other enabled gateways ]
 ```
 
-The React checkout component also supports guarded public build/runtime env keys:
-
-```text
-REACT_APP_APPLE_PAY_URL
-REACT_APP_EXPRESS_APPLE_PAY_URL
-REACT_APP_GOOGLE_PAY_URL
-REACT_APP_EXPRESS_GOOGLE_PAY_URL
-REACT_APP_PAYPAL_EXPRESS_URL
-REACT_APP_PAYPAL_CHECKOUT_URL
-```
-
-SSO remains separately config-gated through:
-
-```text
-window.DTB_AUTH_PROVIDERS
-window.dtbAuthProviders
-REACT_APP_GOOGLE_SSO_URL
-REACT_APP_AUTH_GOOGLE_URL
-REACT_APP_APPLE_SSO_URL
-REACT_APP_AUTH_APPLE_URL
-```
-
-The component uses guarded environment access so a missing `process` object in the browser cannot crash the SPA.
+Classification must never move gateway iframes, nonces, tokenization elements, payment callbacks, or submit ownership out of WooCommerce gateway markup. Selected gateway details expand inline only.
 
 ## Manual verification
 
+Frontend:
+
+```powershell
+cd frontend
+npm run lint
+npm run build:staging
+npm run build
+```
+
+Backend/order-pay smoke checks:
+
+```powershell
+.\scripts\smoke-dtb-mu-modules.ps1
+```
+
+Manual checks:
+
 - `/checkout` renders without the branded 500 error page.
-- Express wallet buttons are first in the unauthenticated checkout flow.
-- Apple Pay and Google Pay render side by side.
-- PayPal renders full width below Apple Pay and Google Pay.
-- Unconfigured wallet buttons are disabled and do not navigate.
-- Configured wallet URLs receive checkout return parameters.
-- Guest checkout remains prominent and does not force account creation.
-- Google/Apple SSO remain disabled unless configured with real launch URLs.
-- `/checkout/order-pay/{id}` renders the same express-first provider hierarchy where matching gateways are available.
-- Payment fields, wallet gateway elements, and card iframes remain inside WooCommerce gateway markup.
+- Guest checkout is the primary unauthenticated action.
+- Fake/unconfigured wallet buttons are not present on the React intake page.
+- Mobile order summary opens/closes and keeps product imagery constrained.
+- Shipping/tax status updates from the DTB quote context.
+- Sticky mobile CTA remains above browser safe areas and opens secure payment when checkout is ready.
+- `/checkout/order-pay/{id}` renders WooCommerce gateway methods in a clean responsive shell.
+- Wallet/card/pay-later fields remain inside official WooCommerce gateway markup.
+- Payment submit remains WooCommerce-owned.
