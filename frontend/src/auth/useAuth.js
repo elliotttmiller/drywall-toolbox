@@ -1,210 +1,231 @@
 /**
  * frontend/src/auth/useAuth.js
  *
- * Custom hook encapsulating JWT authentication state.
- *
- * Authentication flow (cookie-based):
- *   Login    → POST /dtb/v1/auth/login          — sets HttpOnly SameSite=Strict cookie,
- *                                                   returns user profile (no raw JWT in body)
- *   Logout   → DELETE /dtb/v1/auth/logout        — clears the auth cookie server-side
- *   Restore  → POST /dtb/v1/auth/validate        — reads the cookie, validates JWT,
- *                                                   returns user profile on success
- *   Register → POST /dtb/v1/auth/register        — creates a new account and sets
- *                                                   the auth cookie on success.
- *
- * The raw JWT is never stored in JS memory, localStorage, or sessionStorage.
- * The browser sends it automatically via the HttpOnly cookie on every request
- * to the same origin when `credentials: 'include'` is set (see api/client.js).
- *
- * Cross-origin (GitHub Pages preview) — the backend issues SameSite=None; Secure
- * cookies when the request comes from an allowlisted cross-origin, so auth works
- * identically from the GitHub Pages SPA as it will from the production domain.
- *
- * Exposes: { user, isAuthenticated, isLoading, login, logout, register, error }
+ * Cookie-based storefront authentication. Browser code never receives or stores
+ * the raw token; the server sets an HttpOnly cookie and /validate confirms it.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-// ─── DTB auth endpoint base ───────────────────────────────────────────────────
+const AUTH_BASE_PATH = '/wp-json/dtb/v1/auth';
+const SESSION_SYNC_ERROR = 'Sign-in succeeded, but the secure browser session could not be confirmed. Clear site cookies, confirm cookies are enabled, and try again.';
 
-const runtimeHost = typeof window !== 'undefined' ? window.location.hostname : '';
-const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-const envApiBase = ( process.env.REACT_APP_API_BASE_URL || '' ).replace( /\/+$/, '' );
-const _base = envApiBase || ( /github\.io$/i.test( runtimeHost ) ? 'https://drywalltoolbox.com' : runtimeOrigin );
-const DTB_AUTH_BASE = `${ _base }/wp-json/dtb/v1/auth`;
+function readPublicEnv(name) {
+  if (typeof window !== 'undefined') {
+    const runtimeEnv = window.DTB_PUBLIC_ENV || window.dtbPublicEnv || {};
+    if (typeof runtimeEnv[name] === 'string') return runtimeEnv[name];
+  }
+  if (typeof process !== 'undefined' && process?.env && typeof process.env[name] === 'string') {
+    return process.env[name];
+  }
+  return '';
+}
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+function trimSlash(value = '') {
+  return String(value || '').replace(/\/+$/, '');
+}
+
+function baseUrl() {
+  const runtimeHost = typeof window !== 'undefined' ? window.location.hostname : '';
+  const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+  return trimSlash(readPublicEnv('REACT_APP_API_BASE_URL'))
+    || (/github\.io$/i.test(runtimeHost) ? 'https://drywalltoolbox.com' : trimSlash(runtimeOrigin));
+}
+
+function authUrl(path) {
+  const suffix = String(path || '').startsWith('/') ? path : `/${path}`;
+  return `${baseUrl()}${AUTH_BASE_PATH}${suffix}`;
+}
+
+async function authJson(path, options = {}) {
+  const method = options.method || 'POST';
+  const headers = { Accept: 'application/json', ...(options.headers || {}) };
+  if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+
+  const response = await fetch(authUrl(path), {
+    ...options,
+    method,
+    headers,
+    credentials: 'include',
+    cache: 'no-store',
+  });
+
+  const text = await response.text();
+  let data = null;
+  if (text) {
+    try { data = JSON.parse(text); }
+    catch { throw { code: 'invalid_json_response', message: 'Authentication endpoint returned malformed JSON.', status: response.status }; }
+  }
+
+  if (!response.ok) {
+    throw {
+      code: data?.code || 'auth_error',
+      message: data?.message || `Authentication request failed with status ${response.status}.`,
+      status: response.status,
+    };
+  }
+
+  return data || {};
+}
+
+const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+function emitAuthChanged(type) {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event('dtb:auth-changed'));
+  try { window.localStorage.setItem('dtb:auth-sync', JSON.stringify({ type, at: Date.now() })); }
+  catch { /** storage may be unavailable */ }
+}
 
 export function useAuth() {
-  const [ user,      setUser      ] = useState( null );
-  const [ isLoading, setIsLoading ] = useState( true );
-  const [ error,     setError     ] = useState( null );
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const epochRef = useRef(0);
 
-  // ── Restore session on mount ─────────────────────────────────────────────────
-  // If the browser has a valid dtb_auth HttpOnly cookie, the validate endpoint
-  // will confirm it and return the user profile without requiring a re-login.
-  useEffect( () => {
-    let cancelled = false;
-
-    async function validateSession() {
-      setIsLoading( true );
-      try {
-        const res = await fetch( `${ DTB_AUTH_BASE }/validate`, {
-          method:      'POST',
-          credentials: 'include',
-          headers:     { 'Content-Type': 'application/json' },
-        } );
-
-        if ( res.ok ) {
-          const data = await res.json();
-          if ( ! cancelled && data?.user ) {
-            setUser( data.user );
-          }
+  const validateSession = useCallback(async ({ retries = 0, publish = false, epoch = null } = {}) => {
+    const activeEpoch = epoch ?? epochRef.current;
+    for (let attempt = 0; attempt <= retries; attempt += 1) {
+      if (attempt > 0) await wait(150);
+      const data = await authJson('/validate', { method: 'POST' });
+      const nextUser = data?.authenticated === false ? null : data?.user || null;
+      if (nextUser) {
+        if (epochRef.current === activeEpoch) {
+          setUser(nextUser);
+          if (publish) emitAuthChanged('login');
         }
-        // Non-OK means no active session — remain logged out silently.
-      } catch {
-        // Network error — remain logged out.
-      } finally {
-        if ( ! cancelled ) setIsLoading( false );
+        return nextUser;
       }
     }
+    if (epochRef.current === activeEpoch) {
+      setUser(null);
+      if (publish) emitAuthChanged('logout');
+    }
+    return null;
+  }, []);
 
-    validateSession();
+  useEffect(() => {
+    let cancelled = false;
+    const epoch = ++epochRef.current;
+    setIsLoading(true);
+    validateSession({ epoch })
+      .catch(() => { if (!cancelled && epochRef.current === epoch) setUser(null); })
+      .finally(() => { if (!cancelled && epochRef.current === epoch) setIsLoading(false); });
     return () => { cancelled = true; };
-  }, [] );
+  }, [validateSession]);
 
-  // ── logout ───────────────────────────────────────────────────────────────────
-  const logout = useCallback( async () => {
-    setUser( null );
-    setError( null );
-
-    // Clear the HttpOnly cookie server-side.
-    try {
-      await fetch( `${ DTB_AUTH_BASE }/logout`, {
-        method:      'DELETE',
-        credentials: 'include',
-      } );
-    } catch { /**/ }
-  }, [] );
+  const logout = useCallback(async ({ remote = true } = {}) => {
+    ++epochRef.current;
+    setUser(null);
+    setError(null);
+    setIsLoading(false);
+    emitAuthChanged('logout');
+    if (!remote) return;
+    try { await authJson('/logout', { method: 'DELETE' }); }
+    catch { /** best effort */ }
+  }, []);
 
   const updateUser = useCallback((nextUser) => {
     setUser((current) => ({ ...(current || {}), ...(nextUser || {}) }));
   }, []);
 
-  // ── auth:expired listener ────────────────────────────────────────────────────
-  useEffect( () => {
-    const handler = () => logout();
-    window.addEventListener( 'auth:expired', handler );
-    return () => window.removeEventListener( 'auth:expired', handler );
-  }, [ logout ] );
+  useEffect(() => {
+    const handler = () => { void logout(); };
+    window.addEventListener('auth:expired', handler);
+    return () => window.removeEventListener('auth:expired', handler);
+  }, [logout]);
 
-  // ── login ────────────────────────────────────────────────────────────────────
-  const login = useCallback( async ( email, password ) => {
-    setError( null );
-    setIsLoading( true );
+  useEffect(() => {
+    const handler = (event) => {
+      if (event.key !== 'dtb:auth-sync' || !event.newValue) return;
+      try {
+        const payload = JSON.parse(event.newValue);
+        if (payload?.type === 'logout') void logout({ remote: false });
+        if (payload?.type === 'login') void validateSession({ retries: 1 });
+      } catch { /** ignore */ }
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, [logout, validateSession]);
+
+  const login = useCallback(async (email, password) => {
+    const epoch = ++epochRef.current;
+    setError(null);
+    setIsLoading(true);
     try {
-      const res = await fetch( `${ DTB_AUTH_BASE }/login`, {
-        method:      'POST',
-        credentials: 'include',
-        headers:     { 'Content-Type': 'application/json' },
-        body:        JSON.stringify( { email, password } ),
-      } );
-
-      const data = await res.json();
-
-      if ( ! res.ok ) {
-        const msg = data?.message || 'Login failed.';
-        setError( msg );
-        throw new Error( msg );
+      const data = await authJson('/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      if (!data?.success || !data?.user) throw new Error(data?.message || 'Login failed.');
+      const confirmed = await validateSession({ retries: 1, publish: true, epoch });
+      if (!confirmed) throw new Error(SESSION_SYNC_ERROR);
+      return { ...data, user: confirmed };
+    } catch (err) {
+      if (epochRef.current === epoch) {
+        setUser(null);
+        setError(err?.message || 'Login failed.');
       }
-
-      // The JWT is now in the HttpOnly cookie — only store the user profile.
-      setUser( data.user || null );
-      return data;
-    } catch ( err ) {
-      setError( err.message || 'Login failed.' );
       throw err;
     } finally {
-      setIsLoading( false );
+      if (epochRef.current === epoch) setIsLoading(false);
     }
-  }, [] );
+  }, [validateSession]);
 
-  // ── register ─────────────────────────────────────────────────────────────────
-  const register = useCallback( async ( { firstName, lastName, email, password } ) => {
-    setError( null );
-    setIsLoading( true );
+  const register = useCallback(async ({ firstName, lastName, email, password }) => {
+    const epoch = ++epochRef.current;
+    setError(null);
+    setIsLoading(true);
     try {
-      const res = await fetch( `${ DTB_AUTH_BASE }/register`, {
-        method:      'POST',
-        credentials: 'include',
-        headers:     { 'Content-Type': 'application/json' },
-        body:        JSON.stringify( { first_name: firstName, last_name: lastName, email, password } ),
-      } );
-
-      const data = await res.json();
-
-      if ( ! res.ok ) {
-        const msg = data?.message || 'Registration failed.';
-        setError( msg );
-        throw new Error( msg );
+      const data = await authJson('/register', {
+        method: 'POST',
+        body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password }),
+      });
+      if (!data?.success || !data?.user) throw new Error(data?.message || 'Registration failed.');
+      const confirmed = await validateSession({ retries: 1, publish: true, epoch });
+      if (!confirmed) throw new Error(SESSION_SYNC_ERROR);
+      return { ...data, user: confirmed };
+    } catch (err) {
+      if (epochRef.current === epoch) {
+        setUser(null);
+        setError(err?.message || 'Registration failed.');
       }
-
-      setUser( data.user || null );
-      return data;
-    } catch ( err ) {
-      setError( err.message || 'Registration failed.' );
       throw err;
     } finally {
-      setIsLoading( false );
+      if (epochRef.current === epoch) setIsLoading(false);
     }
-  }, [] );
+  }, [validateSession]);
 
-  // ── forgotPassword ────────────────────────────────────────────────────────
-  const forgotPassword = useCallback( async ( email ) => {
-    setError( null );
+  const forgotPassword = useCallback(async (email) => {
+    setError(null);
     try {
-      // Pass the SPA's own base URL so the server can build a reset link that
-      // points back to this deployment (e.g. GitHub Pages) rather than the
-      // production domain.  The backend validates the origin against its
-      // allowlist before using it.
-      const spaUrl = process.env.REACT_APP_SITE_URL || '';
-      const res = await fetch( `${ DTB_AUTH_BASE }/forgot-password`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify( { email, ...( spaUrl ? { spa_url: spaUrl } : {} ) } ),
-      } );
-      return await res.json();
-    } catch ( err ) {
-      setError( err.message || 'Request failed.' );
+      const spaUrl = readPublicEnv('REACT_APP_SITE_URL') || (typeof window !== 'undefined' ? window.location.origin : '');
+      return await authJson('/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email, ...(spaUrl ? { spa_url: spaUrl } : {}) }),
+      });
+    } catch (err) {
+      setError(err?.message || 'Request failed.');
       throw err;
     }
-  }, [] );
+  }, []);
 
-  // ── resetPassword ─────────────────────────────────────────────────────────
-  const resetPassword = useCallback( async ( key, login, password ) => {
-    setError( null );
+  const resetPassword = useCallback(async (key, loginName, password) => {
+    setError(null);
     try {
-      const res = await fetch( `${ DTB_AUTH_BASE }/reset-password`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify( { key, login, password } ),
-      } );
-      const data = await res.json();
-      if ( ! res.ok ) {
-        const msg = data?.message || 'Password reset failed.';
-        setError( msg );
-        throw new Error( msg );
-      }
-      return data;
-    } catch ( err ) {
-      setError( err.message || 'Password reset failed.' );
+      return await authJson('/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ key, login: loginName, password }),
+      });
+    } catch (err) {
+      setError(err?.message || 'Password reset failed.');
       throw err;
     }
-  }, [] );
+  }, []);
 
   return {
     user,
-    isAuthenticated: Boolean( user ),
+    isAuthenticated: Boolean(user),
     isLoading,
     login,
     logout,
@@ -212,6 +233,7 @@ export function useAuth() {
     forgotPassword,
     resetPassword,
     updateUser,
+    refreshSession: validateSession,
     error,
   };
 }
