@@ -2,13 +2,24 @@
 
 Generated from the official TapeTech workbook `TapeTech UPC Codes, Weights & Dimensions.xlsx`.
 
+Last updated: 2026-07-14.
+
+## Target catalog
+
+```text
+products/Production/launch/dtb_woocommerce_official_catalog.csv
+```
+
+The launch catalog file currently tracked on GitHub was an empty placeholder at the time of this audit. The applied catalog was generated from the uploaded production launch CSV supplied with this task and is import-ready for the controlled WooCommerce catalog workflow.
+
 ## Result
 
 - Official source records: 155
+- Production launch catalog rows evaluated and preserved: 796
 - Exact SKU matches applied: 56
-- Unmatched source records: 99
+- Unmatched source records retained for review: 99
 - Ambiguous matches: 0
-- Production catalog rows evaluated: 796
+- Existing populated shipping values overwritten by official TapeTech packaged values: 4
 
 ## Applied fields
 
@@ -19,9 +30,25 @@ For exact SKU matches only:
 - `Length (in)` from TapeTech ship box length
 - `Width (in)` from TapeTech ship box width
 - `Height (in)` from TapeTech ship box height
-- provenance metadata identifying the official source and TapeTech model
+- `Meta: _dtb_shipping_spec_source`
+- `Meta: _dtb_shipping_spec_model`
+- `Meta: _dtb_shipping_spec_description`
+- `Meta: _dtb_shipping_spec_verified`
+- `Meta: _dtb_shipping_package_length_cm`
+- `Meta: _dtb_shipping_package_width_cm`
+- `Meta: _dtb_shipping_package_height_cm`
+- `Meta: _dtb_shipping_package_weight_kg`
 
 No fuzzy or description-only match is written. Unmatched source records must remain rejected until catalog onboarding or an explicit, reviewed alias mapping is added.
+
+## Existing-value overwrites
+
+Official packaged shipping specifications replaced existing populated shipping values for:
+
+- `14TT` — `Weight (lbs)`, `Length (in)`, `Width (in)`, `Height (in)`
+- `CT24TT` — `Weight (lbs)`, `Length (in)`, `Width (in)`, `Height (in)`
+- `CT36TT` — `Weight (lbs)`, `Length (in)`, `Width (in)`, `Height (in)`
+- `CT42TT` — `Weight (lbs)`, `Length (in)`, `Width (in)`, `Height (in)`
 
 ## Integration boundary
 
@@ -32,8 +59,8 @@ WooCommerce remains the product record authority. These package specifications a
 ```powershell
 python scripts/catalog/apply_tapetech_shipping_specs.py `
   --source products/Production/catalogs/sources/tapetech/tapetech_upc_weights_dimensions_official.csv `
-  --catalog products/Production/catalogs/official/woocommerce_catalog_production_optimized.csv `
-  --output products/Production/catalogs/official/woocommerce_catalog_production_optimized.csv `
+  --catalog products/Production/launch/dtb_woocommerce_official_catalog.csv `
+  --output products/Production/launch/dtb_woocommerce_official_catalog.csv `
   --audit products/Production/reports/tapetech_shipping_spec_cross_reference.csv
 ```
 
