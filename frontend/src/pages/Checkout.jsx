@@ -428,9 +428,7 @@ export default function Checkout() {
     [capabilitiesLoading, isFormComplete, paymentMethod, paymentSetupError, processing, quoteReady, safeCartItems.length],
   );
 
-  useEffect(() => {
-    if (isAuthenticated) setCheckoutIdentity('account');
-  }, [isAuthenticated]);
+  const effectiveCheckoutIdentity = isAuthenticated ? 'account' : checkoutIdentity;
 
   useEffect(() => {
     let mounted = true;
@@ -733,7 +731,7 @@ export default function Checkout() {
 
             <CheckoutIdentityChoice
               isAuthenticated={isAuthenticated}
-              selected={checkoutIdentity}
+              selected={effectiveCheckoutIdentity}
               onGuest={handleGuestChoice}
             />
 
@@ -774,7 +772,7 @@ export default function Checkout() {
               animate="visible"
             >
               <SectionHeader title="Contact" />
-              {!isAuthenticated && checkoutIdentity === 'guest' && (
+              {!isAuthenticated && effectiveCheckoutIdentity === 'guest' && (
                 <p className="dtb-co-guest-note">
                   Checking out as guest. <Link to="/login" state={{ returnTo: '/checkout' }}>Log in</Link> to use saved details.
                 </p>

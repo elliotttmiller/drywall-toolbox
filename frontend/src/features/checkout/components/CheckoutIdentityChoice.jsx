@@ -3,6 +3,12 @@ import { CheckCircle, LockKeyhole, ShieldCheck } from 'lucide-react';
 
 const RETURN_TO = '/checkout';
 const SAFE_AUTH_PROTOCOLS = new Set(['http:', 'https:']);
+const PUBLIC_ENV = {
+  REACT_APP_GOOGLE_SSO_URL: process.env.REACT_APP_GOOGLE_SSO_URL,
+  REACT_APP_AUTH_GOOGLE_URL: process.env.REACT_APP_AUTH_GOOGLE_URL,
+  REACT_APP_APPLE_SSO_URL: process.env.REACT_APP_APPLE_SSO_URL,
+  REACT_APP_AUTH_APPLE_URL: process.env.REACT_APP_AUTH_APPLE_URL,
+};
 
 function readPublicEnv(name) {
   if (typeof window !== 'undefined') {
@@ -10,13 +16,8 @@ function readPublicEnv(name) {
     if (typeof runtimeEnv[name] === 'string') return runtimeEnv[name];
   }
 
-  if (
-    typeof process !== 'undefined'
-    && process
-    && process.env
-    && typeof process.env[name] === 'string'
-  ) {
-    return process.env[name];
+  if (typeof PUBLIC_ENV[name] === 'string') {
+    return PUBLIC_ENV[name];
   }
 
   return '';

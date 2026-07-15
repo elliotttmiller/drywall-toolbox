@@ -112,6 +112,11 @@ module.exports = (envFlags, argv) => {
 
   const DEV_PROXY_TARGET = env('REACT_APP_API_BASE_URL') || 'https://drywalltoolbox.com';
   const cacheName = `${mode}-${appEnv}-${PUBLIC_URL || 'root'}`.replace(/[^a-z0-9_.-]+/gi, '-');
+  const siteUrl = (env('REACT_APP_SITE_URL') || 'https://drywalltoolbox.com').replace(/\/+$/, '');
+  const searchIndexingEnabled = env('REACT_APP_SEARCH_INDEXING') !== '0' && appEnv === 'production';
+  const robotsContent = searchIndexingEnabled
+    ? 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+    : 'noindex, nofollow, noarchive';
 
   // ─── DefinePlugin values ────────────────────────────────────────────────
   const defines = {
@@ -155,6 +160,11 @@ module.exports = (envFlags, argv) => {
     'process.env.REACT_APP_CATALOG_SNAPSHOTS_ENABLED':  JSON.stringify(env('REACT_APP_CATALOG_SNAPSHOTS_ENABLED')),
     'process.env.REACT_APP_DTB_CATALOG_PLATFORM':       JSON.stringify(env('REACT_APP_DTB_CATALOG_PLATFORM')),
     'process.env.REACT_APP_GOOGLE_MAPS_PLACES_API_KEY': JSON.stringify(env('REACT_APP_GOOGLE_MAPS_PLACES_API_KEY')),
+    'process.env.REACT_APP_SEARCH_INDEXING':            JSON.stringify(env('REACT_APP_SEARCH_INDEXING')),
+    'process.env.REACT_APP_GOOGLE_SSO_URL':             JSON.stringify(env('REACT_APP_GOOGLE_SSO_URL')),
+    'process.env.REACT_APP_AUTH_GOOGLE_URL':            JSON.stringify(env('REACT_APP_AUTH_GOOGLE_URL')),
+    'process.env.REACT_APP_APPLE_SSO_URL':              JSON.stringify(env('REACT_APP_APPLE_SSO_URL')),
+    'process.env.REACT_APP_AUTH_APPLE_URL':             JSON.stringify(env('REACT_APP_AUTH_APPLE_URL')),
 
     // Build timestamp — set once at config evaluation time (not per-module).
     'process.env.BUILD_TIMESTAMP':                      JSON.stringify(new Date().toISOString()),
@@ -321,6 +331,8 @@ module.exports = (envFlags, argv) => {
       new HtmlWebpackPlugin({
         template:  './index.html',
         publicPath,
+        siteUrl,
+        robotsContent,
         inject:    'body',
         minify: isDev ? false : {
           removeComments:                true,

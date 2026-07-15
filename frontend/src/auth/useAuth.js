@@ -10,14 +10,20 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 const AUTH_BASE_PATH = '/wp-json/dtb/v1/auth';
 const SESSION_SYNC_ERROR = 'Sign-in succeeded, but the browser did not return the secure session cookie. Confirm cookies are enabled for drywalltoolbox.com, close private browsing if enabled, and try again.';
 const SESSION_VALIDATE_DELAYS_MS = [0, 150, 400, 800];
+const SESSION_SYNC_ERROR = 'Sign-in succeeded, but the server session could not be confirmed. Please try again; if it continues, contact support so we can inspect the auth session handoff.';
+const SESSION_VALIDATE_DELAYS_MS = [0, 150, 400, 800];
+const PUBLIC_ENV = {
+  REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
+  REACT_APP_SITE_URL: process.env.REACT_APP_SITE_URL,
+};
 
 function readPublicEnv(name) {
   if (typeof window !== 'undefined') {
     const runtimeEnv = window.DTB_PUBLIC_ENV || window.dtbPublicEnv || {};
     if (typeof runtimeEnv[name] === 'string') return runtimeEnv[name];
   }
-  if (typeof process !== 'undefined' && process?.env && typeof process.env[name] === 'string') {
-    return process.env[name];
+  if (typeof PUBLIC_ENV[name] === 'string') {
+    return PUBLIC_ENV[name];
   }
   return '';
 }

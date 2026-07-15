@@ -14,14 +14,15 @@ Because WordPress is mounted under `/wp` but exposed through root aliases, cooki
 
 ```php
 define( 'WP_HOME', 'https://drywalltoolbox.com' );
-define( 'WP_SITEURL', 'https://drywalltoolbox.com/wp' );
+define( 'WP_SITEURL', 'https://drywalltoolbox.com' );
 
 define( 'COOKIEPATH', '/' );
 define( 'SITECOOKIEPATH', '/' );
 define( 'ADMIN_COOKIE_PATH', '/' );
+define( 'COOKIE_DOMAIN', 'drywalltoolbox.com' );
 ```
 
-The root cookie paths are required because native WordPress admin cookies are issued by WordPress in `/wp` but must be valid for root-mounted `/wp-admin`, `/wp-login.php`, and root `/wp-json` requests.
+The root WordPress URLs and root cookie paths are required because WordPress core files live in `/wp` behind rewrite aliases, while operators and browser clients use root-mounted `/wp-admin`, `/wp-login.php`, and `/wp-json` requests.
 
 ## Canonical host policy
 
@@ -52,6 +53,8 @@ The root and WordPress `.htaccess` files intentionally mark these request famili
 - requests carrying native WordPress auth cookies or WooCommerce session/cart cookies
 
 The root `.htaccess` also sets `endurance-no-cache=1` for those surfaces so HostGator/Endurance cache is bypassed for admin, login, REST, WooCommerce session, and order-payment requests.
+
+`endurance-no-cache` must be added as its own `Set-Cookie` header. Use Apache `Header add Set-Cookie ...`; do not use `Header set Set-Cookie ...`, which replaces WordPress/DTB cookies, or `Header append Set-Cookie ...`, which can comma-join cookies into an invalid combined header.
 
 ## Cacheable assets
 

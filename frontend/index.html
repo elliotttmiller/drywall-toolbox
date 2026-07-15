@@ -20,15 +20,15 @@
     <!-- ── Static default SEO (overridden per-page by SEOHead / react-helmet-async) ── -->
     <title>Drywall Toolbox</title>
     <meta name="description" content="Professional drywall tools and equipment from top brands. Shop automatic taping tools, mud boxes, finishing tools, and more at unbeatable prices.">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <link rel="canonical" href="https://drywalltoolbox.com/">
+    <meta name="robots" content="<%= htmlWebpackPlugin.options.robotsContent %>">
+    <link rel="canonical" href="<%= htmlWebpackPlugin.options.siteUrl %>/">
 
     <!-- Open Graph defaults -->
     <meta property="og:type"        content="website">
     <meta property="og:site_name"   content="Drywall Toolbox">
     <meta property="og:title"       content="Drywall Toolbox">
     <meta property="og:description" content="Professional drywall tools and equipment from top brands. Shop automatic taping tools, mud boxes, finishing tools, and more at unbeatable prices.">
-    <meta property="og:url"         content="https://drywalltoolbox.com/">
+    <meta property="og:url"         content="<%= htmlWebpackPlugin.options.siteUrl %>/">
     <meta property="og:image"       content="https://drywalltoolbox.com/logo-black.svg">
     <meta property="og:image:alt"   content="Drywall Toolbox">
 

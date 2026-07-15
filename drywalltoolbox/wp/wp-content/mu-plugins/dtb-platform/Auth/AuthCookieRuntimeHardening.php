@@ -46,6 +46,11 @@ function dtb_auth_harden_rest_response( $response, $server, $request ) { // phpc
 
 	if ( '/dtb/v1/auth/logout' === $route ) {
 		dtb_auth_clear_hardened_cookie();
+		dtb_auth_signal_session_mutation();
+	}
+
+	if ( '/dtb/v1/auth/logout' === $route ) {
+		dtb_auth_signal_session_mutation();
 	}
 
 	return $response;
@@ -112,6 +117,12 @@ function dtb_auth_clear_hardened_cookie(): void {
 		'samesite' => $cross ? 'None' : 'Lax',
 	] );
 }
+ * Signal shared-hosting cache bypass after auth session mutation.
+ *
+ * AuthRoutes.php is the single owner that issues and clears the `dtb_auth`
+ * cookie. This hardening layer must not generate or overwrite auth tokens.
+ */
+function dtb_auth_signal_session_mutation(): void {
 	setcookie( 'endurance-no-cache', '1', [
 		'expires'  => time() + 60,
 		'path'     => '/',

@@ -15,6 +15,11 @@ add_action( 'rest_api_init', 'dtb_admin_security_register_routes', 20 );
 add_action( 'rest_api_init', 'dtb_admin_security_register_auth_diagnostic_route', 25 );
 add_filter( 'rest_post_dispatch', 'dtb_admin_security_log_rest_denials', 10, 3 );
 add_action( 'admin_notices', 'dtb_admin_security_render_cookie_path_notice' );
+add_action( 'login_init', 'dtb_admin_security_trace_login_init', 1 );
+add_action( 'wp_login_failed', 'dtb_admin_security_trace_login_failed', 10, 2 );
+add_action( 'set_auth_cookie', 'dtb_admin_security_trace_auth_cookie', 10, 6 );
+add_action( 'set_logged_in_cookie', 'dtb_admin_security_trace_logged_in_cookie', 10, 6 );
+add_action( 'wp_login', 'dtb_admin_security_trace_login_success', 10, 2 );
 
 function dtb_admin_security_register_routes(): void {
 	if ( ! dtb_feature_enabled( 'DTB_ENABLE_ADMIN_SMOKE_ROUTE', true ) ) {
@@ -46,6 +51,113 @@ function dtb_admin_security_register_routes(): void {
 
 function dtb_admin_security_can_run_smoke(): bool {
 	return current_user_can( 'manage_options' ) || current_user_can( 'manage_woocommerce' );
+}
+
+function dtb_admin_security_trace_login_init(): void {
+	if ( ! dtb_feature_enabled( 'DTB_ENABLE_ADMIN_LOGIN_TRACE', true ) ) {
+		return;
+	}
+
+	dtb_admin_security_emit_login_trace(
+		'login_init',
+		[
+			'method'          => isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_key( wp_unslash( (string) $_SERVER['REQUEST_METHOD'] ) ) : '',
+			'has_test_cookie' => ! empty( $_COOKIE[ TEST_COOKIE ] ) ? '1' : '0',
+			'cookiepath'      => defined( 'COOKIEPATH' ) ? (string) COOKIEPATH : '',
+			'adminpath'       => defined( 'ADMIN_COOKIE_PATH' ) ? (string) ADMIN_COOKIE_PATH : '',
+			'sitecookiepath'  => defined( 'SITECOOKIEPATH' ) ? (string) SITECOOKIEPATH : '',
+			'cookie_domain'   => defined( 'COOKIE_DOMAIN' ) ? (string) COOKIE_DOMAIN : '',
+		]
+	);
+}
+
+function dtb_admin_security_trace_login_failed( string $username, $error = null ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed
+	if ( ! dtb_feature_enabled( 'DTB_ENABLE_ADMIN_LOGIN_TRACE', true ) ) {
+		return;
+	}
+
+	$error_code = $error instanceof WP_Error ? implode( ',', array_map( 'sanitize_key', $error->get_error_codes() ) ) : '';
+
+	dtb_admin_security_emit_login_trace(
+		'login_failed',
+		[
+			'user_hash'  => '' !== $username ? substr( hash( 'sha256', strtolower( trim( $username ) ) ), 0, 12 ) : '',
+			'error_code' => $error_code,
+		]
+	);
+}
+
+function dtb_admin_security_trace_auth_cookie( string $auth_cookie, int $expire, int $expiration, int $user_id, string $scheme, string $token ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	if ( ! dtb_feature_enabled( 'DTB_ENABLE_ADMIN_LOGIN_TRACE', true ) ) {
+		return;
+	}
+
+	dtb_admin_security_emit_login_trace(
+		'set_auth_cookie',
+		[
+			'user_id' => (string) absint( $user_id ),
+			'scheme'  => sanitize_key( $scheme ),
+			'expire'  => $expire > time() ? 'future' : 'session',
+		]
+	);
+}
+
+function dtb_admin_security_trace_logged_in_cookie( string $logged_in_cookie, int $expire, int $expiration, int $user_id, string $scheme, string $token ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	if ( ! dtb_feature_enabled( 'DTB_ENABLE_ADMIN_LOGIN_TRACE', true ) ) {
+		return;
+	}
+
+	dtb_admin_security_emit_login_trace(
+		'set_logged_in_cookie',
+		[
+			'user_id' => (string) absint( $user_id ),
+			'scheme'  => sanitize_key( $scheme ),
+			'expire'  => $expire > time() ? 'future' : 'session',
+		]
+	);
+}
+
+function dtb_admin_security_trace_login_success( string $user_login, WP_User $user ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed
+	if ( ! dtb_feature_enabled( 'DTB_ENABLE_ADMIN_LOGIN_TRACE', true ) ) {
+		return;
+	}
+
+	dtb_admin_security_emit_login_trace(
+		'login_success',
+		[
+			'user_id'            => (string) absint( $user->ID ),
+			'roles'              => implode( ',', array_map( 'sanitize_key', (array) $user->roles ) ),
+			'manage_options'     => user_can( $user, 'manage_options' ) ? '1' : '0',
+			'manage_woocommerce' => user_can( $user, 'manage_woocommerce' ) ? '1' : '0',
+		]
+	);
+}
+
+function dtb_admin_security_emit_login_trace( string $event, array $context = [] ): void {
+	$safe = [
+		'event' => sanitize_key( $event ),
+	];
+
+	foreach ( $context as $key => $value ) {
+		if ( ! is_scalar( $value ) && null !== $value ) {
+			continue;
+		}
+
+		$safe[ sanitize_key( (string) $key ) ] = sanitize_text_field( (string) $value );
+	}
+
+	dtb_security_log( 'wp_login_trace', $safe );
+
+	if ( headers_sent() ) {
+		return;
+	}
+
+	$parts = [];
+	foreach ( $safe as $key => $value ) {
+		$parts[] = sanitize_key( (string) $key ) . '=' . rawurlencode( (string) $value );
+	}
+
+	header( 'X-DTB-WP-Login-Trace: ' . implode( '; ', $parts ), false );
 }
 
 function dtb_admin_security_register_auth_diagnostic_route(): void {

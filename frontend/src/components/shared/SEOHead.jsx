@@ -22,6 +22,8 @@ const SITE_NAME      = 'Drywall Toolbox';
 const SITE_URL       = 'https://drywalltoolbox.com';
 const DEFAULT_OG_IMG = `${SITE_URL}/logo-black.svg`;
 const MAX_DESC_LEN   = 160;
+const SEARCH_INDEXING_ENABLED =
+  process.env.REACT_APP_ENV === 'production' && process.env.REACT_APP_SEARCH_INDEXING !== '0';
 
 const STATIC_ROUTE_TITLES = {
   '/': '',
@@ -122,7 +124,7 @@ export default function SEOHead({
       <meta name="description" content={safeDesc} />
 
       {/* Robots */}
-      {noindex
+      {noindex || !SEARCH_INDEXING_ENABLED
         ? <meta name="robots" content="noindex, nofollow" />
         : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       }

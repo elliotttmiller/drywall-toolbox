@@ -188,6 +188,23 @@ function dtb_jwt_resolve_rest_user( $user_id ) {
  */
 const DTB_AUTH_COOKIE = 'dtb_auth';
 
+/**
+ * Request-local diagnostics for auth session handoff.
+ *
+ * These values intentionally never include token material. They let the
+ * storefront and operators distinguish "login did not queue an auth cookie"
+ * from "validate did not receive the auth cookie."
+ *
+ * @var array<string,mixed>
+ */
+$GLOBALS['dtb_auth_session_handoff'] = [
+	'cookie_queued'   => false,
+	'cookie_cleared'  => false,
+	'cookie_name'     => DTB_AUTH_COOKIE,
+	'cookie_samesite' => '',
+	'cookie_domain'   => '',
+];
+
 // =============================================================================
 // JWT HELPERS
 // =============================================================================
@@ -408,7 +425,7 @@ function dtb_jwt_get_user_id(): int {
  * Emit the dtb_auth JWT as an HttpOnly cookie.
  *
  * SameSite policy:
- *   - Same-origin requests (production domain) → SameSite=Strict (most secure).
+ *   - Same-origin requests (production domain) → SameSite=Lax.
  *   - Cross-origin requests from an allowlisted origin (e.g. GitHub Pages dev
  *     preview) → SameSite=None; Secure so the browser will actually send the
  *     cookie back on subsequent cross-origin credentialed fetches.
@@ -422,31 +439,23 @@ function dtb_jwt_get_user_id(): int {
  */
 function dtb_set_auth_cookie( string $jwt, int $ttl_sec = 604800 ): void {
 	$cross_origin = dtb_is_cross_origin_request();
+	$same_site    = $cross_origin ? 'None' : 'Lax';
 
-	setcookie( DTB_AUTH_COOKIE, $jwt, [
-		'expires'  => time() + $ttl_sec,
-		'path'     => '/',
-		'domain'   => '',
-		'secure'   => true,   // always true — SameSite=None requires Secure
-		'httponly' => true,
-		'samesite' => $cross_origin ? 'None' : 'Strict',
-	] );
+	dtb_expire_auth_cookie_variants( DTB_AUTH_COOKIE );
+	if ( dtb_emit_auth_cookie_variant( DTB_AUTH_COOKIE, $jwt, time() + $ttl_sec, $same_site ) ) {
+		$GLOBALS['dtb_auth_session_handoff']['cookie_queued']   = true;
+		$GLOBALS['dtb_auth_session_handoff']['cookie_name']     = DTB_AUTH_COOKIE;
+		$GLOBALS['dtb_auth_session_handoff']['cookie_samesite'] = $same_site;
+		$GLOBALS['dtb_auth_session_handoff']['cookie_domain']   = 'host-only';
+	}
 }
 
 /**
  * Clear the dtb_auth cookie (logout).
  */
 function dtb_clear_auth_cookie(): void {
-	$cross_origin = dtb_is_cross_origin_request();
-
-	setcookie( DTB_AUTH_COOKIE, '', [
-		'expires'  => time() - 3600,
-		'path'     => '/',
-		'domain'   => '',
-		'secure'   => true,
-		'httponly' => true,
-		'samesite' => $cross_origin ? 'None' : 'Strict',
-	] );
+	dtb_expire_auth_cookie_variants( DTB_AUTH_COOKIE );
+	$GLOBALS['dtb_auth_session_handoff']['cookie_cleared'] = true;
 }
 
 /**
@@ -472,6 +481,122 @@ function dtb_is_cross_origin_request(): bool {
 
 	// Any other allowlisted origin is cross-origin (dev / staging / GitHub Pages).
 	return in_array( $raw_origin, dtb_allowed_origins(), true );
+}
+
+/**
+ * Return candidate cookie domains that may contain legacy DTB auth cookies.
+ *
+ * Older deployments and host/plugin behavior can leave both host-only and
+ * domain-scoped cookies with the same name. Browsers may send both values, and
+ * PHP exposes only one in $_COOKIE, so stale domain variants must be expired
+ * explicitly before issuing a fresh host-only session cookie.
+ *
+ * @return string[] Empty string means host-only/no Domain attribute.
+ */
+function dtb_auth_cookie_domain_variants(): array {
+	$domains = [ '' ];
+	$host    = '';
+
+	if ( function_exists( 'home_url' ) ) {
+		$host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+	}
+
+	if ( '' === $host && ! empty( $_SERVER['HTTP_HOST'] ) ) {
+		$host = sanitize_text_field( (string) wp_unslash( $_SERVER['HTTP_HOST'] ) );
+	}
+
+	$host = strtolower( preg_replace( '/:\d+$/', '', $host ) );
+	if ( '' === $host ) {
+		$host = 'drywalltoolbox.com';
+	}
+
+	$base = preg_replace( '/^www\./', '', $host );
+	foreach ( array_filter( [ $host, $base, 'www.' . $base, '.' . $base ] ) as $domain ) {
+		$domains[] = $domain;
+	}
+
+	return array_values( array_unique( $domains ) );
+}
+
+/**
+ * Set or expire a DTB auth cookie variant.
+ *
+ * @param string $name      Cookie name.
+ * @param string $value     Cookie value.
+ * @param int    $expires   Expiration timestamp.
+ * @param string $same_site SameSite policy.
+ * @param string $domain    Cookie domain, or empty for host-only.
+ */
+function dtb_emit_auth_cookie_variant( string $name, string $value, int $expires, string $same_site, string $domain = '' ): bool {
+	if ( headers_sent() ) {
+		error_log( '[DTB] Unable to emit auth cookie; headers already sent.' );
+		return false;
+	}
+
+	$cookie_name = preg_replace( '/[^A-Za-z0-9_\-]/', '', $name );
+	if ( '' === $cookie_name ) {
+		error_log( '[DTB] Unable to emit auth cookie; invalid cookie name.' );
+		return false;
+	}
+
+	$expires = (int) $expires;
+	$max_age = max( 0, $expires - time() );
+	$same_site = in_array( $same_site, [ 'Lax', 'Strict', 'None' ], true ) ? $same_site : 'Lax';
+	$parts   = [
+		$cookie_name . '=' . rawurlencode( $value ),
+		'Expires=' . gmdate( 'D, d M Y H:i:s', $expires ) . ' GMT',
+		'Max-Age=' . $max_age,
+		'Path=/',
+		'Secure',
+		'HttpOnly',
+		'SameSite=' . $same_site,
+	];
+
+	if ( '' !== $domain && preg_match( '/^\.?[A-Za-z0-9.-]+$/', $domain ) ) {
+		$parts[] = 'Domain=' . $domain;
+	}
+
+	header( 'Set-Cookie: ' . implode( '; ', $parts ), false );
+	return true;
+}
+
+/**
+ * Expire all known DTB auth cookie variants.
+ *
+ * @param string $name Cookie name.
+ */
+function dtb_expire_auth_cookie_variants( string $name ): void {
+	foreach ( dtb_auth_cookie_domain_variants() as $domain ) {
+		dtb_emit_auth_cookie_variant( $name, '', time() - DAY_IN_SECONDS, 'Lax', $domain );
+		dtb_emit_auth_cookie_variant( $name, '', time() - DAY_IN_SECONDS, 'None', $domain );
+		dtb_emit_auth_cookie_variant( $name, '', time() - DAY_IN_SECONDS, 'Strict', $domain );
+	}
+}
+
+/**
+ * Return redacted session handoff diagnostics for auth responses.
+ *
+ * @param string $event Auth lifecycle event.
+ * @param array  $extra Additional non-secret diagnostic fields.
+ * @return array<string,mixed>
+ */
+function dtb_auth_session_handoff_status( string $event, array $extra = [] ): array {
+	$state = is_array( $GLOBALS['dtb_auth_session_handoff'] ?? null )
+		? $GLOBALS['dtb_auth_session_handoff']
+		: [];
+
+	return array_merge(
+		[
+			'event'              => sanitize_key( $event ),
+			'cookie_name'        => sanitize_key( (string) ( $state['cookie_name'] ?? DTB_AUTH_COOKIE ) ),
+			'cookie_queued'      => (bool) ( $state['cookie_queued'] ?? false ),
+			'cookie_cleared'     => (bool) ( $state['cookie_cleared'] ?? false ),
+			'cookie_samesite'    => sanitize_text_field( (string) ( $state['cookie_samesite'] ?? '' ) ),
+			'cookie_domain'      => sanitize_text_field( (string) ( $state['cookie_domain'] ?? '' ) ),
+			'request_had_cookie' => ! empty( $_COOKIE[ DTB_AUTH_COOKIE ] ),
+		],
+		$extra
+	);
 }
 
 // =============================================================================
@@ -637,6 +762,7 @@ function dtb_auth_login( WP_REST_Request $request ): WP_REST_Response {
 
 	$response = new WP_REST_Response( [
 		'success' => true,
+		'session' => dtb_auth_session_handoff_status( 'login' ),
 		'user'    => [
 			'id'           => $user->ID,
 			'email'        => $user->user_email,
@@ -818,6 +944,7 @@ function dtb_auth_register( WP_REST_Request $request ): WP_REST_Response {
 
 	$response = new WP_REST_Response( [
 		'success' => true,
+		'session' => dtb_auth_session_handoff_status( 'register' ),
 		'user'    => [
 			'id'           => $user->ID,
 			'email'        => $user->user_email,
@@ -1036,17 +1163,20 @@ function dtb_auth_logout(): WP_REST_Response {
  * @return WP_REST_Response
  */
 function dtb_auth_validate( WP_REST_Request $request ): WP_REST_Response {
-	$token = null;
+	$token       = null;
+	$auth_source = 'none';
 
 	// Read cookie first (same precedence as dtb_jwt_permission).
 	if ( ! empty( $_COOKIE[ DTB_AUTH_COOKIE ] ) ) {
-		$token = sanitize_text_field( wp_unslash( $_COOKIE[ DTB_AUTH_COOKIE ] ) );
+		$token       = sanitize_text_field( wp_unslash( $_COOKIE[ DTB_AUTH_COOKIE ] ) );
+		$auth_source = 'cookie';
 	}
 
 	if ( ! $token ) {
 		$auth = $request->get_header( 'authorization' );
 		if ( $auth && preg_match( '/^Bearer\s+(\S+)$/i', $auth, $m ) ) {
-			$token = $m[1];
+			$token       = $m[1];
+			$auth_source = 'bearer';
 		}
 	}
 
@@ -1055,6 +1185,9 @@ function dtb_auth_validate( WP_REST_Request $request ): WP_REST_Response {
 			'success'       => true,
 			'authenticated' => false,
 			'user'          => null,
+			'session'       => dtb_auth_session_handoff_status( 'validate', [
+				'auth_source' => $auth_source,
+			] ),
 		], 200 );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		return $response;
@@ -1069,6 +1202,10 @@ function dtb_auth_validate( WP_REST_Request $request ): WP_REST_Response {
 			'authenticated' => false,
 			'user'          => null,
 			'message'       => 'Session expired. Please log in again.',
+			'session'       => dtb_auth_session_handoff_status( 'validate', [
+				'auth_source' => $auth_source,
+				'token_valid' => false,
+			] ),
 		], 200 );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		return $response;
@@ -1083,6 +1220,10 @@ function dtb_auth_validate( WP_REST_Request $request ): WP_REST_Response {
 			'authenticated' => false,
 			'user'          => null,
 			'message'       => 'User account not found.',
+			'session'       => dtb_auth_session_handoff_status( 'validate', [
+				'auth_source' => $auth_source,
+				'token_valid' => true,
+			] ),
 		], 200 );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		return $response;
@@ -1091,6 +1232,10 @@ function dtb_auth_validate( WP_REST_Request $request ): WP_REST_Response {
 	$response = new WP_REST_Response( [
 		'success'       => true,
 		'authenticated' => true,
+		'session'       => dtb_auth_session_handoff_status( 'validate', [
+			'auth_source' => $auth_source,
+			'token_valid' => true,
+		] ),
 		'user'          => [
 			'id'           => $user->ID,
 			'email'        => $user->user_email,
