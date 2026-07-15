@@ -9,6 +9,14 @@
 	var submitting = false;
 	var lastNoticeSignature = '';
 	var mobileQuery = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
+	var providerClasses = [
+		'dtb-op-provider-apple',
+		'dtb-op-provider-google',
+		'dtb-op-provider-paypal',
+		'dtb-op-provider-wallet',
+		'dtb-op-provider-paylater',
+		'dtb-op-provider-card'
+	];
 
 	function root() {
 		return document.querySelector(rootSelector);
@@ -62,25 +70,55 @@
 		);
 	}
 
+	function clearProviderClasses(method) {
+		method.classList.remove('dtb-op-gateway-express', 'dtb-op-gateway-paylater', 'dtb-op-gateway-card');
+		providerClasses.forEach(function (className) { method.classList.remove(className); });
+		method.removeAttribute('data-dtb-gateway-kind');
+		method.removeAttribute('data-dtb-provider');
+	}
+
 	function classifyGateway(method) {
 		var key = methodKey(method);
-		method.classList.remove('dtb-op-gateway-express', 'dtb-op-gateway-paylater', 'dtb-op-gateway-card');
-		method.removeAttribute('data-dtb-gateway-kind');
+		clearProviderClasses(method);
 
-		if (/apple|google|paypal|wallet|shop pay|woopay/.test(key)) {
-			method.classList.add('dtb-op-gateway-express');
+		if (/apple/.test(key)) {
+			method.classList.add('dtb-op-gateway-express', 'dtb-op-provider-apple');
 			method.setAttribute('data-dtb-gateway-kind', 'express');
+			method.setAttribute('data-dtb-provider', 'apple');
+			return 'express';
+		}
+
+		if (/google|gpay|g pay/.test(key)) {
+			method.classList.add('dtb-op-gateway-express', 'dtb-op-provider-google');
+			method.setAttribute('data-dtb-gateway-kind', 'express');
+			method.setAttribute('data-dtb-provider', 'google');
+			return 'express';
+		}
+
+		if (/paypal/.test(key)) {
+			method.classList.add('dtb-op-gateway-express', 'dtb-op-provider-paypal');
+			method.setAttribute('data-dtb-gateway-kind', 'express');
+			method.setAttribute('data-dtb-provider', 'paypal');
+			return 'express';
+		}
+
+		if (/wallet|shop pay|woopay/.test(key)) {
+			method.classList.add('dtb-op-gateway-express', 'dtb-op-provider-wallet');
+			method.setAttribute('data-dtb-gateway-kind', 'express');
+			method.setAttribute('data-dtb-provider', 'wallet');
 			return 'express';
 		}
 
 		if (/affirm|klarna|afterpay|cash app|pay later|paylater/.test(key)) {
-			method.classList.add('dtb-op-gateway-paylater');
+			method.classList.add('dtb-op-gateway-paylater', 'dtb-op-provider-paylater');
 			method.setAttribute('data-dtb-gateway-kind', 'paylater');
+			method.setAttribute('data-dtb-provider', 'paylater');
 			return 'paylater';
 		}
 
-		method.classList.add('dtb-op-gateway-card');
+		method.classList.add('dtb-op-gateway-card', 'dtb-op-provider-card');
 		method.setAttribute('data-dtb-gateway-kind', 'card');
+		method.setAttribute('data-dtb-provider', 'card');
 		return 'card';
 	}
 
@@ -218,7 +256,7 @@
 		if (title) title.textContent = hasFastOptions ? 'Express checkout' : 'Payment method';
 		if (copy) {
 			copy.textContent = hasFastOptions
-				? 'Use a wallet or pay-later option for the fastest checkout, or choose card below.'
+				? 'Choose Apple Pay, Google Pay, PayPal, pay later, or continue with card.'
 				: 'Choose a secure payment method to complete this order.';
 		}
 	}
