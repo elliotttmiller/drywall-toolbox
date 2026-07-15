@@ -119,6 +119,18 @@ Canonical browser communication uses:
 
 Legacy frontend service facades must call DTB proxy/Store API endpoints and must not collect or persist WooCommerce credentials in localStorage, sessionStorage, source, environment bundles, or UI settings forms.
 
+## Mobile checkout UI architecture
+
+React owns the `/checkout` intake route: guest/account choice, contact and shipping fields, section presentation, coupon/note disclosures, draft recovery, quote-state messaging, and the sticky mobile action sheet.
+
+Checkout UI code belongs under `frontend/src/features/checkout/` when new shared behavior is added. The route must not rely on broad DOM MutationObserver runtimes for guest choice, order summary, mobile totals, or submit CTA behavior. Retired checkout DOM runtimes must not be reintroduced as architecture.
+
+The React checkout CTA uses `Continue to secure payment` language because payment collection happens after backend finalization on the WooCommerce order-pay runtime. The order-pay runtime may use `Pay {total}` because WooCommerce/WooPayments own the gateway form there.
+
+Checkout draft recovery is temporary and session scoped. It must not persist payment data, gateway tokens, checkout session tokens, or customer notes. Form drafts must be cleared after successful handoff/order completion.
+
+Detailed mobile checkout UI guidance lives in `docs/mobile-checkout-architecture.md`.
+
 ## Backend API surface
 
 ### `dtb/v1`
@@ -198,5 +210,6 @@ Heavy catalog imports use Action Scheduler with WP-Cron fallback. Operational he
 - all order/integration writes use the canonical queue and write boundary;
 - public shipping language must distinguish DTB-calculated rates from Veeqo fulfillment data;
 - order-pay presentation stays in `dtb-commerce`; do not restore root-level `zz*` order-pay shims or platform-owned payment-runtime assets;
+- checkout presentation is React-owned under `frontend/src/features/checkout/`; do not restore checkout DOM observer runtimes for identity choice, summary auto-open, or mobile totals mirroring;
 - update `memory-bank/*` and the mu-plugin README whenever durable architecture changes;
 - run `npm run lint` and `npm run build` for frontend changes, plus targeted operator validation only when a changed backend/module contract requires it.
