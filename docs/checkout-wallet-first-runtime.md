@@ -45,8 +45,8 @@ Classification must never move gateway iframes, nonces, tokenization elements, p
 Frontend:
 
 ```powershell
+npm --prefix frontend ci --include=dev
 cd frontend
-npm ci --include=dev
 npm run lint
 npm run build:staging
 npm run build
