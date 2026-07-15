@@ -1,30 +1,26 @@
 /*
- * DTB order-pay runtime: production mobile-first payment presentation.
- * WooCommerce/WooPayments retain ownership of gateway fields, wallet buttons,
- * nonces, iframes, tokenization, callbacks, and payment lifecycle behavior.
+ * DTB order-pay runtime: official WooCommerce/WooPayments payment shell.
+ * WooCommerce and gateway plugins retain ownership of fields, iframes, nonces,
+ * tokenization, callbacks, submit handling, and payment lifecycle state.
  */
 
 :root {
 	--dtb-op-font: Inter, "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-	--dtb-op-display: Inter, "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-	--dtb-op-ink: #111827;
+	--dtb-op-ink: #101827;
 	--dtb-op-text: #334155;
 	--dtb-op-muted: #667085;
 	--dtb-op-faint: #98a2b3;
-	--dtb-op-line: #e1e7ef;
+	--dtb-op-line: #e2e8f0;
 	--dtb-op-line-strong: #cbd5e1;
-	--dtb-op-page: #f6f7f9;
+	--dtb-op-page: #f6f8fb;
 	--dtb-op-surface: #ffffff;
 	--dtb-op-soft: #f8fafc;
 	--dtb-op-navy: #0b1733;
-	--dtb-op-navy-2: #142655;
 	--dtb-op-blue: #2563eb;
-	--dtb-op-success: #16a34a;
 	--dtb-op-danger: #b91c1c;
-	--dtb-op-radius-sm: 14px;
-	--dtb-op-radius-md: 18px;
+	--dtb-op-radius: 18px;
 	--dtb-op-radius-lg: 24px;
-	--dtb-op-shadow: 0 16px 38px rgba(15, 23, 42, .08);
+	--dtb-op-shadow: 0 18px 44px rgba(15, 23, 42, .08);
 }
 
 html,
@@ -35,7 +31,6 @@ body.dtb-order-pay-runtime {
 	color: var(--dtb-op-ink);
 	font-family: var(--dtb-op-font);
 	font-size: 15px;
-	font-feature-settings: "cv02", "cv03", "cv04", "kern";
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }
@@ -73,10 +68,8 @@ body.dtb-order-pay-runtime textarea {
 }
 
 .dtb-op-header {
-	position: relative;
-	z-index: 5;
-	background: linear-gradient(135deg, var(--dtb-op-navy), var(--dtb-op-navy-2));
-	box-shadow: 0 10px 24px rgba(12, 24, 49, .13);
+	background: linear-gradient(135deg, #08152f, #1d4ed8);
+	box-shadow: 0 10px 24px rgba(12, 24, 49, .12);
 }
 
 .dtb-op-header__inner {
@@ -84,9 +77,9 @@ body.dtb-order-pay-runtime textarea {
 	min-height: 72px;
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: minmax(170px, 1fr) auto minmax(130px, 1fr);
+	grid-template-columns: minmax(160px, 1fr) auto minmax(120px, 1fr);
 	align-items: center;
-	gap: 24px;
+	gap: 20px;
 }
 
 .dtb-op-brand {
@@ -111,7 +104,6 @@ body.dtb-order-pay-runtime textarea {
 	align-items: baseline;
 	gap: 2px;
 	color: #ffffff;
-	font-family: var(--dtb-op-display);
 	font-size: 23px;
 	font-weight: 900;
 	letter-spacing: -.055em;
@@ -186,7 +178,7 @@ body.dtb-order-pay-runtime textarea {
 	color: #dbeafe;
 	font-size: 10px;
 	font-weight: 900;
-	letter-spacing: .16em;
+	letter-spacing: .14em;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -230,44 +222,9 @@ body.dtb-order-pay-runtime textarea {
 	background: transparent;
 }
 
-.dtb-op-card .woocommerce-error,
-.dtb-op-card .woocommerce-info,
-.dtb-op-card .woocommerce-message {
-	position: relative !important;
-	margin: 0 0 12px !important;
-	padding: 13px 14px 13px 16px !important;
-	border: 1px solid #fed7aa !important;
-	border-left: 4px solid #f97316 !important;
-	border-radius: var(--dtb-op-radius-sm) !important;
-	background: #fff7ed !important;
-	box-shadow: none !important;
-	color: #9a3412 !important;
-	font-size: 13px !important;
-	font-weight: 700 !important;
-	line-height: 1.42 !important;
-	list-style: none !important;
-}
-
-.dtb-op-card .woocommerce-error {
-	border-color: #fecaca !important;
-	border-left-color: var(--dtb-op-danger) !important;
-	background: #fff5f5 !important;
-	color: #7f1d1d !important;
-}
-
-.dtb-op-card .dtb-op-notice-title {
-	display: block;
-	margin: 0 0 4px;
-	color: inherit;
-	font-family: var(--dtb-op-display);
-	font-size: 13.5px;
-	font-weight: 900;
-	letter-spacing: -.02em;
-}
-
 .dtb-op-card form#order_review {
 	display: grid !important;
-	grid-template-columns: minmax(0, 1fr) minmax(340px, 390px) !important;
+	grid-template-columns: minmax(0, 1fr) minmax(330px, 390px) !important;
 	grid-template-areas: "payment summary" !important;
 	align-items: start !important;
 	gap: 20px !important;
@@ -289,10 +246,9 @@ body.dtb-order-pay-runtime textarea {
 .dtb-op-card #payment::before {
 	content: "Payment";
 	display: block;
-	margin: 0 0 14px;
+	margin: 0 0 12px;
 	color: var(--dtb-op-ink);
-	font-family: var(--dtb-op-display);
-	font-size: clamp(26px, 2.4vw, 34px);
+	font-size: clamp(28px, 3vw, 40px);
 	font-weight: 900;
 	letter-spacing: -.06em;
 	line-height: 1;
@@ -301,27 +257,30 @@ body.dtb-order-pay-runtime textarea {
 .dtb-op-payment-lead {
 	display: grid;
 	gap: 3px;
-	margin: 0 0 12px;
-	text-align: center;
+	margin: 0 0 14px;
+	text-align: left;
 }
 
 .dtb-op-payment-lead__title {
 	color: var(--dtb-op-muted);
-	font-size: 13px;
-	font-weight: 800;
+	font-size: 12px;
+	font-weight: 850;
 	line-height: 1.2;
+	letter-spacing: .08em;
+	text-transform: uppercase;
 }
 
 .dtb-op-payment-lead__copy {
+	max-width: 640px;
 	color: var(--dtb-op-muted);
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 620;
-	line-height: 1.35;
+	line-height: 1.4;
 }
 
 .dtb-op-card .wc_payment_methods {
 	display: grid !important;
-	grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+	grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 	gap: 10px !important;
 	align-items: stretch !important;
 	min-width: 0 !important;
@@ -331,85 +290,36 @@ body.dtb-order-pay-runtime textarea {
 	list-style: none !important;
 }
 
-.dtb-op-card .wc_payment_methods::before {
-	content: "Express checkout";
-	grid-column: 1 / -1;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin: 0 0 2px;
-	color: #7a8291;
-	font-size: 12px;
-	font-weight: 760;
-}
-
-.dtb-op-card .wc_payment_methods::after {
-	content: "Or continue below";
-	grid-column: 1 / -1;
-	order: 29;
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-	align-items: center;
-	gap: 12px;
-	margin: 2px 0 0;
-	color: var(--dtb-op-muted);
-	font-size: 11.5px;
-	font-weight: 760;
-	line-height: 1;
-	text-align: center;
-	text-transform: uppercase;
-	letter-spacing: .04em;
-}
-
-.dtb-op-card .wc_payment_methods::after {
-	background: linear-gradient(var(--dtb-op-line), var(--dtb-op-line)) left center / calc(50% - 44px) 1px no-repeat,
-		linear-gradient(var(--dtb-op-line), var(--dtb-op-line)) right center / calc(50% - 44px) 1px no-repeat;
-}
-
 .dtb-op-card .wc_payment_method {
 	position: relative !important;
-	grid-column: span 6 !important;
 	order: 20;
 	min-width: 0 !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	border: 1px solid var(--dtb-op-line) !important;
-	border-radius: var(--dtb-op-radius-md) !important;
+	border-radius: var(--dtb-op-radius) !important;
 	background: #ffffff !important;
 	box-shadow: none !important;
 	overflow: hidden !important;
-	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease, transform 160ms ease !important;
+	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease !important;
 }
 
 .dtb-op-card .wc_payment_method.dtb-op-gateway-express {
 	order: 10;
 }
 
-.dtb-op-card .wc_payment_method.dtb-op-provider-apple,
-.dtb-op-card .wc_payment_method.dtb-op-provider-google {
-	grid-column: span 6 !important;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-provider-paypal {
-	grid-column: 1 / -1 !important;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-gateway-paylater {
-	order: 35;
-}
-
-.dtb-op-card .wc_payment_method.dtb-op-gateway-card {
-	order: 40;
-	grid-column: 1 / -1 !important;
-}
-
+.dtb-op-card .wc_payment_method.dtb-op-provider-paypal,
+.dtb-op-card .wc_payment_method.dtb-op-gateway-card,
 .dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
 	grid-column: 1 / -1 !important;
 }
 
+.dtb-op-card .wc_payment_method.dtb-op-gateway-paylater {
+	order: 30;
+}
+
 .dtb-op-card .wc_payment_method:hover {
 	border-color: var(--dtb-op-line-strong) !important;
-	box-shadow: 0 10px 24px rgba(15, 23, 42, .05) !important;
 }
 
 .dtb-op-card .wc_payment_method.dtb-op-payment-active {
@@ -441,22 +351,15 @@ body.dtb-order-pay-runtime textarea {
 	min-height: 54px !important;
 	margin: 0 !important;
 	padding: 11px 42px 11px 14px !important;
-	border-radius: var(--dtb-op-radius-md) !important;
+	border-radius: var(--dtb-op-radius) !important;
 	color: var(--dtb-op-ink) !important;
-	font-family: var(--dtb-op-display) !important;
 	font-size: 14px !important;
 	font-weight: 850 !important;
 	letter-spacing: -.025em !important;
-	line-height: 1.08 !important;
+	line-height: 1.1 !important;
 	cursor: pointer !important;
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
-}
-
-.dtb-op-card .wc_payment_method > label::before,
-.dtb-op-card .wc_payment_method > label::after {
-	display: none !important;
-	content: none !important;
 }
 
 .dtb-op-card .wc_payment_method > input[type="radio"]:focus-visible + label {
@@ -507,8 +410,6 @@ body.dtb-order-pay-runtime textarea {
 .dtb-op-card .wc_payment_method.dtb-op-payment-active > .payment_box,
 .dtb-op-card .wc_payment_method.dtb-payment-sheet-current > .payment_box {
 	position: static !important;
-	inset: auto !important;
-	z-index: auto !important;
 	display: block !important;
 	width: 100% !important;
 	min-width: 0 !important;
@@ -526,7 +427,9 @@ body.dtb-order-pay-runtime textarea {
 }
 
 .dtb-op-card .payment_box::before,
-.dtb-op-card .payment_box::after {
+.dtb-op-card .payment_box::after,
+.dtb-op-card .wc_payment_method > label::before,
+.dtb-op-card .wc_payment_method > label::after {
 	display: none !important;
 	content: none !important;
 }
@@ -538,7 +441,6 @@ body.dtb-order-pay-runtime textarea {
 	color: inherit !important;
 	font-size: 13px !important;
 	line-height: 1.45 !important;
-	word-break: normal !important;
 	overflow-wrap: anywhere !important;
 }
 
@@ -582,10 +484,9 @@ body.dtb-order-pay-runtime textarea {
 	min-height: 46px !important;
 	max-width: 100% !important;
 	border: 1px solid var(--dtb-op-line-strong) !important;
-	border-radius: var(--dtb-op-radius-sm) !important;
+	border-radius: 14px !important;
 	background: #ffffff !important;
 	color: var(--dtb-op-ink) !important;
-	font-family: var(--dtb-op-font) !important;
 	font-size: 16px !important;
 	line-height: 1.25 !important;
 	padding: 10px 12px !important;
@@ -649,71 +550,59 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	align-items: center;
 	gap: 10px;
 	width: 100%;
-	min-height: 60px;
-	margin: 0;
+	min-height: 58px;
 	padding: 16px 18px;
 	border: 0;
-	background: transparent;
+	background: #ffffff;
 	color: var(--dtb-op-ink);
-	font-family: var(--dtb-op-display);
 	text-align: left;
 	cursor: pointer;
 }
 
 .dtb-op-summary-card__title {
-	font-size: 18px;
-	font-weight: 850;
-	letter-spacing: -.04em;
-	line-height: 1.12;
+	overflow: hidden;
+	font-size: 16px;
+	font-weight: 900;
+	letter-spacing: -.035em;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .dtb-op-summary-card__amount {
 	color: var(--dtb-op-blue);
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: 900;
-	letter-spacing: -.045em;
+	letter-spacing: -.04em;
 	white-space: nowrap;
 }
 
 .dtb-op-summary-card__chevron {
 	width: 8px;
 	height: 8px;
-	border-right: 2px solid currentColor;
-	border-bottom: 2px solid currentColor;
-	opacity: .7;
-	transform: rotate(45deg) translateY(-2px);
-	transition: transform 160ms ease;
+	border-right: 2px solid var(--dtb-op-muted);
+	border-bottom: 2px solid var(--dtb-op-muted);
+	transform: rotate(45deg);
+	transition: transform .18s ease;
 }
 
 .dtb-op-summary-card.is-open .dtb-op-summary-card__chevron {
-	transform: rotate(225deg) translateY(-1px);
-}
-
-.dtb-op-summary-items,
-.dtb-op-summary-totals {
-	border-top: 1px solid var(--dtb-op-line);
+	transform: rotate(-135deg);
 }
 
 .dtb-op-summary-item {
 	display: grid;
-	grid-template-columns: 50px minmax(0, 1fr) auto;
+	grid-template-columns: 54px minmax(0, 1fr) auto;
 	align-items: center;
 	gap: 12px;
 	padding: 14px 18px;
-	border-bottom: 1px solid var(--dtb-op-line);
-}
-
-.dtb-op-summary-item:last-child {
-	border-bottom: 0;
+	border-top: 1px solid var(--dtb-op-line);
 }
 
 .dtb-op-summary-item__image {
-	display: grid;
-	place-items: center;
-	width: 50px;
-	height: 50px;
-	border: 1px solid var(--dtb-op-line);
-	border-radius: var(--dtb-op-radius-sm);
+	width: 54px;
+	height: 54px;
+	border: 1px solid #e5ebf5;
+	border-radius: 14px;
 	background: #ffffff;
 	overflow: hidden;
 }
@@ -727,38 +616,38 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 
 .dtb-op-summary-item__name {
 	margin: 0;
-	color: var(--dtb-op-text);
+	color: var(--dtb-op-ink);
 	font-size: 13px;
-	font-weight: 780;
-	letter-spacing: -.015em;
-	line-height: 1.25;
+	font-weight: 820;
+	line-height: 1.22;
 }
 
 .dtb-op-summary-item__sub {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 5px 8px;
-	margin-top: 4px;
+	gap: 6px;
+	margin-top: 3px;
 	color: var(--dtb-op-muted);
-	font-size: 11.5px;
-	font-weight: 720;
-	line-height: 1.2;
+	font-size: 11px;
+	font-weight: 700;
 }
 
 .dtb-op-summary-item__price {
-	align-self: start;
-	color: var(--dtb-op-text);
+	color: var(--dtb-op-ink);
 	font-size: 13px;
 	font-weight: 850;
 	white-space: nowrap;
 }
 
+.dtb-op-summary-totals {
+	border-top: 1px solid var(--dtb-op-line);
+}
+
 .dtb-op-summary-total-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: baseline;
+	display: flex;
+	justify-content: space-between;
 	gap: 12px;
-	padding: 12px 18px;
+	padding: 10px 18px;
 	border-bottom: 1px solid var(--dtb-op-line);
 	font-size: 13px;
 	line-height: 1.25;
@@ -781,15 +670,14 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 }
 
 .dtb-op-summary-total-row--final {
-	padding-top: 15px;
-	padding-bottom: 15px;
+	padding-top: 14px;
+	padding-bottom: 14px;
 	background: #fbfcfe;
 }
 
 .dtb-op-summary-total-row--final .dtb-op-summary-total-row__label,
 .dtb-op-summary-total-row--final .dtb-op-summary-total-row__value {
-	font-family: var(--dtb-op-display);
-	font-size: 17px;
+	font-size: 16px;
 	font-weight: 900;
 	letter-spacing: -.035em;
 }
@@ -833,16 +721,15 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 .dtb-op-card button.button,
 .dtb-op-card .button {
 	justify-self: end !important;
-	min-width: 210px !important;
+	min-width: 220px !important;
 	min-height: 52px !important;
 	margin: 0 !important;
 	padding: 0 22px !important;
 	border: 0 !important;
-	border-radius: var(--dtb-op-radius-md) !important;
+	border-radius: 16px !important;
 	background: #111111 !important;
 	box-shadow: 0 14px 32px rgba(17, 17, 17, .18) !important;
 	color: #ffffff !important;
-	font-family: var(--dtb-op-display) !important;
 	font-size: 15px !important;
 	font-weight: 850 !important;
 	letter-spacing: -.02em !important;
@@ -854,10 +741,11 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 }
 
 .dtb-op-card #place_order:hover,
-.dtb-op-card #place_order:focus {
+.dtb-op-card #place_order:focus-visible {
 	background: #000000 !important;
 	box-shadow: 0 16px 36px rgba(17, 17, 17, .22) !important;
 	transform: translateY(-1px);
+	outline: 0;
 }
 
 body.dtb-op-payment-submitting .dtb-op-card #place_order {
@@ -878,31 +766,38 @@ body.dtb-op-payment-submitting .dtb-op-card #place_order {
 	text-align: right;
 }
 
-.dtb-op-verify-hint {
-	grid-column: 1 / -1;
-	display: flex;
-	align-items: center;
-	gap: 7px;
-	margin: -2px 0 0;
-	color: var(--dtb-op-muted);
-	font-size: 11.8px;
-	font-weight: 700;
-	line-height: 1.35;
+.dtb-op-card .woocommerce-error,
+.dtb-op-card .woocommerce-info,
+.dtb-op-card .woocommerce-message {
+	position: relative !important;
+	margin: 0 0 12px !important;
+	padding: 13px 14px 13px 16px !important;
+	border: 1px solid #fed7aa !important;
+	border-left: 4px solid #f97316 !important;
+	border-radius: 14px !important;
+	background: #fff7ed !important;
+	box-shadow: none !important;
+	color: #9a3412 !important;
+	font-size: 13px !important;
+	font-weight: 700 !important;
+	line-height: 1.42 !important;
+	list-style: none !important;
 }
 
-.dtb-op-verify-hint::before {
-	content: "";
-	flex: 0 0 auto;
-	width: 7px;
-	height: 7px;
-	border-radius: 999px;
-	background: var(--dtb-op-success);
-	box-shadow: 0 0 0 4px rgba(22, 163, 74, .1);
+.dtb-op-card .woocommerce-error {
+	border-color: #fecaca !important;
+	border-left-color: var(--dtb-op-danger) !important;
+	background: #fff5f5 !important;
+	color: #7f1d1d !important;
 }
 
-.dtb-op-card form#order_review.processing,
-body.dtb-op-payment-submitting .dtb-op-card form#order_review {
-	cursor: wait;
+.dtb-op-card .dtb-op-notice-title {
+	display: block;
+	margin: 0 0 4px;
+	color: inherit;
+	font-size: 13.5px;
+	font-weight: 900;
+	letter-spacing: -.02em;
 }
 
 @media (max-width: 980px) {
@@ -927,15 +822,15 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 
 	.dtb-op-header__inner {
 		width: 100%;
-		min-height: 64px;
-		padding: 0 16px;
+		min-height: 62px;
+		padding: env(safe-area-inset-top) max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left));
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: 12px;
 	}
 
 	.dtb-op-logo {
-		height: 42px;
-		max-width: min(218px, 64vw);
+		height: 40px;
+		max-width: min(206px, 62vw);
 	}
 
 	.dtb-op-steps {
@@ -947,13 +842,13 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		padding: 0;
 		border: 0;
 		background: transparent;
-		font-size: 10px;
-		letter-spacing: .14em;
+		font-size: 9px;
+		letter-spacing: .11em;
 	}
 
 	.dtb-op-main {
 		width: 100%;
-		padding: 10px 14px calc(22px + env(safe-area-inset-bottom));
+		padding: 10px max(12px, env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 	}
 
 	.dtb-op-topline {
@@ -980,12 +875,12 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 	}
 
 	.dtb-op-summary-card__toggle {
-		min-height: 56px;
-		padding: 14px 16px;
+		min-height: 54px;
+		padding: 13px 15px;
 	}
 
 	.dtb-op-summary-card__title {
-		font-size: 16px;
+		font-size: 15px;
 	}
 
 	.dtb-op-summary-card__amount {
@@ -995,7 +890,7 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 	.dtb-op-summary-item {
 		grid-template-columns: 44px minmax(0, 1fr) auto;
 		gap: 10px;
-		padding: 12px 16px;
+		padding: 12px 15px;
 	}
 
 	.dtb-op-summary-item__image {
@@ -1011,12 +906,16 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 
 	.dtb-op-card #payment::before {
 		margin-bottom: 10px;
-		font-size: 24px;
+		font-size: 28px;
 		letter-spacing: -.06em;
 	}
 
 	.dtb-op-payment-lead {
-		margin-bottom: 9px;
+		margin-bottom: 10px;
+	}
+
+	.dtb-op-payment-lead__copy {
+		font-size: 12px;
 	}
 
 	.dtb-op-card .wc_payment_methods {
@@ -1027,7 +926,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 	.dtb-op-card .wc_payment_method,
 	.dtb-op-card .wc_payment_method.dtb-op-gateway-express,
 	.dtb-op-card .wc_payment_method.dtb-op-gateway-paylater {
-		grid-column: span 1 !important;
 		border-radius: 16px !important;
 	}
 
@@ -1075,7 +973,7 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 
 	.dtb-op-card .place-order {
 		grid-template-columns: minmax(0, 1fr) !important;
-		gap: 10px !important;
+		gap: 9px !important;
 		margin-top: 14px !important;
 		padding-top: 14px !important;
 	}
@@ -1086,13 +984,12 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		align-items: baseline;
 		gap: 12px;
 		padding: 0 0 2px;
-		font-family: var(--dtb-op-display);
 	}
 
 	.dtb-op-pay-total__label,
 	.dtb-op-pay-total__value {
 		color: var(--dtb-op-ink);
-		font-size: 18px;
+		font-size: 17px;
 		font-weight: 900;
 		letter-spacing: -.045em;
 	}
@@ -1117,16 +1014,13 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		min-height: 52px !important;
 		border-radius: 16px !important;
 		font-size: 15px !important;
+		white-space: normal !important;
 	}
 
-	.dtb-op-cta-trust,
-	.dtb-op-verify-hint {
+	.dtb-op-cta-trust {
 		justify-self: center;
+		font-size: 11px;
 		text-align: center;
-	}
-
-	.dtb-op-verify-hint {
-		justify-content: center;
 	}
 }
 
@@ -1137,17 +1031,13 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 	}
 
 	.dtb-op-header__inner {
-		padding: 0 12px;
+		padding-left: 12px;
+		padding-right: 12px;
 	}
 
 	.dtb-op-logo {
 		height: 38px;
 		max-width: min(190px, 62vw);
-	}
-
-	.dtb-op-secure-pill {
-		font-size: 9px;
-		letter-spacing: .11em;
 	}
 
 	.dtb-op-card .wc_payment_methods {
