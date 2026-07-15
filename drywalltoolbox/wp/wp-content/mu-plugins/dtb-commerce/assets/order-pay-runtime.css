@@ -5,7 +5,7 @@
  */
 
 :root {
-	--dtb-op-font: Inter, "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+	--dtb-op-font: inter, "SF Pro Text", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, arial, sans-serif;
 	--dtb-op-ink: #101827;
 	--dtb-op-text: #334155;
 	--dtb-op-muted: #667085;
@@ -429,11 +429,11 @@ body.dtb-order-pay-runtime textarea {
 .dtb-op-card .payment_box .form-row-first,
 .dtb-op-card .payment_box .form-row-last { float: none !important; display: inline-block !important; width: calc(50% - 5px) !important; max-width: calc(50% - 5px) !important; vertical-align: top !important; }
 .dtb-op-card .payment_box .form-row-first { margin-right: 10px !important; }
-.dtb-op-card .payment_box input,
+.dtb-op-card .payment_box input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
 .dtb-op-card .payment_box select,
 .dtb-op-card .payment_box textarea,
 .dtb-op-card .payment_box .input-text { width: 100% !important; min-height: 46px !important; max-width: 100% !important; border: 1px solid var(--dtb-op-line-strong) !important; border-radius: 14px !important; background: #ffffff !important; color: var(--dtb-op-ink) !important; font-size: 16px !important; line-height: 1.25 !important; padding: 10px 12px !important; box-shadow: none !important; }
-.dtb-op-card .payment_box input:focus,
+.dtb-op-card .payment_box input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]):focus,
 .dtb-op-card .payment_box select:focus,
 .dtb-op-card .payment_box textarea:focus,
 .dtb-op-card .payment_box .input-text:focus { border-color: rgba(37, 99, 235, .7) !important; box-shadow: 0 0 0 3px rgba(37, 99, 235, .14) !important; outline: 0 !important; }
