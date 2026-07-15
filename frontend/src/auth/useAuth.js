@@ -8,7 +8,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 const AUTH_BASE_PATH = '/wp-json/dtb/v1/auth';
-const SESSION_SYNC_ERROR = 'Sign-in succeeded, but the secure browser session could not be confirmed. Clear site cookies, confirm cookies are enabled, and try again.';
+const SESSION_SYNC_ERROR = 'Sign-in succeeded, but the browser did not return the secure session cookie. Confirm cookies are enabled for drywalltoolbox.com, close private browsing if enabled, and try again.';
+const SESSION_VALIDATE_DELAYS_MS = [0, 150, 400, 800];
 
 function readPublicEnv(name) {
   if (typeof window !== 'undefined') {
@@ -39,7 +40,12 @@ function authUrl(path) {
 
 async function authJson(path, options = {}) {
   const method = options.method || 'POST';
-  const headers = { Accept: 'application/json', ...(options.headers || {}) };
+  const headers = {
+    Accept: 'application/json',
+    'Cache-Control': 'no-store',
+    Pragma: 'no-cache',
+    ...(options.headers || {}),
+  };
   if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
 
   const response = await fetch(authUrl(path), {
@@ -85,8 +91,12 @@ export function useAuth() {
 
   const validateSession = useCallback(async ({ retries = 0, publish = false, epoch = null } = {}) => {
     const activeEpoch = epoch ?? epochRef.current;
-    for (let attempt = 0; attempt <= retries; attempt += 1) {
-      if (attempt > 0) await wait(150);
+    const attempts = Math.max(1, retries + 1);
+
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const delay = SESSION_VALIDATE_DELAYS_MS[Math.min(attempt, SESSION_VALIDATE_DELAYS_MS.length - 1)];
+      if (delay > 0) await wait(delay);
+
       const data = await authJson('/validate', { method: 'POST' });
       const nextUser = data?.authenticated === false ? null : data?.user || null;
       if (nextUser) {
@@ -97,6 +107,7 @@ export function useAuth() {
         return nextUser;
       }
     }
+
     if (epochRef.current === activeEpoch) {
       setUser(null);
       if (publish) emitAuthChanged('logout');
@@ -108,7 +119,7 @@ export function useAuth() {
     let cancelled = false;
     const epoch = ++epochRef.current;
     setIsLoading(true);
-    validateSession({ epoch })
+    validateSession({ retries: 1, epoch })
       .catch(() => { if (!cancelled && epochRef.current === epoch) setUser(null); })
       .finally(() => { if (!cancelled && epochRef.current === epoch) setIsLoading(false); });
     return () => { cancelled = true; };
@@ -141,7 +152,7 @@ export function useAuth() {
       try {
         const payload = JSON.parse(event.newValue);
         if (payload?.type === 'logout') void logout({ remote: false });
-        if (payload?.type === 'login') void validateSession({ retries: 1 });
+        if (payload?.type === 'login') void validateSession({ retries: 2 });
       } catch { /** ignore */ }
     };
     window.addEventListener('storage', handler);
@@ -158,7 +169,7 @@ export function useAuth() {
         body: JSON.stringify({ email, password }),
       });
       if (!data?.success || !data?.user) throw new Error(data?.message || 'Login failed.');
-      const confirmed = await validateSession({ retries: 1, publish: true, epoch });
+      const confirmed = await validateSession({ retries: 3, publish: true, epoch });
       if (!confirmed) throw new Error(SESSION_SYNC_ERROR);
       return { ...data, user: confirmed };
     } catch (err) {
@@ -182,7 +193,7 @@ export function useAuth() {
         body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password }),
       });
       if (!data?.success || !data?.user) throw new Error(data?.message || 'Registration failed.');
-      const confirmed = await validateSession({ retries: 1, publish: true, epoch });
+      const confirmed = await validateSession({ retries: 3, publish: true, epoch });
       if (!confirmed) throw new Error(SESSION_SYNC_ERROR);
       return { ...data, user: confirmed };
     } catch (err) {
