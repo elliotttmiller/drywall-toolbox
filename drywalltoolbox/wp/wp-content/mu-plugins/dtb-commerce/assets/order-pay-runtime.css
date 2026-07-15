@@ -8,27 +8,23 @@
 	--dtb-op-font: Inter, "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 	--dtb-op-display: Inter, "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 	--dtb-op-ink: #111827;
-	--dtb-op-text: #2d3748;
-	--dtb-op-muted: #6b7280;
-	--dtb-op-faint: #9aa3b2;
+	--dtb-op-text: #334155;
+	--dtb-op-muted: #667085;
+	--dtb-op-faint: #98a2b3;
 	--dtb-op-line: #e1e7ef;
 	--dtb-op-line-strong: #cbd5e1;
 	--dtb-op-page: #f6f7f9;
 	--dtb-op-surface: #ffffff;
-	--dtb-op-surface-soft: #f7f8fa;
+	--dtb-op-soft: #f8fafc;
 	--dtb-op-navy: #0b1733;
 	--dtb-op-navy-2: #142655;
 	--dtb-op-blue: #2563eb;
 	--dtb-op-success: #16a34a;
 	--dtb-op-danger: #b91c1c;
-	--dtb-op-warning-bg: #fff7ed;
-	--dtb-op-warning-line: #fed7aa;
-	--dtb-op-radius-xs: 10px;
 	--dtb-op-radius-sm: 14px;
 	--dtb-op-radius-md: 18px;
 	--dtb-op-radius-lg: 24px;
-	--dtb-op-shadow-soft: 0 12px 28px rgba(15, 23, 42, 0.07);
-	--dtb-op-shadow-card: 0 18px 48px rgba(15, 23, 42, 0.1);
+	--dtb-op-shadow: 0 16px 38px rgba(15, 23, 42, .08);
 }
 
 html,
@@ -63,10 +59,6 @@ body.dtb-order-pay-runtime .dtb-sheet-close {
 	content: none !important;
 }
 
-body.dtb-order-pay-runtime a {
-	color: inherit;
-}
-
 body.dtb-order-pay-runtime img,
 body.dtb-order-pay-runtime iframe,
 body.dtb-order-pay-runtime svg {
@@ -84,8 +76,7 @@ body.dtb-order-pay-runtime textarea {
 	position: relative;
 	z-index: 5;
 	background: linear-gradient(135deg, var(--dtb-op-navy), var(--dtb-op-navy-2));
-	border-bottom: 1px solid rgba(255, 255, 255, 0.11);
-	box-shadow: 0 10px 24px rgba(12, 24, 49, 0.13);
+	box-shadow: 0 10px 24px rgba(12, 24, 49, .13);
 }
 
 .dtb-op-header__inner {
@@ -123,7 +114,7 @@ body.dtb-order-pay-runtime textarea {
 	font-family: var(--dtb-op-display);
 	font-size: 23px;
 	font-weight: 900;
-	letter-spacing: -0.055em;
+	letter-spacing: -.055em;
 	line-height: 1;
 }
 
@@ -136,10 +127,9 @@ body.dtb-order-pay-runtime textarea {
 	display: inline-flex;
 	align-items: center;
 	gap: 9px;
-	color: rgba(219, 234, 254, 0.76);
+	color: rgba(219, 234, 254, .76);
 	font-size: 11px;
 	font-weight: 800;
-	letter-spacing: -0.01em;
 }
 
 .dtb-op-step {
@@ -155,15 +145,15 @@ body.dtb-order-pay-runtime textarea {
 	place-items: center;
 	width: 24px;
 	height: 24px;
-	border: 1px solid rgba(219, 234, 254, 0.28);
+	border: 1px solid rgba(219, 234, 254, .28);
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.08);
+	background: rgba(255, 255, 255, .08);
 	font-size: 11px;
 }
 
 .dtb-op-step--done .dtb-op-step__mark,
 .dtb-op-step--current .dtb-op-step__mark {
-	border-color: rgba(219, 234, 254, 0.72);
+	border-color: rgba(219, 234, 254, .72);
 	background: #ffffff;
 	color: var(--dtb-op-blue);
 }
@@ -177,11 +167,11 @@ body.dtb-order-pay-runtime textarea {
 	width: 34px;
 	height: 2px;
 	border-radius: 999px;
-	background: rgba(219, 234, 254, 0.24);
+	background: rgba(219, 234, 254, .24);
 }
 
 .dtb-op-step__line--done {
-	background: rgba(147, 197, 253, 0.85);
+	background: rgba(147, 197, 253, .85);
 }
 
 .dtb-op-secure-pill {
@@ -190,13 +180,13 @@ body.dtb-order-pay-runtime textarea {
 	align-items: center;
 	min-height: 30px;
 	padding: 0 12px;
-	border: 1px solid rgba(219, 234, 254, 0.22);
+	border: 1px solid rgba(219, 234, 254, .22);
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.07);
+	background: rgba(255, 255, 255, .07);
 	color: #dbeafe;
 	font-size: 10px;
 	font-weight: 900;
-	letter-spacing: 0.16em;
+	letter-spacing: .16em;
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -225,11 +215,6 @@ body.dtb-order-pay-runtime textarea {
 	text-decoration: none;
 }
 
-.dtb-op-back:hover,
-.dtb-op-back:focus {
-	text-decoration: underline;
-}
-
 .dtb-op-microcopy {
 	margin: 0;
 	color: var(--dtb-op-muted);
@@ -251,10 +236,10 @@ body.dtb-order-pay-runtime textarea {
 	position: relative !important;
 	margin: 0 0 12px !important;
 	padding: 13px 14px 13px 16px !important;
-	border: 1px solid var(--dtb-op-warning-line) !important;
+	border: 1px solid #fed7aa !important;
 	border-left: 4px solid #f97316 !important;
 	border-radius: var(--dtb-op-radius-sm) !important;
-	background: var(--dtb-op-warning-bg) !important;
+	background: #fff7ed !important;
 	box-shadow: none !important;
 	color: #9a3412 !important;
 	font-size: 13px !important;
@@ -277,7 +262,7 @@ body.dtb-order-pay-runtime textarea {
 	font-family: var(--dtb-op-display);
 	font-size: 13.5px;
 	font-weight: 900;
-	letter-spacing: -0.02em;
+	letter-spacing: -.02em;
 }
 
 .dtb-op-card form#order_review {
@@ -294,11 +279,11 @@ body.dtb-order-pay-runtime textarea {
 	grid-area: payment !important;
 	min-width: 0 !important;
 	margin: 0 !important;
-	padding: 22px !important;
+	padding: 24px !important;
 	border: 1px solid var(--dtb-op-line) !important;
 	border-radius: var(--dtb-op-radius-lg) !important;
 	background: var(--dtb-op-surface) !important;
-	box-shadow: var(--dtb-op-shadow-soft) !important;
+	box-shadow: var(--dtb-op-shadow) !important;
 }
 
 .dtb-op-card #payment::before {
@@ -307,32 +292,30 @@ body.dtb-order-pay-runtime textarea {
 	margin: 0 0 14px;
 	color: var(--dtb-op-ink);
 	font-family: var(--dtb-op-display);
-	font-size: clamp(24px, 2.4vw, 32px);
+	font-size: clamp(26px, 2.4vw, 34px);
 	font-weight: 900;
-	letter-spacing: -0.055em;
+	letter-spacing: -.06em;
 	line-height: 1;
 }
 
 .dtb-op-payment-lead {
 	display: grid;
-	gap: 2px;
-	margin: 0 0 10px;
-	text-align: left;
+	gap: 3px;
+	margin: 0 0 12px;
+	text-align: center;
 }
 
 .dtb-op-payment-lead__title {
-	color: var(--dtb-op-ink);
-	font-family: var(--dtb-op-display);
+	color: var(--dtb-op-muted);
 	font-size: 13px;
-	font-weight: 850;
-	letter-spacing: -0.02em;
-	line-height: 1.25;
+	font-weight: 800;
+	line-height: 1.2;
 }
 
 .dtb-op-payment-lead__copy {
 	color: var(--dtb-op-muted);
-	font-size: 11.8px;
-	font-weight: 650;
+	font-size: 12px;
+	font-weight: 620;
 	line-height: 1.35;
 }
 
@@ -352,37 +335,35 @@ body.dtb-order-pay-runtime textarea {
 	content: "Express checkout";
 	grid-column: 1 / -1;
 	display: flex;
+	justify-content: center;
 	align-items: center;
-	gap: 10px;
 	margin: 0 0 2px;
-	color: var(--dtb-op-muted);
+	color: #7a8291;
 	font-size: 12px;
-	font-weight: 820;
-	letter-spacing: 0.01em;
+	font-weight: 760;
 }
 
 .dtb-op-card .wc_payment_methods::after {
-	content: "Or continue with another secure payment method";
+	content: "Or continue below";
 	grid-column: 1 / -1;
 	order: 29;
-	display: flex;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	align-items: center;
 	gap: 12px;
 	margin: 2px 0 0;
 	color: var(--dtb-op-muted);
-	font-size: 11.8px;
-	font-weight: 720;
-	line-height: 1.3;
+	font-size: 11.5px;
+	font-weight: 760;
+	line-height: 1;
 	text-align: center;
-}
-
-.dtb-op-card .wc_payment_methods::before,
-.dtb-op-card .wc_payment_methods::after {
-	min-width: 0;
+	text-transform: uppercase;
+	letter-spacing: .04em;
 }
 
 .dtb-op-card .wc_payment_methods::after {
-	justify-content: center;
+	background: linear-gradient(var(--dtb-op-line), var(--dtb-op-line)) left center / calc(50% - 44px) 1px no-repeat,
+		linear-gradient(var(--dtb-op-line), var(--dtb-op-line)) right center / calc(50% - 44px) 1px no-repeat;
 }
 
 .dtb-op-card .wc_payment_method {
@@ -394,7 +375,7 @@ body.dtb-order-pay-runtime textarea {
 	padding: 0 !important;
 	border: 1px solid var(--dtb-op-line) !important;
 	border-radius: var(--dtb-op-radius-md) !important;
-	background: var(--dtb-op-surface) !important;
+	background: #ffffff !important;
 	box-shadow: none !important;
 	overflow: hidden !important;
 	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease, transform 160ms ease !important;
@@ -404,8 +385,17 @@ body.dtb-order-pay-runtime textarea {
 	order: 10;
 }
 
+.dtb-op-card .wc_payment_method.dtb-op-provider-apple,
+.dtb-op-card .wc_payment_method.dtb-op-provider-google {
+	grid-column: span 6 !important;
+}
+
+.dtb-op-card .wc_payment_method.dtb-op-provider-paypal {
+	grid-column: 1 / -1 !important;
+}
+
 .dtb-op-card .wc_payment_method.dtb-op-gateway-paylater {
-	order: 20;
+	order: 35;
 }
 
 .dtb-op-card .wc_payment_method.dtb-op-gateway-card {
@@ -419,13 +409,13 @@ body.dtb-order-pay-runtime textarea {
 
 .dtb-op-card .wc_payment_method:hover {
 	border-color: var(--dtb-op-line-strong) !important;
-	box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05) !important;
+	box-shadow: 0 10px 24px rgba(15, 23, 42, .05) !important;
 }
 
 .dtb-op-card .wc_payment_method.dtb-op-payment-active {
-	border-color: rgba(37, 99, 235, 0.72) !important;
+	border-color: rgba(37, 99, 235, .72) !important;
 	background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
-	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.105) !important;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, .105) !important;
 }
 
 .dtb-op-card .wc_payment_method > input[type="radio"] {
@@ -445,7 +435,7 @@ body.dtb-order-pay-runtime textarea {
 	position: relative !important;
 	display: flex !important;
 	align-items: center !important;
-	justify-content: flex-start !important;
+	justify-content: center !important;
 	gap: 10px !important;
 	width: 100% !important;
 	min-height: 54px !important;
@@ -456,7 +446,7 @@ body.dtb-order-pay-runtime textarea {
 	font-family: var(--dtb-op-display) !important;
 	font-size: 14px !important;
 	font-weight: 850 !important;
-	letter-spacing: -0.025em !important;
+	letter-spacing: -.025em !important;
 	line-height: 1.08 !important;
 	cursor: pointer !important;
 	touch-action: manipulation;
@@ -470,7 +460,7 @@ body.dtb-order-pay-runtime textarea {
 }
 
 .dtb-op-card .wc_payment_method > input[type="radio"]:focus-visible + label {
-	outline: 3px solid rgba(37, 99, 235, 0.24) !important;
+	outline: 3px solid rgba(37, 99, 235, .24) !important;
 	outline-offset: 3px !important;
 }
 
@@ -479,8 +469,8 @@ body.dtb-order-pay-runtime textarea {
 	flex: 0 1 auto !important;
 	display: block !important;
 	width: auto !important;
-	max-width: min(112px, 52%) !important;
-	max-height: 26px !important;
+	max-width: min(120px, 58%) !important;
+	max-height: 27px !important;
 	margin: 0 !important;
 	object-fit: contain !important;
 }
@@ -502,7 +492,7 @@ body.dtb-order-pay-runtime textarea {
 .dtb-op-card .wc_payment_method.dtb-op-payment-active::after {
 	border-color: var(--dtb-op-blue) !important;
 	background: radial-gradient(circle at center, var(--dtb-op-blue) 0 42%, #ffffff 46% 61%, var(--dtb-op-blue) 64% 100%) !important;
-	box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+	box-shadow: 0 0 0 4px rgba(37, 99, 235, .12) !important;
 }
 
 .dtb-op-card .wc_payment_method.dtb-op-payment-has-detail.dtb-op-payment-active::after {
@@ -529,7 +519,7 @@ body.dtb-order-pay-runtime textarea {
 	border: 0 !important;
 	border-top: 1px solid var(--dtb-op-line) !important;
 	border-radius: 0 !important;
-	background: #f8fafc !important;
+	background: var(--dtb-op-soft) !important;
 	box-shadow: none !important;
 	overflow: visible !important;
 	color: var(--dtb-op-text) !important;
@@ -550,14 +540,6 @@ body.dtb-order-pay-runtime textarea {
 	line-height: 1.45 !important;
 	word-break: normal !important;
 	overflow-wrap: anywhere !important;
-}
-
-.dtb-op-card .payment_box p:first-child {
-	margin-top: 0 !important;
-}
-
-.dtb-op-card .payment_box p:last-child {
-	margin-bottom: 0 !important;
 }
 
 .dtb-op-card .payment_box fieldset,
@@ -614,8 +596,8 @@ body.dtb-order-pay-runtime textarea {
 .dtb-op-card .payment_box select:focus,
 .dtb-op-card .payment_box textarea:focus,
 .dtb-op-card .payment_box .input-text:focus {
-	border-color: rgba(37, 99, 235, 0.7) !important;
-	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+	border-color: rgba(37, 99, 235, .7) !important;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, .14) !important;
 	outline: 0 !important;
 }
 
@@ -640,54 +622,13 @@ body.dtb-order-pay-runtime textarea {
 	margin: 0 !important;
 	border: 1px solid var(--dtb-op-line) !important;
 	border-radius: var(--dtb-op-radius-lg) !important;
-	border-collapse: separate !important;
-	border-spacing: 0 !important;
 	background: var(--dtb-op-surface) !important;
-	box-shadow: var(--dtb-op-shadow-soft) !important;
+	box-shadow: var(--dtb-op-shadow) !important;
 	overflow: hidden !important;
 }
 
 body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	display: none !important;
-}
-
-.dtb-op-card table.shop_table tbody,
-.dtb-op-card table.shop_table tfoot,
-.dtb-op-card table.shop_table tr,
-.dtb-op-card table.shop_table th,
-.dtb-op-card table.shop_table td {
-	display: block !important;
-	width: 100% !important;
-	border: 0 !important;
-	background: transparent !important;
-}
-
-.dtb-op-card table.shop_table th,
-.dtb-op-card table.shop_table td {
-	padding: 12px 16px !important;
-	font-size: 13px !important;
-	line-height: 1.3 !important;
-}
-
-.dtb-op-card table.shop_table thead {
-	display: none !important;
-}
-
-.dtb-op-card table.shop_table tr {
-	border-bottom: 1px solid var(--dtb-op-line) !important;
-}
-
-.dtb-op-card table.shop_table tr:last-child {
-	border-bottom: 0 !important;
-}
-
-.dtb-op-card table.shop_table .product-name,
-.dtb-op-card table.shop_table .product-total,
-.dtb-op-card table.shop_table tfoot tr {
-	display: grid !important;
-	grid-template-columns: minmax(0, 1fr) auto !important;
-	gap: 12px !important;
-	align-items: baseline !important;
 }
 
 .dtb-op-summary-card {
@@ -698,12 +639,8 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	border: 1px solid var(--dtb-op-line);
 	border-radius: var(--dtb-op-radius-lg);
 	background: var(--dtb-op-surface);
-	box-shadow: var(--dtb-op-shadow-soft);
+	box-shadow: var(--dtb-op-shadow);
 	overflow: hidden;
-}
-
-.dtb-op-summary-card__header {
-	min-width: 0;
 }
 
 .dtb-op-summary-card__toggle {
@@ -721,27 +658,20 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	font-family: var(--dtb-op-display);
 	text-align: left;
 	cursor: pointer;
-	touch-action: manipulation;
-}
-
-.dtb-op-summary-card__toggle:focus-visible {
-	outline: 3px solid rgba(37, 99, 235, 0.24);
-	outline-offset: -3px;
 }
 
 .dtb-op-summary-card__title {
-	min-width: 0;
 	font-size: 18px;
 	font-weight: 850;
-	letter-spacing: -0.04em;
+	letter-spacing: -.04em;
 	line-height: 1.12;
 }
 
 .dtb-op-summary-card__amount {
-	color: var(--dtb-op-ink);
+	color: var(--dtb-op-blue);
 	font-size: 20px;
 	font-weight: 900;
-	letter-spacing: -0.045em;
+	letter-spacing: -.045em;
 	white-space: nowrap;
 }
 
@@ -750,7 +680,7 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	height: 8px;
 	border-right: 2px solid currentColor;
 	border-bottom: 2px solid currentColor;
-	opacity: 0.7;
+	opacity: .7;
 	transform: rotate(45deg) translateY(-2px);
 	transition: transform 160ms ease;
 }
@@ -795,16 +725,12 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	object-fit: contain;
 }
 
-.dtb-op-summary-item__meta {
-	min-width: 0;
-}
-
 .dtb-op-summary-item__name {
 	margin: 0;
 	color: var(--dtb-op-text);
 	font-size: 13px;
 	font-weight: 780;
-	letter-spacing: -0.015em;
+	letter-spacing: -.015em;
 	line-height: 1.25;
 }
 
@@ -824,7 +750,6 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	color: var(--dtb-op-text);
 	font-size: 13px;
 	font-weight: 850;
-	letter-spacing: -0.01em;
 	white-space: nowrap;
 }
 
@@ -866,7 +791,7 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	font-family: var(--dtb-op-display);
 	font-size: 17px;
 	font-weight: 900;
-	letter-spacing: -0.035em;
+	letter-spacing: -.035em;
 }
 
 .dtb-op-card .place-order {
@@ -915,12 +840,12 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 	border: 0 !important;
 	border-radius: var(--dtb-op-radius-md) !important;
 	background: #111111 !important;
-	box-shadow: 0 14px 32px rgba(17, 17, 17, 0.18) !important;
+	box-shadow: 0 14px 32px rgba(17, 17, 17, .18) !important;
 	color: #ffffff !important;
 	font-family: var(--dtb-op-display) !important;
 	font-size: 15px !important;
 	font-weight: 850 !important;
-	letter-spacing: -0.02em !important;
+	letter-spacing: -.02em !important;
 	line-height: 1 !important;
 	text-align: center !important;
 	text-decoration: none !important;
@@ -931,18 +856,13 @@ body.dtb-op-summary-enhanced .dtb-op-card table.shop_table {
 .dtb-op-card #place_order:hover,
 .dtb-op-card #place_order:focus {
 	background: #000000 !important;
-	box-shadow: 0 16px 36px rgba(17, 17, 17, 0.22) !important;
+	box-shadow: 0 16px 36px rgba(17, 17, 17, .22) !important;
 	transform: translateY(-1px);
-}
-
-.dtb-op-card #place_order:focus-visible {
-	outline: 3px solid rgba(37, 99, 235, 0.28) !important;
-	outline-offset: 3px !important;
 }
 
 body.dtb-op-payment-submitting .dtb-op-card #place_order {
 	cursor: wait !important;
-	opacity: 0.88;
+	opacity: .88;
 	pointer-events: none;
 	transform: none !important;
 }
@@ -977,7 +897,7 @@ body.dtb-op-payment-submitting .dtb-op-card #place_order {
 	height: 7px;
 	border-radius: 999px;
 	background: var(--dtb-op-success);
-	box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+	box-shadow: 0 0 0 4px rgba(22, 163, 74, .1);
 }
 
 .dtb-op-card form#order_review.processing,
@@ -1013,10 +933,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		gap: 12px;
 	}
 
-	.dtb-op-brand {
-		min-height: 42px;
-	}
-
 	.dtb-op-logo {
 		height: 42px;
 		max-width: min(218px, 64vw);
@@ -1032,7 +948,7 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		border: 0;
 		background: transparent;
 		font-size: 10px;
-		letter-spacing: 0.14em;
+		letter-spacing: .14em;
 	}
 
 	.dtb-op-main {
@@ -1042,10 +958,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 
 	.dtb-op-topline {
 		margin-bottom: 10px;
-	}
-
-	.dtb-op-back {
-		font-size: 13.5px;
 	}
 
 	.dtb-op-microcopy {
@@ -1062,6 +974,11 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		box-shadow: none !important;
 	}
 
+	.dtb-op-summary-card:not(.is-open) .dtb-op-summary-items,
+	.dtb-op-summary-card:not(.is-open) .dtb-op-summary-totals {
+		display: none;
+	}
+
 	.dtb-op-summary-card__toggle {
 		min-height: 56px;
 		padding: 14px 16px;
@@ -1073,11 +990,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 
 	.dtb-op-summary-card__amount {
 		font-size: 18px;
-	}
-
-	.dtb-op-summary-card:not(.is-open) .dtb-op-summary-items,
-	.dtb-op-summary-card:not(.is-open) .dtb-op-summary-totals {
-		display: none;
 	}
 
 	.dtb-op-summary-item {
@@ -1092,21 +1004,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		border-radius: 12px;
 	}
 
-	.dtb-op-summary-item__name,
-	.dtb-op-summary-item__price {
-		font-size: 12.5px;
-	}
-
-	.dtb-op-summary-total-row {
-		padding: 11px 16px;
-		font-size: 12.5px;
-	}
-
-	.dtb-op-summary-total-row--final .dtb-op-summary-total-row__label,
-	.dtb-op-summary-total-row--final .dtb-op-summary-total-row__value {
-		font-size: 16px;
-	}
-
 	.dtb-op-card #payment {
 		padding: 15px !important;
 		border-color: var(--dtb-op-line) !important;
@@ -1115,38 +1012,16 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 	.dtb-op-card #payment::before {
 		margin-bottom: 10px;
 		font-size: 24px;
-		letter-spacing: -0.06em;
+		letter-spacing: -.06em;
 	}
 
 	.dtb-op-payment-lead {
 		margin-bottom: 9px;
-		text-align: center;
-	}
-
-	.dtb-op-payment-lead__title {
-		font-size: 12.5px;
-	}
-
-	.dtb-op-payment-lead__copy {
-		font-size: 11.5px;
 	}
 
 	.dtb-op-card .wc_payment_methods {
 		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 		gap: 9px !important;
-	}
-
-	.dtb-op-card .wc_payment_methods::before {
-		grid-column: 1 / -1;
-		margin-bottom: 1px;
-		justify-content: center;
-		color: #7a8291;
-		font-size: 12px;
-		font-weight: 760;
-	}
-
-	.dtb-op-card .wc_payment_methods::after {
-		font-size: 11.5px;
 	}
 
 	.dtb-op-card .wc_payment_method,
@@ -1156,6 +1031,7 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		border-radius: 16px !important;
 	}
 
+	.dtb-op-card .wc_payment_method.dtb-op-provider-paypal,
 	.dtb-op-card .wc_payment_method.dtb-op-gateway-card,
 	.dtb-op-card .wc_payment_method.dtb-op-payment-active.dtb-op-payment-has-detail {
 		grid-column: 1 / -1 !important;
@@ -1166,12 +1042,11 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		padding: 9px 38px 9px 12px !important;
 		border-radius: 16px !important;
 		font-size: 13px !important;
-		justify-content: flex-start !important;
 	}
 
 	.dtb-op-card .wc_payment_method > label img,
 	.dtb-op-card .wc_payment_method > label svg {
-		max-width: min(86px, 48%) !important;
+		max-width: min(90px, 54%) !important;
 		max-height: 24px !important;
 	}
 
@@ -1185,10 +1060,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		top: 25px !important;
 	}
 
-	.dtb-op-card .wc_payment_method.dtb-op-gateway-card > label {
-		min-height: 52px !important;
-	}
-
 	.dtb-op-card .wc_payment_method.dtb-op-payment-active > .payment_box,
 	.dtb-op-card .wc_payment_method.dtb-payment-sheet-current > .payment_box {
 		padding: 14px !important;
@@ -1200,13 +1071,6 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		width: 100% !important;
 		max-width: 100% !important;
 		margin-right: 0 !important;
-	}
-
-	.dtb-op-card .payment_box input,
-	.dtb-op-card .payment_box select,
-	.dtb-op-card .payment_box textarea,
-	.dtb-op-card .payment_box .input-text {
-		min-height: 46px !important;
 	}
 
 	.dtb-op-card .place-order {
@@ -1225,18 +1089,15 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 		font-family: var(--dtb-op-display);
 	}
 
-	.dtb-op-pay-total__label {
-		color: var(--dtb-op-ink);
-		font-size: 18px;
-		font-weight: 900;
-		letter-spacing: -0.045em;
-	}
-
+	.dtb-op-pay-total__label,
 	.dtb-op-pay-total__value {
 		color: var(--dtb-op-ink);
 		font-size: 18px;
 		font-weight: 900;
-		letter-spacing: -0.045em;
+		letter-spacing: -.045em;
+	}
+
+	.dtb-op-pay-total__value {
 		white-space: nowrap;
 	}
 
@@ -1286,7 +1147,7 @@ body.dtb-op-payment-submitting .dtb-op-card form#order_review {
 
 	.dtb-op-secure-pill {
 		font-size: 9px;
-		letter-spacing: 0.11em;
+		letter-spacing: .11em;
 	}
 
 	.dtb-op-card .wc_payment_methods {
