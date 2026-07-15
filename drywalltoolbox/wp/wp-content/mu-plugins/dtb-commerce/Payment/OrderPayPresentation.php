@@ -13,8 +13,9 @@
 defined( 'ABSPATH' ) || exit;
 
 final class DTB_OrderPayPresentation {
-	private const STYLE_HANDLE  = 'dtb-order-pay-runtime';
-	private const SCRIPT_HANDLE = 'dtb-order-pay-runtime';
+	private const STYLE_HANDLE        = 'dtb-order-pay-runtime';
+	private const WALLET_STYLE_HANDLE = 'dtb-order-pay-wallet-first';
+	private const SCRIPT_HANDLE       = 'dtb-order-pay-runtime';
 
 	/** Register early lifecycle hooks. */
 	public static function register(): void {
@@ -103,9 +104,10 @@ final class DTB_OrderPayPresentation {
 		self::suppress_public_storefront_assets();
 		self::dequeue_legacy_asset_handles();
 
-		$asset_dir = dirname( __DIR__ ) . '/assets';
-		$style     = $asset_dir . '/order-pay-runtime.css';
-		$script    = $asset_dir . '/order-pay-runtime.js';
+		$asset_dir    = dirname( __DIR__ ) . '/assets';
+		$style        = $asset_dir . '/order-pay-runtime.css';
+		$wallet_style = $asset_dir . '/order-pay-wallet-first.css';
+		$script       = $asset_dir . '/order-pay-runtime.js';
 
 		if ( file_exists( $style ) ) {
 			wp_enqueue_style(
@@ -113,6 +115,15 @@ final class DTB_OrderPayPresentation {
 				self::asset_url( 'order-pay-runtime.css' ),
 				[],
 				(string) filemtime( $style )
+			);
+		}
+
+		if ( file_exists( $wallet_style ) ) {
+			wp_enqueue_style(
+				self::WALLET_STYLE_HANDLE,
+				self::asset_url( 'order-pay-wallet-first.css' ),
+				file_exists( $style ) ? [ self::STYLE_HANDLE ] : [],
+				(string) filemtime( $wallet_style )
 			);
 		}
 
