@@ -1,0 +1,356 @@
+/*
+ * React-owned checkout UX layer.
+ *
+ * This file replaces the checkout identity/mobile totals DOM runtimes with
+ * component-owned styling. It deliberately does not own backend quote policy,
+ * payment handoff, WooCommerce order-pay, gateway fields, or order lifecycle.
+ */
+
+.dtb-checkout .dtb-co-auth-choice {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 4px;
+  padding: 18px;
+  border: 1px solid rgba(37, 99, 235, .18);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(37, 99, 235, .10), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .07);
+}
+
+.dtb-checkout .dtb-co-auth-choice__eyebrow {
+  margin: 0;
+  color: var(--co-primary, #2563eb);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.dtb-checkout .dtb-co-auth-choice__title {
+  margin: 0;
+  color: var(--co-text-900, #0f172a);
+  font-size: clamp(21px, 4.8vw, 28px);
+  font-weight: 900;
+  letter-spacing: -.055em;
+  line-height: 1.04;
+}
+
+.dtb-checkout .dtb-co-auth-choice__copy,
+.dtb-checkout .dtb-co-auth-choice__footnote,
+.dtb-checkout .dtb-co-guest-note {
+  margin: 0;
+  color: var(--co-text-500, #64748b);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.dtb-checkout .dtb-co-auth-choice__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.dtb-checkout .dtb-co-auth-choice__option {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 72px;
+  padding: 13px 14px;
+  border: 1px solid #dde6f3;
+  border-radius: 17px;
+  background: rgba(255, 255, 255, .88);
+  color: var(--co-text-900, #0f172a);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, background .16s ease;
+}
+
+.dtb-checkout .dtb-co-auth-choice__option:hover,
+.dtb-checkout .dtb-co-auth-choice__option:focus-visible {
+  border-color: rgba(37, 99, 235, .48);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, .12);
+  transform: translateY(-1px);
+  outline: 0;
+}
+
+.dtb-checkout .dtb-co-auth-choice__option--guest {
+  border-color: rgba(37, 99, 235, .58);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  color: #ffffff;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, .22);
+}
+
+.dtb-checkout .dtb-co-auth-choice__option-title {
+  display: block;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -.025em;
+  line-height: 1.12;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dtb-checkout .dtb-co-auth-choice__option-copy {
+  display: block;
+  color: currentcolor;
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.28;
+  opacity: .72;
+}
+
+.dtb-checkout .dtb-co-auth-choice__footnote {
+  padding-top: 1px;
+  font-size: 11.75px;
+}
+
+.dtb-checkout .dtb-co-guest-note {
+  margin: 6px 0 14px;
+}
+
+.dtb-checkout .dtb-co-inline-disclosure {
+  display: grid;
+  gap: 10px;
+}
+
+.dtb-checkout .dtb-co-disclosure-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--co-text-900, #0f172a);
+  cursor: pointer;
+  text-align: left;
+}
+
+.dtb-checkout .dtb-co-disclosure-toggle__copy {
+  color: var(--co-text-500, #64748b);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.dtb-checkout .dtb-co-disclosure-toggle__icon {
+  color: var(--co-primary, #2563eb);
+  transition: transform .18s ease;
+}
+
+.dtb-checkout .dtb-co-disclosure-toggle[aria-expanded="true"] .dtb-co-disclosure-toggle__icon {
+  transform: rotate(90deg);
+}
+
+@media (max-width: 1023px) {
+  .dtb-checkout .dtb-co-auth-choice {
+    margin-top: 12px;
+    padding: 16px;
+    border-radius: 20px;
+    box-shadow: none;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice__actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice__option--guest {
+    grid-column: 1 / -1;
+  }
+
+  .dtb-checkout .dtb-co-formpane {
+    padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+    transition: padding-bottom .22s ease;
+  }
+
+  .dtb-checkout:has(.dtb-co-mobile-cta--expanded) .dtb-co-formpane {
+    padding-bottom: calc(218px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta {
+    padding: 8px 10px calc(9px + env(safe-area-inset-bottom)) !important;
+    border-radius: 20px 20px 0 0 !important;
+    background: rgba(255, 255, 255, .985) !important;
+    border: 1px solid rgba(218, 227, 240, .95) !important;
+    border-bottom: 0 !important;
+    box-shadow: 0 -10px 32px rgba(15, 23, 42, .12) !important;
+    backdrop-filter: blur(16px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.12) !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__inner {
+    width: min(100%, 560px) !important;
+    gap: 7px !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 34px;
+    padding: 0 2px 2px;
+    border: 0;
+    background: transparent;
+    color: var(--co-text-900, #0f172a);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-label {
+    color: var(--co-text-500, #64748b);
+    font-size: 12px;
+    font-weight: 820;
+    letter-spacing: .01em;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-amount {
+    margin-left: auto;
+    color: var(--co-primary, #2563eb);
+    font-size: 18px;
+    font-weight: 920;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.035em;
+    white-space: nowrap;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__summary-chevron {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #eff5ff;
+    color: var(--co-primary, #2563eb);
+    transition: transform .2s ease, background .2s ease;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta--expanded .dtb-co-mobile-cta__summary-chevron {
+    transform: rotate(-90deg);
+    background: #dbeafe;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__totals {
+    display: grid !important;
+    gap: 0 !important;
+    max-height: 0;
+    margin: 0 !important;
+    padding: 0 2px !important;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: max-height .24s ease, opacity .18s ease, transform .22s ease, padding .22s ease;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta--expanded .dtb-co-mobile-cta__totals {
+    max-height: 128px;
+    padding: 4px 2px 6px !important;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line {
+    min-height: 21px !important;
+    padding: 2px 0 !important;
+    border: 0 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    color: var(--co-text-500, #64748b) !important;
+    font-size: 12px !important;
+    font-weight: 750 !important;
+    line-height: 1.12 !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line span:last-child,
+  .dtb-checkout .dtb-co-mobile-cta__total-line .dtb-co-total-row__value {
+    color: #172033 !important;
+    font-size: 12.5px !important;
+    font-weight: 840 !important;
+    white-space: nowrap !important;
+    text-align: right !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line--final {
+    margin-top: 4px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid #e5ebf5 !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line--final span:first-child {
+    color: var(--co-text-900, #0f172a) !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__total-line--final span:last-child {
+    color: var(--co-primary, #2563eb) !important;
+    font-size: 18px !important;
+    font-weight: 920 !important;
+    letter-spacing: -.035em !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta .dtb-co-btn-primary {
+    min-height: 51px !important;
+    border-radius: 17px !important;
+    font-size: 15px !important;
+    font-weight: 880 !important;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, .22) !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__trust {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--co-text-500, #64748b) !important;
+    font-size: 11px !important;
+    font-weight: 720 !important;
+    line-height: 1.22 !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .dtb-checkout .dtb-co-auth-choice {
+    padding: 14px;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice__title {
+    font-size: 21px;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice__copy {
+    font-size: 12.5px;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice__option {
+    min-height: 62px;
+  }
+
+  .dtb-checkout .dtb-co-formpane {
+    padding-bottom: calc(126px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout:has(.dtb-co-mobile-cta--expanded) .dtb-co-formpane {
+    padding-bottom: calc(212px + env(safe-area-inset-bottom)) !important;
+  }
+}
