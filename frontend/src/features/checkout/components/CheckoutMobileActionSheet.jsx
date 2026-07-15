@@ -40,6 +40,7 @@ export function CheckoutMobileActionSheet({
     : taxStatus === 'loading'
       ? 'Calculating'
       : 'Needs address';
+  const compactContext = `Shipping ${shippingCopy} · Tax ${taxCopy}`;
 
   const handleSubmit = () => {
     if (processing) return;
@@ -48,6 +49,7 @@ export function CheckoutMobileActionSheet({
 
   return (
     <div className={`dtb-co-mobile-cta dtb-co-mobile-cta--react${expanded ? ' dtb-co-mobile-cta--expanded' : ''} lg:hidden`}>
+      <div className="dtb-co-mobile-cta__handle" aria-hidden="true" />
       <div className="dtb-co-mobile-cta__inner">
         <button
           type="button"
@@ -63,6 +65,8 @@ export function CheckoutMobileActionSheet({
           <strong className="dtb-co-mobile-cta__summary-amount">{amount}</strong>
           <ChevronRight className="dtb-co-mobile-cta__summary-chevron" size={17} aria-hidden="true" />
         </button>
+
+        <p className="dtb-co-mobile-cta__compact-context" aria-live="polite">{compactContext}</p>
 
         <div className="dtb-co-mobile-cta__context" aria-label="Checkout total context" role="group">
           <span>
@@ -104,7 +108,7 @@ export function CheckoutMobileActionSheet({
 
         <div className="dtb-co-mobile-cta__trust">
           <ShieldCheck size={13} aria-hidden="true" />
-          <span>Secure handoff. Payment is completed on the next screen.</span>
+          <span>Secure payment opens next.</span>
         </div>
       </div>
     </div>
