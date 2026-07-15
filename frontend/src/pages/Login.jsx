@@ -18,19 +18,17 @@
  *   never enters JS memory.
  *
  * Routing:
- *   - Redirect to /dashboard on successful login.
+ *   - Redirect to the requested return target on successful login.
  *   - Link to /register for new users.
  *   - Links to /checkout and /products for guest users.
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, LogIn, AlertCircle, ShoppingCart } from 'lucide-react';
 
 import { useAuthContext } from '../auth/AuthContext.js';
-
-// ─── Animation variants ───────────────────────────────────────────────────────
 
 const cardVariants = {
   hidden:  { opacity: 0, y: 24, scale: 0.98 },
@@ -54,7 +52,18 @@ const errorVariants = {
   exit:    { opacity: 0, y: -4, height: 0,      transition: { duration: 0.18, ease: 'easeIn' } },
 };
 
-// ─── BreathingLoader ──────────────────────────────────────────────────────────
+function safeReturnTarget(location) {
+  const from = location.state?.from;
+  const fromPath = from?.pathname ? `${from.pathname || ''}${from.search || ''}${from.hash || ''}` : '';
+  const stateReturn = typeof location.state?.returnTo === 'string' ? location.state.returnTo : '';
+  const params = new URLSearchParams(location.search || '');
+  const queryReturn = params.get('returnTo') || params.get('return_to') || '';
+  const candidate = fromPath || stateReturn || queryReturn || '/dashboard';
+
+  if (!candidate.startsWith('/') || candidate.startsWith('//')) return '/dashboard';
+  if (candidate.startsWith('/login') || candidate.startsWith('/register')) return '/dashboard';
+  return candidate;
+}
 
 function BreathingLoader( { label = 'Signing in…' } ) {
   return (
@@ -72,8 +81,6 @@ function BreathingLoader( { label = 'Signing in…' } ) {
   );
 }
 
-// ─── Login page ───────────────────────────────────────────────────────────────
-
 export default function Login() {
   const navigate             = useNavigate();
   const location             = useLocation();
@@ -85,9 +92,7 @@ export default function Login() {
   const [ submitError, setSubmitError ] = useState( null );
   const [ submitting,  setSubmitting  ] = useState( false );
 
-  // Where to redirect after a successful login.
-  // Comes from ProtectedRoute via router location state; falls back to /dashboard.
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = useMemo(() => safeReturnTarget(location), [location]);
 
   const handleSubmit = async ( e ) => {
     e.preventDefault();
@@ -107,14 +112,11 @@ export default function Login() {
 
   return (
     <div className="page-wrapper" style={ { minHeight: '100vh' } }>
-      {/* ── Two-column wrapper ── */}
       <div style={ {
         display:             'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
         minHeight:           '100vh',
       } }>
-
-        {/* ── Left: branded hero panel — hidden on mobile, visible md+ ── */}
         <div
           className="hidden md:flex"
           style={ {
@@ -126,7 +128,6 @@ export default function Login() {
           overflow:       'hidden',
           minHeight:      'clamp(220px, 40vw, 100%)',
         } }>
-          {/* dot grid texture */}
           <div style={ {
             position:            'absolute',
             inset:               0,
@@ -178,7 +179,6 @@ export default function Login() {
               Sign in to manage your orders, track shipments, and access exclusive account features.
             </p>
 
-            {/* Guest checkout notice */}
             <div style={ {
               marginTop:    '32px',
               padding:      '14px 18px',
@@ -205,7 +205,6 @@ export default function Login() {
           </Motion.div>
         </div>
 
-        {/* ── Right: login card ── */}
         <div style={ {
           display:         'flex',
           alignItems:      'center',
@@ -227,7 +226,6 @@ export default function Login() {
               boxShadow:    '0 8px 32px rgba(15,23,42,0.07)',
             } }
           >
-            {/* Card header */}
             <div style={ { marginBottom: '28px' } }>
               <div style={ {
                 width:           '44px',
@@ -252,13 +250,12 @@ export default function Login() {
               </h2>
               <p style={ { fontSize: '0.875rem', color: 'rgba(15,23,42,0.5)', margin: 0 } }>
                 Don&apos;t have an account?{ ' ' }
-                <Link to="/register" style={ { color: '#2563eb', fontWeight: 600, textDecoration: 'none' } }>
+                <Link to="/register" state={ { returnTo: from } } style={ { color: '#2563eb', fontWeight: 600, textDecoration: 'none' } }>
                   Create one
                 </Link>
               </p>
             </div>
 
-            {/* Error banner */}
             <AnimatePresence>
               { submitError && (
                 <Motion.div
@@ -286,18 +283,9 @@ export default function Login() {
               ) }
             </AnimatePresence>
 
-            {/* Form */}
             <form onSubmit={ handleSubmit } noValidate>
-              <Motion.div
-                className="form-group"
-                custom={ 0 }
-                variants={ fieldVariants }
-                initial="hidden"
-                animate="visible"
-              >
-                <label className="machined-label text-blue-600" htmlFor="login-email">
-                  Email Address
-                </label>
+              <Motion.div className="form-group" custom={ 0 } variants={ fieldVariants } initial="hidden" animate="visible">
+                <label className="machined-label text-blue-600" htmlFor="login-email">Email Address</label>
                 <input
                   id="login-email"
                   type="email"
@@ -311,17 +299,8 @@ export default function Login() {
                 />
               </Motion.div>
 
-              <Motion.div
-                className="form-group"
-                custom={ 1 }
-                variants={ fieldVariants }
-                initial="hidden"
-                animate="visible"
-                style={ { position: 'relative' } }
-              >
-                <label className="machined-label text-blue-600" htmlFor="login-password">
-                  Password
-                </label>
+              <Motion.div className="form-group" custom={ 1 } variants={ fieldVariants } initial="hidden" animate="visible" style={ { position: 'relative' } }>
+                <label className="machined-label text-blue-600" htmlFor="login-password">Password</label>
                 <div style={ { position: 'relative' } }>
                   <input
                     id="login-password"
@@ -358,31 +337,13 @@ export default function Login() {
                 </div>
               </Motion.div>
 
-              <Motion.div
-                custom={ 2 }
-                variants={ fieldVariants }
-                initial="hidden"
-                animate="visible"
-                style={ { marginTop: '8px' } }
-              >
-                <button
-                  type="submit"
-                  className="alloy-button w-full justify-center"
-                  disabled={ busy }
-                  style={ { opacity: busy ? 0.75 : 1, transition: 'opacity 0.2s' } }
-                >
+              <Motion.div custom={ 2 } variants={ fieldVariants } initial="hidden" animate="visible" style={ { marginTop: '8px' } }>
+                <button type="submit" className="alloy-button w-full justify-center" disabled={ busy } style={ { opacity: busy ? 0.75 : 1, transition: 'opacity 0.2s' } }>
                   { busy ? <BreathingLoader /> : 'Sign In' }
                 </button>
               </Motion.div>
 
-              {/* Forgot password link */}
-              <Motion.div
-                custom={ 3 }
-                variants={ fieldVariants }
-                initial="hidden"
-                animate="visible"
-                style={ { textAlign: 'center', marginTop: '14px' } }
-              >
+              <Motion.div custom={ 3 } variants={ fieldVariants } initial="hidden" animate="visible" style={ { textAlign: 'center', marginTop: '14px' } }>
                 <Link
                   to="/forgot-password"
                   style={ { fontSize: '0.8rem', color: 'rgba(15,23,42,0.5)', textDecoration: 'none' } }
@@ -394,17 +355,9 @@ export default function Login() {
               </Motion.div>
             </form>
 
-            {/* Divider */}
-            <div style={ {
-              display:        'flex',
-              alignItems:     'center',
-              gap:            '12px',
-              margin:         '24px 0',
-            } }>
+            <div style={ { display: 'flex', alignItems: 'center', gap: '12px', margin: '24px 0' } }>
               <div style={ { flex: 1, height: '1px', background: 'rgba(15,23,42,0.08)' } } />
-              <span style={ { fontSize: '0.75rem', color: 'rgba(15,23,42,0.35)', whiteSpace: 'nowrap' } }>
-                or continue as guest
-              </span>
+              <span style={ { fontSize: '0.75rem', color: 'rgba(15,23,42,0.35)', whiteSpace: 'nowrap' } }>or continue as guest</span>
               <div style={ { flex: 1, height: '1px', background: 'rgba(15,23,42,0.08)' } } />
             </div>
 
