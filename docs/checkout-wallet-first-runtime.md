@@ -8,31 +8,36 @@ React owns only the checkout identity presentation and interaction state. DTB ba
 
 The wallet buttons must not create orders, payment intents, gateway callbacks, or payment tokens in the React checkout. They may only link to configured, real express provider launch URLs. When no launch URL is configured, the wallet option renders disabled rather than pointing to a fake route.
 
+## Express layout
+
+The checkout identity step intentionally exposes exactly three express wallet methods in this order:
+
+```text
+[ Apple Pay ] [ Google Pay ]
+[            PayPal            ]
+```
+
+Apple Pay and Google Pay are compact side-by-side wallet choices. PayPal is the full-width wallet choice beneath them. Shop Pay is not shown in the DTB checkout identity step unless a future backend/provider implementation explicitly adds it back.
+
 ## Runtime configuration
 
-Express wallet URLs may be injected at runtime:
+Express wallet URLs may be injected at runtime with these keys:
 
-```js
-window.DTB_EXPRESS_CHECKOUT_PROVIDERS = {
-  shop: '/dtb/v1/auth/shop-pay/start',
-  paypal: '/dtb/v1/auth/paypal/start',
-  google_pay: '/dtb/v1/auth/google-pay/start',
-  apple_pay: '/dtb/v1/auth/apple-pay/start',
-};
+```text
+window.DTB_EXPRESS_CHECKOUT_PROVIDERS.apple_pay
+window.DTB_EXPRESS_CHECKOUT_PROVIDERS.google_pay
+window.DTB_EXPRESS_CHECKOUT_PROVIDERS.paypal
 ```
 
 The component also supports guarded public build/runtime env keys:
 
 ```text
-REACT_APP_SHOP_PAY_URL
-REACT_APP_SHOPPAY_URL
-REACT_APP_EXPRESS_SHOP_PAY_URL
-REACT_APP_PAYPAL_EXPRESS_URL
-REACT_APP_PAYPAL_CHECKOUT_URL
-REACT_APP_GOOGLE_PAY_URL
-REACT_APP_EXPRESS_GOOGLE_PAY_URL
 REACT_APP_APPLE_PAY_URL
 REACT_APP_EXPRESS_APPLE_PAY_URL
+REACT_APP_GOOGLE_PAY_URL
+REACT_APP_EXPRESS_GOOGLE_PAY_URL
+REACT_APP_PAYPAL_EXPRESS_URL
+REACT_APP_PAYPAL_CHECKOUT_URL
 ```
 
 SSO remains separately config-gated through:
@@ -52,7 +57,9 @@ The component uses guarded environment access so a missing `process` object in t
 
 - `/checkout` renders without the branded 500 error page.
 - Express wallet buttons are first in the unauthenticated checkout flow.
+- Apple Pay and Google Pay render side by side.
+- PayPal renders full width below Apple Pay and Google Pay.
 - Unconfigured wallet buttons are disabled and do not navigate.
-- Configured wallet URLs receive `returnTo=/checkout` and `return_to=/checkout` query parameters.
+- Configured wallet URLs receive checkout return parameters.
 - Guest checkout remains prominent and does not force account creation.
 - Google/Apple SSO remain disabled unless configured with real launch URLs.
