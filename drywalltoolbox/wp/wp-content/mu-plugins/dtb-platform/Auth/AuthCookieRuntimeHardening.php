@@ -102,15 +102,16 @@ function dtb_auth_refresh_cookie_from_response( $response ): void {
  */
 function dtb_auth_clear_hardened_cookie(): void {
 	$cookie_name = defined( 'DTB_AUTH_COOKIE' ) ? DTB_AUTH_COOKIE : 'dtb_auth';
+	$cross       = function_exists( 'dtb_is_cross_origin_request' ) && dtb_is_cross_origin_request();
 
 	setcookie( $cookie_name, '', [
 		'expires'  => time() - DAY_IN_SECONDS,
 		'path'     => '/',
 		'secure'   => true,
 		'httponly' => true,
-		'samesite' => 'Lax',
+		'samesite' => $cross ? 'None' : 'Lax',
 	] );
-
+}
 	setcookie( 'endurance-no-cache', '1', [
 		'expires'  => time() + 60,
 		'path'     => '/',
