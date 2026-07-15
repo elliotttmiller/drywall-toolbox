@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle, LockKeyhole, ShieldCheck } from 'lucide-react';
 
 const RETURN_TO = '/checkout';
+const SAFE_AUTH_PROTOCOLS = new Set(['http:', 'https:']);
 
 function readPublicEnv(name) {
   if (typeof window !== 'undefined') {
@@ -28,11 +29,12 @@ function normalizeReturnUrl(value) {
   try {
     const baseOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://drywalltoolbox.com';
     const url = new URL(rawUrl, baseOrigin);
+    if (!SAFE_AUTH_PROTOCOLS.has(url.protocol)) return '';
     if (!url.searchParams.has('returnTo')) url.searchParams.set('returnTo', RETURN_TO);
     if (url.origin === baseOrigin) return `${url.pathname}${url.search}${url.hash}`;
     return url.toString();
   } catch {
-    return rawUrl;
+    return '';
   }
 }
 
