@@ -18,7 +18,7 @@ const EXPRESS_PROVIDERS = [
   },
   {
     id: 'google_pay',
-    label: 'G Pay',
+    label: 'Google Pay',
     envKeys: ['REACT_APP_GOOGLE_PAY_URL', 'REACT_APP_EXPRESS_GOOGLE_PAY_URL'],
     mark: <GooglePayMark />,
   },
@@ -74,10 +74,13 @@ function normalizeCheckoutUrl(value) {
   if (!rawUrl) return '';
 
   try {
-    const url = new URL(rawUrl, typeof window !== 'undefined' ? window.location.origin : 'https://drywalltoolbox.com');
+    const baseOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://drywalltoolbox.com';
+    const url = new URL(rawUrl, baseOrigin);
     if (!url.searchParams.has('returnTo')) url.searchParams.set('returnTo', RETURN_TO);
     if (!url.searchParams.has('return_to')) url.searchParams.set('return_to', RETURN_TO);
-    return `${url.pathname}${url.search}${url.hash}`;
+
+    if (url.origin === baseOrigin) return `${url.pathname}${url.search}${url.hash}`;
+    return url.toString();
   } catch {
     return rawUrl;
   }
@@ -122,15 +125,13 @@ function WalletAction({ provider }) {
         title={title}
       >
         {provider.mark}
-        <span>{provider.label}</span>
       </button>
     );
   }
 
   return (
-    <a className="dtb-co-auth-choice__sso-button" href={href} rel="nofollow" aria-label={title}>
+    <a className="dtb-co-auth-choice__sso-button" href={href} rel="nofollow noopener noreferrer" aria-label={title}>
       {provider.mark}
-      <span>{provider.label}</span>
     </a>
   );
 }
@@ -169,7 +170,7 @@ function SsoAction({ provider, label, children }) {
   }
 
   return (
-    <a className="dtb-co-auth-choice__sso-button" href={href} rel="nofollow">
+    <a className="dtb-co-auth-choice__sso-button" href={href} rel="nofollow noopener noreferrer">
       {children}
       <span>{label}</span>
     </a>
