@@ -29,7 +29,10 @@ import { getCheckoutCapabilities } from '../api/checkout.js';
 import { useAuthContext } from '../auth/AuthContext.js';
 import { useCart } from '../context/CartContext';
 import SEOHead from '../components/shared/SEOHead';
+import CheckoutIdentityChoice from '../features/checkout/components/CheckoutIdentityChoice.jsx';
+import CheckoutMobileActionSheet from '../features/checkout/components/CheckoutMobileActionSheet.jsx';
 import { useCheckoutController } from '../features/checkout/hooks/useCheckoutController.js';
+import { readCheckoutDraft, writeCheckoutDraft, clearCheckoutDraft } from '../features/checkout/hooks/useCheckoutDraft.js';
 import { useCheckoutQuote } from '../features/checkout/hooks/useCheckoutQuote.js';
 import { useCheckoutRecovery } from '../features/checkout/hooks/useCheckoutRecovery.js';
 import { makeCheckoutAttemptId } from '../utils/checkoutRecovery.js';
@@ -38,36 +41,25 @@ import { normalizePaymentUrl } from '../utils/paymentUrl.js';
 const WOO_NATIVE_GATEWAY_ID = 'woo_native';
 const WOO_PAYMENTS_METHOD_ID = '';
 const MANUAL_PAYMENT_METHOD_IDS = new Set(['cod', 'bacs', 'cheque']);
-const CHECKOUT_DRAFT_KEY = 'dtb:checkout-form-draft:v1';
 
-const BLANK_FORM = { firstName: '', lastName: '', email: '', phone: '', address: '', city: '', state: '', zip: '', country: 'US', customerNote: '' };
+const BLANK_FORM = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  address: '',
+  city: '',
+  state: '',
+  zip: '',
+  country: 'US',
+  customerNote: '',
+};
 
-function readCheckoutDraft() {
-  try {
-    const raw = localStorage.getItem(CHECKOUT_DRAFT_KEY);
-    if (!raw) return BLANK_FORM;
-    const parsed = JSON.parse(raw);
-    return typeof parsed === 'object' && parsed !== null ? { ...BLANK_FORM, ...parsed } : BLANK_FORM;
-  } catch {
-    return BLANK_FORM;
-  }
-}
-
-function writeCheckoutDraft(data) {
-  try {
-    localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(data));
-  } catch { /* non-critical */ }
-}
-
-function clearCheckoutDraft() {
-  try {
-    localStorage.removeItem(CHECKOUT_DRAFT_KEY);
-  } catch { /* non-critical */ }
-}
 const PREFERRED_ONLINE_PAYMENT_IDS = [WOO_PAYMENTS_METHOD_ID, 'stripe', 'ppcp-gateway'];
 const PUBLIC_PAYMENT_LABEL = 'Secure card payment';
 const PUBLIC_PAYMENT_TITLE = 'Secure Card Payment';
 const PAYMENT_LOGO_BASE = `${process.env.PUBLIC_URL || ''}/payment_logos`;
+
 const US_STATES = [
   ['AL', 'Alabama'], ['AK', 'Alaska'], ['AZ', 'Arizona'], ['AR', 'Arkansas'],
   ['CA', 'California'], ['CO', 'Colorado'], ['CT', 'Connecticut'], ['DE', 'Delaware'],
@@ -114,8 +106,6 @@ const fadeSlide = {
   hidden: { opacity: 0, y: 12, willChange: 'transform, opacity' },
   visible: { opacity: 1, y: 0, willChange: 'auto', transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] } },
 };
-
-/* ─── Utilities ─────────────────────────────────────────── */
 
 function toMoney(value) {
   const n = Number(value);
@@ -173,13 +163,6 @@ function resolveCartItemImage(item) {
   return item.image || item.image_src || item.thumbnail || item.image_url || item.product?.image || item.product?.thumbnail || item.images?.[0]?.src || item.images?.[0] || '';
 }
 
-function getPaymentBaseUrl() {
-  const configured = (process.env.REACT_APP_API_BASE_URL || '').replace(/\/+$/, '');
-  if (configured) return configured;
-  if (typeof window !== 'undefined') return window.location.origin.replace(/\/+$/, '');
-  return '';
-}
-
 function normalizeWooPaymentUrl(value) {
   if (typeof value !== 'string' || !value.trim()) return '';
   return normalizePaymentUrl(value);
@@ -197,8 +180,6 @@ function makeCartSnapshot(cartItems) {
     image: resolveCartItemImage(item),
   }));
 }
-
-/* ─── Sub-components ────────────────────────────────────── */
 
 function StepProgress({ activeStep }) {
   const activeIdx = CHECKOUT_STEPS.findIndex((step) => step.id === activeStep);
@@ -230,10 +211,11 @@ function StepProgress({ activeStep }) {
   );
 }
 
-function SectionHeader({ title }) {
+function SectionHeader({ title, subtitle }) {
   return (
     <div className="dtb-co-section__header">
       <h2 className="dtb-co-section__title">{title}</h2>
+      {subtitle ? <p className="dtb-co-section__subheader">{subtitle}</p> : null}
     </div>
   );
 }
@@ -281,10 +263,9 @@ function TaxSummaryValue({ status, amount }) {
   return <span className="dtb-co-total-row__value dtb-co-total-row__value--muted">By address</span>;
 }
 
-function MobileSummaryStrip({ cartItems, subtotal, shipping, total, taxAmount, taxStatus, quoteReady }) {
-  const [open, setOpen] = useState(true);
+function MobileSummaryStrip({ cartItems, subtotal, shipping, displayTotal, taxAmount, taxStatus, quoteReady }) {
+  const [open, setOpen] = useState(false);
   const totalQty = cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
-  const displayTotal = total + taxAmount;
 
   return (
     <Motion.div className="dtb-co-msummary lg:hidden" initial={false}>
@@ -370,8 +351,6 @@ function MobileSummaryStrip({ cartItems, subtotal, shipping, total, taxAmount, t
   );
 }
 
-/* ─── Main Component ────────────────────────────────────── */
-
 export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems, clearCart, isLoading: cartLoading, lastSyncedAt } = useCart();
@@ -379,7 +358,7 @@ export default function Checkout() {
   const safeCartItems = useMemo(() => (Array.isArray(cartItems) ? cartItems : []), [cartItems]);
   const cartReady = !cartLoading && lastSyncedAt !== null;
 
-  const [formData, setFormData] = useState(readCheckoutDraft);
+  const [formData, setFormData] = useState(() => readCheckoutDraft(BLANK_FORM));
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState('idle');
   const [checkoutError, setCheckoutError] = useState(null);
@@ -391,6 +370,9 @@ export default function Checkout() {
   const [couponInput, setCouponInput] = useState('');
   const [manualCoupons, setManualCoupons] = useState([]);
   const [selectedRateId, setSelectedRateId] = useState('');
+  const [checkoutIdentity, setCheckoutIdentity] = useState(isAuthenticated ? 'account' : '');
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
   const { pendingPayment, rememberPayment, dismissPayment, resumePayment } = useCheckoutRecovery();
 
   const [checkoutAttemptId, setCheckoutAttemptId] = useState(
@@ -400,7 +382,7 @@ export default function Checkout() {
   const processing = submitStatus !== 'idle';
 
   const isContactComplete = useMemo(
-    () => formData.firstName.trim() !== '' && formData.lastName.trim() !== '' && formData.email.trim() !== '' && formData.phone.trim() !== '',
+    () => formData.firstName.trim() !== '' && formData.lastName.trim() !== '' && formData.email.trim() !== '',
     [formData],
   );
   const isAddressComplete = useMemo(
@@ -408,6 +390,7 @@ export default function Checkout() {
     [formData],
   );
   const isFormComplete = isContactComplete && isAddressComplete;
+
   const {
     quote: checkoutQuote,
     rates: shippingRates,
@@ -418,9 +401,6 @@ export default function Checkout() {
     couponCodes: manualCoupons,
     selectedRateId,
     cartItems: safeCartItems,
-    // Require the full form (name + email + address) before requesting a quote.
-    // Backend validate_addresses() requires first_name, last_name, and email;
-    // firing with only the address fields filled causes a premature 422.
     isAddressComplete: isFormComplete,
     cartReady,
   });
@@ -438,7 +418,6 @@ export default function Checkout() {
   const shipping = toMoney(quoteTotals.shipping);
   const taxAmount = toMoney(quoteTotals.tax);
   const displayTotal = quoteReady ? toMoney(quoteTotals.total) : cartSubtotal;
-  const total = Math.max(0, displayTotal - taxAmount);
   const taxPreview = { status: quoteReady ? 'ready' : (ratesLoading ? 'loading' : 'idle'), amount: taxAmount };
   const activeSelectedRateId = shippingRates.some((rate) => String(rate.id) === String(selectedRateId))
     ? String(selectedRateId)
@@ -448,6 +427,10 @@ export default function Checkout() {
     () => !processing && !capabilitiesLoading && !paymentSetupError && quoteReady && isFormComplete && safeCartItems.length > 0 && Boolean(paymentMethod) && !isManualPaymentMethod(paymentMethod),
     [capabilitiesLoading, isFormComplete, paymentMethod, paymentSetupError, processing, quoteReady, safeCartItems.length],
   );
+
+  useEffect(() => {
+    if (isAuthenticated) setCheckoutIdentity('account');
+  }, [isAuthenticated]);
 
   useEffect(() => {
     let mounted = true;
@@ -469,14 +452,14 @@ export default function Checkout() {
 
   const sanitize = (value) => DOMPurify.sanitize(value, { ALLOWED_TAGS: [] });
 
-  // Persist form fields to localStorage so a hard refresh restores progress.
   useEffect(() => {
     writeCheckoutDraft(formData);
   }, [formData]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: sanitize(value) }));
+    const nextValue = name === 'state' ? String(value).toUpperCase() : value;
+    setFormData((prev) => ({ ...prev, [name]: sanitize(nextValue) }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -495,7 +478,6 @@ export default function Checkout() {
     if (!formData.lastName.trim()) nextErrors.lastName = 'Enter your last name.';
     if (!formData.email.trim()) nextErrors.email = 'Enter your email address.';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) nextErrors.email = 'Enter a valid email address.';
-    if (!formData.phone.trim()) nextErrors.phone = 'Enter a phone number for delivery updates.';
     if (!formData.address.trim()) nextErrors.address = 'Enter your street address.';
     if (!formData.city.trim()) nextErrors.city = 'Enter your city.';
     if (!formData.state.trim()) nextErrors.state = 'Enter your state.';
@@ -603,17 +585,30 @@ export default function Checkout() {
     }
   }, [checkoutQuote, paymentMethod, paymentSetupError, processing, submitCheckout, validateForm]);
 
-  /* ─── Derived helpers ────────────────────────────────── */
-  const inputCls = (field) =>
-    `dtb-co-input${errors[field] ? ' dtb-co-input--error' : ''}`;
+  const handleGuestChoice = useCallback(() => {
+    setCheckoutIdentity('guest');
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById('field-firstName') || document.querySelector('.dtb-co-section');
+      target?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
+      window.setTimeout(() => document.getElementById('field-firstName')?.focus({ preventScroll: true }), 180);
+    });
+  }, []);
 
+  const inputCls = (field) => `dtb-co-input${errors[field] ? ' dtb-co-input--error' : ''}`;
   const activeStep = processing ? 'review' : isFormComplete ? 'payment' : 'shipping';
-  const payButtonLabel = processing ? 'Preparing Payment...' : `Pay $${displayTotal.toFixed(2)} securely`;
+  const payButtonLabel = processing
+    ? 'Preparing secure payment…'
+    : !isAddressComplete
+      ? 'Enter address to calculate total'
+      : !quoteReady || ratesLoading
+        ? 'Calculating shipping and tax…'
+        : `Continue to secure payment — $${displayTotal.toFixed(2)}`;
   const payButtonAriaLabel = processing
     ? 'Preparing secure payment'
-    : `Pay ${displayTotal.toFixed(2)} dollars securely`;
+    : quoteReady
+      ? `Continue to secure payment for ${displayTotal.toFixed(2)} dollars`
+      : 'Complete checkout details to calculate total';
 
-  /* ─── Empty cart ─────────────────────────────────────── */
   if (safeCartItems.length === 0 && !orderComplete) {
     return (
       <div className="dtb-checkout dtb-co-state-bg">
@@ -664,7 +659,6 @@ export default function Checkout() {
     );
   }
 
-  /* ─── Order complete ─────────────────────────────────── */
   if (orderComplete && orderDetails) {
     const order = orderDetails.order;
     return (
@@ -692,12 +686,10 @@ export default function Checkout() {
     );
   }
 
-  /* ─── Main checkout ───────────────────────────────────── */
   return (
     <div className="dtb-checkout">
       <SEOHead noindex title="Checkout" />
 
-      {/* Header */}
       <header className="dtb-co-header">
         <div className="dtb-co-header__brand">
           <Link to="/" aria-label="Drywall Toolbox home">
@@ -709,7 +701,7 @@ export default function Checkout() {
 
         <div className="dtb-co-header__actions">
           {!isAuthenticated && (
-            <Link to="/login" className="dtb-co-header__signin">Sign in</Link>
+            <Link to="/login" state={{ returnTo: '/checkout' }} className="dtb-co-header__signin">Sign in</Link>
           )}
           <span className="dtb-co-header__secure">
             <ShieldCheck size={14} aria-hidden="true" />
@@ -718,40 +710,33 @@ export default function Checkout() {
         </div>
       </header>
 
-      {/* Trust bar */}
       <div className="dtb-co-trustbar">
-        <span className="dtb-co-trustbar__item">
-          Server-calculated shipping for your delivery address
-        </span>
+        <span className="dtb-co-trustbar__item">Server-calculated shipping for your delivery address</span>
         <span className="dtb-co-trustbar__sep" aria-hidden="true">|</span>
-        <span className="dtb-co-trustbar__item">
-          Secure, encrypted checkout
-        </span>
+        <span className="dtb-co-trustbar__item">Secure payment handoff</span>
         <span className="dtb-co-trustbar__sep" aria-hidden="true">|</span>
-        <span className="dtb-co-trustbar__item">
-          Easy returns
-        </span>
+        <span className="dtb-co-trustbar__item">Easy returns</span>
       </div>
 
-      {/* Two-column layout */}
       <div className="dtb-co-grid">
-
-        {/* ── Left: Form pane ── */}
         <main className="dtb-co-formpane">
           <div className="dtb-co-formpane__inner">
-
-            {/* Mobile order summary */}
             <MobileSummaryStrip
               cartItems={safeCartItems}
               subtotal={subtotal}
               shipping={shipping}
-              total={total}
+              displayTotal={displayTotal}
               taxAmount={taxAmount}
               taxStatus={taxPreview.status}
               quoteReady={quoteReady}
             />
 
-            {/* Pending payment recovery */}
+            <CheckoutIdentityChoice
+              isAuthenticated={isAuthenticated}
+              selected={checkoutIdentity}
+              onGuest={handleGuestChoice}
+            />
+
             {pendingPayment?.resumeToken && (
               <Motion.div
                 className="dtb-co-alert dtb-co-alert--warning dtb-co-recovery"
@@ -782,7 +767,6 @@ export default function Checkout() {
               </Motion.div>
             )}
 
-            {/* ── Contact section ── */}
             <Motion.section
               className="dtb-co-section"
               variants={fadeSlide}
@@ -790,22 +774,21 @@ export default function Checkout() {
               animate="visible"
             >
               <SectionHeader title="Contact" />
-              {!isAuthenticated && (
-                <p className="dtb-co-section__subheader">
-                  Have an account?{' '}
-                  <Link to="/login">Log in</Link>
+              {!isAuthenticated && checkoutIdentity === 'guest' && (
+                <p className="dtb-co-guest-note">
+                  Checking out as guest. <Link to="/login" state={{ returnTo: '/checkout' }}>Log in</Link> to use saved details.
                 </p>
               )}
               <div className="dtb-co-grid-2">
                 {[
-                  { name: 'firstName', label: 'First Name', type: 'text', autoComplete: 'given-name' },
-                  { name: 'lastName', label: 'Last Name', type: 'text', autoComplete: 'family-name' },
-                  { name: 'email', label: 'Email Address', type: 'email', autoComplete: 'email' },
-                  { name: 'phone', label: 'Phone', type: 'tel', autoComplete: 'tel', inputMode: 'tel' },
-                ].map(({ name, label, type, autoComplete, inputMode }) => (
+                  { name: 'firstName', label: 'First Name', type: 'text', autoComplete: 'given-name', required: true },
+                  { name: 'lastName', label: 'Last Name', type: 'text', autoComplete: 'family-name', required: true },
+                  { name: 'email', label: 'Email Address', type: 'email', autoComplete: 'email', required: true },
+                  { name: 'phone', label: 'Phone', type: 'tel', autoComplete: 'tel', inputMode: 'tel', required: false },
+                ].map(({ name, label, type, autoComplete, inputMode, required }) => (
                   <div key={name} className="dtb-co-field">
                     <label htmlFor={`field-${name}`} className="dtb-co-label">
-                      {label} <span style={{ color: 'var(--co-error)' }} aria-hidden="true">*</span>
+                      {label}{required ? <span style={{ color: 'var(--co-error)' }} aria-hidden="true"> *</span> : <span style={{ color: 'var(--co-text-400)', textTransform: 'none', fontWeight: 500, fontSize: '10px' }}> (optional)</span>}
                     </label>
                     <input
                       id={`field-${name}`}
@@ -830,7 +813,6 @@ export default function Checkout() {
               </div>
             </Motion.section>
 
-            {/* ── Shipping Address section ── */}
             <Motion.section
               className="dtb-co-section"
               variants={fadeSlide}
@@ -854,10 +836,9 @@ export default function Checkout() {
                   enterKeyHint="next"
                   className={inputCls('address')}
                   aria-invalid={!!errors.address}
+                  aria-describedby={errors.address ? 'err-address' : undefined}
                 />
-                {errors.address && (
-                  <span className="dtb-co-field-error" role="alert">{errors.address}</span>
-                )}
+                {errors.address && <span id="err-address" className="dtb-co-field-error" role="alert">{errors.address}</span>}
               </div>
 
               <div className="dtb-co-grid-3">
@@ -875,8 +856,9 @@ export default function Checkout() {
                     enterKeyHint="next"
                     className={inputCls('city')}
                     aria-invalid={!!errors.city}
+                    aria-describedby={errors.city ? 'err-city' : undefined}
                   />
-                  {errors.city && <span className="dtb-co-field-error" role="alert">{errors.city}</span>}
+                  {errors.city && <span id="err-city" className="dtb-co-field-error" role="alert">{errors.city}</span>}
                 </div>
 
                 <div className="dtb-co-field">
@@ -891,13 +873,14 @@ export default function Checkout() {
                     autoComplete="address-level1"
                     className={`dtb-co-select${errors.state ? ' dtb-co-select--error' : ''}`}
                     aria-invalid={!!errors.state}
+                    aria-describedby={errors.state ? 'err-state' : undefined}
                   >
                     <option value="">Select state</option>
                     {US_STATES.map(([code, name]) => (
                       <option key={code} value={code}>{name} ({code})</option>
                     ))}
                   </select>
-                  {errors.state && <span className="dtb-co-field-error" role="alert">{errors.state}</span>}
+                  {errors.state && <span id="err-state" className="dtb-co-field-error" role="alert">{errors.state}</span>}
                 </div>
 
                 <div className="dtb-co-field">
@@ -915,14 +898,13 @@ export default function Checkout() {
                     enterKeyHint="done"
                     className={inputCls('zip')}
                     aria-invalid={!!errors.zip}
+                    aria-describedby={errors.zip ? 'err-zip' : undefined}
                   />
-                  {errors.zip && <span className="dtb-co-field-error" role="alert">{errors.zip}</span>}
+                  {errors.zip && <span id="err-zip" className="dtb-co-field-error" role="alert">{errors.zip}</span>}
                 </div>
               </div>
-
             </Motion.section>
 
-            {/* ── Shipping Method section ── */}
             <Motion.section
               className="dtb-co-section"
               variants={fadeSlide}
@@ -979,7 +961,6 @@ export default function Checkout() {
               )}
             </Motion.section>
 
-            {/* ── Coupon (mobile only) ── */}
             <Motion.section
               className="dtb-co-section lg:hidden"
               variants={fadeSlide}
@@ -987,23 +968,50 @@ export default function Checkout() {
               animate="visible"
               custom={0.1}
             >
-              <SectionHeader title="Discount code" />
-              <div className="dtb-co-coupon__row">
-                <input
-                  id="coupon-code-mobile"
-                  type="text"
-                  value={couponInput}
-                  onChange={(event) => setCouponInput(event.target.value.toUpperCase())}
-                  placeholder="Enter code"
-                  className="dtb-co-coupon__input"
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  spellCheck={false}
-                  enterKeyHint="done"
-                />
-                <button type="button" onClick={addManualCoupon} className="dtb-co-coupon__btn">
-                  Apply
+              <div className="dtb-co-inline-disclosure">
+                <button
+                  type="button"
+                  className="dtb-co-disclosure-toggle"
+                  aria-expanded={promoOpen}
+                  aria-controls="dtb-co-mobile-coupon"
+                  onClick={() => setPromoOpen((value) => !value)}
+                >
+                  <span>
+                    <strong>Discount code</strong><br />
+                    <span className="dtb-co-disclosure-toggle__copy">Add a promo or gift card code.</span>
+                  </span>
+                  <ChevronRight className="dtb-co-disclosure-toggle__icon" size={18} aria-hidden="true" />
                 </button>
+                <AnimatePresence initial={false}>
+                  {promoOpen && (
+                    <Motion.div
+                      id="dtb-co-mobile-coupon"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.18 }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div className="dtb-co-coupon__row">
+                        <input
+                          id="coupon-code-mobile"
+                          type="text"
+                          value={couponInput}
+                          onChange={(event) => setCouponInput(event.target.value.toUpperCase())}
+                          placeholder="Enter code"
+                          className="dtb-co-coupon__input"
+                          autoComplete="off"
+                          autoCapitalize="characters"
+                          spellCheck={false}
+                          enterKeyHint="done"
+                        />
+                        <button type="button" onClick={addManualCoupon} className="dtb-co-coupon__btn" disabled={!couponInput.trim()}>
+                          Apply
+                        </button>
+                      </div>
+                    </Motion.div>
+                  )}
+                </AnimatePresence>
               </div>
               {manualCoupons.length > 0 && (
                 <div className="dtb-co-coupon__tags">
@@ -1022,7 +1030,6 @@ export default function Checkout() {
               )}
             </Motion.section>
 
-            {/* ── Order note ── */}
             <Motion.section
               className="dtb-co-section"
               variants={fadeSlide}
@@ -1030,27 +1037,49 @@ export default function Checkout() {
               animate="visible"
               custom={0.12}
             >
-              <label htmlFor="field-customerNote" className="dtb-co-label">
-                Order note{' '}
-                <span style={{ color: 'var(--co-text-400)', textTransform: 'none', fontWeight: 500, fontSize: '10px' }}>
-                  (optional)
-                </span>
-              </label>
-              <textarea
-                id="field-customerNote"
-                name="customerNote"
-                value={formData.customerNote}
-                onChange={handleInputChange}
-                rows={2}
-                placeholder="Special instructions for your order…"
-                className="dtb-co-textarea"
-                style={{ marginTop: 6 }}
-                autoComplete="off"
-                enterKeyHint="done"
-              />
+              <div className="dtb-co-inline-disclosure">
+                <button
+                  type="button"
+                  className="dtb-co-disclosure-toggle"
+                  aria-expanded={noteOpen}
+                  aria-controls="field-customerNote-wrap"
+                  onClick={() => setNoteOpen((value) => !value)}
+                >
+                  <span>
+                    <strong>Order note</strong><br />
+                    <span className="dtb-co-disclosure-toggle__copy">Optional delivery or handling instructions.</span>
+                  </span>
+                  <ChevronRight className="dtb-co-disclosure-toggle__icon" size={18} aria-hidden="true" />
+                </button>
+                <AnimatePresence initial={false}>
+                  {noteOpen && (
+                    <Motion.div
+                      id="field-customerNote-wrap"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.18 }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <label htmlFor="field-customerNote" className="sr-only">Order note</label>
+                      <textarea
+                        id="field-customerNote"
+                        name="customerNote"
+                        value={formData.customerNote}
+                        onChange={handleInputChange}
+                        rows={2}
+                        placeholder="Special instructions for your order…"
+                        className="dtb-co-textarea"
+                        style={{ marginTop: 6 }}
+                        autoComplete="off"
+                        enterKeyHint="done"
+                      />
+                    </Motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </Motion.section>
 
-            {/* Error */}
             {checkoutError && (
               <Motion.div
                 className="dtb-co-alert dtb-co-alert--error"
@@ -1063,21 +1092,16 @@ export default function Checkout() {
               </Motion.div>
             )}
 
-            {/* Actions row */}
             <div className="dtb-co-actions">
               <Link to="/cart" className="dtb-co-back-link">
                 <ChevronLeft size={14} />
                 Return to cart
               </Link>
             </div>
-
           </div>
         </main>
 
-        {/* ── Right: Sticky sidebar ── */}
         <aside className="dtb-co-sidebar" aria-label="Order summary">
-
-          {/* Items list */}
           <div className="dtb-co-order-items">
             {safeCartItems.map((item) => {
               const image = resolveCartItemImage(item);
@@ -1085,9 +1109,7 @@ export default function Checkout() {
                 <div key={item.cartKey || item.id} className="dtb-co-order-item">
                   <div className="dtb-co-order-item__thumb">
                     <div className="dtb-co-order-item__thumb-img">
-                      {image && (
-                        <img src={image} alt={item.name} loading="lazy" />
-                      )}
+                      {image && <img src={image} alt={item.name} loading="lazy" />}
                     </div>
                     <span className="dtb-co-order-item__qty" aria-label={`Qty: ${item.quantity}`}>
                       {item.quantity}
@@ -1105,7 +1127,6 @@ export default function Checkout() {
             })}
           </div>
 
-          {/* Coupon */}
           <div className="dtb-co-coupon">
             <div className="dtb-co-coupon__row">
               <input
@@ -1121,7 +1142,7 @@ export default function Checkout() {
                 spellCheck={false}
                 enterKeyHint="done"
               />
-              <button type="button" onClick={addManualCoupon} className="dtb-co-coupon__btn">
+              <button type="button" onClick={addManualCoupon} className="dtb-co-coupon__btn" disabled={!couponInput.trim()}>
                 Apply
               </button>
             </div>
@@ -1142,7 +1163,6 @@ export default function Checkout() {
             )}
           </div>
 
-          {/* Totals */}
           <div className="dtb-co-totals">
             <div className="dtb-co-total-row">
               <span className="dtb-co-total-row__label">Subtotal</span>
@@ -1167,8 +1187,11 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Desktop submit */}
           <div className="dtb-co-sidebar-cta">
+            <div className="dtb-co-sidebar-cta__stage">
+              <span>Secure checkout</span>
+              <strong>Continue to payment</strong>
+            </div>
             {paymentSetupError && (
               <div className="dtb-co-alert dtb-co-alert--warning" style={{ fontSize: 12, marginBottom: 12 }}>
                 <AlertTriangle size={13} style={{ flexShrink: 0 }} />
@@ -1188,68 +1211,30 @@ export default function Checkout() {
             <InlineSubmitStatus status={submitStatus} />
             <div className="dtb-co-cta-trust" aria-label="Secure payment details">
               <span><ShieldCheck size={13} aria-hidden="true" /> Encrypted checkout</span>
-              <span>Payment is verified by the gateway before your order is finalized.</span>
+              <span>Payment is completed on the secure gateway screen before your order is finalized.</span>
             </div>
           </div>
 
-          {/* Payment logos */}
           <div className="dtb-co-payment-section">
-            <p className="dtb-co-payment-label">We accept</p>
+            <p className="dtb-co-payment-label">Express payment available next</p>
             <PaymentMethodLogos />
           </div>
-
         </aside>
       </div>
 
-      {/* ── Mobile sticky CTA ── */}
-      <div className="dtb-co-mobile-cta lg:hidden">
-          <div className="dtb-co-mobile-cta__inner">
-            <div className="dtb-co-mobile-cta__total-row">
-              <span>Est. Total</span>
-              <span className="dtb-co-mobile-cta__total-amount">${displayTotal.toFixed(2)}</span>
-            </div>
-            <div className="dtb-co-mobile-cta__totals" aria-label="Order total summary" aria-live="polite" aria-atomic="true">
-              <div className="dtb-co-mobile-cta__totals-heading">
-                <span>Order totals</span>
-                <span>Secure checkout</span>
-              </div>
-              <div className="dtb-co-mobile-cta__total-line dtb-co-mobile-cta__total-line--final">
-                <span>Est. Total</span>
-                <span>${displayTotal.toFixed(2)}</span>
-              </div>
-              <div className="dtb-co-mobile-cta__total-line">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="dtb-co-mobile-cta__total-line">
-                <span>Shipping</span>
-                <span>{quoteReady ? (shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`) : 'By address'}</span>
-              </div>
-              <div className="dtb-co-mobile-cta__total-line">
-                <span>Tax</span>
-                <TaxSummaryValue status={taxPreview.status} amount={taxAmount} />
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handlePlaceOrder}
-              disabled={!canSubmitCheckout || processing}
-              className="dtb-co-btn-primary dtb-co-btn-primary--wide"
-              aria-label={payButtonAriaLabel}
-            >
-              {processing ? <Loader2 size={16} className="animate-spin" /> : null}
-              {payButtonLabel}
-            </button>
-            <div className="dtb-co-mobile-cta__trust">
-              <ShieldCheck size={13} aria-hidden="true" />
-              <span>Encrypted payment. No charge until gateway confirmation.</span>
-            </div>
-            <div className="dtb-co-mobile-cta__logos">
-              <PaymentMethodLogos compact />
-            </div>
-        </div>
-      </div>
-
+      <CheckoutMobileActionSheet
+        displayTotal={displayTotal}
+        subtotal={subtotal}
+        shipping={shipping}
+        taxAmount={taxAmount}
+        taxStatus={taxPreview.status}
+        quoteReady={quoteReady}
+        processing={processing}
+        canSubmitCheckout={canSubmitCheckout}
+        payButtonLabel={payButtonLabel}
+        payButtonAriaLabel={payButtonAriaLabel}
+        onSubmit={handlePlaceOrder}
+      />
     </div>
   );
 }
