@@ -19,6 +19,7 @@ DTB may:
 
 - present a synchronized single-page `/checkout` workflow shell;
 - collect contact, delivery, shipping-rate, coupon, and note inputs;
+- surface express checkout/payment method affordances immediately at the top of the checkout shell;
 - request DTB quote/session/confirm/finalize through the existing checkout API contract;
 - display a provider-owned Payment step after DTB prepares the WooCommerce pending order;
 - open the protected gateway-owned payment route when fallback is required;
@@ -29,6 +30,7 @@ DTB may:
 ```text
 /cart
 -> /checkout
+   Express checkout rail
    Contact
    Delivery
    Shipping method
@@ -38,7 +40,7 @@ DTB may:
 -> /checkout/order-pay only when the customer opens the protected fallback payment step
 ```
 
-The user-facing checkout steps are now synchronized inside `/checkout`. The final payment entry still remains provider-owned. This is the correct safe transition state before activating any same-shell Blocks payment path.
+The user-facing checkout steps are now synchronized inside `/checkout`. Express checkout/payment methods are visible immediately as provider-branded launch affordances, but final payment entry still remains provider-owned. This is the correct safe transition state before activating any same-shell Blocks payment path.
 
 ## Runtime switch conditions for same-shell payment
 
@@ -67,10 +69,11 @@ If any condition fails, `/checkout/order-pay` remains the primary payment execut
 
 - Confirm PR #475 and the checkout UI/workflow PR are merged into `main`.
 - Run the protected deployment workflow, not manual file drift.
-- Confirm the deployed `frontend/src/main.jsx` bundle imports only the canonical checkout stylesheet path at build time: `features/checkout/checkout-system.css`.
+- Confirm the deployed `frontend/src/main.jsx` bundle imports the canonical checkout stylesheet path at build time: `features/checkout/checkout-system.css`.
+- Confirm the deployed bundle also includes the express payment rail module: `features/checkout/checkout-express-payment-rail.css`.
 - Confirm the old checkout CSS files are not present in the deployed frontend manifest or loaded page source.
 - Purge CDN/cache/plugin/page cache after deploy.
-- Open `/checkout` in an incognito browser and confirm the new Contact, Delivery, Review, Payment sequence appears in one page.
+- Open `/checkout` in an incognito browser and confirm the Express checkout rail plus Contact, Delivery, Review, Payment sequence appears in one page.
 
 ### 2. Confirm WordPress/WooCommerce payment prerequisites
 
@@ -103,6 +106,7 @@ Confirm:
 
 - Add one real catalog product to cart.
 - Open `/checkout`.
+- Confirm the express checkout/payment method rail appears immediately under the checkout header on mobile and at the top of the checkout summary column on desktop.
 - Complete Contact and Delivery.
 - Select a shipping method.
 - Confirm Review appears before Payment.
