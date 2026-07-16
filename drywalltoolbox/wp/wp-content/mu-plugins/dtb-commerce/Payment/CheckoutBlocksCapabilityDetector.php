@@ -67,12 +67,27 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 
 		$server_same_shell_ready = $server_ready && $has_registered_blocks_method;
 
+		/**
+		 * Enable the same-shell checkout/payment path only after the production
+		 * runtime has been verified with provider-owned Checkout Blocks UI.
+		 *
+		 * This filter is the explicit release gate. It must not be enabled merely
+		 * because WooCommerce Blocks classes exist; gateway fields, wallet sheets,
+		 * tokenization, callbacks, and payment lifecycle must remain owned by
+		 * WooCommerce/payment providers and must be exercised against the active
+		 * production gateway stack first.
+		 *
+		 * @param bool  $enabled            Whether DTB may activate same-shell payment.
+		 * @param array $methods            Publicly normalized active checkout methods.
+		 * @param array $registered_methods Normalized registered Blocks integrations.
+		 */
+		$client_bridge_enabled = (bool) apply_filters( 'dtb_checkout_blocks_same_shell_supported', false, $methods, array_values( $registered_methods ) );
+		$same_shell_supported  = $server_same_shell_ready && $client_bridge_enabled;
+
 		return [
-			'contract_version'             => '2',
-			'primary_flow'                 => $server_same_shell_ready ? 'official_blocks_candidate_order_pay_fallback' : 'classic_order_pay_fallback',
-			// Remains false until DTB has a verified client bridge that can hand its
-			// server-created checkout session into official provider-owned Blocks UI.
-			'same_shell_supported'         => false,
+			'contract_version'             => '3',
+			'primary_flow'                 => $same_shell_supported ? 'official_blocks_same_shell' : ( $server_same_shell_ready ? 'official_blocks_candidate_order_pay_fallback' : 'classic_order_pay_fallback' ),
+			'same_shell_supported'         => $same_shell_supported,
 			'fallback_order_pay_enabled'   => true,
 			'blocks_package_available'     => $blocks_package_available,
 			'payment_registry_available'   => $payment_registry_class,
@@ -80,6 +95,7 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			'assets_api_available'         => $assets_api_available,
 			'server_blocks_ready'          => $server_ready,
 			'server_same_shell_ready'      => $server_same_shell_ready,
+			'client_bridge_enabled'        => $client_bridge_enabled,
 			'has_blocks_gateway_candidate' => $has_blocks_candidate,
 			'has_registered_blocks_method' => $has_registered_blocks_method,
 			'registered_methods'           => array_values( $registered_methods ),
