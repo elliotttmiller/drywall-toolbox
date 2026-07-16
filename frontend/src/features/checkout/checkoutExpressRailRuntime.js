@@ -5,10 +5,10 @@
  * payment step presentation.
  *
  * This does not render provider card fields, clone WooCommerce gateway markup,
- * or bypass DTB/WooCommerce payment lifecycle ownership. The rail remains a
- * launch affordance that routes through the existing guarded checkout primary
- * action: prepare the DTB checkout session/order first, then open the protected
- * provider-owned payment step when it is ready.
+ * or bypass DTB/WooCommerce payment lifecycle ownership. The desktop/sidebar rail
+ * remains a launch affordance that routes through the existing guarded checkout
+ * primary action. The mobile cloned rail is presentation-only and renders as a
+ * compact supported-payment logo strip.
  */
 
 const PROVIDER_LABELS = {
@@ -22,6 +22,7 @@ const PROVIDER_LABELS = {
 
 const MOBILE_QUERY = '(max-width: 1023px)';
 const MOBILE_CLONE_SELECTOR = '.dtb-co-payment-section--mobile-reference';
+let checkoutViewportResetPath = '';
 
 function resolveProviderFromLogo(logo) {
   if (!logo || !logo.classList) return 'payment method';
@@ -48,8 +49,21 @@ function focusNextRequiredField(root) {
   return false;
 }
 
+function prepareStaticMobileLogo(logo) {
+  logo.dataset.dtbExpressRailBound = 'static';
+  logo.removeAttribute('role');
+  logo.removeAttribute('tabindex');
+  logo.removeAttribute('title');
+  logo.removeAttribute('aria-disabled');
+}
+
 function activateLogo(logo) {
   if (!(logo instanceof HTMLElement) || logo.dataset.dtbExpressRailBound === 'true') return;
+
+  if (logo.closest(MOBILE_CLONE_SELECTOR)) {
+    prepareStaticMobileLogo(logo);
+    return;
+  }
 
   const provider = resolveProviderFromLogo(logo);
   logo.dataset.dtbExpressRailBound = 'true';
@@ -85,6 +99,17 @@ function isMobileCheckout() {
   return typeof window !== 'undefined' && window.matchMedia?.(MOBILE_QUERY)?.matches === true;
 }
 
+function syncCheckoutInitialViewport(root) {
+  if (!(root instanceof HTMLElement) || typeof window === 'undefined') return;
+  const pathname = window.location?.pathname || '';
+  if (!pathname.includes('/checkout') || checkoutViewportResetPath === pathname) return;
+
+  checkoutViewportResetPath = pathname;
+  window.requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
+}
+
 function syncMobileReferenceExpressRail(root) {
   if (!(root instanceof HTMLElement)) return;
 
@@ -107,10 +132,15 @@ function syncMobileReferenceExpressRail(root) {
 
   const clone = original.cloneNode(true);
   clone.classList.add('dtb-co-payment-section--mobile-reference');
-  clone.setAttribute('aria-label', 'Express checkout payment methods');
+  clone.setAttribute('aria-label', 'Supported payment methods');
   clone.querySelectorAll('[data-dtb-express-rail-bound]').forEach((node) => {
     node.removeAttribute('data-dtb-express-rail-bound');
   });
+
+  const label = clone.querySelector('.dtb-co-payment-label');
+  if (label instanceof HTMLElement) {
+    label.textContent = 'Supported payment methods';
+  }
 
   if (mobileSummary?.parentElement === formInner) {
     mobileSummary.insertAdjacentElement('afterend', clone);
@@ -134,7 +164,10 @@ function bindExpressRail() {
 }
 
 function bindCheckoutFastFlow() {
-  document.querySelectorAll('.dtb-checkout').forEach(syncMobileReferenceExpressRail);
+  document.querySelectorAll('.dtb-checkout').forEach((root) => {
+    syncCheckoutInitialViewport(root);
+    syncMobileReferenceExpressRail(root);
+  });
   bindExpressRail();
   syncPaymentWorkflowState();
 }
