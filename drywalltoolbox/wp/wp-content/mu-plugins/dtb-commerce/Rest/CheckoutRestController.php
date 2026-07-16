@@ -32,7 +32,12 @@ final class DTB_CheckoutRestController {
 	}
 
 	public static function capabilities(): WP_REST_Response {
-		return new WP_REST_Response( [ 'capabilities' => DTB_OrderCheckoutService::capabilities() ], 200 );
+		$capabilities = DTB_OrderCheckoutService::capabilities();
+		$methods      = (array) ( $capabilities['gateways'][0]['payment_methods'] ?? [] );
+		if ( class_exists( 'DTB_CheckoutBlocksCapabilityDetector' ) ) {
+			$capabilities['payment_architecture'] = DTB_CheckoutBlocksCapabilityDetector::detect( $methods );
+		}
+		return new WP_REST_Response( [ 'capabilities' => $capabilities ], 200 );
 	}
 
 	public static function status( WP_REST_Request $request ): WP_REST_Response|WP_Error {
