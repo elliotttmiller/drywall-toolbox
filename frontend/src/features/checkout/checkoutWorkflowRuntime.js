@@ -27,6 +27,7 @@ const PAYMENT_VISUAL_METHODS = [
 let installed = false;
 const boundStepButtons = new WeakSet();
 const boundFields = new WeakSet();
+const boundPrimaryActions = new WeakSet();
 let observer = null;
 let updateQueued = false;
 let manualStep = 'contact';
@@ -111,6 +112,22 @@ function resolveStep(state) {
   if (manualStep && state.allowedSteps.has(manualStep)) return manualStep;
   manualStep = firstAllowedStep(state);
   return manualStep;
+}
+
+function nextLinearStep(activeStep, state) {
+  if (activeStep === 'contact' && state.contactComplete) return 'delivery';
+  if (activeStep === 'delivery' && state.reviewReady) return 'review';
+  if (activeStep === 'review' && state.paymentReady) return 'payment';
+  return '';
+}
+
+function scrollStepIntoView(root, step) {
+  window.requestAnimationFrame(() => {
+    const panel = root.querySelector(`.dtb-co-flow-panel--${step}.is-dtb-flow-visible`)
+      || root.querySelector('.is-dtb-flow-visible')
+      || root.querySelector('.dtb-co-formpane');
+    panel?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+  });
 }
 
 function logoFor(root, key) {
@@ -246,6 +263,7 @@ function goBackFrom(root, activeStep, state) {
   if (previous) {
     manualStep = previous;
     scheduleUpdate();
+    scrollStepIntoView(root, previous);
     return;
   }
 
@@ -310,6 +328,7 @@ function ensureMobileStepShell(root, activeStep, state) {
       dot.addEventListener('click', () => {
         manualStep = step;
         scheduleUpdate();
+        scrollStepIntoView(root, step);
       });
     }
     dots.appendChild(dot);
@@ -372,7 +391,8 @@ function updateStepProgress(root, activeStep, state) {
     node.setAttribute('role', 'button');
     node.setAttribute('tabindex', enabled ? '0' : '-1');
     node.setAttribute('aria-disabled', enabled ? 'false' : 'true');
-    node.setAttribute('aria-current', step === activeStep ? 'step' : 'false');
+    if (step === activeStep) node.setAttribute('aria-current', 'step');
+    else node.removeAttribute('aria-current');
     node.setAttribute('aria-label', `${STEP_LABELS.get(step) || step} checkout step${enabled ? '' : ', locked'}`);
 
     if (!boundStepButtons.has(node)) {
@@ -384,6 +404,7 @@ function updateStepProgress(root, activeStep, state) {
         if (!nextState.allowedSteps.has(selected)) return;
         manualStep = selected;
         scheduleUpdate();
+        scrollStepIntoView(root, selected);
       };
       node.addEventListener('click', activate);
       node.addEventListener('keydown', (event) => {
@@ -393,6 +414,76 @@ function updateStepProgress(root, activeStep, state) {
       });
     }
   });
+}
+
+function setButtonLabel(button, label) {
+  if (!(button instanceof HTMLElement) || !label) return;
+  if (button.dataset.dtbRuntimeLabel === label) return;
+  button.dataset.dtbRuntimeLabel = label;
+  button.replaceChildren(document.createTextNode(label));
+  button.setAttribute('aria-label', label);
+}
+
+function mobileActionState(activeStep, state) {
+  if (activeStep === 'contact') {
+    return state.contactComplete
+      ? { mode: 'next', enabled: true, label: 'Continue to delivery' }
+      : { mode: 'blocked', enabled: false, label: 'Complete contact details' };
+  }
+
+  if (activeStep === 'delivery') {
+    if (!state.deliveryFieldsComplete) {
+      return { mode: 'blocked', enabled: false, label: 'Enter delivery address' };
+    }
+    if (!state.shippingComplete) {
+      return { mode: 'blocked', enabled: false, label: 'Calculating shipping and tax…' };
+    }
+    return { mode: 'next', enabled: true, label: 'Continue to review' };
+  }
+
+  return { mode: 'react', enabled: null, label: '' };
+}
+
+function handleMobileActionClick(button, event) {
+  const root = button.closest('.dtb-checkout');
+  if (!(root instanceof HTMLElement)) return;
+  const state = getState(root);
+  const activeStep = resolveStep(state);
+  const actionState = mobileActionState(activeStep, state);
+  if (actionState.mode !== 'next') return;
+
+  const nextStep = nextLinearStep(activeStep, state);
+  if (!nextStep) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+  manualStep = nextStep;
+  scheduleUpdate();
+  scrollStepIntoView(root, nextStep);
+}
+
+function updateMobilePrimaryAction(root, activeStep, state) {
+  const button = root.querySelector('.dtb-co-mobile-cta .dtb-co-btn-primary');
+  if (!(button instanceof HTMLButtonElement)) return;
+  const actionState = mobileActionState(activeStep, state);
+
+  if (actionState.mode === 'react') {
+    button.dataset.dtbRuntimeMode = 'react';
+    button.removeAttribute('data-dtb-runtime-disabled');
+    return;
+  }
+
+  button.dataset.dtbRuntimeMode = actionState.mode;
+  button.dataset.dtbRuntimeDisabled = actionState.enabled ? 'false' : 'true';
+  button.disabled = !actionState.enabled;
+  button.setAttribute('aria-disabled', actionState.enabled ? 'false' : 'true');
+  button.dataset.ready = actionState.enabled ? 'true' : 'false';
+  setButtonLabel(button, actionState.label);
+
+  if (!boundPrimaryActions.has(button)) {
+    boundPrimaryActions.add(button);
+    button.addEventListener('click', (event) => handleMobileActionClick(button, event), true);
+  }
 }
 
 function bindFields(root) {
@@ -433,6 +524,17 @@ function update() {
   ensureMobileStepShell(root, activeStep, state);
   updatePanelVisibility(root, activeStep);
   updateStepProgress(root, activeStep, state);
+  updateMobilePrimaryAction(root, activeStep, state);
+
+  window.dispatchEvent(new CustomEvent('dtb:checkout-flow-step-changed', {
+    detail: {
+      activeStep,
+      contactComplete: state.contactComplete,
+      deliveryComplete: state.shippingComplete,
+      reviewReady: state.reviewReady,
+      paymentReady: state.paymentReady,
+    },
+  }));
 }
 
 function scheduleUpdate() {
