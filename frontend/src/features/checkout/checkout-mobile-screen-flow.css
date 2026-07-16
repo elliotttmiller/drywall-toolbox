@@ -7,16 +7,17 @@
  * payment handoff, and provider-owned payment controls.
  */
 
-@media (max-width: 1023px) {
+`@media` (max-width: 1023px) {
   .dtb-checkout--mobile-screen-flow {
-    --dtb-flow-bg: #f7f8fb;
-    --dtb-flow-card: #ffffff;
+    --dtb-flow-bg: `#f7f8fb`;
+    --dtb-flow-card: `#ffffff`;
     --dtb-flow-border: rgba(210, 218, 230, .95);
-    --dtb-flow-ink: #080d1c;
-    --dtb-flow-muted: #667085;
-    --dtb-flow-primary: #315ee8;
+    --dtb-flow-ink: `#080d1c`;
+    --dtb-flow-muted: `#667085`;
+    --dtb-flow-primary: `#315ee8`;
     --dtb-flow-radius: clamp(14px, 4vw, 20px);
     --dtb-flow-gutter: max(clamp(14px, 4.4vw, 24px), env(safe-area-inset-left));
+
     min-height: 100svh;
     background: var(--dtb-flow-bg) !important;
     color: var(--dtb-flow-ink);
