@@ -104,166 +104,26 @@
   }
 
   .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
+    display: grid;
     grid-template-columns: minmax(32px, 1fr) auto minmax(32px, 1fr);
+    align-items: center;
     gap: 14px;
+    margin: 0;
     color: #6b7280;
-    font-size: 0;
+    font-size: 16px;
     font-weight: 560;
     letter-spacing: 0;
-    text-transform: none;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    background: #d9dde5;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::selection {
-    background: transparent;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    --dtb-express-label: "Express checkout";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::marker {
-    content: "";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
+    line-height: 1.2;
     text-align: center;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label > * {
-    font-size: initial;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before {
-    content: "";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    content: "";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    overflow: hidden;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    position: relative;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label span,
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label strong {
-    font-size: 16px;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    color: transparent;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    color: initial;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before {
-    content: "";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    content: "";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    grid-template-areas: "left label right";
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before {
-    grid-area: left;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    grid-area: right;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    font-size: 16px;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    text-indent: -9999px;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::selection {
-    color: transparent;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    text-indent: 0;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    min-height: 20px;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    height: 1px;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before {
-    justify-self: stretch;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    justify-self: stretch;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    isolation: isolate;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    z-index: 0;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    background:
-      linear-gradient(#ffffff, #ffffff) center / auto 100% no-repeat;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::selection {
-    text-shadow: none;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    /* Replace the underlying desktop label with the mobile reference label. */
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before {
-    background: #d9dde5;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
-    background: #d9dde5;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    text-shadow: 0 0 0 #6b7280;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    text-indent: 0;
-    color: #6b7280;
-    font-size: 16px;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
     text-transform: none;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background: #d9dde5;
   }
 
   .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
@@ -314,19 +174,13 @@
     content: "OR";
     order: 4;
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    align-items: center;
-    gap: 22px;
     margin: 2px 0 0;
+    padding: 0 0 2px;
     color: #6b7280;
     font-size: 14px;
     font-weight: 520;
     letter-spacing: 0.03em;
     text-align: center;
-  }
-
-  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos::after {
     background:
       linear-gradient(#d9dde5, #d9dde5) left center / calc(50% - 28px) 1px no-repeat,
       linear-gradient(#d9dde5, #d9dde5) right center / calc(50% - 28px) 1px no-repeat;
