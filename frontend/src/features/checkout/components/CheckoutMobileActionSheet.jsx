@@ -108,7 +108,7 @@ export function CheckoutMobileActionSheet({
 
         <div className="dtb-co-mobile-cta__trust">
           <ShieldCheck size={13} aria-hidden="true" />
-          <span>Secure payment opens next.</span>
+          <span>Protected payment continues next.</span>
         </div>
       </div>
     </div>
