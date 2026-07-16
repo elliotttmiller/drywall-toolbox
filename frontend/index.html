@@ -10,12 +10,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="<%= htmlWebpackPlugin.options.publicPath %>apple-touch-icon.png" />
     <link rel="manifest" href="<%= htmlWebpackPlugin.options.publicPath %>site.webmanifest" />
     <!--
-      viewport-fit=cover: lets content extend into iPhone notch/dynamic-island safe areas.
-      user-scalable=yes + maximum-scale=5: allows pinch-zoom (WCAG 1.4.4) and keeps
-      Android Chrome's fast-tap scroll path active. iOS Safari auto-zoom on inputs is
-      prevented via font-size:16px in CSS — no need to lock the viewport.
+      viewport-fit=cover: supports iPhone safe-area layout.
+      interactive-widget=resizes-content: lets mobile browsers resize visual
+      viewport height when the keyboard opens instead of overlaying fixed UI.
+      Pinch zoom remains available for accessibility; CSS prevents input-focus
+      zoom, body-level horizontal overflow, and broken mobile viewport geometry.
     -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 
     <!-- ── Static default SEO (overridden per-page by SEOHead / react-helmet-async) ── -->
     <title>Drywall Toolbox</title>
@@ -70,7 +71,7 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Drywall Toolbox",
-      "url": "https://drywalltoolbox.com",
+      "url": "https://drywalltoolbox.com/",
       "logo": "https://drywalltoolbox.com/logo-black.svg",
       "description": "Professional drywall tools and equipment from top brands. Shop automatic taping tools, mud boxes, finishing tools, and more.",
       "contactPoint": {
@@ -78,77 +79,11 @@
         "contactType": "customer service",
         "email": "info@drywalltoolbox.com",
         "availableLanguage": "English"
-      },
-      "sameAs": [
-        "https://www.facebook.com/drywalltoolbox",
-        "https://www.instagram.com/drywalltoolbox"
-      ]
+      }
     }
     </script>
   </head>
   <body>
-    <!--
-      GitHub Pages SPA deep-link restore.
-      404.html encodes the original path into ?/path — this script decodes it
-      back and replaces the browser URL *before* React/ReactRouter boots so the
-      router sees the real path (e.g. /login, /register) rather than /?/login.
-    -->
-    <script>
-      (function () {
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
-        }
-      })();
-      // Also handle the ?/ encoding used by 404.html
-      (function (l) {
-        if (l.search[1] === '/') {
-          var decoded = l.search.slice(1).split('&').map(function (s) {
-            return s.replace(/~and~/g, '&');
-          });
-          var pathWithoutTrailingSlash = l.pathname.endsWith('/') ? l.pathname.slice(0, -1) : l.pathname;
-          window.history.replaceState(
-            null, null,
-            pathWithoutTrailingSlash + decoded[0] +
-            (decoded.slice(1).length ? '?' + decoded.slice(1).join('&') : '') +
-            l.hash
-          );
-        }
-      }(window.location));
-    </script>
-    <!--
-      WooCommerce core-profiler safety guard
-      ──────────────────────────────────────
-      WooCommerce 7+ ships a React-based admin app (core-profiler.js) that can
-      execute on any page where WordPress injects its scripts. If that bundle
-      runs before its data is ready it throws:
-        "Uncaught TypeError: Cannot read properties of undefined (reading 'title')"
-      The primary fix is the dtb-disable-wc-admin.php mu-plugin (server-side).
-      This inline script is a belt-and-suspenders guard: it pre-seeds the global
-      objects the component reads so that, if the bundle does execute, it finds
-      valid data instead of undefined and does not crash.
-    -->
-    <script>
-      (function () {
-        if (!window.wcAdmin) window.wcAdmin = {};
-        if (!window.wcAdmin.profile) {
-          window.wcAdmin.profile = {
-            title: '',
-            industries: [],
-            products: [],
-            business_extensions: [],
-            completed: true,
-            skipped: true
-          };
-        }
-        if (!window.wcSettings) window.wcSettings = {};
-        if (!window.wcSettings.admin) {
-          window.wcSettings.admin = { defaultDateRange: 'period=month&compare=previous_year' };
-        }
-      })();
-    </script>
     <div id="root"></div>
-    <!-- webpack HtmlWebpackPlugin injects the bundle script automatically -->
   </body>
 </html>
