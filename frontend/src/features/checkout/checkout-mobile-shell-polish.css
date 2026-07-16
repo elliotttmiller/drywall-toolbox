@@ -3,7 +3,8 @@
  *
  * Final mobile checkout shell polish. Presentation-only: removes mobile top
  * whitespace, converts the supported-payment rail into a compact logo strip,
- * and collapses the bottom sheet to a minimal total summary until expanded.
+ * collapses the bottom sheet to a minimal total summary until expanded, and
+ * trims mobile cards/fields into a sleeker mostly-fluid checkout surface.
  */
 
 @media (max-width: 1023px) {
