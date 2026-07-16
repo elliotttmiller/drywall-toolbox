@@ -300,6 +300,11 @@ function ensureMobileStepShell(root, activeStep, state) {
     dot.classList.toggle('is-current', index === activeIndex);
     dot.disabled = !state.allowedSteps.has(step);
     dot.setAttribute('aria-label', `${STEP_LABELS.get(step) || step}${dot.disabled ? ' locked' : ''}`);
+    if (index === activeIndex) {
+      dot.setAttribute('aria-current', 'step');
+    } else {
+      dot.removeAttribute('aria-current');
+    }
     if (!dot.disabled) {
       dot.addEventListener('click', () => {
         manualStep = step;
