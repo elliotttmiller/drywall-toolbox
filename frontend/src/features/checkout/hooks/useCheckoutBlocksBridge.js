@@ -36,6 +36,7 @@ export function normalizePaymentArchitecture( capabilities = {} ) {
 		fallbackOrderPayEnabled: architecture.fallback_order_pay_enabled !== false,
 		serverBlocksReady: architecture.server_blocks_ready === true,
 		serverSameShellReady: architecture.server_same_shell_ready === true,
+		clientBridgeEnabled: architecture.client_bridge_enabled === true,
 		hasRegisteredBlocksMethod: architecture.has_registered_blocks_method === true,
 		clientRegistryGlobal: String( architecture.client_registry_global || 'window.wc.wcBlocksRegistry' ),
 		methods,
@@ -51,6 +52,7 @@ export function resolveCheckoutBlocksBridge( capabilities = {} ) {
 	);
 	const sameShellReady = Boolean(
 		architecture.sameShellSupported
+		&& architecture.clientBridgeEnabled
 		&& architecture.serverBlocksReady
 		&& architecture.serverSameShellReady
 		&& clientRegistryReady
@@ -60,6 +62,7 @@ export function resolveCheckoutBlocksBridge( capabilities = {} ) {
 	let reason = '';
 	if ( !sameShellReady ) {
 		if ( !architecture.sameShellSupported ) reason = 'dtb_bridge_not_enabled';
+		else if ( !architecture.clientBridgeEnabled ) reason = 'client_bridge_not_enabled';
 		else if ( !architecture.serverBlocksReady ) reason = 'server_blocks_unavailable';
 		else if ( !architecture.serverSameShellReady ) reason = 'no_registered_blocks_methods';
 		else if ( !clientRegistryReady ) reason = 'client_blocks_registry_unavailable';
