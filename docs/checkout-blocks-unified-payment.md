@@ -19,8 +19,16 @@ Official WooCommerce Blocks payment integration requires:
 - client-side registration through `window.wc.wcBlocksRegistry`;
 - `registerExpressPaymentMethod` for Apple Pay, Google Pay, PayPal, and other one-button methods;
 - `registerPaymentMethod` for regular/card/payment-provider methods;
-- server-side `Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType` integration where DTB or a gateway must expose scripts/settings to the Checkout block;
+- server-side `Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType` integration where DTB or a gateway exposes scripts/settings to the Checkout block;
 - gateway/provider ownership of tokenization, iframes, callbacks, and processing.
+
+## Implemented DTB bridge wiring
+
+This PR adds `DTB_CheckoutBlocksBridgeIntegration`, a conservative server-side `AbstractPaymentMethodType` integration shell. It registers only inside WooCommerce Blocks through `woocommerce_blocks_payment_method_type_registration` and exposes `checkout-blocks-bridge.js` as the matching client registration script.
+
+The bridge is intentionally hidden by default. `is_active()` returns true only when the explicit `dtb_checkout_blocks_same_shell_supported` filter is enabled and at least one non-manual WooCommerce gateway is available. The client script still requires provider-owned Blocks registry APIs before registering its payment method.
+
+The bridge does **not** clone gateway fields, embed order-pay, intercept iframes, or move card entry into custom React code.
 
 ## Fallback rule
 
@@ -30,7 +38,7 @@ DTB must not simulate Blocks support by embedding order-pay, cloning gateway fie
 
 ## Runtime capability contract
 
-`GET /wp-json/dtb/v1/checkout/capabilities` now includes `payment_architecture`:
+`GET /wp-json/dtb/v1/checkout/capabilities` includes `payment_architecture`:
 
 ```json
 {
@@ -100,13 +108,12 @@ This separates DTB session/order preparation from the payment UI activation poin
 
 ## Rollout sequence
 
-1. Ship capability detection, registered-method discovery, bridge gating, and payment-stage state separation.
+1. Ship capability detection, registered-method discovery, server-side Blocks bridge registration, client bridge guard, and payment-stage state separation.
 2. Verify production WooPayments/PayPal plugin stack exposes Blocks payment infrastructure.
-3. Build a gateway-specific official Blocks payment bridge only for proven eligible methods.
-4. Enable `dtb_checkout_blocks_same_shell_supported` only after the client bridge is verified end to end.
-5. Switch supported checkouts to one-shell payment.
-6. Keep order-pay for fallback, retry, and manual payment links.
-7. Simplify the order-pay visual template after it is no longer the primary storefront path.
+3. Enable `dtb_checkout_blocks_same_shell_supported` only in a staging/protected production rollout after gateway-owned Blocks UI is verified.
+4. Switch supported checkouts to one-shell payment after the active provider stack proves tokenization/callback/order lifecycle correctness.
+5. Keep order-pay for fallback, retry, and manual payment links.
+6. Simplify the order-pay visual template after it is no longer the primary storefront path.
 
 ## Validation
 
@@ -125,7 +132,7 @@ Manual checks:
 
 - `/wp-json/dtb/v1/checkout/capabilities` returns `payment_architecture.contract_version = "3"`.
 - `registered_methods` reflects WooCommerce Blocks payment registry state when available.
-- `same_shell_supported` remains false until `dtb_checkout_blocks_same_shell_supported` is intentionally enabled and the client bridge is verified.
+- `same_shell_supported` remains false until a verified DTB client bridge is intentionally enabled.
 - Existing checkout still reaches order-pay fallback.
 - Retry/double-submit behavior remains contained.
 - `/checkout/order-pay/{id}` still works for recovery links.
