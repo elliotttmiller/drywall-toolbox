@@ -72,7 +72,7 @@ export function CheckoutIdentityChoice({ isAuthenticated = false, selected = '',
         </div>
         <div className="dtb-co-auth-choice__selected-copy">
           <span className="dtb-co-auth-choice__selected-label">Guest checkout</span>
-          <p>No account is required. Payment happens on the secure WooCommerce gateway screen.</p>
+          <p>No account is required. Payment continues through the protected checkout payment step.</p>
         </div>
         <Link to="/login" state={{ returnTo: RETURN_TO }} className="dtb-co-auth-choice__selected-link">
           Sign in instead
@@ -89,7 +89,7 @@ export function CheckoutIdentityChoice({ isAuthenticated = false, selected = '',
         <p className="dtb-co-auth-choice__eyebrow">Start checkout</p>
         <h2 id="dtb-co-auth-choice-title" className="dtb-co-auth-choice__title">Checkout as guest</h2>
         <p className="dtb-co-auth-choice__copy">
-          Fastest path. Enter shipping details, review the server-calculated total, then continue to the secure payment page.
+          Fastest path. Enter shipping details, review the server-calculated total, then continue through the protected payment step.
         </p>
       </div>
 
@@ -110,7 +110,7 @@ export function CheckoutIdentityChoice({ isAuthenticated = false, selected = '',
       )}
 
       <div className="dtb-co-auth-choice__assurance" aria-label="Checkout assurances">
-        <span><ShieldCheck size={13} aria-hidden="true" /> Official payment gateway next</span>
+        <span><ShieldCheck size={13} aria-hidden="true" /> Protected payment step</span>
         <span><LockKeyhole size={13} aria-hidden="true" /> No forced account creation</span>
       </div>
     </section>
