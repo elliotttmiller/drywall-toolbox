@@ -12,38 +12,19 @@ export function makeCheckoutAttemptId() {
 }
 
 export function readPendingCheckoutPayment() {
-	if ( !canUseSessionStorage() ) return null;
-	try {
-		const raw = window.sessionStorage.getItem( PENDING_CHECKOUT_KEY );
-		if ( !raw ) return null;
-		const parsed = JSON.parse( raw );
-		if ( !parsed || typeof parsed !== 'object' || !parsed.resumeToken || !parsed.sessionId ) return null;
-		if ( parsed.expiresAt && Date.parse( parsed.expiresAt ) <= Date.now() ) {
-			window.sessionStorage.removeItem( PENDING_CHECKOUT_KEY );
-			return null;
-		}
-		return parsed;
-	} catch {
-		return null;
-	}
+	// Legacy order-pay resume badges are retired. Same-shell checkout keeps payment
+	// context in the active checkout runtime and must not resurrect stale order-pay
+	// recovery links after refresh/navigation.
+	clearPendingCheckoutPayment();
+	return null;
 }
 
-export function writePendingCheckoutPayment( payload = {} ) {
-	if ( !canUseSessionStorage() || !payload.resumeToken || !payload.sessionId ) return null;
-	const normalized = {
-		attemptId: payload.attemptId || makeCheckoutAttemptId(),
-		resumeToken: String( payload.resumeToken ),
-		sessionId: String( payload.sessionId ),
-		expiresAt: payload.expiresAt || '',
-		cartSnapshot: Array.isArray( payload.cartSnapshot ) ? payload.cartSnapshot : [],
-		createdAt: new Date().toISOString(),
-	};
-	try {
-		window.sessionStorage.setItem( PENDING_CHECKOUT_KEY, JSON.stringify( normalized ) );
-	} catch {
-		// Payment redirect still proceeds if opportunistic recovery storage fails.
-	}
-	return normalized;
+export function writePendingCheckoutPayment() {
+	// Do not persist resumable payment redirects. The WooPayments same-shell flow
+	// either completes inside /checkout or shows an in-shell provider readiness
+	// error without creating a legacy resume badge.
+	clearPendingCheckoutPayment();
+	return null;
 }
 
 export function clearPendingCheckoutPayment() {
