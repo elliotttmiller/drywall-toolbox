@@ -43,7 +43,7 @@ export function CheckoutMobileActionSheet({
   const compactContext = `Shipping ${shippingCopy} · Tax ${taxCopy}`;
 
   const handleSubmit = () => {
-    if (processing) return;
+    if (processing || !canSubmitCheckout) return;
     onSubmit?.();
   };
 
@@ -96,7 +96,7 @@ export function CheckoutMobileActionSheet({
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={processing}
+          disabled={processing || !canSubmitCheckout}
           aria-disabled={!canSubmitCheckout || processing}
           data-ready={canSubmitCheckout ? 'true' : 'false'}
           className="dtb-co-btn-primary dtb-co-btn-primary--wide"
@@ -108,7 +108,7 @@ export function CheckoutMobileActionSheet({
 
         <div className="dtb-co-mobile-cta__trust">
           <ShieldCheck size={13} aria-hidden="true" />
-          <span>Protected payment continues next.</span>
+          <span>Protected checkout stays synchronized in this page.</span>
         </div>
       </div>
     </div>
