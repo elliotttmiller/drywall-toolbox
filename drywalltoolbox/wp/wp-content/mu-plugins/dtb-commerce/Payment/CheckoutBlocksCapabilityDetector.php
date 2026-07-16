@@ -187,7 +187,7 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		}
 
 		$data_available = false;
-		if ( is_object( $integration ) && method_exists( 'get_payment_method_data' ) ) {
+		if ( is_object( $integration ) && method_exists( $integration, 'get_payment_method_data' ) ) {
 			try {
 				$data_available = is_array( $integration->get_payment_method_data() );
 			} catch ( Throwable $exception ) {
