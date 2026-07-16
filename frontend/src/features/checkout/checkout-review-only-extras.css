@@ -1,0 +1,19 @@
+/*
+ * frontend/src/features/checkout/checkout-review-only-extras.css
+ *
+ * Final mobile checkout review-step guard. Presentation-only: discount code and
+ * order note controls are review/completion inputs and should not appear inside
+ * Contact, Delivery, or Payment step surfaces.
+ */
+
+@media (max-width: 1023px) {
+  .dtb-checkout--mobile-screen-flow:not([data-dtb-flow-step="review"]) #dtb-co-mobile-coupon,
+  .dtb-checkout--mobile-screen-flow:not([data-dtb-flow-step="review"]) #field-customerNote-wrap {
+    display: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="review"] #dtb-co-mobile-coupon,
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="review"] #field-customerNote-wrap {
+    display: block !important;
+  }
+}
