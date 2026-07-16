@@ -11,10 +11,17 @@
   var createElement = elApi.createElement;
   var data = settings && typeof settings.getSetting === 'function' ? settings.getSetting('dtb_checkout_blocks_bridge_data', {}) : {};
   data = data || {};
-  var enabled = data.bridgeEnabled === true && data.sameShellSupported === true;
-  var title = String(data.title || 'Drywall Toolbox secure checkout');
+
+  // This shim is diagnostics-only. Production same-shell checkout must render the
+  // active provider's official Blocks payment method, not a DTB placeholder.
+  var enabled = data.bridgeEnabled === true && data.sameShellSupported !== true;
+  if (!enabled) {
+    return;
+  }
+
+  var title = String(data.title || 'Drywall Toolbox diagnostics bridge');
   function label(){ return createElement('span', { className: 'dtb-blocks-bridge-label' }, title); }
-  function content(){ return createElement('div', { className: 'dtb-blocks-bridge-content' }, String(data.description || 'Provider-owned checkout is required.')); }
+  function content(){ return createElement('div', { className: 'dtb-blocks-bridge-content' }, String(data.description || 'Diagnostics only. Provider-owned checkout is required.')); }
   registry.registerPaymentMethod({
     name: 'dtb_checkout_blocks_bridge',
     label: createElement(label),
