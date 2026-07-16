@@ -1,13 +1,11 @@
 import { useCallback, useState } from 'react';
 
-import { resumeCheckoutPayment } from '../../../api/checkout.js';
 import {
 	clearPendingCheckoutPayment,
 	makeCheckoutAttemptId,
 	readPendingCheckoutPayment,
 	writePendingCheckoutPayment,
 } from '../../../utils/checkoutRecovery.js';
-import { normalizePaymentUrl } from '../../../utils/paymentUrl.js';
 
 export function useCheckoutRecovery() {
 	const [pendingPayment, setPendingPayment] = useState( () => readPendingCheckoutPayment() );
@@ -24,12 +22,13 @@ export function useCheckoutRecovery() {
 	}, [] );
 
 	const resumePayment = useCallback( async () => {
-		if ( !pendingPayment?.resumeToken ) throw new Error( 'No resumable payment session is available.' );
-		const response = await resumeCheckoutPayment( pendingPayment.resumeToken );
-		if ( !response?.payment_url ) throw new Error( 'Secure payment is no longer available for this checkout.' );
-		window.location.assign( normalizePaymentUrl( response.payment_url ) );
-		return response;
-	}, [pendingPayment] );
+		clearPendingCheckoutPayment();
+		setPendingPayment( null );
+		throw Object.assign(
+			new Error( 'Legacy order-pay resume has been retired. Start checkout again so payment remains inside the same-shell WooPayments flow.' ),
+			{ code: 'dtb_legacy_resume_retired' },
+		);
+	}, [] );
 
 	return { pendingPayment, rememberPayment, dismissPayment, resumePayment };
 }
