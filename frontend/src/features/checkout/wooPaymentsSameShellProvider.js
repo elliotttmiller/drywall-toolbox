@@ -4,9 +4,10 @@
  * WooPayments same-shell provider/data adapter for DTB checkout. This module does
  * not render raw card fields, wallet sheets, provider iframes, or payment
  * callbacks. It synchronizes the DTB-created pending order context with the
- * WooCommerce Blocks data stores when those official stores are present, reads
- * provider-owned payment data from WooCommerce Blocks, and submits only that
- * provider-owned payment data through the existing same-order Store API callback.
+ * WooCommerce Blocks data stores when those official stores are present, mounts
+ * provider-owned registered Blocks payment nodes when they are exposed by the
+ * WooCommerce Blocks registry/store, and submits only provider-owned payment data
+ * through the existing same-order Store API callback.
  */
 
 const WOOPAYMENTS_GATEWAY_IDS = new Set(['woocommerce_payments', 'woopayments']);
@@ -14,10 +15,14 @@ const WOOPAYMENTS_COMPATIBLE_GATEWAY_IDS = new Set(['woocommerce_payments', 'woo
 const WALLET_METHODS = new Set(['apple-pay', 'google-pay']);
 const STORE_WAIT_TIMEOUT_MS = 6500;
 const STORE_WAIT_INTERVAL_MS = 80;
+const CONTROL_MOUNT_CLASS = 'dtb-woopayments-control-mount';
+const CONTROL_BODY_CLASS = 'dtb-woopayments-control-mount__body';
 
 let installed = false;
 let unsubscribePaymentStore = null;
 let lastSnapshotKey = '';
+let mountedControlsKey = '';
+let mountedControlsRoot = null;
 
 function normalizeId(value) {
   return String(value || '').trim().toLowerCase();
@@ -251,6 +256,153 @@ function sameShellReady() {
   }
 }
 
+function paymentMethodDefinition(snapshot, paymentMethod) {
+  const methods = snapshot.availablePaymentMethods || {};
+  return methods[paymentMethod]
+    || methods[normalizeId(paymentMethod)]
+    || methods.woocommerce_payments
+    || methods.woopayments
+    || methods.stripe
+    || null;
+}
+
+function ensureControlMount(root) {
+  const paymentStep = root?.querySelector?.('#checkout-payment-step');
+  if (!(paymentStep instanceof HTMLElement)) return null;
+
+  let mount = paymentStep.querySelector(`.${CONTROL_MOUNT_CLASS}`);
+  if (!(mount instanceof HTMLElement)) {
+    mount = document.createElement('section');
+    mount.className = CONTROL_MOUNT_CLASS;
+    mount.setAttribute('aria-label', 'WooPayments secure payment controls');
+    mount.innerHTML = `
+      <div class="dtb-woopayments-control-mount__header">
+        <span>WooPayments</span>
+        <strong>Secure payment controls</strong>
+      </div>
+      <div class="${CONTROL_BODY_CLASS}" role="group" aria-live="polite"></div>
+    `;
+    const status = paymentStep.querySelector('.dtb-same-shell-payment-status');
+    if (status instanceof HTMLElement) {
+      status.before(mount);
+    } else {
+      paymentStep.appendChild(mount);
+    }
+  }
+  return mount;
+}
+
+function setControlMountMessage(root, status, message) {
+  const mount = ensureControlMount(root);
+  const body = mount?.querySelector?.(`.${CONTROL_BODY_CLASS}`);
+  if (!(body instanceof HTMLElement)) return;
+  mount.dataset.status = status;
+  body.replaceChildren();
+  const copy = document.createElement('p');
+  copy.textContent = message;
+  body.appendChild(copy);
+}
+
+function mountedControlProps({ order = {}, snapshot = {}, paymentMethod = '', addresses = {} } = {}) {
+  const billingAddress = addresses.billingAddress || normalizeStoreAddress(order.billingAddress || order.billing_address || {});
+  const shippingAddress = addresses.shippingAddress || normalizeStoreAddress(order.shippingAddress || order.shipping_address || billingAddress);
+  const blocksCheckout = window.wc?.blocksCheckout || {};
+  return {
+    activePaymentMethod: paymentMethod,
+    billing: {
+      billingAddress,
+      cartTotal: order.total || '',
+      currency: { code: order.currency || 'USD' },
+      cartTotalItems: 0,
+      displayPricesIncludingTax: false,
+      appliedCoupons: [],
+      customerId: 0,
+    },
+    shippingData: {
+      shippingAddress,
+      needsShipping: true,
+      shippingRates: [],
+      selectedRates: {},
+    },
+    cartData: {
+      cartItems: [],
+      cartFees: [],
+      extensions: {},
+    },
+    components: blocksCheckout,
+    eventRegistration: window.wc?.blocksCheckoutEvents || {},
+    emitResponse: blocksCheckout.emitResponse || {},
+    paymentStatus: snapshot.paymentStatus || 'idle',
+  };
+}
+
+function renderOfficialPaymentNode(root, definition, props, paymentMethod) {
+  const mount = ensureControlMount(root);
+  const body = mount?.querySelector?.(`.${CONTROL_BODY_CLASS}`);
+  const wpElement = window.wp?.element;
+  if (!(body instanceof HTMLElement) || !wpElement) return false;
+
+  const node = definition?.content || definition?.edit || definition?.component || null;
+  if (!node) return false;
+
+  try {
+    let element = node;
+    if (typeof node === 'function' && typeof wpElement.createElement === 'function') {
+      element = wpElement.createElement(node, props);
+    } else if (node && typeof node === 'object' && typeof wpElement.cloneElement === 'function') {
+      element = wpElement.cloneElement(node, props);
+    }
+
+    if (mountedControlsRoot && mountedControlsKey === paymentMethod) {
+      mountedControlsRoot.render(element);
+    } else if (window.ReactDOM?.createRoot) {
+      body.replaceChildren();
+      mountedControlsRoot = window.ReactDOM.createRoot(body);
+      mountedControlsRoot.render(element);
+    } else if (typeof wpElement.render === 'function') {
+      body.replaceChildren();
+      wpElement.render(element, body);
+      mountedControlsRoot = null;
+    } else {
+      return false;
+    }
+
+    mountedControlsKey = paymentMethod;
+    mount.dataset.status = 'mounted';
+    return true;
+  } catch (error) {
+    setControlMountMessage(
+      root,
+      'error',
+      error?.message || 'WooPayments registered Blocks controls could not mount in this checkout shell.',
+    );
+    return false;
+  }
+}
+
+function mountOfficialPaymentControls({ root, order = {}, snapshot, paymentMethod, addresses }) {
+  if (!(root instanceof HTMLElement)) return false;
+  const definition = paymentMethodDefinition(snapshot, paymentMethod);
+  if (!definition) {
+    setControlMountMessage(root, 'waiting', 'Waiting for WooPayments to expose its registered Blocks payment method.');
+    return false;
+  }
+
+  const props = mountedControlProps({ order, snapshot, paymentMethod, addresses });
+  if (renderOfficialPaymentNode(root, definition, props, paymentMethod)) {
+    publishSnapshot(snapshot, { paymentControlsMounted: true, paymentMethod });
+    return true;
+  }
+
+  setControlMountMessage(
+    root,
+    'waiting',
+    'WooPayments Blocks data is available, but the registered control node is not exposed to this headless checkout shell yet.',
+  );
+  publishSnapshot(snapshot, { paymentControlsMounted: false, paymentMethod });
+  return false;
+}
+
 function waitForProviderStore(timeoutMs = STORE_WAIT_TIMEOUT_MS) {
   const startedAt = Date.now();
   return new Promise((resolve, reject) => {
@@ -266,6 +418,32 @@ function waitForProviderStore(timeoutMs = STORE_WAIT_TIMEOUT_MS) {
       if (Date.now() - startedAt >= timeoutMs) {
         reject(Object.assign(new Error('WooPayments Blocks payment data did not initialize in time.'), {
           code: 'dtb_woopayments_provider_timeout',
+        }));
+        return;
+      }
+      window.setTimeout(tick, STORE_WAIT_INTERVAL_MS);
+    };
+    tick();
+  });
+}
+
+function waitForProviderPaymentData(paymentMethod, timeoutMs = STORE_WAIT_TIMEOUT_MS) {
+  const startedAt = Date.now();
+  return new Promise((resolve, reject) => {
+    const tick = () => {
+      try {
+        const snapshot = providerSnapshot();
+        const paymentData = normalizePaymentData(snapshot.paymentMethodData, paymentMethod);
+        if (paymentData.length && hasProviderTokenData(paymentData)) {
+          resolve({ snapshot, paymentData });
+          return;
+        }
+      } catch {
+        // Keep waiting while the mounted provider control hydrates.
+      }
+      if (Date.now() - startedAt >= timeoutMs) {
+        reject(Object.assign(new Error('Provider-owned WooPayments controls did not produce payment data in time. Confirm the official WooPayments Blocks controls mounted inside the checkout payment step.'), {
+          code: 'dtb_woopayments_payment_data_timeout',
         }));
         return;
       }
@@ -313,7 +491,7 @@ function startProviderSubscription() {
   });
 }
 
-async function startPayment({ methods = [], order = {}, visualMethod = 'card', processPayment } = {}) {
+async function startPayment({ root, methods = [], order = {}, visualMethod = 'card', processPayment } = {}) {
   if (typeof processPayment !== 'function') {
     throw Object.assign(new Error('DTB same-shell payment processor is unavailable.'), {
       code: 'dtb_same_shell_processor_missing',
@@ -341,15 +519,18 @@ async function startPayment({ methods = [], order = {}, visualMethod = 'card', p
     });
   }
 
-  const paymentData = normalizePaymentData(snapshot.paymentMethodData, paymentMethod);
+  mountOfficialPaymentControls({ root, order, snapshot, paymentMethod, addresses: syncedAddresses });
+
+  let paymentData = normalizePaymentData(snapshot.paymentMethodData, paymentMethod);
   if (!paymentData.length || !hasProviderTokenData(paymentData)) {
     publishSnapshot(snapshot, { paymentDataReady: false, paymentMethod });
-    throw Object.assign(new Error('Provider-owned WooPayments controls have not produced payment data yet. The payment step must render active WooPayments controls before submission.'), {
-      code: 'dtb_woopayments_payment_data_missing',
-    });
+    const hydrated = await waitForProviderPaymentData(paymentMethod);
+    paymentData = hydrated.paymentData;
+    publishSnapshot(hydrated.snapshot, { paymentDataReady: true, paymentMethod });
+  } else {
+    publishSnapshot(snapshot, { paymentDataReady: true, paymentMethod });
   }
 
-  publishSnapshot(snapshot, { paymentDataReady: true, paymentMethod });
   return processPayment({
     paymentMethod,
     paymentData,
@@ -370,6 +551,7 @@ export function installWooPaymentsSameShellProvider() {
     gatewayIds: Array.from(WOOPAYMENTS_GATEWAY_IDS),
     sameShellReady,
     snapshot: providerSnapshot,
+    mountControls: mountOfficialPaymentControls,
     startPayment,
   };
 
