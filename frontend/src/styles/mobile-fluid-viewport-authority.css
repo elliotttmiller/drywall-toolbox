@@ -1,0 +1,387 @@
+/*
+ * frontend/src/styles/mobile-fluid-viewport-authority.css
+ *
+ * Final storefront mobile viewport authority layer.
+ * Loaded last so mobile Safari/Chrome cannot create body-level horizontal
+ * overflow from sticky headers, search docks, product rails, PDP media, drawers,
+ * checkout sheets, transformed children, or oversized input text. This does not
+ * disable accessibility pinch zoom; it prevents layout/focus zoom from breaking
+ * the usable viewport.
+ */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overscroll-behavior-x: none;
+}
+
+#root {
+  isolation: isolate;
+}
+
+* ,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+picture,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  max-width: 100%;
+}
+
+@supports not (overflow: clip) {
+  html,
+  body,
+  #root {
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --dtb-mobile-safe-left: max(0px, env(safe-area-inset-left, 0px));
+    --dtb-mobile-safe-right: max(0px, env(safe-area-inset-right, 0px));
+    --dtb-mobile-safe-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+    --dtb-mobile-viewport-gutter: clamp(14px, 4vw, 20px);
+    --dtb-mobile-readable-width: min(100%, 720px);
+  }
+
+  html {
+    min-width: 0;
+    scroll-padding-top: var(--header-height, 0px);
+  }
+
+  body {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  main,
+  main.main-content,
+  .page-wrapper,
+  .storefront-shell,
+  .storefront-section,
+  .storefront-section__inner,
+  .products-platform,
+  .products-page,
+  .products-grid,
+  .dtb-product-grid,
+  .dtb-product-card,
+  .dtb-pdp,
+  .dtb-pdp__inner,
+  .dtb-cart-page,
+  .dtb-checkout {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  main.main-content,
+  .page-wrapper,
+  .storefront-shell,
+  .products-platform,
+  .products-page,
+  .dtb-cart-page,
+  .dtb-checkout {
+    overflow-x: clip;
+  }
+
+  .site-header {
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: clip;
+    contain: layout paint;
+  }
+
+  .site-header-inner,
+  .header-mobile-layout,
+  .header-mobile-search-dock,
+  .header-mobile-slot,
+  .header-mobile-logo,
+  .header-desktop-layout {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .site-header-inner {
+    width: 100%;
+    padding-left: var(--dtb-mobile-safe-left);
+    padding-right: var(--dtb-mobile-safe-right);
+  }
+
+  .header-mobile-layout {
+    width: 100%;
+    overflow: clip;
+  }
+
+  .header-mobile-slot {
+    flex-shrink: 1;
+  }
+
+  .header-mobile-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .logo-image-mobile {
+    display: block;
+    width: clamp(148px, 44vw, 230px);
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .header-mobile-search-dock {
+    width: 100%;
+    padding-left: max(var(--dtb-mobile-viewport-gutter), var(--dtb-mobile-safe-left));
+    padding-right: max(var(--dtb-mobile-viewport-gutter), var(--dtb-mobile-safe-right));
+  }
+
+  .storefront-search-dock {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .storefront-search-dock input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: max(16px, 1rem) !important;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+  }
+
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    font-size: max(16px, 1rem) !important;
+    line-height: 1.3;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  button,
+  a,
+  [role="button"],
+  input,
+  textarea,
+  select,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  a,
+  [role="button"],
+  summary {
+    touch-action: manipulation;
+  }
+
+  .storefront-mobile-drawer,
+  .storefront-search-overlay,
+  .account-hub-sheet,
+  .cart-drawer,
+  .mobile-menu,
+  [class*="drawer"],
+  [class*="sheet"] {
+    max-width: 100vw;
+  }
+
+  .storefront-mobile-drawer,
+  .storefront-search-overlay {
+    overflow-x: clip;
+  }
+
+  .storefront-mobile-drawer__nav,
+  .storefront-mobile-drawer__row,
+  .storefront-mobile-drawer__row-label,
+  .storefront-mobile-drawer__row-link,
+  .storefront-search-overlay__panel,
+  .storefront-search-overlay__body {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .dtb-product-card,
+  .dtb-product-card * {
+    min-width: 0;
+  }
+
+  .dtb-product-card__image,
+  .dtb-product-card__thumb,
+  .product-card-image,
+  .product-image-gallery__main,
+  .dtb-pdp-gallery,
+  .dtb-pdp__media,
+  .dtb-pdp__hero {
+    min-width: 0;
+    max-width: 100%;
+    overflow: clip;
+  }
+
+  .dtb-product-card__img,
+  .product-card-image img,
+  .product-image-gallery__main img,
+  .dtb-pdp-gallery img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .dtb-product-card--rail {
+    flex: 0 0 clamp(162px, 45vw, 204px);
+    width: clamp(162px, 45vw, 204px);
+    max-width: calc(100vw - (2 * var(--dtb-mobile-viewport-gutter)));
+  }
+
+  .dtb-product-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .dtb-pdp__inner,
+  .product-detail-modern,
+  .product-detail-modern * {
+    min-width: 0;
+  }
+
+  .dtb-pdp-header__title,
+  .dtb-pdp-header__meta,
+  .dtb-pdp-header__price-block,
+  .dtb-product-card__name,
+  .dtb-product-card__brand,
+  .dtb-product-card__sku {
+    overflow-wrap: anywhere;
+  }
+
+  .dtb-pdp-purchase-row,
+  .dtb-pdp-variation-options,
+  .dtb-pdp-actions,
+  .dtb-pdp-stock-meter--pre-cart {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .dtb-pdp-qty-input,
+  .dtb-pdp-add-to-cart,
+  .dtb-pdp-variation-options button {
+    min-height: 44px;
+  }
+
+  .dtb-checkout,
+  .dtb-checkout * {
+    min-width: 0;
+  }
+
+  .dtb-checkout input,
+  .dtb-checkout textarea,
+  .dtb-checkout select,
+  .dtb-checkout button {
+    font-size: max(16px, 1rem) !important;
+  }
+
+  .dtb-co-mobile-cta,
+  .dtb-co-mobile-cta__inner,
+  .dtb-co-formpane,
+  .dtb-co-formpane__inner,
+  .dtb-co-msummary,
+  .dtb-co-sidebar,
+  .dtb-co-section {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  :root {
+    --dtb-mobile-viewport-gutter: 14px;
+  }
+
+  .header-mobile-layout {
+    gap: clamp(4px, 1.4vw, 8px);
+  }
+
+  .header-mobile-slot {
+    --mobile-header-side-slot: clamp(78px, 23vw, 96px);
+  }
+
+  .logo-image-mobile {
+    width: clamp(142px, 43vw, 190px);
+  }
+
+  .storefront-search-dock input {
+    font-size: 16px !important;
+    letter-spacing: -0.02em;
+  }
+
+  .dtb-product-grid {
+    gap: clamp(10px, 3vw, 14px);
+  }
+
+  .dtb-product-card--rail {
+    flex-basis: clamp(154px, 46vw, 188px);
+    width: clamp(154px, 46vw, 188px);
+  }
+}
+
+@media (max-width: 360px) {
+  .header-mobile-slot {
+    --mobile-header-side-slot: 76px;
+  }
+
+  .logo-image-mobile {
+    width: clamp(132px, 42vw, 166px);
+  }
+
+  .header-mobile-search-dock {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .storefront-search-dock,
+  .storefront-mobile-drawer,
+  .storefront-search-overlay,
+  .dtb-product-card,
+  .dtb-pdp,
+  .dtb-checkout {
+    transition: none !important;
+    animation: none !important;
+  }
+}
