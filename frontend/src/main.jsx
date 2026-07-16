@@ -40,6 +40,7 @@ import './features/checkout/checkout-mobile-sheet-polish.css'
 import './features/checkout/checkout-mobile-screen-flow.css'
 import './features/checkout/checkout-mobile-flow-revisions.css'
 import './features/checkout/checkout-review-only-extras.css'
+import './features/checkout/checkout-same-shell-payment.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
 import { installSchematicPageLabelRuntime } from './utils/schematicPageLabelRuntime.js'
@@ -49,6 +50,7 @@ import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRunt
 import { installCheckoutExpressRailRuntime } from './features/checkout/checkoutExpressRailRuntime.js'
 import { installCheckoutWorkflowRuntime } from './features/checkout/checkoutWorkflowRuntime.js'
 import { installCheckoutPaymentPreferenceRuntime } from './features/checkout/checkoutPaymentPreferenceRuntime.js'
+import { installCheckoutSameShellPaymentRuntime } from './features/checkout/checkoutSameShellPaymentRuntime.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
 // The legacy all-products cache is intentionally delayed so it cannot compete
@@ -62,6 +64,7 @@ installCustomerFacingCopyRuntime();
 installCheckoutPaymentPreferenceRuntime();
 installCheckoutExpressRailRuntime();
 installCheckoutWorkflowRuntime();
+installCheckoutSameShellPaymentRuntime();
 
 if (typeof window !== 'undefined') {
   const pathname = window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') || '/';
