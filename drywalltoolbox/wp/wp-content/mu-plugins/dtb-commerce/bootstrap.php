@@ -24,6 +24,7 @@ require_once __DIR__ . '/Payment/PaymentBnplCartFinalization.php';
 require_once __DIR__ . '/Payment/CustomerAssociation.php';
 require_once __DIR__ . '/Payment/PaymentStatusGuard.php';
 require_once __DIR__ . '/Payment/CheckoutBlocksCapabilityDetector.php';
+require_once __DIR__ . '/Payment/CheckoutBlocksBridgeIntegration.php';
 require_once __DIR__ . '/Shipping/DTBShippingMethod.php';
 require_once __DIR__ . '/Rest/CheckoutRestController.php';
 require_once __DIR__ . '/Email/WooCommerceBrandedEmails.php';
@@ -37,3 +38,4 @@ require_once __DIR__ . '/Rest/OrderRestController.php';
 
 DTB_ToolsetCartItemData::register();
 DTB_ToolsetOrderLineMeta::register();
+DTB_CheckoutBlocksBridgeIntegration::register();
