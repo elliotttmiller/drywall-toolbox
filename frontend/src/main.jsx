@@ -47,6 +47,7 @@ import { installRepairPackageSelectionRuntime } from './utils/repairPackageSelec
 import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRuntime.js'
 import { installCheckoutExpressRailRuntime } from './features/checkout/checkoutExpressRailRuntime.js'
 import { installCheckoutWorkflowRuntime } from './features/checkout/checkoutWorkflowRuntime.js'
+import { installCheckoutPaymentPreferenceRuntime } from './features/checkout/checkoutPaymentPreferenceRuntime.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
 // The legacy all-products cache is intentionally delayed so it cannot compete
@@ -57,6 +58,7 @@ installSchematicPageLabelRuntime();
 installMobileSchematicNavRuntime();
 installRepairPackageSelectionRuntime();
 installCustomerFacingCopyRuntime();
+installCheckoutPaymentPreferenceRuntime();
 installCheckoutExpressRailRuntime();
 installCheckoutWorkflowRuntime();
 
