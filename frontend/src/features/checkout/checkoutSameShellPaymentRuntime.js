@@ -31,6 +31,9 @@ let currentState = {
   methods: [],
 };
 let paymentInFlight = false;
+let lastAutoStartKey = '';
+let originalSetTimeout = null;
+let preparedPaymentObserver = null;
 
 function isCheckoutRoute() {
   if (typeof window === 'undefined') return false;
@@ -197,6 +200,20 @@ function paymentActionFromEvent(event) {
   return action;
 }
 
+function paymentActionFromRoot(root) {
+  const paymentStep = root.querySelector('#checkout-payment-step');
+  if (!(paymentStep instanceof HTMLElement)) return null;
+
+  const actionWithContext = paymentStep.querySelector('button[data-dtb-order-id][data-dtb-order-key]');
+  if (actionWithContext instanceof HTMLElement) return actionWithContext;
+
+  const openPaymentAction = Array.from(paymentStep.querySelectorAll('button, a')).find((node) => {
+    const label = String(node.textContent || node.getAttribute('aria-label') || '').trim().toLowerCase();
+    return label.includes('open protected payment');
+  });
+  return openPaymentAction instanceof HTMLElement ? openPaymentAction : paymentStep;
+}
+
 function ensureStatusPanel(root) {
   const paymentStep = root.querySelector('#checkout-payment-step');
   if (!(paymentStep instanceof HTMLElement)) return null;
@@ -320,6 +337,28 @@ async function startSameShellPayment(root, action) {
   }
 }
 
+async function requestSameShellPayment(root, action, { force = false } = {}) {
+  if (!(root instanceof HTMLElement)) return;
+  const paymentAction = action instanceof HTMLElement ? action : paymentActionFromRoot(root);
+  const context = paymentContext(root, paymentAction);
+  if (!context.orderId || !context.orderKey) return;
+
+  const key = `${context.orderId}:${context.orderKey}`;
+  if (!force && key === lastAutoStartKey) return;
+
+  const state = await syncState(root, true);
+  if (!state.eligible) {
+    renderStatus(root, 'error', sameShellBlockedMessage(state.reason));
+    window.dispatchEvent(new CustomEvent('dtb:checkout-same-shell-payment-blocked', {
+      detail: { reason: state.reason, orderId: context.orderId },
+    }));
+    return;
+  }
+
+  lastAutoStartKey = key;
+  void startSameShellPayment(root, paymentAction);
+}
+
 async function handlePaymentClick(event) {
   if (!isCheckoutRoute()) return;
   const action = paymentActionFromEvent(event);
@@ -331,16 +370,74 @@ async function handlePaymentClick(event) {
   event.stopPropagation();
   if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
 
-  const state = await syncState(root);
-  if (!state.eligible) {
-    renderStatus(root, 'error', sameShellBlockedMessage(state.reason));
-    window.dispatchEvent(new CustomEvent('dtb:checkout-same-shell-payment-blocked', {
-      detail: { reason: state.reason },
-    }));
-    return;
-  }
+  void requestSameShellPayment(root, action, { force: true });
+}
 
-  void startSameShellPayment(root, action);
+function handleSameShellPaymentRequest(event) {
+  if (!isCheckoutRoute()) return;
+  const root = document.querySelector('.dtb-checkout');
+  if (!(root instanceof HTMLElement)) return;
+  void requestSameShellPayment(root, paymentActionFromRoot(root), { force: event?.detail?.force === true });
+}
+
+function callbackLooksLikeLegacyPaymentRedirect(callback) {
+  if (typeof callback !== 'function') return false;
+  let source = '';
+  try {
+    source = Function.prototype.toString.call(callback);
+  } catch {
+    return false;
+  }
+  return source.includes('location.assign') || source.includes('.assign(');
+}
+
+function suppressLegacyOrderPayTimeout(callback, delay, args) {
+  return originalSetTimeout(() => {
+    if (!isCheckoutRoute()) return;
+    const root = document.querySelector('.dtb-checkout');
+    if (!(root instanceof HTMLElement)) return;
+    renderStatus(root, 'loading', 'Keeping payment inside checkout. Opening the same-shell WooPayments provider…');
+    void requestSameShellPayment(root, paymentActionFromRoot(root), { force: true });
+  }, delay, ...args);
+}
+
+function patchLegacyOrderPayTimeout() {
+  if (originalSetTimeout || typeof window === 'undefined' || typeof window.setTimeout !== 'function') return;
+  originalSetTimeout = window.setTimeout.bind(window);
+  window.setTimeout = (callback, delay = 0, ...args) => {
+    if (isCheckoutRoute() && callbackLooksLikeLegacyPaymentRedirect(callback)) {
+      return suppressLegacyOrderPayTimeout(callback, delay, args);
+    }
+    return originalSetTimeout(callback, delay, ...args);
+  };
+}
+
+function observePreparedPayment() {
+  if (preparedPaymentObserver || typeof MutationObserver === 'undefined') return;
+  const root = document.querySelector('.dtb-checkout');
+  if (!(root instanceof HTMLElement)) return;
+
+  const syncPreparedPayment = () => {
+    const action = paymentActionFromRoot(root);
+    const context = paymentContext(root, action);
+    if (!context.orderId || !context.orderKey) return;
+    void requestSameShellPayment(root, action);
+  };
+
+  preparedPaymentObserver = new MutationObserver(() => syncPreparedPayment());
+  preparedPaymentObserver.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: [
+      'data-dtb-order-id',
+      'data-dtb-order-key',
+      'data-dtb-payment-url',
+      'data-dtb-payment-method',
+      'data-dtb-billing-email',
+    ],
+  });
+  syncPreparedPayment();
 }
 
 function scheduleSync() {
@@ -350,28 +447,37 @@ function scheduleSync() {
   void syncState(root);
 }
 
+function schedulePreparedPaymentSync() {
+  if (!isCheckoutRoute()) return;
+  const root = document.querySelector('.dtb-checkout');
+  if (!(root instanceof HTMLElement)) return;
+  void syncState(root, true).finally(() => {
+    void requestSameShellPayment(root, paymentActionFromRoot(root));
+  });
+}
+
 export function installCheckoutSameShellPaymentRuntime() {
   if (installed || typeof window === 'undefined' || typeof document === 'undefined') return;
   installed = true;
 
+  patchLegacyOrderPayTimeout();
   document.addEventListener('click', handlePaymentClick, true);
+  window.addEventListener('dtb:checkout-same-shell-payment-requested', handleSameShellPaymentRequest);
   window.addEventListener('dtb:checkout-payment-method-selected', () => {
     const root = document.querySelector('.dtb-checkout');
     if (root instanceof HTMLElement) void syncState(root, true);
   });
-  window.addEventListener('dtb:checkout-same-shell-provider-installed', () => {
-    const root = document.querySelector('.dtb-checkout');
-    if (root instanceof HTMLElement) void syncState(root, true);
-  });
-  window.addEventListener('dtb:checkout-woopayments-provider-sync', () => {
-    const root = document.querySelector('.dtb-checkout');
-    if (root instanceof HTMLElement) void syncState(root, true);
-  });
+  window.addEventListener('dtb:checkout-same-shell-provider-installed', schedulePreparedPaymentSync);
+  window.addEventListener('dtb:checkout-woopayments-provider-sync', schedulePreparedPaymentSync);
   window.addEventListener('popstate', () => window.setTimeout(scheduleSync, 0));
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scheduleSync, { once: true });
+    document.addEventListener('DOMContentLoaded', () => {
+      scheduleSync();
+      observePreparedPayment();
+    }, { once: true });
   } else {
     scheduleSync();
+    observePreparedPayment();
   }
 }
