@@ -91,6 +91,7 @@ export function useCheckoutController({ quote, formData, couponCodes = [], payme
 			} );
 			const session = sessionResponse?.session;
 			if ( !session?.resume_token || !session?.session_id ) throw new Error( 'Secure checkout session was not created.' );
+			setState( CHECKOUT_STATES.SESSION_CREATED );
 			const confirmation = await confirmCheckoutSession( { resume_token: session.resume_token } );
 			if ( !confirmation?.confirmed ) throw new Error( 'Checkout confirmation failed.' );
 			setState( CHECKOUT_STATES.FINALIZING );
@@ -98,7 +99,7 @@ export function useCheckoutController({ quote, formData, couponCodes = [], payme
 			const order = response?.order || response?.finalize?.order || {};
 			const result = { response, order, session, paymentUrl: order.payment_url || '' };
 			if ( result.paymentUrl ) {
-				setState( CHECKOUT_STATES.PAYMENT_REQUIRED );
+				setState( CHECKOUT_STATES.PAYMENT_READY );
 				onPaymentRequired?.( result );
 			} else {
 				if ( order.payment_verified !== true && order.payment_required !== false ) {
@@ -118,7 +119,13 @@ export function useCheckoutController({ quote, formData, couponCodes = [], payme
 		}
 	}, [couponCodes, formData, idempotencyKey, onComplete, onPaymentRequired, paymentMethod, quote, remoteSubmitting, selectedRateId] );
 
-	return { state, error, submitting: state === CHECKOUT_STATES.CONFIRMING || state === CHECKOUT_STATES.FINALIZING, submitCheckout };
+	return {
+		state,
+		error,
+		submitting: state === CHECKOUT_STATES.CONFIRMING || state === CHECKOUT_STATES.SESSION_CREATED || state === CHECKOUT_STATES.FINALIZING,
+		paymentReady: state === CHECKOUT_STATES.PAYMENT_READY,
+		submitCheckout,
+	};
 }
 
 export default useCheckoutController;
