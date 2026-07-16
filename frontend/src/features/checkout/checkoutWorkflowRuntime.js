@@ -1,14 +1,15 @@
 /*
  * frontend/src/features/checkout/checkoutWorkflowRuntime.js
  *
- * Progressive checkout presentation runtime. It does not create orders, select
- * payment gateways, submit payment, inject card fields, or alter DTB/WooCommerce
- * authority. It only keeps the existing React checkout sections visually aligned
- * to a Repairs-style step workflow while the canonical checkout controller remains
- * the source of truth for quote/session/finalize/payment readiness.
+ * Progressive checkout stepper runtime with CoreUI CStepper-style linear wizard
+ * semantics. This file does not create orders, select payment gateways, submit
+ * payment, inject card fields, or alter DTB/WooCommerce authority. It only
+ * keeps the existing React checkout sections visually synchronized to a guided
+ * linear checkout workflow while the canonical checkout controller remains the
+ * source of truth for quote/session/finalize/payment readiness.
  */
 
-const CHECKOUT_PATH_RE = /\/checkout\/?(?:[?#].*)?$/;
+const CHECKOUT_PATH_RE = /(?:^|\/)checkout\/?$/;
 const STEP_ORDER = ['contact', 'delivery', 'review', 'payment'];
 const STEP_LABELS = new Map([
   ['contact', 'Contact'],
@@ -60,6 +61,10 @@ function classifySection(section) {
   return '';
 }
 
+function hasSelectedShippingRate(root) {
+  return Boolean(root.querySelector('.dtb-co-rate-option--selected input[name="shippingRate"]'));
+}
+
 function getPaymentReady(root) {
   const payment = root.querySelector('#checkout-payment-step');
   if (!payment) return false;
@@ -73,18 +78,20 @@ function getState(root) {
     valueFor('lastName') &&
     isEmail(valueFor('email')),
   );
-  const deliveryComplete = Boolean(
+  const deliveryFieldsComplete = Boolean(
     valueFor('address') &&
     valueFor('city') &&
     valueFor('state') &&
     valueFor('zip'),
   );
+  const shippingComplete = deliveryFieldsComplete && hasSelectedShippingRate(root);
   const paymentReady = getPaymentReady(root);
-  const reviewReady = contactComplete && deliveryComplete;
+  const reviewReady = contactComplete && shippingComplete;
 
   return {
     contactComplete,
-    deliveryComplete,
+    deliveryFieldsComplete,
+    shippingComplete,
     reviewReady,
     paymentReady,
     allowedSteps: new Set([
@@ -115,7 +122,7 @@ function updatePanelVisibility(root, activeStep) {
     const step = classifySection(section);
     if (!step) return;
     section.classList.add('dtb-co-flow-panel', `dtb-co-flow-panel--${step}`);
-    const visible = step === activeStep || (activeStep === 'delivery' && step === 'delivery');
+    const visible = step === activeStep;
     section.classList.toggle('is-dtb-flow-visible', visible);
     section.classList.toggle('is-dtb-flow-hidden', !visible);
     section.toggleAttribute('hidden', !visible);
@@ -128,25 +135,36 @@ function updatePanelVisibility(root, activeStep) {
     const showAuth = activeStep === 'contact';
     authChoice.classList.toggle('is-dtb-flow-hidden', !showAuth);
     authChoice.toggleAttribute('hidden', !showAuth);
+    if (showAuth) authChoice.removeAttribute('aria-hidden');
+    else authChoice.setAttribute('aria-hidden', 'true');
   }
 }
 
 function updateStepProgress(root, activeStep, state) {
   const activeIndex = STEP_ORDER.indexOf(activeStep);
+  const progress = root.querySelector('.dtb-co-steps');
+  if (progress) {
+    progress.dataset.linear = 'true';
+    progress.dataset.activeStep = activeStep;
+    progress.setAttribute('aria-label', 'Checkout progress, linear');
+  }
+
   const steps = Array.from(root.querySelectorAll('.dtb-co-step'));
   steps.forEach((node, index) => {
     const step = STEP_ORDER[index];
     if (!step) return;
     const enabled = state.allowedSteps.has(step);
+    const done = index < activeIndex;
     node.dataset.dtbStep = step;
-    node.classList.toggle('dtb-co-step--done', index < activeIndex);
+    node.classList.toggle('dtb-co-step--done', done);
     node.classList.toggle('dtb-co-step--current', step === activeStep);
     node.classList.toggle('dtb-co-step--locked', !enabled);
+    node.classList.toggle('dtb-co-step--enabled', enabled);
     node.setAttribute('role', 'button');
     node.setAttribute('tabindex', enabled ? '0' : '-1');
     node.setAttribute('aria-disabled', enabled ? 'false' : 'true');
     node.setAttribute('aria-current', step === activeStep ? 'step' : 'false');
-    node.setAttribute('aria-label', `${STEP_LABELS.get(step) || step} checkout step`);
+    node.setAttribute('aria-label', `${STEP_LABELS.get(step) || step} checkout step${enabled ? '' : ', locked'}`);
 
     if (!boundStepButtons.has(node)) {
       boundStepButtons.add(node);
@@ -195,6 +213,9 @@ function update() {
   const activeStep = resolveStep(state);
   root.dataset.dtbFlowStep = activeStep;
   root.classList.add('dtb-checkout--step-runtime');
+  root.classList.add('dtb-checkout--linear-stepper');
+  root.classList.toggle('dtb-checkout--contact-complete', state.contactComplete);
+  root.classList.toggle('dtb-checkout--delivery-complete', state.shippingComplete);
   root.classList.toggle('dtb-checkout--payment-ready', state.paymentReady);
   root.classList.toggle('dtb-checkout--review-ready', state.reviewReady);
 
@@ -222,7 +243,7 @@ export function installCheckoutWorkflowRuntime() {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['disabled', 'class', 'aria-expanded', 'hidden'],
+      attributeFilter: ['disabled', 'class', 'aria-expanded', 'hidden', 'checked'],
     });
   };
 
