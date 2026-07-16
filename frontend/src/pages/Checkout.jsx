@@ -1,8 +1,9 @@
 /**
  * frontend/src/pages/Checkout.jsx
  *
- * Branded checkout intake with secure backend payment handoff.
- * The storefront collects order intent; the backend payment runtime collects funds.
+ * Branded checkout intake with a synchronized single-page workflow shell.
+ * React owns presentation and step orchestration only; DTB/WooCommerce remain
+ * authoritative for quote, session, finalize, order creation, and payment.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -35,6 +36,7 @@ import { useCheckoutController } from '../features/checkout/hooks/useCheckoutCon
 import { readCheckoutDraft, writeCheckoutDraft, clearCheckoutDraft } from '../features/checkout/hooks/useCheckoutDraft.js';
 import { useCheckoutQuote } from '../features/checkout/hooks/useCheckoutQuote.js';
 import { useCheckoutRecovery } from '../features/checkout/hooks/useCheckoutRecovery.js';
+import { resolveCheckoutBlocksBridge } from '../features/checkout/hooks/useCheckoutBlocksBridge.js';
 import { makeCheckoutAttemptId } from '../utils/checkoutRecovery.js';
 import { normalizePaymentUrl } from '../utils/paymentUrl.js';
 
@@ -90,16 +92,18 @@ const PAYMENT_METHOD_LOGOS = [
 ];
 
 const CHECKOUT_STEPS = [
-  { id: 'shipping', label: 'Shipping', icon: Truck },
-  { id: 'payment', label: 'Payment', icon: CreditCard },
+  { id: 'contact', label: 'Contact', icon: ShieldCheck },
+  { id: 'delivery', label: 'Delivery', icon: Truck },
   { id: 'review', label: 'Review', icon: ClipboardCheck },
+  { id: 'payment', label: 'Payment', icon: CreditCard },
 ];
 
 const SUBMIT_MESSAGES = {
   idle: '',
   validating: 'Checking your checkout details…',
-  creating: 'Creating your secure order…',
-  ready: 'Secure payment is ready. Redirecting…',
+  creating: 'Creating your protected order…',
+  ready: 'Protected payment step is ready.',
+  redirecting: 'Opening protected payment…',
 };
 
 const fadeSlide = {
@@ -224,7 +228,7 @@ function InlineSubmitStatus({ status }) {
   if (!status || status === 'idle') return null;
   return (
     <div className="dtb-co-submit-status" role="status" aria-live="polite">
-      <Loader2 size={13} className="animate-spin" style={{ color: 'var(--co-primary)' }} />
+      <Loader2 size={13} className={status === 'ready' ? '' : 'animate-spin'} style={{ color: 'var(--co-primary)' }} />
       {SUBMIT_MESSAGES[status] || 'Preparing checkout…'}
     </div>
   );
@@ -351,6 +355,108 @@ function MobileSummaryStrip({ cartItems, subtotal, shipping, displayTotal, taxAm
   );
 }
 
+function ReviewSummary({ formData, shippingRates, activeSelectedRateId, displayTotal, quoteReady }) {
+  const selectedRate = shippingRates.find((rate) => String(rate.id) === String(activeSelectedRateId));
+  return (
+    <Motion.section className="dtb-co-section" variants={fadeSlide} initial="hidden" animate="visible" custom={0.1}>
+      <SectionHeader
+        title="Review"
+        subtitle="Confirm the checkout details before preparing the protected payment step."
+      />
+      <div className="dtb-co-rates" aria-label="Checkout review summary">
+        <div className="dtb-co-rate-option dtb-co-rate-option--selected">
+          <ClipboardCheck size={17} aria-hidden="true" />
+          <div className="dtb-co-rate-meta">
+            <p className="dtb-co-rate-name">Contact</p>
+            <p className="dtb-co-rate-eta">{formData.firstName} {formData.lastName} · {formData.email}</p>
+          </div>
+        </div>
+        <div className="dtb-co-rate-option dtb-co-rate-option--selected">
+          <Truck size={17} aria-hidden="true" />
+          <div className="dtb-co-rate-meta">
+            <p className="dtb-co-rate-name">Delivery</p>
+            <p className="dtb-co-rate-eta">{formData.address}, {formData.city}, {formData.state} {formData.zip}</p>
+          </div>
+        </div>
+        <div className="dtb-co-rate-option dtb-co-rate-option--selected">
+          <ShieldCheck size={17} aria-hidden="true" />
+          <div className="dtb-co-rate-meta">
+            <p className="dtb-co-rate-name">Shipping method</p>
+            <p className="dtb-co-rate-eta">{selectedRate?.name || (quoteReady ? 'Server-selected shipping' : 'Calculated after address')}</p>
+          </div>
+          <span className="dtb-co-rate-price">${displayTotal.toFixed(2)}</span>
+        </div>
+      </div>
+    </Motion.section>
+  );
+}
+
+function CheckoutPaymentStep({
+  blocksBridge,
+  displayTotal,
+  paymentMethod,
+  paymentReady,
+  paymentSetupError,
+  paymentUrl,
+  processing,
+  submitStatus,
+  onContinueToPayment,
+}) {
+  const bridgeReady = blocksBridge?.sameShellReady === true;
+  const fallbackReason = blocksBridge?.reason || 'classic_order_pay_fallback';
+  return (
+    <Motion.section
+      id="checkout-payment-step"
+      className="dtb-co-section dtb-co-payment-workflow"
+      variants={fadeSlide}
+      initial="hidden"
+      animate="visible"
+      custom={0.14}
+    >
+      <SectionHeader
+        title="Payment"
+        subtitle={paymentReady ? 'Your order is prepared. Continue to the protected provider-owned payment step.' : 'Payment is prepared after review; provider-owned payment controls remain isolated from DTB order creation.'}
+      />
+
+      {paymentSetupError ? (
+        <div className="dtb-co-alert dtb-co-alert--warning" style={{ marginBottom: 12 }}>
+          <AlertTriangle size={14} style={{ flexShrink: 0 }} />
+          {paymentSetupError}
+        </div>
+      ) : null}
+
+      <div className="dtb-co-sidebar-cta" aria-live="polite">
+        <div className="dtb-co-sidebar-cta__stage">
+          <span>{bridgeReady ? 'Official Blocks bridge eligible' : 'Protected payment fallback'}</span>
+          <strong>{paymentReady ? 'Payment step ready' : 'Prepare payment after review'}</strong>
+        </div>
+        <div className="dtb-co-cta-trust" aria-label="Payment workflow details">
+          <span><ShieldCheck size={13} aria-hidden="true" /> Gateway-owned payment controls</span>
+          <span>
+            {bridgeReady
+              ? 'The official Blocks bridge reports same-shell eligibility, but gateway tokenization remains provider-owned.'
+              : `Current runtime uses the protected fallback handoff (${fallbackReason}).`}
+          </span>
+          <span>Selected method: {paymentMethod || 'Secure online payment'}</span>
+        </div>
+        <PaymentMethodLogos compact />
+        <button
+          type="button"
+          className="dtb-co-btn-primary dtb-co-btn-primary--wide"
+          onClick={onContinueToPayment}
+          disabled={!paymentReady || !paymentUrl || processing}
+          style={{ marginTop: 14 }}
+          aria-label={`Open protected payment for ${displayTotal.toFixed(2)} dollars`}
+        >
+          {submitStatus === 'redirecting' ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <CreditCard size={16} aria-hidden="true" />}
+          {paymentReady ? `Open protected payment — $${displayTotal.toFixed(2)}` : 'Payment step prepares after review'}
+        </button>
+        <InlineSubmitStatus status={submitStatus} />
+      </div>
+    </Motion.section>
+  );
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems, clearCart, isLoading: cartLoading, lastSyncedAt } = useCart();
@@ -366,6 +472,7 @@ export default function Checkout() {
   const [orderDetails, setOrderDetails] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(WOO_PAYMENTS_METHOD_ID);
   const [paymentSetupError, setPaymentSetupError] = useState(null);
+  const [checkoutCapabilities, setCheckoutCapabilities] = useState(null);
   const [capabilitiesLoading, setCapabilitiesLoading] = useState(true);
   const [couponInput, setCouponInput] = useState('');
   const [manualCoupons, setManualCoupons] = useState([]);
@@ -379,7 +486,7 @@ export default function Checkout() {
     () => pendingPayment?.attemptId || makeCheckoutAttemptId(),
   );
   const isSubmittingRef = useRef(false);
-  const processing = submitStatus !== 'idle';
+  const processing = submitStatus !== 'idle' && submitStatus !== 'ready';
 
   const isContactComplete = useMemo(
     () => formData.firstName.trim() !== '' && formData.lastName.trim() !== '' && formData.email.trim() !== '',
@@ -422,10 +529,17 @@ export default function Checkout() {
   const activeSelectedRateId = shippingRates.some((rate) => String(rate.id) === String(selectedRateId))
     ? String(selectedRateId)
     : String(checkoutQuote?.selected_rate_id || shippingRates[0]?.id || '');
+  const blocksBridge = useMemo(
+    () => resolveCheckoutBlocksBridge(checkoutCapabilities || {}),
+    [checkoutCapabilities],
+  );
+
+  const paymentUrl = normalizeWooPaymentUrl(orderDetails?.order?.payment_url || '');
+  const paymentReady = Boolean(orderDetails?.order?.payment_required && paymentUrl);
 
   const canSubmitCheckout = useMemo(
-    () => !processing && !capabilitiesLoading && !paymentSetupError && quoteReady && isFormComplete && safeCartItems.length > 0 && Boolean(paymentMethod) && !isManualPaymentMethod(paymentMethod),
-    [capabilitiesLoading, isFormComplete, paymentMethod, paymentSetupError, processing, quoteReady, safeCartItems.length],
+    () => !processing && !paymentReady && !capabilitiesLoading && !paymentSetupError && quoteReady && isFormComplete && safeCartItems.length > 0 && Boolean(paymentMethod) && !isManualPaymentMethod(paymentMethod),
+    [capabilitiesLoading, isFormComplete, paymentMethod, paymentReady, paymentSetupError, processing, quoteReady, safeCartItems.length],
   );
 
   const effectiveCheckoutIdentity = isAuthenticated ? 'account' : checkoutIdentity;
@@ -435,12 +549,14 @@ export default function Checkout() {
     getCheckoutCapabilities()
       .then((caps) => {
         if (!mounted) return;
+        setCheckoutCapabilities(caps || null);
         const selection = resolvePaymentSelection(caps);
         setPaymentMethod(selection.methodId);
         setPaymentSetupError(selection.setupError);
       })
       .catch(() => {
         if (!mounted) return;
+        setCheckoutCapabilities(null);
         setPaymentMethod('');
         setPaymentSetupError('Secure payment capabilities could not be verified. Please try again before placing the order.');
       })
@@ -459,6 +575,10 @@ export default function Checkout() {
     const nextValue = name === 'state' ? String(value).toUpperCase() : value;
     setFormData((prev) => ({ ...prev, [name]: sanitize(nextValue) }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (paymentReady) {
+      setOrderDetails(null);
+      setSubmitStatus('idle');
+    }
   };
 
   const focusFirstInvalidField = useCallback((nextErrors) => {
@@ -490,10 +610,18 @@ export default function Checkout() {
     if (!normalized) return;
     setManualCoupons((prev) => (prev.includes(normalized) ? prev : [...prev, normalized]));
     setCouponInput('');
+    if (paymentReady) {
+      setOrderDetails(null);
+      setSubmitStatus('idle');
+    }
   }
 
   function removeManualCoupon(code) {
     setManualCoupons((prev) => prev.filter((current) => current !== code));
+    if (paymentReady) {
+      setOrderDetails(null);
+      setSubmitStatus('idle');
+    }
   }
 
   const dismissPendingPayment = useCallback(() => {
@@ -507,8 +635,14 @@ export default function Checkout() {
 
   const handlePaymentRequired = useCallback((result) => {
     const orderPayload = result?.order || {};
-    const paymentUrl = normalizeWooPaymentUrl(result?.paymentUrl || '');
-    setOrderDetails({ order: { ...orderPayload, payment_url: paymentUrl, payment_required: true } });
+    const nextPaymentUrl = normalizeWooPaymentUrl(result?.paymentUrl || orderPayload?.payment_url || '');
+    if (!nextPaymentUrl) {
+      setCheckoutError('Protected payment was prepared, but the payment URL was not returned. Please try again.');
+      setSubmitStatus('idle');
+      isSubmittingRef.current = false;
+      return;
+    }
+    setOrderDetails({ order: { ...orderPayload, payment_url: nextPaymentUrl, payment_required: true } });
     rememberPayment({
       attemptId: checkoutAttemptId,
       resumeToken: result?.session?.resume_token,
@@ -518,7 +652,9 @@ export default function Checkout() {
     });
     setSubmitStatus('ready');
     isSubmittingRef.current = false;
-    window.setTimeout(() => window.location.assign(paymentUrl), 250);
+    window.requestAnimationFrame(() => {
+      document.getElementById('checkout-payment-step')?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
+    });
   }, [checkoutAttemptId, rememberPayment, safeCartItems]);
 
   const handleCheckoutComplete = useCallback((result) => {
@@ -545,7 +681,7 @@ export default function Checkout() {
   });
 
   const handlePlaceOrder = useCallback(async () => {
-    if (processing || isSubmittingRef.current) return;
+    if (processing || isSubmittingRef.current || paymentReady) return;
     isSubmittingRef.current = true;
     setSubmitStatus('validating');
     setCheckoutError(null);
@@ -581,7 +717,13 @@ export default function Checkout() {
       setSubmitStatus('idle');
       isSubmittingRef.current = false;
     }
-  }, [checkoutQuote, paymentMethod, paymentSetupError, processing, submitCheckout, validateForm]);
+  }, [checkoutQuote, paymentMethod, paymentReady, paymentSetupError, processing, submitCheckout, validateForm]);
+
+  const handleContinueToPayment = useCallback(() => {
+    if (!paymentReady || !paymentUrl || processing) return;
+    setSubmitStatus('redirecting');
+    window.setTimeout(() => window.location.assign(paymentUrl), 120);
+  }, [paymentReady, paymentUrl, processing]);
 
   const handleGuestChoice = useCallback(() => {
     setCheckoutIdentity('guest');
@@ -592,20 +734,42 @@ export default function Checkout() {
     });
   }, []);
 
+  const handleRateChange = useCallback((rateId) => {
+    setSelectedRateId(String(rateId));
+    if (paymentReady) {
+      setOrderDetails(null);
+      setSubmitStatus('idle');
+    }
+  }, [paymentReady]);
+
   const inputCls = (field) => `dtb-co-input${errors[field] ? ' dtb-co-input--error' : ''}`;
-  const activeStep = processing ? 'review' : isFormComplete ? 'payment' : 'shipping';
-  const payButtonLabel = processing
-    ? 'Preparing secure payment…'
-    : !isAddressComplete
-      ? 'Enter address to calculate total'
-      : !quoteReady || ratesLoading
-        ? 'Calculating shipping and tax…'
-        : `Continue to secure payment — $${displayTotal.toFixed(2)}`;
-  const payButtonAriaLabel = processing
-    ? 'Preparing secure payment'
-    : quoteReady
-      ? `Continue to secure payment for ${displayTotal.toFixed(2)} dollars`
-      : 'Complete checkout details to calculate total';
+  const activeStep = paymentReady || submitStatus === 'redirecting'
+    ? 'payment'
+    : processing
+      ? 'review'
+      : quoteReady && isFormComplete
+        ? 'review'
+        : isAddressComplete
+          ? 'delivery'
+          : 'contact';
+  const primaryActionLabel = paymentReady
+    ? `Open protected payment — $${displayTotal.toFixed(2)}`
+    : processing
+      ? 'Preparing protected payment…'
+      : !isAddressComplete
+        ? 'Enter address to calculate total'
+        : !quoteReady || ratesLoading
+          ? 'Calculating shipping and tax…'
+          : `Prepare protected payment — $${displayTotal.toFixed(2)}`;
+  const primaryActionAriaLabel = paymentReady
+    ? `Open protected payment for ${displayTotal.toFixed(2)} dollars`
+    : processing
+      ? 'Preparing protected payment'
+      : quoteReady
+        ? `Prepare protected payment for ${displayTotal.toFixed(2)} dollars`
+        : 'Complete checkout details to calculate total';
+  const canPrimaryAction = paymentReady ? Boolean(paymentUrl) && !processing : canSubmitCheckout;
+  const handlePrimaryAction = paymentReady ? handleContinueToPayment : handlePlaceOrder;
 
   if (safeCartItems.length === 0 && !orderComplete) {
     return (
@@ -623,14 +787,14 @@ export default function Checkout() {
           <h2>Your cart is empty</h2>
           {pendingPayment?.resumeToken ? (
             <>
-              <p>A previous order still has an incomplete secure payment step.</p>
+              <p>A previous order still has an incomplete protected payment step.</p>
               <button
                 type="button"
                 onClick={() => { void resumePendingPayment(); }}
                 className="dtb-co-btn-primary dtb-co-btn-primary--wide"
                 style={{ marginBottom: '12px' }}
               >
-                Resume Secure Payment <ExternalLink size={14} />
+                Resume Payment <ExternalLink size={14} />
               </button>
               <button
                 type="button"
@@ -703,17 +867,17 @@ export default function Checkout() {
           )}
           <span className="dtb-co-header__secure">
             <ShieldCheck size={14} aria-hidden="true" />
-            Secure checkout
+            Protected checkout
           </span>
         </div>
       </header>
 
       <div className="dtb-co-trustbar">
-        <span className="dtb-co-trustbar__item">Server-calculated shipping for your delivery address</span>
+        <span className="dtb-co-trustbar__item">Single-page checkout workflow</span>
         <span className="dtb-co-trustbar__sep" aria-hidden="true">|</span>
-        <span className="dtb-co-trustbar__item">Secure payment handoff</span>
+        <span className="dtb-co-trustbar__item">Server-calculated shipping and tax</span>
         <span className="dtb-co-trustbar__sep" aria-hidden="true">|</span>
-        <span className="dtb-co-trustbar__item">Easy returns</span>
+        <span className="dtb-co-trustbar__item">Gateway-owned payment controls</span>
       </div>
 
       <div className="dtb-co-grid">
@@ -771,7 +935,7 @@ export default function Checkout() {
               initial="hidden"
               animate="visible"
             >
-              <SectionHeader title="Contact" />
+              <SectionHeader title="Contact" subtitle="Tell us who should receive checkout and delivery updates." />
               {!isAuthenticated && effectiveCheckoutIdentity === 'guest' && (
                 <p className="dtb-co-guest-note">
                   Checking out as guest. <Link to="/login" state={{ returnTo: '/checkout' }}>Log in</Link> to use saved details.
@@ -818,7 +982,7 @@ export default function Checkout() {
               animate="visible"
               custom={0.05}
             >
-              <SectionHeader title="Shipping address" />
+              <SectionHeader title="Delivery" subtitle="Shipping, tax, and available delivery methods update from this address." />
 
               <div className="dtb-co-field" style={{ marginBottom: 12 }}>
                 <label htmlFor="field-address" className="dtb-co-label">
@@ -910,7 +1074,7 @@ export default function Checkout() {
               animate="visible"
               custom={0.08}
             >
-              <SectionHeader title="Shipping method" />
+              <SectionHeader title="Shipping method" subtitle="Choose the server-calculated rate for this order." />
 
               {ratesLoading && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--co-text-400)', padding: '4px 0' }}>
@@ -944,7 +1108,7 @@ export default function Checkout() {
                         name="shippingRate"
                         value={rate.id}
                         checked={activeSelectedRateId === String(rate.id)}
-                        onChange={() => setSelectedRateId(String(rate.id))}
+                        onChange={() => handleRateChange(rate.id)}
                       />
                       <div className="dtb-co-rate-meta">
                         <p className="dtb-co-rate-name">{rate.name}</p>
@@ -964,7 +1128,7 @@ export default function Checkout() {
               variants={fadeSlide}
               initial="hidden"
               animate="visible"
-              custom={0.1}
+              custom={0.09}
             >
               <div className="dtb-co-inline-disclosure">
                 <button
@@ -1033,7 +1197,7 @@ export default function Checkout() {
               variants={fadeSlide}
               initial="hidden"
               animate="visible"
-              custom={0.12}
+              custom={0.1}
             >
               <div className="dtb-co-inline-disclosure">
                 <button
@@ -1077,6 +1241,28 @@ export default function Checkout() {
                 </AnimatePresence>
               </div>
             </Motion.section>
+
+            {isFormComplete && (
+              <ReviewSummary
+                formData={formData}
+                shippingRates={shippingRates}
+                activeSelectedRateId={activeSelectedRateId}
+                displayTotal={displayTotal}
+                quoteReady={quoteReady}
+              />
+            )}
+
+            <CheckoutPaymentStep
+              blocksBridge={blocksBridge}
+              displayTotal={displayTotal}
+              paymentMethod={paymentMethod}
+              paymentReady={paymentReady}
+              paymentSetupError={paymentSetupError}
+              paymentUrl={paymentUrl}
+              processing={processing}
+              submitStatus={submitStatus}
+              onContinueToPayment={handleContinueToPayment}
+            />
 
             {checkoutError && (
               <Motion.div
@@ -1187,8 +1373,8 @@ export default function Checkout() {
 
           <div className="dtb-co-sidebar-cta">
             <div className="dtb-co-sidebar-cta__stage">
-              <span>Secure checkout</span>
-              <strong>Continue to payment</strong>
+              <span>{paymentReady ? 'Payment ready' : 'Checkout review'}</span>
+              <strong>{paymentReady ? 'Open protected payment' : 'Prepare protected payment'}</strong>
             </div>
             {paymentSetupError && (
               <div className="dtb-co-alert dtb-co-alert--warning" style={{ fontSize: 12, marginBottom: 12 }}>
@@ -1198,23 +1384,23 @@ export default function Checkout() {
             )}
             <button
               type="button"
-              onClick={handlePlaceOrder}
-              disabled={!canSubmitCheckout || processing}
+              onClick={handlePrimaryAction}
+              disabled={!canPrimaryAction}
               className="dtb-co-btn-primary dtb-co-btn-primary--wide"
-              aria-label={payButtonAriaLabel}
+              aria-label={primaryActionAriaLabel}
             >
               {processing ? <Loader2 size={16} className="animate-spin" /> : null}
-              {payButtonLabel}
+              {primaryActionLabel}
             </button>
             <InlineSubmitStatus status={submitStatus} />
             <div className="dtb-co-cta-trust" aria-label="Secure payment details">
               <span><ShieldCheck size={13} aria-hidden="true" /> Encrypted checkout</span>
-              <span>Payment is completed on the secure gateway screen before your order is finalized.</span>
+              <span>All checkout details stay in this page until the protected provider-owned payment step opens.</span>
             </div>
           </div>
 
           <div className="dtb-co-payment-section">
-            <p className="dtb-co-payment-label">Express payment available next</p>
+            <p className="dtb-co-payment-label">Supported payment methods</p>
             <PaymentMethodLogos />
           </div>
         </aside>
@@ -1228,10 +1414,10 @@ export default function Checkout() {
         taxStatus={taxPreview.status}
         quoteReady={quoteReady}
         processing={processing}
-        canSubmitCheckout={canSubmitCheckout}
-        payButtonLabel={payButtonLabel}
-        payButtonAriaLabel={payButtonAriaLabel}
-        onSubmit={handlePlaceOrder}
+        canSubmitCheckout={canPrimaryAction}
+        payButtonLabel={primaryActionLabel}
+        payButtonAriaLabel={primaryActionAriaLabel}
+        onSubmit={handlePrimaryAction}
       />
     </div>
   );
