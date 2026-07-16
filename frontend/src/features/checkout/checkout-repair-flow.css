@@ -1,0 +1,216 @@
+/*
+ * frontend/src/features/checkout/checkout-repair-flow.css
+ *
+ * Checkout visual workflow alignment with /repairs/start.
+ * Presentation-only: no gateway fields, no checkout API changes, no order
+ * lifecycle changes. This makes the existing synchronized checkout shell use the
+ * same step-card/progress/card motion language as the repair intake flow.
+ */
+
+.dtb-checkout {
+  --dtb-flow-card-border: rgba(203, 213, 225, 0.92);
+  --dtb-flow-card-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  --dtb-flow-blue-soft: rgba(37, 99, 235, 0.08);
+  --dtb-flow-blue-line: rgba(37, 99, 235, 0.2);
+}
+
+.dtb-checkout .dtb-co-trustbar {
+  display: none;
+}
+
+.dtb-checkout .dtb-co-header .dtb-co-steps {
+  max-width: 520px;
+}
+
+.dtb-checkout .dtb-co-grid {
+  align-items: start;
+}
+
+.dtb-checkout .dtb-co-formpane__inner {
+  gap: 18px;
+}
+
+.dtb-checkout .dtb-co-section,
+.dtb-checkout .dtb-co-auth-choice,
+.dtb-checkout .dtb-co-msummary,
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-sidebar-cta {
+  border: 1px solid var(--dtb-flow-card-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--dtb-flow-card-shadow);
+}
+
+.dtb-checkout .dtb-co-section {
+  padding: clamp(1.35rem, 3.6vw, 2.25rem);
+  animation: dtbCheckoutStepIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dtbCheckoutStepIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dtb-checkout .dtb-co-section__header {
+  margin-bottom: clamp(18px, 3vw, 28px);
+}
+
+.dtb-checkout .dtb-co-section__title {
+  color: #0f172a;
+  font-size: clamp(1.55rem, 4vw, 2.35rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.dtb-checkout .dtb-co-section__subheader {
+  color: rgba(15, 23, 42, 0.55);
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.dtb-checkout .dtb-co-steps {
+  gap: 4px;
+}
+
+.dtb-checkout .dtb-co-step {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dtb-checkout .dtb-co-step__bubble {
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(15, 23, 42, 0.15);
+  background: #fff;
+  color: rgba(15, 23, 42, 0.35);
+  font-size: 0.78rem;
+  font-weight: 800;
+  transition: background 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.dtb-checkout .dtb-co-step--done .dtb-co-step__bubble {
+  border-color: var(--dtb-co-primary);
+  background: var(--dtb-co-primary);
+  color: #fff;
+}
+
+.dtb-checkout .dtb-co-step--current .dtb-co-step__bubble {
+  border-color: var(--dtb-co-primary);
+  background: #eff6ff;
+  color: var(--dtb-co-primary);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
+}
+
+.dtb-checkout .dtb-co-step__label {
+  font-size: clamp(0.6rem, 1.5vw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.dtb-checkout .dtb-co-step__line {
+  height: 4px;
+  margin-top: 15px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.dtb-checkout .dtb-co-step__line--done {
+  background: linear-gradient(90deg, var(--dtb-co-primary), #3b82f6);
+}
+
+.dtb-checkout .dtb-co-payment-section {
+  border-radius: 16px;
+  box-shadow: var(--dtb-flow-card-shadow);
+}
+
+.dtb-checkout .dtb-co-payment-workflow:not(.is-payment-ready) {
+  display: none !important;
+}
+
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-cta-trust span:nth-child(2),
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-cta-trust span:nth-child(3) {
+  display: none !important;
+}
+
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-section__subheader {
+  display: none;
+}
+
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-sidebar-cta__stage span {
+  display: none;
+}
+
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-sidebar-cta__stage strong {
+  font-size: clamp(1.25rem, 4vw, 1.8rem);
+  line-height: 1.08;
+}
+
+.dtb-checkout .dtb-co-payment-workflow .dtb-co-sidebar-cta {
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.dtb-checkout .dtb-co-btn-primary,
+.dtb-checkout .dtb-co-coupon__btn,
+.dtb-checkout .dtb-co-auth-choice__guest-primary {
+  border-radius: 12px;
+  min-height: 52px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.dtb-checkout .dtb-co-rate-option,
+.dtb-checkout .dtb-co-disclosure-toggle,
+.dtb-checkout .dtb-co-auth-choice {
+  border-radius: 12px;
+}
+
+@media (max-width: 1023px) {
+  .dtb-checkout .dtb-co-header .dtb-co-steps,
+  .dtb-checkout .dtb-co-header__secure {
+    display: none;
+  }
+
+  .dtb-checkout .dtb-co-header {
+    min-height: auto;
+    padding-bottom: 0;
+  }
+
+  .dtb-checkout .dtb-co-formpane__inner {
+    gap: 14px;
+  }
+
+  .dtb-checkout .dtb-co-section,
+  .dtb-checkout .dtb-co-auth-choice,
+  .dtb-checkout .dtb-co-msummary {
+    border-radius: 16px;
+  }
+
+  .dtb-checkout .dtb-co-section {
+    padding: 1.15rem;
+  }
+
+  .dtb-checkout .dtb-co-section__title {
+    font-size: clamp(1.35rem, 7vw, 1.9rem);
+  }
+
+  .dtb-checkout .dtb-co-section__subheader {
+    font-size: 0.92rem;
+  }
+
+  .dtb-checkout .dtb-co-payment-workflow .dtb-co-btn-primary,
+  .dtb-checkout .dtb-co-payment-workflow .dtb-co-submit-status {
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta__inner {
+    border-radius: 20px 20px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dtb-checkout .dtb-co-section {
+    animation: none;
+  }
+}
