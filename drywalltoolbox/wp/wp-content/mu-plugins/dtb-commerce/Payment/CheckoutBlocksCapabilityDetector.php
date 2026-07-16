@@ -28,6 +28,13 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		'klarna',
 	];
 
+	/** Gateway ids that DTB can activate for the same-shell WooPayments adapter. */
+	private const SAME_SHELL_PROVIDER_GATEWAY_IDS = [
+		'woocommerce_payments',
+		'woopayments',
+		'stripe',
+	];
+
 	/** Return the current payment architecture capability envelope. */
 	public static function detect( array $payment_methods ): array {
 		$blocks_package_available = class_exists( '\\Automattic\\WooCommerce\\Blocks\\Package' );
@@ -65,24 +72,23 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			];
 		}
 
-		$server_same_shell_ready = $server_ready && $has_registered_blocks_method;
+		$server_same_shell_ready   = $server_ready && $has_registered_blocks_method;
+		$provider_same_shell_ready = $server_same_shell_ready && self::has_same_shell_provider_method( $methods );
 
 		/**
 		 * Enable the same-shell checkout/payment path only after the production
 		 * runtime has been verified with provider-owned Checkout Blocks UI.
 		 *
-		 * This filter is the explicit release gate. It must not be enabled merely
-		 * because WooCommerce Blocks classes exist; gateway fields, wallet sheets,
-		 * tokenization, callbacks, and payment lifecycle must remain owned by
-		 * WooCommerce/payment providers and must be exercised against the active
-		 * production gateway stack first.
+		 * The default is now the conservative WooPayments-compatible adapter gate:
+		 * server Blocks infrastructure plus an active registered WooPayments/Stripe
+		 * Blocks method. A site can still force-disable this by returning false.
 		 *
 		 * @param bool  $enabled            Whether DTB may activate same-shell payment.
 		 * @param array $methods            Publicly normalized active checkout methods.
 		 * @param array $registered_methods Normalized registered Blocks integrations.
 		 */
-		$client_bridge_enabled = (bool) apply_filters( 'dtb_checkout_blocks_same_shell_supported', false, $methods, array_values( $registered_methods ) );
-		$same_shell_supported  = $server_same_shell_ready && $client_bridge_enabled;
+		$client_bridge_enabled = (bool) apply_filters( 'dtb_checkout_blocks_same_shell_supported', $provider_same_shell_ready, $methods, array_values( $registered_methods ) );
+		$same_shell_supported  = $server_same_shell_ready && $provider_same_shell_ready && $client_bridge_enabled;
 
 		return [
 			'contract_version'             => '3',
@@ -95,6 +101,7 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			'assets_api_available'         => $assets_api_available,
 			'server_blocks_ready'          => $server_ready,
 			'server_same_shell_ready'      => $server_same_shell_ready,
+			'provider_same_shell_ready'    => $provider_same_shell_ready,
 			'client_bridge_enabled'        => $client_bridge_enabled,
 			'has_blocks_gateway_candidate' => $has_blocks_candidate,
 			'has_registered_blocks_method' => $has_registered_blocks_method,
@@ -102,10 +109,11 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			'client_registry_required'     => true,
 			'client_registry_global'       => 'window.wc.wcBlocksRegistry',
 			'client_bridge_required'       => 'dtb_checkout_blocks_bridge',
+			'client_provider_adapter'      => 'window.dtbCheckoutSameShellProvider.startPayment',
 			'methods'                      => $methods,
 			'notes'                        => [
 				'Official same-shell payment requires WooCommerce Blocks client registration and server-side payment method integration.',
-				'DTB keeps /checkout/order-pay as fallback until an eligible gateway is proven through the Blocks registry at runtime and the DTB client bridge is explicitly enabled.',
+				'DTB same-shell activation is limited to an active registered WooPayments-compatible Blocks method and the DTB client provider adapter.',
 			],
 		];
 	}
@@ -179,7 +187,7 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		}
 
 		$data_available = false;
-		if ( is_object( $integration ) && method_exists( $integration, 'get_payment_method_data' ) ) {
+		if ( is_object( $integration ) && method_exists( 'get_payment_method_data' ) ) {
 			try {
 				$data_available = is_array( $integration->get_payment_method_data() );
 			} catch ( Throwable $exception ) {
@@ -215,6 +223,23 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		$normalized = strtolower( $method_id );
 		foreach ( self::KNOWN_BLOCKS_GATEWAY_IDS as $candidate ) {
 			if ( $normalized === $candidate || false !== strpos( $normalized, $candidate ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Return whether an active registered same-shell provider method is present. */
+	private static function has_same_shell_provider_method( array $methods ): bool {
+		foreach ( $methods as $method ) {
+			$id = strtolower( (string) ( $method['id'] ?? '' ) );
+			if ( '' === $id || ! in_array( $id, self::SAME_SHELL_PROVIDER_GATEWAY_IDS, true ) ) {
+				continue;
+			}
+			if ( ! empty( $method['is_manual'] ) ) {
+				continue;
+			}
+			if ( ! empty( $method['blocks_registered'] ) && ! empty( $method['blocks_active'] ) ) {
 				return true;
 			}
 		}
