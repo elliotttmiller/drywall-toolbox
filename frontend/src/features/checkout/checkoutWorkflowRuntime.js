@@ -17,12 +17,6 @@ const STEP_LABELS = new Map([
   ['review', 'Review'],
   ['payment', 'Secure Payment'],
 ]);
-const STEP_EYEBROWS = new Map([
-  ['contact', 'Checkout'],
-  ['delivery', 'Shipping'],
-  ['review', 'Payment Method'],
-  ['payment', 'Payment'],
-]);
 const PAYMENT_VISUAL_METHODS = [
   { id: 'card', label: 'Credit Card', logos: ['visa', 'mastercard', 'amex'] },
   { id: 'paypal', label: 'PayPal', logos: ['paypal'] },
@@ -35,8 +29,9 @@ const boundStepButtons = new WeakSet();
 const boundFields = new WeakSet();
 let observer = null;
 let updateQueued = false;
-let manualStep = '';
+let manualStep = 'contact';
 let visualPaymentMethod = 'card';
+let lastPaymentReady = false;
 
 function isCheckoutRoute() {
   if (typeof window === 'undefined') return false;
@@ -108,17 +103,14 @@ function getState(root) {
   };
 }
 
-function defaultStep(state) {
-  if (state.paymentReady) return 'payment';
-  if (state.reviewReady) return 'review';
-  if (state.contactComplete) return 'delivery';
-  return 'contact';
+function firstAllowedStep(state) {
+  return STEP_ORDER.find((step) => state.allowedSteps.has(step)) || 'contact';
 }
 
 function resolveStep(state) {
   if (manualStep && state.allowedSteps.has(manualStep)) return manualStep;
-  manualStep = '';
-  return defaultStep(state);
+  manualStep = firstAllowedStep(state);
+  return manualStep;
 }
 
 function logoFor(root, key) {
@@ -133,11 +125,18 @@ function logoFor(root, key) {
   return img;
 }
 
+function announceVisualPaymentMethod(methodId) {
+  window.dispatchEvent(new CustomEvent('dtb:checkout-payment-method-selected', {
+    detail: { visualMethod: methodId },
+  }));
+}
+
 function updateVisualPaymentRows(panel) {
   panel.querySelectorAll('.dtb-mobile-payment-method-row').forEach((row) => {
     const selected = row instanceof HTMLElement && row.dataset.method === visualPaymentMethod;
     row.classList.toggle('is-selected', selected);
     row.setAttribute('aria-checked', selected ? 'true' : 'false');
+    row.setAttribute('aria-pressed', selected ? 'true' : 'false');
   });
 }
 
@@ -168,11 +167,19 @@ function makePaymentMethodRow(root, method) {
     if (logo) logos.appendChild(logo);
   });
 
-  row.append(label, logos);
-  row.addEventListener('click', () => {
+  const activate = () => {
     visualPaymentMethod = method.id;
     const panel = row.closest('.dtb-mobile-payment-method-panel');
     if (panel) updateVisualPaymentRows(panel);
+    announceVisualPaymentMethod(method.id);
+  };
+
+  row.append(label, logos);
+  row.addEventListener('click', activate);
+  row.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    activate();
   });
   return row;
 }
@@ -198,7 +205,7 @@ function ensurePaymentMethodPanel(root, state) {
 
     const copy = document.createElement('p');
     copy.className = 'dtb-mobile-payment-method-panel__copy';
-    copy.textContent = 'Choose how you want to continue. Final wallet, card, tokenization, and verification controls remain provider-owned.';
+    copy.textContent = 'Choose how you want to continue. Wallet, card, tokenization, and verification controls stay provider-owned.';
 
     const list = document.createElement('div');
     list.className = 'dtb-mobile-payment-method-list';
@@ -209,7 +216,7 @@ function ensurePaymentMethodPanel(root, state) {
 
     const note = document.createElement('p');
     note.className = 'dtb-mobile-payment-method-note';
-    note.textContent = 'DTB prepares the order; WooCommerce and the selected payment provider complete the payment step.';
+    note.textContent = 'Selecting a method updates the checkout preference; final availability is confirmed by WooCommerce and the payment provider.';
 
     panel.append(title, copy, list, note);
 
@@ -277,15 +284,9 @@ function ensureMobileStepShell(root, activeStep, state) {
   const title = document.createElement('div');
   title.className = 'dtb-mobile-stepbar__title';
 
-  const eyebrow = document.createElement('span');
-  eyebrow.className = 'dtb-mobile-stepbar__eyebrow';
-  eyebrow.textContent = STEP_EYEBROWS.get(activeStep) || 'Checkout';
-
   const heading = document.createElement('strong');
   heading.className = 'dtb-mobile-stepbar__heading';
-  heading.textContent = STEP_LABELS.get(activeStep) || 'Checkout';
-
-  title.append(eyebrow, heading);
+  heading.textContent = 'Checkout';
 
   const dots = document.createElement('div');
   dots.className = 'dtb-mobile-stepbar__dots';
@@ -314,7 +315,13 @@ function ensureMobileStepShell(root, activeStep, state) {
     dots.appendChild(dot);
   });
 
-  bar.append(back, title, dots);
+  title.append(heading, dots);
+
+  const stepLabel = document.createElement('span');
+  stepLabel.className = 'dtb-mobile-stepbar__current-label';
+  stepLabel.textContent = STEP_LABELS.get(activeStep) || activeStep;
+
+  bar.append(back, title, stepLabel);
   shell.appendChild(bar);
 }
 
@@ -393,14 +400,8 @@ function bindFields(root) {
   fields.forEach((field) => {
     if (boundFields.has(field)) return;
     boundFields.add(field);
-    field.addEventListener('input', () => {
-      manualStep = '';
-      scheduleUpdate();
-    }, { passive: true });
-    field.addEventListener('change', () => {
-      manualStep = '';
-      scheduleUpdate();
-    }, { passive: true });
+    field.addEventListener('input', scheduleUpdate, { passive: true });
+    field.addEventListener('change', scheduleUpdate, { passive: true });
   });
 }
 
@@ -412,6 +413,10 @@ function update() {
 
   bindFields(root);
   const state = getState(root);
+  if (state.paymentReady && !lastPaymentReady) {
+    manualStep = 'payment';
+  }
+  lastPaymentReady = state.paymentReady;
   const activeStep = resolveStep(state);
   ensurePaymentMethodPanel(root, state);
 
@@ -461,7 +466,8 @@ export function installCheckoutWorkflowRuntime() {
   }
 
   window.addEventListener('popstate', () => {
-    manualStep = '';
+    manualStep = 'contact';
+    lastPaymentReady = false;
     window.setTimeout(start, 0);
   });
 }
