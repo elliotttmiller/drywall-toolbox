@@ -7,20 +7,17 @@
  * payment handoff, and provider-owned payment controls.
  */
 
-`@media` (max-width: 1023px) {
+@media (max-width: 1023px) {
   .dtb-checkout--mobile-screen-flow {
-    --dtb-flow-bg: `#f7f8fb`;
-    --dtb-flow-card: `#ffffff`;
+    --dtb-flow-bg: #f7f8fb;
+    --dtb-flow-card: #fff;
     --dtb-flow-border: rgba(210, 218, 230, .95);
-    --dtb-flow-ink: `#080d1c`;
-    --dtb-flow-muted: `#667085`;
-    --dtb-flow-primary: `#315ee8`;
+    --dtb-flow-ink: #080d1c;
+    --dtb-flow-muted: #667085;
+    --dtb-flow-primary: #315ee8;
     --dtb-flow-radius: clamp(14px, 4vw, 20px);
-    --dtb-flow-gutter: max(clamp(14px, 4.4vw, 24px), env(safe-area-inset-left));
-
     min-height: 100svh;
     background: var(--dtb-flow-bg) !important;
-    color: var(--dtb-flow-ink);
   }
 
   .dtb-checkout--mobile-screen-flow .dtb-co-header,
@@ -32,10 +29,9 @@
     position: sticky;
     top: 0;
     z-index: 96;
-    display: block;
     padding: calc(env(safe-area-inset-top) + 8px) max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
-    background: rgba(247, 248, 251, .96);
     border-bottom: 1px solid rgba(210, 218, 230, .78);
+    background: rgba(247, 248, 251, .96);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
   }
@@ -93,7 +89,6 @@
 
   .dtb-mobile-stepbar__dots {
     display: inline-flex;
-    align-items: center;
     justify-content: flex-end;
     gap: 5px;
     min-width: 54px;
@@ -169,15 +164,6 @@
     background: transparent !important;
   }
 
-  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
-    margin: 2px 0 0;
-    color: #667085;
-    font-size: 13px;
-    font-weight: 620;
-    letter-spacing: 0;
-    text-transform: none;
-  }
-
   .dtb-checkout--mobile-screen-flow .dtb-co-flow-panel.is-dtb-flow-visible,
   .dtb-checkout--mobile-screen-flow .dtb-co-auth-choice:not([hidden]),
   .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-panel:not([hidden]) {
@@ -198,11 +184,6 @@
   .dtb-checkout--mobile-screen-flow .dtb-co-flow-panel.is-dtb-flow-hidden,
   .dtb-checkout--mobile-screen-flow .is-dtb-flow-hidden {
     display: none !important;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-section__header,
-  .dtb-checkout--mobile-screen-flow .dtb-co-auth-choice__header {
-    margin-bottom: 14px !important;
   }
 
   .dtb-checkout--mobile-screen-flow .dtb-co-section__title,
@@ -232,16 +213,6 @@
     gap: clamp(9px, 2.8vw, 12px) !important;
   }
 
-  .dtb-checkout--mobile-screen-flow .dtb-co-field {
-    gap: 6px !important;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-label {
-    color: #667085;
-    font-size: 10.5px !important;
-    letter-spacing: .12em !important;
-  }
-
   .dtb-checkout--mobile-screen-flow .dtb-co-input,
   .dtb-checkout--mobile-screen-flow .dtb-co-select,
   .dtb-checkout--mobile-screen-flow .dtb-co-textarea,
@@ -251,14 +222,6 @@
     border-radius: clamp(11px, 3.2vw, 15px) !important;
     background: #fff !important;
     box-shadow: none !important;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-textarea {
-    min-height: 74px !important;
-  }
-
-  .dtb-mobile-payment-method-panel {
-    position: relative;
   }
 
   .dtb-mobile-payment-method-list {
@@ -293,7 +256,6 @@
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    min-width: 0;
     font-size: 14px;
     font-weight: 760;
     letter-spacing: -.02em;
@@ -314,7 +276,6 @@
 
   .dtb-mobile-payment-method-row.is-selected .dtb-mobile-payment-method-row__mark::after {
     content: "";
-    display: block;
     width: 9px;
     height: 9px;
     border-radius: inherit;
@@ -337,10 +298,6 @@
     object-fit: contain;
   }
 
-  .dtb-mobile-payment-method-row__logos img[data-logo="mastercard"] {
-    max-width: 28px;
-  }
-
   .dtb-mobile-payment-method-note {
     margin: 11px 0 0;
     color: #667085;
@@ -353,44 +310,12 @@
     display: none !important;
   }
 
-  .dtb-checkout--mobile-screen-flow .dtb-co-payment-workflow .dtb-co-sidebar-cta__stage span {
-    display: none;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-payment-workflow .dtb-co-sidebar-cta__stage strong {
-    font-size: clamp(17px, 5vw, 22px);
-    letter-spacing: -.045em;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta {
-    background: rgba(255, 255, 255, .96) !important;
-    border-top: 1px solid rgba(210, 218, 230, .95) !important;
-    box-shadow: 0 -14px 30px rgba(15, 23, 42, .12) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-  }
-
   .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) {
     padding-block: 7px max(8px, env(safe-area-inset-bottom)) !important;
   }
 
   .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-toggle {
     min-height: 46px !important;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-label {
-    font-size: 13px !important;
-    line-height: 1.05;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-amount {
-    font-size: clamp(22px, 6.4vw, 30px) !important;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta--expanded .dtb-co-btn-primary,
-  .dtb-checkout--mobile-screen-flow .dtb-co-sidebar-cta .dtb-co-btn-primary {
-    min-height: 50px !important;
-    border-radius: 13px !important;
   }
 
   @keyframes dtb-mobile-flow-panel-in {
@@ -413,31 +338,5 @@
 
   .dtb-checkout--mobile-screen-flow .dtb-co-grid-3 {
     grid-template-columns: minmax(0, 1.1fr) minmax(118px, .8fr) minmax(96px, .7fr);
-  }
-}
-
-@media (max-width: 374px) {
-  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar {
-    grid-template-columns: 34px minmax(0, 1fr) auto;
-    gap: 7px;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__back {
-    width: 33px;
-    height: 33px;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dots {
-    gap: 4px;
-    min-width: 46px;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot {
-    width: 7px;
-    height: 7px;
-  }
-
-  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot.is-current {
-    width: 14px;
   }
 }
