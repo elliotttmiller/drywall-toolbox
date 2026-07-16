@@ -16,6 +16,7 @@
     --dtb-flow-muted: #667085;
     --dtb-flow-primary: #315ee8;
     --dtb-flow-radius: clamp(14px, 4vw, 20px);
+
     min-height: 100svh;
     background: var(--dtb-flow-bg) !important;
   }
