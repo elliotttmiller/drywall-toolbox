@@ -34,6 +34,7 @@ import './components/catalog/products-selector-overrides.css'
 import './styles/mobile-fluid-viewport-authority.css'
 import './features/checkout/checkout-fast-flow.css'
 import './features/checkout/checkout-repair-flow.css'
+import './features/checkout/checkout-step-runtime.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
 import { installSchematicPageLabelRuntime } from './utils/schematicPageLabelRuntime.js'
@@ -41,6 +42,7 @@ import { installMobileSchematicNavRuntime } from './utils/mobileSchematicNavRunt
 import { installRepairPackageSelectionRuntime } from './utils/repairPackageSelectionRuntime.js'
 import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRuntime.js'
 import { installCheckoutExpressRailRuntime } from './features/checkout/checkoutExpressRailRuntime.js'
+import { installCheckoutWorkflowRuntime } from './features/checkout/checkoutWorkflowRuntime.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
 // The legacy all-products cache is intentionally delayed so it cannot compete
@@ -52,6 +54,7 @@ installMobileSchematicNavRuntime();
 installRepairPackageSelectionRuntime();
 installCustomerFacingCopyRuntime();
 installCheckoutExpressRailRuntime();
+installCheckoutWorkflowRuntime();
 
 if (typeof window !== 'undefined') {
   const pathname = window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') || '/';
