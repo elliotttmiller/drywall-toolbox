@@ -1,0 +1,342 @@
+/*
+ * frontend/src/features/checkout/checkout-mobile-screen-flow.css
+ *
+ * Final mobile checkout screen-flow authority. Presentation-only: converts the
+ * mobile checkout into a compact app-style, mostly-fluid, one-panel-at-a-time
+ * flow while DTB/WooCommerce remain authoritative for quote, session, order,
+ * payment handoff, and provider-owned payment controls.
+ */
+
+@media (max-width: 1023px) {
+  .dtb-checkout--mobile-screen-flow {
+    --dtb-flow-bg: #f7f8fb;
+    --dtb-flow-card: #fff;
+    --dtb-flow-border: rgba(210, 218, 230, .95);
+    --dtb-flow-ink: #080d1c;
+    --dtb-flow-muted: #667085;
+    --dtb-flow-primary: #315ee8;
+    --dtb-flow-radius: clamp(14px, 4vw, 20px);
+    min-height: 100svh;
+    background: var(--dtb-flow-bg) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-header,
+  .dtb-checkout--mobile-screen-flow .dtb-co-trustbar {
+    display: none !important;
+  }
+
+  .dtb-checkout-mobile-step-shell {
+    position: sticky;
+    top: 0;
+    z-index: 96;
+    padding: calc(env(safe-area-inset-top) + 8px) max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
+    border-bottom: 1px solid rgba(210, 218, 230, .78);
+    background: rgba(247, 248, 251, .96);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .dtb-mobile-stepbar {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: min(100%, 640px);
+    margin-inline: auto;
+  }
+
+  .dtb-mobile-stepbar__back {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--dtb-flow-ink);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .dtb-mobile-stepbar__title {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .dtb-mobile-stepbar__eyebrow {
+    display: block;
+    color: var(--dtb-flow-muted);
+    font-size: 10px;
+    font-weight: 780;
+    letter-spacing: .16em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .dtb-mobile-stepbar__heading {
+    display: block;
+    margin-top: 3px;
+    overflow: hidden;
+    color: var(--dtb-flow-ink);
+    font-size: clamp(16px, 4.8vw, 19px);
+    font-weight: 830;
+    letter-spacing: -.045em;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dtb-mobile-stepbar__dots {
+    display: inline-flex;
+    justify-content: flex-end;
+    gap: 5px;
+    min-width: 54px;
+  }
+
+  .dtb-mobile-stepbar__dot {
+    width: 8px;
+    height: 8px;
+    border: 0;
+    border-radius: 999px;
+    background: #d7dce6;
+    padding: 0;
+  }
+
+  .dtb-mobile-stepbar__dot.is-done,
+  .dtb-mobile-stepbar__dot.is-current {
+    background: var(--dtb-flow-primary);
+  }
+
+  .dtb-mobile-stepbar__dot.is-current {
+    width: 17px;
+  }
+
+  .dtb-mobile-stepbar__dot:disabled {
+    opacity: .5;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-grid,
+  .dtb-checkout--mobile-screen-flow .dtb-co-formpane {
+    background: var(--dtb-flow-bg) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-formpane {
+    padding: 10px max(14px, env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow:has(.dtb-co-mobile-cta--expanded) .dtb-co-formpane {
+    padding-bottom: calc(230px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-formpane__inner,
+  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta__inner {
+    width: min(100%, 640px) !important;
+    max-width: min(640px, calc(100vw - 28px - env(safe-area-inset-left) - env(safe-area-inset-right))) !important;
+    margin-inline: auto !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-msummary {
+    margin: 0 0 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 1px solid var(--dtb-flow-border) !important;
+    border-radius: var(--dtb-flow-radius) !important;
+    background: var(--dtb-flow-card) !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .045) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-msummary__toggle {
+    min-height: 52px !important;
+    padding-inline: clamp(14px, 4vw, 18px) !important;
+    background: transparent !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-payment-section--mobile-reference {
+    display: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference {
+    display: grid !important;
+    margin: 0 0 10px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-flow-panel.is-dtb-flow-visible,
+  .dtb-checkout--mobile-screen-flow .dtb-co-auth-choice:not([hidden]),
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-panel:not([hidden]) {
+    display: block !important;
+    border: 1px solid var(--dtb-flow-border) !important;
+    border-radius: var(--dtb-flow-radius) !important;
+    background: var(--dtb-flow-card) !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .052) !important;
+    animation: dtb-mobile-flow-panel-in .22s ease-out both;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-flow-panel.is-dtb-flow-visible,
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-panel:not([hidden]) {
+    margin: 10px 0 !important;
+    padding: clamp(16px, 4.6vw, 22px) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-flow-panel.is-dtb-flow-hidden,
+  .dtb-checkout--mobile-screen-flow .is-dtb-flow-hidden {
+    display: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-section__title,
+  .dtb-checkout--mobile-screen-flow .dtb-co-auth-choice__title,
+  .dtb-mobile-payment-method-panel__title {
+    margin: 0;
+    color: var(--dtb-flow-ink);
+    font-size: clamp(20px, 6vw, 27px) !important;
+    font-weight: 840 !important;
+    letter-spacing: -.055em !important;
+    line-height: 1.02 !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-section__subheader,
+  .dtb-checkout--mobile-screen-flow .dtb-co-guest-note,
+  .dtb-mobile-payment-method-panel__copy {
+    margin-top: 7px;
+    color: var(--dtb-flow-muted);
+    font-size: clamp(13px, 3.7vw, 15px) !important;
+    font-weight: 520;
+    line-height: 1.42 !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-grid-2,
+  .dtb-checkout--mobile-screen-flow .dtb-co-grid-3 {
+    display: grid;
+    gap: clamp(9px, 2.8vw, 12px) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-input,
+  .dtb-checkout--mobile-screen-flow .dtb-co-select,
+  .dtb-checkout--mobile-screen-flow .dtb-co-textarea,
+  .dtb-checkout--mobile-screen-flow .dtb-co-coupon__input {
+    min-height: clamp(46px, 11.8vw, 52px) !important;
+    border: 1.35px solid #d8dee9 !important;
+    border-radius: clamp(11px, 3.2vw, 15px) !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .dtb-mobile-payment-method-list {
+    display: grid;
+    gap: 9px;
+    margin-top: 14px;
+  }
+
+  .dtb-mobile-payment-method-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 50px;
+    width: 100%;
+    padding: 0 14px;
+    border: 1.25px solid #d8dee9;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--dtb-flow-ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .dtb-mobile-payment-method-row.is-selected {
+    border-color: var(--dtb-flow-primary);
+    box-shadow: 0 0 0 2px rgba(49, 94, 232, .1);
+  }
+
+  .dtb-mobile-payment-method-row__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 760;
+    letter-spacing: -.02em;
+  }
+
+  .dtb-mobile-payment-method-row__mark {
+    display: inline-grid;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 999px;
+  }
+
+  .dtb-mobile-payment-method-row.is-selected .dtb-mobile-payment-method-row__mark {
+    border-color: var(--dtb-flow-primary);
+  }
+
+  .dtb-mobile-payment-method-row.is-selected .dtb-mobile-payment-method-row__mark::after {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: inherit;
+    background: var(--dtb-flow-primary);
+  }
+
+  .dtb-mobile-payment-method-row__logos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    min-width: 56px;
+  }
+
+  .dtb-mobile-payment-method-row__logos img {
+    display: block;
+    width: auto;
+    max-width: 54px;
+    height: 18px;
+    object-fit: contain;
+  }
+
+  .dtb-mobile-payment-method-note {
+    margin: 11px 0 0;
+    color: #667085;
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-payment-workflow .dtb-co-cta-trust,
+  .dtb-checkout--mobile-screen-flow .dtb-co-payment-workflow .dtb-checkout-payment-logos {
+    display: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) {
+    padding-block: 7px max(8px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-toggle {
+    min-height: 46px !important;
+  }
+
+  @keyframes dtb-mobile-flow-panel-in {
+    from { opacity: 0; transform: translate3d(0, 10px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dtb-checkout--mobile-screen-flow .dtb-co-flow-panel.is-dtb-flow-visible,
+    .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-panel:not([hidden]) {
+      animation: none;
+    }
+  }
+}
+
+@media (min-width: 560px) and (max-width: 1023px) {
+  .dtb-checkout--mobile-screen-flow .dtb-co-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-co-grid-3 {
+    grid-template-columns: minmax(0, 1.1fr) minmax(118px, .8fr) minmax(96px, .7fr);
+  }
+}
