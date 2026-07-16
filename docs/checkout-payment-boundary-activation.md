@@ -13,7 +13,7 @@ DTB must not:
 - iframe `/checkout/order-pay` inside the storefront;
 - scrape, intercept, or mutate provider iframes;
 - bypass WooCommerce/WooPayments/PayPal nonce, tokenization, callback, webhook, or payment-status lifecycle;
-- remove `/checkout/order-pay` while it remains required for fallback, recovery, manual payment, email payment links, retries, or unsupported gateway stacks.
+- remove `/checkout/order-pay` from WordPress while it remains required for recovery, manual payment, email payment links, retries, or unsupported gateway stacks.
 
 DTB may:
 
@@ -22,8 +22,8 @@ DTB may:
 - surface express checkout/payment method affordances immediately at the top of the checkout shell;
 - request DTB quote/session/confirm/finalize through the existing checkout API contract;
 - display a provider-owned Payment step after DTB prepares the WooCommerce pending order;
-- open the protected gateway-owned payment route when fallback is required;
-- activate official WooCommerce Blocks payment only when the active gateway stack exposes provider-owned Blocks registration and the release gate is intentionally enabled.
+- block the default storefront payment click path from redirecting away from `/checkout`;
+- activate official WooCommerce Blocks payment only when the active gateway stack exposes provider-owned Blocks registration and the DTB WooPayments same-shell provider adapter can submit provider-owned payment data.
 
 ## Current implemented customer workflow
 
@@ -36,11 +36,10 @@ DTB may:
    Shipping method
    Review
    Payment preparation
-   Open protected payment
--> /checkout/order-pay only when the customer opens the protected fallback payment step
+   Same-shell WooPayments adapter
 ```
 
-The user-facing checkout steps are synchronized inside `/checkout`. Express checkout/payment methods are visible immediately as provider-branded launch affordances, but final payment entry still remains provider-owned. This is the correct safe transition state before activating any same-shell Blocks payment path.
+The user-facing checkout steps are synchronized inside `/checkout`. Express checkout/payment methods are visible immediately as provider-branded launch affordances, but final payment entry still remains provider-owned.
 
 ## Linear stepper contract
 
@@ -78,9 +77,9 @@ The resolver changes only the `payment_method` value sent to DTB session creatio
 
 ## Same-shell provider ownership contract
 
-Same-shell payment means provider-owned WooCommerce Blocks controls render inside the checkout shell. It does **not** mean DTB registers a fake gateway, clones order-pay markup, or submits payment directly from React.
+Same-shell payment means provider-owned WooCommerce Blocks controls render inside the checkout shell. It does **not** mean DTB registers a fake gateway, clones order-pay markup, or submits payment directly from raw React card fields.
 
-The DTB `dtb_checkout_blocks_bridge` integration is diagnostics-only. It must not be enabled as the production payment method. Production same-shell payment must use the active provider's own registered Blocks payment method, such as WooPayments (`woocommerce_payments`) for card/Apple Pay/Google Pay or PayPal Commerce Platform (`ppcp-gateway`) for PayPal.
+The DTB `dtb_checkout_blocks_bridge` integration is diagnostics-only. It must not be enabled as the production payment method. Production same-shell payment must use the active provider's own registered Blocks payment method, such as WooPayments (`woocommerce_payments`) for card/Apple Pay/Google Pay.
 
 The diagnostic bridge can only be exposed with this separate filter:
 
@@ -92,75 +91,77 @@ That filter is not a production same-shell activation switch.
 
 ## Same-shell frontend adapter contract
 
-The frontend now includes a same-shell payment adapter gate. It checks the DTB checkout capability envelope, the WooCommerce Blocks registry, registered provider Blocks methods, and a provider-owned adapter before it suppresses the protected order-pay fallback navigation.
+The frontend includes a same-shell payment runtime and a WooPayments provider adapter.
 
-The gate only intercepts `Open protected payment` when all of these are true:
+The runtime intercepts `Open protected payment`, refreshes capabilities, and starts `window.dtbCheckoutSameShellProvider.startPayment()` only when all of these are true:
 
 ```text
 payment_architecture.same_shell_supported === true
 payment_architecture.client_bridge_enabled === true
 payment_architecture.server_blocks_ready === true
 payment_architecture.server_same_shell_ready === true
+payment_architecture.provider_same_shell_ready === true
 window.wc.wcBlocksRegistry.registerPaymentMethod exists
 window.wc.wcBlocksRegistry.registerExpressPaymentMethod exists
-an active provider gateway such as woocommerce_payments has blocks_registered === true and blocks_active === true
+an active WooPayments-compatible gateway reports blocks_registered === true and blocks_active === true
+window.wc.wcBlocksData.paymentStore exists
 window.dtbCheckoutSameShellProvider.startPayment is a function
 ```
 
-If `window.dtbCheckoutSameShellProvider.startPayment` is missing, checkout keeps the order-pay fallback path. The adapter contract is intentionally explicit so DTB cannot silently block a working fallback with a placeholder payment screen.
+The WooPayments adapter must:
 
-A production provider adapter must:
-
-- render or activate only provider-owned WooPayments/WooCommerce Blocks controls;
+- read only provider-owned payment state from the WooCommerce Blocks payment store;
+- reject payment if WooCommerce Blocks has not initialized payment methods;
+- reject Apple Pay / Google Pay if express methods are not initialized and available for the browser/device;
+- reject payment if provider-owned payment data is missing;
 - update the same DTB-created WooCommerce pending order;
 - submit valid provider-owned `payment_data` through WooCommerce's existing-order Store API payment path, `POST /wc/store/v1/checkout/{ORDER_ID}`, using the DTB-created order id and order key returned in `order.same_shell_payment`;
-- return success/failure to the checkout shell without creating a second WooCommerce order;
-- expose recoverable failure so the fallback route can remain available.
+- return success/failure to the checkout shell without creating a second WooCommerce order.
 
 `order.same_shell_payment` is emitted only while the order still requires payment. It contains the prepared WooCommerce order id, order key, billing email, selected payment method, the Store API path, and the protected fallback URL. The order key is already present in WooCommerce's order-pay URL, but DTB must still avoid logging it or exposing it after payment is verified.
 
 ## Runtime switch conditions for same-shell payment
 
-Same-shell payment must remain disabled unless all of these are true on the live server:
+Same-shell payment can complete only when all of these are true on the live server:
 
 ```text
 payment_architecture.contract_version === "3"
 payment_architecture.server_blocks_ready === true
 payment_architecture.server_same_shell_ready === true
+payment_architecture.provider_same_shell_ready === true
 payment_architecture.client_bridge_enabled === true
 payment_architecture.same_shell_supported === true
-at least one active non-manual provider gateway reports blocks_registered === true
-at least one active non-manual provider gateway reports blocks_active === true
+at least one active WooPayments-compatible gateway reports blocks_registered === true
+at least one active WooPayments-compatible gateway reports blocks_active === true
 window.wc.wcBlocksRegistry.registerPaymentMethod exists
 window.wc.wcBlocksRegistry.registerExpressPaymentMethod exists
-provider-owned UI renders without DTB-created card inputs
+window.wc.wcBlocksData.paymentStore exists
+provider-owned payment data is present before payment submission
 payment submission targets `POST /wc/store/v1/checkout/{ORDER_ID}` for the same DTB-created WooCommerce pending order
 no duplicate WooCommerce order is created by the Blocks provider flow
 ```
 
-If any condition fails, `/checkout/order-pay` remains the primary payment execution path.
+If any condition fails, the storefront remains in `/checkout` and surfaces the blocked same-shell state. `/checkout/order-pay` can still exist for recovery and non-storefront links, but it is not the default storefront payment click path.
 
 ## Live server manual activation checklist
 
 ### 1. Deploy source safely
 
-- Confirm PR #475 and the checkout UI/workflow PR are merged into `main`.
+- Confirm the checkout same-shell PR is merged into `main`.
 - Run the protected deployment workflow, not manual file drift.
 - Confirm the deployed `frontend/src/main.jsx` bundle imports the canonical checkout stylesheet path at build time: `features/checkout/checkout-system.css`.
-- Confirm the deployed bundle also includes the express payment rail module: `features/checkout/checkout-express-payment-rail.css`.
-- Confirm the old checkout CSS files are not present in the deployed frontend manifest or loaded page source.
+- Confirm the deployed bundle includes the same-shell runtime and WooPayments same-shell adapter.
 - Purge CDN/cache/plugin/page cache after deploy.
 - Open `/checkout` in an incognito browser and confirm the Express checkout rail plus Contact, Delivery, Review, Payment sequence appears in one page.
 
 ### 2. Confirm WordPress/WooCommerce payment prerequisites
 
 - Confirm WooCommerce is active and healthy.
-- Confirm WooPayments and/or PayPal payment plugin is active.
+- Confirm WooPayments is active, connected, and enabled.
 - Confirm production/sandbox mode is intentional.
 - Confirm webhook endpoints and webhook secrets are configured in the payment provider dashboard.
-- Confirm WooCommerce order-pay route remains reachable.
-- Confirm no maintenance/security plugin blocks `/checkout/order-pay`, `/wp-json/wc/`, or `/wp-json/dtb/v1/checkout/*`.
-- Confirm HTTPS is valid and no mixed-content warnings appear on checkout or order-pay.
+- Confirm no maintenance/security plugin blocks `/wp-json/wc/` or `/wp-json/dtb/v1/checkout/*`.
+- Confirm HTTPS is valid and no mixed-content warnings appear on checkout.
 
 ### 3. Inspect DTB checkout capability response
 
@@ -173,70 +174,7 @@ Open:
 Confirm:
 
 - `payment_architecture.contract_version` is `"3"`.
-- `fallback_order_pay_enabled` is `true`.
-- `client_bridge_enabled` is `false` unless intentionally enabling same-shell payment.
-- `same_shell_supported` is `false` by default.
-- Active gateways are present and manual-only methods are not selected as the storefront payment method.
-- `woocommerce_payments` is present and enabled when WooPayments should own card/wallet preference routing.
-- If WooCommerce Blocks registry is available, registered methods are reported without exposing secrets.
-
-### 4. Confirm fallback payment flow before enabling anything
-
-- Add one real catalog product to cart.
-- Open `/checkout`.
-- Confirm the express checkout/payment method rail appears immediately under the checkout header on mobile and at the top of the checkout summary column on desktop.
-- Complete Contact and Delivery.
-- Select a shipping method.
-- Confirm Review appears before Payment.
-- Select Card, Apple Pay, Google Pay, or PayPal in the Payment Method step.
-- Confirm Card/Apple Pay/Google Pay create the checkout session with `woocommerce_payments` when WooPayments is enabled.
-- Confirm PayPal creates the checkout session with `ppcp-gateway` when PayPal Commerce Platform is enabled.
-- Click `Prepare protected payment`.
-- Confirm the Payment section appears in `/checkout` without an automatic redirect.
-- Confirm the button changes to `Open protected payment`.
-- Click `Open protected payment`.
-- Confirm the customer is taken to `/checkout/order-pay/...`.
-- Complete or cancel payment using the configured sandbox/test method.
-- Confirm only one WooCommerce order exists for the attempt.
-- Confirm the DTB order/session metadata and recovery state remain consistent.
-
-### 5. Same-shell Blocks gate activation, only after fallback is clean
-
-Do not enable this in production first. Enable only in staging/protected rollout by adding a controlled mu-plugin or environment-specific filter:
-
-```php
-add_filter('dtb_checkout_blocks_same_shell_supported', '__return_true');
-```
-
-After enabling on staging, confirm:
-
-- `/wp-json/dtb/v1/checkout/capabilities` reports `client_bridge_enabled: true`.
-- `same_shell_supported` becomes true only if registered provider Blocks payment methods are actually active.
-- Browser console shows `window.wc.wcBlocksRegistry` exists.
-- Browser console shows `window.dtbCheckoutSameShellProvider.startPayment` exists before fallback navigation is suppressed.
-- Provider-owned payment UI renders through WooCommerce Blocks registration.
-- DTB React code does not render raw card fields.
-- Gateway/provider callback updates the DTB-created pending order.
-- A failed payment can be retried without creating duplicate orders.
-- A browser refresh during payment does not lose recovery state.
-- A second tab/double click does not create duplicate orders.
-
-### 6. Production rollout guardrails
-
-- Keep the same-shell gate disabled until staging proves order lifecycle correctness.
-- Keep `/checkout/order-pay` route reachable after enabling same-shell payment.
-- Keep payment recovery links pointing to order-pay unless an officially supported provider recovery path is proven.
-- Monitor WooCommerce orders, DTB checkout session rows, action scheduler jobs, payment-provider events, and failed payment webhooks during rollout.
-- Roll back by removing the `dtb_checkout_blocks_same_shell_supported` filter first; do not roll back source unless frontend checkout itself is broken.
-
-## Rollback rules
-
-Fast rollback for payment issues:
-
-```php
-remove_filter('dtb_checkout_blocks_same_shell_supported', '__return_true');
-```
-
-or remove the temporary activation mu-plugin. This returns checkout to the protected order-pay fallback while preserving the unified `/checkout` intake workflow.
-
-Full rollback is only needed if the new checkout visual shell or step orchestration itself breaks. In that case, revert the checkout UI/workflow PR and redeploy through the protected deployment workflow.
+- `client_bridge_enabled` is `true` when WooPayments Blocks is active.
+- `same_shell_supported` is `true` when WooPayments Blocks is active.
+- `provider_same_shell_ready` is `true`.
+- `woocommerce_payments` or `woopayments` is present, enabled, `blocks_registered`, and `blocks_active`.
