@@ -22,6 +22,7 @@ const PROVIDER_LABELS = {
 
 const MOBILE_QUERY = '(max-width: 1023px)';
 const MOBILE_CLONE_SELECTOR = '.dtb-co-payment-section--mobile-reference';
+const MOBILE_LOGOS_ONLY_CLASS = 'dtb-co-payment-section--supported-logos';
 
 function resolveProviderFromLogo(logo) {
   if (!logo || !logo.classList) return 'payment method';
@@ -50,6 +51,14 @@ function focusNextRequiredField(root) {
 
 function activateLogo(logo) {
   if (!(logo instanceof HTMLElement) || logo.dataset.dtbExpressRailBound === 'true') return;
+  if (logo.closest(`.${MOBILE_LOGOS_ONLY_CLASS}`)) {
+    logo.dataset.dtbExpressRailBound = 'true';
+    logo.removeAttribute('role');
+    logo.removeAttribute('tabindex');
+    logo.removeAttribute('title');
+    logo.setAttribute('aria-hidden', 'true');
+    return;
+  }
 
   const provider = resolveProviderFromLogo(logo);
   logo.dataset.dtbExpressRailBound = 'true';
@@ -85,8 +94,27 @@ function isMobileCheckout() {
   return typeof window !== 'undefined' && window.matchMedia?.(MOBILE_QUERY)?.matches === true;
 }
 
+function resetInitialCheckoutScroll(root) {
+  if (!(root instanceof HTMLElement) || root.dataset.dtbInitialScrollReset === 'true') return;
+  root.dataset.dtbInitialScrollReset = 'true';
+
+  window.requestAnimationFrame(() => {
+    const scrollY = Math.max(
+      window.scrollY || 0,
+      document.documentElement?.scrollTop || 0,
+      document.body?.scrollTop || 0,
+    );
+
+    if (scrollY > 2) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+  });
+}
+
 function syncMobileReferenceExpressRail(root) {
   if (!(root instanceof HTMLElement)) return;
+
+  resetInitialCheckoutScroll(root);
 
   const existingClone = root.querySelector(MOBILE_CLONE_SELECTOR);
   const original = root.querySelector('.dtb-co-sidebar .dtb-co-payment-section');
@@ -106,8 +134,8 @@ function syncMobileReferenceExpressRail(root) {
   if (existingClone instanceof HTMLElement) return;
 
   const clone = original.cloneNode(true);
-  clone.classList.add('dtb-co-payment-section--mobile-reference');
-  clone.setAttribute('aria-label', 'Express checkout payment methods');
+  clone.classList.add('dtb-co-payment-section--mobile-reference', MOBILE_LOGOS_ONLY_CLASS);
+  clone.setAttribute('aria-label', 'Supported payment methods');
   clone.querySelectorAll('[data-dtb-express-rail-bound]').forEach((node) => {
     node.removeAttribute('data-dtb-express-rail-bound');
   });
