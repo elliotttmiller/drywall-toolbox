@@ -33,7 +33,6 @@ const PAYMENT_VISUAL_METHODS = [
 let installed = false;
 const boundStepButtons = new WeakSet();
 const boundFields = new WeakSet();
-const boundPaymentRows = new WeakSet();
 let observer = null;
 let updateQueued = false;
 let manualStep = '';
@@ -88,17 +87,8 @@ function getPaymentReady(root) {
 }
 
 function getState(root) {
-  const contactComplete = Boolean(
-    valueFor('firstName') &&
-    valueFor('lastName') &&
-    isEmail(valueFor('email')),
-  );
-  const deliveryFieldsComplete = Boolean(
-    valueFor('address') &&
-    valueFor('city') &&
-    valueFor('state') &&
-    valueFor('zip'),
-  );
+  const contactComplete = Boolean(valueFor('firstName') && valueFor('lastName') && isEmail(valueFor('email')));
+  const deliveryFieldsComplete = Boolean(valueFor('address') && valueFor('city') && valueFor('state') && valueFor('zip'));
   const shippingComplete = deliveryFieldsComplete && hasSelectedShippingRate(root);
   const paymentReady = getPaymentReady(root);
   const reviewReady = contactComplete && shippingComplete;
@@ -184,7 +174,6 @@ function makePaymentMethodRow(root, method) {
     const panel = row.closest('.dtb-mobile-payment-method-panel');
     if (panel) updateVisualPaymentRows(panel);
   });
-  boundPaymentRows.add(row);
   return row;
 }
 
@@ -270,7 +259,11 @@ function ensureMobileStepShell(root, activeStep, state) {
     root.insertBefore(shell, root.querySelector('.dtb-co-grid'));
   }
 
-  shell.innerHTML = '';
+  const stateKey = `${activeStep}:${STEP_ORDER.map((step) => (state.allowedSteps.has(step) ? '1' : '0')).join('')}`;
+  if (shell.dataset.stepbarState === stateKey) return;
+  shell.dataset.stepbarState = stateKey;
+  shell.replaceChildren();
+
   const bar = document.createElement('div');
   bar.className = 'dtb-mobile-stepbar';
 
