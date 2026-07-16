@@ -50,6 +50,7 @@ import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRunt
 import { installCheckoutExpressRailRuntime } from './features/checkout/checkoutExpressRailRuntime.js'
 import { installCheckoutWorkflowRuntime } from './features/checkout/checkoutWorkflowRuntime.js'
 import { installCheckoutPaymentPreferenceRuntime } from './features/checkout/checkoutPaymentPreferenceRuntime.js'
+import { installWooPaymentsSameShellProvider } from './features/checkout/wooPaymentsSameShellProvider.js'
 import { installCheckoutSameShellPaymentRuntime } from './features/checkout/checkoutSameShellPaymentRuntime.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
@@ -64,6 +65,7 @@ installCustomerFacingCopyRuntime();
 installCheckoutPaymentPreferenceRuntime();
 installCheckoutExpressRailRuntime();
 installCheckoutWorkflowRuntime();
+installWooPaymentsSameShellProvider();
 installCheckoutSameShellPaymentRuntime();
 
 if (typeof window !== 'undefined') {
@@ -95,4 +97,4 @@ createRoot(document.getElementById('root')).render(
       </ErrorBoundary>
     </HelmetProvider>
   </StrictMode>,
-);
+)
