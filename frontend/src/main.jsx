@@ -38,6 +38,7 @@ import './features/checkout/checkout-step-runtime.css'
 import './features/checkout/checkout-mobile-reference-flow.css'
 import './features/checkout/checkout-mobile-sheet-polish.css'
 import './features/checkout/checkout-mobile-screen-flow.css'
+import './features/checkout/checkout-mobile-flow-revisions.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
 import { installSchematicPageLabelRuntime } from './utils/schematicPageLabelRuntime.js'
@@ -88,4 +89,4 @@ createRoot(document.getElementById('root')).render(
       </ErrorBoundary>
     </HelmetProvider>
   </StrictMode>,
-)
+);
