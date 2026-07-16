@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { AlertCircle, CheckCircle, Clock, ExternalLink, Loader2, ShoppingBag } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, Loader2, ShoppingBag } from 'lucide-react';
 
 import SEOHead from '../components/shared/SEOHead.jsx';
-import { getCheckoutStatus, resumeCheckoutPayment } from '../api/checkout.js';
+import { getCheckoutStatus } from '../api/checkout.js';
 import { useCart } from '../context/CartContext.jsx';
 import { clearPendingCheckoutPayment, readPendingCheckoutPayment } from '../utils/checkoutRecovery.js';
-import { normalizePaymentUrl } from '../utils/paymentUrl.js';
 
 const PAID_STATUSES = new Set(['processing', 'completed']);
 const FAILED_STATUSES = new Set(['failed', 'cancelled', 'refunded']);
@@ -32,7 +31,6 @@ export default function CheckoutReturn({ fallbackState = 'complete' }) {
 	const pendingPayment = useMemo(() => readPendingCheckoutPayment(), []);
 	const resumeToken = pendingPayment?.resumeToken || searchParams.get( 'resume_token' ) || '';
 	const [loading, setLoading] = useState( Boolean( resumeToken ) );
-	const [resumeLoading, setResumeLoading] = useState( false );
 	const [error, setError] = useState( null );
 	const [order, setOrder] = useState( null );
 
@@ -58,21 +56,6 @@ export default function CheckoutReturn({ fallbackState = 'complete' }) {
 		return () => { cancelled = true; };
 	}, [clearCart, resumeToken]);
 
-	const resumePayment = useCallback( async () => {
-		if ( !resumeToken ) return;
-		setResumeLoading( true );
-		setError( null );
-		try {
-			const response = await resumeCheckoutPayment( resumeToken );
-			if ( !response?.payment_url ) throw new Error( 'Secure payment is no longer available for this checkout.' );
-			window.location.assign( normalizePaymentUrl( response.payment_url ) );
-		} catch ( requestError ) {
-			setError( requestError?.message || 'Unable to resume secure payment.' );
-		} finally {
-			setResumeLoading( false );
-		}
-	}, [resumeToken]);
-
 	const inferredState = fallbackState === 'failed' || fallbackState === 'cancelled' ? 'failed' : 'pending';
 	const state = order ? resolveStatusState( order ) : ( resumeToken ? ( loading ? 'unknown' : inferredState ) : inferredState );
 	const title = state === 'success'
@@ -85,8 +68,8 @@ export default function CheckoutReturn({ fallbackState = 'complete' }) {
 	const description = state === 'success'
 		? 'Your order has been received and is now being processed. A confirmation email will be sent to your inbox.'
 		: state === 'failed'
-			? 'Your order was created, but payment was not completed. You can resume secure payment or contact support if this was unexpected.'
-			: 'Your order was created and payment is still pending. Complete the secure payment step to finish checkout.';
+			? 'Your order was created, but payment was not completed. Return to checkout to start a fresh same-shell WooPayments payment session.'
+			: 'Your order was created and payment is still pending. Return to checkout to complete payment in the same-shell WooPayments flow.';
 	const orderId = order?.order_id || '';
 
 	return (
@@ -108,10 +91,10 @@ export default function CheckoutReturn({ fallbackState = 'complete' }) {
 				) : null}
 
 				<div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-					{state !== 'success' && resumeToken ? (
-						<button type="button" onClick={() => { void resumePayment(); }} disabled={resumeLoading} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-primary-700 disabled:opacity-60">
-							{resumeLoading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />} Resume Secure Payment
-						</button>
+					{state !== 'success' ? (
+						<Link to="/checkout" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-primary-700">
+							Return to Checkout
+						</Link>
 					) : null}
 					{state === 'success' && orderId ? (
 						<Link to={`/order/${ orderId }`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-primary-700">
