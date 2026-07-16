@@ -20,12 +20,12 @@ const GATEWAY_PRIORITY = Object.freeze({
 });
 
 const WALLET_ALIASES = Object.freeze({
-  'apple-pay': ['apple-pay', 'apple_pay', 'applePay', 'apple'],
-  'google-pay': ['google-pay', 'google_pay', 'googlePay', 'google'],
+  'apple-pay': ['apple-pay', 'apple_pay', 'applepay', 'apple'],
+  'google-pay': ['google-pay', 'google_pay', 'googlepay', 'google'],
 });
 
 let cachedCapabilities = null;
-let selectedVisualMethod = DEFAULT_VISUAL_METHOD;
+let selectedVisualMethod = '';
 
 function normalizeId(value) {
   return String(value || '').trim().toLowerCase();
@@ -104,14 +104,16 @@ export function rememberCheckoutCapabilities(capabilities) {
 
 export function setCheckoutPaymentPreference(visualMethod) {
   const normalized = normalizeId(visualMethod);
-  if (!VISUAL_METHODS.has(normalized)) return selectedVisualMethod;
+  if (!VISUAL_METHODS.has(normalized)) return getCheckoutPaymentPreference();
   selectedVisualMethod = normalized;
   writeStoredVisualMethod(selectedVisualMethod);
   return selectedVisualMethod;
 }
 
 export function getCheckoutPaymentPreference() {
-  selectedVisualMethod = VISUAL_METHODS.has(selectedVisualMethod) ? selectedVisualMethod : readStoredVisualMethod();
+  if (!VISUAL_METHODS.has(selectedVisualMethod)) {
+    selectedVisualMethod = readStoredVisualMethod();
+  }
   return selectedVisualMethod;
 }
 
