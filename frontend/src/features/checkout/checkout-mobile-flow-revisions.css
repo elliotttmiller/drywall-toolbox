@@ -1,0 +1,184 @@
+/*
+ * frontend/src/features/checkout/checkout-mobile-flow-revisions.css
+ *
+ * Final mobile checkout workflow polish. Presentation-only: tightens the mobile
+ * header, moves progress dots below the centered Checkout title, keeps supported
+ * payment logos compact, and improves step navigation clarity.
+ */
+
+@media (max-width: 1023px) {
+  .dtb-checkout--mobile-screen-flow .dtb-checkout-mobile-step-shell {
+    padding-block: calc(env(safe-area-inset-top) + 7px) 7px !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar {
+    grid-template-columns: 38px minmax(0, 1fr) 38px !important;
+    align-items: center !important;
+    min-height: 54px;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__title {
+    display: grid !important;
+    justify-items: center;
+    gap: 7px;
+    text-align: center;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__heading {
+    margin: 0 !important;
+    font-size: clamp(17px, 4.9vw, 21px) !important;
+    font-weight: 850 !important;
+    letter-spacing: -.045em !important;
+    line-height: 1 !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__current-label {
+    justify-self: end;
+    overflow: hidden;
+    max-width: 38px;
+    color: transparent;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dots {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-width: 0 !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot {
+    width: 9px !important;
+    height: 9px !important;
+    opacity: 1;
+    transition: width .18s ease, background-color .18s ease, opacity .18s ease, transform .18s ease;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot.is-current {
+    width: 27px !important;
+    background: var(--dtb-flow-primary) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot:not(:disabled) {
+    cursor: pointer;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot:focus-visible {
+    outline: 2px solid rgba(49, 94, 232, .55);
+    outline-offset: 3px;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+  }
+
+  .dtb-checkout--mobile-screen-flow:not([data-dtb-flow-step="contact"]) .dtb-co-payment-section--mobile-reference {
+    display: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference {
+    display: block !important;
+    margin: 2px 0 10px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px !important;
+    color: #8a94a8 !important;
+    font-size: 10.5px !important;
+    font-weight: 780 !important;
+    letter-spacing: .16em !important;
+    line-height: 1 !important;
+    text-align: center;
+    text-transform: uppercase !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
+    content: "";
+    flex: 1 1 0;
+    height: 1px;
+    background: rgba(210, 218, 230, .95);
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: clamp(12px, 3.6vw, 20px) !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    display: block !important;
+    width: auto !important;
+    max-width: clamp(44px, 14vw, 74px) !important;
+    height: clamp(17px, 4.7vw, 24px) !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--mastercard {
+    max-width: 38px !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="contact"] .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--amex {
+    max-width: 88px !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-row {
+    min-height: 48px !important;
+    border-width: 1.35px !important;
+    transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, background-color .16s ease;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-row:hover,
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-row:focus-visible {
+    border-color: rgba(49, 94, 232, .72) !important;
+    outline: none;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-row:active {
+    transform: scale(.992);
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-row.is-selected {
+    border-color: var(--dtb-flow-primary) !important;
+    background: rgba(49, 94, 232, .045) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-note {
+    color: #737f95 !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dtb-checkout--mobile-screen-flow .dtb-mobile-stepbar__dot,
+    .dtb-checkout--mobile-screen-flow .dtb-mobile-payment-method-row {
+      transition: none !important;
+    }
+  }
+}
