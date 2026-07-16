@@ -1,7 +1,8 @@
 /**
  * frontend/src/features/checkout/checkoutExpressRailRuntime.js
  *
- * Progressive interaction layer for the checkout express-payment rail.
+ * Progressive interaction layer for the checkout express-payment rail and final
+ * payment step presentation.
  *
  * This does not render provider card fields, clone WooCommerce gateway markup,
  * or bypass DTB/WooCommerce payment lifecycle ownership. The rail remains a
@@ -77,18 +78,33 @@ function activateLogo(logo) {
   });
 }
 
+function syncPaymentWorkflowState() {
+  const paymentStep = document.querySelector('.dtb-checkout .dtb-co-payment-workflow');
+  if (!(paymentStep instanceof HTMLElement)) return;
+
+  const action = paymentStep.querySelector('.dtb-co-btn-primary');
+  const ready = action instanceof HTMLButtonElement && !action.disabled;
+  paymentStep.classList.toggle('is-payment-ready', ready);
+  paymentStep.setAttribute('aria-hidden', ready ? 'false' : 'true');
+}
+
 function bindExpressRail() {
   document.querySelectorAll('.dtb-checkout .dtb-checkout-payment-logo').forEach(activateLogo);
+}
+
+function bindCheckoutFastFlow() {
+  bindExpressRail();
+  syncPaymentWorkflowState();
 }
 
 export function installCheckoutExpressRailRuntime() {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-  const schedule = () => window.requestAnimationFrame(bindExpressRail);
+  const schedule = () => window.requestAnimationFrame(bindCheckoutFastFlow);
   schedule();
 
   const observer = new MutationObserver(schedule);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'aria-disabled'] });
 
   window.addEventListener('beforeunload', () => observer.disconnect(), { once: true });
 }
