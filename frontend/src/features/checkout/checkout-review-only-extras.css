@@ -19,8 +19,7 @@
 
   .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #dtb-co-mobile-coupon,
   .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #field-customerNote-wrap,
-  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-payment-method-panel,
-  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-co-flow-panel--review:not(#checkout-payment-step) {
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-payment-method-panel {
     display: none !important;
   }
 }
