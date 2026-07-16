@@ -3,7 +3,8 @@
  *
  * Final mobile checkout review-step guard. Presentation-only: discount code and
  * order note controls are review/completion inputs and should not appear inside
- * Contact, Delivery, or Payment step surfaces.
+ * Contact, Delivery, or Payment step surfaces. The mobile Payment Method panel is
+ * a Review-step preference panel and must not leak into the final Payment panel.
  */
 
 @media (max-width: 1023px) {
