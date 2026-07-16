@@ -331,7 +331,7 @@ async function handlePaymentClick(event) {
   event.stopPropagation();
   if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
 
-  const state = await syncState(root, true);
+  const state = await syncState(root);
   if (!state.eligible) {
     renderStatus(root, 'error', sameShellBlockedMessage(state.reason));
     window.dispatchEvent(new CustomEvent('dtb:checkout-same-shell-payment-blocked', {
