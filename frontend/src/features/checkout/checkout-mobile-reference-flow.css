@@ -1,0 +1,245 @@
+/*
+ * frontend/src/features/checkout/checkout-mobile-reference-flow.css
+ *
+ * Final mobile checkout presentation layer. It matches the requested compact
+ * Shopify-style mobile checkout rhythm: brand header, order summary, express
+ * methods, then the active linear checkout panel. Presentation-only: no payment
+ * fields, no gateway ownership changes, and no checkout API/order side effects.
+ */
+
+@media (max-width: 1023px) {
+  .dtb-checkout {
+    --dtb-co-mobile-gutter-left: max(14px, env(safe-area-inset-left));
+    --dtb-co-mobile-gutter-right: max(14px, env(safe-area-inset-right));
+    background: #ffffff;
+  }
+
+  .dtb-checkout .dtb-co-header {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    min-height: 82px;
+    padding: calc(env(safe-area-inset-top) + 10px) 18px 12px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background: linear-gradient(135deg, #071329 0%, #10204a 54%, #2557d6 100%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  }
+
+  .dtb-checkout .dtb-co-header__logo {
+    height: clamp(42px, 11vw, 52px);
+    max-width: min(270px, 72vw);
+  }
+
+  .dtb-checkout .dtb-co-grid {
+    display: block;
+    background: #ffffff;
+  }
+
+  .dtb-checkout .dtb-co-formpane {
+    padding: 0 var(--dtb-co-mobile-gutter-right) calc(188px + env(safe-area-inset-bottom)) var(--dtb-co-mobile-gutter-left);
+    background: #ffffff;
+  }
+
+  .dtb-checkout:has(.dtb-co-mobile-cta--expanded) .dtb-co-formpane {
+    padding-bottom: calc(264px + env(safe-area-inset-bottom));
+  }
+
+  .dtb-checkout .dtb-co-formpane__inner {
+    width: min(100%, 620px);
+    max-width: min(620px, calc(100vw - var(--dtb-co-mobile-gutter-left) - var(--dtb-co-mobile-gutter-right)));
+    margin-inline: auto;
+  }
+
+  .dtb-checkout .dtb-co-formpane__inner::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  .dtb-checkout.dtb-checkout--mobile-express-cloned .dtb-co-sidebar {
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-msummary {
+    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
+    max-width: none;
+    margin: 0 calc(-1 * var(--dtb-co-mobile-gutter-right)) 0 calc(-1 * var(--dtb-co-mobile-gutter-left));
+    border-width: 0 0 1px;
+    border-color: rgba(226, 232, 240, 0.94);
+    border-radius: 0;
+    background: #f8fafc;
+    box-shadow: none;
+  }
+
+  .dtb-checkout .dtb-co-msummary__toggle {
+    min-height: 64px;
+    padding: 0 var(--dtb-co-mobile-gutter-right) 0 var(--dtb-co-mobile-gutter-left);
+    background: #f8fafc;
+  }
+
+  .dtb-checkout .dtb-co-msummary__toggle-left,
+  .dtb-checkout .dtb-co-msummary__toggle-right {
+    font-size: clamp(16px, 4.6vw, 20px);
+    font-weight: 760;
+    letter-spacing: -0.035em;
+  }
+
+  .dtb-checkout .dtb-co-msummary__toggle-right {
+    color: #0f172a;
+  }
+
+  .dtb-checkout .dtb-co-msummary__body {
+    background: #ffffff;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference {
+    display: grid !important;
+    gap: 16px;
+    width: 100%;
+    margin: 0 0 20px;
+    padding: 22px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: #ffffff;
+    box-shadow: none;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
+    display: grid;
+    grid-template-columns: minmax(32px, 1fr) auto minmax(32px, 1fr);
+    align-items: center;
+    gap: 14px;
+    margin: 0;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 560;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: none;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::before,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background: #d9dde5;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    width: 100%;
+    max-width: none;
+    height: 58px;
+    min-height: 58px;
+    padding: 13px 18px;
+    border: 0;
+    border-radius: 13px;
+    box-shadow: none;
+    object-fit: contain;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--apple-pay {
+    order: 1;
+    background: #ffffff;
+    border: 1px solid #d4d8df;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--google-pay {
+    order: 2;
+    background: #000000;
+    border: 1px solid #000000;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--paypal {
+    order: 3;
+    grid-column: 1 / -1;
+    background: #ffc439;
+    border: 1px solid #ffc439;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--visa,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--mastercard,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--amex {
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos::after {
+    content: "OR";
+    order: 4;
+    grid-column: 1 / -1;
+    margin: 2px 0 0;
+    padding: 0 0 2px;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 520;
+    letter-spacing: 0.03em;
+    text-align: center;
+    background:
+      linear-gradient(#d9dde5, #d9dde5) left center / calc(50% - 28px) 1px no-repeat,
+      linear-gradient(#d9dde5, #d9dde5) right center / calc(50% - 28px) 1px no-repeat;
+  }
+
+  .dtb-checkout .dtb-co-auth-choice,
+  .dtb-checkout .dtb-co-section {
+    border-radius: 0;
+    border-width: 1px 0 0;
+    box-shadow: none;
+    padding: 24px 0;
+  }
+
+  .dtb-checkout .dtb-co-section__title {
+    font-size: clamp(24px, 7.4vw, 34px);
+    font-weight: 760;
+    letter-spacing: -0.04em;
+  }
+
+  .dtb-checkout .dtb-co-section__subheader,
+  .dtb-checkout .dtb-co-guest-note {
+    font-size: clamp(14px, 4vw, 17px);
+    line-height: 1.55;
+  }
+
+  .dtb-checkout .dtb-co-input,
+  .dtb-checkout .dtb-co-select,
+  .dtb-checkout .dtb-co-textarea,
+  .dtb-checkout .dtb-co-coupon__input {
+    min-height: 58px;
+    border: 2px solid #111827;
+    border-radius: 14px;
+    font-size: 16px;
+    box-shadow: none;
+  }
+
+  .dtb-checkout .dtb-co-input:focus,
+  .dtb-checkout .dtb-co-select:focus,
+  .dtb-checkout .dtb-co-textarea:focus,
+  .dtb-checkout .dtb-co-coupon__input:focus {
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.12);
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta {
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -14px 34px rgba(15, 23, 42, 0.16);
+  }
+}
+
+@media (max-width: 430px) {
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
+    gap: 10px;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    height: 54px;
+    min-height: 54px;
+    border-radius: 12px;
+    padding-inline: 14px;
+  }
+}
