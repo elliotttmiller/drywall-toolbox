@@ -347,6 +347,10 @@ export function installCheckoutSameShellPaymentRuntime() {
     const root = document.querySelector('.dtb-checkout');
     if (root instanceof HTMLElement) void syncState(root, true);
   });
+  window.addEventListener('dtb:checkout-same-shell-provider-installed', () => {
+    const root = document.querySelector('.dtb-checkout');
+    if (root instanceof HTMLElement) void syncState(root, true);
+  });
   window.addEventListener('popstate', () => window.setTimeout(scheduleSync, 0));
 
   if (document.readyState === 'loading') {
