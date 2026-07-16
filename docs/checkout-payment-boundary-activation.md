@@ -40,7 +40,24 @@ DTB may:
 -> /checkout/order-pay only when the customer opens the protected fallback payment step
 ```
 
-The user-facing checkout steps are now synchronized inside `/checkout`. Express checkout/payment methods are visible immediately as provider-branded launch affordances, but final payment entry still remains provider-owned. This is the correct safe transition state before activating any same-shell Blocks payment path.
+The user-facing checkout steps are synchronized inside `/checkout`. Express checkout/payment methods are visible immediately as provider-branded launch affordances, but final payment entry still remains provider-owned. This is the correct safe transition state before activating any same-shell Blocks payment path.
+
+## Linear stepper contract
+
+The checkout stepper follows a linear wizard contract matching the requested CoreUI `CStepper` behavior:
+
+```text
+Contact -> Delivery -> Review -> Payment
+```
+
+A later step remains locked until the prior checkout state is complete:
+
+- Contact unlocks Delivery only after first name, last name, and a valid email are present.
+- Delivery unlocks Review only after the shipping address is complete and a server-calculated shipping rate is selected.
+- Review unlocks Payment only after DTB has created/finalized the protected WooCommerce pending order and the payment action is actually ready.
+- Payment execution remains provider-owned.
+
+The repository does not currently include `@coreui/react-pro` in `frontend/package.json`. Importing `CStepper` directly without the package, license/registry access, and lockfile update would break the frontend build. The current implementation therefore uses a local linear stepper runtime with the same locked/unlocked behavior and ARIA step semantics. If CoreUI Pro is approved and installed later, it can replace the visual stepper behind this same contract without changing checkout authority.
 
 ## Runtime switch conditions for same-shell payment
 
