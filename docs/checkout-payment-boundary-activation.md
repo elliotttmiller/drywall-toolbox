@@ -59,6 +59,23 @@ A later step remains locked until the prior checkout state is complete:
 
 The repository does not currently include `@coreui/react-pro` in `frontend/package.json`. Importing `CStepper` directly without the package, license/registry access, and lockfile update would break the frontend build. The current implementation therefore uses a local linear stepper runtime with the same locked/unlocked behavior and ARIA step semantics. If CoreUI Pro is approved and installed later, it can replace the visual stepper behind this same contract without changing checkout authority.
 
+## Payment method preference contract
+
+The mobile Payment Method rows are now connected to the checkout session creation path as a gateway preference resolver. The selected customer-facing method is mapped to the available WooCommerce gateway IDs returned by `/dtb/v1/checkout/capabilities` immediately before `POST /dtb/v1/checkout/session` is sent.
+
+Mapping policy:
+
+```text
+card       -> woocommerce_payments -> stripe -> current available online gateway
+paypal     -> ppcp-gateway -> paypal -> current available online gateway
+apple-pay  -> woocommerce_payments -> stripe -> current available online gateway
+google-pay -> woocommerce_payments -> stripe -> current available online gateway
+```
+
+WooPayments (`woocommerce_payments`) is the preferred gateway for card, Apple Pay, and Google Pay. Stripe is fallback only. PayPal is resolved to PayPal Commerce Platform (`ppcp-gateway`) first, then legacy `paypal` if present.
+
+The resolver changes only the `payment_method` value sent to DTB session creation. It does not create orders, execute payment, inject provider controls, or bypass WooCommerce/provider tokenization. Wallet availability is still finally determined by WooPayments/Stripe/PayPal in their provider-owned payment step.
+
 ## Runtime switch conditions for same-shell payment
 
 Same-shell payment must remain disabled unless all of these are true on the live server:
@@ -117,6 +134,7 @@ Confirm:
 - `client_bridge_enabled` is `false` unless intentionally enabling same-shell payment.
 - `same_shell_supported` is `false` by default.
 - Active gateways are present and manual-only methods are not selected as the storefront payment method.
+- `woocommerce_payments` is present and enabled when WooPayments should own card/wallet preference routing.
 - If WooCommerce Blocks registry is available, registered methods are reported without exposing secrets.
 
 ### 4. Confirm fallback payment flow before enabling anything
@@ -127,6 +145,9 @@ Confirm:
 - Complete Contact and Delivery.
 - Select a shipping method.
 - Confirm Review appears before Payment.
+- Select Card, Apple Pay, Google Pay, or PayPal in the Payment Method step.
+- Confirm Card/Apple Pay/Google Pay create the checkout session with `woocommerce_payments` when WooPayments is enabled.
+- Confirm PayPal creates the checkout session with `ppcp-gateway` when PayPal Commerce Platform is enabled.
 - Click `Prepare protected payment`.
 - Confirm the Payment section appears in `/checkout` without an automatic redirect.
 - Confirm the button changes to `Open protected payment`.
