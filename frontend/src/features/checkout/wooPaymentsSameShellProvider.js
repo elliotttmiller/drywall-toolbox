@@ -163,7 +163,7 @@ async function startPayment({ methods = [], order = {}, visualMethod = 'card', p
     });
   }
 
-  const result = await processPayment({
+  return processPayment({
     paymentMethod,
     paymentData,
     billingEmail: order.billingEmail || order.billing_email || '',
@@ -172,8 +172,6 @@ async function startPayment({ methods = [], order = {}, visualMethod = 'card', p
     extensions: {},
     customerNote: '',
   });
-
-  return result;
 }
 
 export function installWooPaymentsSameShellProvider() {
