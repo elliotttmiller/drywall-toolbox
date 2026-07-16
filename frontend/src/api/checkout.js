@@ -7,6 +7,10 @@
  */
 import { apiClient } from './client.js';
 import { getCartToken } from './cart.js';
+import {
+	applyCheckoutPaymentPreference,
+	rememberCheckoutCapabilities,
+} from '../features/checkout/paymentGatewaySelection.js';
 
 const CHECKOUT_CAPABILITIES_TIMEOUT_MS = 8000;
 
@@ -24,7 +28,9 @@ export async function getCheckoutCapabilities() {
 	const timeoutId = window.setTimeout( () => controller.abort(), CHECKOUT_CAPABILITIES_TIMEOUT_MS );
 	try {
 		const response = await apiClient( '/wp-json/dtb/v1/checkout/capabilities', { signal: controller.signal } );
-		return response?.capabilities || response || {};
+		const capabilities = response?.capabilities || response || {};
+		rememberCheckoutCapabilities( capabilities );
+		return capabilities;
 	} catch ( error ) {
 		if ( error?.name === 'AbortError' ) {
 			throw Object.assign( new Error( 'Checkout payment capabilities timed out.' ), { code: 'checkout_capabilities_timeout' } );
@@ -41,7 +47,7 @@ export async function createCheckoutQuote( payload = {} ) {
 }
 
 export async function createCheckoutSession( payload = {} ) {
-	return post( 'session', payload );
+	return post( 'session', applyCheckoutPaymentPreference( payload ) );
 }
 
 export async function confirmCheckoutSession( payload = {} ) {
