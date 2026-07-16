@@ -1,0 +1,157 @@
+/*
+ * frontend/src/features/checkout/checkout-mobile-sheet-polish.css
+ *
+ * Final mobile checkout density/polish layer. Fixes route-entry top whitespace,
+ * converts the mobile supported-payment area from oversized button tiles to a
+ * compact logo strip, and collapses the mobile bottom sheet to total-only while
+ * closed. Presentation-only: no checkout API, order, gateway, or payment
+ * lifecycle behavior is changed here.
+ */
+
+@media (max-width: 1023px) {
+  @supports selector(:has(.dtb-checkout)) {
+    html:has(.dtb-checkout),
+    body:has(.dtb-checkout),
+    #root:has(.dtb-checkout) {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+      scroll-padding-top: 0 !important;
+      overflow-x: hidden;
+      background: #ffffff;
+    }
+  }
+
+  .dtb-checkout {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    overflow-x: clip;
+    background: #ffffff;
+  }
+
+  .dtb-checkout .dtb-co-header {
+    margin-top: 0 !important;
+    transform: translateZ(0);
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference {
+    gap: clamp(10px, 2.8vw, 14px);
+    margin-bottom: clamp(10px, 3vw, 16px);
+    padding-top: clamp(12px, 3.6vw, 18px);
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-co-payment-label {
+    font-size: clamp(12px, 3.2vw, 14px);
+    font-weight: 760;
+    letter-spacing: .11em;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 4vw, 22px);
+    margin: 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    display: inline-block;
+    flex: 0 1 auto;
+    width: auto;
+    max-width: min(104px, 24vw);
+    height: clamp(20px, 6vw, 28px);
+    min-height: 0;
+    padding: 0;
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+    cursor: default;
+    object-fit: contain;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--paypal,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--apple-pay,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--google-pay,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--visa,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--mastercard,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--amex {
+    order: 0;
+    grid-column: auto;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--mastercard {
+    max-width: 52px;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo--amex {
+    max-width: min(120px, 28vw);
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) {
+    padding: 12px max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+    border-radius: 22px 22px 0 0;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__inner {
+    gap: 0;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__handle,
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-status,
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__compact-context,
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__context,
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__totals,
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-btn-primary,
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__trust {
+    display: none !important;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-toggle {
+    min-height: 48px;
+    padding: 0 4px;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-label {
+    color: var(--dtb-co-muted);
+    font-size: clamp(13px, 3.7vw, 15px);
+    font-weight: 780;
+    line-height: 1.05;
+  }
+
+  .dtb-checkout .dtb-co-mobile-cta:not(.dtb-co-mobile-cta--expanded) .dtb-co-mobile-cta__summary-amount {
+    color: var(--dtb-co-primary);
+    font-size: clamp(24px, 7.2vw, 34px);
+    font-weight: 820;
+    letter-spacing: -.055em;
+  }
+
+  @supports selector(:has(.dtb-co-mobile-cta)) {
+    .dtb-checkout:not(:has(.dtb-co-mobile-cta--expanded)) .dtb-co-formpane {
+      padding-bottom: calc(92px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+@media (max-width: 374px) {
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
+    gap: 12px;
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    height: 20px;
+    max-width: 88px;
+  }
+}
