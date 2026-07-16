@@ -90,6 +90,32 @@ add_filter( 'dtb_checkout_blocks_register_diagnostics_bridge', '__return_true' )
 
 That filter is not a production same-shell activation switch.
 
+## Same-shell frontend adapter contract
+
+The frontend now includes a same-shell payment adapter gate. It checks the DTB checkout capability envelope, the WooCommerce Blocks registry, registered provider Blocks methods, and a provider-owned adapter before it suppresses the protected order-pay fallback navigation.
+
+The gate only intercepts `Open protected payment` when all of these are true:
+
+```text
+payment_architecture.same_shell_supported === true
+payment_architecture.client_bridge_enabled === true
+payment_architecture.server_blocks_ready === true
+payment_architecture.server_same_shell_ready === true
+window.wc.wcBlocksRegistry.registerPaymentMethod exists
+window.wc.wcBlocksRegistry.registerExpressPaymentMethod exists
+an active provider gateway such as woocommerce_payments has blocks_registered === true and blocks_active === true
+window.dtbCheckoutSameShellProvider.startPayment is a function
+```
+
+If `window.dtbCheckoutSameShellProvider.startPayment` is missing, checkout keeps the order-pay fallback path. The adapter contract is intentionally explicit so DTB cannot silently block a working fallback with a placeholder payment screen.
+
+A production provider adapter must:
+
+- render or activate only provider-owned WooPayments/WooCommerce Blocks controls;
+- update the same DTB-created WooCommerce pending order;
+- return success/failure to the checkout shell without creating a second WooCommerce order;
+- expose recoverable failure so the fallback route can remain available.
+
 ## Runtime switch conditions for same-shell payment
 
 Same-shell payment must remain disabled unless all of these are true on the live server:
@@ -184,6 +210,7 @@ After enabling on staging, confirm:
 - `/wp-json/dtb/v1/checkout/capabilities` reports `client_bridge_enabled: true`.
 - `same_shell_supported` becomes true only if registered provider Blocks payment methods are actually active.
 - Browser console shows `window.wc.wcBlocksRegistry` exists.
+- Browser console shows `window.dtbCheckoutSameShellProvider.startPayment` exists before fallback navigation is suppressed.
 - Provider-owned payment UI renders through WooCommerce Blocks registration.
 - DTB React code does not render raw card fields.
 - Gateway/provider callback updates the DTB-created pending order.
