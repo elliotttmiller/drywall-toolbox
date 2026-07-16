@@ -10,49 +10,9 @@ React /checkout -> DTB checkout session -> WooCommerce pending order -> /checkou
 
 WooCommerce and the active payment provider own card fields, wallet sheets, nonces, tokenization, callbacks, and payment lifecycle state. DTB owns quote validation, idempotency, order write boundaries, recovery, and post-payment event orchestration.
 
-## Implemented single-page checkout shell
-
-The customer-facing checkout shell is now synchronized in `/checkout`:
-
-```text
-/cart
--> /checkout
-   Contact
-   Delivery
-   Shipping method
-   Review
-   Payment preparation
-   Open protected payment
--> /checkout/order-pay only when the customer opens the protected fallback payment step
-```
-
-The frontend no longer treats a prepared payment URL as an immediate automatic redirect. DTB prepares the order/session, stores the returned payment URL, moves the customer to the in-page Payment step, and only opens `/checkout/order-pay` after an explicit customer action.
-
-This does not change ownership of payment execution. Provider payment entry remains gateway-owned.
-
-## Non-negotiable payment boundary
-
-DTB must not:
-
-- render raw card number, expiration, CVC, wallet, or bank-account fields in React;
-- clone WooCommerce gateway markup into the React app;
-- iframe `/checkout/order-pay` inside the storefront;
-- scrape, intercept, or mutate provider iframes;
-- bypass WooCommerce/WooPayments/PayPal nonce, tokenization, callback, webhook, or payment-status lifecycle;
-- remove `/checkout/order-pay` while it remains required for fallback, recovery, manual payment, email payment links, retries, or unsupported gateway stacks.
-
-DTB may:
-
-- present a synchronized single-page `/checkout` workflow shell;
-- collect contact, delivery, shipping-rate, coupon, and note inputs;
-- request DTB quote/session/confirm/finalize through the checkout API contract;
-- display a provider-owned Payment step after DTB prepares the WooCommerce pending order;
-- open the protected gateway-owned payment route when fallback is required;
-- activate official WooCommerce Blocks payment only when the active gateway stack exposes provider-owned Blocks registration and the release gate is intentionally enabled.
-
 ## Official Blocks-compatible target
 
-The unified checkout target is one visible `/checkout` shell with contact, shipping, review, and payment steps. Payment methods must be rendered through official WooCommerce Blocks payment method architecture when the production gateway stack supports it.
+The unified checkout target is one visible `/checkout` shell with express payment affordances, contact, delivery, review, and payment steps. Payment methods must be rendered through official WooCommerce Blocks payment method architecture when the production gateway stack supports it.
 
 Official WooCommerce Blocks payment integration requires:
 
@@ -69,6 +29,12 @@ This PR adds `DTB_CheckoutBlocksBridgeIntegration`, a conservative server-side `
 The bridge is intentionally hidden by default. `is_active()` returns true only when the explicit `dtb_checkout_blocks_same_shell_supported` filter is enabled and at least one non-manual WooCommerce gateway is available. The client script still requires provider-owned Blocks registry APIs before registering its payment method.
 
 The bridge does **not** clone gateway fields, embed order-pay, intercept iframes, or move card entry into custom React code.
+
+## Express payment rail
+
+The React checkout shell now surfaces express checkout/payment methods immediately near the top of the checkout experience. This is a visual and workflow affordance only: the rail does not render provider fields, clone payment forms, or bypass WooCommerce payment ownership.
+
+On mobile, the express rail is promoted above Contact/Delivery so the customer sees wallet/card options immediately. On desktop, the same provider-branded rail is placed at the top of the checkout summary column, matching the mostly-fluid desktop layout.
 
 ## Fallback rule
 
@@ -146,25 +112,29 @@ complete | failed | recoverable
 
 This separates DTB session/order preparation from the payment UI activation point and prevents future one-shell payment work from being implemented as an implicit redirect-only side effect.
 
-## Rollout sequence
-
-1. Ship capability detection, registered-method discovery, server-side Blocks bridge registration, client bridge guard, payment-stage state separation, unified checkout styling, and the synchronized single-page workflow shell.
-2. Verify production WooPayments/PayPal plugin stack exposes Blocks payment infrastructure.
-3. Confirm the protected order-pay fallback path works with the new in-page Payment step.
-4. Enable `dtb_checkout_blocks_same_shell_supported` only in a staging/protected production rollout after gateway-owned Blocks UI is verified.
-5. Switch supported checkouts to one-shell payment after the active provider stack proves tokenization/callback/order lifecycle correctness.
-6. Keep order-pay for fallback, retry, and manual payment links.
-7. Simplify the order-pay visual template after it is no longer the primary storefront path.
-
-## Live activation checklist
-
-The live-server activation and rollback checklist is maintained in:
+## Implemented visible workflow
 
 ```text
-docs/checkout-payment-boundary-activation.md
+/cart
+-> /checkout
+   Express checkout rail
+   Contact
+   Delivery
+   Shipping method
+   Review
+   Payment preparation
+   Open protected payment
+-> /checkout/order-pay only when the customer opens the protected fallback payment step
 ```
 
-Do not enable same-shell payment in production until every server, gateway, callback, recovery, and duplicate-order condition in that checklist is satisfied.
+## Rollout sequence
+
+1. Ship capability detection, registered-method discovery, server-side Blocks bridge registration, client bridge guard, payment-stage state separation, and the unified checkout shell.
+2. Verify production WooPayments/PayPal plugin stack exposes Blocks payment infrastructure.
+3. Enable `dtb_checkout_blocks_same_shell_supported` only in a staging/protected production rollout after gateway-owned Blocks UI is verified.
+4. Switch supported checkouts to one-shell payment after the active provider stack proves tokenization/callback/order lifecycle correctness.
+5. Keep order-pay for fallback, retry, and manual payment links.
+6. Simplify the order-pay visual template after it is no longer the primary storefront path.
 
 ## Validation
 
@@ -184,6 +154,7 @@ Manual checks:
 - `/wp-json/dtb/v1/checkout/capabilities` returns `payment_architecture.contract_version = "3"`.
 - `registered_methods` reflects WooCommerce Blocks payment registry state when available.
 - `same_shell_supported` remains false until a verified DTB client bridge is intentionally enabled.
-- Existing checkout opens order-pay fallback only after the customer explicitly opens the prepared payment step.
+- Existing checkout still reaches order-pay fallback only after the explicit protected payment action.
+- Express checkout/payment rail is visible immediately on desktop and mobile without rendering card fields in React.
 - Retry/double-submit behavior remains contained.
 - `/checkout/order-pay/{id}` still works for recovery links.
