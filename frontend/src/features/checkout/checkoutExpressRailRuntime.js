@@ -20,6 +20,9 @@ const PROVIDER_LABELS = {
   amex: 'card',
 };
 
+const MOBILE_QUERY = '(max-width: 1023px)';
+const MOBILE_CLONE_SELECTOR = '.dtb-co-payment-section--mobile-reference';
+
 function resolveProviderFromLogo(logo) {
   if (!logo || !logo.classList) return 'payment method';
   const className = Array.from(logo.classList).find((token) => token.startsWith('dtb-checkout-payment-logo--'));
@@ -78,6 +81,44 @@ function activateLogo(logo) {
   });
 }
 
+function isMobileCheckout() {
+  return typeof window !== 'undefined' && window.matchMedia?.(MOBILE_QUERY)?.matches === true;
+}
+
+function syncMobileReferenceExpressRail(root) {
+  if (!(root instanceof HTMLElement)) return;
+
+  const existingClone = root.querySelector(MOBILE_CLONE_SELECTOR);
+  const original = root.querySelector('.dtb-co-sidebar .dtb-co-payment-section');
+  const formInner = root.querySelector('.dtb-co-formpane__inner');
+  const mobileSummary = root.querySelector('.dtb-co-msummary');
+
+  if (!isMobileCheckout()) {
+    root.classList.remove('dtb-checkout--mobile-express-cloned');
+    existingClone?.remove();
+    return;
+  }
+
+  if (!(original instanceof HTMLElement) || !(formInner instanceof HTMLElement)) return;
+
+  root.classList.add('dtb-checkout--mobile-express-cloned');
+
+  if (existingClone instanceof HTMLElement) return;
+
+  const clone = original.cloneNode(true);
+  clone.classList.add('dtb-co-payment-section--mobile-reference');
+  clone.setAttribute('aria-label', 'Express checkout payment methods');
+  clone.querySelectorAll('[data-dtb-express-rail-bound]').forEach((node) => {
+    node.removeAttribute('data-dtb-express-rail-bound');
+  });
+
+  if (mobileSummary?.parentElement === formInner) {
+    mobileSummary.insertAdjacentElement('afterend', clone);
+  } else {
+    formInner.insertAdjacentElement('afterbegin', clone);
+  }
+}
+
 function syncPaymentWorkflowState() {
   const paymentStep = document.querySelector('.dtb-checkout .dtb-co-payment-workflow');
   if (!(paymentStep instanceof HTMLElement)) return;
@@ -93,6 +134,7 @@ function bindExpressRail() {
 }
 
 function bindCheckoutFastFlow() {
+  document.querySelectorAll('.dtb-checkout').forEach(syncMobileReferenceExpressRail);
   bindExpressRail();
   syncPaymentWorkflowState();
 }
@@ -106,5 +148,6 @@ export function installCheckoutExpressRailRuntime() {
   const observer = new MutationObserver(schedule);
   observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'aria-disabled'] });
 
+  window.addEventListener('resize', schedule, { passive: true });
   window.addEventListener('beforeunload', () => observer.disconnect(), { once: true });
 }
