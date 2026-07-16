@@ -76,6 +76,20 @@ WooPayments (`woocommerce_payments`) is the preferred gateway for card, Apple Pa
 
 The resolver changes only the `payment_method` value sent to DTB session creation. It does not create orders, execute payment, inject provider controls, or bypass WooCommerce/provider tokenization. Wallet availability is still finally determined by WooPayments/Stripe/PayPal in their provider-owned payment step.
 
+## Same-shell provider ownership contract
+
+Same-shell payment means provider-owned WooCommerce Blocks controls render inside the checkout shell. It does **not** mean DTB registers a fake gateway, clones order-pay markup, or submits payment directly from React.
+
+The DTB `dtb_checkout_blocks_bridge` integration is diagnostics-only. It must not be enabled as the production payment method. Production same-shell payment must use the active provider's own registered Blocks payment method, such as WooPayments (`woocommerce_payments`) for card/Apple Pay/Google Pay or PayPal Commerce Platform (`ppcp-gateway`) for PayPal.
+
+The diagnostic bridge can only be exposed with this separate filter:
+
+```php
+add_filter( 'dtb_checkout_blocks_register_diagnostics_bridge', '__return_true' );
+```
+
+That filter is not a production same-shell activation switch.
+
 ## Runtime switch conditions for same-shell payment
 
 Same-shell payment must remain disabled unless all of these are true on the live server:
@@ -86,8 +100,8 @@ payment_architecture.server_blocks_ready === true
 payment_architecture.server_same_shell_ready === true
 payment_architecture.client_bridge_enabled === true
 payment_architecture.same_shell_supported === true
-at least one active non-manual method reports blocks_registered === true
-at least one active non-manual method reports blocks_active === true
+at least one active non-manual provider gateway reports blocks_registered === true
+at least one active non-manual provider gateway reports blocks_active === true
 window.wc.wcBlocksRegistry.registerPaymentMethod exists
 window.wc.wcBlocksRegistry.registerExpressPaymentMethod exists
 provider-owned UI renders without DTB-created card inputs
@@ -168,7 +182,7 @@ add_filter('dtb_checkout_blocks_same_shell_supported', '__return_true');
 After enabling on staging, confirm:
 
 - `/wp-json/dtb/v1/checkout/capabilities` reports `client_bridge_enabled: true`.
-- `same_shell_supported` becomes true only if registered Blocks payment methods are actually active.
+- `same_shell_supported` becomes true only if registered provider Blocks payment methods are actually active.
 - Browser console shows `window.wc.wcBlocksRegistry` exists.
 - Provider-owned payment UI renders through WooCommerce Blocks registration.
 - DTB React code does not render raw card fields.
