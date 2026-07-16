@@ -1,11 +1,14 @@
 <?php
 /**
- * DTB Checkout Blocks bridge integration shell.
+ * DTB Checkout Blocks bridge integration guard.
  *
- * Registers a conservative WooCommerce Checkout Blocks payment-method type so
- * DTB can participate in the official Blocks payment registry without moving
- * card fields, wallet sheets, tokenization, callbacks, or payment processing
- * into the React storefront.
+ * DTB must not register a fake payment gateway for same-shell checkout. Official
+ * provider-owned gateway integrations such as WooPayments, Stripe, or PayPal
+ * must register their own Checkout Blocks payment methods and own card fields,
+ * wallets, tokenization, callbacks, and payment processing.
+ *
+ * This class is retained only as an optional diagnostics shim behind a separate
+ * explicit filter. It must not become the production same-shell payment method.
  *
  * @package drywall-toolbox
  */
@@ -16,7 +19,7 @@ if ( class_exists( '\\Automattic\\WooCommerce\\Blocks\\Payments\\Integrations\\A
 	final class DTB_CheckoutBlocksBridgeIntegration extends \Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType {
 		protected $name = 'dtb_checkout_blocks_bridge';
 
-		/** Register the Blocks payment method type with WooCommerce Blocks. */
+		/** Register the optional diagnostics method type with WooCommerce Blocks. */
 		public static function register(): void {
 			add_action( 'woocommerce_blocks_payment_method_type_registration', [ __CLASS__, 'register_payment_method_type' ] );
 		}
@@ -33,16 +36,17 @@ if ( class_exists( '\\Automattic\\WooCommerce\\Blocks\\Payments\\Integrations\\A
 		public function initialize(): void {}
 
 		/**
-		 * Keep this payment method hidden unless the explicit DTB release gate is enabled.
+		 * Keep this shim inactive by default.
 		 *
-		 * The gate must only be enabled after the active provider-owned Blocks UI has
-		 * been verified end to end against DTB quote/session/finalize/order lifecycle.
+		 * Same-shell payment must be provided by the active payment provider's own
+		 * official Blocks registration, not by a DTB placeholder gateway. This shim is
+		 * only available for diagnostics if explicitly enabled by a separate filter.
 		 */
 		public function is_active(): bool {
-			return $this->bridge_enabled() && $this->has_online_gateway_candidate();
+			return (bool) apply_filters( 'dtb_checkout_blocks_register_diagnostics_bridge', false );
 		}
 
-		/** Return script handles for the client-side Blocks registration shim. */
+		/** Return script handles for the optional client-side diagnostics shim. */
 		public function get_payment_method_script_handles(): array {
 			$asset_path = dirname( __DIR__ ) . '/assets/checkout-blocks-bridge.js';
 			$asset_url  = content_url( 'mu-plugins/dtb-commerce/assets/checkout-blocks-bridge.js' );
@@ -57,37 +61,18 @@ if ( class_exists( '\\Automattic\\WooCommerce\\Blocks\\Payments\\Integrations\\A
 			return [ 'dtb-checkout-blocks-bridge' ];
 		}
 
-		/** Return public settings exposed to the Blocks registry script. */
+		/** Return public settings exposed to the optional Blocks registry script. */
 		public function get_payment_method_data(): array {
-			$enabled = $this->bridge_enabled();
+			$enabled = (bool) apply_filters( 'dtb_checkout_blocks_register_diagnostics_bridge', false );
 			return [
-				'title'              => 'Drywall Toolbox secure payment',
-				'description'        => 'Payment remains provider-owned through WooCommerce Checkout Blocks.',
+				'title'              => 'Drywall Toolbox diagnostics bridge',
+				'description'        => 'Diagnostics only. Production payment remains provider-owned through WooCommerce Checkout Blocks.',
 				'bridgeEnabled'      => $enabled,
-				'sameShellSupported' => $enabled,
+				'sameShellSupported' => false,
 				'supports'           => [ 'features' => [ 'products' ] ],
 				'fallbackRoute'      => '/checkout/order-pay',
-				'contractVersion'    => '1',
+				'contractVersion'    => '3',
 			];
-		}
-
-		/** Whether the explicit production release gate is enabled. */
-		private function bridge_enabled(): bool {
-			return (bool) apply_filters( 'dtb_checkout_blocks_same_shell_supported', false, [], [] );
-		}
-
-		/** Return whether at least one non-manual WooCommerce gateway is available. */
-		private function has_online_gateway_candidate(): bool {
-			if ( ! function_exists( 'WC' ) || ! WC()->payment_gateways() ) {
-				return false;
-			}
-			foreach ( (array) WC()->payment_gateways()->get_available_payment_gateways() as $gateway ) {
-				$id = is_object( $gateway ) ? sanitize_key( (string) ( $gateway->id ?? '' ) ) : '';
-				if ( '' !== $id && ! in_array( $id, [ 'cod', 'bacs', 'cheque' ], true ) ) {
-					return true;
-				}
-			}
-			return false;
 		}
 	}
 } else {
