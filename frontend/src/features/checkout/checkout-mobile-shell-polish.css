@@ -27,6 +27,7 @@
     --dtb-co-mobile-card-border: rgba(203, 213, 225, .92);
     --dtb-co-mobile-card-pad: clamp(15px, 4.2vw, 21px);
     --dtb-co-mobile-row-gap: clamp(9px, 2.8vw, 13px);
+
     margin-block-start: 0 !important;
     padding-block-start: 0 !important;
     background: #ffffff;
