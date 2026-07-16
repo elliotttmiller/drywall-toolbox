@@ -19,6 +19,7 @@ const PROVIDER_LABELS = {
   mastercard: 'card',
   amex: 'card',
 };
+const STATIC_LOGO_ORDER = ['apple-pay', 'google-pay', 'paypal', 'visa', 'mastercard', 'amex'];
 
 const MOBILE_QUERY = '(max-width: 1023px)';
 const MOBILE_CLONE_SELECTOR = '.dtb-co-payment-section--mobile-reference';
@@ -56,6 +57,7 @@ function prepareStaticMobileLogo(logo) {
   logo.removeAttribute('tabindex');
   logo.removeAttribute('title');
   logo.removeAttribute('aria-disabled');
+  logo.setAttribute('aria-hidden', 'false');
 }
 
 function activateLogo(logo) {
@@ -130,13 +132,49 @@ function resetInitialCheckoutScroll(root) {
   });
 }
 
+function cloneLogo(root, key) {
+  const source = root.querySelector(`.dtb-checkout-payment-logo--${key}`);
+  if (!(source instanceof HTMLImageElement)) return null;
+  const logo = source.cloneNode(false);
+  logo.className = `dtb-checkout-payment-logo dtb-checkout-payment-logo--${key}`;
+  logo.alt = source.alt || PROVIDER_LABELS[key] || key;
+  logo.decoding = 'async';
+  logo.loading = 'eager';
+  logo.removeAttribute('role');
+  logo.removeAttribute('tabindex');
+  logo.removeAttribute('title');
+  logo.removeAttribute('aria-disabled');
+  logo.removeAttribute('aria-hidden');
+  logo.dataset.dtbExpressRailBound = 'static';
+  return logo;
+}
+
+function buildStaticMobileReferenceRail(root) {
+  const section = document.createElement('section');
+  section.className = `dtb-co-payment-section dtb-co-payment-section--mobile-reference ${MOBILE_LOGOS_ONLY_CLASS} ${MOBILE_STATIC_LOGOS_CLASS}`;
+  section.setAttribute('aria-label', 'Supported payment methods');
+
+  const label = document.createElement('div');
+  label.className = 'dtb-co-payment-label';
+  label.textContent = 'Supported payment methods';
+
+  const logos = document.createElement('div');
+  logos.className = 'dtb-checkout-payment-logos';
+  STATIC_LOGO_ORDER.forEach((key) => {
+    const logo = cloneLogo(root, key);
+    if (logo) logos.appendChild(logo);
+  });
+
+  section.append(label, logos);
+  return section;
+}
+
 function syncMobileReferenceExpressRail(root) {
   if (!(root instanceof HTMLElement)) return;
 
   resetInitialCheckoutScroll(root);
 
   const existingClone = root.querySelector(MOBILE_CLONE_SELECTOR);
-  const original = root.querySelector('.dtb-co-sidebar .dtb-co-payment-section');
   const formInner = root.querySelector('.dtb-co-formpane__inner');
   const mobileSummary = root.querySelector('.dtb-co-msummary');
 
@@ -146,24 +184,17 @@ function syncMobileReferenceExpressRail(root) {
     return;
   }
 
-  if (!(original instanceof HTMLElement) || !(formInner instanceof HTMLElement)) return;
+  if (!(formInner instanceof HTMLElement)) return;
 
   root.classList.add('dtb-checkout--mobile-express-cloned');
 
-  if (existingClone instanceof HTMLElement) return;
-
-  const clone = original.cloneNode(true);
-  clone.classList.add('dtb-co-payment-section--mobile-reference', MOBILE_LOGOS_ONLY_CLASS, MOBILE_STATIC_LOGOS_CLASS);
-  clone.setAttribute('aria-label', 'Supported payment methods');
-  clone.querySelectorAll('[data-dtb-express-rail-bound]').forEach((node) => {
-    node.removeAttribute('data-dtb-express-rail-bound');
-  });
-
-  const label = clone.querySelector('.dtb-co-payment-label');
-  if (label instanceof HTMLElement) {
-    label.textContent = 'Supported payment methods';
+  if (existingClone instanceof HTMLElement) {
+    existingClone.classList.add(MOBILE_LOGOS_ONLY_CLASS, MOBILE_STATIC_LOGOS_CLASS);
+    existingClone.querySelectorAll('.dtb-checkout-payment-logo').forEach(prepareStaticMobileLogo);
+    return;
   }
 
+  const clone = buildStaticMobileReferenceRail(root);
   if (mobileSummary?.parentElement === formInner) {
     mobileSummary.insertAdjacentElement('afterend', clone);
   } else {
