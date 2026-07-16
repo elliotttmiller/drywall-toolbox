@@ -9,8 +9,10 @@
 
 @media (max-width: 1023px) {
   .dtb-checkout {
-    --dtb-co-mobile-gutter-left: max(14px, env(safe-area-inset-left));
-    --dtb-co-mobile-gutter-right: max(14px, env(safe-area-inset-right));
+    --dtb-co-mobile-gutter-left: max(clamp(16px, 4.8vw, 26px), env(safe-area-inset-left));
+    --dtb-co-mobile-gutter-right: max(clamp(16px, 4.8vw, 26px), env(safe-area-inset-right));
+    --dtb-co-mobile-fluid-max: min(100%, 640px);
+    --dtb-co-mobile-fluid-gap: clamp(12px, 3.4vw, 18px);
     background: #ffffff;
   }
 
@@ -18,16 +20,16 @@
     position: sticky;
     top: 0;
     z-index: 90;
-    min-height: 82px;
-    padding: calc(env(safe-area-inset-top) + 10px) 18px 12px;
+    min-height: clamp(72px, 18vw, 84px);
+    padding: calc(env(safe-area-inset-top) + clamp(8px, 2.4vw, 12px)) clamp(16px, 4vw, 24px) clamp(9px, 2.4vw, 13px);
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
     background: linear-gradient(135deg, #071329 0%, #10204a 54%, #2557d6 100%);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
   }
 
   .dtb-checkout .dtb-co-header__logo {
-    height: clamp(42px, 11vw, 52px);
-    max-width: min(270px, 72vw);
+    height: clamp(38px, 10vw, 50px);
+    max-width: min(258px, 70vw);
   }
 
   .dtb-checkout .dtb-co-grid {
@@ -36,17 +38,17 @@
   }
 
   .dtb-checkout .dtb-co-formpane {
-    padding: 0 var(--dtb-co-mobile-gutter-right) calc(188px + env(safe-area-inset-bottom)) var(--dtb-co-mobile-gutter-left);
+    padding: 0 var(--dtb-co-mobile-gutter-right) calc(176px + env(safe-area-inset-bottom)) var(--dtb-co-mobile-gutter-left);
     background: #ffffff;
   }
 
   .dtb-checkout:has(.dtb-co-mobile-cta--expanded) .dtb-co-formpane {
-    padding-bottom: calc(264px + env(safe-area-inset-bottom));
+    padding-bottom: calc(252px + env(safe-area-inset-bottom));
   }
 
   .dtb-checkout .dtb-co-formpane__inner {
-    width: min(100%, 620px);
-    max-width: min(620px, calc(100vw - var(--dtb-co-mobile-gutter-left) - var(--dtb-co-mobile-gutter-right)));
+    width: var(--dtb-co-mobile-fluid-max);
+    max-width: min(640px, calc(100vw - var(--dtb-co-mobile-gutter-left) - var(--dtb-co-mobile-gutter-right)));
     margin-inline: auto;
   }
 
@@ -71,14 +73,14 @@
   }
 
   .dtb-checkout .dtb-co-msummary__toggle {
-    min-height: 64px;
+    min-height: clamp(56px, 14vw, 64px);
     padding: 0 var(--dtb-co-mobile-gutter-right) 0 var(--dtb-co-mobile-gutter-left);
     background: #f8fafc;
   }
 
   .dtb-checkout .dtb-co-msummary__toggle-left,
   .dtb-checkout .dtb-co-msummary__toggle-right {
-    font-size: clamp(16px, 4.6vw, 20px);
+    font-size: clamp(15px, 4.2vw, 19px);
     font-weight: 760;
     letter-spacing: -0.035em;
   }
@@ -93,10 +95,11 @@
 
   .dtb-checkout .dtb-co-payment-section--mobile-reference {
     display: grid !important;
-    gap: 16px;
+    gap: var(--dtb-co-mobile-fluid-gap);
     width: 100%;
-    margin: 0 0 20px;
-    padding: 22px 0 0;
+    max-width: var(--dtb-co-mobile-fluid-max);
+    margin: 0 auto clamp(16px, 4.5vw, 22px);
+    padding: clamp(18px, 5vw, 24px) 0 0;
     border: 0;
     border-radius: 0;
     background: #ffffff;
@@ -107,10 +110,10 @@
     display: grid;
     grid-template-columns: minmax(32px, 1fr) auto minmax(32px, 1fr);
     align-items: center;
-    gap: 14px;
+    gap: clamp(10px, 3.2vw, 16px);
     margin: 0;
     color: #6b7280;
-    font-size: 16px;
+    font-size: clamp(14px, 3.9vw, 16px);
     font-weight: 560;
     letter-spacing: 0;
     line-height: 1.2;
@@ -129,18 +132,18 @@
   .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: clamp(9px, 3vw, 13px);
     margin: 0;
   }
 
   .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
     width: 100%;
     max-width: none;
-    height: 58px;
-    min-height: 58px;
-    padding: 13px 18px;
+    height: clamp(50px, 13.4vw, 58px);
+    min-height: clamp(50px, 13.4vw, 58px);
+    padding: clamp(10px, 3.2vw, 13px) clamp(14px, 4.2vw, 18px);
     border: 0;
-    border-radius: 13px;
+    border-radius: clamp(11px, 3.3vw, 14px);
     box-shadow: none;
     object-fit: contain;
   }
@@ -177,7 +180,7 @@
     margin: 2px 0 0;
     padding: 0 0 2px;
     color: #6b7280;
-    font-size: 14px;
+    font-size: clamp(12px, 3.4vw, 14px);
     font-weight: 520;
     letter-spacing: 0.03em;
     text-align: center;
@@ -191,28 +194,34 @@
     border-radius: 0;
     border-width: 1px 0 0;
     box-shadow: none;
-    padding: 24px 0;
+    padding: clamp(20px, 5vw, 28px) 0;
   }
 
   .dtb-checkout .dtb-co-section__title {
-    font-size: clamp(24px, 7.4vw, 34px);
+    font-size: clamp(23px, 6.4vw, 31px);
     font-weight: 760;
     letter-spacing: -0.04em;
   }
 
   .dtb-checkout .dtb-co-section__subheader,
   .dtb-checkout .dtb-co-guest-note {
-    font-size: clamp(14px, 4vw, 17px);
+    font-size: clamp(13.5px, 3.7vw, 16px);
     line-height: 1.55;
+  }
+
+  .dtb-checkout .dtb-co-grid-2,
+  .dtb-checkout .dtb-co-grid-3 {
+    gap: clamp(11px, 3.2vw, 15px);
   }
 
   .dtb-checkout .dtb-co-input,
   .dtb-checkout .dtb-co-select,
   .dtb-checkout .dtb-co-textarea,
   .dtb-checkout .dtb-co-coupon__input {
-    min-height: 58px;
-    border: 2px solid #111827;
-    border-radius: 14px;
+    min-height: clamp(52px, 13.6vw, 58px);
+    padding: clamp(12px, 3.4vw, 14px) clamp(14px, 4vw, 18px);
+    border: 1.75px solid #111827;
+    border-radius: clamp(12px, 3.6vw, 15px);
     font-size: 16px;
     box-shadow: none;
   }
@@ -231,15 +240,61 @@
   }
 }
 
+@media (min-width: 560px) and (max-width: 1023px) {
+  .dtb-checkout .dtb-co-formpane__inner,
+  .dtb-checkout .dtb-co-payment-section--mobile-reference,
+  .dtb-checkout .dtb-co-mobile-cta__inner {
+    max-width: 680px;
+  }
+
+  .dtb-checkout .dtb-co-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dtb-checkout .dtb-co-grid-3 {
+    grid-template-columns: minmax(0, 1.2fr) minmax(132px, 0.85fr) minmax(112px, 0.75fr);
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    height: 56px;
+  }
+}
+
 @media (max-width: 430px) {
+  .dtb-checkout {
+    --dtb-co-mobile-gutter-left: max(15px, env(safe-area-inset-left));
+    --dtb-co-mobile-gutter-right: max(15px, env(safe-area-inset-right));
+  }
+
   .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logos {
     gap: 10px;
   }
 
   .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
-    height: 54px;
-    min-height: 54px;
+    height: 52px;
+    min-height: 52px;
     border-radius: 12px;
     padding-inline: 14px;
+  }
+}
+
+@media (max-width: 374px) {
+  .dtb-checkout {
+    --dtb-co-mobile-gutter-left: max(12px, env(safe-area-inset-left));
+    --dtb-co-mobile-gutter-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .dtb-checkout .dtb-co-header__logo {
+    max-width: min(224px, 68vw);
+  }
+
+  .dtb-checkout .dtb-co-payment-section--mobile-reference .dtb-checkout-payment-logo {
+    height: 49px;
+    min-height: 49px;
+    padding-inline: 11px;
+  }
+
+  .dtb-checkout .dtb-co-section__title {
+    font-size: clamp(22px, 6.2vw, 28px);
   }
 }
