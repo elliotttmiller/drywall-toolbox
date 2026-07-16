@@ -3,21 +3,18 @@
  *
  * Runtime adapter gate for provider-owned same-shell payment execution.
  * This module never renders card fields and never processes payment directly.
- * It blocks the legacy order-pay navigation by default and only starts payment
- * when an eligible provider-owned same-shell adapter is present and ready.
+ * It blocks legacy order-pay navigation and starts payment only when an eligible
+ * provider-owned same-shell adapter is present, ready, and synchronized.
  */
 
-import { getCheckoutCapabilities } from '../../api/checkout.js';
-import { processExistingOrderPayment } from '../../api/checkout.js';
+import { getCheckoutCapabilities, processExistingOrderPayment } from '../../api/checkout.js';
 
 const CHECKOUT_PATH_RE = /(?:^|\/)checkout\/?$/;
+const LEGACY_ORDER_PAY_RE = /(?:^|\/)checkout\/order-pay\//;
 const PROVIDER_GATEWAY_IDS = new Set([
   'woocommerce_payments',
   'woopayments',
   'stripe',
-  'ppcp-gateway',
-  'ppec_paypal',
-  'paypal',
 ]);
 const SYNC_INTERVAL_MS = 30000;
 
@@ -43,6 +40,17 @@ function isCheckoutRoute() {
 
 function normalizeId(value) {
   return String(value || '').trim().toLowerCase();
+}
+
+function isLegacyOrderPayUrl(value) {
+  const href = String(value || '');
+  if (!href) return false;
+  try {
+    const url = new URL(href, window.location.origin);
+    return LEGACY_ORDER_PAY_RE.test(url.pathname);
+  } catch {
+    return LEGACY_ORDER_PAY_RE.test(href);
+  }
 }
 
 function registryReady() {
@@ -196,8 +204,10 @@ function paymentActionFromEvent(event) {
   const action = target?.closest?.('button, a');
   if (!(action instanceof HTMLElement)) return null;
   const label = String(action.textContent || action.getAttribute('aria-label') || '').trim().toLowerCase();
-  if (!label.includes('open protected payment')) return null;
-  return action;
+  const href = action instanceof HTMLAnchorElement ? action.href : action.getAttribute('href');
+  if (label.includes('open protected payment') || label.includes('resume payment') || label.includes('resume secure payment')) return action;
+  if (isLegacyOrderPayUrl(href)) return action;
+  return null;
 }
 
 function paymentActionFromRoot(root) {
@@ -209,7 +219,8 @@ function paymentActionFromRoot(root) {
 
   const openPaymentAction = Array.from(paymentStep.querySelectorAll('button, a')).find((node) => {
     const label = String(node.textContent || node.getAttribute('aria-label') || '').trim().toLowerCase();
-    return label.includes('open protected payment');
+    const href = node instanceof HTMLAnchorElement ? node.href : node.getAttribute('href');
+    return label.includes('open protected payment') || isLegacyOrderPayUrl(href);
   });
   return openPaymentAction instanceof HTMLElement ? openPaymentAction : paymentStep;
 }
@@ -251,21 +262,13 @@ async function startSameShellPayment(root, action) {
   if (paymentInFlight) return;
   const adapter = providerAdapter();
   if (!adapter) {
-    renderStatus(
-      root,
-      'error',
-      sameShellBlockedMessage('provider_adapter_unavailable'),
-    );
+    renderStatus(root, 'error', sameShellBlockedMessage('provider_adapter_unavailable'));
     return;
   }
 
   const context = paymentContext(root, action);
   if (!context.orderId || !context.orderKey) {
-    renderStatus(
-      root,
-      'error',
-      'The prepared WooCommerce order is missing the payment context required for in-checkout payment. No payment redirect was opened.',
-    );
+    renderStatus(root, 'error', 'The prepared WooCommerce order is missing the payment context required for in-checkout payment. No payment redirect was opened.');
     return;
   }
 
@@ -307,11 +310,7 @@ async function startSameShellPayment(root, action) {
 
     const redirectUrl = paymentResultRedirectUrl(processed);
     if (redirectUrl) {
-      renderStatus(
-        root,
-        'error',
-        'The payment provider returned a redirect requirement. This checkout shell will not leave the page automatically; complete same-shell provider handling before enabling this flow.',
-      );
+      renderStatus(root, 'error', 'The payment provider returned a redirect requirement. This checkout shell will not leave the page automatically; complete same-shell provider handling before enabling this flow.');
       return;
     }
 
@@ -327,11 +326,7 @@ async function startSameShellPayment(root, action) {
       },
     }));
   } catch (error) {
-    renderStatus(
-      root,
-      'error',
-      error?.message || 'Provider-owned in-checkout payment could not start. No payment redirect was opened.',
-    );
+    renderStatus(root, 'error', error?.message || 'Provider-owned in-checkout payment could not start. No payment redirect was opened.');
   } finally {
     paymentInFlight = false;
   }
@@ -388,12 +383,15 @@ function callbackLooksLikeLegacyPaymentRedirect(callback) {
   } catch {
     return false;
   }
-  return source.includes('location.assign') || source.includes('.assign(');
+  return source.includes('location.assign') || source.includes('.assign(') || source.includes('order-pay');
 }
 
 function suppressLegacyOrderPayTimeout(callback, delay, args) {
   return originalSetTimeout(() => {
-    if (!isCheckoutRoute()) return;
+    if (!isCheckoutRoute()) {
+      callback(...args);
+      return;
+    }
     const root = document.querySelector('.dtb-checkout');
     if (!(root instanceof HTMLElement)) return;
     renderStatus(root, 'loading', 'Keeping payment inside checkout. Opening the same-shell WooPayments provider…');
