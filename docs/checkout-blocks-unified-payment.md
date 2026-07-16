@@ -34,7 +34,7 @@ DTB must not simulate Blocks support by embedding order-pay, cloning gateway fie
 
 ```json
 {
-  "contract_version": "2",
+  "contract_version": "3",
   "primary_flow": "official_blocks_candidate_order_pay_fallback",
   "same_shell_supported": false,
   "fallback_order_pay_enabled": true,
@@ -44,6 +44,7 @@ DTB must not simulate Blocks support by embedding order-pay, cloning gateway fie
   "assets_api_available": true,
   "server_blocks_ready": true,
   "server_same_shell_ready": true,
+  "client_bridge_enabled": false,
   "has_blocks_gateway_candidate": true,
   "has_registered_blocks_method": true,
   "client_registry_required": true,
@@ -52,12 +53,24 @@ DTB must not simulate Blocks support by embedding order-pay, cloning gateway fie
 }
 ```
 
-The detector now inspects the WooCommerce Blocks payment registry when it is available through WooCommerce's dependency container. Per active gateway method, the response reports whether it is only a known Blocks-capable candidate or whether an actual registered Blocks integration is present.
+The detector inspects the WooCommerce Blocks payment registry when it is available through WooCommerce's dependency container. Per active gateway method, the response reports whether it is only a known Blocks-capable candidate or whether an actual registered Blocks integration is present.
 
-`same_shell_supported` intentionally remains false until DTB has a verified client bridge that can use the registered provider-owned Blocks UI without bypassing DTB's quote/session/finalize/order lifecycle. The frontend guard in `useCheckoutBlocksBridge.js` requires all of the following before a same-shell payment step can become primary:
+`same_shell_supported` is gated by all of the following:
+
+```text
+server_blocks_ready === true
+server_same_shell_ready === true
+client_bridge_enabled === true
+at least one non-manual registered Blocks method is active
+```
+
+`client_bridge_enabled` is controlled by the `dtb_checkout_blocks_same_shell_supported` PHP filter and defaults to `false`. This is the explicit production release gate; it must only be enabled after the provider-owned Blocks UI is verified with the active gateway stack and DTB's quote/session/finalize/order lifecycle remains intact.
+
+The frontend guard in `useCheckoutBlocksBridge.js` then requires:
 
 ```text
 payment_architecture.same_shell_supported === true
+client_bridge_enabled === true
 server_blocks_ready === true
 server_same_shell_ready === true
 window.wc.wcBlocksRegistry.registerPaymentMethod exists
@@ -87,12 +100,13 @@ This separates DTB session/order preparation from the payment UI activation poin
 
 ## Rollout sequence
 
-1. Ship capability detection, registered-method discovery, and payment-stage state separation.
+1. Ship capability detection, registered-method discovery, bridge gating, and payment-stage state separation.
 2. Verify production WooPayments/PayPal plugin stack exposes Blocks payment infrastructure.
 3. Build a gateway-specific official Blocks payment bridge only for proven eligible methods.
-4. Switch supported checkouts to one-shell payment by enabling `same_shell_supported` only after the client bridge is verified.
-5. Keep order-pay for fallback, retry, and manual payment links.
-6. Simplify the order-pay visual template after it is no longer the primary storefront path.
+4. Enable `dtb_checkout_blocks_same_shell_supported` only after the client bridge is verified end to end.
+5. Switch supported checkouts to one-shell payment.
+6. Keep order-pay for fallback, retry, and manual payment links.
+7. Simplify the order-pay visual template after it is no longer the primary storefront path.
 
 ## Validation
 
@@ -109,9 +123,9 @@ cd ..
 
 Manual checks:
 
-- `/wp-json/dtb/v1/checkout/capabilities` returns `payment_architecture.contract_version = "2"`.
+- `/wp-json/dtb/v1/checkout/capabilities` returns `payment_architecture.contract_version = "3"`.
 - `registered_methods` reflects WooCommerce Blocks payment registry state when available.
-- `same_shell_supported` remains false until a verified DTB client bridge is intentionally enabled.
+- `same_shell_supported` remains false until `dtb_checkout_blocks_same_shell_supported` is intentionally enabled and the client bridge is verified.
 - Existing checkout still reaches order-pay fallback.
 - Retry/double-submit behavior remains contained.
 - `/checkout/order-pay/{id}` still works for recovery links.
