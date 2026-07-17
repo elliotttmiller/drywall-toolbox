@@ -47,7 +47,8 @@ function isLegacyOrderPayUrl(value) {
   if (!href) return false;
   try {
     const url = new URL(href, window.location.origin);
-    return LEGACY_ORDER_PAY_RE.test(url.pathname);
+    return url.origin === window.location.origin
+      && LEGACY_ORDER_PAY_RE.test(url.pathname);
   } catch {
     return LEGACY_ORDER_PAY_RE.test(href);
   }
