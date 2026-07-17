@@ -29,7 +29,6 @@ require_once $_dtb_order . '/Services/OrderOpsQueryService.php';
 require_once $_dtb_order . '/Services/OrderOpsProjectionService.php';
 require_once $_dtb_order . '/Services/OrderWorkflowService.php';
 require_once $_dtb_order . '/Application/TransitionOrderStatus.php';
-require_once $_dtb_order . '/Application/CheckoutService.php';
 require_once $_dtb_order . '/Application/StripeEmbeddedCheckoutOrderMaterializer.php';
 require_once $_dtb_order . '/Application/BuildOrderTrackingProjection.php';
 require_once $_dtb_order . '/Application/RefreshOrderProjection.php';
