@@ -1,32 +1,36 @@
 /**
  * frontend/src/features/checkout/checkoutSameShellPaymentRuntime.js
  *
- * Same-page payment surface runtime. This module does not render, clone, or
- * dispatch into payment-provider Blocks controls. It embeds a same-origin WordPress
- * document where the native WooCommerce Checkout Block/provider runtime owns
- * card fields, wallets, tokenization, and payment processing.
+ * Same-page Stripe payment surface runtime.
+ *
+ * React owns checkout presentation and decides when payment is ready. This
+ * runtime only mounts the same-origin WordPress/WooCommerce payment document
+ * that contains the official WooCommerce Checkout Block and Payment Plugins
+ * Stripe Blocks integration. It never renders, clones, or confirms Stripe
+ * Elements directly.
  */
 
 import { getCheckoutCapabilities, requestCheckoutPaymentSurface } from '../../api/checkout.js';
 
 const CHECKOUT_PATH_RE = /(?:^|\/)checkout\/?$/;
 const LEGACY_ORDER_PAY_RE = /(?:^|\/)checkout\/order-pay\//;
+const PAYMENT_SURFACE_QUERY = 'dtb_checkout_payment_surface';
 const SYNC_INTERVAL_MS = 30000;
 const SURFACE_CLASS = 'dtb-payment-surface-frame';
 const STATUS_CLASS = 'dtb-same-shell-payment-status';
+const ROOT_SELECTOR = '.dtb-checkout';
 
 let installed = false;
 let syncPromise = null;
 let lastSyncAt = 0;
 let currentState = { eligible: false, reason: 'not_checked', capabilities: null };
-let originalSetTimeout = null;
-let originalPushState = null;
-let originalReplaceState = null;
 let preparedPaymentObserver = null;
 let observedCheckoutRoot = null;
 let currentSurfaceKey = '';
 let surfaceInFlight = false;
 let surfaceRequestSeq = 0;
+let originalPushState = null;
+let originalReplaceState = null;
 
 function isCheckoutRoute() {
   if (typeof window === 'undefined') return false;
@@ -56,44 +60,103 @@ function isPaymentSurfaceUrl(value) {
   if (!href) return false;
   try {
     const url = new URL(href, window.location.origin);
-    return url.searchParams.has('dtb_checkout_payment_surface');
+    return url.searchParams.has(PAYMENT_SURFACE_QUERY);
   } catch {
-    return href.includes('dtb_checkout_payment_surface=');
+    return href.includes(`${PAYMENT_SURFACE_QUERY}=`);
   }
 }
 
 function decodeDatasetJson(value) {
   if (!value) return null;
   try {
-    return JSON.parse(value);
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' ? parsed : null;
   } catch {
     return null;
   }
 }
 
-function paymentContext(root, action) {
-  const paymentStep = root.querySelector('#checkout-payment-step');
+function checkoutRootFromEvent(event) {
+  const detailRoot = event?.detail?.rootSelector ? document.querySelector(event.detail.rootSelector) : null;
+  if (detailRoot instanceof HTMLElement) return detailRoot;
+  return document.querySelector(ROOT_SELECTOR);
+}
+
+function paymentStepFromRoot(root) {
+  return root instanceof HTMLElement ? root.querySelector('#checkout-payment-step') : null;
+}
+
+function paymentActionFromRoot(root) {
+  const paymentStep = paymentStepFromRoot(root);
+  if (!(paymentStep instanceof HTMLElement)) return null;
+
+  const contextualAction = paymentStep.querySelector('button[data-dtb-order-id][data-dtb-order-key], a[data-dtb-order-id][data-dtb-order-key]');
+  if (contextualAction instanceof HTMLElement) return contextualAction;
+
+  return Array.from(paymentStep.querySelectorAll('button, a')).find((node) => {
+    const label = String(node.textContent || node.getAttribute('aria-label') || '').trim().toLowerCase();
+    const href = node instanceof HTMLAnchorElement ? node.href : node.getAttribute('href');
+    return label.includes('open protected payment')
+      || label.includes('load secure payment')
+      || label.includes('resume payment')
+      || isLegacyOrderPayUrl(href)
+      || isPaymentSurfaceUrl(href);
+  }) || paymentStep;
+}
+
+function paymentActionFromEvent(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  const action = target?.closest?.('button, a');
+  if (!(action instanceof HTMLElement)) return null;
+  const label = String(action.textContent || action.getAttribute('aria-label') || '').trim().toLowerCase();
+  const href = action instanceof HTMLAnchorElement ? action.href : action.getAttribute('href');
+  if (label.includes('open protected payment') || label.includes('load secure payment') || label.includes('resume payment')) return action;
+  if (isLegacyOrderPayUrl(href) || isPaymentSurfaceUrl(href)) return action;
+  return null;
+}
+
+function paymentContextFromDataset(root, action) {
+  const paymentStep = paymentStepFromRoot(root);
   const source = action instanceof HTMLElement ? action : paymentStep;
-  const orderId = Number(source?.dataset?.dtbOrderId || paymentStep?.dataset?.dtbOrderId || 0);
-  const orderKey = String(source?.dataset?.dtbOrderKey || paymentStep?.dataset?.dtbOrderKey || '');
-  const billingEmail = String(source?.dataset?.dtbBillingEmail || paymentStep?.dataset?.dtbBillingEmail || '');
-  const paymentUrl = String(source?.dataset?.dtbPaymentUrl || paymentStep?.dataset?.dtbPaymentUrl || '');
-  const paymentMethod = String(source?.dataset?.dtbPaymentMethod || paymentStep?.dataset?.dtbPaymentMethod || '');
   const billingAddress = decodeDatasetJson(paymentStep?.dataset?.dtbBillingAddress || '') || {};
   const shippingAddress = decodeDatasetJson(paymentStep?.dataset?.dtbShippingAddress || '') || billingAddress;
-  return { orderId, orderKey, billingEmail, paymentUrl, paymentMethod, billingAddress, shippingAddress };
+
+  return {
+    orderId: Number(source?.dataset?.dtbOrderId || paymentStep?.dataset?.dtbOrderId || 0),
+    orderKey: String(source?.dataset?.dtbOrderKey || paymentStep?.dataset?.dtbOrderKey || ''),
+    paymentUrl: String(source?.dataset?.dtbPaymentUrl || paymentStep?.dataset?.dtbPaymentUrl || ''),
+    paymentMethod: String(source?.dataset?.dtbPaymentMethod || paymentStep?.dataset?.dtbPaymentMethod || ''),
+    billingEmail: String(source?.dataset?.dtbBillingEmail || paymentStep?.dataset?.dtbBillingEmail || ''),
+    billingAddress,
+    shippingAddress,
+  };
+}
+
+function paymentContextFromDetail(detail = {}) {
+  const orderId = Number(detail.orderId || detail.order_id || 0);
+  const orderKey = String(detail.orderKey || detail.order_key || '');
+  if (!orderId || !orderKey) return null;
+  return {
+    orderId,
+    orderKey,
+    paymentUrl: String(detail.paymentUrl || detail.payment_url || ''),
+    paymentMethod: String(detail.paymentMethod || detail.payment_method || ''),
+    billingEmail: String(detail.billingEmail || detail.billing_email || ''),
+    billingAddress: detail.billingAddress && typeof detail.billingAddress === 'object' ? detail.billingAddress : {},
+    shippingAddress: detail.shippingAddress && typeof detail.shippingAddress === 'object' ? detail.shippingAddress : {},
+  };
 }
 
 function evaluate(capabilities) {
   const architecture = capabilities?.payment_architecture || {};
-  if (architecture.contract_version !== '4') {
+  if (String(architecture.contract_version || '') !== '4') {
     return { eligible: false, reason: 'contract_version_mismatch' };
-  }
-  if (architecture.same_shell_supported !== true) {
-    return { eligible: false, reason: 'payment_surface_not_enabled' };
   }
   if (architecture.payment_surface_supported !== true) {
     return { eligible: false, reason: 'native_payment_surface_unavailable' };
+  }
+  if (architecture.same_shell_supported !== true) {
+    return { eligible: false, reason: 'provider_blocks_not_ready' };
   }
   return { eligible: true, reason: 'native_payment_surface_ready' };
 }
@@ -134,32 +197,8 @@ async function syncState(root, force = false) {
   return syncPromise;
 }
 
-function paymentActionFromEvent(event) {
-  const target = event.target instanceof Element ? event.target : null;
-  const action = target?.closest?.('button, a');
-  if (!(action instanceof HTMLElement)) return null;
-  const label = String(action.textContent || action.getAttribute('aria-label') || '').trim().toLowerCase();
-  const href = action instanceof HTMLAnchorElement ? action.href : action.getAttribute('href');
-  if (label.includes('open protected payment') || label.includes('resume payment') || label.includes('resume secure payment')) return action;
-  if (isLegacyOrderPayUrl(href) || isPaymentSurfaceUrl(href)) return action;
-  return null;
-}
-
-function paymentActionFromRoot(root) {
-  const paymentStep = root.querySelector('#checkout-payment-step');
-  if (!(paymentStep instanceof HTMLElement)) return null;
-  const actionWithContext = paymentStep.querySelector('button[data-dtb-order-id][data-dtb-order-key]');
-  if (actionWithContext instanceof HTMLElement) return actionWithContext;
-  const openPaymentAction = Array.from(paymentStep.querySelectorAll('button, a')).find((node) => {
-    const label = String(node.textContent || node.getAttribute('aria-label') || '').trim().toLowerCase();
-    const href = node instanceof HTMLAnchorElement ? node.href : node.getAttribute('href');
-    return label.includes('open protected payment') || isLegacyOrderPayUrl(href) || isPaymentSurfaceUrl(href);
-  });
-  return openPaymentAction instanceof HTMLElement ? openPaymentAction : paymentStep;
-}
-
 function ensureStatusPanel(root) {
-  const paymentStep = root.querySelector('#checkout-payment-step');
+  const paymentStep = paymentStepFromRoot(root);
   if (!(paymentStep instanceof HTMLElement)) return null;
   let panel = paymentStep.querySelector(`.${STATUS_CLASS}`);
   if (!(panel instanceof HTMLElement)) {
@@ -178,14 +217,14 @@ function renderStatus(root, status, message) {
   panel.dataset.status = status;
   panel.replaceChildren();
   const title = document.createElement('strong');
-  title.textContent = status === 'error' ? 'In-checkout payment unavailable' : 'Secure in-checkout payment';
+  title.textContent = status === 'error' ? 'Secure Stripe payment unavailable' : 'Secure Stripe payment';
   const copy = document.createElement('p');
   copy.textContent = message;
   panel.append(title, copy);
 }
 
 function ensureFrame(root) {
-  const paymentStep = root.querySelector('#checkout-payment-step');
+  const paymentStep = paymentStepFromRoot(root);
   if (!(paymentStep instanceof HTMLElement)) return null;
   let frame = paymentStep.querySelector(`iframe.${SURFACE_CLASS}`);
   if (!(frame instanceof HTMLIFrameElement)) {
@@ -217,65 +256,74 @@ async function resolveSurfaceUrl(context) {
   return String(response?.url || response?.payment_surface_url || '');
 }
 
-async function mountPaymentSurface(root, action, { force = false } = {}) {
+async function mountPaymentSurface(root, rawContext, { force = false } = {}) {
   if (!(root instanceof HTMLElement) || !document.contains(root)) return;
   if (surfaceInFlight && !force) return;
-  const paymentAction = action instanceof HTMLElement ? action : paymentActionFromRoot(root);
-  const context = paymentContext(root, paymentAction);
-  if (!context.orderId || !context.orderKey) return;
+
+  const context = rawContext || paymentContextFromDataset(root, paymentActionFromRoot(root));
+  if (!context?.orderId || !context?.orderKey) return;
+
   const key = `${context.orderId}:${context.orderKey}`;
   if (!force && key === currentSurfaceKey) return;
 
   const requestId = ++surfaceRequestSeq;
   surfaceInFlight = true;
-  renderStatus(root, 'loading', 'Loading the secure Stripe checkout surface inside checkout...');
+  renderStatus(root, 'loading', 'Loading the provider-owned Stripe payment surface…');
+
   try {
     const state = await syncState(root, true);
     if (requestId !== surfaceRequestSeq || !document.contains(root)) return;
     if (!state.eligible) {
-      renderStatus(root, 'error', `Same-page Stripe checkout is not active (${normalizeId(state.reason)}).`);
+      renderStatus(root, 'error', `Stripe payment is not ready in WooCommerce Blocks (${normalizeId(state.reason)}).`);
       return;
     }
+
     const url = await resolveSurfaceUrl(context);
     if (requestId !== surfaceRequestSeq || !document.contains(root)) return;
-    const latestAction = paymentActionFromRoot(root);
-    const latestContext = paymentContext(root, latestAction);
-    if (`${latestContext.orderId}:${latestContext.orderKey}` !== key) return;
-    if (!url) throw new Error('The checkout payment surface URL could not be created.');
+    if (!url) throw new Error('The Stripe payment surface URL could not be created.');
+
     const frame = ensureFrame(root);
-    if (!frame) throw new Error('The checkout payment surface could not be mounted.');
-    if (requestId !== surfaceRequestSeq || !document.contains(root)) return;
+    if (!frame) throw new Error('The Stripe payment surface could not be mounted.');
+
     frame.dataset.dtbOrderId = String(context.orderId);
-    frame.src = url;
+    if (frame.src !== url) frame.src = url;
     currentSurfaceKey = key;
-    renderStatus(root, 'loading', 'Stripe is loading securely inside checkout...');
+    renderStatus(root, 'loading', 'Stripe is loading securely inside checkout…');
     window.dispatchEvent(new CustomEvent('dtb:checkout-payment-surface-mounted', { detail: { orderId: context.orderId } }));
   } catch (error) {
     if (requestId === surfaceRequestSeq && document.contains(root)) {
-      renderStatus(root, 'error', error?.message || 'The secure Stripe checkout surface could not be loaded.');
+      renderStatus(root, 'error', error?.message || 'The secure Stripe payment surface could not be loaded.');
     }
   } finally {
     if (requestId === surfaceRequestSeq) surfaceInFlight = false;
   }
 }
 
-async function handlePaymentClick(event) {
+function handlePaymentRequest(event) {
+  if (!isCheckoutRoute()) return;
+  const root = checkoutRootFromEvent(event);
+  if (!(root instanceof HTMLElement)) return;
+  const context = paymentContextFromDetail(event.detail) || paymentContextFromDataset(root, paymentActionFromRoot(root));
+  void mountPaymentSurface(root, context, { force: true });
+}
+
+function handlePaymentClick(event) {
   if (!isCheckoutRoute()) return;
   const action = paymentActionFromEvent(event);
   if (!action) return;
-  const root = document.querySelector('.dtb-checkout');
+  const root = document.querySelector(ROOT_SELECTOR);
   if (!(root instanceof HTMLElement)) return;
 
   event.preventDefault();
   event.stopPropagation();
   if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
 
-  void mountPaymentSurface(root, action, { force: true });
+  void mountPaymentSurface(root, paymentContextFromDataset(root, action), { force: true });
 }
 
 function handleSurfaceMessage(event) {
   if (event.origin !== window.location.origin) return;
-  const root = document.querySelector('.dtb-checkout');
+  const root = document.querySelector(ROOT_SELECTOR);
   if (!(root instanceof HTMLElement)) return;
   const frame = root.querySelector(`iframe.${SURFACE_CLASS}`);
   if (!(frame instanceof HTMLIFrameElement) || event.source !== frame.contentWindow) return;
@@ -291,45 +339,12 @@ function handleSurfaceMessage(event) {
     renderStatus(root, 'ready', 'Stripe is available in the secure checkout payment surface.');
   }
   if (detail.type === 'dtb:payment-surface:error') {
-    renderStatus(root, 'error', String(detail.message || 'Stripe reported a recoverable payment-surface error.'));
+    renderStatus(root, 'error', String(detail.message || 'Stripe reported a recoverable payment error.'));
   }
   if (detail.type === 'dtb:payment-surface:success') {
-    renderStatus(root, 'ready', 'Payment was completed securely. Updating checkout status…');
+    renderStatus(root, 'ready', 'Payment was completed securely. You can now view the order status.');
+    window.dispatchEvent(new CustomEvent('dtb:checkout-payment-surface-complete', { detail: { orderId: detail.orderId } }));
   }
-}
-
-function callbackLooksLikeLegacyPaymentRedirect(callback) {
-  if (typeof callback !== 'function') return false;
-  let source = '';
-  try {
-    source = Function.prototype.toString.call(callback);
-  } catch {
-    return false;
-  }
-  return source.includes('location.assign') || source.includes('.assign(') || source.includes('order-pay');
-}
-
-function suppressLegacyOrderPayTimeout(callback, delay, args) {
-  return originalSetTimeout(() => {
-    if (!isCheckoutRoute()) {
-      callback(...args);
-      return;
-    }
-    const root = document.querySelector('.dtb-checkout');
-    if (!(root instanceof HTMLElement)) return;
-    void mountPaymentSurface(root, paymentActionFromRoot(root), { force: true });
-  }, delay, ...args);
-}
-
-function patchLegacyOrderPayTimeout() {
-  if (originalSetTimeout || typeof window === 'undefined' || typeof window.setTimeout !== 'function') return;
-  originalSetTimeout = window.setTimeout.bind(window);
-  window.setTimeout = (callback, delay = 0, ...args) => {
-    if (isCheckoutRoute() && callbackLooksLikeLegacyPaymentRedirect(callback)) {
-      return suppressLegacyOrderPayTimeout(callback, delay, args);
-    }
-    return originalSetTimeout(callback, delay, ...args);
-  };
 }
 
 function resetObserver() {
@@ -340,21 +355,21 @@ function resetObserver() {
 
 function observePreparedPayment() {
   if (typeof MutationObserver === 'undefined') return;
-  const root = document.querySelector('.dtb-checkout');
+  const root = document.querySelector(ROOT_SELECTOR);
   if (!isCheckoutRoute() || !(root instanceof HTMLElement)) {
     resetObserver();
     return;
   }
   if (preparedPaymentObserver && observedCheckoutRoot === root) return;
+
   resetObserver();
   observedCheckoutRoot = root;
 
   const syncPreparedPayment = () => {
     if (observedCheckoutRoot !== root || !document.contains(root)) return;
-    const action = paymentActionFromRoot(root);
-    const context = paymentContext(root, action);
+    const context = paymentContextFromDataset(root, paymentActionFromRoot(root));
     if (!context.orderId || !context.orderKey) return;
-    void mountPaymentSurface(root, action);
+    void mountPaymentSurface(root, context);
   };
 
   preparedPaymentObserver = new MutationObserver(() => syncPreparedPayment());
@@ -368,6 +383,8 @@ function observePreparedPayment() {
       'data-dtb-payment-url',
       'data-dtb-payment-method',
       'data-dtb-billing-email',
+      'data-dtb-billing-address',
+      'data-dtb-shipping-address',
     ],
   });
   syncPreparedPayment();
@@ -378,7 +395,7 @@ function scheduleSync() {
     resetObserver();
     return;
   }
-  const root = document.querySelector('.dtb-checkout');
+  const root = document.querySelector(ROOT_SELECTOR);
   if (!(root instanceof HTMLElement)) {
     resetObserver();
     return;
@@ -408,14 +425,10 @@ export function installCheckoutSameShellPaymentRuntime() {
   if (installed || typeof window === 'undefined' || typeof document === 'undefined') return;
   installed = true;
 
-  patchLegacyOrderPayTimeout();
   patchNavigationEvents();
   document.addEventListener('click', handlePaymentClick, true);
   window.addEventListener('message', handleSurfaceMessage);
-  window.addEventListener('dtb:checkout-same-shell-payment-requested', () => {
-    const root = document.querySelector('.dtb-checkout');
-    if (root instanceof HTMLElement) void mountPaymentSurface(root, paymentActionFromRoot(root), { force: true });
-  });
+  window.addEventListener('dtb:checkout-same-shell-payment-requested', handlePaymentRequest);
   window.addEventListener('dtb:checkout-payment-method-selected', scheduleSync);
   window.addEventListener('popstate', () => window.setTimeout(scheduleSync, 0));
 
