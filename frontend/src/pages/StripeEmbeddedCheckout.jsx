@@ -1,7 +1,7 @@
 /**
  * Stripe-first checkout route.
  *
- * Stripe Embedded Checkout owns the checkout UI workflow. DTB owns only the
+ * Stripe Embedded Checkout owns the checkout UI workflow. DTB owns the
  * server-side cart snapshot, Stripe Checkout Session creation, dynamic shipping
  * updates, webhook verification, and WooCommerce order materialization.
  */
@@ -81,7 +81,7 @@ export default function StripeEmbeddedCheckout() {
   const [sessionError, setSessionError] = useState('');
   const [customerNote, setCustomerNote] = useState('');
   const [attemptId] = useState(() => makeCheckoutAttemptId());
-  const hasStartedRef = useRef(false);
+  const sessionMetaRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,44 +112,55 @@ export default function StripeEmbeddedCheckout() {
     if (!clientSecret) {
       throw new Error('Stripe Embedded Checkout did not return a client secret.');
     }
-    setSessionMeta({
+    const nextMeta = {
       checkoutSessionId: response?.stripe?.checkout_session_id || '',
       dtbSessionId: response?.checkout?.session_id || '',
       expiresAt: response?.checkout?.expires_at || '',
-    });
+    };
+    sessionMetaRef.current = nextMeta;
+    setSessionMeta(nextMeta);
     return clientSecret;
   }, [attemptId, customerNote]);
 
-  const onShippingDetailsChange = useCallback(async (event = {}) => {
-    const checkoutSessionId = event.checkoutSessionId || event.checkout_session_id || event.session?.id || sessionMeta?.checkoutSessionId || '';
-    const shippingDetails = event.shippingDetails || event.shipping_details || event.shipping || null;
+  const onShippingDetailsChange = useCallback((event = {}) => {
+    const checkoutSessionId = event.checkoutSessionId || '';
+    const shippingDetails = event.shippingDetails || null;
     if (!checkoutSessionId || !shippingDetails) {
-      return { type: 'reject', errorMessage: 'Shipping details could not be verified. Refresh checkout and try again.' };
+      return Promise.resolve({ type: 'reject', errorMessage: 'Shipping details could not be verified. Refresh checkout and try again.' });
     }
-    try {
-      const response = await updateStripeEmbeddedShippingOptions({
-        checkout_session_id: checkoutSessionId,
-        shipping_details: shippingDetails,
-      });
-      if (response?.type) return response;
-      if (response?.action?.type) return response.action;
-      return { type: 'accept' };
-    } catch (error) {
-      return { type: 'reject', errorMessage: error?.message || 'Shipping is unavailable for this address.' };
-    }
-  }, [sessionMeta?.checkoutSessionId]);
+    return updateStripeEmbeddedShippingOptions({
+      checkout_session_id: checkoutSessionId,
+      shipping_details: shippingDetails,
+    })
+      .then((response) => {
+        if (response?.type === 'accept') return { type: 'accept' };
+        if (response?.action?.type === 'accept') return { type: 'accept' };
+        const message = response?.message || response?.action?.errorMessage || 'Shipping is unavailable for this address.';
+        return { type: 'reject', errorMessage: message };
+      })
+      .catch((error) => ({
+        type: 'reject',
+        errorMessage: error?.message || 'Shipping is unavailable for this address.',
+      }));
+  }, []);
+
+  const onComplete = useCallback(() => {
+    const checkoutSessionId = sessionMetaRef.current?.checkoutSessionId || sessionMeta?.checkoutSessionId || '';
+    const query = checkoutSessionId ? `?stripe_session_id=${encodeURIComponent(checkoutSessionId)}` : '';
+    navigate(`/checkout/complete${query}`, { replace: true });
+  }, [navigate, sessionMeta?.checkoutSessionId]);
 
   const checkoutOptions = useMemo(() => ({
     fetchClientSecret,
     onShippingDetailsChange,
-  }), [fetchClientSecret, onShippingDetailsChange]);
+    onComplete,
+  }), [fetchClientSecret, onComplete, onShippingDetailsChange]);
 
   const cartReady = !cartLoading && lastSyncedAt !== null;
   const isEmpty = cartReady && safeCartItems.length === 0;
   const available = config?.available === true && Boolean(stripePromise);
 
   function startCheckout() {
-    hasStartedRef.current = true;
     setStarted(true);
   }
 
@@ -209,7 +220,7 @@ export default function StripeEmbeddedCheckout() {
                 <div className="dtb-stripe-checkout-assurance"><CheckCircle size={14} /> No WooCommerce order is created until Stripe verifies payment.</div>
               </div>
             ) : (
-              <div className="dtb-stripe-checkout-embed" data-dtb-started={hasStartedRef.current ? '1' : '0'}>
+              <div className="dtb-stripe-checkout-embed">
                 {stripePromise ? (
                   <EmbeddedCheckoutProvider stripe={stripePromise} options={checkoutOptions}>
                     <EmbeddedCheckout />
