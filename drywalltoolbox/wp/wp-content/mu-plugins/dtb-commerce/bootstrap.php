@@ -2,8 +2,8 @@
 /**
  * DTB Commerce bootstrap.
  *
- * Persists DTB toolset metadata from Store API add-to-cart requests through
- * Woo cart item data and into order line item meta.
+ * Loads cart metadata, checkout validation, Stripe Embedded Checkout, shipping,
+ * and commerce-facing REST/email integrations.
  *
  * @package drywall-toolbox
  */
@@ -16,23 +16,10 @@ require_once __DIR__ . '/Services/OrderTypeService.php';
 require_once __DIR__ . '/Services/OrderAdminQueryService.php';
 require_once __DIR__ . '/Validation/CheckoutValidator.php';
 require_once __DIR__ . '/Domain/PaymentState.php';
-require_once __DIR__ . '/Payment/PaymentRuntime.php';
-require_once __DIR__ . '/Payment/OrderPayPresentation.php';
-require_once __DIR__ . '/Payment/OrderPayHardening.php';
-require_once __DIR__ . '/Payment/UnpaidOrderPayGuard.php';
-require_once __DIR__ . '/Payment/PaymentBnplCartFinalization.php';
-require_once __DIR__ . '/Payment/CustomerAssociation.php';
-require_once __DIR__ . '/Payment/PaymentStatusGuard.php';
-require_once __DIR__ . '/Payment/PaymentProviderRuntimeGuards.php';
-require_once __DIR__ . '/Payment/CheckoutBlocksCapabilityDetector.php';
-require_once __DIR__ . '/Payment/CheckoutBlocksBridgeIntegration.php';
-require_once __DIR__ . '/Payment/CheckoutPaymentSurface.php';
-require_once __DIR__ . '/Payment/PaymentPluginsStripeIntegration.php';
 require_once __DIR__ . '/Payment/StripeEmbeddedCheckoutConfig.php';
 require_once __DIR__ . '/Payment/StripeApiClient.php';
 require_once __DIR__ . '/Payment/StripeEmbeddedCheckoutBridge.php';
 require_once __DIR__ . '/Shipping/DTBShippingMethod.php';
-require_once __DIR__ . '/Rest/CheckoutRestController.php';
 require_once __DIR__ . '/Rest/StripeEmbeddedCheckoutRestController.php';
 require_once __DIR__ . '/Rest/StripeEmbeddedCheckoutWebhookController.php';
 require_once __DIR__ . '/Email/WooCommerceBrandedEmails.php';
@@ -46,5 +33,3 @@ require_once __DIR__ . '/Rest/OrderRestController.php';
 
 DTB_ToolsetCartItemData::register();
 DTB_ToolsetOrderLineMeta::register();
-DTB_CheckoutBlocksBridgeIntegration::register();
-DTB_CheckoutPaymentSurface::register();
