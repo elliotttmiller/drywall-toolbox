@@ -3,6 +3,7 @@ export const dtbEase = {
   emphasized: [0.16, 1, 0.3, 1],
   soft: [0.2, 0.8, 0.2, 1],
   exit: [0.4, 0, 0.2, 1],
+  fade: [0.4, 0, 0.2, 1],
 };
 
 export const dtbDuration = {
@@ -15,32 +16,27 @@ export const dtbDuration = {
 export const routeVariants = {
   initial: {
     opacity: 0,
-    y: 8,
-    filter: 'blur(2px)',
   },
   animate: {
     opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
     transition: {
-      duration: 0.26,
-      ease: dtbEase.standard,
-      opacity: { duration: 0.22, ease: dtbEase.soft },
-      filter: { duration: 0.18, ease: dtbEase.soft },
+      duration: 0.36,
+      ease: dtbEase.fade,
     },
   },
   exit: {
     opacity: 0,
-    y: -3,
-    filter: 'blur(1px)',
-    transition: { duration: 0.14, ease: dtbEase.exit },
+    transition: {
+      duration: 0.28,
+      ease: dtbEase.fade,
+    },
   },
 };
 
 export const reducedRouteVariants = {
   initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: dtbDuration.instant } },
-  exit: { opacity: 0, transition: { duration: dtbDuration.instant } },
+  animate: { opacity: 1, transition: { duration: 0.01, ease: 'linear' } },
+  exit: { opacity: 0, transition: { duration: 0.01, ease: 'linear' } },
 };
 
 export const surfaceVariants = {
