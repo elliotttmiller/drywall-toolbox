@@ -24,8 +24,8 @@ export default function LoadingCardTransition({
     let removalTimer = 0;
 
     if (loading) {
-      setShowSkeleton(true);
       firstFrame = window.requestAnimationFrame(() => {
+        setShowSkeleton(true);
         setReady(false);
       });
     } else {
