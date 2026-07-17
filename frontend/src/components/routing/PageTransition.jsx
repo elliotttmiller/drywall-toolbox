@@ -1,9 +1,9 @@
 /**
  * PageTransition
  *
- * Lightweight route transition wrapper. Motion is constrained to composite-safe
- * properties so route changes feel smooth without blocking catalog/product data
- * rendering or masking normal component-level loading states.
+ * A route-level opacity crossfade. The shell stays mounted while outgoing and
+ * incoming route content overlap, so navigation feels continuous without
+ * delaying data rendering or hiding component-level loading states.
  */
 import { motion as Motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { routeVariants, reducedRouteVariants } from '../../motion/dtbMotion.js';
@@ -24,8 +24,8 @@ export default function PageTransition({ children, locationKey }) {
         style={{
           width: '100%',
           minHeight: '100%',
-          willChange: reduceMotion ? 'opacity' : 'transform, opacity, filter',
-          transform: 'translate3d(0, 0, 0)',
+          willChange: 'opacity',
+          position: 'relative',
           backfaceVisibility: 'hidden',
           contain: 'layout paint',
         }}
