@@ -41,6 +41,19 @@ export async function getCheckoutCapabilities() {
 	}
 }
 
+export async function getStripeEmbeddedCheckoutConfig() {
+	const response = await apiClient( '/wp-json/dtb/v1/checkout/stripe-embedded/config' );
+	return response?.stripe_embedded_checkout || response || {};
+}
+
+export async function createStripeEmbeddedCheckoutSession( payload = {} ) {
+	return post( 'stripe-embedded/session', payload );
+}
+
+export async function updateStripeEmbeddedShippingOptions( payload = {} ) {
+	return post( 'stripe-embedded/shipping-options', payload );
+}
+
 export async function createCheckoutQuote( payload = {} ) {
 	const response = await post( 'quote', payload );
 	return response?.quote || response || {};
