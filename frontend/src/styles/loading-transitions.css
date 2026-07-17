@@ -328,11 +328,13 @@ html.dtb-document-transition-active #root {
 }
 
 @media (min-width: 1024px) {
-  .dtb-selector-skeleton-grid--brands {
+  .dtb-selector-skeleton-grid--categories {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
 
-  .dtb-selector-skeleton-grid--categories {
+@media (min-width: 1100px) {
+  .dtb-selector-skeleton-grid--brands {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
