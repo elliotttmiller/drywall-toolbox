@@ -32,6 +32,11 @@ final class DTB_StripeEmbeddedCheckoutRestController {
 			'callback'            => [ __CLASS__, 'shipping_options' ],
 			'permission_callback' => [ __CLASS__, 'permission' ],
 		] );
+		register_rest_route( 'dtb/v1', '/checkout/stripe-embedded/status', [
+			'methods'             => WP_REST_Server::READABLE,
+			'callback'            => [ __CLASS__, 'status' ],
+			'permission_callback' => [ __CLASS__, 'permission' ],
+		] );
 	}
 
 	public static function config(): WP_REST_Response {
@@ -48,6 +53,12 @@ final class DTB_StripeEmbeddedCheckoutRestController {
 	public static function shipping_options( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		return self::mutation( $request, 'stripe_embedded_shipping_options', static function ( array $payload ) {
 			return DTB_StripeEmbeddedCheckoutBridge::update_shipping_options( $payload );
+		} );
+	}
+
+	public static function status( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		return self::mutation( $request, 'stripe_embedded_checkout_status', static function ( array $payload ) {
+			return DTB_StripeEmbeddedCheckoutBridge::status( $payload );
 		} );
 	}
 
