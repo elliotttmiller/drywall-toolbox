@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'DTB_CHECKOUT_SESSION_DB_VERSION' ) ) {
-	define( 'DTB_CHECKOUT_SESSION_DB_VERSION', '2.0.0' );
+	define( 'DTB_CHECKOUT_SESSION_DB_VERSION', '3.0.0' );
 }
 
 final class DTB_OrderCheckoutSessionRepository {
@@ -32,7 +32,7 @@ final class DTB_OrderCheckoutSessionRepository {
 			fingerprint char(64) NOT NULL,
 			state varchar(32) NOT NULL DEFAULT 'quoted',
 			state_version bigint(20) unsigned NOT NULL DEFAULT 1,
-			payment_gateway varchar(64) NOT NULL DEFAULT 'woo_native',
+			payment_gateway varchar(64) NOT NULL DEFAULT 'stripe_embedded_checkout',
 			payment_method varchar(100) NOT NULL DEFAULT '',
 			context_json longtext NOT NULL,
 			quote_json longtext NOT NULL,
@@ -96,13 +96,13 @@ final class DTB_OrderCheckoutSessionRepository {
 	}
 
 	private static function hydrate( array $row ): array {
-		$row['id']                    = (int) $row['id'];
-		$row['customer_id']           = (int) $row['customer_id'];
-		$row['order_id']              = ! empty( $row['order_id'] ) ? (int) $row['order_id'] : 0;
-		$row['state_version']         = (int) ( $row['state_version'] ?? 1 );
-		$row['quote_version']         = (int) ( $row['quote_version'] ?? 1 );
-		$row['context']               = json_decode( (string) ( $row['context_json'] ?? '' ), true ) ?: [];
-		$row['quote']                 = json_decode( (string) ( $row['quote_json'] ?? '' ), true ) ?: [];
+		$row['id']                       = (int) $row['id'];
+		$row['customer_id']              = (int) $row['customer_id'];
+		$row['order_id']                 = ! empty( $row['order_id'] ) ? (int) $row['order_id'] : 0;
+		$row['state_version']            = (int) ( $row['state_version'] ?? 1 );
+		$row['quote_version']            = (int) ( $row['quote_version'] ?? 1 );
+		$row['context']                  = json_decode( (string) ( $row['context_json'] ?? '' ), true ) ?: [];
+		$row['quote']                    = json_decode( (string) ( $row['quote_json'] ?? '' ), true ) ?: [];
 		$row['failure_context_redacted'] = (string) ( $row['failure_context_redacted'] ?? '' );
 		return $row;
 	}
@@ -113,25 +113,25 @@ final class DTB_OrderCheckoutSessionRepository {
 		$ok  = $wpdb->insert(
 			self::table(),
 			[
-				'session_id'                 => (string) $data['session_id'],
-				'quote_id'                   => (string) $data['quote_id'],
-				'customer_id'                => (int) $data['customer_id'],
-				'woo_session_identifier'     => (string) $data['woo_session_identifier'],
-				'cart_hash'                  => (string) $data['cart_hash'],
-				'quote_version'              => 1,
-				'selected_shipping_rate_id'  => (string) ( $data['selected_shipping_rate_id'] ?? '' ),
-				'fingerprint'                => (string) $data['fingerprint'],
+				'session_id'                => (string) $data['session_id'],
+				'quote_id'                  => (string) $data['quote_id'],
+				'customer_id'               => (int) $data['customer_id'],
+				'woo_session_identifier'    => (string) $data['woo_session_identifier'],
+				'cart_hash'                 => (string) $data['cart_hash'],
+				'quote_version'             => 1,
+				'selected_shipping_rate_id' => (string) ( $data['selected_shipping_rate_id'] ?? '' ),
+				'fingerprint'               => (string) $data['fingerprint'],
 				'state'                     => 'quoted',
 				'state_version'             => 1,
-				'payment_gateway'           => 'woo_native',
+				'payment_gateway'           => 'stripe_embedded_checkout',
 				'payment_method'            => '',
 				'context_json'              => wp_json_encode( $data['context'] ),
 				'quote_json'                => wp_json_encode( $data['quote'] ),
 				'expires_at'                => $data['expires_at'],
 				'failure_code'              => '',
 				'failure_context_redacted'  => '',
-				'created_at'               => $now,
-				'updated_at'               => $now,
+				'created_at'                => $now,
+				'updated_at'                => $now,
 			],
 			[ '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ]
 		);
@@ -144,22 +144,22 @@ final class DTB_OrderCheckoutSessionRepository {
 		$updated = $wpdb->update(
 			self::table(),
 			[
-				'resume_token_hash'          => (string) $data['resume_token_hash'],
-				'idempotency_key'            => (string) $data['idempotency_key'],
-				'customer_id'                => (int) $data['customer_id'],
-				'woo_session_identifier'     => (string) $data['woo_session_identifier'],
-				'cart_hash'                  => (string) $data['cart_hash'],
-				'quote_version'              => (int) ( $data['quote_version'] ?? 1 ),
-				'selected_shipping_rate_id'  => (string) ( $data['selected_shipping_rate_id'] ?? '' ),
-				'fingerprint'                => (string) $data['fingerprint'],
+				'resume_token_hash'         => (string) $data['resume_token_hash'],
+				'idempotency_key'           => (string) $data['idempotency_key'],
+				'customer_id'               => (int) $data['customer_id'],
+				'woo_session_identifier'    => (string) $data['woo_session_identifier'],
+				'cart_hash'                 => (string) $data['cart_hash'],
+				'quote_version'             => (int) ( $data['quote_version'] ?? 1 ),
+				'selected_shipping_rate_id' => (string) ( $data['selected_shipping_rate_id'] ?? '' ),
+				'fingerprint'               => (string) $data['fingerprint'],
 				'state'                     => 'created',
 				'state_version'             => $expected_version + 1,
-				'payment_gateway'           => (string) ( $data['payment_gateway'] ?? 'woo_native' ),
+				'payment_gateway'           => (string) ( $data['payment_gateway'] ?? 'stripe_embedded_checkout' ),
 				'payment_method'            => (string) $data['payment_method'],
 				'context_json'              => wp_json_encode( $data['context'] ),
 				'quote_json'                => wp_json_encode( $data['quote'] ),
 				'expires_at'                => $data['expires_at'],
-				'updated_at'               => $now,
+				'updated_at'                => $now,
 			],
 			[ 'id' => $id, 'state' => 'quoted', 'state_version' => $expected_version ],
 			[ '%s', '%s', '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ],
@@ -182,12 +182,6 @@ final class DTB_OrderCheckoutSessionRepository {
 			'finalized_at'              => '%s',
 			'failure_code'              => '%s',
 			'failure_context_redacted'  => '%s',
-			// Allows an anonymous (customer_id 0) checkout row to be promoted
-			// to the authenticated identity when the customer logs in mid-flow
-			// (see DTB_OrderCheckoutService::assert_owner()). Never accept this
-			// from unauthenticated/untrusted input directly — only internal
-			// callers that have already verified the Cart-Token session-hash
-			// match may set it.
 			'customer_id'               => '%d',
 			'updated_at'                => '%s',
 		];
