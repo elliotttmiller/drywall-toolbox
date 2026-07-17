@@ -68,8 +68,8 @@ export default function CheckoutReturn({ fallbackState = 'complete' }) {
 	const description = state === 'success'
 		? 'Your order has been received and is now being processed. A confirmation email will be sent to your inbox.'
 		: state === 'failed'
-			? 'Your order was created, but payment was not completed. Return to checkout to start a fresh same-shell WooPayments payment session.'
-			: 'Your order was created and payment is still pending. Return to checkout to complete payment in the same-shell WooPayments flow.';
+			? 'Your order was created, but payment was not completed. Return to checkout to try your payment again.'
+			: 'Your order was created and payment is still pending. Return to checkout to complete your payment.';
 	const orderId = order?.order_id || '';
 
 	return (
