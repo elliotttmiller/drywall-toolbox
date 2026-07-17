@@ -1,50 +1,79 @@
+function SkeletonBar({ className = '' }) {
+  return <span className={`dtb-loading-bar ${className}`.trim()} aria-hidden="true" />;
+}
+
 /**
- * ProductShoppingCardSkeleton.jsx
- *
- * Shimmer placeholder for catalog grids that render ui/ProductShoppingCard.
- * This stays outside components/ui because it is a catalog-loading helper,
- * not a general-purpose interactive card primitive.
- *
- * Rendered while the catalog is loading so the page never shows a spinner
- * in an empty void — the layout is stable and the transition to real cards
- * is seamless.
+ * Layout-matched product-card skeleton used by grids, list results, and rails.
  */
-export default function ProductShoppingCardSkeleton() {
+export default function ProductShoppingCardSkeleton({ variant = 'grid' }) {
   return (
-    <div className="product-skeleton-card" aria-hidden="true">
-      {/* Image area */}
-      <div className="product-skeleton-img skeleton-shimmer" />
+    <article className={`dtb-product-card-skeleton dtb-product-card-skeleton--${variant}`} aria-hidden="true">
+      <span className="dtb-product-card-skeleton__image">
+        <span className="dtb-product-card-skeleton__image-shimmer" />
+        <SkeletonBar className="dtb-product-card-skeleton__stock" />
+      </span>
 
-      {/* Body */}
-      <div className="product-skeleton-body">
-        {/* Brand label */}
-        <div className="product-skeleton-brand skeleton-shimmer" />
+      <span className="dtb-product-card-skeleton__meta">
+        <SkeletonBar className="dtb-product-card-skeleton__brand" />
+        <SkeletonBar className="dtb-product-card-skeleton__name" />
+        <SkeletonBar className="dtb-product-card-skeleton__name dtb-product-card-skeleton__name--short" />
+        <SkeletonBar className="dtb-product-card-skeleton__sku" />
+        <span className="dtb-product-card-skeleton__divider" />
+        <span className="dtb-product-card-skeleton__footer">
+          <SkeletonBar className="dtb-product-card-skeleton__price" />
+          <SkeletonBar className="dtb-product-card-skeleton__action" />
+        </span>
+      </span>
+    </article>
+  );
+}
 
-        {/* Product name — two lines */}
-        <div className="product-skeleton-name skeleton-shimmer" />
-        <div className="product-skeleton-name product-skeleton-name--short skeleton-shimmer" />
+export function ProductSkeletonGrid({ count = 24, variant = 'grid', className = '' }) {
+  const classes = [
+    'dtb-product-skeleton-grid',
+    `dtb-product-skeleton-grid--${variant}`,
+    className,
+  ].filter(Boolean).join(' ');
 
-        {/* SKU */}
-        <div className="product-skeleton-sku skeleton-shimmer" />
-
-        {/* Price */}
-        <div className="product-skeleton-price skeleton-shimmer" />
-      </div>
+  return (
+    <div className={classes} aria-hidden="true">
+      {Array.from({ length: count }, (_, index) => (
+        <ProductShoppingCardSkeleton key={index} variant={variant} />
+      ))}
     </div>
   );
 }
 
-/**
- * Renders a responsive grid of skeleton cards matching the ProductShoppingCard grid.
- *
- * @param {number} count  Number of cards to show (default 24 — matches ITEMS_PER_PAGE)
- */
-export function ProductSkeletonGrid({ count = 24 }) {
+function BrandSelectorSkeletonCard() {
   return (
-    <div className="product-skeleton-grid">
-      {Array.from({ length: count }, (_, i) => (
-        <ProductShoppingCardSkeleton key={i} />
-      ))}
+    <div className="dtb-selector-skeleton-card dtb-selector-skeleton-card--brand" aria-hidden="true">
+      <span className="dtb-selector-skeleton-card__brand-frame">
+        <SkeletonBar className="dtb-selector-skeleton-card__brand-logo" />
+      </span>
+      <SkeletonBar className="dtb-selector-skeleton-card__label" />
+    </div>
+  );
+}
+
+function CategorySelectorSkeletonCard() {
+  return (
+    <div className="dtb-selector-skeleton-card dtb-selector-skeleton-card--category" aria-hidden="true">
+      <span className="dtb-selector-skeleton-card__image-shimmer" />
+      <span className="dtb-selector-skeleton-card__category-copy">
+        <SkeletonBar className="dtb-selector-skeleton-card__category-name" />
+        <SkeletonBar className="dtb-selector-skeleton-card__category-count" />
+      </span>
+    </div>
+  );
+}
+
+export function SelectorSkeletonGrid({ mode = 'brands', count }) {
+  const resolvedCount = count ?? (mode === 'categories' ? 8 : 6);
+  const Card = mode === 'categories' ? CategorySelectorSkeletonCard : BrandSelectorSkeletonCard;
+
+  return (
+    <div className={`dtb-selector-skeleton-grid dtb-selector-skeleton-grid--${mode}`} aria-hidden="true">
+      {Array.from({ length: resolvedCount }, (_, index) => <Card key={index} />)}
     </div>
   );
 }
