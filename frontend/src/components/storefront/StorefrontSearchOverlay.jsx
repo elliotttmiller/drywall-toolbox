@@ -4,6 +4,8 @@ import { brandToSlug } from '../../utils/catalogUrlState.js';
 import { buildDisplayCategoryUrl, normalizeCatalogCategoryEntry } from '../../utils/catalogFacets.js';
 import ProductModal from '../product/ProductModal.jsx';
 import ProductDetail from '../product/ProductDetail.jsx';
+import { ProductSkeletonGrid } from '../catalog/ProductShoppingCardSkeleton.jsx';
+import LoadingCardTransition from '../shared/LoadingCardTransition.jsx';
 import StorefrontProductTile from './StorefrontProductTile.jsx';
 import { useCart } from '../../context/CartContext.jsx';
 
@@ -75,6 +77,40 @@ export default function StorefrontSearchOverlay({
 
   if (!isOpen) return null;
 
+  const searchSkeleton = (
+    <section className="storefront-search-overlay__results" aria-hidden="true">
+      <ProductSkeletonGrid count={4} variant="list" />
+    </section>
+  );
+
+  const searchResults = resolvedSuggestions.length > 0 ? (
+    <section className="storefront-search-overlay__results storefront-search-overlay__results--product-cards">
+      {resolvedSuggestions.map((product, index) => (
+        <StorefrontProductTile
+          key={product.id || product.slug || product.sku || index}
+          product={product}
+          cardProduct={product?.cardProduct || null}
+          variant="list"
+          index={index}
+          onOpenModal={() => openQuickView(product)}
+          onAddToCart={() => handleAddToCart(product, 1)}
+        />
+      ))}
+      <button type="button" onClick={onViewAll} className="storefront-search-overlay__view-all">
+        View all results
+      </button>
+    </section>
+  ) : (
+    <section className="storefront-search-overlay__results">
+      <div className="storefront-search-overlay__empty-message">
+        No products matched &quot;{query.trim()}&quot;. Try a brand, SKU, or broader term.
+      </div>
+      <button type="button" onClick={onViewAll} className="storefront-search-overlay__view-all">
+        Browse all products
+      </button>
+    </section>
+  );
+
   return (
     <>
       <div className="storefront-search-overlay" data-open={isOpen ? 'true' : 'false'} role="dialog" aria-modal="true" aria-label="Search products">
@@ -135,46 +171,13 @@ export default function StorefrontSearchOverlay({
               ) : null}
 
               {hasQuery ? (
-                loading ? (
-                  <section className="storefront-search-overlay__results">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <div key={index} className="storefront-search-overlay__skeleton-row">
-                        <div className="storefront-search-overlay__skeleton-thumb storefront-skeleton" />
-                        <div className="storefront-search-overlay__skeleton-copy">
-                          <div className="storefront-skeleton" style={{ height: 10, width: '42%', borderRadius: 999 }} />
-                          <div className="storefront-skeleton" style={{ height: 12, width: '78%', borderRadius: 999 }} />
-                          <div className="storefront-skeleton" style={{ height: 11, width: '30%', borderRadius: 999 }} />
-                        </div>
-                      </div>
-                    ))}
-                  </section>
-                ) : resolvedSuggestions.length > 0 ? (
-                  <section className="storefront-search-overlay__results storefront-search-overlay__results--product-cards">
-                    {resolvedSuggestions.map((product, index) => (
-                      <StorefrontProductTile
-                        key={product.id || product.slug || product.sku || index}
-                        product={product}
-                        cardProduct={product?.cardProduct || null}
-                        variant="list"
-                        index={index}
-                        onOpenModal={() => openQuickView(product)}
-                        onAddToCart={() => handleAddToCart(product, 1)}
-                      />
-                    ))}
-                    <button type="button" onClick={onViewAll} className="storefront-search-overlay__view-all">
-                      View all results
-                    </button>
-                  </section>
-                ) : (
-                  <section className="storefront-search-overlay__results">
-                    <div className="storefront-search-overlay__empty-message">
-                      No products matched &quot;{query.trim()}&quot;. Try a brand, SKU, or broader term.
-                    </div>
-                    <button type="button" onClick={onViewAll} className="storefront-search-overlay__view-all">
-                      Browse all products
-                    </button>
-                  </section>
-                )
+                <LoadingCardTransition
+                  loading={loading}
+                  skeleton={searchSkeleton}
+                  label="Loading search results"
+                >
+                  {searchResults}
+                </LoadingCardTransition>
               ) : null}
             </div>
           </div>
