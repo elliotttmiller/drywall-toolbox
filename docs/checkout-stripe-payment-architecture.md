@@ -1,199 +1,160 @@
-# Checkout Stripe Embedded Payment Architecture
+# Checkout and Official WooCommerce Stripe Architecture
 
 ## Purpose
 
-Drywall Toolbox checkout uses Stripe Embedded Checkout as the storefront checkout UI/workflow authority. React renders the branded checkout shell and cart summary. DTB creates Stripe Checkout Sessions from a server-authoritative WooCommerce cart snapshot, handles Stripe dynamic shipping callbacks, verifies Stripe webhooks, and materializes a WooCommerce order only after Stripe reports a paid Checkout Session.
+Drywall Toolbox checkout uses WooCommerce Checkout Block as the storefront checkout/order-creation authority and the official WooCommerce Stripe Payment Gateway as the payment-rendering and Stripe synchronization authority.
 
-WooCommerce is the operational order record after verified payment. Veeqo syncs normal WooCommerce processing orders. QuickBooks receives accounting projections after eligible order/refund lifecycle events.
+React owns the storefront browsing/cart/account experience and hands checkout off to `/checkout/` with a full-document navigation. The root `.htaccess` routes `/checkout/` into WordPress/WooCommerce instead of the React SPA shell. DTB styles and brands the Woo checkout page, tags Woo checkout orders for downstream lifecycle observation, and dispatches order-processing jobs only after WooCommerce reports verified payment lifecycle events.
 
 ## System-of-record boundaries
 
 | Concern | Authority |
 | --- | --- |
-| Checkout shell, cart summary, loading/error states | React storefront |
-| Embedded checkout form, contact/address/payment UI, wallets, saved methods, localization | Stripe Embedded Checkout |
-| Cart snapshot, Checkout Session creation, idempotency, dynamic shipping endpoint, webhook verification, Woo order materialization | DTB MU plugins |
-| Product catalog, customer account, materialized order record | WooCommerce |
-| Paid-order observation, event ledger, downstream jobs | DTB order platform |
+| Product browsing, cart sidebar, account UX, checkout handoff | React storefront |
+| Checkout form, customer/address collection, order creation | WooCommerce Checkout Block / Store API |
+| Stripe payment form, wallets, saved payment methods, payment processing, Stripe webhooks | Official WooCommerce Stripe Payment Gateway |
+| Checkout page shell/styling, checkout-order tagging, paid-order observation, event ledger, downstream jobs | DTB MU plugins |
+| Product catalog, customer account, operational order record | WooCommerce |
 | Inventory allocation, fulfillment, labels, shipment/tracking | Veeqo |
 | Accounting projection after eligible payment/refund events | QuickBooks |
 
-React must never receive Stripe secret keys, webhook secrets, WooCommerce application passwords, Veeqo credentials, QuickBooks credentials, or private integration credentials. Browser code receives only the Stripe publishable key and Stripe Checkout Session client secret.
+React must never receive Stripe secret keys, webhook secrets, WooCommerce application passwords, Veeqo credentials, QuickBooks credentials, or private integration credentials. Browser code does not create Stripe Checkout Sessions and does not copy or mount private gateway internals.
 
 ## Production flow
 
 ```text
-React /checkout route
-  -> GET /wp-json/dtb/v1/checkout/stripe-embedded/config
-  -> POST /wp-json/dtb/v1/checkout/stripe-embedded/session
-       DTB validates current Woo cart/session
-       DTB stores locked checkout snapshot + idempotency key
-       DTB creates Stripe Checkout Session with ui_mode=embedded
-  -> Stripe Embedded Checkout iframe
-       Stripe collects contact, billing, shipping, tax/payment context, payment method, wallets, and saved-method UI
-  -> POST /wp-json/dtb/v1/checkout/stripe-embedded/shipping-options
-       Stripe onShippingDetailsChange sends { checkoutSessionId, shippingDetails }
-       DTB calculates shipping from Woo/DTB policy, not live Veeqo carrier rating
-       DTB updates the Stripe Checkout Session shipping details/options
-  -> POST /wp-json/dtb/v1/stripe/embedded-checkout/webhook
-       DTB verifies Stripe-Signature
-       DTB retrieves the Checkout Session from Stripe
-       DTB requires payment_status=paid before Woo order creation
-       DTB validates DTB session id, Stripe session id, cart hash, amount, and currency
-       DTB creates one WooCommerce order with real product/variation line items and SKUs
-       DTB stores Stripe payment/session references and marks Woo order paid
-  -> WooCommerce payment lifecycle hooks
+React cart / cart side sheet
+  -> full-document navigation to /checkout/
+  -> .htaccess routes /checkout/ to wp/index.php?pagename=checkout
+  -> DTB Woo checkout shell filter renders WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway renders payment methods
+  -> WooCommerce Store API checkout creates the order
+  -> official Stripe gateway processes payment
+  -> official Stripe gateway webhooks update WooCommerce order/payment status
+  -> WooCommerce payment_complete / processing / completed hooks
   -> DTB order event ledger + dtb-orders queue
   -> Veeqo, QuickBooks, notification, and tracking projections
 ```
 
-## Active checkout routes
+## Active checkout surface
 
-| Route | Method | Authority |
-| --- | --- | --- |
-| `/wp-json/dtb/v1/checkout/stripe-embedded/config` | GET | Public checkout runtime config; returns publishable values only |
-| `/wp-json/dtb/v1/checkout/stripe-embedded/session` | POST | Creates a Stripe Embedded Checkout Session from the current Woo cart snapshot |
-| `/wp-json/dtb/v1/checkout/stripe-embedded/shipping-options` | POST | Handles Stripe dynamic shipping updates using DTB/Woo shipping policy |
-| `/wp-json/dtb/v1/checkout/stripe-embedded/status` | GET | Returns verified session/order status for `/checkout/complete` |
-| `/wp-json/dtb/v1/stripe/embedded-checkout/webhook` | POST | Public Stripe webhook endpoint protected by Stripe-Signature HMAC |
+| Surface | Authority |
+| --- | --- |
+| `/checkout/` | WordPress/WooCommerce Checkout Block, not React SPA |
+| `/checkout/order-pay/{id}` | WooCommerce order-pay endpoint for payment retry only |
+| `/checkout/order-received/{id}` | WooCommerce order-received endpoint |
+| React `/checkout` route | Compatibility handoff that forces a full-page navigation into `/checkout/` |
 
-The old Woo-native checkout/payment-surface endpoints and same-shell Payment Plugins integration were removed from the active bootstrap and deleted from source in this architecture branch.
+The retired Stripe Embedded Checkout Session bridge, same-shell payment iframe, Payment Plugins integration, and custom DTB payment-surface routes are not active checkout authorities.
 
-## Stripe Checkout Session contract
+## Official Stripe gateway configuration
 
-DTB creates Checkout Sessions with:
+Production requires the official WooCommerce Stripe Payment Gateway to be installed, connected, enabled, and configured through WooCommerce settings.
 
-```text
-mode = payment
-ui_mode = embedded
-redirect_on_completion = always
-client_reference_id = DTB checkout session id
-metadata.dtb_checkout_session_id = DTB checkout session id
-metadata.dtb_cart_hash = locked cart hash
-metadata.dtb_idempotency_key = DTB checkout idempotency key
-metadata.dtb_customer_id = authenticated customer id, or 0 for guest
-metadata.dtb_contract_version = 5
-billing_address_collection = required
-phone_number_collection.enabled = true
-shipping_address_collection.allowed_countries = DTB allowed countries
-permissions.update_shipping_details = server_only
-return_url = /checkout/complete?stripe_session_id={CHECKOUT_SESSION_ID}
-```
-
-Line items are generated from the current server-side WooCommerce cart snapshot. Browser cart values are display-only and are not authoritative.
-
-## Dynamic shipping contract
-
-Stripe Embedded Checkout calls `onShippingDetailsChange` when the customer completes the shipping details form. The runtime payload shape is treated as:
-
-```json
-{
-  "checkoutSessionId": "cs_...",
-  "shippingDetails": {
-    "name": "Customer Name",
-    "address": {
-      "line1": "...",
-      "line2": "...",
-      "city": "...",
-      "state": "...",
-      "postal_code": "...",
-      "country": "US"
-    }
-  }
-}
-```
-
-The frontend sends that shape to DTB as:
-
-```json
-{
-  "checkout_session_id": "cs_...",
-  "shipping_details": { }
-}
-```
-
-The shipping-options endpoint:
-
-1. retrieves the Stripe Checkout Session from Stripe;
-2. validates the DTB checkout session metadata;
-3. validates same-cart ownership using the Cart-Token/session hash;
-4. calculates shipping using `DTB_CheckoutValidator::shipping_rates_for_current_cart()`;
-5. updates the Stripe Checkout Session with `shipping_details` and `shipping_options`;
-6. returns `{ "type": "accept" }` or a Stripe-compatible reject action.
-
-These are DTB/Woo policy rates. They are not live Veeqo carrier rates.
-
-## Webhook and order materialization contract
-
-The Stripe webhook endpoint is public only because Stripe cannot present browser credentials. The authorization boundary is the `Stripe-Signature` HMAC using `DTB_STRIPE_WEBHOOK_SECRET`.
-
-Handled events:
+Recommended wp-admin path:
 
 ```text
-checkout.session.completed
-checkout.session.async_payment_succeeded
-checkout.session.async_payment_failed
-checkout.session.expired
-charge.refunded
-refund.created
-refund.updated
-charge.dispute.created
-charge.dispute.updated
-charge.dispute.closed
+WooCommerce -> Settings -> Payments -> Stripe
 ```
 
-For successful sessions, DTB must:
+Required operational settings:
 
-1. verify the Stripe webhook signature with timing-safe comparison;
-2. retrieve the Checkout Session from Stripe;
-3. require `payment_status=paid`;
-4. verify DTB session metadata, Stripe session id, cart hash, amount, and currency;
-5. use the checkout-session row as the idempotency/write boundary;
-6. create exactly one WooCommerce order with real product/variation line items and SKUs;
-7. store Stripe session/payment references on the Woo order;
-8. mark the Woo order paid using WooCommerce payment completion;
-9. let DTB payment lifecycle observers append events and dispatch `dtb-orders` downstream jobs.
+1. Connect the official Stripe gateway to the production Stripe account.
+2. Enable the Stripe payment method for checkout.
+3. Enable Optimized Checkout Suite where supported.
+4. Choose the desired Optimized Checkout Suite layout, normally Accordion for mobile-friendly checkout.
+5. Confirm live and test webhook status is configured by the plugin connection.
+6. Verify wallet/domain registration for Apple Pay / Google Pay / Link where used.
+7. Disable Payment Plugins for Stripe and any other competing Stripe checkout gateway as storefront payment authorities.
 
-Duplicate webhook deliveries must be idempotent. A second delivery for the same Stripe session or financial event must not create a duplicate Woo order, duplicate note, duplicate event, or duplicate downstream processing dispatch.
+The official gateway owns Stripe webhook registration and synchronization. DTB does not create an additional storefront checkout webhook endpoint for payment completion in this architecture.
 
-## Refund and dispute projection
+## DTB Woo checkout integration
 
-Stripe refund/dispute events are projected into Woo order metadata, order notes, and the DTB event ledger using Stripe event idempotency. The bridge stores the latest refund/dispute state and amount/reference metadata and leaves operational resolution to the order/finance workflows. It does not create a second order, mutate fulfillment allocation, or call Veeqo directly from the webhook acknowledgement path.
-
-## Configuration
-
-Configure these values outside generated assets and browser code, normally in `wp-config.php` or secure host-level configuration:
-
-```php
-define( 'DTB_STRIPE_PUBLISHABLE_KEY', 'pk_...' );
-define( 'DTB_STRIPE_SECRET_KEY', 'sk_...' );
-define( 'DTB_STRIPE_WEBHOOK_SECRET', 'whsec_...' );
-```
-
-The intended Stripe webhook endpoint is:
+`DTB_WooNativeStripeCheckout` owns the DTB layer around Woo checkout:
 
 ```text
-/wp-json/dtb/v1/stripe/embedded-checkout/webhook
+drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeStripeCheckout.php
 ```
 
-No WooCommerce Stripe gateway plugin should be active as the storefront `/checkout` payment authority. Stripe Embedded Checkout is the only storefront checkout/payment UI for this architecture.
+Responsibilities:
 
-## Operational readiness checklist
+- enqueue the DTB checkout stylesheet only on the primary Woo checkout page;
+- replace the checkout page content with a branded shell around the WooCommerce Checkout Block, falling back to `[woocommerce_checkout]` if block rendering is unavailable;
+- tag Woo checkout orders with DTB metadata;
+- mirror verified official Stripe payment references into non-secret DTB order meta;
+- show wp-admin readiness warnings if WooCommerce is active but the official Stripe gateway is not enabled.
 
-Before production use, verify:
+The styling file is:
 
-1. `DTB_STRIPE_PUBLISHABLE_KEY`, `DTB_STRIPE_SECRET_KEY`, and `DTB_STRIPE_WEBHOOK_SECRET` are configured for the intended Stripe mode.
-2. Stripe Dashboard has a webhook endpoint pointing to `/wp-json/dtb/v1/stripe/embedded-checkout/webhook`.
-3. No competing Woo Stripe gateway is active as the storefront checkout authority.
-4. Stripe Embedded Checkout loads on desktop and mobile.
-5. Stripe dynamic shipping callback returns shipping methods for supported destinations and rejects unsupported destinations.
-6. Card success, 3DS, wallet, failed card, async success/failure, expired session, retry, duplicate webhook delivery, refund, and dispute events are tested.
-7. WooCommerce order is created only after a verified paid Stripe session.
-8. Woo order contains real product/variation IDs, SKUs, billing/shipping addresses, shipping line, Stripe payment references, and DTB checkout metadata.
-9. DTB checkout session state reaches `paid` exactly once per Stripe session.
-10. DTB event ledger and `dtb-orders` queue receive exactly one downstream processing dispatch per paid order.
-11. Veeqo pulls the WooCommerce processing order and maps order lines by SKU.
-12. Refund/dispute projections create only idempotent metadata/notes/events and do not perform synchronous Veeqo or QuickBooks side effects.
+```text
+drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/assets/woo-native-checkout.css
+```
+
+## Order metadata
+
+Woo checkout orders are tagged with:
+
+```text
+_dtb_checkout_gateway = woo_native_stripe
+_dtb_checkout_contract_version = woo-stripe-v1
+_dtb_checkout_source = woocommerce_checkout | woocommerce_store_api_checkout | woocommerce_stripe_payment_lifecycle
+_dtb_order_type = product
+```
+
+When WooCommerce reports verified official Stripe payment with a transaction/payment reference, DTB mirrors:
+
+```text
+_dtb_payment_provider = woo_official_stripe
+_dtb_payment_ref = Woo transaction id or Stripe payment reference
+_dtb_payment_captured = 1 when date_paid is present
+```
+
+These values are non-secret references only.
+
+## Downstream lifecycle
+
+DTB order-platform observes WooCommerce payment lifecycle hooks:
+
+```text
+woocommerce_payment_complete
+woocommerce_order_status_processing
+woocommerce_order_status_completed
+woocommerce_order_status_failed
+woocommerce_order_status_cancelled
+woocommerce_order_status_refunded
+```
+
+For DTB-tagged, verified official Stripe orders, DTB appends lifecycle events and dispatches `dtb-orders` processing jobs once payment is captured. The webhook/payment authority remains the official Stripe gateway.
+
+## Routing contract
+
+The public root `.htaccess` must route these to WordPress before the React SPA catch-all:
+
+```text
+/checkout/
+/checkout/order-pay/{id}
+/checkout/?pay_for_order=true&key=wc_order_...
+/wp-json/*
+?rest_route=...
+?wc-api=...
+```
+
+This prevents React from rendering the checkout route and prevents API calls from returning SPA HTML instead of JSON.
+
+## Deployment checklist
+
+Before production use:
+
+1. Deploy frontend and backend as a clean mirror, not a partial FTP overlay.
+2. Remove retired Stripe Embedded Checkout bridge files from live `mu-plugins` if they were previously deployed.
+3. Confirm `/wp-json/` returns JSON.
+4. Confirm `/wp-json/dtb/v1/catalog/products?per_page=1` returns JSON.
+5. Confirm `/checkout/` renders the WooCommerce checkout page, not the React SPA.
+6. Confirm the official Stripe gateway is connected and enabled.
+7. Confirm official Stripe gateway webhooks are configured in live and test modes.
+8. Confirm Payment Plugins for Stripe is disabled as a checkout payment authority.
+9. Test card success, 3DS, wallets, failed card, payment retry, refund, dispute, Woo order status changes, Veeqo order sync by SKU, and QuickBooks projection eligibility.
 
 ## Validation commands
 
@@ -209,16 +170,13 @@ npm run build
 Backend:
 
 ```powershell
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/StripeEmbeddedCheckoutConfig.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/StripeApiClient.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/StripeEmbeddedCheckoutBridge.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Rest/StripeEmbeddedCheckoutRestController.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Rest/StripeEmbeddedCheckoutWebhookController.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Application/StripeEmbeddedCheckoutOrderMaterializer.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeStripeCheckout.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/bootstrap.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/bootstrap.php
 .\scripts\smoke-dtb-mu-modules.ps1
 git diff --check
 ```
 
-Runtime verification remains mandatory because Stripe Embedded Checkout, dynamic shipping callbacks, webhook delivery, wallets, tax behavior, and Veeqo order sync depend on deployed Stripe/WooCommerce/Veeqo configuration.
+Runtime verification remains mandatory because the final payment form, webhook status, wallet registration, order status transitions, Veeqo sync, and QuickBooks projection depend on deployed WooCommerce/Stripe/Veeqo configuration.
