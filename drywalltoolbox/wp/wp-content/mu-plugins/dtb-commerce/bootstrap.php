@@ -28,8 +28,13 @@ require_once __DIR__ . '/Payment/CheckoutBlocksCapabilityDetector.php';
 require_once __DIR__ . '/Payment/CheckoutBlocksBridgeIntegration.php';
 require_once __DIR__ . '/Payment/CheckoutPaymentSurface.php';
 require_once __DIR__ . '/Payment/PaymentPluginsStripeIntegration.php';
+require_once __DIR__ . '/Payment/StripeEmbeddedCheckoutConfig.php';
+require_once __DIR__ . '/Payment/StripeApiClient.php';
+require_once __DIR__ . '/Payment/StripeEmbeddedCheckoutBridge.php';
 require_once __DIR__ . '/Shipping/DTBShippingMethod.php';
 require_once __DIR__ . '/Rest/CheckoutRestController.php';
+require_once __DIR__ . '/Rest/StripeEmbeddedCheckoutRestController.php';
+require_once __DIR__ . '/Rest/StripeEmbeddedCheckoutWebhookController.php';
 require_once __DIR__ . '/Email/WooCommerceBrandedEmails.php';
 require_once __DIR__ . '/Email/WooCommerceAdminBrandedEmails.php';
 
