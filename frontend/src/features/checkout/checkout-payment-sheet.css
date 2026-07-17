@@ -1,0 +1,162 @@
+/*
+ * frontend/src/features/checkout/checkout-payment-sheet.css
+ *
+ * Responsive checkout/payment presentation overlay. Desktop remains a modern
+ * single-page checkout. Mobile uses the checkout workflow runtime as a guided
+ * multi-step flow and presents the provider-owned payment surface in a bottom
+ * sheet when payment is prepared.
+ */
+
+@media (min-width: 1024px) {
+  .dtb-checkout--desktop-single-page .dtb-checkout-mobile-step-shell,
+  .dtb-checkout--desktop-single-page .dtb-mobile-payment-method-panel {
+    display: none !important;
+  }
+
+  .dtb-checkout--desktop-single-page .dtb-co-formpane__inner > .dtb-co-section,
+  .dtb-checkout--desktop-single-page .dtb-co-auth-choice {
+    display: block !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  @supports selector(:has(.dtb-payment-surface-frame)) {
+    body:has(.dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"]) {
+      overflow: hidden;
+    }
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"]::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 112;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(37, 99, 235, .24), transparent 34%),
+      rgba(15, 23, 42, .48);
+    pointer-events: none;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-checkout-mobile-step-shell {
+    z-index: 132;
+    border-bottom-color: transparent;
+    background: linear-gradient(180deg, rgba(15, 23, 42, .54), rgba(15, 23, 42, 0));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-stepbar__back {
+    border-color: rgba(255, 255, 255, .28);
+    background: rgba(255, 255, 255, .16);
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .2);
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-stepbar__heading,
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-stepbar__current-label {
+    color: #ffffff !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-stepbar__dot {
+    background: rgba(255, 255, 255, .36);
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-stepbar__dot.is-current,
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-mobile-stepbar__dot.is-done {
+    background: #ffffff;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-co-mobile-cta {
+    display: none !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-co-formpane {
+    padding-bottom: calc(32px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #checkout-payment-step.dtb-co-flow-panel.is-dtb-flow-visible {
+    position: fixed;
+    left: max(10px, env(safe-area-inset-left));
+    right: max(10px, env(safe-area-inset-right));
+    bottom: 0;
+    z-index: 124;
+    display: block !important;
+    width: min(100% - 20px, 680px) !important;
+    max-width: calc(100vw - max(20px, env(safe-area-inset-left) + env(safe-area-inset-right))) !important;
+    max-height: min(88svh, 780px);
+    margin: 0 auto !important;
+    padding: clamp(16px, 4.7vw, 22px) clamp(14px, 4.4vw, 22px) calc(18px + env(safe-area-inset-bottom)) !important;
+    border: 1px solid rgba(226, 232, 240, .98) !important;
+    border-bottom: 0 !important;
+    border-radius: 30px 30px 0 0 !important;
+    background: #ffffff !important;
+    box-shadow: 0 -26px 64px rgba(15, 23, 42, .34) !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    animation: dtb-checkout-payment-sheet-in .24s cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #checkout-payment-step::before {
+    content: "";
+    display: block;
+    width: 46px;
+    height: 5px;
+    margin: 0 auto 14px;
+    border-radius: 999px;
+    background: #d7deea;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #checkout-payment-step .dtb-co-section__header {
+    position: sticky;
+    top: -1px;
+    z-index: 2;
+    margin: 0 0 14px !important;
+    padding: 0 0 12px;
+    background: linear-gradient(180deg, #ffffff 76%, rgba(255, 255, 255, .88));
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #checkout-payment-step .dtb-co-section__title {
+    font-size: clamp(22px, 6.4vw, 31px) !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #checkout-payment-step .dtb-co-section__subheader {
+    max-width: 52ch;
+  }
+
+  @supports selector(:has(.dtb-payment-surface-frame)) {
+    .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] #checkout-payment-step:has(.dtb-payment-surface-frame) .dtb-co-sidebar-cta {
+      display: none !important;
+    }
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-payment-surface-frame,
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-same-shell-payment-status {
+    width: 100% !important;
+    margin: 12px 0 0 !important;
+    border-radius: 20px !important;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-payment-surface-frame {
+    min-height: min(70svh, 640px) !important;
+    height: min(70svh, 680px);
+    border-color: rgba(37, 99, 235, .2);
+    box-shadow: none;
+  }
+
+  .dtb-checkout--mobile-screen-flow[data-dtb-flow-step="payment"] .dtb-same-shell-payment-status {
+    padding: 12px 14px !important;
+    box-shadow: none;
+  }
+
+  @keyframes dtb-checkout-payment-sheet-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 34px, 0) scale(.985);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+}
