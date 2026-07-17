@@ -82,7 +82,7 @@ const RepairStatus = lazyWithReload(() => import('./pages/RepairStatus'));
 const ReturnStatus = lazyWithReload(() => import('./pages/ReturnStatus'));
 const SupportStatus = lazyWithReload(() => import('./pages/SupportStatus'));
 const Cart = lazyWithReload(() => import('./pages/Cart'));
-const Checkout = lazyWithReload(() => import('./pages/Checkout'));
+const Checkout = lazyWithReload(() => import('./pages/StripeEmbeddedCheckout'));
 const CheckoutReturn = lazyWithReload(() => import('./pages/CheckoutReturn'));
 const OrderConfirmation = lazyWithReload(() => import('./pages/OrderConfirmation'));
 const OrderTracking = lazyWithReload(() => import('./pages/OrderTracking'));
@@ -358,33 +358,28 @@ function HomepageSignupCtaController() {
 
     const timer = setTimeout(() => {
       setShowSignupCta(true);
-      setLocalStorageFlag(HOMEPAGE_SIGNUP_CTA_SEEN_KEY);
     }, HOMEPAGE_SIGNUP_CTA_DELAY_MS);
 
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSignupCtaClose = useCallback(() => {
+  const handleClose = useCallback(() => {
+    setLocalStorageFlag(HOMEPAGE_SIGNUP_CTA_SEEN_KEY);
     setShowSignupCta(false);
   }, []);
 
-  const handleSignupCtaCreateAccount = useCallback(() => {
+  const handleRegister = useCallback(() => {
+    setLocalStorageFlag(HOMEPAGE_SIGNUP_CTA_SEEN_KEY);
     setShowSignupCta(false);
-    navigate('/register');
-  }, [navigate]);
-
-  const handleSignupCtaSignIn = useCallback(() => {
-    setShowSignupCta(false);
-    navigate('/login');
+    navigate('/register', { state: { returnTo: '/' } });
   }, [navigate]);
 
   return (
-      <HomepageSignupCTA
-        isOpen={showSignupCta}
-        onClose={handleSignupCtaClose}
-        onCreateAccount={handleSignupCtaCreateAccount}
-        onSignIn={handleSignupCtaSignIn}
-      />
+    <HomepageSignupCTA
+      isVisible={showSignupCta}
+      onClose={handleClose}
+      onRegister={handleRegister}
+    />
   );
 }
 
