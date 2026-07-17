@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import SEOHead from '../components/shared/SEOHead.jsx';
+import { navigateDocument } from '../utils/documentNavigation.js';
 
 const CHECKOUT_QUERY_FLAG = 'dtb_woo_checkout';
 
@@ -31,7 +32,7 @@ export default function WooNativeCheckout() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     if (isWooCheckoutHandoffRequest()) return undefined;
-    window.location.replace(checkoutUrl());
+    navigateDocument(checkoutUrl(), { replace: true });
     return undefined;
   }, []);
 
