@@ -7,6 +7,7 @@ import ProductDetail from '../components/product/ProductDetail';
 import ProductModal from '../components/product/ProductModal';
 import ProductShoppingCard from '../components/ui/ProductShoppingCard';
 import { ProductSkeletonGrid } from '../components/catalog/ProductShoppingCardSkeleton';
+import LoadingCardTransition from '../components/shared/LoadingCardTransition.jsx';
 import Toast from '../components/ui/Toast';
 import SEOHead from '../components/shared/SEOHead';
 import { buildBreadcrumbSchema } from '../utils/schema';
@@ -19,11 +20,9 @@ export default function CategoryPage() {
   const { addToCart } = useCart();
   const { runWorkflow } = useWorkflowTransition();
 
-  // All fetch-derived state in one object — avoids synchronous multi-setState
-  // inside useEffect (react-hooks/set-state-in-effect rule).
   const [pageState, setPageState] = useState({ loading: true, products: [], category: null, error: null });
   const [modalProduct, setModalProduct] = useState(null);
-  const [toast, setToast]         = useState(null);
+  const [toast, setToast] = useState(null);
 
   const showToast = (message, type = 'cart') => setToast({ message, type });
 
@@ -56,9 +55,6 @@ export default function CategoryPage() {
 
   const [cardVariationMap, setCardVariationMap] = useState({});
   const cardVariationMapRef = useRef({});
-
-  // Depend on the visible variable-product ID set instead of the products
-  // array identity so the effect does not re-fire on equivalent renders.
 
   useEffect(() => {
     let mounted = true;
@@ -93,7 +89,7 @@ export default function CategoryPage() {
     const variableIds = products
       .filter((p) => p.is_variable && p.id && !cardVariationMapRef.current[p.id])
       .map((p) => p.id);
-    if (variableIds.length === 0) return;
+    if (variableIds.length === 0) return undefined;
 
     let mounted = true;
     fetchVariationsBatched(variableIds, getProductVariations).then((pairs) => {
@@ -112,38 +108,22 @@ export default function CategoryPage() {
     if (!product.is_variable) return product;
     const vars = cardVariationMap[product.id];
     if (!Array.isArray(vars) || vars.length === 0) return product;
-    // Prefer first in-stock variation; fall back to first variation overall.
     const best = vars.find(v => v.stock_status !== 'outofstock') || vars[0];
     if (!best) return product;
-    // WC variations with no custom image return images:[] which normalizeProduct()
-    // resolves to PLACEHOLDER_IMAGE. Inherit the parent's image fields so the
-    // card always shows the real product photo rather than the blank placeholder.
     if (!best.image || best.image === PLACEHOLDER_IMAGE) {
       return {
         ...best,
-        image:           product.image,
-        images:          product.images,
+        image: product.image,
+        images: product.images,
         image_thumbnail: product.image_thumbnail,
-        image_srcset:    product.image_srcset,
-        image_sizes:     product.image_sizes,
+        image_srcset: product.image_srcset,
+        image_sizes: product.image_sizes,
       };
     }
     return best;
   }, [cardVariationMap]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 page-wrapper">
-        <SEOHead noindex title="Loading category…" />
-        <div className="container mx-auto px-4 py-12">
-          <div className="mb-8 h-10 w-56 rounded-xl bg-slate-200/70 animate-pulse" aria-hidden="true" />
-          <ProductSkeletonGrid count={24} />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
+  if (!loading && error) {
     return (
       <div className="min-h-screen container mx-auto px-4 py-16 text-center">
         <SEOHead noindex title="Category not found" />
@@ -155,29 +135,39 @@ export default function CategoryPage() {
 
   const categoryName = category?.name || slug;
   const breadcrumbSchema = buildBreadcrumbSchema([
-    { label: 'Home',      path: '/'                    },
-    { label: 'Products',  path: '/products'             },
-    { label: categoryName, path: `/category/${slug}`   },
+    { label: 'Home', path: '/' },
+    { label: 'Products', path: '/products' },
+    { label: categoryName, path: `/category/${slug}` },
   ]);
+
+  const loadingSkeleton = (
+    <div className="container mx-auto px-4 py-12">
+      <div className="mb-8 h-10 w-56 rounded-xl dtb-loading-bar" aria-hidden="true" />
+      <ProductSkeletonGrid count={24} />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
       <SEOHead
-        title={categoryName}
-        description={`Shop ${categoryName} drywall tools and equipment. Professional-grade products from top brands at unbeatable prices.`}
-        canonical={`https://drywalltoolbox.com/category/${slug}`}
-        schema={breadcrumbSchema}
+        noindex={loading}
+        title={loading ? 'Loading category…' : categoryName}
+        description={loading ? undefined : `Shop ${categoryName} drywall tools and equipment. Professional-grade products from top brands at unbeatable prices.`}
+        canonical={loading ? undefined : `https://drywalltoolbox.com/category/${slug}`}
+        schema={loading ? undefined : breadcrumbSchema}
       />
-      <div className="container mx-auto px-4 py-12">
-        {category && (
-          <h1 className="text-3xl font-bold mb-8 text-gray-900">{category.name}</h1>
-        )}
 
-        {products.length === 0 ? (
-          <p className="text-gray-500">No products found in this category.</p>
-        ) : (
-          <div className={`dtb-product-grid${products.length === 1 ? ' dtb-product-grid--single' : ''}`}>
-            {products.map((product, index) => {
+      <LoadingCardTransition loading={loading} skeleton={loadingSkeleton} label="Loading category products">
+        <div className="container mx-auto px-4 py-12">
+          {category && (
+            <h1 className="text-3xl font-bold mb-8 text-gray-900">{category.name}</h1>
+          )}
+
+          {products.length === 0 ? (
+            <p className="text-gray-500">No products found in this category.</p>
+          ) : (
+            <div className={`dtb-product-grid${products.length === 1 ? ' dtb-product-grid--single' : ''}`}>
+              {products.map((product, index) => {
                 const cardProduct = getCardDisplayProduct(product);
                 return (
                   <ProductShoppingCard
@@ -190,12 +180,12 @@ export default function CategoryPage() {
                     index={index}
                   />
                 );
-            })}
-          </div>
-        )}
-      </div>
+              })}
+            </div>
+          )}
+        </div>
+      </LoadingCardTransition>
 
-      {/* Product detail modal */}
       <ProductModal
         isOpen={!!modalProduct}
         product={modalProduct?.product || modalProduct}
