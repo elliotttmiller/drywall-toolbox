@@ -4,10 +4,11 @@ import { getProductVariations } from '../../services/api';
 import { useCart } from '../../context/CartContext';
 import ProductDetail from '../product/ProductDetail';
 import ProductModal from '../product/ProductModal';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import LoadingCardTransition from '../shared/LoadingCardTransition.jsx';
 import StorefrontProductTile from '../storefront/StorefrontProductTile';
 import StorefrontSection from '../storefront/StorefrontSection';
 import StorefrontRail from '../storefront/StorefrontRail';
+import StorefrontSkeletons from '../storefront/StorefrontSkeletons.jsx';
 import Toast from '../ui/Toast';
 import { PLACEHOLDER_IMAGE } from '../../constants/images.js';
 import { fetchVariationsBatched, getVariationSelectionMap } from '../../utils/variationSelection';
@@ -63,7 +64,6 @@ export default function TrendingProducts() {
     getProducts().then((allProducts) => {
       if (!mounted) return;
 
-      // Exclude replacement parts; prefer actual tools and tool sets.
       const toolsOnly = allProducts.filter((p) => !p.is_parts && p.category !== 'parts');
       const withPrice = toolsOnly.filter((p) => {
         const price = Number(p.price) || Number(p.min_price) || Number(p.regular_price) || 0;
@@ -129,17 +129,7 @@ export default function TrendingProducts() {
     return () => { mounted = false; };
   }, [trendingVariableIdsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading) {
-    return (
-      <StorefrontSection eyebrow="Featured" title="Trending Products" viewAllHref="/products?sort=popular">
-        <div style={{ padding: 'clamp(1.5rem, 5vw, 2.5rem) 0' }}>
-          <LoadingSpinner fullPage={false} size="lg" label="Loading products" />
-        </div>
-      </StorefrontSection>
-    );
-  }
-
-  if (products.length === 0) return null;
+  if (!loading && products.length === 0) return null;
 
   return (
     <StorefrontSection
@@ -147,38 +137,44 @@ export default function TrendingProducts() {
       title="Trending Products"
       viewAllHref="/products?sort=popular"
     >
-      <StorefrontRail label="Trending products" className="storefront-rail--fixed-tiles">
-        {products.map((product, index) => {
-          const variations = variationMap[product.id] || [];
-          const bestVariation = variations.find((variation) => variation.stock_status !== 'outofstock') || variations[0] || null;
-          const cardProduct = bestVariation
-            ? {
-                ...bestVariation,
-                image: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
-                  ? bestVariation.image
-                  : product.image,
-                images: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
-                  ? bestVariation.images
-                  : product.images,
-                image_thumbnail: bestVariation.image_thumbnail || bestVariation.image || product.image_thumbnail,
-                image_srcset: bestVariation.image_srcset || product.image_srcset,
-                image_sizes: bestVariation.image_sizes || product.image_sizes,
-              }
-            : product;
+      <LoadingCardTransition
+        loading={loading}
+        skeleton={<StorefrontSkeletons count={4} variant="rail" />}
+        label="Loading trending products"
+      >
+        <StorefrontRail label="Trending products" className="storefront-rail--fixed-tiles">
+          {products.map((product, index) => {
+            const variations = variationMap[product.id] || [];
+            const bestVariation = variations.find((variation) => variation.stock_status !== 'outofstock') || variations[0] || null;
+            const cardProduct = bestVariation
+              ? {
+                  ...bestVariation,
+                  image: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
+                    ? bestVariation.image
+                    : product.image,
+                  images: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
+                    ? bestVariation.images
+                    : product.images,
+                  image_thumbnail: bestVariation.image_thumbnail || bestVariation.image || product.image_thumbnail,
+                  image_srcset: bestVariation.image_srcset || product.image_srcset,
+                  image_sizes: bestVariation.image_sizes || product.image_sizes,
+                }
+              : product;
 
-          return (
-            <StorefrontProductTile
-              key={product.sku || product.id}
-              product={product}
-              cardProduct={cardProduct}
-              variant="grid"
-              onOpenModal={() => openModal(product, cardProduct)}
-              onAddToCart={() => handleAddToCart(cardProduct)}
-              index={index}
-            />
-          );
-        })}
-      </StorefrontRail>
+            return (
+              <StorefrontProductTile
+                key={product.sku || product.id}
+                product={product}
+                cardProduct={cardProduct}
+                variant="grid"
+                onOpenModal={() => openModal(product, cardProduct)}
+                onAddToCart={() => handleAddToCart(cardProduct)}
+                index={index}
+              />
+            );
+          })}
+        </StorefrontRail>
+      </LoadingCardTransition>
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
