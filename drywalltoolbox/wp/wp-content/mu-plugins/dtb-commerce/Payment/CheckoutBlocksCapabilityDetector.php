@@ -74,25 +74,32 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			];
 		}
 
+		$provider_diagnostics = class_exists( 'DTB_PaymentProviderRuntimeGuards' )
+			? DTB_PaymentProviderRuntimeGuards::provider_diagnostics( $methods, array_values( $registered_methods ) )
+			: [];
+		$provider_runtime_ready = empty( $provider_diagnostics ) || ! empty( $provider_diagnostics['provider_runtime_ready'] );
 		$server_same_shell_ready   = $server_ready && $payment_surface_supported && $has_registered_blocks_method;
 		$provider_same_shell_ready = $server_same_shell_ready && self::has_surface_provider_method( $methods );
 
 		/**
 		 * Enable DTB's same-page checkout payment surface only after the native
-		 * WooCommerce Checkout Block route and provider Blocks integrations are ready.
+		 * WooCommerce Checkout Block route, provider Blocks integrations, and live
+		 * provider runtime diagnostics are ready.
 		 *
 		 * @param bool  $enabled            Whether DTB may activate the payment surface.
 		 * @param array $methods            Publicly normalized active checkout methods.
 		 * @param array $registered_methods Normalized registered Blocks integrations.
 		 */
-		$client_bridge_enabled = (bool) apply_filters( 'dtb_checkout_blocks_same_shell_supported', $provider_same_shell_ready, $methods, array_values( $registered_methods ) );
-		$same_shell_supported  = $server_same_shell_ready && $provider_same_shell_ready && $client_bridge_enabled;
+		$client_bridge_enabled = (bool) apply_filters( 'dtb_checkout_blocks_same_shell_supported', $provider_same_shell_ready && $provider_runtime_ready, $methods, array_values( $registered_methods ) );
+		$same_shell_supported  = $server_same_shell_ready && $provider_same_shell_ready && $provider_runtime_ready && $client_bridge_enabled;
 
 		return [
 			'contract_version'             => '4',
 			'primary_flow'                 => $same_shell_supported ? 'native_checkout_block_payment_surface' : ( $server_same_shell_ready ? 'native_payment_surface_candidate' : 'payment_surface_unavailable' ),
 			'same_shell_supported'         => $same_shell_supported,
 			'fallback_order_pay_enabled'   => false,
+			'order_pay_blocks_native'      => false,
+			'order_pay_role'               => 'legacy_provider_fallback_only_not_dtb_primary_flow',
 			'payment_surface_supported'    => $payment_surface_supported,
 			'blocks_package_available'     => $blocks_package_available,
 			'payment_registry_available'   => $payment_registry_class,
@@ -101,10 +108,13 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			'server_blocks_ready'          => $server_ready,
 			'server_same_shell_ready'      => $server_same_shell_ready,
 			'provider_same_shell_ready'    => $provider_same_shell_ready,
+			'provider_runtime_ready'       => $provider_runtime_ready,
 			'client_bridge_enabled'        => $client_bridge_enabled,
 			'has_blocks_gateway_candidate' => $has_blocks_candidate,
 			'has_registered_blocks_method' => $has_registered_blocks_method,
+			'gateway_availability_source'  => 'woocommerce_available_payment_gateways',
 			'registered_methods'           => array_values( $registered_methods ),
+			'provider_diagnostics'         => $provider_diagnostics,
 			'client_registry_required'     => false,
 			'client_registry_global'       => '',
 			'client_bridge_required'       => 'dtb_checkout_payment_surface_frame',
@@ -113,6 +123,7 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			'notes'                        => [
 				'DTB same-page payment uses a signed same-origin WordPress payment surface, not cloned provider Blocks nodes in React.',
 				'Gateway controls, wallet sheets, tokenization, and payment execution remain inside the native WooCommerce Checkout Block document.',
+				'Payment readiness is derived from live WooCommerce gateway availability, provider Blocks registration, and current-mode webhook diagnostics.',
 			],
 		];
 	}
