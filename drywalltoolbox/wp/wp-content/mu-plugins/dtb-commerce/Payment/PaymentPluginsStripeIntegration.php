@@ -163,6 +163,15 @@ final class DTB_PaymentPluginsStripeIntegration {
 		$order_id = self::metadata_order_id( $intent );
 		if ( $order_id > 0 ) {
 			self::sync_paid_order_meta( $order_id );
+			return;
+		}
+
+		if ( class_exists( 'DTB_PaymentProviderRuntimeGuards' ) && self::is_dtb_metadata_object( $intent ) ) {
+			DTB_PaymentProviderRuntimeGuards::record_warning(
+				'dtb_stripe_webhook_order_unresolved',
+				'A DTB Stripe PaymentIntent webhook could not be resolved to a WooCommerce order from provider metadata.',
+				[ 'intent_id' => self::object_id( $intent ) ]
+			);
 		}
 	}
 
@@ -180,17 +189,23 @@ final class DTB_PaymentPluginsStripeIntegration {
 		$order->update_meta_data( '_dtb_payment_provider', self::PROVIDER );
 		$order->update_meta_data( '_dtb_payment_ref', $reference );
 		$order->update_meta_data( '_dtb_payment_captured', '1' );
+		$order->update_meta_data( '_dtb_payment_verified_at', gmdate( 'c' ) );
 		$order->delete_meta_data( '_dtb_payment_handoff_pending' );
 		$order->save_meta_data();
 	}
 
 	private static function safe_correlation_metadata( WC_Order $order ): array {
+		$order_id = (string) (int) $order->get_id();
+
 		return [
-			'dtb_checkout_session_id' => substr( sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_session_id', true ) ), 0, 255 ),
-			'dtb_idempotency_key'     => substr( sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_idempotency_key', true ) ), 0, 255 ),
-			'dtb_order_type'          => substr( sanitize_key( (string) $order->get_meta( '_dtb_order_type', true ) ), 0, 64 ),
-			'dtb_payment_provider'    => self::PROVIDER,
-			'dtb_created_via'         => 'dtb_checkout',
+			'dtb_order_id'             => $order_id,
+			'dtb_wc_order_id'          => $order_id,
+			'wc_order_id'              => $order_id,
+			'dtb_checkout_session_id'  => substr( sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_session_id', true ) ), 0, 255 ),
+			'dtb_idempotency_key'      => substr( sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_idempotency_key', true ) ), 0, 255 ),
+			'dtb_order_type'           => substr( sanitize_key( (string) $order->get_meta( '_dtb_order_type', true ) ), 0, 64 ),
+			'dtb_payment_provider'     => self::PROVIDER,
+			'dtb_created_via'          => 'dtb_checkout',
 		];
 	}
 
@@ -202,7 +217,7 @@ final class DTB_PaymentPluginsStripeIntegration {
 			$metadata = $object['metadata'];
 		}
 
-		foreach ( [ 'order_id', 'wc_order_id' ] as $key ) {
+		foreach ( [ 'dtb_order_id', 'dtb_wc_order_id', 'wc_order_id', 'order_id' ] as $key ) {
 			if ( is_object( $metadata ) && isset( $metadata->{$key} ) ) {
 				return absint( $metadata->{$key} );
 			}
@@ -234,6 +249,30 @@ final class DTB_PaymentPluginsStripeIntegration {
 			}
 		}
 
+		return '';
+	}
+
+	private static function is_dtb_metadata_object( $object ): bool {
+		$metadata = null;
+		if ( is_object( $object ) && isset( $object->metadata ) ) {
+			$metadata = $object->metadata;
+		} elseif ( is_array( $object ) && isset( $object['metadata'] ) ) {
+			$metadata = $object['metadata'];
+		}
+
+		if ( is_object( $metadata ) ) {
+			return (string) ( $metadata->dtb_created_via ?? '' ) === 'dtb_checkout';
+		}
+		return is_array( $metadata ) && (string) ( $metadata['dtb_created_via'] ?? '' ) === 'dtb_checkout';
+	}
+
+	private static function object_id( $object ): string {
+		if ( is_object( $object ) && isset( $object->id ) ) {
+			return sanitize_text_field( (string) $object->id );
+		}
+		if ( is_array( $object ) && isset( $object['id'] ) ) {
+			return sanitize_text_field( (string) $object['id'] );
+		}
 		return '';
 	}
 
