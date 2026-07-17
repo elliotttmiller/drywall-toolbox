@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import ProductDetail from '../product/ProductDetail';
 import ProductModal from '../product/ProductModal';
 import Toast from '../ui/Toast';
+import LoadingCardTransition from '../shared/LoadingCardTransition.jsx';
 import StorefrontRail from './StorefrontRail';
 import StorefrontProductTile from './StorefrontProductTile';
 import StorefrontSkeletons from './StorefrontSkeletons';
@@ -67,7 +68,7 @@ export default function StorefrontProductRail({
         filtered = filtered.slice().sort((a, b) => {
           const dateA = new Date(a.date_created || 0);
           const dateB = new Date(b.date_created || 0);
-          return dateB - dateA; // newest first
+          return dateB - dateA;
         });
       } else if (sort === 'price_asc') {
         filtered = filtered.slice().sort((a, b) => {
@@ -96,7 +97,7 @@ export default function StorefrontProductRail({
     const ids = products
       .filter((p) => p.is_variable && p.id && !variationMap[p.id])
       .map((p) => p.id);
-    if (ids.length === 0) return;
+    if (ids.length === 0) return undefined;
 
     let mounted = true;
     fetchVariationsBatched(ids, getProductVariations)
@@ -132,46 +133,48 @@ export default function StorefrontProductRail({
     setIsModalOpen(true);
   };
 
-  if (loading) {
-    return <StorefrontSkeletons count={4} />;
-  }
-
-  if (products.length === 0) return null;
+  if (!loading && products.length === 0) return null;
 
   return (
     <>
-      <StorefrontRail label={label} className="storefront-rail--fixed-tiles">
-        {products.map((product, index) => {
-          const variations = variationMap[product.id] || [];
-          const bestVariation = variations.find((v) => v.stock_status !== 'outofstock') || variations[0] || null;
-          const cardProduct = bestVariation
-            ? {
-                ...bestVariation,
-                image: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
-                  ? bestVariation.image
-                  : product.image,
-                images: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
-                  ? bestVariation.images
-                  : product.images,
-                image_thumbnail: bestVariation.image_thumbnail || bestVariation.image || product.image_thumbnail,
-                image_srcset: bestVariation.image_srcset || product.image_srcset,
-                image_sizes: bestVariation.image_sizes || product.image_sizes,
-              }
-            : product;
+      <LoadingCardTransition
+        loading={loading}
+        skeleton={<StorefrontSkeletons count={4} variant="rail" />}
+        label={`Loading ${label.toLowerCase()}`}
+      >
+        <StorefrontRail label={label} className="storefront-rail--fixed-tiles">
+          {products.map((product, index) => {
+            const variations = variationMap[product.id] || [];
+            const bestVariation = variations.find((v) => v.stock_status !== 'outofstock') || variations[0] || null;
+            const cardProduct = bestVariation
+              ? {
+                  ...bestVariation,
+                  image: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
+                    ? bestVariation.image
+                    : product.image,
+                  images: bestVariation.image && bestVariation.image !== PLACEHOLDER_IMAGE
+                    ? bestVariation.images
+                    : product.images,
+                  image_thumbnail: bestVariation.image_thumbnail || bestVariation.image || product.image_thumbnail,
+                  image_srcset: bestVariation.image_srcset || product.image_srcset,
+                  image_sizes: bestVariation.image_sizes || product.image_sizes,
+                }
+              : product;
 
-          return (
-            <StorefrontProductTile
-              key={product.sku || product.id}
-              product={product}
-              cardProduct={cardProduct}
-              variant="grid"
-              onOpenModal={() => openModal(product, cardProduct)}
-              onAddToCart={() => handleAddToCart(cardProduct)}
-              index={index}
-            />
-          );
-        })}
-      </StorefrontRail>
+            return (
+              <StorefrontProductTile
+                key={product.sku || product.id}
+                product={product}
+                cardProduct={cardProduct}
+                variant="grid"
+                onOpenModal={() => openModal(product, cardProduct)}
+                onAddToCart={() => handleAddToCart(cardProduct)}
+                index={index}
+              />
+            );
+          })}
+        </StorefrontRail>
+      </LoadingCardTransition>
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
