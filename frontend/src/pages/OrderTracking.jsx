@@ -24,7 +24,6 @@ import { useOrderEventStream } from '../hooks/useOrderEventStream.js';
 import { useOrderItemImageFallbacks } from '../hooks/useOrderItemImageFallbacks.js';
 import { ORDER_STATUS_LABELS } from '../api/orders.js';
 import { useCart } from '../context/CartContext.jsx';
-import { clearPendingCheckoutPayment } from '../utils/checkoutRecovery.js';
 import { getOrderItemKey, resolveOrderItemImage } from '../utils/orderItemImages.js';
 import '../styles/order-pages.css';
 import '../styles/order-tracking.css';
@@ -458,7 +457,6 @@ export default function OrderTracking() {
   useEffect(() => {
     if (!checkoutComplete || cartClearHandledRef.current || !data || !shouldClearCartForCompletedCheckout(data)) return;
     cartClearHandledRef.current = true;
-    clearPendingCheckoutPayment();
     Promise.resolve(clearCart()).catch(() => {});
   }, [checkoutComplete, clearCart, data]);
 
