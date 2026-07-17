@@ -47,16 +47,18 @@ export default function LoadingCardTransition({
     };
   }, [loading]);
 
+  const skeletonVisible = loading || showSkeleton;
+  const contentReady = !loading && ready;
   const classes = [
     'dtb-card-loading-transition',
-    showSkeleton ? 'dtb-card-loading-transition--layered' : '',
-    ready ? 'ready' : '',
+    skeletonVisible ? 'dtb-card-loading-transition--layered' : '',
+    contentReady ? 'ready' : '',
     className,
   ].filter(Boolean).join(' ');
 
   return (
     <div className={classes} aria-busy={loading ? 'true' : 'false'}>
-      {showSkeleton ? (
+      {skeletonVisible ? (
         <div className="dtb-card-loading-transition__skeleton" aria-hidden="true">
           {skeleton}
         </div>
@@ -64,8 +66,8 @@ export default function LoadingCardTransition({
 
       <div
         className="dtb-card-loading-transition__content"
-        aria-hidden={ready ? undefined : 'true'}
-        inert={!ready}
+        aria-hidden={contentReady ? undefined : 'true'}
+        inert={!contentReady}
       >
         {children}
       </div>
