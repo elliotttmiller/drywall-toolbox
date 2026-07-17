@@ -37,21 +37,21 @@ final class DTB_CheckoutPaymentLifecycle {
 
 	public static function failed( $order_id ): void {
 		$order = wc_get_order( (int) $order_id );
-		if ( $order instanceof WC_Order ) {
+		if ( $order instanceof WC_Order && self::is_dtb_checkout_order( $order ) ) {
 			self::record( $order, 'payment_failed', 'failed' );
 		}
 	}
 
 	public static function cancelled( $order_id ): void {
 		$order = wc_get_order( (int) $order_id );
-		if ( $order instanceof WC_Order ) {
+		if ( $order instanceof WC_Order && self::is_dtb_checkout_order( $order ) ) {
 			self::record( $order, 'payment_cancelled', 'cancelled' );
 		}
 	}
 
 	public static function refunded( $order_id ): void {
 		$order = wc_get_order( (int) $order_id );
-		if ( $order instanceof WC_Order ) {
+		if ( $order instanceof WC_Order && self::is_dtb_checkout_order( $order ) ) {
 			self::record( $order, 'payment_refunded', 'failed' );
 		}
 	}
@@ -64,8 +64,14 @@ final class DTB_CheckoutPaymentLifecycle {
 			&& ( ! empty( $order->get_date_paid() ) || '' !== trim( (string) $order->get_transaction_id() ) );
 	}
 
+	private static function is_dtb_checkout_order( WC_Order $order ): bool {
+		return function_exists( 'dtb_checkout_handoff_is_order' )
+			? dtb_checkout_handoff_is_order( $order )
+			: '' !== (string) $order->get_meta( '_dtb_checkout_session_id', true );
+	}
+
 	private static function record( WC_Order $order, string $event, string $session_state ): void {
-		if ( function_exists( 'dtb_checkout_handoff_is_order' ) && ! dtb_checkout_handoff_is_order( $order ) ) {
+		if ( ! self::is_dtb_checkout_order( $order ) ) {
 			return;
 		}
 		$event_key = 'payment-lifecycle:' . $event . ':' . (int) $order->get_id();
@@ -76,14 +82,14 @@ final class DTB_CheckoutPaymentLifecycle {
 				'visibility'      => 'internal',
 				'idempotency_key' => $event_key,
 				'payload'         => [
-					'gateway'          => sanitize_key( (string) $order->get_payment_method() ),
+					'gateway'            => sanitize_key( (string) $order->get_payment_method() ),
 					'provider_reference' => sanitize_text_field( (string) $order->get_transaction_id() ),
-					'event_timestamp'  => gmdate( 'c' ),
-					'source'           => 'woocommerce',
+					'event_timestamp'    => gmdate( 'c' ),
+					'source'             => 'woocommerce',
 				],
 			] );
 		}
-		DTB_OrderCheckoutService::transition_payment_state( (int) $order->get_id(), $session_state, $event );
+		self::transition_checkout_session( $order, $session_state, $event );
 		if ( 'paid' === $session_state ) {
 			if ( function_exists( 'dtb_order_dispatch_processing_jobs' ) ) {
 				dtb_order_dispatch_processing_jobs( (int) $order->get_id() );
@@ -91,6 +97,27 @@ final class DTB_CheckoutPaymentLifecycle {
 			$order->delete_meta_data( '_dtb_payment_handoff_pending' );
 			$order->save_meta_data();
 		}
+	}
+
+	private static function transition_checkout_session( WC_Order $order, string $state, string $event_code ): bool {
+		if ( ! class_exists( 'DTB_OrderCheckoutSessionRepository' ) ) {
+			return false;
+		}
+		$row = DTB_OrderCheckoutSessionRepository::find_by_order_id( (int) $order->get_id() );
+		if ( ! is_array( $row ) ) {
+			return false;
+		}
+		if ( $state === (string) $row['state'] ) {
+			return true;
+		}
+		if ( ! in_array( $state, [ 'paid', 'failed', 'cancelled' ], true ) ) {
+			return false;
+		}
+		return DTB_OrderCheckoutSessionRepository::transition( (int) $row['id'], (string) $row['state'], $state, (int) $row['state_version'], [
+			'failure_code'             => 'paid' === $state ? '' : sanitize_key( $event_code ),
+			'failure_context_redacted' => 'checkout-payment-lifecycle',
+			'finalized_at'             => current_time( 'mysql', true ),
+		] );
 	}
 }
 
