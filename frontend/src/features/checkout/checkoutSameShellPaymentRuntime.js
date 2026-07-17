@@ -1,36 +1,32 @@
 /**
  * frontend/src/features/checkout/checkoutSameShellPaymentRuntime.js
  *
- * Runtime adapter gate for provider-owned same-shell payment execution.
- * This module never renders card fields and never processes payment directly.
- * It blocks legacy order-pay navigation and starts payment only when an eligible
- * provider-owned same-shell adapter is present, ready, and synchronized.
+ * Same-page payment surface runtime. This module does not render, clone, or
+ * dispatch into WooPayments Blocks controls. It embeds a same-origin WordPress
+ * document where the native WooCommerce Checkout Block/WooPayments runtime owns
+ * card fields, wallets, tokenization, and payment processing.
  */
 
-import { getCheckoutCapabilities, processExistingOrderPayment } from '../../api/checkout.js';
+import { getCheckoutCapabilities, requestCheckoutPaymentSurface } from '../../api/checkout.js';
 
 const CHECKOUT_PATH_RE = /(?:^|\/)checkout\/?$/;
 const LEGACY_ORDER_PAY_RE = /(?:^|\/)checkout\/order-pay\//;
-const PROVIDER_GATEWAY_IDS = new Set([
-  'woocommerce_payments',
-  'woopayments',
-  'stripe',
-]);
 const SYNC_INTERVAL_MS = 30000;
+const SURFACE_CLASS = 'dtb-payment-surface-frame';
+const STATUS_CLASS = 'dtb-same-shell-payment-status';
 
 let installed = false;
 let syncPromise = null;
 let lastSyncAt = 0;
-let currentState = {
-  eligible: false,
-  reason: 'not_checked',
-  capabilities: null,
-  methods: [],
-};
-let paymentInFlight = false;
-let lastAutoStartKey = '';
+let currentState = { eligible: false, reason: 'not_checked', capabilities: null };
 let originalSetTimeout = null;
+let originalPushState = null;
+let originalReplaceState = null;
 let preparedPaymentObserver = null;
+let observedCheckoutRoot = null;
+let currentSurfaceKey = '';
+let surfaceInFlight = false;
+let surfaceRequestSeq = 0;
 
 function isCheckoutRoute() {
   if (typeof window === 'undefined') return false;
@@ -47,35 +43,20 @@ function isLegacyOrderPayUrl(value) {
   if (!href) return false;
   try {
     const url = new URL(href, window.location.origin);
-    return url.origin === window.location.origin
-      && LEGACY_ORDER_PAY_RE.test(url.pathname);
+    return LEGACY_ORDER_PAY_RE.test(url.pathname);
   } catch {
     return LEGACY_ORDER_PAY_RE.test(href);
   }
 }
 
-function registryReady() {
-  const registry = window.wc?.wcBlocksRegistry;
-  return Boolean(
-    registry
-    && typeof registry.registerPaymentMethod === 'function'
-    && typeof registry.registerExpressPaymentMethod === 'function',
-  );
-}
-
-function providerAdapter() {
-  const adapter = window.dtbCheckoutSameShellProvider;
-  if (!adapter || typeof adapter !== 'object') return null;
-  return typeof adapter.startPayment === 'function' ? adapter : null;
-}
-
-function providerAdapterReady(adapter) {
-  if (!adapter) return false;
-  if (typeof adapter.sameShellReady !== 'function') return true;
+function isPaymentSurfaceUrl(value) {
+  const href = String(value || '');
+  if (!href) return false;
   try {
-    return adapter.sameShellReady() === true;
+    const url = new URL(href, window.location.origin);
+    return url.searchParams.has('dtb_checkout_payment_surface');
   } catch {
-    return false;
+    return href.includes('dtb_checkout_payment_surface=');
   }
 }
 
@@ -94,64 +75,25 @@ function paymentContext(root, action) {
   const orderId = Number(source?.dataset?.dtbOrderId || paymentStep?.dataset?.dtbOrderId || 0);
   const orderKey = String(source?.dataset?.dtbOrderKey || paymentStep?.dataset?.dtbOrderKey || '');
   const billingEmail = String(source?.dataset?.dtbBillingEmail || paymentStep?.dataset?.dtbBillingEmail || '');
-  const fallbackUrl = String(source?.dataset?.dtbPaymentUrl || paymentStep?.dataset?.dtbPaymentUrl || '');
+  const paymentUrl = String(source?.dataset?.dtbPaymentUrl || paymentStep?.dataset?.dtbPaymentUrl || '');
   const paymentMethod = String(source?.dataset?.dtbPaymentMethod || paymentStep?.dataset?.dtbPaymentMethod || '');
   const billingAddress = decodeDatasetJson(paymentStep?.dataset?.dtbBillingAddress || '') || {};
   const shippingAddress = decodeDatasetJson(paymentStep?.dataset?.dtbShippingAddress || '') || billingAddress;
-  return {
-    orderId,
-    orderKey,
-    billingEmail,
-    fallbackUrl,
-    paymentMethod,
-    billingAddress,
-    shippingAddress,
-  };
-}
-
-function paymentResultRedirectUrl(result) {
-  return String(
-    result?.payment_result?.redirect_url
-    || result?.payment_result?.redirectUrl
-    || result?.redirect_url
-    || result?.redirectUrl
-    || '',
-  );
-}
-
-function paymentResultSuccess(result) {
-  const status = String(result?.payment_result?.payment_status || result?.payment_status || '').toLowerCase();
-  return result?.payment_result?.payment_status === 'success'
-    || result?.payment_result?.status === 'success'
-    || result?.status === 'success'
-    || ['success', 'completed', 'processing'].includes(status);
-}
-
-function activeProviderMethods(capabilities) {
-  const architecture = capabilities?.payment_architecture || {};
-  const methods = Array.isArray(architecture.methods) ? architecture.methods : [];
-  return methods.filter((method) => {
-    const id = normalizeId(method?.id);
-    if (!PROVIDER_GATEWAY_IDS.has(id)) return false;
-    if (method?.is_manual === true) return false;
-    return method?.blocks_registered === true && method?.blocks_active === true;
-  });
+  return { orderId, orderKey, billingEmail, paymentUrl, paymentMethod, billingAddress, shippingAddress };
 }
 
 function evaluate(capabilities) {
   const architecture = capabilities?.payment_architecture || {};
-  const methods = activeProviderMethods(capabilities);
-  const adapter = providerAdapter();
-  if (architecture.contract_version !== '3') return { eligible: false, reason: 'contract_version_mismatch', methods };
-  if (architecture.same_shell_supported !== true) return { eligible: false, reason: 'same_shell_not_enabled', methods };
-  if (architecture.client_bridge_enabled !== true) return { eligible: false, reason: 'client_bridge_disabled', methods };
-  if (architecture.server_blocks_ready !== true) return { eligible: false, reason: 'server_blocks_unavailable', methods };
-  if (architecture.server_same_shell_ready !== true) return { eligible: false, reason: 'server_same_shell_unavailable', methods };
-  if (!registryReady()) return { eligible: false, reason: 'client_blocks_registry_unavailable', methods };
-  if (!methods.length) return { eligible: false, reason: 'provider_blocks_method_unavailable', methods };
-  if (!adapter) return { eligible: false, reason: 'provider_adapter_unavailable', methods };
-  if (!providerAdapterReady(adapter)) return { eligible: false, reason: 'provider_adapter_not_ready', methods };
-  return { eligible: true, reason: 'provider_adapter_ready', methods };
+  if (architecture.contract_version !== '4') {
+    return { eligible: false, reason: 'contract_version_mismatch' };
+  }
+  if (architecture.same_shell_supported !== true) {
+    return { eligible: false, reason: 'payment_surface_not_enabled' };
+  }
+  if (architecture.payment_surface_supported !== true) {
+    return { eligible: false, reason: 'native_payment_surface_unavailable' };
+  }
+  return { eligible: true, reason: 'native_payment_surface_ready' };
 }
 
 function applyState(root) {
@@ -159,7 +101,6 @@ function applyState(root) {
   root.dataset.dtbSameShellPayment = currentState.eligible ? 'ready' : 'blocked';
   root.dataset.dtbSameShellReason = currentState.reason;
   root.classList.toggle('dtb-checkout--same-shell-ready', currentState.eligible);
-  root.classList.toggle('dtb-checkout--same-shell-fallback', false);
   root.classList.toggle('dtb-checkout--same-shell-blocked', !currentState.eligible);
 }
 
@@ -173,22 +114,13 @@ async function syncState(root, force = false) {
 
   syncPromise = getCheckoutCapabilities()
     .then((capabilities) => {
-      const result = evaluate(capabilities);
-      currentState = {
-        ...result,
-        capabilities,
-      };
+      currentState = { ...evaluate(capabilities), capabilities };
       lastSyncAt = Date.now();
       applyState(root);
       return currentState;
     })
     .catch(() => {
-      currentState = {
-        eligible: false,
-        reason: 'capability_fetch_failed',
-        capabilities: null,
-        methods: [],
-      };
+      currentState = { eligible: false, reason: 'capability_fetch_failed', capabilities: null };
       lastSyncAt = Date.now();
       applyState(root);
       return currentState;
@@ -207,21 +139,19 @@ function paymentActionFromEvent(event) {
   const label = String(action.textContent || action.getAttribute('aria-label') || '').trim().toLowerCase();
   const href = action instanceof HTMLAnchorElement ? action.href : action.getAttribute('href');
   if (label.includes('open protected payment') || label.includes('resume payment') || label.includes('resume secure payment')) return action;
-  if (isLegacyOrderPayUrl(href)) return action;
+  if (isLegacyOrderPayUrl(href) || isPaymentSurfaceUrl(href)) return action;
   return null;
 }
 
 function paymentActionFromRoot(root) {
   const paymentStep = root.querySelector('#checkout-payment-step');
   if (!(paymentStep instanceof HTMLElement)) return null;
-
   const actionWithContext = paymentStep.querySelector('button[data-dtb-order-id][data-dtb-order-key]');
   if (actionWithContext instanceof HTMLElement) return actionWithContext;
-
   const openPaymentAction = Array.from(paymentStep.querySelectorAll('button, a')).find((node) => {
     const label = String(node.textContent || node.getAttribute('aria-label') || '').trim().toLowerCase();
     const href = node instanceof HTMLAnchorElement ? node.href : node.getAttribute('href');
-    return label.includes('open protected payment') || isLegacyOrderPayUrl(href);
+    return label.includes('open protected payment') || isLegacyOrderPayUrl(href) || isPaymentSurfaceUrl(href);
   });
   return openPaymentAction instanceof HTMLElement ? openPaymentAction : paymentStep;
 }
@@ -229,10 +159,10 @@ function paymentActionFromRoot(root) {
 function ensureStatusPanel(root) {
   const paymentStep = root.querySelector('#checkout-payment-step');
   if (!(paymentStep instanceof HTMLElement)) return null;
-  let panel = paymentStep.querySelector('.dtb-same-shell-payment-status');
+  let panel = paymentStep.querySelector(`.${STATUS_CLASS}`);
   if (!(panel instanceof HTMLElement)) {
     panel = document.createElement('div');
-    panel.className = 'dtb-same-shell-payment-status';
+    panel.className = STATUS_CLASS;
     panel.setAttribute('role', 'status');
     panel.setAttribute('aria-live', 'polite');
     paymentStep.appendChild(panel);
@@ -245,7 +175,6 @@ function renderStatus(root, status, message) {
   if (!panel) return;
   panel.dataset.status = status;
   panel.replaceChildren();
-
   const title = document.createElement('strong');
   title.textContent = status === 'error' ? 'In-checkout payment unavailable' : 'Secure in-checkout payment';
   const copy = document.createElement('p');
@@ -253,106 +182,79 @@ function renderStatus(root, status, message) {
   panel.append(title, copy);
 }
 
-function sameShellBlockedMessage(reason) {
-  const normalized = normalizeId(reason);
-  const reasonLabel = normalized ? ` (${normalized})` : '';
-  return `Same-page WooPayments checkout is not active${reasonLabel}. Payment redirects are disabled in this checkout shell until the provider-owned same-shell adapter is available and synchronized.`;
+function ensureFrame(root) {
+  const paymentStep = root.querySelector('#checkout-payment-step');
+  if (!(paymentStep instanceof HTMLElement)) return null;
+  let frame = paymentStep.querySelector(`iframe.${SURFACE_CLASS}`);
+  if (!(frame instanceof HTMLIFrameElement)) {
+    frame = document.createElement('iframe');
+    frame.className = SURFACE_CLASS;
+    frame.title = 'Secure WooPayments checkout';
+    frame.setAttribute('loading', 'eager');
+    frame.setAttribute('allow', 'payment *; publickey-credentials-get *');
+    frame.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation');
+    frame.style.width = '100%';
+    frame.style.minHeight = '520px';
+    frame.style.border = '0';
+    const status = paymentStep.querySelector(`.${STATUS_CLASS}`);
+    if (status instanceof HTMLElement) {
+      status.before(frame);
+    } else {
+      paymentStep.appendChild(frame);
+    }
+  }
+  return frame;
 }
 
-async function startSameShellPayment(root, action) {
-  if (paymentInFlight) return;
-  const adapter = providerAdapter();
-  if (!adapter) {
-    renderStatus(root, 'error', sameShellBlockedMessage('provider_adapter_unavailable'));
-    return;
-  }
-
-  const context = paymentContext(root, action);
-  if (!context.orderId || !context.orderKey) {
-    renderStatus(root, 'error', 'The prepared WooCommerce order is missing the payment context required for in-checkout payment. No payment redirect was opened.');
-    return;
-  }
-
-  paymentInFlight = true;
-  renderStatus(root, 'loading', 'Synchronizing WooPayments-owned payment data inside checkout…');
-  try {
-    const result = await adapter.startPayment({
-      root,
-      capabilities: currentState.capabilities,
-      methods: currentState.methods,
-      order: context,
-      visualMethod: root.dataset.dtbVisualPaymentMethod || 'card',
-      processPayment: (request = {}) => processExistingOrderPayment({
-        orderId: context.orderId,
-        orderKey: context.orderKey,
-        billingEmail: request.billingEmail || context.billingEmail,
-        billingAddress: request.billingAddress || context.billingAddress,
-        shippingAddress: request.shippingAddress || context.shippingAddress,
-        paymentMethod: request.paymentMethod || context.paymentMethod,
-        paymentData: request.paymentData || [],
-        extensions: request.extensions || {},
-        customerNote: request.customerNote || '',
-      }),
-    });
-
-    const processed = result?.paymentData || result?.payment_data || result?.paymentMethod || result?.payment_method
-      ? await processExistingOrderPayment({
-        orderId: context.orderId,
-        orderKey: context.orderKey,
-        billingEmail: result.billingEmail || context.billingEmail,
-        billingAddress: result.billingAddress || context.billingAddress,
-        shippingAddress: result.shippingAddress || context.shippingAddress,
-        paymentMethod: result.paymentMethod || result.payment_method || context.paymentMethod,
-        paymentData: result.paymentData || result.payment_data || [],
-        extensions: result.extensions || {},
-        customerNote: result.customerNote || '',
-      })
-      : result;
-
-    const redirectUrl = paymentResultRedirectUrl(processed);
-    if (redirectUrl) {
-      renderStatus(root, 'error', 'The payment provider returned a redirect requirement. This checkout shell will not leave the page automatically; complete same-shell provider handling before enabling this flow.');
-      return;
-    }
-
-    if (processed && !paymentResultSuccess(processed) && processed.requires_action !== true && processed.completed !== true) {
-      throw new Error(processed?.message || processed?.payment_result?.message || 'Provider-owned payment did not complete.');
-    }
-
-    renderStatus(root, 'ready', 'WooPayments-owned payment data was accepted for this checkout order.');
-    window.dispatchEvent(new CustomEvent('dtb:checkout-same-shell-payment-started', {
-      detail: {
-        methods: currentState.methods.map((method) => normalizeId(method?.id)).filter(Boolean),
-        orderId: context.orderId,
-      },
-    }));
-  } catch (error) {
-    renderStatus(root, 'error', error?.message || 'Provider-owned in-checkout payment could not start. No payment redirect was opened.');
-  } finally {
-    paymentInFlight = false;
-  }
+async function resolveSurfaceUrl(context) {
+  if (isPaymentSurfaceUrl(context.paymentUrl)) return context.paymentUrl;
+  const response = await requestCheckoutPaymentSurface({
+    order_id: context.orderId,
+    order_key: context.orderKey,
+  });
+  return String(response?.url || response?.payment_surface_url || '');
 }
 
-async function requestSameShellPayment(root, action, { force = false } = {}) {
-  if (!(root instanceof HTMLElement)) return;
+async function mountPaymentSurface(root, action, { force = false } = {}) {
+  if (!(root instanceof HTMLElement) || !document.contains(root)) return;
+  if (surfaceInFlight && !force) return;
   const paymentAction = action instanceof HTMLElement ? action : paymentActionFromRoot(root);
   const context = paymentContext(root, paymentAction);
   if (!context.orderId || !context.orderKey) return;
-
   const key = `${context.orderId}:${context.orderKey}`;
-  if (!force && key === lastAutoStartKey) return;
+  if (!force && key === currentSurfaceKey) return;
 
-  const state = await syncState(root, true);
-  if (!state.eligible) {
-    renderStatus(root, 'error', sameShellBlockedMessage(state.reason));
-    window.dispatchEvent(new CustomEvent('dtb:checkout-same-shell-payment-blocked', {
-      detail: { reason: state.reason, orderId: context.orderId },
-    }));
-    return;
+  const requestId = ++surfaceRequestSeq;
+  surfaceInFlight = true;
+  renderStatus(root, 'loading', 'Loading the native WooPayments checkout surface inside checkout…');
+  try {
+    const state = await syncState(root, true);
+    if (requestId !== surfaceRequestSeq || !document.contains(root)) return;
+    if (!state.eligible) {
+      renderStatus(root, 'error', `Same-page WooPayments checkout is not active (${normalizeId(state.reason)}).`);
+      return;
+    }
+    const url = await resolveSurfaceUrl(context);
+    if (requestId !== surfaceRequestSeq || !document.contains(root)) return;
+    const latestAction = paymentActionFromRoot(root);
+    const latestContext = paymentContext(root, latestAction);
+    if (`${latestContext.orderId}:${latestContext.orderKey}` !== key) return;
+    if (!url) throw new Error('The checkout payment surface URL could not be created.');
+    const frame = ensureFrame(root);
+    if (!frame) throw new Error('The checkout payment surface could not be mounted.');
+    if (requestId !== surfaceRequestSeq || !document.contains(root)) return;
+    frame.dataset.dtbOrderId = String(context.orderId);
+    frame.src = url;
+    currentSurfaceKey = key;
+    renderStatus(root, 'loading', 'WooPayments is loading securely inside checkout…');
+    window.dispatchEvent(new CustomEvent('dtb:checkout-payment-surface-mounted', { detail: { orderId: context.orderId } }));
+  } catch (error) {
+    if (requestId === surfaceRequestSeq && document.contains(root)) {
+      renderStatus(root, 'error', error?.message || 'The native WooPayments checkout surface could not be loaded.');
+    }
+  } finally {
+    if (requestId === surfaceRequestSeq) surfaceInFlight = false;
   }
-
-  lastAutoStartKey = key;
-  void startSameShellPayment(root, paymentAction);
 }
 
 async function handlePaymentClick(event) {
@@ -366,14 +268,32 @@ async function handlePaymentClick(event) {
   event.stopPropagation();
   if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
 
-  void requestSameShellPayment(root, action, { force: true });
+  void mountPaymentSurface(root, action, { force: true });
 }
 
-function handleSameShellPaymentRequest(event) {
-  if (!isCheckoutRoute()) return;
+function handleSurfaceMessage(event) {
+  if (event.origin !== window.location.origin) return;
   const root = document.querySelector('.dtb-checkout');
   if (!(root instanceof HTMLElement)) return;
-  void requestSameShellPayment(root, paymentActionFromRoot(root), { force: event?.detail?.force === true });
+  const frame = root.querySelector(`iframe.${SURFACE_CLASS}`);
+  if (!(frame instanceof HTMLIFrameElement) || event.source !== frame.contentWindow) return;
+  const detail = event.data || {};
+  if (!detail || detail.source !== 'dtb-payment-surface') return;
+  if (String(detail.orderId || '') !== String(frame.dataset.dtbOrderId || '')) return;
+
+  if (detail.type === 'dtb:payment-surface:resize') {
+    const height = Number(detail.height || 0);
+    if (Number.isFinite(height) && height > 240) frame.style.height = `${Math.min(Math.ceil(height), 2400)}px`;
+  }
+  if (detail.type === 'dtb:payment-surface:ready') {
+    renderStatus(root, 'ready', 'WooPayments is available in the secure checkout payment surface.');
+  }
+  if (detail.type === 'dtb:payment-surface:error') {
+    renderStatus(root, 'error', String(detail.message || 'WooPayments reported a recoverable payment-surface error.'));
+  }
+  if (detail.type === 'dtb:payment-surface:success') {
+    renderStatus(root, 'ready', 'Payment was completed securely. Updating checkout status…');
+  }
 }
 
 function callbackLooksLikeLegacyPaymentRedirect(callback) {
@@ -395,8 +315,7 @@ function suppressLegacyOrderPayTimeout(callback, delay, args) {
     }
     const root = document.querySelector('.dtb-checkout');
     if (!(root instanceof HTMLElement)) return;
-    renderStatus(root, 'loading', 'Keeping payment inside checkout. Opening the same-shell WooPayments provider…');
-    void requestSameShellPayment(root, paymentActionFromRoot(root), { force: true });
+    void mountPaymentSurface(root, paymentActionFromRoot(root), { force: true });
   }, delay, ...args);
 }
 
@@ -411,16 +330,29 @@ function patchLegacyOrderPayTimeout() {
   };
 }
 
+function resetObserver() {
+  if (preparedPaymentObserver) preparedPaymentObserver.disconnect();
+  preparedPaymentObserver = null;
+  observedCheckoutRoot = null;
+}
+
 function observePreparedPayment() {
-  if (preparedPaymentObserver || typeof MutationObserver === 'undefined') return;
+  if (typeof MutationObserver === 'undefined') return;
   const root = document.querySelector('.dtb-checkout');
-  if (!(root instanceof HTMLElement)) return;
+  if (!isCheckoutRoute() || !(root instanceof HTMLElement)) {
+    resetObserver();
+    return;
+  }
+  if (preparedPaymentObserver && observedCheckoutRoot === root) return;
+  resetObserver();
+  observedCheckoutRoot = root;
 
   const syncPreparedPayment = () => {
+    if (observedCheckoutRoot !== root || !document.contains(root)) return;
     const action = paymentActionFromRoot(root);
     const context = paymentContext(root, action);
     if (!context.orderId || !context.orderKey) return;
-    void requestSameShellPayment(root, action);
+    void mountPaymentSurface(root, action);
   };
 
   preparedPaymentObserver = new MutationObserver(() => syncPreparedPayment());
@@ -440,19 +372,34 @@ function observePreparedPayment() {
 }
 
 function scheduleSync() {
-  if (!isCheckoutRoute()) return;
+  if (!isCheckoutRoute()) {
+    resetObserver();
+    return;
+  }
   const root = document.querySelector('.dtb-checkout');
-  if (!(root instanceof HTMLElement)) return;
+  if (!(root instanceof HTMLElement)) {
+    resetObserver();
+    return;
+  }
   void syncState(root);
+  observePreparedPayment();
 }
 
-function schedulePreparedPaymentSync() {
-  if (!isCheckoutRoute()) return;
-  const root = document.querySelector('.dtb-checkout');
-  if (!(root instanceof HTMLElement)) return;
-  void syncState(root, true).finally(() => {
-    void requestSameShellPayment(root, paymentActionFromRoot(root));
-  });
+function patchNavigationEvents() {
+  if (originalPushState || typeof window === 'undefined' || !window.history) return;
+  originalPushState = window.history.pushState.bind(window.history);
+  originalReplaceState = window.history.replaceState.bind(window.history);
+  const schedule = () => window.setTimeout(scheduleSync, 0);
+  window.history.pushState = (...args) => {
+    const result = originalPushState(...args);
+    schedule();
+    return result;
+  };
+  window.history.replaceState = (...args) => {
+    const result = originalReplaceState(...args);
+    schedule();
+    return result;
+  };
 }
 
 export function installCheckoutSameShellPaymentRuntime() {
@@ -460,23 +407,19 @@ export function installCheckoutSameShellPaymentRuntime() {
   installed = true;
 
   patchLegacyOrderPayTimeout();
+  patchNavigationEvents();
   document.addEventListener('click', handlePaymentClick, true);
-  window.addEventListener('dtb:checkout-same-shell-payment-requested', handleSameShellPaymentRequest);
-  window.addEventListener('dtb:checkout-payment-method-selected', () => {
+  window.addEventListener('message', handleSurfaceMessage);
+  window.addEventListener('dtb:checkout-same-shell-payment-requested', () => {
     const root = document.querySelector('.dtb-checkout');
-    if (root instanceof HTMLElement) void syncState(root, true);
+    if (root instanceof HTMLElement) void mountPaymentSurface(root, paymentActionFromRoot(root), { force: true });
   });
-  window.addEventListener('dtb:checkout-same-shell-provider-installed', schedulePreparedPaymentSync);
-  window.addEventListener('dtb:checkout-woopayments-provider-sync', schedulePreparedPaymentSync);
+  window.addEventListener('dtb:checkout-payment-method-selected', scheduleSync);
   window.addEventListener('popstate', () => window.setTimeout(scheduleSync, 0));
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      scheduleSync();
-      observePreparedPayment();
-    }, { once: true });
+    document.addEventListener('DOMContentLoaded', scheduleSync, { once: true });
   } else {
     scheduleSync();
-    observePreparedPayment();
   }
 }

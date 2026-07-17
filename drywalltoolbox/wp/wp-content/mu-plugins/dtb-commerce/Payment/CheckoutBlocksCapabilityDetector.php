@@ -2,12 +2,10 @@
 /**
  * Checkout payment capability detector.
  *
- * Reports whether the current WooCommerce/runtime stack can support an
- * official Checkout Blocks payment experience. This is intentionally
- * conservative: DTB may keep the classic order-pay fallback unless the active
- * gateway stack exposes the WooCommerce Blocks payment infrastructure needed to
- * keep payment fields, wallets, tokenization, callbacks, and lifecycle state
- * owned by WooCommerce/payment providers.
+ * Reports whether the current WooCommerce runtime can support DTB's signed,
+ * same-origin payment surface. The surface renders the native WooCommerce
+ * Checkout Block document so WooPayments stays inside its supported provider
+ * context; DTB does not clone registered Blocks nodes into the React SPA.
  *
  * @package drywall-toolbox
  */
@@ -28,8 +26,8 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		'klarna',
 	];
 
-	/** Gateway ids that DTB can activate for the same-shell WooPayments adapter. */
-	private const SAME_SHELL_PROVIDER_GATEWAY_IDS = [
+	/** Gateway ids that DTB can route through the native payment surface. */
+	private const SURFACE_PROVIDER_GATEWAY_IDS = [
 		'woocommerce_payments',
 		'woopayments',
 		'stripe',
@@ -37,11 +35,12 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 
 	/** Return the current payment architecture capability envelope. */
 	public static function detect( array $payment_methods ): array {
-		$blocks_package_available = class_exists( '\\Automattic\\WooCommerce\\Blocks\\Package' );
-		$payment_registry_class    = class_exists( '\\Automattic\\WooCommerce\\Blocks\\Payments\\PaymentMethodRegistry' );
-		$abstract_method_class     = class_exists( '\\Automattic\\WooCommerce\\Blocks\\Payments\\Integrations\\AbstractPaymentMethodType' );
-		$assets_api_available      = function_exists( 'wc_get_container' ) && class_exists( '\\Automattic\\WooCommerce\\Blocks\\Assets\\AssetDataRegistry' );
+		$blocks_package_available = class_exists( '\Automattic\WooCommerce\Blocks\Package' );
+		$payment_registry_class    = class_exists( '\Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry' );
+		$abstract_method_class     = class_exists( '\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' );
+		$assets_api_available      = function_exists( 'wc_get_container' ) && class_exists( '\Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry' );
 		$server_ready              = $blocks_package_available && $payment_registry_class && $abstract_method_class && $assets_api_available;
+		$payment_surface_supported = class_exists( 'DTB_CheckoutPaymentSurface' ) && DTB_CheckoutPaymentSurface::surface_available();
 		$registered_methods        = self::registered_blocks_methods();
 
 		$methods = [];
@@ -68,22 +67,18 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 				'blocks_active'              => $blocks_registered ? (bool) ( $registered['active'] ?? false ) : false,
 				'blocks_script_handles'      => $blocks_registered ? (array) ( $registered['script_handles'] ?? [] ) : [],
 				'blocks_data_available'      => $blocks_registered ? (bool) ( $registered['data_available'] ?? false ) : false,
-				'classic_order_pay_fallback' => true,
+				'classic_order_pay_fallback' => false,
 			];
 		}
 
-		$server_same_shell_ready   = $server_ready && $has_registered_blocks_method;
-		$provider_same_shell_ready = $server_same_shell_ready && self::has_same_shell_provider_method( $methods );
+		$server_same_shell_ready   = $server_ready && $payment_surface_supported && $has_registered_blocks_method;
+		$provider_same_shell_ready = $server_same_shell_ready && self::has_surface_provider_method( $methods );
 
 		/**
-		 * Enable the same-shell checkout/payment path only after the production
-		 * runtime has been verified with provider-owned Checkout Blocks UI.
+		 * Enable DTB's same-page checkout payment surface only after the native
+		 * WooCommerce Checkout Block route and provider Blocks integrations are ready.
 		 *
-		 * The default is now the conservative WooPayments-compatible adapter gate:
-		 * server Blocks infrastructure plus an active registered WooPayments/Stripe
-		 * Blocks method. A site can still force-disable this by returning false.
-		 *
-		 * @param bool  $enabled            Whether DTB may activate same-shell payment.
+		 * @param bool  $enabled            Whether DTB may activate the payment surface.
 		 * @param array $methods            Publicly normalized active checkout methods.
 		 * @param array $registered_methods Normalized registered Blocks integrations.
 		 */
@@ -91,10 +86,11 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		$same_shell_supported  = $server_same_shell_ready && $provider_same_shell_ready && $client_bridge_enabled;
 
 		return [
-			'contract_version'             => '3',
-			'primary_flow'                 => $same_shell_supported ? 'official_blocks_same_shell' : ( $server_same_shell_ready ? 'official_blocks_candidate_order_pay_fallback' : 'classic_order_pay_fallback' ),
+			'contract_version'             => '4',
+			'primary_flow'                 => $same_shell_supported ? 'native_checkout_block_payment_surface' : ( $server_same_shell_ready ? 'native_payment_surface_candidate' : 'payment_surface_unavailable' ),
 			'same_shell_supported'         => $same_shell_supported,
-			'fallback_order_pay_enabled'   => true,
+			'fallback_order_pay_enabled'   => false,
+			'payment_surface_supported'    => $payment_surface_supported,
 			'blocks_package_available'     => $blocks_package_available,
 			'payment_registry_available'   => $payment_registry_class,
 			'abstract_method_available'    => $abstract_method_class,
@@ -106,26 +102,26 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 			'has_blocks_gateway_candidate' => $has_blocks_candidate,
 			'has_registered_blocks_method' => $has_registered_blocks_method,
 			'registered_methods'           => array_values( $registered_methods ),
-			'client_registry_required'     => true,
-			'client_registry_global'       => 'window.wc.wcBlocksRegistry',
-			'client_bridge_required'       => 'dtb_checkout_blocks_bridge',
-			'client_provider_adapter'      => 'window.dtbCheckoutSameShellProvider.startPayment',
+			'client_registry_required'     => false,
+			'client_registry_global'       => '',
+			'client_bridge_required'       => 'dtb_checkout_payment_surface_frame',
+			'client_provider_adapter'      => '',
 			'methods'                      => $methods,
 			'notes'                        => [
-				'Official same-shell payment requires WooCommerce Blocks client registration and server-side payment method integration.',
-				'DTB same-shell activation is limited to an active registered WooPayments-compatible Blocks method and the DTB client provider adapter.',
+				'DTB same-page payment uses a signed same-origin WordPress payment surface, not cloned WooPayments Blocks nodes in React.',
+				'WooPayments controls, wallet sheets, tokenization, and payment execution remain inside the native WooCommerce Checkout Block document.',
 			],
 		];
 	}
 
 	/** Return registered WooCommerce Blocks payment integrations when available. */
 	private static function registered_blocks_methods(): array {
-		if ( ! function_exists( 'wc_get_container' ) || ! class_exists( '\\Automattic\\WooCommerce\\Blocks\\Payments\\PaymentMethodRegistry' ) ) {
+		if ( ! function_exists( 'wc_get_container' ) || ! class_exists( '\Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry' ) ) {
 			return [];
 		}
 
 		try {
-			$registry = wc_get_container()->get( '\\Automattic\\WooCommerce\\Blocks\\Payments\\PaymentMethodRegistry' );
+			$registry = wc_get_container()->get( '\Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry' );
 		} catch ( Throwable $exception ) {
 			return [];
 		}
@@ -229,11 +225,11 @@ final class DTB_CheckoutBlocksCapabilityDetector {
 		return false;
 	}
 
-	/** Return whether an active registered same-shell provider method is present. */
-	private static function has_same_shell_provider_method( array $methods ): bool {
+	/** Return whether an active registered surface provider method is present. */
+	private static function has_surface_provider_method( array $methods ): bool {
 		foreach ( $methods as $method ) {
 			$id = strtolower( (string) ( $method['id'] ?? '' ) );
-			if ( '' === $id || ! in_array( $id, self::SAME_SHELL_PROVIDER_GATEWAY_IDS, true ) ) {
+			if ( '' === $id || ! in_array( $id, self::SURFACE_PROVIDER_GATEWAY_IDS, true ) ) {
 				continue;
 			}
 			if ( ! empty( $method['is_manual'] ) ) {

@@ -50,7 +50,6 @@ import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRunt
 import { installCheckoutExpressRailRuntime } from './features/checkout/checkoutExpressRailRuntime.js'
 import { installCheckoutWorkflowRuntime } from './features/checkout/checkoutWorkflowRuntime.js'
 import { installCheckoutPaymentPreferenceRuntime } from './features/checkout/checkoutPaymentPreferenceRuntime.js'
-import { installWooPaymentsSameShellProvider } from './features/checkout/wooPaymentsSameShellProvider.js'
 import { installCheckoutSameShellPaymentRuntime } from './features/checkout/checkoutSameShellPaymentRuntime.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
@@ -65,7 +64,6 @@ installCustomerFacingCopyRuntime();
 installCheckoutPaymentPreferenceRuntime();
 installCheckoutExpressRailRuntime();
 installCheckoutWorkflowRuntime();
-installWooPaymentsSameShellProvider();
 installCheckoutSameShellPaymentRuntime();
 
 if (typeof window !== 'undefined') {
@@ -78,11 +76,9 @@ if (typeof window !== 'undefined') {
   if (!isCatalogRoute) {
     const scheduleLegacyCatalogPrewarm = () => prewarmCatalog();
     // On the home page TrendingProducts depends on the legacy catalog immediately,
-    // so kick it off right away instead of waiting for an idle callback.
+    // but catalog/product routes already use the faster API-backed loaders.
     if (isHomePage) {
       scheduleLegacyCatalogPrewarm();
-    } else if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(scheduleLegacyCatalogPrewarm, { timeout: CATALOG_PREWARM_TIMEOUT_MS });
     } else {
       window.setTimeout(scheduleLegacyCatalogPrewarm, CATALOG_PREWARM_TIMEOUT_MS);
     }

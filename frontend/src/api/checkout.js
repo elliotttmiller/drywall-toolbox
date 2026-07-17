@@ -58,6 +58,11 @@ export async function finalizeCheckout( payload = {} ) {
 	return post( 'finalize', payload );
 }
 
+export async function requestCheckoutPaymentSurface( payload = {} ) {
+	const response = await post( 'payment-surface', payload );
+	return response?.payment_surface || response || {};
+}
+
 export async function getCheckoutStatus( resumeToken ) {
 	const token = encodeURIComponent( String( resumeToken || '' ) );
 	return apiClient( `/wp-json/dtb/v1/checkout/status?resume_token=${ token }` );
