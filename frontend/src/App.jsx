@@ -82,7 +82,7 @@ const RepairStatus = lazyWithReload(() => import('./pages/RepairStatus'));
 const ReturnStatus = lazyWithReload(() => import('./pages/ReturnStatus'));
 const SupportStatus = lazyWithReload(() => import('./pages/SupportStatus'));
 const Cart = lazyWithReload(() => import('./pages/Cart'));
-const Checkout = lazyWithReload(() => import('./pages/StripeEmbeddedCheckout'));
+const Checkout = lazyWithReload(() => import('./pages/WooNativeCheckout'));
 const CheckoutReturn = lazyWithReload(() => import('./pages/CheckoutReturn'));
 const OrderConfirmation = lazyWithReload(() => import('./pages/OrderConfirmation'));
 const OrderTracking = lazyWithReload(() => import('./pages/OrderTracking'));
@@ -322,8 +322,6 @@ function AppShell({ cartOpen, toggleCart, closeCart }) {
   const previousRouteKeyRef = useRef(routeKey);
 
   const isHome = location.pathname === '/';
-  // Checkout owns a dedicated, reduced-distraction header. Rendering the full
-  // storefront shell here created two competing headers above the form.
   const minimalChrome = location.pathname === '/checkout';
 
   useEffect(() => {
