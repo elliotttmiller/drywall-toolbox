@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'DTB_CHECKOUT_SESSION_DB_VERSION' ) ) {
-	define( 'DTB_CHECKOUT_SESSION_DB_VERSION', '3.0.0' );
+	define( 'DTB_CHECKOUT_SESSION_DB_VERSION', '3.0.1' );
 }
 
 final class DTB_OrderCheckoutSessionRepository {
@@ -32,7 +32,7 @@ final class DTB_OrderCheckoutSessionRepository {
 			fingerprint char(64) NOT NULL,
 			state varchar(32) NOT NULL DEFAULT 'quoted',
 			state_version bigint(20) unsigned NOT NULL DEFAULT 1,
-			payment_gateway varchar(64) NOT NULL DEFAULT 'stripe_embedded_checkout',
+			payment_gateway varchar(64) NOT NULL DEFAULT 'woo_native',
 			payment_method varchar(100) NOT NULL DEFAULT '',
 			context_json longtext NOT NULL,
 			quote_json longtext NOT NULL,
@@ -123,7 +123,7 @@ final class DTB_OrderCheckoutSessionRepository {
 				'fingerprint'               => (string) $data['fingerprint'],
 				'state'                     => 'quoted',
 				'state_version'             => 1,
-				'payment_gateway'           => 'stripe_embedded_checkout',
+				'payment_gateway'           => 'woo_native',
 				'payment_method'            => '',
 				'context_json'              => wp_json_encode( $data['context'] ),
 				'quote_json'                => wp_json_encode( $data['quote'] ),
@@ -154,7 +154,7 @@ final class DTB_OrderCheckoutSessionRepository {
 				'fingerprint'               => (string) $data['fingerprint'],
 				'state'                     => 'created',
 				'state_version'             => $expected_version + 1,
-				'payment_gateway'           => (string) ( $data['payment_gateway'] ?? 'stripe_embedded_checkout' ),
+				'payment_gateway'           => (string) ( $data['payment_gateway'] ?? 'woo_native' ),
 				'payment_method'            => (string) $data['payment_method'],
 				'context_json'              => wp_json_encode( $data['context'] ),
 				'quote_json'                => wp_json_encode( $data['quote'] ),
