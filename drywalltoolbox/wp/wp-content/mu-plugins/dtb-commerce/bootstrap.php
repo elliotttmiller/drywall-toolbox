@@ -23,6 +23,7 @@ require_once __DIR__ . '/Payment/UnpaidOrderPayGuard.php';
 require_once __DIR__ . '/Payment/PaymentBnplCartFinalization.php';
 require_once __DIR__ . '/Payment/CustomerAssociation.php';
 require_once __DIR__ . '/Payment/PaymentStatusGuard.php';
+require_once __DIR__ . '/Payment/PaymentProviderRuntimeGuards.php';
 require_once __DIR__ . '/Payment/CheckoutBlocksCapabilityDetector.php';
 require_once __DIR__ . '/Payment/CheckoutBlocksBridgeIntegration.php';
 require_once __DIR__ . '/Payment/CheckoutPaymentSurface.php';
