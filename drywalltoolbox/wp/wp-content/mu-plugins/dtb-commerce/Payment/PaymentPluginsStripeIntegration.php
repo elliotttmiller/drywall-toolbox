@@ -2,10 +2,11 @@
 /**
  * DTB integration contract for Payment Plugins for Stripe WooCommerce.
  *
- * The Stripe plugin owns credentials, webhooks, payment fields, wallets,
- * PaymentIntents, and Stripe API calls. DTB only declares provider capability,
- * applies supported Stripe Elements appearance options, and mirrors verified
- * WooCommerce payment references onto DTB checkout metadata.
+ * Payment Plugins owns Stripe credentials, webhooks, payment fields, wallets,
+ * PaymentIntents, Stripe API calls, refunds, disputes, and WooCommerce payment
+ * completion. DTB only declares capability, applies supported Stripe Elements
+ * appearance options, attaches non-secret correlation metadata, and mirrors
+ * verified WooCommerce payment references onto DTB checkout metadata.
  *
  * @package drywall-toolbox
  */
@@ -17,6 +18,7 @@ final class DTB_PaymentPluginsStripeIntegration {
 
 	/** @var string[] */
 	private const GATEWAY_IDS = [
+		'stripe',
 		'stripe_cc',
 		'stripe_upm',
 		'stripe_applepay',
@@ -40,10 +42,12 @@ final class DTB_PaymentPluginsStripeIntegration {
 	public static function register(): void {
 		add_filter( 'dtb_checkout_blocks_same_shell_supported', [ __CLASS__, 'same_shell_supported' ], 20, 3 );
 		add_filter( 'wc_stripe_get_element_options', [ __CLASS__, 'stripe_element_options' ], 20, 2 );
+		add_filter( 'wc_stripe_order_meta_data', [ __CLASS__, 'order_metadata' ], 20, 2 );
 		add_filter( 'wc_stripe_payment_intent_args', [ __CLASS__, 'payment_intent_metadata' ], 20, 3 );
 		add_action( 'woocommerce_payment_complete', [ __CLASS__, 'sync_paid_order_meta' ], 15, 1 );
 		add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'sync_paid_order_meta' ], 15, 1 );
 		add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'sync_paid_order_meta' ], 15, 1 );
+		add_action( 'wc_stripe_order_payment_complete', [ __CLASS__, 'sync_completed_charge' ], 20, 2 );
 		add_action( 'wc_stripe_webhook_payment_intent_succeeded', [ __CLASS__, 'sync_webhook_payment_intent' ], 20, 3 );
 	}
 
@@ -85,19 +89,19 @@ final class DTB_PaymentPluginsStripeIntegration {
 		$options['appearance'] = [
 			'theme'     => (string) ( $appearance['theme'] ?? 'stripe' ),
 			'variables' => array_merge( $variables, [
-				'fontFamily'            => 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-				'fontSizeBase'          => '16px',
-				'fontWeightNormal'      => '500',
-				'fontWeightMedium'      => '700',
-				'colorPrimary'          => '#2563eb',
-				'colorText'             => '#0f172a',
-				'colorTextSecondary'    => '#64748b',
-				'colorTextPlaceholder'  => '#94a3b8',
-				'colorBackground'       => '#ffffff',
-				'colorDanger'           => '#dc2626',
-				'colorSuccess'          => '#16a34a',
-				'borderRadius'          => '14px',
-				'spacingUnit'           => '6px',
+				'fontFamily'           => 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+				'fontSizeBase'         => '16px',
+				'fontWeightNormal'     => '500',
+				'fontWeightMedium'     => '700',
+				'colorPrimary'         => '#2563eb',
+				'colorText'            => '#0f172a',
+				'colorTextSecondary'   => '#64748b',
+				'colorTextPlaceholder' => '#94a3b8',
+				'colorBackground'      => '#ffffff',
+				'colorDanger'          => '#dc2626',
+				'colorSuccess'         => '#16a34a',
+				'borderRadius'         => '14px',
+				'spacingUnit'          => '6px',
 			] ),
 			'rules'     => array_merge( $rules, [
 				'.Input'       => [
@@ -111,10 +115,10 @@ final class DTB_PaymentPluginsStripeIntegration {
 					'boxShadow'   => '0 0 0 3px rgba(37, 99, 235, 0.14)',
 				],
 				'.Label'       => [
-					'fontSize'      => '13px',
-					'fontWeight'    => '700',
-					'color'         => '#475569',
-					'marginBottom'  => '7px',
+					'fontSize'     => '13px',
+					'fontWeight'   => '700',
+					'color'        => '#475569',
+					'marginBottom' => '7px',
 				],
 				'.Tab'         => [
 					'border'       => '1px solid #d8e1f0',
@@ -130,30 +134,33 @@ final class DTB_PaymentPluginsStripeIntegration {
 		return $options;
 	}
 
-	public static function payment_intent_metadata( array $args, $order, $payment ): array {
+	public static function order_metadata( array $metadata, $order ): array {
+		if ( ! $order instanceof WC_Order || ! self::is_dtb_stripe_order( $order ) ) {
+			return $metadata;
+		}
+
+		return array_merge( $metadata, self::safe_correlation_metadata( $order ) );
+	}
+
+	public static function payment_intent_metadata( array $args, $order, $payment = null ): array {
 		if ( ! $order instanceof WC_Order || ! self::is_dtb_stripe_order( $order ) ) {
 			return $args;
 		}
 
-		$metadata = is_array( $args['metadata'] ?? null ) ? $args['metadata'] : [];
-		$args['metadata'] = array_merge( $metadata, [
-			'dtb_checkout_session_id' => sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_session_id', true ) ),
-			'dtb_idempotency_key'     => sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_idempotency_key', true ) ),
-			'dtb_order_type'          => sanitize_key( (string) $order->get_meta( '_dtb_order_type', true ) ),
-			'dtb_payment_provider'    => self::PROVIDER,
-		] );
+		$metadata         = is_array( $args['metadata'] ?? null ) ? $args['metadata'] : [];
+		$args['metadata'] = array_merge( $metadata, self::safe_correlation_metadata( $order ) );
 
 		return $args;
 	}
 
-	public static function sync_webhook_payment_intent( $intent, $request = null, $event = null ): void {
-		$order_id = 0;
-		if ( is_object( $intent ) && isset( $intent->metadata['order_id'] ) ) {
-			$order_id = absint( $intent->metadata['order_id'] );
-		} elseif ( is_array( $intent ) && isset( $intent['metadata']['order_id'] ) ) {
-			$order_id = absint( $intent['metadata']['order_id'] );
+	public static function sync_completed_charge( $charge, $order ): void {
+		if ( $order instanceof WC_Order ) {
+			self::sync_paid_order_meta( (int) $order->get_id() );
 		}
+	}
 
+	public static function sync_webhook_payment_intent( $intent, $request = null, $event = null ): void {
+		$order_id = self::metadata_order_id( $intent );
 		if ( $order_id > 0 ) {
 			self::sync_paid_order_meta( $order_id );
 		}
@@ -175,6 +182,36 @@ final class DTB_PaymentPluginsStripeIntegration {
 		$order->update_meta_data( '_dtb_payment_captured', '1' );
 		$order->delete_meta_data( '_dtb_payment_handoff_pending' );
 		$order->save_meta_data();
+	}
+
+	private static function safe_correlation_metadata( WC_Order $order ): array {
+		return [
+			'dtb_checkout_session_id' => substr( sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_session_id', true ) ), 0, 255 ),
+			'dtb_idempotency_key'     => substr( sanitize_text_field( (string) $order->get_meta( '_dtb_checkout_idempotency_key', true ) ), 0, 255 ),
+			'dtb_order_type'          => substr( sanitize_key( (string) $order->get_meta( '_dtb_order_type', true ) ), 0, 64 ),
+			'dtb_payment_provider'    => self::PROVIDER,
+			'dtb_created_via'         => 'dtb_checkout',
+		];
+	}
+
+	private static function metadata_order_id( $object ): int {
+		$metadata = null;
+		if ( is_object( $object ) && isset( $object->metadata ) ) {
+			$metadata = $object->metadata;
+		} elseif ( is_array( $object ) && isset( $object['metadata'] ) ) {
+			$metadata = $object['metadata'];
+		}
+
+		foreach ( [ 'order_id', 'wc_order_id' ] as $key ) {
+			if ( is_object( $metadata ) && isset( $metadata->{$key} ) ) {
+				return absint( $metadata->{$key} );
+			}
+			if ( is_array( $metadata ) && isset( $metadata[ $key ] ) ) {
+				return absint( $metadata[ $key ] );
+			}
+		}
+
+		return 0;
 	}
 
 	private static function is_dtb_stripe_order( WC_Order $order ): bool {
