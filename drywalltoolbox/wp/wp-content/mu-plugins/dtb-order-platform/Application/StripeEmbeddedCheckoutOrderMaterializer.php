@@ -137,8 +137,13 @@ final class DTB_StripeEmbeddedCheckoutOrderMaterializer {
 			$order->set_transaction_id( $payment_ref );
 			$order->update_meta_data( '_dtb_payment_ref', $payment_ref );
 		}
-		if ( ! empty( $stripe_session['payment_intent'] ) ) {
-			$order->update_meta_data( '_stripe_intent_id', is_array( $stripe_session['payment_intent'] ) ? (string) ( $stripe_session['payment_intent']['id'] ?? '' ) : (string) $stripe_session['payment_intent'] );
+		$intent_id = self::payment_intent_id( $stripe_session );
+		$charge_id = self::charge_id( $stripe_session );
+		if ( '' !== $intent_id ) {
+			$order->update_meta_data( '_stripe_intent_id', $intent_id );
+		}
+		if ( '' !== $charge_id ) {
+			$order->update_meta_data( '_stripe_charge_id', $charge_id );
 		}
 
 		self::apply_addresses( $order, $stripe_session );
@@ -202,6 +207,14 @@ final class DTB_StripeEmbeddedCheckoutOrderMaterializer {
 		$order->update_meta_data( '_dtb_payment_captured', '1' );
 		$order->update_meta_data( '_dtb_payment_ref', $payment_ref );
 		$order->update_meta_data( '_dtb_stripe_checkout_session_id', (string) ( $stripe_session['id'] ?? '' ) );
+		$intent_id = self::payment_intent_id( $stripe_session );
+		$charge_id = self::charge_id( $stripe_session );
+		if ( '' !== $intent_id ) {
+			$order->update_meta_data( '_stripe_intent_id', $intent_id );
+		}
+		if ( '' !== $charge_id ) {
+			$order->update_meta_data( '_stripe_charge_id', $charge_id );
+		}
 		if ( '' !== $event_id ) {
 			$order->update_meta_data( '_dtb_stripe_paid_event_id', sanitize_text_field( $event_id ) );
 		}
@@ -250,13 +263,26 @@ final class DTB_StripeEmbeddedCheckoutOrderMaterializer {
 	}
 
 	private static function payment_reference( array $stripe_session ): string {
+		$intent_id = self::payment_intent_id( $stripe_session );
+		return '' !== $intent_id ? $intent_id : sanitize_text_field( (string) ( $stripe_session['id'] ?? '' ) );
+	}
+
+	private static function payment_intent_id( array $stripe_session ): string {
 		if ( is_array( $stripe_session['payment_intent'] ?? null ) ) {
 			return sanitize_text_field( (string) ( $stripe_session['payment_intent']['id'] ?? '' ) );
 		}
-		if ( ! empty( $stripe_session['payment_intent'] ) ) {
-			return sanitize_text_field( (string) $stripe_session['payment_intent'] );
+		return sanitize_text_field( (string) ( $stripe_session['payment_intent'] ?? '' ) );
+	}
+
+	private static function charge_id( array $stripe_session ): string {
+		if ( is_array( $stripe_session['payment_intent'] ?? null ) ) {
+			$intent = $stripe_session['payment_intent'];
+			if ( is_array( $intent['latest_charge'] ?? null ) ) {
+				return sanitize_text_field( (string) ( $intent['latest_charge']['id'] ?? '' ) );
+			}
+			return sanitize_text_field( (string) ( $intent['latest_charge'] ?? '' ) );
 		}
-		return sanitize_text_field( (string) ( $stripe_session['id'] ?? '' ) );
+		return '';
 	}
 
 	private static function stripe_address_to_wc( array $details, bool $include_contact ): array {
