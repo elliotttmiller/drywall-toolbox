@@ -37,10 +37,6 @@ import { installSchematicPageLabelRuntime } from './utils/schematicPageLabelRunt
 import { installMobileSchematicNavRuntime } from './utils/mobileSchematicNavRuntime.js'
 import { installRepairPackageSelectionRuntime } from './utils/repairPackageSelectionRuntime.js'
 import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRuntime.js'
-
-// ─── Pre-warm product catalog cache ──────────────────────────────────────────
-// The legacy all-products cache is intentionally delayed so it cannot compete
-// with the first visible catalog/product render on a cold device.
 import { prewarmCatalog } from './services/catalog.js';
 
 installSchematicPageLabelRuntime();
@@ -52,17 +48,14 @@ if (typeof window !== 'undefined') {
   const pathname = window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') || '/';
   const isCatalogRoute = pathname.startsWith('/products') || pathname.startsWith('/parts');
   const isHomePage = pathname === '/';
-  // Max delay for background catalog prewarm on non-home, non-catalog routes.
   const CATALOG_PREWARM_TIMEOUT_MS = 5000;
 
   if (!isCatalogRoute) {
-    const scheduleLegacyCatalogPrewarm = () => prewarmCatalog();
-    // On the home page TrendingProducts depends on the legacy catalog immediately,
-    // but catalog/product routes already use the faster API-backed loaders.
+    const scheduleCatalogPrewarm = () => prewarmCatalog();
     if (isHomePage) {
-      scheduleLegacyCatalogPrewarm();
+      scheduleCatalogPrewarm();
     } else {
-      window.setTimeout(scheduleLegacyCatalogPrewarm, CATALOG_PREWARM_TIMEOUT_MS);
+      window.setTimeout(scheduleCatalogPrewarm, CATALOG_PREWARM_TIMEOUT_MS);
     }
   }
 }
