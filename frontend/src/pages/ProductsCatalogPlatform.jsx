@@ -11,9 +11,10 @@ import ProductShoppingCard from '../components/ui/ProductShoppingCard';
 import ProductModal from '../components/product/ProductModal';
 import ProductDetailPlatform from '../components/product/ProductDetailPlatform';
 import Toast from '../components/ui/Toast';
-import { ProductSkeletonGrid } from '../components/catalog/ProductShoppingCardSkeleton';
+import { ProductSkeletonGrid, SelectorSkeletonGrid } from '../components/catalog/ProductShoppingCardSkeleton';
 import ProductsBrandSelector from '../components/catalog/ProductsBrandSelector.jsx';
 import ProductsCategorySelector from '../components/catalog/ProductsCategorySelector.jsx';
+import LoadingCardTransition from '../components/shared/LoadingCardTransition.jsx';
 import { SORT_OPTIONS } from '../constants/sortOptions';
 import { useCatalogFacets } from '../hooks/useCatalogFacets';
 import { useCatalogProducts } from '../hooks/useCatalogProducts';
@@ -259,19 +260,6 @@ function CatalogError({ title, message, details, onRetry }) {
   );
 }
 
-function SelectorSkeleton({ mode = 'brands' }) {
-  const count = mode === 'categories' ? 8 : 6;
-  return (
-    <div className={mode === 'categories' ? 'product-categories-grid' : 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'}>
-      {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className={mode === 'categories' ? 'product-category-card product-category-card--no-image animate-pulse' : 'product-brand-selector-card animate-pulse'}>
-          {mode === 'brands' && <div className="h-16 w-28 rounded-xl bg-gray-100" />}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function ProductsCatalogPlatform({ forceProductGrid = false, title = 'Products', isPartsFilter = 0 } = {}) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -510,6 +498,33 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
     }
   }, []);
 
+  const productGridContent = (
+    <>
+      <div className={`dtb-product-grid dtb-product-grid--${displayMode}${mappedProducts.length === 1 ? ' dtb-product-grid--single' : ''}`}>
+        {mappedProducts.map((product, index) => {
+          const cardProduct = getCardDisplayProduct(product);
+          return <ProductShoppingCard key={product.id} product={product} cardProduct={cardProduct} variant={displayMode} hasSelectedVariation={Boolean(product.is_variable && cardProduct?.parent_id)} onOpenModal={() => openModal(product, cardProduct)} onAddToCart={() => handleAddToCart(cardProduct || product, 1)} index={index} />;
+        })}
+      </div>
+
+      {mappedProducts.length > 0 && (
+        <>
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={(next) => { setQuery({ page: next }, { resetPage: false }); if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="mt-8" />
+          <p className="text-center text-sm text-gray-400 mt-2">Showing {pageStart + 1}–{Math.min(pageStart + mappedProducts.length, total)} of {total.toLocaleString()} results</p>
+        </>
+      )}
+
+      {mappedProducts.length === 0 && !productsError && (
+        <div className="text-center py-16">
+          <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
+          <p className="text-gray-600 mb-6">Try adjusting your filters to see more products.</p>
+          <button onClick={() => navigate(isPartsPage ? '/parts' : '/products')} className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Clear Filters</button>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 page-wrapper">
       <SEOHead title={pageHeading} description={seoDescription} canonical={canonicalUrl} schema={buildSiteLinksSearchBoxSchema()} />
@@ -560,14 +575,22 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
         )}
 
         {showBrandLanding ? (
-          facetsLoading ? <SelectorSkeleton mode="brands" /> : (
+          <LoadingCardTransition
+            loading={facetsLoading}
+            skeleton={<SelectorSkeletonGrid mode="brands" />}
+            label="Loading product brands"
+          >
             <ProductsBrandSelector
               brands={brandFacets}
               onSelectBrand={(brand) => navigate(`/products/brands/${brand.slug || brandToSlug(brand.label)}`)}
             />
-          )
+          </LoadingCardTransition>
         ) : showCategoryLanding ? (
-          facetsLoading ? <SelectorSkeleton mode="categories" /> : (
+          <LoadingCardTransition
+            loading={facetsLoading}
+            skeleton={<SelectorSkeletonGrid mode="categories" />}
+            label="Loading product categories"
+          >
             <ProductsCategorySelector
               brand={selectedBrandFacet?.label || selectedBrand}
               brandLogo={selectedBrandFacet?.logo || getBrandLogo(selectedBrand)}
@@ -575,7 +598,7 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
               onBack={resetToBrandList}
               onSelectCategory={(cat) => navigate(`/products/brands/${selectedBrandFacet?.slug || brandToSlug(selectedBrand)}/categories/${cat.slug}`)}
             />
-          )
+          </LoadingCardTransition>
         ) : (
           <>
             <div className="dtb-listing-search">
@@ -647,32 +670,13 @@ export default function ProductsCatalogPlatform({ forceProductGrid = false, titl
                   )}
                 </div>
 
-                {itemsLoading ? <ProductSkeletonGrid count={24} /> : (
-                  <>
-                    <div className={`dtb-product-grid dtb-product-grid--${displayMode}${mappedProducts.length === 1 ? ' dtb-product-grid--single' : ''}`}>
-                      {mappedProducts.map((product, index) => {
-                        const cardProduct = getCardDisplayProduct(product);
-                        return <ProductShoppingCard key={product.id} product={product} cardProduct={cardProduct} variant={displayMode} hasSelectedVariation={Boolean(product.is_variable && cardProduct?.parent_id)} onOpenModal={() => openModal(product, cardProduct)} onAddToCart={() => handleAddToCart(cardProduct || product, 1)} index={index} />;
-                      })}
-                    </div>
-
-                    {mappedProducts.length > 0 && (
-                      <>
-                        <Pagination currentPage={page} totalPages={totalPages} onPageChange={(next) => { setQuery({ page: next }, { resetPage: false }); if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="mt-8" />
-                        <p className="text-center text-sm text-gray-400 mt-2">Showing {pageStart + 1}–{Math.min(pageStart + mappedProducts.length, total)} of {total.toLocaleString()} results</p>
-                      </>
-                    )}
-
-                    {mappedProducts.length === 0 && !productsError && (
-                      <div className="text-center py-16">
-                        <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-gray-300" />
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
-                        <p className="text-gray-600 mb-6">Try adjusting your filters to see more products.</p>
-                        <button onClick={() => navigate(isPartsPage ? '/parts' : '/products')} className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Clear Filters</button>
-                      </div>
-                    )}
-                  </>
-                )}
+                <LoadingCardTransition
+                  loading={itemsLoading}
+                  skeleton={<ProductSkeletonGrid count={24} variant={displayMode} />}
+                  label="Loading catalog products"
+                >
+                  {productGridContent}
+                </LoadingCardTransition>
               </div>
             </div>
           </>
