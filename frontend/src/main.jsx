@@ -28,16 +28,8 @@ import './styles/order-tracking-layout-fixes.css'
 import './styles/mobile-account-order-layout-fixes.css'
 import './styles/order-checkout-font-consistency.css'
 import './styles/global-loading.css'
-import './features/checkout/checkout-system.css'
-import './features/checkout/checkout-express-payment-rail.css'
 import './components/catalog/products-selector-overrides.css'
 import './styles/mobile-fluid-viewport-authority.css'
-import './features/checkout/checkout-fast-flow.css'
-import './features/checkout/checkout-repair-flow.css'
-import './features/checkout/checkout-step-runtime.css'
-import './features/checkout/checkout-mobile-screen-flow.css'
-import './features/checkout/checkout-same-shell-payment.css'
-import './features/checkout/checkout-payment-sheet.css'
 import './features/checkout/checkout-stripe-embedded.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/errors/ErrorBoundary.jsx'
@@ -45,11 +37,6 @@ import { installSchematicPageLabelRuntime } from './utils/schematicPageLabelRunt
 import { installMobileSchematicNavRuntime } from './utils/mobileSchematicNavRuntime.js'
 import { installRepairPackageSelectionRuntime } from './utils/repairPackageSelectionRuntime.js'
 import { installCustomerFacingCopyRuntime } from './utils/customerFacingCopyRuntime.js'
-import { installCheckoutExpressRailRuntime } from './features/checkout/checkoutExpressRailRuntime.js'
-import { installCheckoutWorkflowRuntime } from './features/checkout/checkoutWorkflowRuntime.js'
-import { installCheckoutPaymentPreferenceRuntime } from './features/checkout/checkoutPaymentPreferenceRuntime.js'
-import { installCheckoutSameShellPaymentRuntime } from './features/checkout/checkoutSameShellPaymentRuntime.js'
-import { installCheckoutResponsiveLayoutRuntime } from './features/checkout/checkoutResponsiveLayoutRuntime.js'
 
 // ─── Pre-warm product catalog cache ──────────────────────────────────────────
 // The legacy all-products cache is intentionally delayed so it cannot compete
@@ -60,11 +47,6 @@ installSchematicPageLabelRuntime();
 installMobileSchematicNavRuntime();
 installRepairPackageSelectionRuntime();
 installCustomerFacingCopyRuntime();
-installCheckoutPaymentPreferenceRuntime();
-installCheckoutExpressRailRuntime();
-installCheckoutWorkflowRuntime();
-installCheckoutSameShellPaymentRuntime();
-installCheckoutResponsiveLayoutRuntime();
 
 if (typeof window !== 'undefined') {
   const pathname = window.location.pathname.replace(/^\/drywall-toolbox(?=\/|$)/, '') || '/';
