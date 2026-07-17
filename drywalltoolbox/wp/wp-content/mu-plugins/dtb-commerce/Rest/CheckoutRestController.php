@@ -106,12 +106,24 @@ final class DTB_CheckoutRestController {
 			if ( is_wp_error( $owner ) ) {
 				return $owner;
 			}
+
+			$architecture = self::payment_architecture_capability();
+			if ( empty( $architecture['same_shell_supported'] ) ) {
+				return new WP_Error(
+					'dtb_checkout_payment_provider_not_ready',
+					'The checkout payment provider is not ready for the same-shell payment surface.',
+					[ 'status' => 503, 'payment_architecture' => $architecture ]
+				);
+			}
+
 			return [
 				'payment_surface' => [
-					'url'              => DTB_CheckoutPaymentSurface::payment_surface_url( $order ),
-					'order_id'         => $order_id,
-					'contract_version' => '4',
-					'expires_in'       => 900,
+					'url'                  => DTB_CheckoutPaymentSurface::payment_surface_url( $order ),
+					'order_id'             => $order_id,
+					'contract_version'     => '4',
+					'expires_in'           => 900,
+					'provider_gateway_id'  => sanitize_key( (string) $order->get_payment_method() ),
+					'payment_architecture' => $architecture,
 				],
 			];
 		} );
@@ -155,6 +167,16 @@ final class DTB_CheckoutRestController {
 		}
 
 		return true;
+	}
+
+	private static function payment_architecture_capability(): array {
+		if ( ! class_exists( 'DTB_CheckoutBlocksCapabilityDetector' ) ) {
+			return [ 'same_shell_supported' => false, 'reason' => 'capability_detector_missing' ];
+		}
+
+		$capabilities = DTB_OrderCheckoutService::capabilities();
+		$methods      = (array) ( $capabilities['gateways'][0]['payment_methods'] ?? [] );
+		return DTB_CheckoutBlocksCapabilityDetector::detect( $methods );
 	}
 
 	private static function run_mutation( WP_REST_Request $request, string $route_key, callable $callback ): WP_REST_Response|WP_Error {
