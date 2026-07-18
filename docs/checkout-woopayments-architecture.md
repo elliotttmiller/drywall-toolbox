@@ -4,18 +4,18 @@
 
 Drywall Toolbox checkout uses WooCommerce as the order, customer, cart, address, shipping, tax, and checkout authority. WooPayments is the single active storefront payment authority for embedded cards, supported wallets, tokenization, payment processing, and webhook-backed payment status.
 
-React owns product browsing, cart page, cart drawer, account UX, and the checkout handoff. React does not host payment iframes, create payment intents, create checkout sessions, create orders, render wallet lookalikes, or own payment lifecycle state.
+React owns product browsing, cart page, cart drawer, account UX, and checkout placement/hand-off UX. React may frame a same-origin DTB WooPayments express surface for cart, drawer, and product-detail presentation, but it does not draw wallet buttons, create payment intents, create checkout sessions, create orders, or own payment lifecycle state.
 
-The customer remains on `drywalltoolbox.com`. `/checkout/` is a WordPress/WooCommerce document with a DTB-branded shell around the native WooCommerce Checkout Block or classic `[woocommerce_checkout]` fallback.
+The customer remains on `drywalltoolbox.com`. `/checkout/` is a WordPress/WooCommerce document with a DTB-branded shell around the native WooCommerce Checkout Block or classic `[woocommerce_checkout]` fallback. Cart/product express surfaces are same-origin shells that only expose provider-owned WooPayments express controls when WooPayments reports an eligible method.
 
 ## System-of-record boundaries
 
 | Concern | Authority |
 | --- | --- |
-| Product browsing, cart page, cart drawer, account UX, checkout CTA | React storefront |
+| Product browsing, cart page, cart drawer, account UX, checkout CTA, express surface placement | React storefront |
 | Cart/session/customer/address/shipping/tax/order creation | WooCommerce Checkout Block / Store API |
 | Embedded payment form, Apple Pay, Google Pay, Link, WooPay, cards, tokenization, 3DS/SCA, webhooks | WooPayments |
-| Checkout shell/styling, readiness diagnostics, checkout-order tagging, paid-order observation, event ledger, downstream jobs | DTB MU plugins |
+| Checkout shell/styling, express iframe shell, readiness diagnostics, checkout-order tagging, paid-order observation, event ledger, downstream jobs | DTB MU plugins |
 | Product catalog, customer account, operational order record | WooCommerce |
 | Inventory allocation, fulfillment, labels, shipment/tracking | Veeqo |
 | Accounting projection after eligible payment/refund events | QuickBooks |
@@ -23,6 +23,8 @@ The customer remains on `drywalltoolbox.com`. `/checkout/` is a WordPress/WooCom
 React and DTB REST responses must never expose WooCommerce application passwords, WooPayments/Stripe secrets, webhook secrets, Veeqo credentials, QuickBooks credentials, private keys, PaymentIntent client secrets, wallet tokens, or raw payment method data.
 
 ## Production flow
+
+### Standard checkout
 
 ```text
 React cart / cart side sheet
@@ -38,11 +40,27 @@ React cart / cart side sheet
   -> Veeqo, QuickBooks, notification, and tracking projections
 ```
 
+### Express checkout surfaces
+
+```text
+React full cart / cart drawer / product page / product modal
+  -> same-origin iframe requests /checkout/?dtb_wcpay_express_surface=1
+  -> DTB emits a minimal no-store, noindex frame shell
+  -> WooPayments evaluates eligible express methods for the Woo session/context
+  -> Apple Pay, Google Pay, WooPay, Link, or other enabled methods render only when eligible
+  -> WooCommerce/WooPayments own address, shipping, order creation, payment, and webhooks
+  -> successful order-received navigation is promoted to the top-level document
+  -> normal Woo payment lifecycle and DTB downstream queues continue
+```
+
+Express button availability is dynamic. The gateway may render one method, multiple methods, or no method depending on merchant settings, product/cart contents, browser, device, wallet setup, domain registration, country, currency, and WooPayments account state. DTB must not render lookalike buttons when the provider reports a method unavailable.
+
 ## Active checkout surfaces
 
 | Surface | Authority |
 | --- | --- |
 | `/checkout/` | WordPress/WooCommerce Checkout Block or classic checkout, rendered inside the DTB WooPayments shell |
+| `/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart|drawer|product` | Minimal same-origin DTB shell containing only provider-owned WooPayments express checkout controls |
 | `/checkout/order-pay/{id}` | WooCommerce order-pay endpoint for payment retry only |
 | `/checkout/order-received/{id}` | WooCommerce order-received endpoint |
 | React `/checkout` route | Compatibility handoff that forces full-page navigation into `/checkout/` |
@@ -64,10 +82,11 @@ Required operational settings:
 1. Connect WooPayments to the intended production account.
 2. Enable WooPayments as the active card/wallet checkout provider.
 3. Enable the desired embedded payment methods and express checkout methods.
-4. Verify Apple Pay / Google Pay / WooPay / Link behavior on eligible devices and browsers.
-5. Confirm WooPayments webhook/account health in WooCommerce status tools.
-6. Disable the official WooCommerce Stripe Gateway, Payment Plugins for Stripe, and any other competing card/wallet storefront payment authority.
-7. Confirm staging/test mode before any live payment attempt.
+4. Enable cart/product locations for express checkout where WooPayments supports those locations.
+5. Verify Apple Pay / Google Pay / WooPay / Link behavior on eligible devices and browsers.
+6. Confirm WooPayments webhook/account health in WooCommerce status tools.
+7. Disable the official WooCommerce Stripe Gateway, Payment Plugins for Stripe, and any other competing card/wallet storefront payment authority.
+8. Confirm staging/test mode before any live payment attempt.
 
 WooPayments owns payment method rendering, wallet availability, tokenization, challenge/redirect authentication, and webhook-backed payment state. DTB does not create a parallel payment webhook endpoint for storefront payment completion.
 
@@ -89,10 +108,29 @@ Responsibilities:
 - mirror verified WooPayments references into non-secret DTB order meta;
 - show wp-admin readiness warnings when WooPayments is not enabled or a competing Stripe gateway remains active.
 
-Presentation asset:
+`DTB_WooPaymentsExpressCheckoutSurface` owns only the frame shell used by React express placement:
+
+```text
+drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsExpressCheckoutSurface.php
+```
+
+Responsibilities:
+
+- recognize the public express-surface query before the primary checkout shell;
+- preserve same-origin framing, no-store/noindex behavior, and redacted diagnostics;
+- render WooCommerce cart/checkout express payment blocks for cart and drawer contexts;
+- render Woo product express hooks for product page/modal contexts;
+- report ready/unavailable state and frame height to the same-origin React parent;
+- leave all wallet eligibility, address collection, order creation, payment, and webhook behavior in WooPayments.
+
+Presentation assets:
 
 ```text
 drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/assets/woo-native-checkout.css
+drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/assets/woo-payments-express-surface.css
+frontend/src/components/payments/WooPaymentsExpressCheckout.jsx
+frontend/src/components/checkout/MobileCartCheckoutDock.jsx
+frontend/src/styles/woopayments-express.css
 ```
 
 ## Order metadata
@@ -137,6 +175,7 @@ The public root `.htaccess` must route these to WordPress before the React SPA c
 
 ```text
 /checkout/
+/checkout/?dtb_wcpay_express_surface=1
 /checkout/order-pay/{id}
 /checkout/?pay_for_order=true&key=wc_order_...
 /wp-json/*
@@ -151,6 +190,7 @@ The public root `.htaccess` must route these to WordPress before the React SPA c
 - If Woo checkout markup is unavailable, DTB renders a visible customer-facing fallback panel instead of a blank page.
 - If WooPayments is not enabled, wp-admin shows a warning before live payment acceptance.
 - If the official WooCommerce Stripe gateway is also enabled, wp-admin shows a competing-authority warning.
+- If express checkout is unavailable, React removes the provider frame and keeps the standard checkout CTA available.
 - No fallback may fabricate Apple Pay/Google Pay/WooPay buttons or create an alternate order/payment path.
 - Checkout remains same-domain but payment fields are provider-owned embedded controls.
 
@@ -163,9 +203,10 @@ Before production use:
 3. Confirm `/wp-json/` returns JSON.
 4. Confirm `/wp-json/dtb/v1/catalog/products?per_page=1` returns JSON.
 5. Confirm `/checkout/` renders the DTB WooPayments shell and a visible Woo checkout form.
-6. Confirm WooPayments is installed, connected, enabled, and in the intended test/live mode.
-7. Confirm official WooCommerce Stripe Gateway and Payment Plugins for Stripe are disabled as storefront payment authorities.
-8. Test guest checkout, authenticated checkout, cards, 3DS/SCA, wallets, wallet ineligible devices, failed payment, retry, order-received, refund, webhook delay/replay, Veeqo sync, and QuickBooks eligibility.
+6. Confirm `/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart` returns a same-origin noindex express surface.
+7. Confirm WooPayments is installed, connected, enabled, and in the intended test/live mode.
+8. Confirm official WooCommerce Stripe Gateway and Payment Plugins for Stripe are disabled as storefront payment authorities.
+9. Test guest checkout, authenticated checkout, cards, 3DS/SCA, wallets, wallet ineligible devices, failed payment, retry, order-received, refund, webhook delay/replay, Veeqo sync, and QuickBooks eligibility.
 
 ## Validation commands
 
@@ -182,6 +223,7 @@ Backend:
 
 ```powershell
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsNativeCheckout.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsExpressCheckoutSurface.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/bootstrap.php
