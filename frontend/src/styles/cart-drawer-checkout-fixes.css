@@ -1,0 +1,100 @@
+/*
+ * Cart drawer checkout placement hardening.
+ *
+ * The WooPayments express dock is provider-owned payment UI framed by React,
+ * but the drawer layout must remain stable on desktop and mobile. These rules
+ * keep the desktop dock aligned to the right cart sheet instead of floating as
+ * a detached card over the page, while preserving the mobile bottom-sheet model.
+ */
+
+@media (min-width: 768px) {
+  .cart-overlay.active .cart-panel.storefront-cart-sheet {
+    width: min(430px, 100vw) !important;
+    max-width: 430px !important;
+    border-left: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 18px 0 0 0;
+    box-shadow: -24px 0 70px rgba(15, 23, 42, 0.18) !important;
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-header {
+    padding: 18px 18px 15px !important;
+    border-bottom-color: #e2e8f0 !important;
+    background:
+      radial-gradient(circle at 18% -42%, rgba(37, 99, 235, 0.12), transparent 48%),
+      linear-gradient(180deg, #ffffff, #f8fbff) !important;
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-body {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    padding: 8px 0 330px !important;
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-item-list {
+    padding: 0 14px 10px !important;
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-item {
+    margin: 9px 0 !important;
+    border: 1px solid #e8eef7 !important;
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.055);
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-item:hover {
+    border-color: #dbeafe !important;
+    background: #fbfdff !important;
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-item-img {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 14px !important;
+    border-color: #e2e8f0 !important;
+    background: #f8fafc !important;
+  }
+
+  body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-footer {
+    display: none !important;
+  }
+
+  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock {
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 10004 !important;
+    width: min(430px, 100vw) !important;
+    max-height: 340px !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 20px 0 0 0 !important;
+    background:
+      radial-gradient(circle at 16% -28%, rgba(59, 130, 246, 0.16), transparent 50%),
+      rgba(255, 255, 255, 0.985) !important;
+    padding: 16px 18px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    box-shadow: -18px -18px 54px rgba(15, 23, 42, 0.16) !important;
+  }
+
+  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock .dtb-wcpay-express__heading-row {
+    margin-bottom: 8px;
+  }
+
+  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock .dtb-wcpay-express__heading {
+    color: #0f172a;
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock .dtb-wcpay-express__divider {
+    margin-top: 10px;
+  }
+
+  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock__checkout {
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 767px) {
+  body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-body {
+    padding-bottom: 310px !important;
+  }
+}
