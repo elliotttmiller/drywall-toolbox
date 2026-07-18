@@ -29,6 +29,7 @@ import useCatalogProductDetail from '../hooks/useCatalogProductDetail.js';
 import { getVariationSelectionMap } from '../utils/variationSelection';
 import { buildBreadcrumbSchema, buildProductSchema, stripHtml } from '../utils/schema';
 import ProductDetail from '../components/product/ProductDetail';
+import WooPaymentsExpressCheckout from '../components/payments/WooPaymentsExpressCheckout.jsx';
 import SEOHead from '../components/shared/SEOHead';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import Toast from '../components/ui/Toast';
@@ -257,6 +258,14 @@ export default function ProductDetailPage() {
           initialComputedData={computed}
           disableLegacyDetailFetch
         />
+        <div className="dtb-pdp-route-express">
+          <WooPaymentsExpressCheckout
+            context="product"
+            product={product}
+            selectedVariation={selectedVariation}
+            quantity={1}
+          />
+        </div>
       </div>
 
       {toast && (
