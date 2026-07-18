@@ -64,26 +64,27 @@ Run in WooPayments test/sandbox mode before live mode:
 3. Confirm cart side drawer renders provider-owned express checkout when eligible.
 4. Confirm product detail page renders provider-owned express checkout when eligible.
 5. Confirm product detail modal renders provider-owned express checkout when eligible.
-6. Proceed from React cart/sidebar to `/checkout/`.
-7. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
-8. Confirm customer/contact fields render.
-9. Confirm shipping address fields render.
-10. Confirm order summary renders.
-11. Confirm WooPayments embedded payment methods render.
-12. Test successful card payment.
-13. Test 3DS/SCA challenge flow.
-14. Test failed card flow.
-15. Test Apple Pay / Google Pay / WooPay / Link only on eligible devices and browsers.
-16. Confirm ineligible wallet devices hide wallet controls cleanly and keep standard checkout available.
-17. Confirm Woo order is created once.
-18. Confirm Woo order has real product/variation IDs and SKUs.
-19. Confirm `_dtb_checkout_gateway=woo_native_woopayments` is present on the order.
-20. Confirm `_dtb_checkout_contract_version=woo-payments-v1` is present on the order.
-21. Confirm paid WooPayments order records DTB payment lifecycle events once.
-22. Confirm `dtb-orders` downstream processing is dispatched once.
-23. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
-24. Confirm refund and failure events update Woo order state/notes as expected.
-25. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
+6. Confirm product/variable-product ineligible states hide express controls without hiding normal add-to-cart.
+7. Proceed from React cart/sidebar to `/checkout/`.
+8. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
+9. Confirm customer/contact fields render.
+10. Confirm shipping address fields render.
+11. Confirm order summary renders.
+12. Confirm WooPayments embedded payment methods render.
+13. Test successful card payment.
+14. Test 3DS/SCA challenge flow.
+15. Test failed card flow.
+16. Test Apple Pay / Google Pay / WooPay / Link only on eligible devices and browsers.
+17. Confirm ineligible wallet devices hide wallet controls cleanly and keep standard checkout available.
+18. Confirm Woo order is created once.
+19. Confirm Woo order has real product/variation IDs and SKUs.
+20. Confirm `_dtb_checkout_gateway=woo_native_woopayments` is present on the order.
+21. Confirm `_dtb_checkout_contract_version=woo-payments-v1` is present on the order.
+22. Confirm paid WooPayments order records DTB payment lifecycle events once.
+23. Confirm `dtb-orders` downstream processing is dispatched once.
+24. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
+25. Confirm refund and failure events update Woo order state/notes as expected.
+26. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
 
 ## Validation commands
 
