@@ -8,7 +8,7 @@ const MIN_SURFACE_HEIGHT = 54;
 const MAX_SURFACE_HEIGHT = 180;
 
 function getBaseCheckoutPath() {
-  return `${(process.env.PUBLIC_URL || '').replace(/\/+$/, '')}/checkout/`.replace(/\/\/{2,}/g, '/');
+  return `${(process.env.PUBLIC_URL || '').replace(/\/+$/, '')}/checkout/`.replace(/\/\/+/g, '/');
 }
 
 function getCartSignature(cartItems = []) {
@@ -72,6 +72,12 @@ export default function WooPaymentsExpressCheckout({
     [reactId]
   );
   const normalizedContext = context === 'drawer' || context === 'product' ? context : 'cart';
+  const cartSignature = useMemo(() => getCartSignature(cartItems), [cartItems]);
+  const productSignature = useMemo(() => {
+    const parentId = getNumericId(product?.id, selectedVariation?.parent_id);
+    const variationId = getNumericId(selectedVariation?.id);
+    return parentId ? `${parentId}:${variationId || 'parent'}:${Math.max(1, Number(quantity) || 1)}` : '';
+  }, [product?.id, quantity, selectedVariation?.id, selectedVariation?.parent_id]);
 
   const surfaceUrl = useMemo(() => {
     if (disabled) return '';
@@ -172,6 +178,8 @@ export default function WooPaymentsExpressCheckout({
     <section
       className={classes}
       data-status={status}
+      data-cart-version={normalizedContext === 'product' ? undefined : cartSignature}
+      data-product-version={normalizedContext === 'product' ? productSignature : undefined}
       aria-label="Express checkout"
       aria-busy={status === 'loading' ? 'true' : 'false'}
     >
