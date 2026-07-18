@@ -27,7 +27,7 @@ export default function MobileCartCheckoutDock({ isOpen, onClose, cartItems = []
 
   return (
     <aside
-      className="dtb-mobile-cart-checkout-dock"
+      className="dtb-mobile-cart-checkout-dock hidden"
       data-wallet-state={walletState}
       aria-label="Cart checkout options"
     >
