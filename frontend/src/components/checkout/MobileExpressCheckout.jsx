@@ -1,5 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
+import { navigateDocument } from '../../utils/documentNavigation.js';
+
 const MOBILE_QUERY = '(max-width: 767px)';
 const SURFACE_MESSAGE_TYPE = 'dtb:express-checkout-surface';
 const SURFACE_TIMEOUT_MS = 8000;
@@ -41,6 +43,10 @@ function buildSurfaceUrl(surfaceId, cartSignature) {
   return url.toString();
 }
 
+function isOrderConfirmationUrl(url) {
+  return /\/checkout\/order-received\//i.test(url.pathname);
+}
+
 export default function MobileExpressCheckout({
   cartItems = [],
   variant = 'card',
@@ -48,6 +54,7 @@ export default function MobileExpressCheckout({
 }) {
   const isMobile = useMobileViewport();
   const iframeRef = useRef(null);
+  const timeoutRef = useRef(null);
   const reactId = useId();
   const surfaceId = useMemo(
     () => `dtb-express-${reactId.replace(/[^a-z0-9_-]/gi, '') || 'surface'}`,
@@ -62,23 +69,32 @@ export default function MobileExpressCheckout({
   const [status, setStatus] = useState('loading');
   const [surfaceHeight, setSurfaceHeight] = useState(MIN_SURFACE_HEIGHT);
 
+  const clearAvailabilityTimeout = () => {
+    if (!timeoutRef.current || typeof window === 'undefined') return;
+    window.clearTimeout(timeoutRef.current);
+    timeoutRef.current = null;
+  };
+
   useEffect(() => {
     if (!isMobile || cartItems.length === 0 || !surfaceUrl) {
+      clearAvailabilityTimeout();
       setStatus('unavailable');
       onAvailabilityChange?.(false);
       return undefined;
     }
 
+    clearAvailabilityTimeout();
     setStatus('loading');
     setSurfaceHeight(MIN_SURFACE_HEIGHT);
     onAvailabilityChange?.(null);
 
-    const timeoutId = window.setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
+      timeoutRef.current = null;
       setStatus('unavailable');
       onAvailabilityChange?.(false);
     }, SURFACE_TIMEOUT_MS);
 
-    return () => window.clearTimeout(timeoutId);
+    return clearAvailabilityTimeout;
   }, [cartItems.length, cartSignature, isMobile, onAvailabilityChange, surfaceUrl]);
 
   useEffect(() => {
@@ -91,6 +107,7 @@ export default function MobileExpressCheckout({
       if (!payload || payload.type !== SURFACE_MESSAGE_TYPE || payload.surfaceId !== surfaceId) return;
 
       if (payload.state === 'ready') {
+        clearAvailabilityTimeout();
         const reportedHeight = Number(payload.height);
         if (Number.isFinite(reportedHeight)) {
           setSurfaceHeight(Math.min(MAX_SURFACE_HEIGHT, Math.max(MIN_SURFACE_HEIGHT, Math.ceil(reportedHeight))));
@@ -101,6 +118,7 @@ export default function MobileExpressCheckout({
       }
 
       if (payload.state === 'unavailable') {
+        clearAvailabilityTimeout();
         setStatus('unavailable');
         onAvailabilityChange?.(false);
       }
@@ -109,6 +127,21 @@ export default function MobileExpressCheckout({
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, [onAvailabilityChange, surfaceId, surfaceUrl]);
+
+  const handleFrameLoad = () => {
+    const frameWindow = iframeRef.current?.contentWindow;
+    if (!frameWindow || typeof window === 'undefined') return;
+
+    try {
+      const currentUrl = new URL(frameWindow.location.href);
+      if (currentUrl.origin === window.location.origin && isOrderConfirmationUrl(currentUrl)) {
+        navigateDocument(currentUrl.toString(), { replace: true });
+      }
+    } catch {
+      // Stripe-controlled cross-origin authentication can temporarily make the
+      // frame location unreadable. The official gateway owns that flow.
+    }
+  };
 
   if (!isMobile || cartItems.length === 0 || status === 'unavailable') return null;
 
@@ -138,6 +171,7 @@ export default function MobileExpressCheckout({
           loading="eager"
           referrerPolicy="same-origin"
           scrolling="no"
+          onLoad={handleFrameLoad}
           style={{ height: `${surfaceHeight}px` }}
         />
       </div>
