@@ -87,7 +87,13 @@ class WooCommerceService {
   }
 
   async getPaymentGateways() {
-    const capabilities = await apiClient('/wp-json/dtb/v1/checkout/capabilities');
+    let capabilities = null;
+    try {
+      capabilities = await apiClient('/wp-json/dtb/v1/checkout/capabilities');
+    } catch (error) {
+      if (error?.status !== 404) throw error;
+      return [];
+    }
     const gateways = Array.isArray(capabilities?.gateways) ? capabilities.gateways : [];
     return gateways.flatMap((gateway) => {
       if (Array.isArray(gateway?.payment_methods)) return gateway.payment_methods;

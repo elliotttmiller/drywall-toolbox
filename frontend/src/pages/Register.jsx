@@ -28,6 +28,7 @@ import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, UserPlus, AlertCircle, CheckCircle, ShoppingCart } from 'lucide-react';
 
 import { useAuthContext } from '../auth/AuthContext.js';
+import '../styles/auth-frosted-glass.css';
 
 // ─── Password strength scoring ────────────────────────────────────────────────
 
@@ -178,35 +179,31 @@ export default function Register() {
   const busy = submitting || isLoading;
 
   return (
-    <div className="page-wrapper" style={ { minHeight: '100vh' } }>
+    <div className="page-wrapper dtb-auth" style={ { minHeight: '100vh' } }>
       {/* ── Two-column wrapper — card left, hero right ── */}
-      <div style={ {
+      <div className="dtb-auth__layout" style={ {
         display:             'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
         minHeight:           '100vh',
       } }>
 
         {/* ── Left: registration card ── */}
-        <div style={ {
+        <div className="dtb-auth__form-panel" style={ {
           display:         'flex',
           alignItems:      'center',
           justifyContent:  'center',
           padding:         'clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem)',
-          background:      '#f8fafc',
           order:           0,
         } }>
           <Motion.div
+            className="dtb-auth__card"
             variants={ cardVariants }
             initial="hidden"
             animate="visible"
             style={ {
-              background:   'white',
-              border:       '1px solid rgba(15,23,42,0.08)',
-              borderRadius: '8px',
               padding:      'clamp(2rem, 5vw, 2.75rem)',
               width:        '100%',
               maxWidth:     '440px',
-              boxShadow:    '0 8px 32px rgba(15,23,42,0.07)',
             } }
           >
             {/* Card header */}
@@ -471,7 +468,7 @@ export default function Register() {
               >
                 <button
                   type="submit"
-                  className="alloy-button w-full justify-center"
+                  className="alloy-button dtb-auth__submit w-full justify-center"
                   disabled={ busy }
                   style={ { opacity: busy ? 0.75 : 1, transition: 'opacity 0.2s' } }
                 >

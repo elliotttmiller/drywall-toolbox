@@ -200,30 +200,18 @@ module.exports = (envFlags, argv) => {
     },
   };
 
-  // Static 4xx/5xx error pages are an Apache/.htaccess static-hosting concern —
-  // webpack-dev-server never serves them (it handles routing via
-  // historyApiFallback), so this plugin is scoped to production builds only.
-  // Previously it ran on every dev rebuild too, re-reading the template from
-  // disk and re-emitting 35 unused assets on every HMR pass.
-  //
-  // The template is also read once here (outside the compilation hook)
-  // instead of on every compilation/rebuild, since its content only depends
-  // on PUBLIC_URL, which is fixed for the lifetime of this config instance.
-  const errorPageTemplate = isDev
-    ? null
-    : fs.readFileSync(path.resolve(__dirname, 'error-page.html'), 'utf8')
-        .replaceAll('__PUBLIC_URL__', PUBLIC_URL);
-
   const EmitServerErrorPagesPlugin = {
     apply(compiler) {
       compiler.hooks.thisCompilation.tap('EmitServerErrorPagesPlugin', (compilation) => {
         compilation.hooks.processAssets.tap(
           { name: 'EmitServerErrorPagesPlugin', stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL },
           () => {
+            const template = fs.readFileSync(path.resolve(__dirname, 'error-page.html'), 'utf8')
+              .replaceAll('__PUBLIC_URL__', PUBLIC_URL);
             for (const code of SERVER_ERROR_CODES) {
               compilation.emitAsset(
                 `errors/${code}.html`,
-                new webpack.sources.RawSource(errorPageTemplate.replaceAll('__ERROR_CODE__', String(code))),
+                new webpack.sources.RawSource(template.replaceAll('__ERROR_CODE__', String(code))),
               );
             }
           },
@@ -394,10 +382,7 @@ module.exports = (envFlags, argv) => {
         ],
       }),
 
-      // Production-only: static error pages for Apache/.htaccess hosting.
-      // Skipped in dev — webpack-dev-server never serves these, and the
-      // template is now read once above instead of on every rebuild.
-      ...(!isDev ? [EmitServerErrorPagesPlugin] : []),
+      EmitServerErrorPagesPlugin,
 
       ...(!isDev ? [
         new MiniCssExtractPlugin({
@@ -636,8 +621,8 @@ module.exports = (envFlags, argv) => {
         /\.(js|css)$/.test(assetFilename) && !assetFilename.endsWith('.map'),
     },
 
-    // Both branches previously resolved to the same value ('errors-warnings');
-    // simplified to remove the no-op conditional.
-    stats: 'errors-warnings',
+    stats: isDev ? 'errors-warnings' : 'errors-warnings',
   };
 };
+
+

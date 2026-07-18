@@ -1,8 +1,6 @@
 /*
- * Mobile-only DTB adaptations of the supplied sign-in, sign-up, and checkout
- * card/drawer references. Desktop presentation and all business workflows stay
- * unchanged. The auth selectors intentionally key off stable form control IDs
- * so no authentication logic or page component structure is duplicated.
+ * DTB mobile-only auth cards and cart-to-checkout drawer.
+ * Desktop rendering and all auth/cart/checkout behavior remain unchanged.
  */
 
 @media (max-width: 767px) {
@@ -11,8 +9,8 @@
     .page-wrapper:has(#reg-email) {
       min-height: calc(100dvh - var(--header-height, 0px)) !important;
       background:
-        radial-gradient(circle at 16% 4%, rgba(59, 130, 246, 0.28), transparent 34%),
-        linear-gradient(155deg, var(--dtb-shell, #0a1020) 0%, #101d39 54%, #17365d 100%);
+        radial-gradient(circle at 14% 2%, rgba(59, 130, 246, 0.28), transparent 34%),
+        linear-gradient(155deg, var(--dtb-shell, #0a1020), #101d39 56%, #17365d);
     }
 
     .page-wrapper:has(#login-email) > div,
@@ -21,6 +19,7 @@
       min-height: calc(100dvh - var(--header-height, 0px)) !important;
     }
 
+    /* Mobile keeps the reference card treatment and removes desktop hero panels. */
     .page-wrapper:has(#login-email) > div > div:first-child,
     .page-wrapper:has(#reg-email) > div > div:last-child {
       display: none !important;
@@ -29,13 +28,13 @@
     .page-wrapper:has(#login-email) > div > div:last-child,
     .page-wrapper:has(#reg-email) > div > div:first-child {
       min-height: calc(100dvh - var(--header-height, 0px)) !important;
+      align-items: flex-start !important;
       padding:
         clamp(20px, 5vw, 28px)
         max(var(--dtb-mobile-gutter, 16px), env(safe-area-inset-right, 0px))
         calc(28px + env(safe-area-inset-bottom, 0px))
         max(var(--dtb-mobile-gutter, 16px), env(safe-area-inset-left, 0px)) !important;
       background: transparent !important;
-      align-items: flex-start !important;
     }
 
     .page-wrapper:has(#login-email) div:has(> form #login-email),
@@ -60,20 +59,15 @@
     }
 
     .page-wrapper:has(#login-email) div:has(> form #login-email) {
-      background:
-        linear-gradient(145deg, rgba(18, 32, 61, 0.98), rgba(7, 15, 31, 0.99)) !important;
+      background: linear-gradient(145deg, rgba(18, 32, 61, 0.98), rgba(7, 15, 31, 0.99)) !important;
       border: 1px solid rgba(147, 197, 253, 0.17) !important;
-      box-shadow:
-        0 28px 70px rgba(2, 6, 23, 0.44),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+      box-shadow: 0 28px 70px rgba(2, 6, 23, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
     }
 
     .page-wrapper:has(#reg-email) div:has(> form #reg-email) {
       background: rgba(255, 255, 255, 0.985) !important;
       border: 1px solid rgba(191, 219, 254, 0.72) !important;
-      box-shadow:
-        0 28px 70px rgba(2, 6, 23, 0.34),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 28px 70px rgba(2, 6, 23, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
     }
 
     .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child,
@@ -86,16 +80,16 @@
       width: 46px !important;
       height: 46px !important;
       margin-bottom: 15px !important;
+      border: 1px solid rgba(96, 165, 250, 0.24);
       border-radius: 14px !important;
       background: linear-gradient(145deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.08)) !important;
-      border: 1px solid rgba(96, 165, 250, 0.24);
     }
 
-    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child > div:first-child svg {
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child svg {
       color: #93c5fd !important;
     }
 
-    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child > div:first-child svg {
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child svg {
       color: var(--dtb-primary, #2563eb) !important;
     }
 
@@ -168,10 +162,7 @@
       background-repeat: no-repeat !important;
       background-position: 16px center !important;
       background-size: 18px 18px !important;
-      transition:
-        border-color 180ms ease,
-        box-shadow 180ms ease,
-        background-color 180ms ease !important;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
     }
 
     .page-wrapper:has(#login-email) .machined-input {
@@ -204,35 +195,39 @@
 
     .page-wrapper:has(#reg-email) .machined-input:focus {
       border-color: var(--dtb-primary, #2563eb) !important;
-      background-color: #ffffff !important;
+      background-color: #fff !important;
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
     }
 
     .page-wrapper:has(#login-email) #login-email,
     .page-wrapper:has(#reg-email) #reg-email {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") !important;
     }
 
     .page-wrapper:has(#reg-email) #reg-email {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") !important;
     }
 
     .page-wrapper:has(#reg-email) #reg-first,
     .page-wrapper:has(#reg-email) #reg-last {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") !important;
     }
 
     .page-wrapper:has(#login-email) #login-password {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") !important;
     }
 
     .page-wrapper:has(#reg-email) #reg-password,
     .page-wrapper:has(#reg-email) #reg-confirm {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#reg-email) #reg-confirm {
+      padding-right: 76px !important;
     }
 
     .page-wrapper:has(#reg-email) #reg-referral {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9a3 3 0 0 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z'/%3E%3Cpath d='M13 5v2'/%3E%3Cpath d='M13 17v2'/%3E%3Cpath d='M13 11v2'/%3E%3C/svg%3E") !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9a3 3 0 0 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z'/%3E%3Cpath d='M13 5v2M13 11v2M13 17v2'/%3E%3C/svg%3E") !important;
     }
 
     .page-wrapper:has(#login-email) form button[aria-label*="password"],
@@ -257,7 +252,7 @@
     .page-wrapper:has(#reg-email) .alloy-button {
       min-height: 52px;
       border-radius: 13px !important;
-      background: linear-gradient(135deg, #17365d 0%, var(--dtb-primary, #2563eb) 100%) !important;
+      background: linear-gradient(135deg, #17365d, var(--dtb-primary, #2563eb)) !important;
       box-shadow: 0 12px 26px rgba(37, 99, 235, 0.25);
       font-size: 0.86rem !important;
       letter-spacing: 0.08em !important;
@@ -277,8 +272,8 @@
 
     .page-wrapper:has(#login-email) div:has(> form #login-email) > a:last-child {
       min-height: 50px;
-      border-radius: 13px !important;
       border-color: rgba(147, 197, 253, 0.22) !important;
+      border-radius: 13px !important;
       background: rgba(255, 255, 255, 0.06);
       color: rgba(226, 232, 240, 0.88) !important;
     }
@@ -288,6 +283,7 @@
     }
   }
 
+  /* Mobile cart becomes a branded bottom checkout drawer. */
   .cart-overlay {
     background: rgba(2, 6, 23, 0.68) !important;
     backdrop-filter: blur(4px);
@@ -304,9 +300,9 @@
     height: min(88dvh, 760px);
     max-height: calc(100dvh - 12px);
     margin-top: 0 !important;
-    border-radius: 24px 24px 0 0;
     border: 1px solid rgba(147, 197, 253, 0.16);
     border-bottom: 0;
+    border-radius: 24px 24px 0 0;
     background: var(--dtb-shell, #0a1020) !important;
     box-shadow: 0 -24px 70px rgba(2, 6, 23, 0.48) !important;
     transform: translateY(105%) !important;
@@ -340,12 +336,17 @@
   }
 
   .storefront-cart-sheet .scs-header-icon {
-    background: rgba(59, 130, 246, 0.16) !important;
     border: 1px solid rgba(96, 165, 250, 0.22);
+    background: rgba(59, 130, 246, 0.16) !important;
     color: #93c5fd !important;
   }
 
-  .storefront-cart-sheet .scs-title {
+  .storefront-cart-sheet .scs-title,
+  .storefront-cart-sheet .scs-item-name,
+  .storefront-cart-sheet .scs-item-line-total,
+  .storefront-cart-sheet .scs-qty-display,
+  .storefront-cart-sheet .scs-subtotal-amount,
+  .storefront-cart-sheet .scs-empty-title {
     color: #f8fafc !important;
   }
 
@@ -389,16 +390,11 @@
     height: 66px !important;
     border-color: rgba(226, 232, 240, 0.24) !important;
     border-radius: 12px !important;
-    background: #ffffff !important;
+    background: #fff !important;
   }
 
-  .storefront-cart-sheet .scs-item-name,
-  .storefront-cart-sheet .scs-item-line-total,
-  .storefront-cart-sheet .scs-qty-display {
-    color: #f8fafc !important;
-  }
-
-  .storefront-cart-sheet .scs-item-sku {
+  .storefront-cart-sheet .scs-item-sku,
+  .storefront-cart-sheet .scs-empty-body {
     color: #94a3b8 !important;
   }
 
@@ -413,8 +409,8 @@
   }
 
   .storefront-cart-sheet .scs-item-remove:hover {
-    color: #fca5a5 !important;
     background: rgba(239, 68, 68, 0.12) !important;
+    color: #fca5a5 !important;
   }
 
   .storefront-cart-sheet .scs-item-qty-row {
@@ -467,7 +463,6 @@
   }
 
   .storefront-cart-sheet .scs-subtotal-amount {
-    color: #f8fafc !important;
     font-size: clamp(1.25rem, 6vw, 1.55rem) !important;
   }
 
@@ -505,14 +500,6 @@
     color: #93c5fd !important;
   }
 
-  .storefront-cart-sheet .scs-empty-title {
-    color: #f8fafc !important;
-  }
-
-  .storefront-cart-sheet .scs-empty-body {
-    color: #94a3b8 !important;
-  }
-
   .storefront-cart-sheet .scs-browse-btn {
     background: linear-gradient(135deg, #17365d, #2563eb) !important;
     color: #fff !important;
@@ -537,12 +524,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cart-panel.storefront-cart-sheet,
-  .page-wrapper:has(#login-email) div:has(> form #login-email),
-  .page-wrapper:has(#reg-email) div:has(> form #reg-email),
-  .page-wrapper:has(#login-email) .machined-input,
-  .page-wrapper:has(#reg-email) .machined-input {
+  .cart-panel.storefront-cart-sheet {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  @supports selector(.page-wrapper:has(#login-email)) {
+    .page-wrapper:has(#login-email) div:has(> form #login-email),
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email),
+    .page-wrapper:has(#login-email) .machined-input,
+    .page-wrapper:has(#reg-email) .machined-input {
+      transition: none !important;
+      animation: none !important;
+    }
   }
 }

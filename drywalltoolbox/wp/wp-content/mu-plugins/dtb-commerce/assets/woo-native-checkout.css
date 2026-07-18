@@ -71,6 +71,139 @@ body.dtb-woo-native-checkout .wp-site-blocks {
   font-weight: 800;
 }
 
+.dtb-woo-checkout-progress,
+.dtb-woo-checkout-progress *,
+.dtb-woo-checkout-progress *::before,
+.dtb-woo-checkout-progress *::after {
+  box-sizing: border-box;
+}
+
+.dtb-woo-checkout-progress {
+  overflow: hidden;
+  margin-top: 22px;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+}
+
+.dtb-woo-checkout-progress__steps {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 15px 20px;
+  list-style: none;
+}
+
+.dtb-woo-checkout-progress__step {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.dtb-woo-checkout-progress__circle {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #dbe4f0;
+  border-radius: 999px;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.dtb-woo-checkout-progress__step.is-active .dtb-woo-checkout-progress__circle {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.dtb-woo-checkout-progress__info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.dtb-woo-checkout-progress__info span {
+  color: #64748b;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dtb-woo-checkout-progress__info strong {
+  margin-top: 2px;
+  color: #64748b;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.dtb-woo-checkout-progress__step.is-active .dtb-woo-checkout-progress__info span {
+  color: #2563eb;
+}
+
+.dtb-woo-checkout-progress__step.is-active .dtb-woo-checkout-progress__info strong {
+  color: #0f172a;
+}
+
+.dtb-woo-checkout-progress__connector {
+  position: relative;
+  height: 2px;
+  flex: 1;
+  min-width: 32px;
+  margin: 0 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dbe4f0;
+}
+
+.dtb-woo-checkout-progress__connector::after {
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  border-radius: inherit;
+  background: #2563eb;
+  content: '';
+}
+
+.dtb-woo-checkout-progress__summary {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid rgba(37, 99, 235, 0.1);
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.dtb-woo-checkout-progress__track {
+  width: min(220px, 42%);
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.14);
+}
+
+.dtb-woo-checkout-progress__track span {
+  display: block;
+  width: 50%;
+  height: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+}
+
 .dtb-woo-checkout-card {
   margin-top: 22px;
   border: 1px solid rgba(15, 23, 42, 0.10);
@@ -137,5 +270,35 @@ body.dtb-woo-native-checkout .wp-site-blocks {
   .dtb-woo-checkout-trust span {
     flex: 1 1 100%;
     justify-content: center;
+  }
+
+  .dtb-woo-checkout-progress {
+    border-radius: 18px;
+  }
+
+  .dtb-woo-checkout-progress__info {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .dtb-woo-checkout-progress__summary {
+    padding-inline: 14px;
+  }
+
+  .dtb-woo-checkout-progress__track {
+    width: auto;
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dtb-woo-checkout-progress__circle,
+  .dtb-woo-checkout-progress__track span {
+    transition: none;
   }
 }

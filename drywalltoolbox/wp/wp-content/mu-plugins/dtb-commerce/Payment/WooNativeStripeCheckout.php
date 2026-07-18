@@ -18,6 +18,7 @@ final class DTB_WooNativeStripeCheckout {
 	private const OFFICIAL_GATEWAY_ID  = 'stripe';
 
 	public static function register(): void {
+		add_action( 'rest_api_init', [ __CLASS__, 'register_rest_routes' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_checkout_assets' ], 20 );
 		add_filter( 'body_class', [ __CLASS__, 'body_class' ] );
 		add_filter( 'the_content', [ __CLASS__, 'checkout_content' ], 20 );
@@ -29,6 +30,57 @@ final class DTB_WooNativeStripeCheckout {
 		add_action( 'admin_notices', [ __CLASS__, 'admin_notices' ] );
 	}
 
+	public static function register_rest_routes(): void {
+		register_rest_route(
+			'dtb/v1',
+			'/checkout/capabilities',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ __CLASS__, 'checkout_capabilities' ],
+				'permission_callback' => '__return_true',
+			]
+		);
+	}
+
+	public static function checkout_capabilities(): WP_REST_Response {
+		$gateways = [];
+		if ( function_exists( 'WC' ) && WC()->payment_gateways() ) {
+			foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
+				if ( ! is_object( $gateway ) || ! isset( $gateway->id ) ) {
+					continue;
+				}
+				$id      = sanitize_key( (string) $gateway->id );
+				$enabled = isset( $gateway->enabled ) && 'yes' === (string) $gateway->enabled;
+				if ( self::OFFICIAL_GATEWAY_ID !== $id && ! str_starts_with( $id, self::OFFICIAL_GATEWAY_ID . '_' ) ) {
+					continue;
+				}
+				$gateways[] = [
+					'id'              => $id,
+					'title'           => sanitize_text_field( (string) ( $gateway->method_title ?? $gateway->title ?? 'Stripe' ) ),
+					'enabled'         => $enabled,
+					'provider'        => 'woo_official_stripe',
+					'contract'        => self::CONTRACT_VERSION,
+					'payment_methods' => [
+						[
+							'id'       => $id,
+							'title'    => sanitize_text_field( (string) ( $gateway->title ?? 'Stripe' ) ),
+							'enabled'  => $enabled,
+							'provider' => 'woo_official_stripe',
+						],
+					],
+				];
+			}
+		}
+
+		return rest_ensure_response(
+			[
+				'checkout' => 'woo_native',
+				'contract' => self::CONTRACT_VERSION,
+				'gateways' => $gateways,
+			]
+		);
+	}
+
 	public static function enqueue_checkout_assets(): void {
 		if ( ! self::is_primary_checkout_request() ) {
 			return;
@@ -37,7 +89,7 @@ final class DTB_WooNativeStripeCheckout {
 			'dtb-woo-native-checkout',
 			content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout.css' ),
 			[],
-			'2026.07.17'
+			'2026.07.17.1'
 		);
 	}
 
@@ -69,6 +121,23 @@ final class DTB_WooNativeStripeCheckout {
 			. '<span>Veeqo fulfillment sync</span>'
 			. '</div>'
 			. '</header>'
+			. '<nav class="dtb-woo-checkout-progress" aria-label="Checkout progress">'
+			. '<ol class="dtb-woo-checkout-progress__steps">'
+			. '<li class="dtb-woo-checkout-progress__step is-active" aria-current="step">'
+			. '<span class="dtb-woo-checkout-progress__circle" aria-hidden="true">1</span>'
+			. '<span class="dtb-woo-checkout-progress__info"><span>Step 1</span><strong>Checkout</strong></span>'
+			. '</li>'
+			. '<li class="dtb-woo-checkout-progress__connector" aria-hidden="true"></li>'
+			. '<li class="dtb-woo-checkout-progress__step">'
+			. '<span class="dtb-woo-checkout-progress__circle" aria-hidden="true">2</span>'
+			. '<span class="dtb-woo-checkout-progress__info"><span>Step 2</span><strong>Confirmation</strong></span>'
+			. '</li>'
+			. '</ol>'
+			. '<div class="dtb-woo-checkout-progress__summary">'
+			. '<span>Step 1 of 2 — Details and secure payment</span>'
+			. '<span class="dtb-woo-checkout-progress__track" role="progressbar" aria-label="Checkout completion" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1"><span></span></span>'
+			. '</div>'
+			. '</nav>'
 			. '<section class="dtb-woo-checkout-card" aria-label="Checkout form">'
 			. $checkout_markup
 			. '</section>'

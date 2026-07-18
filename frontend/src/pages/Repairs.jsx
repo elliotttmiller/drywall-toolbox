@@ -31,6 +31,7 @@ import {
 import { uploadRepairMedia } from '../api/repairs.js';
 import veeqoService from '../services/veeqo';
 import '../styles/repairs-workflow.css';
+import '../styles/repair-step-nav.css';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Brands & tools sourced from schematicMappings — the single source of truth
@@ -588,73 +589,57 @@ export default function Repairs() {
    ───────────────────────────────────────────────────────────────────────── */
 function ProgressBar({ step, total, onStepSelect }) {
   const pct = ((step - 1) / (total - 1)) * 100;
+
   return (
-    <div style={{ marginBottom: '32px' }}>
-      {/* Step labels */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '10px',
-        gap: '4px',
-      }}>
-        {STEPS.map((s) => (
-          <button
-            type="button"
-            key={s.id}
-            onClick={() => onStepSelect?.(s.id)}
-            style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            flex: 1,
-            gap: '6px',
-            border: 'none',
-            background: 'transparent',
-            padding: 0,
-            cursor: 'pointer',
-          }}>
-            <div style={{
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '0.78rem',
-              transition: 'background 0.3s, color 0.3s, border-color 0.3s',
-              border: s.id <= step ? '2px solid var(--primary-600)' : '2px solid rgba(15,23,42,0.15)',
-              background: s.id < step ? 'var(--primary-600)' : s.id === step ? '#eff6ff' : 'white',
-              color: s.id < step ? 'white' : s.id === step ? 'var(--primary-600)' : 'rgba(15,23,42,0.35)',
-              flexShrink: 0,
-            }}>
-              {s.id < step
-                ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                : s.id}
-            </div>
-            <span style={{
-              fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)',
-              fontWeight: s.id === step ? 700 : 500,
-              color: s.id === step ? 'var(--primary-600)' : s.id < step ? 'rgba(15,23,42,0.55)' : 'rgba(15,23,42,0.3)',
-              whiteSpace: 'nowrap',
-              letterSpacing: '0.02em',
-            }}>
-              {s.short}
-            </span>
-          </button>
-        ))}
+    <nav aria-label="Repair inquiry progress" className="repair-step-nav">
+      <ol className="repair-step-nav__steps">
+        {STEPS.map((s, index) => {
+          const done = s.id < step;
+          const active = s.id === step;
+          const stateClass = done ? ' is-done' : active ? ' is-active' : '';
+
+          return (
+            <li key={s.id} className={`repair-step-nav__step${stateClass}`}>
+              <button
+                type="button"
+                className="repair-step-nav__content"
+                onClick={() => onStepSelect?.(s.id)}
+                aria-current={active ? 'step' : undefined}
+                aria-label={`Step ${s.id}: ${s.short}${done ? ', completed' : active ? ', current' : ''}`}
+              >
+                <span className="repair-step-nav__circle" aria-hidden="true">
+                  {done
+                    ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    : s.id}
+                </span>
+                <span className="repair-step-nav__info" aria-hidden="true">
+                  <span className="repair-step-nav__label">Step {s.id}</span>
+                  <span className="repair-step-nav__title">{s.short}</span>
+                </span>
+              </button>
+              {index < STEPS.length - 1 && (
+                <span className="repair-step-nav__connector" aria-hidden="true" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      <div className="repair-step-nav__summary">
+        <span className="repair-step-nav__summary-text">
+          Step {step} of {total} — {STEPS[step - 1]?.short}
+        </span>
+        <span
+          className="repair-step-nav__progress-track"
+          role="progressbar"
+          aria-label="Repair inquiry completion"
+          aria-valuemin="1"
+          aria-valuemax={total}
+          aria-valuenow={step}
+        >
+          <span className="repair-step-nav__progress-bar" style={{ '--repair-progress': `${pct}%` }} />
+        </span>
       </div>
-      {/* Progress track */}
-      <div style={{ height: '4px', background: 'rgba(15,23,42,0.08)', borderRadius: '99px', overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          width: `${pct}%`,
-          background: 'linear-gradient(90deg, var(--primary-600), #3b82f6)',
-          borderRadius: '99px',
-          transition: 'width 0.45s cubic-bezier(0.16,1,0.3,1)',
-        }} />
-      </div>
-    </div>
+    </nav>
   );
 }
 

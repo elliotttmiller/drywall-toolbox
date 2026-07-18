@@ -2,23 +2,25 @@ import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import SEOHead from '../components/shared/SEOHead.jsx';
+import { API_BASE_URL } from '../api/client.js';
 import { navigateDocument } from '../utils/documentNavigation.js';
 
 const CHECKOUT_QUERY_FLAG = 'dtb_woo_checkout';
+const CHECKOUT_PATH = '/checkout/';
 
 function checkoutPath() {
-  const publicUrl = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
-  return `${publicUrl}/checkout/`;
+  return CHECKOUT_PATH;
 }
 
 function checkoutUrl() {
+  const origin = (API_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')).replace(/\/+$/, '');
   const path = checkoutPath();
 
   if (typeof window === 'undefined') {
     return `${path}?${CHECKOUT_QUERY_FLAG}=1`;
   }
 
-  const url = new URL(path, window.location.origin);
+  const url = new URL(path, origin || window.location.origin);
   url.searchParams.set(CHECKOUT_QUERY_FLAG, '1');
   return url.toString();
 }
@@ -28,10 +30,15 @@ function isWooCheckoutHandoffRequest() {
   return new URLSearchParams(window.location.search).get(CHECKOUT_QUERY_FLAG) === '1';
 }
 
+function isCanonicalWooCheckoutPath() {
+  if (typeof window === 'undefined') return false;
+  return window.location.pathname.replace(/\/+$/, '') === CHECKOUT_PATH.replace(/\/+$/, '');
+}
+
 export default function WooNativeCheckout() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
-    if (isWooCheckoutHandoffRequest()) return undefined;
+    if (isWooCheckoutHandoffRequest() && isCanonicalWooCheckoutPath()) return undefined;
     navigateDocument(checkoutUrl(), { replace: true });
     return undefined;
   }, []);

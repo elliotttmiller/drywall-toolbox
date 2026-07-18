@@ -5,14 +5,9 @@
   "type": "module",
   "homepage": "https://drywalltoolbox.com",
   "scripts": {
-    "predev": "node scripts/assert-public-env-safe.cjs pre",
     "dev": "webpack serve --config webpack.config.cjs --mode development",
-    "prebuild": "node scripts/assert-public-env-safe.cjs pre",
-    "build": "webpack --config webpack.config.cjs --mode production",
-    "postbuild": "node scripts/assert-public-env-safe.cjs post",
-    "prebuild:staging": "node scripts/assert-public-env-safe.cjs pre",
-    "build:staging": "cross-env APP_ENV=staging PUBLIC_URL=/staging/2972 webpack --config webpack.config.cjs --mode production",
-    "postbuild:staging": "cross-env APP_ENV=staging node scripts/assert-public-env-safe.cjs post",
+    "build": "node scripts/assert-public-env-safe.cjs pre && webpack --config webpack.config.cjs --mode production && node scripts/assert-public-env-safe.cjs post",
+    "build:staging": "cross-env APP_ENV=staging PUBLIC_URL=/staging/2972 node scripts/assert-public-env-safe.cjs pre && cross-env APP_ENV=staging PUBLIC_URL=/staging/2972 webpack --config webpack.config.cjs --mode production && cross-env APP_ENV=staging node scripts/assert-public-env-safe.cjs post",
     "reviews-server": "node server/index.js",
     "lint": "eslint src",
     "preview": "webpack serve --config webpack.config.cjs --mode production"
@@ -65,7 +60,7 @@
     "webpack": "^5.106.1",
     "webpack-bundle-analyzer": "^5.3.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.2.2",
+    "webpack-dev-server": "^5.2.6",
     "workbox-webpack-plugin": "^7.4.1"
   }
 }

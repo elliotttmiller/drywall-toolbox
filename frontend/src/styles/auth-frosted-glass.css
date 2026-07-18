@@ -1,0 +1,151 @@
+.dtb-auth,
+.dtb-auth *,
+.dtb-auth *::before,
+.dtb-auth *::after {
+  box-sizing: border-box;
+}
+
+.dtb-auth {
+  --dtb-auth-bg: #071224;
+  --dtb-auth-orb-blue: #2563eb;
+  --dtb-auth-orb-cyan: #0891b2;
+  --dtb-auth-orb-deep-blue: #1d4ed8;
+  --dtb-auth-glass: rgba(255, 255, 255, 0.78);
+  --dtb-auth-glass-border: rgba(255, 255, 255, 0.58);
+  position: relative;
+  overflow: hidden;
+  background: var(--dtb-auth-bg);
+  isolation: isolate;
+}
+
+.dtb-auth__layout {
+  position: relative;
+  z-index: 1;
+}
+
+.dtb-auth__form-panel {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 20% 15%, rgba(37, 99, 235, 0.46), transparent 38%),
+    radial-gradient(circle at 86% 78%, rgba(8, 145, 178, 0.32), transparent 34%),
+    var(--dtb-auth-bg);
+  background-size: 40px 40px, 40px 40px, auto, auto, auto;
+  isolation: isolate;
+}
+
+.dtb-auth__form-panel::before,
+.dtb-auth__form-panel::after {
+  position: absolute;
+  z-index: -1;
+  border-radius: 999px;
+  content: '';
+  filter: blur(70px);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.dtb-auth__form-panel::before {
+  top: -10%;
+  left: -8%;
+  width: clamp(15rem, 34vw, 28rem);
+  aspect-ratio: 1;
+  background: var(--dtb-auth-orb-deep-blue);
+  opacity: 0.3;
+  animation: dtb-auth-orb-one 18s ease-in-out infinite alternate;
+}
+
+.dtb-auth__form-panel::after {
+  right: -10%;
+  bottom: -10%;
+  width: clamp(14rem, 30vw, 24rem);
+  aspect-ratio: 1;
+  background: var(--dtb-auth-orb-cyan);
+  opacity: 0.26;
+  animation: dtb-auth-orb-two 22s ease-in-out infinite alternate;
+}
+
+.dtb-auth__card {
+  position: relative;
+  z-index: 1;
+  border: 1px solid var(--dtb-auth-glass-border);
+  border-radius: 1.5rem;
+  background: var(--dtb-auth-glass);
+  box-shadow: 0 24px 70px rgba(2, 8, 23, 0.38), 0 1px 0 rgba(255, 255, 255, 0.82) inset;
+  backdrop-filter: blur(26px) saturate(155%);
+  -webkit-backdrop-filter: blur(26px) saturate(155%);
+}
+
+.dtb-auth__card .machined-input {
+  border-color: rgba(15, 23, 42, 0.13);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+}
+
+.dtb-auth__card .machined-input:focus {
+  border-color: #2563eb;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+.dtb-auth__submit {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+}
+
+.dtb-auth__submit::before {
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+  content: '';
+  animation: dtb-auth-shimmer 2.8s linear infinite;
+  pointer-events: none;
+}
+
+.dtb-auth__submit > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes dtb-auth-orb-one {
+  to { transform: translate(4rem, 5rem) scale(1.12); }
+}
+
+@keyframes dtb-auth-orb-two {
+  to { transform: translate(-4rem, -4rem) scale(1.16); }
+}
+
+@keyframes dtb-auth-shimmer {
+  to { left: 160%; }
+}
+
+@media (max-width: 767px) {
+  .dtb-auth__card {
+    border-radius: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dtb-auth__form-panel::before,
+  .dtb-auth__form-panel::after,
+  .dtb-auth__submit::before {
+    animation: none;
+  }
+
+  .dtb-auth__card .machined-input {
+    transition: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dtb-auth__card {
+    background: rgba(255, 255, 255, 0.96);
+  }
+}

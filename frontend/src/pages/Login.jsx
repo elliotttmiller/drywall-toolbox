@@ -29,6 +29,7 @@ import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, LogIn, AlertCircle, ShoppingCart } from 'lucide-react';
 
 import { useAuthContext } from '../auth/AuthContext.js';
+import '../styles/auth-frosted-glass.css';
 
 const cardVariants = {
   hidden:  { opacity: 0, y: 24, scale: 0.98 },
@@ -111,8 +112,8 @@ export default function Login() {
   const busy = submitting || isLoading;
 
   return (
-    <div className="page-wrapper" style={ { minHeight: '100vh' } }>
-      <div style={ {
+    <div className="page-wrapper dtb-auth" style={ { minHeight: '100vh' } }>
+      <div className="dtb-auth__layout" style={ {
         display:             'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
         minHeight:           '100vh',
@@ -205,25 +206,21 @@ export default function Login() {
           </Motion.div>
         </div>
 
-        <div style={ {
+        <div className="dtb-auth__form-panel" style={ {
           display:         'flex',
           alignItems:      'center',
           justifyContent:  'center',
           padding:         'clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem)',
-          background:      '#f8fafc',
         } }>
           <Motion.div
+            className="dtb-auth__card"
             variants={ cardVariants }
             initial="hidden"
             animate="visible"
             style={ {
-              background:   'white',
-              border:       '1px solid rgba(15,23,42,0.08)',
-              borderRadius: '8px',
               padding:      'clamp(2rem, 5vw, 2.75rem)',
               width:        '100%',
               maxWidth:     '420px',
-              boxShadow:    '0 8px 32px rgba(15,23,42,0.07)',
             } }
           >
             <div style={ { marginBottom: '28px' } }>
@@ -338,7 +335,7 @@ export default function Login() {
               </Motion.div>
 
               <Motion.div custom={ 2 } variants={ fieldVariants } initial="hidden" animate="visible" style={ { marginTop: '8px' } }>
-                <button type="submit" className="alloy-button w-full justify-center" disabled={ busy } style={ { opacity: busy ? 0.75 : 1, transition: 'opacity 0.2s' } }>
+                <button type="submit" className="alloy-button dtb-auth__submit w-full justify-center" disabled={ busy } style={ { opacity: busy ? 0.75 : 1, transition: 'opacity 0.2s' } }>
                   { busy ? <BreathingLoader /> : 'Sign In' }
                 </button>
               </Motion.div>
