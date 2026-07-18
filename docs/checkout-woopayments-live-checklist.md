@@ -85,6 +85,28 @@ Run in WooPayments test/sandbox mode before live mode:
 24. Confirm refund and failure events update Woo order state/notes as expected.
 25. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
 
+## Validation commands
+
+Frontend:
+
+```powershell
+cd frontend
+npm ci --include=dev
+npm run lint
+npm run build
+```
+
+Backend:
+
+```powershell
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsNativeCheckout.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsExpressCheckoutSurface.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/bootstrap.php
+.\scripts\smoke-dtb-mu-modules.ps1
+git diff --check
+```
+
 ## Rollback
 
 If checkout fails after deploy:
