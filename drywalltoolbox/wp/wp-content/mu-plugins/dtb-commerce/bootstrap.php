@@ -17,6 +17,7 @@ require_once __DIR__ . '/Services/OrderTypeService.php';
 require_once __DIR__ . '/Services/OrderAdminQueryService.php';
 require_once __DIR__ . '/Validation/CheckoutValidator.php';
 require_once __DIR__ . '/Domain/PaymentState.php';
+require_once __DIR__ . '/Payment/WooFrontendTracksGuard.php';
 require_once __DIR__ . '/Payment/WooPaymentsExpressCheckoutSurface.php';
 require_once __DIR__ . '/Payment/WooPaymentsNativeCheckout.php';
 require_once __DIR__ . '/Shipping/DTBShippingMethod.php';
