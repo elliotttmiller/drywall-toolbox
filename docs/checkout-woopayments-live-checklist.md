@@ -42,10 +42,17 @@ Confirm this renders the DTB WooPayments checkout shell and visible Woo checkout
 https://drywalltoolbox.com/checkout/
 ```
 
-Confirm this returns a noindex same-origin express surface and does not expose secrets:
+Confirm these return noindex same-origin express surfaces and do not expose secrets:
 
 ```text
 https://drywalltoolbox.com/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart
+https://drywalltoolbox.com/checkout/?dtb_wcpay_express_surface=1&dtb_context=product&product_id={woo_product_id}&quantity=1
+```
+
+Confirm the optional WooCommerce frontend tracking script is not emitted on DTB checkout shells if it would crash checkout initialization:
+
+```text
+frontend-tracks.js should be absent from /checkout/?dtb_woo_checkout=1 when it throws Cannot read properties of undefined (reading 'url')
 ```
 
 Confirm these WordPress routes are not rewritten to React:
@@ -62,21 +69,25 @@ Run in WooPayments test/sandbox mode before live mode:
 1. Add a real SKU-backed product to cart.
 2. Confirm full cart renders provider-owned express checkout when eligible.
 3. Confirm cart side drawer renders provider-owned express checkout when eligible.
-4. Confirm product detail page renders provider-owned express checkout when eligible.
-5. Confirm product detail modal renders provider-owned express checkout when eligible.
-6. Confirm product/variable-product ineligible states hide express controls without hiding normal add-to-cart.
-7. Confirm `/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart` posts ready or unavailable state to the parent only from same origin.
-8. Proceed from React cart/sidebar to `/checkout/`.
-9. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
-10. Confirm customer/contact, shipping, order summary, WooPayments embedded payment, and place-order sections render.
-11. Test successful card payment, 3DS/SCA, failed card, eligible wallets, ineligible wallets, and retry.
-12. Confirm Woo order is created once with real product/variation IDs and SKUs.
-13. Confirm `_dtb_checkout_gateway=woo_native_woopayments` and `_dtb_checkout_contract_version=woo-payments-v1` are present on the order.
-14. Confirm paid WooPayments order records DTB payment lifecycle events once.
-15. Confirm `dtb-orders` downstream processing is dispatched once.
-16. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
-17. Confirm refund and failure events update Woo order state/notes as expected.
-18. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
+4. Confirm desktop cart drawer express checkout is aligned to the drawer, not floating detached over the page.
+5. Confirm mobile cart drawer uses the safe-area-aware bottom checkout dock without horizontal overflow.
+6. Confirm product detail page renders provider-owned express checkout when eligible.
+7. Confirm product detail modal renders provider-owned express checkout when eligible.
+8. Confirm product express surface requests `/checkout/?dtb_wcpay_express_surface=1&dtb_context=product&product_id=...`, not the React staging route.
+9. Confirm product express surface renders inside a WooCommerce add-to-cart form context.
+10. Confirm product/variable-product ineligible states hide express controls without hiding normal add-to-cart.
+11. Confirm `/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart` posts ready or unavailable state to the parent only from same origin.
+12. Proceed from React cart/sidebar to `/checkout/`.
+13. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
+14. Confirm customer/contact, shipping, order summary, WooPayments embedded payment, and place-order sections render.
+15. Test successful card payment, 3DS/SCA, failed card, eligible wallets, ineligible wallets, and retry.
+16. Confirm Woo order is created once with real product/variation IDs and SKUs.
+17. Confirm `_dtb_checkout_gateway=woo_native_woopayments` and `_dtb_checkout_contract_version=woo-payments-v1` are present on the order.
+18. Confirm paid WooPayments order records DTB payment lifecycle events once.
+19. Confirm `dtb-orders` downstream processing is dispatched once.
+20. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
+21. Confirm refund and failure events update Woo order state/notes as expected.
+22. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
 
 ## Validation commands
 
@@ -92,6 +103,7 @@ npm run build
 Backend:
 
 ```powershell
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooFrontendTracksGuard.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsNativeCheckout.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsExpressCheckoutSurface.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
