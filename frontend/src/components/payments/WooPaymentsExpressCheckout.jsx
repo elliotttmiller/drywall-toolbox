@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
+import { API_BASE_URL } from '../../api/client.js';
 import { navigateDocument } from '../../utils/documentNavigation.js';
 
 const SURFACE_MESSAGE_TYPE = 'dtb:woopayments-express-surface';
@@ -7,9 +8,13 @@ const SURFACE_TIMEOUT_MS = 8000;
 const MIN_SURFACE_HEIGHT = 54;
 const MAX_SURFACE_HEIGHT = 180;
 
+function getCheckoutOrigin() {
+  if (typeof window === 'undefined') return '';
+  return (API_BASE_URL || window.location.origin).replace(/\/+$/, '');
+}
+
 function getBaseCheckoutPath() {
-  const basePath = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
-  return `${basePath}/checkout/`;
+  return '/checkout/';
 }
 
 function getCartSignature(cartItems = []) {
@@ -29,7 +34,8 @@ function getNumericId(...values) {
 function buildSurfaceUrl({ context, surfaceId, cartSignature, productId, variationId, quantity }) {
   if (typeof window === 'undefined') return '';
 
-  const url = new URL(getBaseCheckoutPath(), window.location.origin);
+  const checkoutOrigin = getCheckoutOrigin() || window.location.origin;
+  const url = new URL(getBaseCheckoutPath(), checkoutOrigin);
   url.searchParams.set('dtb_wcpay_express_surface', '1');
   url.searchParams.set('dtb_surface_id', surfaceId);
   url.searchParams.set('dtb_context', context);
@@ -72,8 +78,8 @@ export default function WooPaymentsExpressCheckout({
   const normalizedContext = context === 'drawer' || context === 'product' ? context : 'cart';
   const cartSignature = useMemo(() => getCartSignature(cartItems), [cartItems]);
   const productId = useMemo(
-    () => getNumericId(product?.id, selectedVariation?.parent_id),
-    [product?.id, selectedVariation?.parent_id]
+    () => getNumericId(product?.id, selectedVariation?.parent_id, selectedVariation?.parentId),
+    [product?.id, selectedVariation?.parent_id, selectedVariation?.parentId]
   );
   const variationId = useMemo(
     () => getNumericId(selectedVariation?.id),
