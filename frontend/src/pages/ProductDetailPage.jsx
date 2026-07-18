@@ -72,7 +72,6 @@ export default function ProductDetailPage() {
   const [toast, setToast] = useState(null);
   const [locallySelectedVariation, setLocallySelectedVariation] = useState(null);
 
-  // ── Data fetching ──────────────────────────────────────────────────────────
   const { product, variations, computed, status, error } = useCatalogProductDetail(slug);
 
   const urlVariantId = useMemo(
@@ -103,8 +102,6 @@ export default function ProductDetailPage() {
 
   const selectedVariation = locallySelectedVariation || resolvedInitialVariation;
 
-  // Normalize legacy /products/:slug/variations/:id routes to the canonical
-  // /products/:slug?variant=:id contract used by quick view and selectors.
   useEffect(() => {
     if (!slug || !variationId) return;
     const targetSlug = product?.slug || slug;
@@ -120,7 +117,6 @@ export default function ProductDetailPage() {
     }
   }, [legacyPathVariantId, location.pathname, location.search, navigate, product?.slug, slug, variationId]);
 
-  // ── Recently viewed tracking ───────────────────────────────────────────────
   useEffect( () => {
     if ( ! product ) return;
     addRecentlyViewed( {
@@ -133,7 +129,6 @@ export default function ProductDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ product?.id ] );
 
-  // ── Add to cart ────────────────────────────────────────────────────────────
   const handleAddToCart = async (prod, qty = 1) => {
     try {
       await addToCart(prod, qty);
@@ -148,7 +143,6 @@ export default function ProductDetailPage() {
     replaceVariantInAddressBar(location, variation?.id ? Number(variation.id) : null);
   }, [location]);
 
-  // ── Loading state ──────────────────────────────────────────────────────────
   if (status === 'loading' || status === 'idle') {
     return (
       <>
@@ -158,7 +152,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  // ── Not found ──────────────────────────────────────────────────────────────
   if (status === 'not_found' || !product) {
     return (
       <div className="min-h-screen container mx-auto px-4 py-16">
@@ -175,7 +168,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  // ── Error state ────────────────────────────────────────────────────────────
   if (status === 'error') {
     return (
       <div className="min-h-screen container mx-auto px-4 py-16">
@@ -201,7 +193,6 @@ export default function ProductDetailPage() {
     : product.name;
   const productDetailPath = `/products/${product.slug || slug}${selectedVariation?.id ? `?variant=${encodeURIComponent(selectedVariation.id)}` : ''}`;
 
-  // ── SEO ────────────────────────────────────────────────────────────────────
   const metaMap = {};
   if (Array.isArray(product.meta_data)) {
     product.meta_data.forEach(({ key: k, value: v }) => { metaMap[k] = v; });
@@ -240,7 +231,6 @@ export default function ProductDetailPage() {
       />
 
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
-        {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ marginBottom: '24px', fontSize: '0.8rem', color: '#64748b' }}>
           <Link to="/" style={{ color: '#64748b', textDecoration: 'none' }}>Home</Link>
           <span style={{ margin: '0 8px' }}>›</span>
@@ -264,6 +254,7 @@ export default function ProductDetailPage() {
             product={product}
             selectedVariation={selectedVariation}
             quantity={1}
+            disabled={Boolean(product?.is_variable && !selectedVariation)}
           />
         </div>
       </div>
