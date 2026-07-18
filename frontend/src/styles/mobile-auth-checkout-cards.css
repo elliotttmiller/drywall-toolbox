@@ -1,0 +1,543 @@
+/*
+ * DTB mobile-only auth cards and cart-to-checkout drawer.
+ * Desktop rendering and all auth/cart/checkout behavior remain unchanged.
+ */
+
+@media (max-width: 767px) {
+  @supports selector(.page-wrapper:has(#login-email)) {
+    .page-wrapper:has(#login-email),
+    .page-wrapper:has(#reg-email) {
+      min-height: calc(100dvh - var(--header-height, 0px)) !important;
+      background:
+        radial-gradient(circle at 14% 2%, rgba(59, 130, 246, 0.28), transparent 34%),
+        linear-gradient(155deg, var(--dtb-shell, #0a1020), #101d39 56%, #17365d);
+    }
+
+    .page-wrapper:has(#login-email) > div,
+    .page-wrapper:has(#reg-email) > div {
+      display: block !important;
+      min-height: calc(100dvh - var(--header-height, 0px)) !important;
+    }
+
+    /* Mobile keeps the reference card treatment and removes desktop hero panels. */
+    .page-wrapper:has(#login-email) > div > div:first-child,
+    .page-wrapper:has(#reg-email) > div > div:last-child {
+      display: none !important;
+    }
+
+    .page-wrapper:has(#login-email) > div > div:last-child,
+    .page-wrapper:has(#reg-email) > div > div:first-child {
+      min-height: calc(100dvh - var(--header-height, 0px)) !important;
+      align-items: flex-start !important;
+      padding:
+        clamp(20px, 5vw, 28px)
+        max(var(--dtb-mobile-gutter, 16px), env(safe-area-inset-right, 0px))
+        calc(28px + env(safe-area-inset-bottom, 0px))
+        max(var(--dtb-mobile-gutter, 16px), env(safe-area-inset-left, 0px)) !important;
+      background: transparent !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email),
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) {
+      position: relative;
+      width: 100% !important;
+      max-width: 430px !important;
+      margin: auto;
+      padding: clamp(21px, 5.5vw, 28px) !important;
+      border-radius: clamp(20px, 5.5vw, 26px) !important;
+      overflow: hidden;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email)::before,
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email)::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, #60a5fa, var(--dtb-primary, #2563eb), #1d4ed8);
+      pointer-events: none;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) {
+      background: linear-gradient(145deg, rgba(18, 32, 61, 0.98), rgba(7, 15, 31, 0.99)) !important;
+      border: 1px solid rgba(147, 197, 253, 0.17) !important;
+      box-shadow: 0 28px 70px rgba(2, 6, 23, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) {
+      background: rgba(255, 255, 255, 0.985) !important;
+      border: 1px solid rgba(191, 219, 254, 0.72) !important;
+      box-shadow: 0 28px 70px rgba(2, 6, 23, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child,
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child {
+      margin-bottom: 22px !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child > div:first-child,
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child > div:first-child {
+      width: 46px !important;
+      height: 46px !important;
+      margin-bottom: 15px !important;
+      border: 1px solid rgba(96, 165, 250, 0.24);
+      border-radius: 14px !important;
+      background: linear-gradient(145deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.08)) !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child svg {
+      color: #93c5fd !important;
+    }
+
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child svg {
+      color: var(--dtb-primary, #2563eb) !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child h2 {
+      color: #f8fafc !important;
+      font-size: clamp(1.55rem, 7vw, 1.9rem) !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child p {
+      color: rgba(226, 232, 240, 0.72) !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > div:first-child a {
+      color: #93c5fd !important;
+    }
+
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child h2 {
+      color: var(--dtb-text, #0f172a) !important;
+      font-size: clamp(1.55rem, 7vw, 1.9rem) !important;
+    }
+
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child p {
+      color: var(--dtb-muted, #64748b) !important;
+    }
+
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email) > div:first-child a {
+      color: var(--dtb-primary, #2563eb) !important;
+    }
+
+    .page-wrapper:has(#login-email) form,
+    .page-wrapper:has(#reg-email) form {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .page-wrapper:has(#login-email) .form-group,
+    .page-wrapper:has(#reg-email) .form-group {
+      margin-bottom: 14px !important;
+    }
+
+    .page-wrapper:has(#reg-email) form > div:first-child {
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+    }
+
+    .page-wrapper:has(#login-email) .machined-label,
+    .page-wrapper:has(#reg-email) .machined-label {
+      margin-bottom: 7px !important;
+      font-size: 0.72rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.075em !important;
+    }
+
+    .page-wrapper:has(#login-email) .machined-label {
+      color: rgba(226, 232, 240, 0.88) !important;
+    }
+
+    .page-wrapper:has(#reg-email) .machined-label {
+      color: #1e3a5f !important;
+    }
+
+    .page-wrapper:has(#login-email) .machined-input,
+    .page-wrapper:has(#reg-email) .machined-input {
+      min-height: 52px;
+      padding: 0 48px !important;
+      border-radius: 13px !important;
+      font-size: 16px !important;
+      line-height: 1.2 !important;
+      background-repeat: no-repeat !important;
+      background-position: 16px center !important;
+      background-size: 18px 18px !important;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+    }
+
+    .page-wrapper:has(#login-email) .machined-input {
+      border: 1px solid rgba(148, 163, 184, 0.24) !important;
+      background-color: rgba(255, 255, 255, 0.07) !important;
+      color: #f8fafc !important;
+      caret-color: #93c5fd;
+    }
+
+    .page-wrapper:has(#login-email) .machined-input::placeholder {
+      color: rgba(203, 213, 225, 0.55) !important;
+    }
+
+    .page-wrapper:has(#login-email) .machined-input:focus {
+      border-color: rgba(96, 165, 250, 0.9) !important;
+      background-color: rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+    }
+
+    .page-wrapper:has(#reg-email) .machined-input {
+      border: 1px solid rgba(148, 163, 184, 0.34) !important;
+      background-color: #f8fafc !important;
+      color: var(--dtb-text, #0f172a) !important;
+      caret-color: var(--dtb-primary, #2563eb);
+    }
+
+    .page-wrapper:has(#reg-email) .machined-input::placeholder {
+      color: #94a3b8 !important;
+    }
+
+    .page-wrapper:has(#reg-email) .machined-input:focus {
+      border-color: var(--dtb-primary, #2563eb) !important;
+      background-color: #fff !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+    }
+
+    .page-wrapper:has(#login-email) #login-email,
+    .page-wrapper:has(#reg-email) #reg-email {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#reg-email) #reg-email {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='16' x='2' y='4' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#reg-email) #reg-first,
+    .page-wrapper:has(#reg-email) #reg-last {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#login-email) #login-password {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2393c5fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#reg-email) #reg-password,
+    .page-wrapper:has(#reg-email) #reg-confirm {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#reg-email) #reg-confirm {
+      padding-right: 76px !important;
+    }
+
+    .page-wrapper:has(#reg-email) #reg-referral {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9a3 3 0 0 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z'/%3E%3Cpath d='M13 5v2M13 11v2M13 17v2'/%3E%3C/svg%3E") !important;
+    }
+
+    .page-wrapper:has(#login-email) form button[aria-label*="password"],
+    .page-wrapper:has(#reg-email) form button[aria-label*="password"] {
+      right: 12px !important;
+      width: 34px;
+      height: 34px;
+      align-items: center !important;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .page-wrapper:has(#login-email) form button[aria-label*="password"] {
+      color: rgba(191, 219, 254, 0.8) !important;
+    }
+
+    .page-wrapper:has(#reg-email) form button[aria-label*="password"] {
+      color: #64748b !important;
+    }
+
+    .page-wrapper:has(#login-email) .alloy-button,
+    .page-wrapper:has(#reg-email) .alloy-button {
+      min-height: 52px;
+      border-radius: 13px !important;
+      background: linear-gradient(135deg, #17365d, var(--dtb-primary, #2563eb)) !important;
+      box-shadow: 0 12px 26px rgba(37, 99, 235, 0.25);
+      font-size: 0.86rem !important;
+      letter-spacing: 0.08em !important;
+    }
+
+    .page-wrapper:has(#login-email) form + div {
+      margin: 21px 0 !important;
+    }
+
+    .page-wrapper:has(#login-email) form + div > div {
+      background: rgba(148, 163, 184, 0.2) !important;
+    }
+
+    .page-wrapper:has(#login-email) form + div > span {
+      color: rgba(203, 213, 225, 0.58) !important;
+    }
+
+    .page-wrapper:has(#login-email) div:has(> form #login-email) > a:last-child {
+      min-height: 50px;
+      border-color: rgba(147, 197, 253, 0.22) !important;
+      border-radius: 13px !important;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(226, 232, 240, 0.88) !important;
+    }
+
+    .page-wrapper:has(#reg-email) form > p:last-child {
+      color: #64748b !important;
+    }
+  }
+
+  /* Mobile cart becomes a branded bottom checkout drawer. */
+  .cart-overlay {
+    background: rgba(2, 6, 23, 0.68) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .cart-panel.storefront-cart-sheet {
+    top: auto !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: min(88dvh, 760px);
+    max-height: calc(100dvh - 12px);
+    margin-top: 0 !important;
+    border: 1px solid rgba(147, 197, 253, 0.16);
+    border-bottom: 0;
+    border-radius: 24px 24px 0 0;
+    background: var(--dtb-shell, #0a1020) !important;
+    box-shadow: 0 -24px 70px rgba(2, 6, 23, 0.48) !important;
+    transform: translateY(105%) !important;
+    transition: transform 320ms var(--dtb-ease, cubic-bezier(0.22, 1, 0.36, 1)) !important;
+  }
+
+  .cart-overlay.active .cart-panel.storefront-cart-sheet {
+    transform: translateY(0) !important;
+  }
+
+  .cart-panel.storefront-cart-sheet::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    z-index: 5;
+    width: 42px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(191, 219, 254, 0.34);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .storefront-cart-sheet .scs-header {
+    padding: 22px 16px 13px !important;
+    border-bottom-color: rgba(148, 163, 184, 0.15) !important;
+    background:
+      radial-gradient(circle at 16% -35%, rgba(59, 130, 246, 0.3), transparent 50%),
+      linear-gradient(145deg, #101d39, var(--dtb-shell, #0a1020)) !important;
+  }
+
+  .storefront-cart-sheet .scs-header-icon {
+    border: 1px solid rgba(96, 165, 250, 0.22);
+    background: rgba(59, 130, 246, 0.16) !important;
+    color: #93c5fd !important;
+  }
+
+  .storefront-cart-sheet .scs-title,
+  .storefront-cart-sheet .scs-item-name,
+  .storefront-cart-sheet .scs-item-line-total,
+  .storefront-cart-sheet .scs-qty-display,
+  .storefront-cart-sheet .scs-subtotal-amount,
+  .storefront-cart-sheet .scs-empty-title {
+    color: #f8fafc !important;
+  }
+
+  .storefront-cart-sheet .scs-count {
+    background: var(--dtb-primary, #2563eb) !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  }
+
+  .storefront-cart-sheet .scs-close {
+    border-color: rgba(148, 163, 184, 0.22) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #cbd5e1 !important;
+  }
+
+  .storefront-cart-sheet .scs-body {
+    padding: 7px 0;
+    background: linear-gradient(180deg, #0b1428, #0a1020) !important;
+    overscroll-behavior: contain;
+  }
+
+  .storefront-cart-sheet .scs-item-list {
+    padding: 0 12px 5px !important;
+  }
+
+  .storefront-cart-sheet .scs-item {
+    margin: 8px 0;
+    padding: 12px !important;
+    gap: 11px !important;
+    border: 1px solid rgba(148, 163, 184, 0.14) !important;
+    border-radius: 15px;
+    background: rgba(20, 33, 60, 0.88) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .storefront-cart-sheet .scs-item:hover {
+    background: rgba(24, 41, 74, 0.96) !important;
+  }
+
+  .storefront-cart-sheet .scs-item-img {
+    width: 66px !important;
+    height: 66px !important;
+    border-color: rgba(226, 232, 240, 0.24) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+  }
+
+  .storefront-cart-sheet .scs-item-sku,
+  .storefront-cart-sheet .scs-empty-body {
+    color: #94a3b8 !important;
+  }
+
+  .storefront-cart-sheet .scs-item-name-button:hover,
+  .storefront-cart-sheet .scs-item-name-button:focus-visible,
+  .storefront-cart-sheet .scs-item--syncing .scs-item-line-total {
+    color: #93c5fd !important;
+  }
+
+  .storefront-cart-sheet .scs-item-remove {
+    color: #94a3b8 !important;
+  }
+
+  .storefront-cart-sheet .scs-item-remove:hover {
+    background: rgba(239, 68, 68, 0.12) !important;
+    color: #fca5a5 !important;
+  }
+
+  .storefront-cart-sheet .scs-item-qty-row {
+    border-color: rgba(148, 163, 184, 0.18) !important;
+    background: rgba(2, 6, 23, 0.42) !important;
+  }
+
+  .storefront-cart-sheet .scs-qty-btn {
+    color: #cbd5e1 !important;
+  }
+
+  .storefront-cart-sheet .scs-qty-btn:hover:not(:disabled) {
+    background: rgba(96, 165, 250, 0.13) !important;
+    color: #bfdbfe !important;
+  }
+
+  .storefront-cart-sheet .scs-footer {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(132px, 42%);
+    align-items: stretch;
+    gap: 10px !important;
+    padding: 14px 14px calc(env(safe-area-inset-bottom, 0px) + 14px) !important;
+    border-top-color: rgba(148, 163, 184, 0.16) !important;
+    background: linear-gradient(180deg, #101a31, #080f20) !important;
+  }
+
+  .storefront-cart-sheet .scs-subtotal-row {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    padding: 0 !important;
+  }
+
+  .storefront-cart-sheet .scs-subtotal-info {
+    gap: 1px !important;
+  }
+
+  .storefront-cart-sheet .scs-subtotal-label {
+    color: #cbd5e1 !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .storefront-cart-sheet .scs-subtotal-hint {
+    color: #64748b !important;
+    font-size: 0.64rem !important;
+  }
+
+  .storefront-cart-sheet .scs-subtotal-amount {
+    font-size: clamp(1.25rem, 6vw, 1.55rem) !important;
+  }
+
+  .storefront-cart-sheet .scs-checkout-btn {
+    min-height: 50px;
+    padding: 0 14px !important;
+    border-radius: 13px !important;
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6) !important;
+    box-shadow: 0 12px 26px rgba(37, 99, 235, 0.3) !important;
+  }
+
+  .storefront-cart-sheet .scs-view-cart-btn {
+    grid-column: 1 / -1;
+    min-height: 42px;
+    padding: 0 16px !important;
+    border-color: rgba(148, 163, 184, 0.2) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.045) !important;
+    color: #cbd5e1 !important;
+  }
+
+  .storefront-cart-sheet .scs-view-cart-btn:hover {
+    border-color: rgba(96, 165, 250, 0.38) !important;
+    background: rgba(59, 130, 246, 0.09) !important;
+    color: #bfdbfe !important;
+  }
+
+  .storefront-cart-sheet .scs-empty {
+    min-height: 52dvh;
+    justify-content: center;
+  }
+
+  .storefront-cart-sheet .scs-empty-icon {
+    background: rgba(59, 130, 246, 0.12) !important;
+    color: #93c5fd !important;
+  }
+
+  .storefront-cart-sheet .scs-browse-btn {
+    background: linear-gradient(135deg, #17365d, #2563eb) !important;
+    color: #fff !important;
+  }
+}
+
+@media (max-width: 374px) {
+  .storefront-cart-sheet .scs-footer {
+    grid-template-columns: 1fr !important;
+  }
+
+  .storefront-cart-sheet .scs-checkout-btn,
+  .storefront-cart-sheet .scs-view-cart-btn {
+    grid-column: 1;
+  }
+
+  .storefront-cart-sheet .scs-subtotal-row {
+    flex-direction: row;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-panel.storefront-cart-sheet {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  @supports selector(.page-wrapper:has(#login-email)) {
+    .page-wrapper:has(#login-email) div:has(> form #login-email),
+    .page-wrapper:has(#reg-email) div:has(> form #reg-email),
+    .page-wrapper:has(#login-email) .machined-input,
+    .page-wrapper:has(#reg-email) .machined-input {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
