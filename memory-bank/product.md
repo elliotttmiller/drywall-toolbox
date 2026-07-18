@@ -1,6 +1,6 @@
 # Product
 
-Last verified against source: 2026-07-17.
+Last verified against source: 2026-07-18.
 
 ## Product definition
 
@@ -8,14 +8,14 @@ Drywall Toolbox (`drywalltoolbox.com`) is a contractor-focused headless commerce
 
 It combines:
 
-- multi-brand ecommerce backed by WooCommerce Checkout Block, the official WooCommerce Stripe Payment Gateway, WooCommerce operational orders, and Veeqo fulfillment sync;
+- multi-brand ecommerce backed by WooCommerce Checkout Block or classic checkout, WooPayments embedded payment methods, WooCommerce operational orders, and Veeqo fulfillment sync;
 - schematic-driven part discovery and product compatibility;
 - repair intake, quoting, lifecycle tracking, and operator workflows;
 - returns and support-ticket workflows with customer-facing status views;
 - customer account, address, order-history, and preference experiences;
 - catalog, taxonomy, pricing, image, and schematic operations in the same repository.
 
-The public browsing/account/cart experience is the React SPA in `frontend/`. WordPress/WooCommerce under `drywalltoolbox/wp/` is the commerce and operational backend. WooCommerce Checkout Block owns checkout order creation. The official WooCommerce Stripe Payment Gateway owns Stripe payment rendering, payment processing, Optimized Checkout Suite, and Stripe webhook synchronization. DTB observes verified Woo order/payment lifecycle events for order projections and downstream queues. Veeqo is the inventory and fulfillment authority. QuickBooks receives accounting projections.
+The public browsing/account/cart experience is the React SPA in `frontend/`. WordPress/WooCommerce under `drywalltoolbox/wp/` is the commerce and operational backend. WooCommerce owns checkout order creation. WooPayments owns embedded payment rendering, supported wallets, payment processing, and webhook synchronization. DTB observes verified Woo order/payment lifecycle events for order projections and downstream queues. Veeqo is the inventory and fulfillment authority. QuickBooks receives accounting projections.
 
 ## Primary users
 
@@ -30,7 +30,7 @@ The public browsing/account/cart experience is the React SPA in `frontend/`. Wor
 
 - operators managing orders, repairs, returns, support, and exceptions through wp-admin workbenches;
 - catalog operators maintaining taxonomy, product metadata, pricing, images, and schematics;
-- administrators managing platform health, Stripe, Veeqo, QuickBooks, marketplace channels, and deployment operations.
+- administrators managing platform health, WooPayments, Veeqo, QuickBooks, marketplace channels, and deployment operations.
 
 ## Live capability map
 
@@ -39,11 +39,12 @@ The public browsing/account/cart experience is the React SPA in `frontend/`. Wor
 - catalog browsing, search, brand/category filtering, and product detail/variation selection;
 - Store API-backed cart in the React storefront;
 - full-document checkout handoff from React cart/cart sidebar to `/checkout/`;
-- root `.htaccess` routes `/checkout/` to the WordPress/WooCommerce Checkout Block instead of the React SPA shell;
-- official WooCommerce Stripe Payment Gateway renders Stripe payment fields, wallets, saved-method UI, Optimized Checkout Suite, and payment errors inside Woo checkout;
+- root `.htaccess` routes `/checkout/` to the WordPress/WooCommerce checkout instead of the React SPA shell;
+- DTB renders a same-domain WooPayments checkout shell around WooCommerce Checkout Block or `[woocommerce_checkout]`;
+- WooPayments renders embedded payment fields, eligible wallets, WooPay/Link where enabled, saved-method UI, and payment errors inside Woo checkout;
 - WooCommerce creates the storefront order through Checkout Block/Store API;
-- official Stripe gateway and its Stripe webhooks synchronize payment status back to WooCommerce;
-- DTB tags Woo checkout orders, observes verified paid Stripe orders, appends order events, and dispatches downstream jobs through `dtb-orders`;
+- WooPayments and its webhooks synchronize payment status back to WooCommerce;
+- DTB tags Woo checkout orders, observes verified paid WooPayments orders, appends order events, and dispatches downstream jobs through `dtb-orders`;
 - order confirmation, authenticated history, and customer tracking projections from WooCommerce orders;
 - checkout shipping options calculated by Woo/DTB policy from destination, subtotal, product type, and weight;
 - Veeqo-backed cart availability and downstream inventory/fulfillment processing.
@@ -94,7 +95,7 @@ The WordPress layer is a headless product backend and operator cockpit, not the 
 
 - custom REST APIs and Store API extension behavior;
 - catalog read models, variation normalization, compatibility, and inventory intelligence;
-- WooCommerce Checkout Block routing/styling support, official Stripe gateway readiness notices, Woo checkout order tagging, order event ledger, queue, write boundary, duplicate containment, and tracking projections;
+- WooCommerce checkout routing/styling support, WooPayments readiness notices, Woo checkout order tagging, order event ledger, queue, write boundary, duplicate containment, and tracking projections;
 - repair, return, and support persistence and lifecycle policy;
 - authentication, authorization, origin policy, rate limiting, and operational health;
 - media and schematic administration;
@@ -115,20 +116,21 @@ This repository is both:
 - React owns customer-facing browsing, cart shell, account UX, and checkout handoff rendering.
 - WordPress/WooCommerce owns the public checkout route and order creation surface.
 - Mu-plugin modules are the canonical home for backend business logic.
-- The official WooCommerce Stripe Payment Gateway owns payment rendering, Stripe payment processing, Optimized Checkout Suite, and Stripe webhook synchronization.
+- WooPayments owns embedded payment rendering, supported wallets, payment processing, and webhook synchronization.
 - WooCommerce owns products, customers, Store API cart state, and operational orders.
 - DTB owns order observation, downstream eventing/projections/queues, checkout routing support, domain workflows, and integration policy.
 - Veeqo owns inventory and fulfillment truth.
 - QuickBooks owns accounting projection after qualifying order/refund events.
-- Storefront order creation occurs through WooCommerce Checkout Block and the official Stripe gateway; raw external WooCommerce order creation remains blocked or retired.
-- Browser code never receives WooCommerce admin credentials, application passwords, consumer secrets, Stripe secret keys, Stripe webhook secrets, or integration API keys.
+- Storefront order creation occurs through WooCommerce checkout and WooPayments; raw external WooCommerce order creation remains blocked or retired.
+- Browser code never receives WooCommerce admin credentials, application passwords, consumer secrets, WooPayments secrets, Stripe secret keys, Stripe webhook secrets, wallet tokens, PaymentIntent client secrets, or integration API keys.
 - Controlled catalog taxonomy is validated before production import.
 
 ## Non-goals
 
 - returning to a classic WordPress theme-first storefront for catalog/account browsing;
-- copying or mounting official Stripe gateway private React/build internals inside the React SPA;
-- building custom DTB Stripe Checkout Sessions for storefront checkout while the official Woo Stripe gateway is the payment authority;
+- copying or mounting payment plugin private React/build internals inside the React SPA;
+- building custom DTB Stripe Checkout Sessions for storefront checkout while WooPayments is the payment authority;
+- building separate React payment iframe surfaces for Apple Pay / Google Pay / WooPay;
 - building a separate admin SPA when wp-admin workbenches already own operations;
 - treating catalog/media maintenance as unrelated to application engineering;
 - using the browser as an integration credential store;
@@ -136,4 +138,4 @@ This repository is both:
 
 ## One-line truth statement
 
-Drywall Toolbox is a headless React and WordPress/WooCommerce contractor platform unifying ecommerce, schematic-driven parts, repairs, returns, support, and operator workflows, with WooCommerce Checkout Block and the official WooCommerce Stripe Payment Gateway for storefront checkout/payment, DTB-controlled order observation/projections, Veeqo-controlled inventory/fulfillment, QuickBooks accounting projection, and first-class catalog/media operations.
+Drywall Toolbox is a headless React and WordPress/WooCommerce contractor platform unifying ecommerce, schematic-driven parts, repairs, returns, support, and operator workflows, with WooCommerce checkout and WooPayments for same-domain embedded checkout/payment, DTB-controlled order observation/projections, Veeqo-controlled inventory/fulfillment, QuickBooks accounting projection, and first-class catalog/media operations.
