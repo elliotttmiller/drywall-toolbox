@@ -65,17 +65,18 @@ Run in WooPayments test/sandbox mode before live mode:
 4. Confirm product detail page renders provider-owned express checkout when eligible.
 5. Confirm product detail modal renders provider-owned express checkout when eligible.
 6. Confirm product/variable-product ineligible states hide express controls without hiding normal add-to-cart.
-7. Proceed from React cart/sidebar to `/checkout/`.
-8. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
-9. Confirm customer/contact, shipping, order summary, WooPayments embedded payment, and place-order sections render.
-10. Test successful card payment, 3DS/SCA, failed card, eligible wallets, ineligible wallets, and retry.
-11. Confirm Woo order is created once with real product/variation IDs and SKUs.
-12. Confirm `_dtb_checkout_gateway=woo_native_woopayments` and `_dtb_checkout_contract_version=woo-payments-v1` are present on the order.
-13. Confirm paid WooPayments order records DTB payment lifecycle events once.
-14. Confirm `dtb-orders` downstream processing is dispatched once.
-15. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
-16. Confirm refund and failure events update Woo order state/notes as expected.
-17. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
+7. Confirm `/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart` posts ready or unavailable state to the parent only from same origin.
+8. Proceed from React cart/sidebar to `/checkout/`.
+9. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
+10. Confirm customer/contact, shipping, order summary, WooPayments embedded payment, and place-order sections render.
+11. Test successful card payment, 3DS/SCA, failed card, eligible wallets, ineligible wallets, and retry.
+12. Confirm Woo order is created once with real product/variation IDs and SKUs.
+13. Confirm `_dtb_checkout_gateway=woo_native_woopayments` and `_dtb_checkout_contract_version=woo-payments-v1` are present on the order.
+14. Confirm paid WooPayments order records DTB payment lifecycle events once.
+15. Confirm `dtb-orders` downstream processing is dispatched once.
+16. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
+17. Confirm refund and failure events update Woo order state/notes as expected.
+18. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
 
 ## Validation commands
 
