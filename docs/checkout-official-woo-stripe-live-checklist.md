@@ -1,29 +1,29 @@
-# Official WooCommerce Stripe Live Checkout Checklist
+# WooPayments Embedded Checkout Checklist
 
 ## Required plugin authority
 
-Use one checkout payment authority only:
+Use one storefront checkout payment authority only:
 
 ```text
-WooCommerce Checkout Block
-+ official WooCommerce Stripe Payment Gateway
-+ Optimized Checkout Suite
+WooCommerce Checkout Block or [woocommerce_checkout]
++ WooPayments
++ DTB checkout shell/styling only
 ```
 
-Do not enable Payment Plugins for Stripe, DTB Stripe Embedded Checkout, same-shell payment iframes, copied gateway internals, or custom Stripe Checkout Sessions as the storefront `/checkout` authority.
+Do not enable the official WooCommerce Stripe Gateway, Payment Plugins for Stripe, DTB Stripe Embedded Checkout, same-shell custom payment iframes, copied gateway internals, or custom Stripe Checkout Sessions as storefront checkout authorities while WooPayments is active.
 
 ## wp-admin configuration
 
-1. Install and activate the official WooCommerce Stripe Payment Gateway.
-2. Go to `WooCommerce -> Settings -> Payments -> Stripe`.
-3. Connect the intended Stripe account through the plugin connection flow.
-4. Enable Stripe for checkout.
-5. Enable Optimized Checkout Suite where available.
-6. Select the desired Optimized Checkout Suite layout, normally Accordion for mobile-first checkout.
-7. Confirm live webhook status is configured.
-8. Confirm test webhook status is configured before sandbox testing.
-9. Verify Apple Pay / wallet domain association.
-10. Disable competing Stripe gateways and duplicate express-checkout buttons.
+1. Install and activate WooPayments.
+2. Go to `WooCommerce -> Settings -> Payments -> WooPayments`.
+3. Connect the intended WooPayments account through the plugin connection flow.
+4. Enable WooPayments for checkout.
+5. Enable the desired card, wallet, WooPay, Link, and express checkout methods.
+6. Confirm WooPayments account/webhook health in WooCommerce status tools.
+7. Verify Apple Pay / Google Pay domain and browser/device eligibility where used.
+8. Disable official WooCommerce Stripe Gateway and any competing card/wallet gateway.
+9. Confirm the WooCommerce Checkout page is assigned under `WooCommerce -> Settings -> Advanced -> Page setup`.
+10. Keep the Checkout page content as either the WooCommerce Checkout Block or `[woocommerce_checkout]`.
 
 ## Server deployment checks
 
@@ -35,7 +35,7 @@ https://drywalltoolbox.com/wp-json/dtb/v1/catalog/products?per_page=1
 https://drywalltoolbox.com/wp/wp-json/dtb/v1/catalog/products?per_page=1
 ```
 
-Confirm this renders WooCommerce checkout, not the React SPA shell:
+Confirm this renders the DTB WooPayments checkout shell and visible Woo checkout form, not the React SPA shell or a blank document:
 
 ```text
 https://drywalltoolbox.com/checkout/
@@ -45,29 +45,34 @@ Confirm these WordPress routes are not rewritten to React:
 
 ```text
 https://drywalltoolbox.com/checkout/order-pay/{order_id}/?pay_for_order=true&key=wc_order_...
-https://drywalltoolbox.com/?wc-api=wc_stripe
+https://drywalltoolbox.com/?wc-api=...
 ```
 
 ## Runtime tests
 
-Run in Stripe test mode before live mode:
+Run in WooPayments test/sandbox mode before live mode:
 
 1. Add a real SKU-backed product to cart.
 2. Proceed from React cart/sidebar to `/checkout/`.
-3. Confirm Woo Checkout Block renders inside the DTB-branded checkout shell.
-4. Confirm official Stripe payment methods render.
-5. Test successful card payment.
-6. Test 3DS challenge flow.
-7. Test failed card flow.
-8. Test wallet/Link flow if enabled.
-9. Confirm Woo order is created once.
-10. Confirm Woo order has real product/variation IDs and SKUs.
-11. Confirm `_dtb_checkout_gateway=woo_native_stripe` is present on the order.
-12. Confirm paid Stripe order records DTB payment lifecycle events.
-13. Confirm `dtb-orders` downstream processing is dispatched once.
-14. Confirm Veeqo receives/maps the Woo order by SKU.
-15. Confirm refund and dispute events from the official Stripe plugin update Woo order state/notes as expected.
-16. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
+3. Confirm the DTB shell source contains `dtb-checkout-contract: woo-payments-v1`.
+4. Confirm customer/contact fields render.
+5. Confirm shipping address fields render.
+6. Confirm order summary renders.
+7. Confirm WooPayments embedded payment methods render.
+8. Test successful card payment.
+9. Test 3DS/SCA challenge flow.
+10. Test failed card flow.
+11. Test Apple Pay / Google Pay / WooPay / Link only on eligible devices and browsers.
+12. Confirm ineligible wallet devices hide wallet controls cleanly.
+13. Confirm Woo order is created once.
+14. Confirm Woo order has real product/variation IDs and SKUs.
+15. Confirm `_dtb_checkout_gateway=woo_native_woopayments` is present on the order.
+16. Confirm `_dtb_checkout_contract_version=woo-payments-v1` is present on the order.
+17. Confirm paid WooPayments order records DTB payment lifecycle events once.
+18. Confirm `dtb-orders` downstream processing is dispatched once.
+19. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
+20. Confirm refund and failure events update Woo order state/notes as expected.
+21. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
 
 ## Rollback
 
@@ -76,5 +81,5 @@ If checkout fails after deploy:
 1. Disable checkout traffic or place site in maintenance mode.
 2. Confirm `/wp-json/` and `/wp/wp-json/` status.
 3. Check PHP fatal logs first.
-4. Roll back `drywalltoolbox/wp/wp-content/mu-plugins/` and `.htaccess` to the previous deploy artifact if REST is returning HTML/critical-error pages.
-5. Clear any server cache that may be serving old `index.html` or stale `.htaccess` behavior.
+4. Roll back `drywalltoolbox/wp/wp-content/mu-plugins/`, frontend `dist/`, and `.htaccess` to the previous deploy artifact if REST is returning HTML, checkout is blank, or WordPress reports critical errors.
+5. Clear any server cache that may be serving old `index.html`, stale CSS, stale PHP opcode, or stale `.htaccess` behavior.
