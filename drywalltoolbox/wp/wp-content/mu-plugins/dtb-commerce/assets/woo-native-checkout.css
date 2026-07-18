@@ -353,6 +353,14 @@ body.dtb-woo-native-checkout * {
   width: 65%;
 }
 
+.dtb-woo-checkout-progress__connector.is-complete::after {
+  width: 100%;
+}
+
+.dtb-woo-checkout-progress__connector.is-active::after {
+  width: 65%;
+}
+
 .dtb-woo-checkout-progress__summary {
   display: flex;
   align-items: center;
@@ -507,20 +515,6 @@ body.dtb-woo-native-checkout * {
   color: #0f172a;
   font-weight: 950;
   letter-spacing: -0.025em;
-}
-
-.dtb-woo-checkout-card .wc-block-components-checkout-step__heading {
-  align-items: flex-start;
-}
-
-.dtb-woo-checkout-card .wc-block-components-checkout-step__title {
-  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
-}
-
-.dtb-woo-checkout-card .wc-block-components-express-payment,
-.dtb-woo-checkout-card .wc-block-components-express-payment__content,
-.dtb-woo-checkout-card .wc-block-components-express-payment__event-buttons {
-  border-radius: 20px;
 }
 
 .dtb-woo-checkout-card .wc-block-components-express-payment {
@@ -690,11 +684,6 @@ body.dtb-woo-native-checkout * {
     padding: 0 0 calc(34px + env(safe-area-inset-bottom, 0px));
   }
 
-  .dtb-checkout-app-shell::before,
-  .dtb-checkout-app-shell::after {
-    display: none;
-  }
-
   .dtb-checkout-topbar {
     flex-direction: column;
     align-items: stretch;
@@ -724,6 +713,20 @@ body.dtb-woo-native-checkout * {
     border-radius: 0;
   }
 
+  .dtb-checkout-topbar__actions span,
+  .dtb-checkout-topbar__actions a {
+    min-height: 30px;
+    font-size: 0.66rem;
+  }
+
+  .dtb-checkout-hero,
+  .dtb-woo-checkout-progress,
+  .dtb-woo-checkout-card {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
   .dtb-checkout-hero {
     padding:
       22px
@@ -736,8 +739,27 @@ body.dtb-woo-native-checkout * {
     font-size: clamp(2.05rem, 10vw, 3.15rem);
   }
 
+  .dtb-checkout-hero h1 {
+    font-size: clamp(2.05rem, 10vw, 3.15rem);
+  }
+
   .dtb-checkout-hero__card {
     display: none;
+  }
+
+  .dtb-woo-checkout-progress__steps {
+    overflow-x: auto;
+    padding: 14px;
+    scroll-snap-type: x proximity;
+  }
+
+  .dtb-woo-checkout-progress__step {
+    scroll-snap-align: start;
+  }
+
+  .dtb-woo-checkout-progress__connector {
+    min-width: 18px;
+    margin-inline: 8px;
   }
 
   .dtb-woo-checkout-progress__steps {
