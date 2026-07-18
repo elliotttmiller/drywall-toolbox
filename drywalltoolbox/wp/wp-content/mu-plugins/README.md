@@ -2,7 +2,7 @@
 
 # Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-Last verified against source: 2026-07-17.
+Last verified against source: 2026-07-18.
 
 This document is the canonical operational map for:
 
@@ -61,8 +61,9 @@ Canonical module order:
 
 - WooCommerce Store API cart extension data;
 - toolset/order-line metadata persistence;
-- WooCommerce Checkout Block handoff and DTB-branded checkout shell/styling;
-- official WooCommerce Stripe gateway readiness notices and checkout-order metadata tagging;
+- WooCommerce Checkout Block / shortcode handoff and DTB-branded checkout shell/styling;
+- WooPayments readiness diagnostics and checkout-order metadata tagging;
+- non-secret WooPayments payment reference mirroring after verified Woo payment lifecycle events;
 - order-type and order-admin query services;
 - branded WooCommerce email integration;
 - commerce-facing order REST/admin surfaces.
@@ -129,8 +130,9 @@ Checkout is the intentional exception to React rendering ownership:
 React cart/cart sidebar
   -> full-document navigation to /checkout/
   -> .htaccess routes /checkout/ to WordPress
-  -> WooCommerce Checkout Block
-  -> official WooCommerce Stripe Payment Gateway
+  -> DTB WooPayments checkout shell
+  -> WooCommerce Checkout Block or [woocommerce_checkout]
+  -> WooPayments embedded payment methods and webhooks
   -> WooCommerce order/payment lifecycle
   -> DTB order observation and downstream queues
 ```
@@ -158,7 +160,7 @@ Server-only constants include:
 - QuickBooks and marketplace credentials;
 - feature flags and operational switches.
 
-`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys.
+`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys. Payment secrets, WooPayments/Stripe secrets, webhook secrets, wallet tokens, and PaymentIntent client secrets must never be exposed through React environment variables, REST responses, storage, logs, or generated assets.
 
 ## 10. Scheduled and asynchronous work
 
@@ -210,7 +212,7 @@ Deployment never overwrites:
 - runtime secrets;
 - uncontrolled database dumps.
 
-Order-pay cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, and legacy DTB payment-webhook files from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
+Checkout cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, legacy DTB payment-webhook files, official Stripe express iframe files, and custom Stripe Embedded Checkout bridge files from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
 
 ## 13. Validation
 
