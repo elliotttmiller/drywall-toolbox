@@ -208,10 +208,14 @@ body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .sc
   text-decoration: none;
 }
 
-.dtb-pdp-route-express,
-.dtb-product-modal-express {
+.dtb-pdp-route-express {
   max-width: 640px;
   margin: 18px auto 0;
+}
+
+.dtb-product-modal-express {
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 @keyframes dtb-wcpay-loading {
@@ -241,8 +245,7 @@ body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .sc
     padding-bottom: 310px !important;
   }
 
-  .dtb-pdp-route-express,
-  .dtb-product-modal-express {
+  .dtb-pdp-route-express {
     margin-top: 12px;
   }
 }
