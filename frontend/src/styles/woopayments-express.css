@@ -129,11 +129,11 @@
   overscroll-behavior: contain;
 }
 
-body:has(.dtb-cart-express-dock) .storefront-cart-sheet .scs-footer {
+body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-footer {
   display: none !important;
 }
 
-body:has(.dtb-cart-express-dock) .storefront-cart-sheet .scs-body {
+body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-body {
   padding-bottom: 300px !important;
 }
 
@@ -208,6 +208,12 @@ body:has(.dtb-cart-express-dock) .storefront-cart-sheet .scs-body {
   text-decoration: none;
 }
 
+.dtb-pdp-route-express,
+.dtb-product-modal-express {
+  max-width: 640px;
+  margin: 18px auto 0;
+}
+
 @keyframes dtb-wcpay-loading {
   0% { background-position: 180% 0, 0 0; }
   100% { background-position: -40% 0, 0 0; }
@@ -231,8 +237,13 @@ body:has(.dtb-cart-express-dock) .storefront-cart-sheet .scs-body {
       max(14px, env(safe-area-inset-left, 0px));
   }
 
-  body:has(.dtb-cart-express-dock) .storefront-cart-sheet .scs-body {
+  body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-body {
     padding-bottom: 310px !important;
+  }
+
+  .dtb-pdp-route-express,
+  .dtb-product-modal-express {
+    margin-top: 12px;
   }
 }
 
