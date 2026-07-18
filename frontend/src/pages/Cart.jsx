@@ -1,9 +1,9 @@
 /**
  * frontend/src/pages/Cart.jsx
  *
- * Responsive cart page. WooCommerce Store API remains the cart authority and the
- * official WooCommerce Stripe gateway owns the optional mobile express-wallet
- * surface. Standard checkout continues to hand off to WooCommerce /checkout/.
+ * Responsive cart page. WooCommerce Store API remains the cart authority.
+ * Checkout and embedded payment methods are owned by the same-domain
+ * WooCommerce + WooPayments checkout page.
  */
 
 import { Link } from 'react-router-dom';
@@ -20,7 +20,6 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 
-import MobileExpressCheckout from '../components/checkout/MobileExpressCheckout.jsx';
 import SEOHead from '../components/shared/SEOHead';
 import { FREE_SHIP_THRESHOLD, ESTIMATED_SHIP_RATE } from '../constants/shipping';
 import { useCart } from '../context/CartContext';
@@ -281,14 +280,12 @@ export default function Cart() {
                   </div>
                 </div>
 
-                <MobileExpressCheckout cartItems={cartItems} variant="cart" />
-
                 <a
                   href={CHECKOUT_HREF}
                   className="dtb-cart-summary-card__checkout w-full inline-flex items-center justify-center gap-2.5 bg-primary-600 hover:bg-primary-700 active:scale-[0.99] text-white py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all shadow-sm min-h-[48px]"
                 >
                   <Lock size={14} strokeWidth={2.5} />
-                  Proceed to Checkout
+                  Continue to Embedded Checkout
                   <ArrowRight size={14} strokeWidth={2.5} />
                 </a>
 
