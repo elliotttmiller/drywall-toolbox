@@ -26,7 +26,7 @@ function getNumericId(...values) {
   return null;
 }
 
-function buildSurfaceUrl({ context, surfaceId, cartItems, product, selectedVariation, quantity }) {
+function buildSurfaceUrl({ context, surfaceId, cartSignature, productId, variationId, quantity }) {
   if (typeof window === 'undefined') return '';
 
   const url = new URL(getBaseCheckoutPath(), window.location.origin);
@@ -35,17 +35,14 @@ function buildSurfaceUrl({ context, surfaceId, cartItems, product, selectedVaria
   url.searchParams.set('dtb_context', context);
 
   if (context === 'product') {
-    const parentId = getNumericId(product?.id, selectedVariation?.parent_id);
-    const variationId = getNumericId(selectedVariation?.id);
-    if (!parentId) return '';
-    url.searchParams.set('product_id', String(parentId));
+    if (!productId) return '';
+    url.searchParams.set('product_id', String(productId));
     if (variationId) url.searchParams.set('variation_id', String(variationId));
     url.searchParams.set('quantity', String(Math.max(1, Number(quantity) || 1)));
-    url.searchParams.set('dtb_product_version', `${parentId}:${variationId || 'parent'}:${Math.max(1, Number(quantity) || 1)}`);
+    url.searchParams.set('dtb_product_version', `${productId}:${variationId || 'parent'}:${Math.max(1, Number(quantity) || 1)}`);
   } else {
-    const signature = getCartSignature(cartItems);
-    if (!signature) return '';
-    url.searchParams.set('dtb_cart_version', signature);
+    if (!cartSignature) return '';
+    url.searchParams.set('dtb_cart_version', cartSignature);
   }
 
   return url.toString();
@@ -74,23 +71,28 @@ export default function WooPaymentsExpressCheckout({
   );
   const normalizedContext = context === 'drawer' || context === 'product' ? context : 'cart';
   const cartSignature = useMemo(() => getCartSignature(cartItems), [cartItems]);
-  const productSignature = useMemo(() => {
-    const parentId = getNumericId(product?.id, selectedVariation?.parent_id);
-    const variationId = getNumericId(selectedVariation?.id);
-    return parentId ? `${parentId}:${variationId || 'parent'}:${Math.max(1, Number(quantity) || 1)}` : '';
-  }, [product?.id, quantity, selectedVariation?.id, selectedVariation?.parent_id]);
+  const productId = useMemo(
+    () => getNumericId(product?.id, selectedVariation?.parent_id),
+    [product?.id, selectedVariation?.parent_id]
+  );
+  const variationId = useMemo(
+    () => getNumericId(selectedVariation?.id),
+    [selectedVariation?.id]
+  );
+  const normalizedQuantity = Math.max(1, Number(quantity) || 1);
+  const productSignature = productId ? `${productId}:${variationId || 'parent'}:${normalizedQuantity}` : '';
 
   const surfaceUrl = useMemo(() => {
     if (disabled) return '';
     return buildSurfaceUrl({
       context: normalizedContext,
       surfaceId,
-      cartItems,
-      product,
-      selectedVariation,
-      quantity,
+      cartSignature,
+      productId,
+      variationId,
+      quantity: normalizedQuantity,
     });
-  }, [cartItems, disabled, normalizedContext, product, quantity, selectedVariation, surfaceId]);
+  }, [cartSignature, disabled, normalizedContext, normalizedQuantity, productId, surfaceId, variationId]);
 
   const [surfaceState, setSurfaceState] = useState({
     url: '',
