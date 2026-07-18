@@ -12,12 +12,12 @@
 defined( 'ABSPATH' ) || exit;
 
 final class DTB_WooPaymentsExpressCheckoutSurface {
-	private const QUERY_FLAG       = 'dtb_wcpay_express_surface';
-	private const SURFACE_ID_PARAM = 'dtb_surface_id';
-	private const CONTEXT_PARAM    = 'dtb_context';
-	private const MESSAGE_TYPE     = 'dtb:woopayments-express-surface';
-	private const ASSET_VERSION    = '2026.07.18.1';
-	private const WOOPAYMENTS_GATEWAY_ID = 'woocommerce_payments';
+	private const QUERY_FLAG              = 'dtb_wcpay_express_surface';
+	private const SURFACE_ID_PARAM        = 'dtb_surface_id';
+	private const CONTEXT_PARAM           = 'dtb_context';
+	private const MESSAGE_TYPE            = 'dtb:woopayments-express-surface';
+	private const ASSET_VERSION           = '2026.07.18.1';
+	private const WOOPAYMENTS_GATEWAY_ID  = 'woocommerce_payments';
 
 	public static function register(): void {
 		add_action( 'template_redirect', [ __CLASS__, 'maybe_render' ], 5 );
@@ -229,16 +229,16 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 			return '';
 		}
 
-		$product = wc_get_product( $product_id );
-		if ( ! $product instanceof WC_Product || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+		$surface_product = wc_get_product( $product_id );
+		if ( ! $surface_product instanceof WC_Product || ! $surface_product->is_purchasable() || ! $surface_product->is_in_stock() ) {
 			return '';
 		}
 
-		global $post, $product as $global_product;
+		global $post, $product;
 		$previous_post    = $post;
-		$previous_product = $global_product ?? null;
+		$previous_product = $product ?? null;
 		$post             = get_post( $product_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$global_product   = $product; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$product          = $surface_product; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		if ( $post instanceof WP_Post ) {
 			setup_postdata( $post );
 		}
@@ -253,8 +253,8 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 		$markup = (string) ob_get_clean();
 
 		wp_reset_postdata();
-		$post = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$global_product = $previous_product; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$post    = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$product = $previous_product; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		return $markup;
 	}
