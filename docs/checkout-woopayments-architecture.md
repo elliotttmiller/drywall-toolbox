@@ -53,6 +53,8 @@ React full cart / cart drawer / product page / product modal
   -> normal Woo payment lifecycle and DTB downstream queues continue
 ```
 
+`dtb_wcpay_express_surface=1` is a public presentation selector, not an authorization credential. Provider payment operations remain protected by WooCommerce session state, WooPayments nonces, wallet eligibility, gateway validation, and webhook reconciliation.
+
 Express button availability is dynamic. The gateway may render one method, multiple methods, or no method depending on merchant settings, product/cart contents, browser, device, wallet setup, domain registration, country, currency, and WooPayments account state. DTB must not render lookalike buttons when the provider reports a method unavailable.
 
 Product-surface express checkout is configuration-sensitive and must be verified on staging because product buttons depend on WooPayments product-location support and product-type eligibility. If WooPayments reports no eligible product method, React removes the section and preserves normal add-to-cart and checkout behavior.
