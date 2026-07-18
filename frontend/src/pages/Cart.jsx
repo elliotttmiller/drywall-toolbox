@@ -20,6 +20,7 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 
+import WooPaymentsExpressCheckout from '../components/payments/WooPaymentsExpressCheckout.jsx';
 import SEOHead from '../components/shared/SEOHead';
 import { FREE_SHIP_THRESHOLD, ESTIMATED_SHIP_RATE } from '../constants/shipping';
 import { useCart } from '../context/CartContext';
@@ -280,12 +281,14 @@ export default function Cart() {
                   </div>
                 </div>
 
+                <WooPaymentsExpressCheckout context="cart" cartItems={cartItems} />
+
                 <a
                   href={CHECKOUT_HREF}
                   className="dtb-cart-summary-card__checkout w-full inline-flex items-center justify-center gap-2.5 bg-primary-600 hover:bg-primary-700 active:scale-[0.99] text-white py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all shadow-sm min-h-[48px]"
                 >
                   <Lock size={14} strokeWidth={2.5} />
-                  Continue to Embedded Checkout
+                  Continue to checkout
                   <ArrowRight size={14} strokeWidth={2.5} />
                 </a>
 
