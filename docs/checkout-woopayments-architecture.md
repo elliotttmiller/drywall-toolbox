@@ -206,9 +206,10 @@ Before production use:
 4. Confirm `/wp-json/dtb/v1/catalog/products?per_page=1` returns JSON.
 5. Confirm `/checkout/` renders the DTB WooPayments shell and a visible Woo checkout form.
 6. Confirm `/checkout/?dtb_wcpay_express_surface=1&dtb_context=cart` returns a same-origin noindex express surface.
-7. Confirm WooPayments is installed, connected, enabled, and in the intended test/live mode.
-8. Confirm official WooCommerce Stripe Gateway and Payment Plugins for Stripe are disabled as storefront payment authorities.
-9. Test guest checkout, authenticated checkout, cards, 3DS/SCA, wallets, wallet ineligible devices, failed payment, retry, order-received, refund, webhook delay/replay, Veeqo sync, and QuickBooks eligibility.
+7. Confirm full cart, cart drawer, product page, and product modal hosts hide cleanly when express checkout is unavailable.
+8. Confirm WooPayments is installed, connected, enabled, and in the intended test/live mode.
+9. Confirm official WooCommerce Stripe Gateway and Payment Plugins for Stripe are disabled as storefront payment authorities.
+10. Test guest checkout, authenticated checkout, cards, 3DS/SCA, wallets, wallet ineligible devices, failed payment, retry, order-received, refund, webhook delay/replay, Veeqo sync, and QuickBooks eligibility.
 
 ## Validation commands
 
