@@ -16,10 +16,11 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 	private const SURFACE_ID_PARAM       = 'dtb_surface_id';
 	private const CONTEXT_PARAM          = 'dtb_context';
 	private const MESSAGE_TYPE           = 'dtb:woopayments-express-surface';
-	private const ASSET_VERSION          = '2026.07.18.2';
+	private const ASSET_VERSION          = '2026.07.18.3';
 	private const WOOPAYMENTS_GATEWAY_ID = 'woocommerce_payments';
 
 	public static function register(): void {
+		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'dequeue_optional_tracking_scripts' ], 9999 );
 		add_action( 'template_redirect', [ __CLASS__, 'maybe_render' ], 5 );
 	}
 
@@ -36,6 +37,14 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 
 		self::render_surface();
 		exit;
+	}
+
+	public static function dequeue_optional_tracking_scripts(): void {
+		if ( ! self::is_surface_request() ) {
+			return;
+		}
+
+		self::dequeue_scripts_matching_sources( [ 'frontend-tracks.js' ] );
 	}
 
 	private static function is_surface_request(): bool {
@@ -262,6 +271,27 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 		$product = $previous_product; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 		return $markup;
+	}
+
+	private static function dequeue_scripts_matching_sources( array $fragments ): void {
+		global $wp_scripts;
+
+		$handles = [ 'wc-tracks', 'woo-tracks', 'woocommerce-tracks', 'wc-frontend-tracks', 'woocommerce-frontend-tracks' ];
+		if ( $wp_scripts instanceof WP_Scripts ) {
+			foreach ( $wp_scripts->registered as $handle => $dependency ) {
+				$src = is_object( $dependency ) && isset( $dependency->src ) ? (string) $dependency->src : '';
+				foreach ( $fragments as $fragment ) {
+					if ( '' !== $src && false !== stripos( $src, $fragment ) ) {
+						$handles[] = (string) $handle;
+						break;
+					}
+				}
+			}
+		}
+
+		foreach ( array_unique( array_filter( $handles ) ) as $handle ) {
+			wp_dequeue_script( $handle );
+		}
 	}
 
 	private static function looks_like_express_markup( string $markup ): bool {
