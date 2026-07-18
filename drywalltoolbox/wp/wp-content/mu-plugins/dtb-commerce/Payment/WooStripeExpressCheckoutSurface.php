@@ -16,7 +16,9 @@ final class DTB_WooStripeExpressCheckoutSurface {
 	private const QUERY_FLAG       = 'dtb_express_surface';
 	private const SURFACE_ID_PARAM = 'dtb_surface_id';
 	private const MESSAGE_TYPE     = 'dtb:express-checkout-surface';
-	private const ASSET_VERSION    = '2026.07.18.1';
+	private const ASSET_VERSION    = '2026.07.18.2';
+
+	private static bool $surface_enabled = false;
 
 	public static function register(): void {
 		add_action( 'template_redirect', [ __CLASS__, 'maybe_render' ], 99 );
@@ -33,7 +35,33 @@ final class DTB_WooStripeExpressCheckoutSurface {
 			exit;
 		}
 
+		self::$surface_enabled = self::prepare_gateway_context();
 		self::render_surface();
+	}
+
+	/**
+	 * Limit the official ECE surface to Apple Pay / Google Pay and align its
+	 * provider-owned button height with the mobile cart layout.
+	 *
+	 * @param array<string,mixed> $params Official gateway script parameters.
+	 * @return array<string,mixed>
+	 */
+	public static function filter_gateway_params( array $params ): array {
+		if ( ! self::$surface_enabled ) {
+			return $params;
+		}
+
+		if ( isset( $params['stripe'] ) && is_array( $params['stripe'] ) ) {
+			$params['stripe']['is_link_enabled']       = false;
+			$params['stripe']['is_amazon_pay_enabled'] = false;
+		}
+
+		if ( isset( $params['button'] ) && is_array( $params['button'] ) ) {
+			$params['button']['height'] = '52';
+			$params['button']['radius'] = '8';
+		}
+
+		return $params;
 	}
 
 	private static function is_surface_request(): bool {
@@ -46,6 +74,58 @@ final class DTB_WooStripeExpressCheckoutSurface {
 	private static function is_checkout_endpoint(): bool {
 		return function_exists( 'is_wc_endpoint_url' )
 			&& ( is_wc_endpoint_url( 'order-pay' ) || is_wc_endpoint_url( 'order-received' ) );
+	}
+
+	/**
+	 * The frame is visually embedded in a cart surface but is served from the
+	 * existing Woo checkout route. Map cart-enabled express checkout to this
+	 * request only so the official gateway can use its checkout-safe order path.
+	 * Persistent Stripe settings and vendor source remain untouched.
+	 */
+	private static function prepare_gateway_context(): bool {
+		if ( ! class_exists( 'WC_Stripe_Express_Checkout_Element' ) ) {
+			return false;
+		}
+
+		$element = WC_Stripe_Express_Checkout_Element::instance();
+		if ( ! is_object( $element ) || ! isset( $element->express_checkout_helper ) ) {
+			return false;
+		}
+
+		$helper = $element->express_checkout_helper;
+		if ( ! is_object( $helper ) || ! method_exists( $helper, 'get_button_locations' ) ) {
+			return false;
+		}
+
+		$locations = $helper->get_button_locations( 'payment_request' );
+		if ( ! is_array( $locations ) ) {
+			return false;
+		}
+
+		if ( ! in_array( 'cart', $locations, true ) && ! in_array( 'checkout', $locations, true ) ) {
+			return false;
+		}
+
+		if ( ! in_array( 'checkout', $locations, true ) ) {
+			$locations[] = 'checkout';
+		}
+
+		$settings = isset( $helper->stripe_settings ) && is_array( $helper->stripe_settings )
+			? $helper->stripe_settings
+			: [];
+		$settings['express_checkout_button_locations'] = array_values( array_unique( $locations ) );
+		$helper->stripe_settings                        = $settings;
+
+		if ( isset( $element->stripe_settings ) && is_array( $element->stripe_settings ) ) {
+			$element->stripe_settings['express_checkout_button_locations'] = $settings['express_checkout_button_locations'];
+		}
+
+		if ( method_exists( $helper, 'is_apple_google_pay_enabled' ) && ! $helper->is_apple_google_pay_enabled() ) {
+			return false;
+		}
+
+		add_filter( 'wc_stripe_express_checkout_params', [ __CLASS__, 'filter_gateway_params' ], 99 );
+		return true;
 	}
 
 	private static function render_surface(): void {
@@ -82,7 +162,11 @@ final class DTB_WooStripeExpressCheckoutSurface {
 	<?php wp_head(); ?>
 </head>
 <body class="dtb-woo-stripe-express-surface">
-	<?php if ( function_exists( 'wp_body_open' ) ) { wp_body_open(); } ?>
+	<?php
+	if ( function_exists( 'wp_body_open' ) ) {
+		wp_body_open();
+	}
+	?>
 	<main class="dtb-woo-stripe-express-surface__root" aria-label="Express checkout methods">
 		<?php self::render_gateway_element(); ?>
 	</main>
@@ -168,7 +252,7 @@ final class DTB_WooStripeExpressCheckoutSurface {
 	}
 
 	private static function render_gateway_element(): void {
-		if ( ! class_exists( 'WC_Stripe_Express_Checkout_Element' ) ) {
+		if ( ! self::$surface_enabled || ! class_exists( 'WC_Stripe_Express_Checkout_Element' ) ) {
 			echo '<span id="dtb-express-checkout-unavailable" hidden></span>';
 			return;
 		}
