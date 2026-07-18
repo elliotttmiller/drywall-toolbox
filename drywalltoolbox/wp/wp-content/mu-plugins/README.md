@@ -61,9 +61,8 @@ Canonical module order:
 
 - WooCommerce Store API cart extension data;
 - toolset/order-line metadata persistence;
-- WooCommerce Checkout Block / shortcode handoff and DTB-branded checkout shell/styling;
-- WooPayments readiness diagnostics and checkout-order metadata tagging;
-- non-secret WooPayments payment reference mirroring after verified Woo payment lifecycle events;
+- WooCommerce Checkout Block handoff and DTB-branded checkout shell/styling;
+- WooPayments readiness notices, same-origin provider-owned express checkout surfaces, and checkout-order metadata tagging;
 - order-type and order-admin query services;
 - branded WooCommerce email integration;
 - commerce-facing order REST/admin surfaces.
@@ -127,12 +126,11 @@ React SPA
 Checkout is the intentional exception to React rendering ownership:
 
 ```text
-React cart/cart sidebar
-  -> full-document navigation to /checkout/
+React cart/cart sidebar/product surfaces
+  -> provider-owned WooPayments express iframe where eligible, or full-document navigation to /checkout/
   -> .htaccess routes /checkout/ to WordPress
-  -> DTB WooPayments checkout shell
-  -> WooCommerce Checkout Block or [woocommerce_checkout]
-  -> WooPayments embedded payment methods and webhooks
+  -> WooCommerce Checkout Block
+  -> WooPayments
   -> WooCommerce order/payment lifecycle
   -> DTB order observation and downstream queues
 ```
@@ -160,7 +158,7 @@ Server-only constants include:
 - QuickBooks and marketplace credentials;
 - feature flags and operational switches.
 
-`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys. Payment secrets, WooPayments/Stripe secrets, webhook secrets, wallet tokens, and PaymentIntent client secrets must never be exposed through React environment variables, REST responses, storage, logs, or generated assets.
+`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys.
 
 ## 10. Scheduled and asynchronous work
 
@@ -212,7 +210,7 @@ Deployment never overwrites:
 - runtime secrets;
 - uncontrolled database dumps.
 
-Checkout cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, legacy DTB payment-webhook files, official Stripe express iframe files, and custom Stripe Embedded Checkout bridge files from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
+Order-pay cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, and legacy DTB payment-webhook files from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
 
 ## 13. Validation
 
