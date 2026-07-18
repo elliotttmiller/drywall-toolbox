@@ -8,7 +8,8 @@ const MIN_SURFACE_HEIGHT = 54;
 const MAX_SURFACE_HEIGHT = 180;
 
 function getBaseCheckoutPath() {
-  return `${(process.env.PUBLIC_URL || '').replace(/\/+$/, '')}/checkout/`.replace(/\/\/+/g, '/');
+  const basePath = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
+  return `${basePath}/checkout/`;
 }
 
 function getCartSignature(cartItems = []) {
