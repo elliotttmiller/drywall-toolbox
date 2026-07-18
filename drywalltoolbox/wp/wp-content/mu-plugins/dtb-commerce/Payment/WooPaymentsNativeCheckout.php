@@ -18,7 +18,7 @@ final class DTB_WooPaymentsNativeCheckout {
 	public const CONTRACT_VERSION = 'woo-payments-v1';
 
 	private const WOOPAYMENTS_GATEWAY_ID = 'woocommerce_payments';
-	private const ASSET_VERSION          = '2026.07.18.1';
+	private const ASSET_VERSION          = '2026.07.18.2';
 
 	public static function register(): void {
 		add_action( 'rest_api_init', [ __CLASS__, 'register_rest_routes' ] );
@@ -96,6 +96,7 @@ final class DTB_WooPaymentsNativeCheckout {
 		if ( self::is_primary_checkout_request() ) {
 			$classes[] = 'dtb-woo-native-checkout';
 			$classes[] = 'dtb-woopayments-checkout';
+			$classes[] = 'dtb-checkout-embedded-flow';
 		}
 		return $classes;
 	}
@@ -163,9 +164,9 @@ final class DTB_WooPaymentsNativeCheckout {
 		header( 'X-Robots-Tag: noindex, nofollow, noarchive', true );
 		header( 'Referrer-Policy: strict-origin-when-cross-origin', true );
 
-		$body_classes = implode( ' ', array_map( 'sanitize_html_class', get_body_class( [ 'dtb-woo-native-checkout', 'dtb-woopayments-checkout' ] ) ) );
+		$body_classes    = implode( ' ', array_map( 'sanitize_html_class', get_body_class( [ 'dtb-woo-native-checkout', 'dtb-woopayments-checkout', 'dtb-checkout-embedded-flow' ] ) ) );
 		$checkout_markup = self::render_checkout_runtime();
-		$has_markup = '' !== trim( wp_strip_all_tags( $checkout_markup ) ) || false !== strpos( $checkout_markup, 'wc-block-checkout' ) || false !== strpos( $checkout_markup, 'woocommerce-checkout' );
+		$has_markup      = '' !== trim( wp_strip_all_tags( $checkout_markup ) ) || false !== strpos( $checkout_markup, 'wc-block-checkout' ) || false !== strpos( $checkout_markup, 'woocommerce-checkout' );
 		?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -180,44 +181,73 @@ final class DTB_WooPaymentsNativeCheckout {
 	<?php if ( function_exists( 'wp_body_open' ) ) { wp_body_open(); } ?>
 	<!-- dtb-checkout-contract: <?php echo esc_html( self::CONTRACT_VERSION ); ?> -->
 	<main class="dtb-woo-checkout-shell" data-dtb-checkout-contract="<?php echo esc_attr( self::CONTRACT_VERSION ); ?>" data-dtb-checkout-provider="woopayments">
-		<header class="dtb-woo-checkout-hero">
-			<div class="dtb-woo-checkout-hero__content">
-				<p class="dtb-woo-checkout-kicker"><?php esc_html_e( 'Secure embedded checkout', 'drywall-toolbox' ); ?></p>
-				<h1><?php esc_html_e( 'Complete your Drywall Toolbox order', 'drywall-toolbox' ); ?></h1>
-				<p><?php esc_html_e( 'WooCommerce keeps your order, customer, address, shipping, and tax workflow synchronized. WooPayments securely embeds cards, wallets, and supported express checkout methods on this page.', 'drywall-toolbox' ); ?></p>
-				<div class="dtb-woo-checkout-trust" aria-label="Checkout safeguards">
+		<div class="dtb-checkout-app-shell">
+			<header class="dtb-checkout-topbar" aria-label="Drywall Toolbox checkout header">
+				<a class="dtb-checkout-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="Drywall Toolbox home">
+					<span class="dtb-checkout-brand__mark" aria-hidden="true">DTB</span>
+					<span class="dtb-checkout-brand__copy">
+						<strong><?php esc_html_e( 'Drywall Toolbox', 'drywall-toolbox' ); ?></strong>
+						<small><?php esc_html_e( 'Secure contractor checkout', 'drywall-toolbox' ); ?></small>
+					</span>
+				</a>
+				<div class="dtb-checkout-topbar__actions" aria-label="Checkout assurances">
+					<span><?php esc_html_e( 'Embedded WooPayments', 'drywall-toolbox' ); ?></span>
 					<span><?php esc_html_e( 'Same-domain checkout', 'drywall-toolbox' ); ?></span>
-					<span><?php esc_html_e( 'WooPayments embedded payment form', 'drywall-toolbox' ); ?></span>
-					<span><?php esc_html_e( 'Veeqo + QuickBooks after payment', 'drywall-toolbox' ); ?></span>
+					<a href="<?php echo esc_url( wc_get_cart_url() ); ?>"><?php esc_html_e( 'Return to cart', 'drywall-toolbox' ); ?></a>
 				</div>
-			</div>
-		</header>
+			</header>
 
-		<nav class="dtb-woo-checkout-progress" aria-label="Checkout progress">
-			<ol class="dtb-woo-checkout-progress__steps">
-				<?php self::render_progress_step( 1, __( 'Cart', 'drywall-toolbox' ), __( 'Reviewed', 'drywall-toolbox' ), true ); ?>
-				<li class="dtb-woo-checkout-progress__connector" aria-hidden="true"></li>
-				<?php self::render_progress_step( 2, __( 'Details', 'drywall-toolbox' ), __( 'Contact + shipping', 'drywall-toolbox' ), true ); ?>
-				<li class="dtb-woo-checkout-progress__connector" aria-hidden="true"></li>
-				<?php self::render_progress_step( 3, __( 'Payment', 'drywall-toolbox' ), __( 'WooPayments', 'drywall-toolbox' ), true ); ?>
-				<li class="dtb-woo-checkout-progress__connector" aria-hidden="true"></li>
-				<?php self::render_progress_step( 4, __( 'Confirmation', 'drywall-toolbox' ), __( 'Receipt', 'drywall-toolbox' ), false ); ?>
-			</ol>
-			<div class="dtb-woo-checkout-progress__summary">
-				<span><?php esc_html_e( 'Step 2 of 4 — details and embedded payment', 'drywall-toolbox' ); ?></span>
-				<span class="dtb-woo-checkout-progress__track" role="progressbar" aria-label="Checkout completion" aria-valuemin="1" aria-valuemax="4" aria-valuenow="3"><span></span></span>
-			</div>
-		</nav>
+			<section class="dtb-checkout-hero" aria-labelledby="dtb-checkout-title">
+				<div class="dtb-checkout-hero__copy">
+					<p class="dtb-woo-checkout-kicker"><?php esc_html_e( 'Fully embedded checkout', 'drywall-toolbox' ); ?></p>
+					<h1 id="dtb-checkout-title"><?php esc_html_e( 'Fast, secure payment without leaving Drywall Toolbox.', 'drywall-toolbox' ); ?></h1>
+					<p><?php esc_html_e( 'WooCommerce keeps the authoritative cart, customer, shipping, tax, and order workflow synchronized while WooPayments renders the embedded payment form and eligible express methods.', 'drywall-toolbox' ); ?></p>
+				</div>
+				<div class="dtb-checkout-hero__card" aria-label="Checkout flow summary">
+					<span><?php esc_html_e( 'Current step', 'drywall-toolbox' ); ?></span>
+					<strong><?php esc_html_e( 'Details + payment', 'drywall-toolbox' ); ?></strong>
+					<small><?php esc_html_e( 'Order creation and payment remain provider-owned.', 'drywall-toolbox' ); ?></small>
+				</div>
+			</section>
 
-		<section class="dtb-woo-checkout-card" aria-label="Checkout form">
-			<?php
-			if ( $has_markup ) {
-				echo $checkout_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce renders trusted checkout markup.
-			} else {
-				self::render_unavailable_panel();
-			}
-			?>
-		</section>
+			<nav class="dtb-woo-checkout-progress" aria-label="Checkout progress">
+				<ol class="dtb-woo-checkout-progress__steps">
+					<?php self::render_progress_step( 1, __( 'Cart', 'drywall-toolbox' ), __( 'Reviewed', 'drywall-toolbox' ), 'complete' ); ?>
+					<li class="dtb-woo-checkout-progress__connector is-complete" aria-hidden="true"></li>
+					<?php self::render_progress_step( 2, __( 'Express', 'drywall-toolbox' ), __( 'Wallet options', 'drywall-toolbox' ), 'active' ); ?>
+					<li class="dtb-woo-checkout-progress__connector is-active" aria-hidden="true"></li>
+					<?php self::render_progress_step( 3, __( 'Details', 'drywall-toolbox' ), __( 'Contact + delivery', 'drywall-toolbox' ), 'active' ); ?>
+					<li class="dtb-woo-checkout-progress__connector" aria-hidden="true"></li>
+					<?php self::render_progress_step( 4, __( 'Payment', 'drywall-toolbox' ), __( 'Embedded', 'drywall-toolbox' ), 'active' ); ?>
+					<li class="dtb-woo-checkout-progress__connector" aria-hidden="true"></li>
+					<?php self::render_progress_step( 5, __( 'Receipt', 'drywall-toolbox' ), __( 'Confirmation', 'drywall-toolbox' ), 'pending' ); ?>
+				</ol>
+				<div class="dtb-woo-checkout-progress__summary">
+					<span><?php esc_html_e( 'One synchronized WooCommerce checkout: express options, contact, delivery, payment, and confirmation.', 'drywall-toolbox' ); ?></span>
+					<span class="dtb-woo-checkout-progress__track" role="progressbar" aria-label="Checkout completion" aria-valuemin="1" aria-valuemax="5" aria-valuenow="4"><span></span></span>
+				</div>
+			</nav>
+
+			<section class="dtb-woo-checkout-card" aria-label="Embedded checkout form">
+				<div class="dtb-checkout-card__header">
+					<div>
+						<p class="dtb-checkout-eyebrow"><?php esc_html_e( 'Checkout', 'drywall-toolbox' ); ?></p>
+						<h2><?php esc_html_e( 'Complete your order', 'drywall-toolbox' ); ?></h2>
+					</div>
+					<div class="dtb-checkout-card__badges" aria-label="Payment safeguards">
+						<span><?php esc_html_e( 'WooPayments', 'drywall-toolbox' ); ?></span>
+						<span><?php esc_html_e( 'Encrypted', 'drywall-toolbox' ); ?></span>
+					</div>
+				</div>
+				<?php
+				if ( $has_markup ) {
+					echo $checkout_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce renders trusted checkout markup.
+				} else {
+					self::render_unavailable_panel();
+				}
+				?>
+			</section>
+		</div>
 	</main>
 	<?php wp_footer(); ?>
 </body>
@@ -225,10 +255,12 @@ final class DTB_WooPaymentsNativeCheckout {
 		<?php
 	}
 
-	private static function render_progress_step( int $step, string $label, string $detail, bool $active ): void {
-		$classes = 'dtb-woo-checkout-progress__step' . ( $active ? ' is-active' : '' );
+	private static function render_progress_step( int $step, string $label, string $detail, string $state ): void {
+		$allowed = [ 'complete', 'active', 'pending' ];
+		$state   = in_array( $state, $allowed, true ) ? $state : 'pending';
+		$classes = 'dtb-woo-checkout-progress__step is-' . $state;
 		?>
-		<li class="<?php echo esc_attr( $classes ); ?>"<?php echo 3 === $step ? ' aria-current="step"' : ''; ?>>
+		<li class="<?php echo esc_attr( $classes ); ?>"<?php echo 'active' === $state ? ' aria-current="step"' : ''; ?>>
 			<span class="dtb-woo-checkout-progress__circle" aria-hidden="true"><?php echo esc_html( (string) $step ); ?></span>
 			<span class="dtb-woo-checkout-progress__info"><span><?php echo esc_html( $label ); ?></span><strong><?php echo esc_html( $detail ); ?></strong></span>
 		</li>
@@ -237,7 +269,7 @@ final class DTB_WooPaymentsNativeCheckout {
 
 	private static function render_checkout_runtime(): string {
 		$checkout_page_id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'checkout' ) : 0;
-		$page_content = $checkout_page_id > 0 ? (string) get_post_field( 'post_content', $checkout_page_id ) : '';
+		$page_content     = $checkout_page_id > 0 ? (string) get_post_field( 'post_content', $checkout_page_id ) : '';
 
 		if ( '' !== trim( $page_content ) && ( has_block( 'woocommerce/checkout', $page_content ) || has_shortcode( $page_content, 'woocommerce_checkout' ) ) ) {
 			$rendered = apply_filters( 'the_content', $page_content );
