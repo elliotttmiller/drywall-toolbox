@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { navigateDocument } from '../../utils/documentNavigation.js';
 
@@ -16,8 +16,7 @@ function useMobileViewport() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     const mediaQuery = window.matchMedia(MOBILE_QUERY);
-    const update = () => setIsMobile(mediaQuery.matches);
-    update();
+    const update = (event) => setIsMobile(event.matches);
     mediaQuery.addEventListener?.('change', update);
     return () => mediaQuery.removeEventListener?.('change', update);
   }, []);
@@ -66,36 +65,34 @@ export default function MobileExpressCheckout({
     [cartItems.length, cartSignature, isMobile, surfaceId]
   );
 
-  const [status, setStatus] = useState('loading');
-  const [surfaceHeight, setSurfaceHeight] = useState(MIN_SURFACE_HEIGHT);
+  const [surfaceState, setSurfaceState] = useState({
+    url: '',
+    status: 'loading',
+    height: MIN_SURFACE_HEIGHT,
+  });
 
-  const clearAvailabilityTimeout = () => {
+  const status = surfaceState.url === surfaceUrl ? surfaceState.status : 'loading';
+  const surfaceHeight = surfaceState.url === surfaceUrl ? surfaceState.height : MIN_SURFACE_HEIGHT;
+
+  const clearAvailabilityTimeout = useCallback(() => {
     if (!timeoutRef.current || typeof window === 'undefined') return;
     window.clearTimeout(timeoutRef.current);
     timeoutRef.current = null;
-  };
+  }, []);
 
   useEffect(() => {
-    if (!isMobile || cartItems.length === 0 || !surfaceUrl) {
-      clearAvailabilityTimeout();
-      setStatus('unavailable');
-      onAvailabilityChange?.(false);
-      return undefined;
-    }
+    if (!surfaceUrl || typeof window === 'undefined') return undefined;
 
     clearAvailabilityTimeout();
-    setStatus('loading');
-    setSurfaceHeight(MIN_SURFACE_HEIGHT);
     onAvailabilityChange?.(null);
-
     timeoutRef.current = window.setTimeout(() => {
       timeoutRef.current = null;
-      setStatus('unavailable');
+      setSurfaceState({ url: surfaceUrl, status: 'unavailable', height: MIN_SURFACE_HEIGHT });
       onAvailabilityChange?.(false);
     }, SURFACE_TIMEOUT_MS);
 
     return clearAvailabilityTimeout;
-  }, [cartItems.length, cartSignature, isMobile, onAvailabilityChange, surfaceUrl]);
+  }, [clearAvailabilityTimeout, onAvailabilityChange, surfaceUrl]);
 
   useEffect(() => {
     if (!surfaceUrl || typeof window === 'undefined') return undefined;
@@ -109,24 +106,24 @@ export default function MobileExpressCheckout({
       if (payload.state === 'ready') {
         clearAvailabilityTimeout();
         const reportedHeight = Number(payload.height);
-        if (Number.isFinite(reportedHeight)) {
-          setSurfaceHeight(Math.min(MAX_SURFACE_HEIGHT, Math.max(MIN_SURFACE_HEIGHT, Math.ceil(reportedHeight))));
-        }
-        setStatus('ready');
+        const height = Number.isFinite(reportedHeight)
+          ? Math.min(MAX_SURFACE_HEIGHT, Math.max(MIN_SURFACE_HEIGHT, Math.ceil(reportedHeight)))
+          : MIN_SURFACE_HEIGHT;
+        setSurfaceState({ url: surfaceUrl, status: 'ready', height });
         onAvailabilityChange?.(true);
         return;
       }
 
       if (payload.state === 'unavailable') {
         clearAvailabilityTimeout();
-        setStatus('unavailable');
+        setSurfaceState({ url: surfaceUrl, status: 'unavailable', height: MIN_SURFACE_HEIGHT });
         onAvailabilityChange?.(false);
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [onAvailabilityChange, surfaceId, surfaceUrl]);
+  }, [clearAvailabilityTimeout, onAvailabilityChange, surfaceId, surfaceUrl]);
 
   const handleFrameLoad = () => {
     const frameWindow = iframeRef.current?.contentWindow;
@@ -143,7 +140,7 @@ export default function MobileExpressCheckout({
     }
   };
 
-  if (!isMobile || cartItems.length === 0 || status === 'unavailable') return null;
+  if (!surfaceUrl || status === 'unavailable') return null;
 
   return (
     <section
