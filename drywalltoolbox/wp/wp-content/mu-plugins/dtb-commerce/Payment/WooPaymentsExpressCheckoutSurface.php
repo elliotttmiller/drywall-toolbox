@@ -12,12 +12,12 @@
 defined( 'ABSPATH' ) || exit;
 
 final class DTB_WooPaymentsExpressCheckoutSurface {
-	private const QUERY_FLAG              = 'dtb_wcpay_express_surface';
-	private const SURFACE_ID_PARAM        = 'dtb_surface_id';
-	private const CONTEXT_PARAM           = 'dtb_context';
-	private const MESSAGE_TYPE            = 'dtb:woopayments-express-surface';
-	private const ASSET_VERSION           = '2026.07.18.1';
-	private const WOOPAYMENTS_GATEWAY_ID  = 'woocommerce_payments';
+	private const QUERY_FLAG             = 'dtb_wcpay_express_surface';
+	private const SURFACE_ID_PARAM       = 'dtb_surface_id';
+	private const CONTEXT_PARAM          = 'dtb_context';
+	private const MESSAGE_TYPE           = 'dtb:woopayments-express-surface';
+	private const ASSET_VERSION          = '2026.07.18.3';
+	private const WOOPAYMENTS_GATEWAY_ID = 'woocommerce_payments';
 
 	public static function register(): void {
 		add_action( 'template_redirect', [ __CLASS__, 'maybe_render' ], 5 );
@@ -225,6 +225,7 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 
 	private static function render_product_surface(): string {
 		$product_id = isset( $_GET['product_id'] ) ? absint( $_GET['product_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$quantity   = isset( $_GET['quantity'] ) ? max( 1, absint( $_GET['quantity'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( $product_id <= 0 || ! function_exists( 'wc_get_product' ) ) {
 			return '';
 		}
@@ -235,7 +236,7 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 		}
 
 		global $post, $product;
-		$previous_post    = $post;
+		$previous_post    = $post ?? null;
 		$previous_product = $product ?? null;
 		$post             = get_post( $product_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$product          = $surface_product; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -244,11 +245,15 @@ final class DTB_WooPaymentsExpressCheckoutSurface {
 		}
 
 		ob_start();
-		echo '<div class="dtb-wcpay-product-express-context">';
-		do_action( 'woocommerce_before_add_to_cart_form' );
-		do_action( 'woocommerce_before_add_to_cart_button' );
-		do_action( 'woocommerce_after_add_to_cart_button' );
-		do_action( 'woocommerce_after_add_to_cart_form' );
+		echo '<div class="dtb-wcpay-product-express-context" data-dtb-product-id="' . esc_attr( (string) $product_id ) . '" data-dtb-quantity="' . esc_attr( (string) $quantity ) . '">';
+		if ( function_exists( 'woocommerce_template_single_add_to_cart' ) ) {
+			woocommerce_template_single_add_to_cart();
+		} else {
+			do_action( 'woocommerce_before_add_to_cart_form' );
+			do_action( 'woocommerce_before_add_to_cart_button' );
+			do_action( 'woocommerce_after_add_to_cart_button' );
+			do_action( 'woocommerce_after_add_to_cart_form' );
+		}
 		echo '</div>';
 		$markup = (string) ob_get_clean();
 
