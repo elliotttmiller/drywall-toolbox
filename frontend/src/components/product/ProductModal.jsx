@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion as Motion, useReducedMotion } from 'framer-motion';
+import WooPaymentsExpressCheckout from '../payments/WooPaymentsExpressCheckout.jsx';
 import MotionBackdrop from '../motion/MotionBackdrop.jsx';
 import MotionDialog from '../motion/MotionDialog.jsx';
 import MotionDrawer from '../motion/MotionDrawer.jsx';
@@ -159,6 +160,13 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
                 onClick={(e) => e.stopPropagation()}
               >
                 {children}
+                <div className="dtb-product-modal-express">
+                  <WooPaymentsExpressCheckout
+                    context="product"
+                    product={product}
+                    quantity={1}
+                  />
+                </div>
               </Motion.div>
             </div>
           </PanelComponent>
@@ -184,6 +192,12 @@ export default function ProductModal({ isOpen, product, onClose, children }) {
               border-radius: 26px 26px 0 0;
               box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.18);
               overflow: hidden;
+            }
+            .dtb-product-modal-express {
+              margin-top: -1px;
+              border-top: 1px solid #dbe3f1;
+              background: #ffffff;
+              padding: 16px;
             }
             @media (min-width: 769px) {
               .product-modal-scroll-shell {
