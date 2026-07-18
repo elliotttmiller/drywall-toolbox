@@ -49,6 +49,12 @@ https://drywalltoolbox.com/checkout/?dtb_wcpay_express_surface=1&dtb_context=car
 https://drywalltoolbox.com/checkout/?dtb_wcpay_express_surface=1&dtb_context=product&product_id={woo_product_id}&quantity=1
 ```
 
+Confirm the optional WooCommerce frontend tracking script is not emitted on DTB checkout shells if it would crash checkout initialization:
+
+```text
+frontend-tracks.js should be absent from /checkout/?dtb_woo_checkout=1 when it throws Cannot read properties of undefined (reading 'url')
+```
+
 Confirm these WordPress routes are not rewritten to React:
 
 ```text
@@ -97,6 +103,7 @@ npm run build
 Backend:
 
 ```powershell
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooFrontendTracksGuard.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsNativeCheckout.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooPaymentsExpressCheckoutSurface.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
