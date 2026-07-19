@@ -87,10 +87,10 @@ ErrorDocument 511 /errors/511.html
   RewriteCond %{HTTP_HOST} ^www\.drywalltoolbox\.com$ [NC]
   RewriteRule ^ https://drywalltoolbox.com%{REQUEST_URI} [R=301,L]
 
-  # Apple Pay / Stripe / WooPayments domain-association verification.
-  # The file must be non-empty. If WooPayments writes it under the WordPress
-  # subdirectory because WP core lives in /wp, expose that non-empty generated
-  # copy at the public domain-root .well-known URL Apple verifies.
+  # Apple Pay / official WooCommerce Stripe gateway domain association.
+  # The official Stripe extension can create the required association file. If
+  # WordPress writes it below /wp because core lives in that subdirectory, expose
+  # the non-empty generated copy at the public domain-root URL Apple verifies.
   RewriteCond %{DOCUMENT_ROOT}/.well-known/apple-developer-merchantid-domain-association -s
   RewriteRule ^\.well-known/apple-developer-merchantid-domain-association$ .well-known/apple-developer-merchantid-domain-association [L]
 
@@ -107,11 +107,9 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^ - [R=404,L]
 
   # Route root/query-string REST fallback into WordPress before the SPA homepage.
-  # Woo.com and some diagnostics probe ?rest_route=/ instead of /wp-json/.
   RewriteCond %{QUERY_STRING} (^|&)rest_route= [NC]
   RewriteRule ^$ wp/index.php [QSA,L]
 
-  # Route direct rest_route=index.php calls into /wp/index.php.
   RewriteCond %{QUERY_STRING} (^|&)rest_route= [NC]
   RewriteRule ^index\.php$ wp/index.php [QSA,L]
 
@@ -121,55 +119,37 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^dtb/(.*)$ wp/index.php?rest_route=/dtb/$1 [QSA,L]
 
   # Staging REST aliases -> WordPress in /wp.
-  # Prevent /staging/2972/wp-json/* from falling into the staging SPA shell.
   RewriteRule ^staging/2972/wp-json/?$ wp/index.php?rest_route=/ [QSA,L]
   RewriteRule ^staging/2972/wp-json/(.*)$ wp/index.php?rest_route=/$1 [QSA,L]
   RewriteRule ^staging/2972/dtb/(.*)$ wp/index.php?rest_route=/dtb/$1 [QSA,L]
 
-  # Route staging rest_route query probes into WordPress as well.
   RewriteCond %{REQUEST_URI} ^/staging/2972/?$ [NC]
   RewriteCond %{QUERY_STRING} (^|&)rest_route= [NC]
   RewriteRule ^staging/2972/?$ wp/index.php [QSA,L]
 
-  # WooCommerce legacy callback/API compatibility from the root URL space.
+  # WooCommerce/official Stripe callbacks. The official Stripe extension uses
+  # WooCommerce's wc-api callback space (for example ?wc-api=wc_stripe).
   RewriteCond %{QUERY_STRING} (^|&)wc-api= [NC]
   RewriteRule ^(?:index\.php)?$ wp/index.php [QSA,L]
   RewriteRule ^wc-api/?$ wp/index.php [QSA,L]
   RewriteRule ^staging/2972/wc-api/?$ wp/index.php [QSA,L]
 
   # WooCommerce Checkout Block is the authoritative storefront checkout surface.
-  # React cart links may navigate to /checkout client-side, but any full reload or
-  # direct hit must enter WordPress/WooCommerce instead of the SPA catch-all.
   RewriteRule ^checkout/?$ wp/index.php?pagename=checkout [QSA,L]
   RewriteRule ^staging/2972/checkout/?$ wp/index.php?pagename=checkout [QSA,L]
 
   # Canonicalize wp-prefixed WooCommerce payment endpoints back to the public
-  # checkout URL. WooCommerce order-pay is a checkout endpoint, not a React route;
-  # when served under /wp/checkout/order-pay it can miss the public checkout page
-  # context and fall through to the coming-soon/front-page template.
+  # checkout URL.
   RewriteRule ^wp/checkout/order-pay/(.*)$ /checkout/order-pay/$1 [R=302,L,QSA]
   RewriteRule ^wp/order-pay/(.*)$ /checkout/order-pay/$1 [R=302,L,QSA]
 
   # WooCommerce payment/order-pay endpoints must be handled by WordPress, not by
-  # the React SPA shell. Without this rule, secure-payment redirects can fall
-  # back into the public landing/coming-soon page instead of the payment runtime.
-  # Pass the endpoint and order id explicitly. A bare wp/index.php handoff keeps
-  # the original headless/staging REQUEST_URI, so WordPress can resolve it as a
-  # 404 before WooCommerce registers the order-pay endpoint context.
+  # the React SPA shell.
   RewriteRule ^checkout/order-pay/([0-9]+)/?$ wp/index.php?pagename=checkout&order-pay=$1 [QSA,L]
   RewriteRule ^order-pay/([0-9]+)/?$ wp/index.php?pagename=checkout&order-pay=$1 [QSA,L]
-
-  # Staging variants of the order-pay endpoint must also route to WordPress.
   RewriteRule ^staging/2972/checkout/order-pay/([0-9]+)/?$ wp/index.php?pagename=checkout&order-pay=$1 [QSA,L]
 
-  # Reduced/query-string order-pay shape — e.g. checkout/?pay_for_order=true&key=wc_order_xxx
-  # or checkout/?order-pay=123&key=wc_order_xxx. WooCommerce (and DTB checkout-confirm
-  # "next" links) can legitimately emit this shape with no /order-pay/{id}/ path segment
-  # at all (plain-permalink resolution, or a payment retry link built without pretty
-  # rewrite context). Without this rule the request matches none of the conditions above
-  # and silently falls through to the final SPA catch-all near the bottom of this file,
-  # which serves the static coming-soon/SPA shell with a 200 OK and no error of any kind —
-  # WordPress/WooCommerce never loads, so no PHP-level order-pay hardening can run either.
+  # Reduced/query-string order-pay shapes must also remain in WooCommerce.
   RewriteCond %{QUERY_STRING} (^|&)(pay_for_order=true|order-pay=[0-9]+)(&|$) [NC]
   RewriteCond %{QUERY_STRING} (^|&)key=wc_order_ [NC]
   RewriteRule ^checkout/?$ wp/index.php?pagename=checkout [QSA,L]
@@ -180,27 +160,21 @@ ErrorDocument 511 /errors/511.html
 
   # Signal Endurance/nginx cache to bypass WordPress admin/auth and customer/session-owned surfaces.
   <If "%{REQUEST_URI} =~ m#^/(?:wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wordpress_test_cookie|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|dtb_auth)#i">
-    Header always set Set-Cookie "endurance-no-cache=1; Path=/; Max-Age=60; SameSite=Strict; Secure"
-    # Add instead of set/append: Set-Cookie must remain separate header fields.
-    # `set` strips WordPress/DTB auth cookies; `append` can comma-join cookies.
+    # Add a separate cache-bypass cookie without replacing WordPress/WooCommerce
+    # Set-Cookie headers. `set` could destroy session/auth cookies and `append`
+    # can illegally comma-join Set-Cookie values.
     Header always add Set-Cookie "endurance-no-cache=1; Path=/; Max-Age=60; SameSite=Strict; Secure"
   </If>
 
   # Force homepage to the static React landing page after API fallbacks.
   RewriteRule ^$ index.html [L]
 
-  # Conventional browser favicon path backed by the shared logo assets folder.
   RewriteRule ^favicon\.ico$ logos/favicon.ico [L]
 
-  # WordPress admin/login aliases from the root URL space. Redirect to the real
-  # /wp/* subdirectory so native WordPress test/login cookies use the same path
-  # the browser submits back to wp-login.php and wp-admin.
+  # WordPress admin/login aliases.
   RewriteRule ^wp-admin/?$ /wp/wp-admin/ [R=302,L,QSA]
   RewriteRule ^wp-admin/(.*)$ /wp/wp-admin/$1 [R=302,L,QSA]
   RewriteRule ^wp-login\.php$ /wp/wp-login.php [R=302,L,QSA]
-  # WordPress admin/login aliases from the root URL space. Keep these as
-  # internal rewrites: external redirects during login can split the native
-  # WordPress auth-cookie handoff across root and /wp URLs.
   RewriteRule ^wp-admin/?$ wp/wp-admin/ [L,QSA]
   RewriteRule ^wp-admin/(.*)$ wp/wp-admin/$1 [L,QSA]
   RewriteRule ^wp-login\.php$ wp/wp-login.php [L,QSA]
@@ -211,10 +185,11 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^wp-cron\.php$ wp/wp-cron.php [L,QSA]
   RewriteRule ^xmlrpc\.php$ wp/xmlrpc.php [L,QSA]
 
-  # Staging SPA deep-link fallback.
+  # Staging SPA deep-link fallback. Checkout is already consumed by the explicit
+  # rules above and therefore cannot fall through to this shell.
   RewriteCond %{REQUEST_URI} ^/staging/2972/ [NC]
   RewriteCond %{REQUEST_URI} !^/staging/2972/(?:wp-json|dtb)(?:/|$) [NC]
-  RewriteCond %{REQUEST_URI} !^/staging/2972/checkout/order-pay/ [NC]
+  RewriteCond %{REQUEST_URI} !^/staging/2972/checkout(?:/|$) [NC]
   RewriteCond %{REQUEST_URI} !\.(?:css|js|mjs|map|json|webmanifest|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf|eot|pdf|txt|xml)$ [NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
@@ -230,8 +205,6 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^ - [L]
 
   # Do not serve the SPA shell for missing static assets or verification files.
-  # Returning HTML for missing JS/CSS/provider verification paths causes blank
-  # screens, MIME/type failures, and provider verification false-positives.
   RewriteCond %{REQUEST_URI} \.(?:css|js|mjs|map|json|webmanifest|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf|eot|pdf|txt|xml)$ [NC,OR]
   RewriteCond %{REQUEST_URI} ^/\.well-known/ [NC]
   RewriteRule ^ - [R=404,L]
@@ -249,7 +222,6 @@ ErrorDocument 511 /errors/511.html
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(self), usb=(), browsing-topics=()"
   Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
 
-  # HTML shell must revalidate so clients pick up newly deployed asset paths.
   <FilesMatch "^index\.html$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
@@ -262,8 +234,8 @@ ErrorDocument 511 /errors/511.html
     Header set Expires "0"
   </FilesMatch>
 
-  # Apple Pay / Stripe domain association files must not be cached aggressively
-  # while verification is being repaired.
+  # Official Stripe/Apple Pay domain association should be revalidated during
+  # gateway/domain setup rather than served from a stale public cache.
   <FilesMatch "^apple-developer-merchantid-domain-association$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
