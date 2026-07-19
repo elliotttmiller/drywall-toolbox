@@ -2,8 +2,9 @@
 /**
  * DTB Transition Order Status — WooCommerce status-change handler.
  *
- * Registers and handles woocommerce_order_status_changed to record domain
- * events and dispatch follow-on async jobs for each lifecycle transition.
+ * Records domain lifecycle transitions. Payment/refund-specific external side
+ * effects remain owned by their dedicated WooCommerce hooks so status changes
+ * cannot create duplicate accounting or refund jobs.
  *
  * @package drywall-toolbox
  */
@@ -18,10 +19,8 @@ function dtb_order_on_status_changed( int $order_id, string $from_status, string
 	}
 
 	if ( $order instanceof WC_Order && function_exists( 'dtb_checkout_handoff_is_unpaid_order' ) && dtb_checkout_handoff_is_unpaid_order( $order ) ) {
-		// Native order-pay redirects can transiently promote unpaid handoff orders to
-		// processing before the gateway has produced a transaction/date-paid state.
-		// Never emit payment-confirmed events or fulfillment/accounting jobs for that
-		// transient state.
+		// Never project a transient processing/completed status as paid. The official
+		// Stripe lifecycle must first provide a captured payment/date-paid state.
 		if ( in_array( $to_status, [ 'processing', 'completed' ], true ) ) {
 			return;
 		}
@@ -59,12 +58,9 @@ function dtb_order_on_status_changed( int $order_id, string $from_status, string
 		dtb_order_dispatch_processing_jobs( $order_id );
 	}
 
-	if ( in_array( $to_status, [ 'cancelled', 'refunded' ], true ) ) {
-		dtb_order_enqueue_job( 'dtb_order_handle_refund', $order_id );
-	}
-
 	if ( 'completed' === $to_status ) {
-		dtb_order_enqueue_job( 'dtb_order_sync_quickbooks', $order_id );
+		// Captured-payment lifecycle dispatch already owns accounting/fulfillment.
+		// Completion only archives the operational projection.
 		dtb_order_enqueue_job( 'dtb_order_archive_completed', $order_id );
 	}
 }
