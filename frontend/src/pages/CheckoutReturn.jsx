@@ -7,7 +7,7 @@ export default function CheckoutReturn({ fallbackState = 'complete' }) {
 	const failed = fallbackState === 'failed' || fallbackState === 'cancelled';
 	const title = failed ? 'Checkout was not completed' : 'Checkout status';
 	const description = failed
-		? 'Return to the WooCommerce checkout page to retry with the official Stripe payment form.'
+		? 'Return to the WooCommerce checkout page to retry with the embedded WooPayments form.'
 		: 'WooCommerce handles checkout confirmation and order-received pages. Use your account dashboard or order email for final order details.';
 
 	return (
