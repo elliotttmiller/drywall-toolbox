@@ -1,4 +1,5 @@
 <?php
+
 defined( 'ABSPATH' ) || exit;
 
 function dtb_checkout_handoff_is_order( $order ): bool {
@@ -6,13 +7,11 @@ function dtb_checkout_handoff_is_order( $order ): bool {
 		return false;
 	}
 
-	$gateway = (string) $order->get_meta( '_dtb_checkout_gateway', true );
+	$gateway  = (string) $order->get_meta( '_dtb_checkout_gateway', true );
 	$contract = (string) $order->get_meta( '_dtb_checkout_contract_version', true );
 
-	return in_array( $gateway, [ 'woo_native_woopayments', 'woo_native_stripe' ], true )
-		|| '' !== $contract
-		|| '' !== (string) $order->get_meta( '_dtb_checkout_session_id', true )
-		|| '' !== (string) $order->get_meta( '_dtb_checkout_idempotency_key', true );
+	return 'woo_native_woopayments' === $gateway
+		|| 'woo-payments-v1' === $contract;
 }
 
 function dtb_checkout_handoff_has_gateway_reference( WC_Order $order ): bool {
@@ -26,10 +25,6 @@ function dtb_checkout_handoff_has_gateway_reference( WC_Order $order ): bool {
 		'_wcpay_payment_intent_id',
 		'_wcpay_charge_id',
 		'_wcpay_transaction_id',
-		'_stripe_intent_id',
-		'_stripe_charge_id',
-		'_stripe_source_id',
-		'_payment_intent_id',
 	];
 
 	foreach ( $meta_keys as $meta_key ) {
@@ -45,17 +40,12 @@ function dtb_checkout_handoff_uses_woopayments_gateway( WC_Order $order ): bool 
 	return 'woocommerce_payments' === $method || str_starts_with( $method, 'woocommerce_payments_' );
 }
 
-function dtb_checkout_handoff_uses_official_stripe_gateway( WC_Order $order ): bool {
-	$method = sanitize_key( (string) $order->get_payment_method() );
-	return 'stripe' === $method || str_starts_with( $method, 'stripe_' );
-}
-
 function dtb_checkout_handoff_has_provider_verified_payment( WC_Order $order ): bool {
-	if ( dtb_checkout_handoff_uses_woopayments_gateway( $order ) || dtb_checkout_handoff_uses_official_stripe_gateway( $order ) ) {
+	if ( dtb_checkout_handoff_uses_woopayments_gateway( $order ) ) {
 		return null !== $order->get_date_paid() && dtb_checkout_handoff_has_gateway_reference( $order );
 	}
 
-	return dtb_checkout_handoff_has_gateway_reference( $order );
+	return false;
 }
 
 function dtb_checkout_handoff_has_captured_payment( WC_Order $order ): bool {
