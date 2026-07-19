@@ -2,9 +2,9 @@
 /**
  * DTB Transition Order Status — WooCommerce status-change handler.
  *
- * Records domain lifecycle transitions. Payment/refund-specific external side
- * effects remain owned by their dedicated WooCommerce hooks so status changes
- * cannot create duplicate accounting or refund jobs.
+ * Records order-status lifecycle transitions. Payment/refund events and external
+ * side effects remain owned by their dedicated WooCommerce hooks so status
+ * changes cannot duplicate payment/refund timeline events or accounting jobs.
  *
  * @package drywall-toolbox
  */
@@ -31,24 +31,25 @@ function dtb_order_on_status_changed( int $order_id, string $from_status, string
 	$source     = is_admin() ? 'wp_admin' : 'system';
 
 	$event_map = [
-		'pending'    => 'order.payment_pending',
-		'on-hold'    => 'order.payment_review_required',
-		'processing' => 'order.payment_confirmed',
+		'pending'    => 'order.pending',
+		'on-hold'    => 'order.on_hold',
+		'processing' => 'order.processing',
 		'completed'  => 'order.completed',
 		'cancelled'  => 'order.cancelled',
-		'refunded'   => 'order.refunded',
-		'failed'     => 'order.payment_failed',
+		'refunded'   => 'order.refund_status_changed',
+		'failed'     => 'order.failed',
 	];
 
 	$event_type = $event_map[ $to_status ] ?? ( 'order.status_changed.' . sanitize_key( $to_status ) );
 
 	dtb_order_append_event( $order_id, $event_type, [
-		'from_status' => $from_status,
-		'to_status'   => $to_status,
-		'actor_type'  => $actor_type,
-		'actor_id'    => $actor_id ?: null,
-		'source'      => $source,
-		'payload'     => [
+		'from_status'     => $from_status,
+		'to_status'       => $to_status,
+		'actor_type'      => $actor_type,
+		'actor_id'        => $actor_id ?: null,
+		'source'          => $source,
+		'idempotency_key' => 'order-status:' . $order_id . ':' . sanitize_key( $from_status ) . ':' . sanitize_key( $to_status ),
+		'payload'         => [
 			'from' => $from_status,
 			'to'   => $to_status,
 		],
