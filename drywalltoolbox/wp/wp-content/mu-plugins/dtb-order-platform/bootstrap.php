@@ -16,7 +16,6 @@ require_once $_dtb_order . '/Domain/OrderLifecycleStatus.php';
 require_once $_dtb_order . '/Domain/OrderTransition.php';
 require_once $_dtb_order . '/Domain/OrderTrackingProjection.php';
 require_once $_dtb_order . '/Infrastructure/OrderSchemaInstaller.php';
-require_once $_dtb_order . '/Infrastructure/CheckoutSessionRepository.php';
 require_once $_dtb_order . '/Infrastructure/WooOrderStatusStore.php';
 require_once $_dtb_order . '/Infrastructure/OrderIntegrationStateStore.php';
 require_once $_dtb_order . '/Infrastructure/OrderQueue.php';
