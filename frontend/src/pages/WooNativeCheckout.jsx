@@ -2,45 +2,49 @@ import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import SEOHead from '../components/shared/SEOHead.jsx';
-import { API_BASE_URL } from '../api/client.js';
 import { navigateDocument } from '../utils/documentNavigation.js';
+import { getWooCheckoutFallbackUrl, getWooCheckoutUrl } from '../utils/checkoutUrl.js';
 
-const CHECKOUT_QUERY_FLAG = 'dtb_woo_checkout';
-const CHECKOUT_PATH = '/checkout/';
+const HANDOFF_MARKER = 'dtb:native-checkout-handoff:v1';
+const HANDOFF_LOOP_WINDOW_MS = 15000;
 
-function checkoutPath() {
-  return CHECKOUT_PATH;
-}
-
-function checkoutUrl() {
-  const origin = (API_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '')).replace(/\/+$/, '');
-  const path = checkoutPath();
-
-  if (typeof window === 'undefined') {
-    return `${path}?${CHECKOUT_QUERY_FLAG}=1`;
-  }
-
-  const url = new URL(path, origin || window.location.origin);
-  url.searchParams.set(CHECKOUT_QUERY_FLAG, '1');
-  return url.toString();
-}
-
-function isWooCheckoutHandoffRequest() {
-  if (typeof window === 'undefined') return false;
-  return new URLSearchParams(window.location.search).get(CHECKOUT_QUERY_FLAG) === '1';
-}
-
-function isCanonicalWooCheckoutPath() {
-  if (typeof window === 'undefined') return false;
-  return window.location.pathname.replace(/\/+$/, '') === CHECKOUT_PATH.replace(/\/+$/, '');
-}
-
+/**
+ * Compatibility route only.
+ *
+ * Cart CTAs use a full-document link to native WooCommerce checkout. If React
+ * Router reaches `/checkout` through client navigation, force document
+ * navigation so WordPress/WooCommerce owns the runtime. A one-shot direct
+ * WordPress fallback prevents an infinite reload loop if the root rewrite is
+ * accidentally serving the SPA at `/checkout/`.
+ */
 export default function WooNativeCheckout() {
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    if (isWooCheckoutHandoffRequest() && isCanonicalWooCheckoutPath()) return undefined;
-    navigateDocument(checkoutUrl(), { replace: true });
-    return undefined;
+    let previousHandoff = 0;
+    try {
+      previousHandoff = Number(window.sessionStorage.getItem(HANDOFF_MARKER) || 0);
+    } catch {
+      previousHandoff = 0;
+    }
+
+    const now = Date.now();
+    const likelyRoutingLoop = previousHandoff > 0 && (now - previousHandoff) < HANDOFF_LOOP_WINDOW_MS;
+
+    if (likelyRoutingLoop) {
+      try {
+        window.sessionStorage.removeItem(HANDOFF_MARKER);
+      } catch {
+        // Session storage is optional; direct document navigation remains valid.
+      }
+      navigateDocument(getWooCheckoutFallbackUrl(), { replace: true });
+      return;
+    }
+
+    try {
+      window.sessionStorage.setItem(HANDOFF_MARKER, String(now));
+    } catch {
+      // Session storage is optional; the canonical checkout handoff still works.
+    }
+    navigateDocument(getWooCheckoutUrl(), { replace: true });
   }, []);
 
   return (
@@ -54,7 +58,7 @@ export default function WooNativeCheckout() {
             aria-hidden="true"
           />
         </span>
-        <p className="text-sm font-medium tracking-wide text-slate-200">Loading checkout...</p>
+        <p className="text-sm font-medium tracking-wide text-slate-200">Opening secure checkout…</p>
       </div>
     </div>
   );
