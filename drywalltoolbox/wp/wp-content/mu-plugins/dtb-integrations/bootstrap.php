@@ -11,11 +11,6 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'dtb_integrations_require_files' ) ) {
-	/**
-	 * Require a list of integration module files in-order.
-	 *
-	 * @param string[] $relative_paths Paths relative to wp-content/mu-plugins.
-	 */
 	function dtb_integrations_require_files( array $relative_paths ): void {
 		foreach ( $relative_paths as $path ) {
 			dtb_module_require( $path );
@@ -24,27 +19,16 @@ if ( ! function_exists( 'dtb_integrations_require_files' ) ) {
 }
 
 if ( ! function_exists( 'dtb_integrations_register_health_checks' ) ) {
-	/** Register major integration health checks with DTB health registry. */
 	function dtb_integrations_register_health_checks(): void {
-		if ( class_exists( 'DTB_WooCommerceHealthCheck' ) ) {
-			DTB_WooCommerceHealthCheck::register();
-		}
-		if ( class_exists( 'DTB_VeeqoHealthCheck' ) ) {
-			DTB_VeeqoHealthCheck::register();
-		}
-		if ( class_exists( 'DTB_QuickBooksHealthCheck' ) ) {
-			DTB_QuickBooksHealthCheck::register();
-		}
-		if ( class_exists( 'DTB_AmazonHealthCheck' ) ) {
-			DTB_AmazonHealthCheck::register();
-		}
-		if ( class_exists( 'DTB_EbayHealthCheck' ) ) {
-			DTB_EbayHealthCheck::register();
-		}
+		if ( class_exists( 'DTB_WooCommerceHealthCheck' ) ) DTB_WooCommerceHealthCheck::register();
+		if ( class_exists( 'DTB_VeeqoHealthCheck' ) ) DTB_VeeqoHealthCheck::register();
+		if ( class_exists( 'DTB_QuickBooksHealthCheck' ) ) DTB_QuickBooksHealthCheck::register();
+		if ( class_exists( 'DTB_AmazonHealthCheck' ) ) DTB_AmazonHealthCheck::register();
+		if ( class_exists( 'DTB_EbayHealthCheck' ) ) DTB_EbayHealthCheck::register();
 	}
 }
 
-// 1) Core bridges/clients first (runtime hooks/routes).
+// 1) Core bridges/clients first.
 dtb_integrations_require_files( [
 	'dtb-integrations/WooCommerce/WooCommerceBridge.php',
 	'dtb-integrations/Veeqo/VeeqoClient.php',
@@ -80,8 +64,9 @@ dtb_integrations_require_files( [
 	'dtb-integrations/QuickBooks/QuickBooksHealthCheck.php',
 ] );
 
-// 4.5) Canonical order-platform contracts and hook overrides for Veeqo/QuickBooks orchestration.
+// 4.5) Canonical order-platform contracts and hook overrides.
 dtb_integrations_require_files( [
+	'dtb-integrations/OperationalPipeline/AtomicIntegrationLock.php',
 	'dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php',
 	'dtb-integrations/OperationalPipeline/OrderIntegrationContracts.php',
 	'dtb-integrations/OperationalPipeline/OrderPipelineHookOverrides.php',
@@ -92,14 +77,9 @@ dtb_integrations_require_files( [
 	'dtb-integrations/OperationalPipeline/PipelinePayloadPreview.php',
 ] );
 
-// Rewards module intentionally omitted for launch:
-// - RewardsService.php
-// - RewardsIssueJob.php
-// - RewardsAdjustmentController.php
-// - RewardsBalanceController.php
-// - RewardsHealthCheck.php
+// Rewards module intentionally omitted for launch.
 
-// 5) Notifications last (cross-integration consumers).
+// 5) Notifications last.
 dtb_integrations_require_files( [
 	'dtb-integrations/Notifications/NotificationTemplateRepository.php',
 	'dtb-integrations/Notifications/EmailTemplateRenderer.php',
@@ -108,7 +88,7 @@ dtb_integrations_require_files( [
 	'dtb-integrations/Notifications/SmsGateway.php',
 ] );
 
-// 6) Marketplace shared infrastructure (schema + contracts + credentials).
+// 6) Marketplace shared infrastructure.
 dtb_integrations_require_files( [
 	'dtb-integrations/Marketplace/Schema/MarketplaceSchemaInstaller.php',
 	'dtb-integrations/Marketplace/ChannelContract.php',
@@ -124,7 +104,7 @@ dtb_integrations_require_files( [
 	'dtb-integrations/Marketplace/OrderMaterializationService.php',
 ] );
 
-// 7) Amazon module.
+// 7) Amazon.
 dtb_integrations_require_files( [
 	'dtb-integrations/Amazon/AmazonConfig.php',
 	'dtb-integrations/Amazon/AmazonLwaTokenService.php',
@@ -136,7 +116,7 @@ dtb_integrations_require_files( [
 	'dtb-integrations/Amazon/AmazonWebhookController.php',
 ] );
 
-// 8) eBay module.
+// 8) eBay.
 dtb_integrations_require_files( [
 	'dtb-integrations/Ebay/EbayConfig.php',
 	'dtb-integrations/Ebay/EbayOAuthTokenService.php',
@@ -176,5 +156,4 @@ dtb_integrations_require_files( [
 	'dtb-integrations/Marketplace/Admin/MarketplaceSettingsPage.php',
 ] );
 
-// Register existing lightweight integration diagnostics.
 dtb_integrations_register_health_checks();
