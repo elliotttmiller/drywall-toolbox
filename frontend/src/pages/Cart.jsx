@@ -20,7 +20,6 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 
-import WooPaymentsExpressCheckout from '../components/payments/WooPaymentsExpressCheckout.jsx';
 import SEOHead from '../components/shared/SEOHead';
 import { FREE_SHIP_THRESHOLD, ESTIMATED_SHIP_RATE } from '../constants/shipping';
 import { useCart } from '../context/CartContext';
@@ -280,8 +279,6 @@ export default function Cart() {
                     <p className="text-[10px] text-slate-400 mt-0.5">+ tax at checkout</p>
                   </div>
                 </div>
-
-                <WooPaymentsExpressCheckout context="cart" cartItems={cartItems} />
 
                 <a
                   href={CHECKOUT_HREF}
