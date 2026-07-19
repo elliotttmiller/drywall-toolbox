@@ -37,6 +37,7 @@ require_once $_dtb_order . '/Tracking/OrderStatusProjector.php';
 require_once $_dtb_order . '/Tracking/OrderEventStream.php';
 require_once $_dtb_order . '/Tracking/OrderOperatorTimeline.php';
 require_once $_dtb_order . '/Payment/CheckoutPaymentLifecycle.php';
+require_once $_dtb_order . '/Payment/RefundLifecycle.php';
 require_once $_dtb_order . '/Rest/OrderListController.php';
 require_once $_dtb_order . '/Rest/OrderDetailController.php';
 require_once $_dtb_order . '/Rest/OrderTrackingController.php';
