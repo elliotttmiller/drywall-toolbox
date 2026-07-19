@@ -84,6 +84,8 @@ Forbidden browser values include WooCommerce application passwords, consumer key
 - environment identifier;
 - public launch dates.
 
+Do not put Stripe secret keys, webhook secrets, PaymentIntent client secrets, wallet tokens, or gateway credentials in `REACT_APP_*` values. Publishable-key exposure is allowed only when an official documented browser integration requires it; the current production storefront does not need a React-owned Stripe integration.
+
 ### Server-only values
 
 Defined in `wp-config.php`, WooCommerce/Stripe plugin settings, or secured host configuration:
