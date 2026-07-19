@@ -48,6 +48,13 @@ export default function CartSidebar({ isOpen, onClose }) {
         await sleep(75);
       }
 
+      if (isMutatingRef.current) {
+        checkoutPendingRef.current = false;
+        window.alert('Your cart is still updating. Please wait a moment and try checkout again.');
+        anchor.focus?.();
+        return;
+      }
+
       onClose?.();
       window.location.assign(getWooCheckoutUrl());
     };
