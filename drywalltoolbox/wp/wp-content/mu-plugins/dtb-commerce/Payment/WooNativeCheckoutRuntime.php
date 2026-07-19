@@ -22,6 +22,7 @@ final class DTB_WooNativeCheckoutRuntime {
 		add_action( 'wp', [ __CLASS__, 'prepare_runtime' ], 1 );
 		add_filter( 'template_include', [ __CLASS__, 'template_include' ], 1000 );
 		add_action( 'send_headers', [ __CLASS__, 'send_private_headers' ], 20 );
+		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'persist_store_api_checkout_metadata' ], 100 );
 	}
 
 	public static function prepare_runtime(): void {
@@ -54,6 +55,27 @@ final class DTB_WooNativeCheckoutRuntime {
 		nocache_headers();
 		header( 'Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0', true );
 		header( 'Pragma: no-cache', true );
+	}
+
+	/**
+	 * Checkout Block processes orders through the Store API. DTB checkout tagging
+	 * runs earlier on that lifecycle and updates the order object in memory; save
+	 * the metadata explicitly at a late priority so the production contract is
+	 * durable before payment/lifecycle observers inspect it.
+	 */
+	public static function persist_store_api_checkout_metadata( $order ): void {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		if (
+			'woo_native_stripe' !== (string) $order->get_meta( '_dtb_checkout_gateway', true ) ||
+			'woo-stripe-v1' !== (string) $order->get_meta( '_dtb_checkout_contract_version', true )
+		) {
+			return;
+		}
+
+		$order->save_meta_data();
 	}
 
 	private static function is_native_checkout_surface(): bool {
