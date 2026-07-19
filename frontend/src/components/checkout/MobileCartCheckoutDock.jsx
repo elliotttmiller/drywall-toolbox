@@ -18,20 +18,20 @@ export default function MobileCartCheckoutDock({ isOpen, onClose, cartItems = []
 
   return (
     <aside
-      className="dtb-cart-express-dock dtb-cart-checkout-dock"
+      className="dtb-cart-checkout-dock"
       aria-label="Cart checkout actions"
     >
-      <div className="dtb-cart-express-dock__total-row">
+      <div className="dtb-cart-checkout-dock__total-row">
         <div>
-          <span className="dtb-cart-express-dock__label">Subtotal</span>
-          <span className="dtb-cart-express-dock__hint">Shipping, tax, and payment at checkout</span>
+          <span className="dtb-cart-checkout-dock__label">Subtotal</span>
+          <span className="dtb-cart-checkout-dock__hint">Shipping, tax, and payment at checkout</span>
         </div>
         <strong>${subtotal.toFixed(2)}</strong>
       </div>
 
       <a
         href={CHECKOUT_HREF}
-        className="dtb-cart-express-dock__checkout"
+        className="dtb-cart-checkout-dock__checkout"
         onClick={onClose}
       >
         <Lock size={15} strokeWidth={2.4} aria-hidden="true" />
@@ -41,7 +41,7 @@ export default function MobileCartCheckoutDock({ isOpen, onClose, cartItems = []
 
       <Link
         to="/cart"
-        className="dtb-cart-express-dock__view-cart"
+        className="dtb-cart-checkout-dock__view-cart"
         onClick={onClose}
       >
         View full cart
