@@ -1,6 +1,6 @@
 # Structure
 
-Last verified against source: 2026-07-12.
+Last verified against source: 2026-07-19.
 
 ## Architecture truth
 
@@ -73,7 +73,7 @@ Browser
      -> existing static file / React application shell
      -> /wp-json/* alias -> /wp/index.php
      -> /wp-admin/* alias -> /wp/wp-admin/*
-     -> WooCommerce order-pay endpoint -> /wp/index.php
+     -> /checkout/ and WooCommerce order-pay endpoints -> /wp/index.php
   -> React route in frontend/src/App.jsx
   -> frontend/src/api/*, hooks, and providers
   -> /wp-json/dtb/v1/*
@@ -85,7 +85,7 @@ Browser
   -> WooCommerce, DTB tables/post meta, Action Scheduler, Veeqo, QuickBooks
 ```
 
-React owns public rendering and interaction state. Backend modules own authorization, validation, persistence, lifecycle transitions, integration policy, and operational side effects.
+React owns public rendering and interaction state. Backend modules own authorization, validation, persistence, lifecycle transitions, integration policy, and operational side effects. Checkout is intentionally a WordPress/WooCommerce document, not a React payment route.
 
 ## Frontend structure
 
@@ -134,13 +134,14 @@ Frontend ownership rules:
 - Keep optional legacy facades in `frontend/src/services/` credential-free and proxy-backed.
 - Use `frontend/src/auth/tokenStore.js` for optional in-memory bearer tokens; never persist credentials or JWTs in browser storage.
 - Use WooCommerce Store API only for public cart/session operations. WooCommerce admin REST credentials remain server-side.
+- Do not mount Stripe Elements, Stripe Checkout Sessions, express-wallet iframes, or copied payment gateway components in React.
 
 ## Public route groups
 
 - Storefront: `/`, `/products`, brand/category selectors, product and variation detail.
 - Parts/schematics: `/parts`, `/product/:partNumber`, `/schematics`.
 - Repairs: intake, packages, tracking, status, authenticated dashboard detail.
-- Commerce: `/cart`, `/checkout`, checkout return states, order confirmation and tracking.
+- Commerce: `/cart`, `/checkout` handoff, checkout return states, order confirmation and tracking.
 - Returns/support: return portal/status and support contact/status.
 - Account: login, register, password recovery, dashboard tabs.
 - Content: calculators, FAQ, shipping policy, policies.
@@ -178,11 +179,11 @@ Catalog domain models, Woo/product repositories, normalization, facets, variatio
 
 ### `dtb-commerce/`
 
-WooCommerce Store API cart extensions, toolset/order-line metadata, order type/query services, branded WooCommerce email integration, and commerce-facing order REST/admin surfaces.
+WooCommerce Store API cart extensions, native Woo checkout runtime exception for the headless theme, checkout capability metadata, official Stripe checkout styling/diagnostics, Woo order tagging, toolset/order-line metadata, order type/query services, branded WooCommerce email integration, and commerce-facing order REST/admin surfaces.
 
 ### `dtb-order-platform/`
 
-Order lifecycle domain, event ledger, integration state, Action Scheduler queue, write boundary, duplicate containment, payment webhooks, customer/operator tracking projections, order REST controllers, and operations UI.
+Order lifecycle domain, event ledger, integration state, Action Scheduler queue, write boundary, duplicate containment, WooCommerce payment/refund lifecycle observation, customer/operator tracking projections, order REST controllers, and operations UI.
 
 ### `dtb-schematics/` and `dtb-media/`
 
@@ -199,18 +200,21 @@ Server-side adapters and orchestration for WooCommerce, Veeqo, QuickBooks, notif
 ## Order and fulfillment flow
 
 ```text
-React cart
-  -> WooCommerce Store API cart session
-  -> DTB checkout session / confirmation / finalization
-  -> WooCommerce order and payment runtime
-  -> DTB order event ledger
+React cart / cart drawer
+  -> WooCommerce Store API cookie-backed cart session
+  -> full-document navigation to /checkout/
+  -> assigned WordPress WooCommerce Checkout page
+  -> WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway
+  -> WooCommerce order and payment lifecycle
+  -> DTB captured-payment event ledger
   -> dtb-orders Action Scheduler queue
   -> Veeqo inventory/fulfillment synchronization
   -> QuickBooks accounting projection
   -> notification and customer tracking projections
 ```
 
-Only the DTB checkout/finalization pipeline may create storefront orders. Legacy raw WooCommerce order creation is blocked/retired. Customer order reads must bind requested records to the authenticated customer, not caller-supplied customer IDs.
+Only WooCommerce Checkout Block may create storefront orders. Legacy raw WooCommerce order creation, DTB-owned checkout session/finalization, and browser-created Stripe payment flows are blocked/retired. Customer order reads must bind requested records to the authenticated customer, not caller-supplied customer IDs.
 
 ## Data and operations structure
 
@@ -218,34 +222,8 @@ Only the DTB checkout/finalization pipeline may create storefront orders. Legacy
 
 Primary authorities:
 
-- Production catalog: `products/Production/catalogs/official/woocommerce_catalog_production_optimized.csv`
-- Taxonomy policy: `products/Production/catalogs/config/production_taxonomy_policy.json`
-- Catalog validation and SKU audits: `scripts/*.py`
-- Loader/API smoke checks: `scripts/smoke-dtb-mu-modules.ps1`, `scripts/smoke-dtb-catalog-api.ps1`
-- Veeqo and production-catalog tooling: `scripts/veeqo/`, `scripts/production_catalog/`
-
-Treat SKUs, MPNs, part numbers, taxonomy slugs, image mappings, schematic paths, and external-system IDs as stable business identifiers.
-
-## CI/CD structure
-
-- `.github/workflows/ci-build.yml` validates pull requests targeting `main`, pushes to `main`, and manual dispatches.
-- `.github/workflows/deploy.yml` performs controlled HostGator backup, deploy/restore, production smoke checks, and rollback.
-- Production deployment packages `dist/`, routing files, logos, mu-plugins, and themes.
-- Runtime secrets, `wp-config.php`, uploads, cache, upgrade state, and full WordPress core are forbidden in deployment payloads.
-
-## Engineering navigation
-
-- UI/route issue: `frontend/src/pages/`, `frontend/src/components/`, `frontend/src/App.jsx`
-- Frontend API/session issue: `frontend/src/api/`, `frontend/src/auth/`, providers/hooks
-- Backend route/business rule: owning subtree in `drywalltoolbox/wp/wp-content/mu-plugins/`
-- Order side effect or duplicate issue: `dtb-order-platform/Infrastructure/OrderWriteBoundary.php`, `OrderQueue.php`, integration pipeline files
-- Catalog correctness: `dtb-catalog-platform/`, `products/Production/`, `scripts/`
-- Deployment/routing: `drywalltoolbox/.htaccess`, `drywalltoolbox/wp/.htaccess`, `.github/workflows/`
-
-## Source precedence
-
-When documentation and implementation disagree:
-
-1. live source code and active workflow configuration win;
-2. `drywalltoolbox/wp/wp-content/mu-plugins/README.md` documents the backend runtime contract;
-3. `memory-bank/*` records durable cross-system context and must be updated when architecture changes.
+- WooCommerce: products, customers, Store API cart/session, Checkout Block, orders, taxes/totals, payment status record;
+- official WooCommerce Stripe Payment Gateway: card/payment method rendering, Link, eligible express wallets, tokenization, 3DS/SCA, Stripe payment processing, webhook synchronization;
+- DTB: domain policy, order observation, integration queues, projections, catalog/media/schematic/repair/return/support workflows;
+- Veeqo: inventory and fulfillment;
+- QuickBooks: accounting projection after eligible order/refund lifecycle events.
