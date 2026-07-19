@@ -1,6 +1,6 @@
 # Tech
 
-Last verified against source: 2026-07-14.
+Last verified against source: 2026-07-19.
 
 ## Runtime stack
 
@@ -11,13 +11,14 @@ Last verified against source: 2026-07-14.
 - Framer Motion with centralized motion configuration;
 - React Helmet Async;
 - React Markdown, `remark-gfm`, and DOMPurify;
-- Stripe browser libraries for publishable-key/payment UI integration;
 - `lucide-react` icons.
+
+The frontend does not own payment rendering, Stripe Elements, wallet controls, Stripe Checkout Sessions, PaymentIntents, or order creation. Payment UI is rendered by the official WooCommerce Stripe Payment Gateway inside the native WooCommerce checkout/order-pay surfaces.
 
 ### Backend (`drywalltoolbox/wp/`)
 
 - WordPress in headless usage;
-- WooCommerce and WooPayments;
+- WooCommerce and the official WooCommerce Stripe Payment Gateway;
 - custom DTB must-use plugin suite under `drywalltoolbox/wp/wp-content/mu-plugins/`;
 - composition root `00-dtb-loader.php` loading 11 module bootstraps;
 - Action Scheduler for order, integration, import, and other asynchronous jobs;
@@ -25,13 +26,14 @@ Last verified against source: 2026-07-14.
 
 ### Integration authorities
 
-- WooCommerce: product/customer/order/payment record system;
+- WooCommerce: product/customer/cart/checkout/order/payment record system;
+- official WooCommerce Stripe Payment Gateway: embedded Stripe payment methods, eligible wallets, Link, tokenization, 3DS/SCA, Stripe webhook synchronization into WooCommerce;
 - DTB order platform: lifecycle events, idempotency, integration state, write boundary, queue, and customer/operator projections;
 - Veeqo: inventory, allocation, fulfillment, labels, shipment status, and tracking;
 - QuickBooks: accounting projection after eligible payment/refund events;
 - marketplace modules: normalized Amazon/eBay operational ingestion and exception handling.
 
-Checkout shipping rates are currently computed by DTB policy. They are not live carrier quotes returned by Veeqo.
+Checkout shipping rates are currently computed by Woo/DTB policy. They are not live carrier quotes returned by Veeqo.
 
 ## Backend module chain
 
@@ -77,7 +79,7 @@ Frontend validation gates are dependency installation, source lint, production b
 - service-worker precache/runtime caching;
 - development proxying to the WordPress backend.
 
-Only public configuration may use a `REACT_APP_*` variable. Forbidden browser values include WooCommerce application passwords, consumer keys/secrets, Veeqo keys, webhook secrets, private keys, and server integration credentials.
+Only public configuration may use a `REACT_APP_*` variable. Forbidden browser values include WooCommerce application passwords, consumer keys/secrets, Stripe secret keys, Stripe webhook secrets, Veeqo keys, webhook secrets, private keys, and server integration credentials.
 
 ## Environment model
 
@@ -89,8 +91,9 @@ Examples include:
 - Store API path;
 - feature flags;
 - environment identifier;
-- Stripe publishable key;
 - public launch dates.
+
+Do not put Stripe secret keys, webhook secrets, PaymentIntent client secrets, wallet tokens, or gateway credentials in `REACT_APP_*` values. Publishable-key exposure is allowed only when an official documented browser integration requires it; the current production storefront does not need a React-owned Stripe integration.
 
 ### Server-only values
 
@@ -99,6 +102,7 @@ Defined in `wp-config.php` or secure hosting/CI configuration:
 - `WC_PROXY_CONSUMER_KEY`, `WC_PROXY_CONSUMER_SECRET`;
 - `DTB_WC_AUTH_USER`, `DTB_WC_AUTH_PASS`;
 - `WC_WEBHOOK_SECRET`, `DTB_IMPORT_SECRET`;
+- official Stripe gateway secret/webhook configuration managed by the plugin/runtime;
 - `DRYWALL_JWT_SECRET`;
 - `DTB_VEEQO_*` secrets and authority IDs;
 - `DTB_QBO_*` credentials;
@@ -119,29 +123,25 @@ Canonical browser communication uses:
 
 Legacy frontend service facades must call DTB proxy/Store API endpoints and must not collect or persist WooCommerce credentials in localStorage, sessionStorage, source, environment bundles, or UI settings forms.
 
-## Mobile checkout UI architecture
+## Checkout UI architecture
 
-React owns the `/checkout` intake route: guest/account choice, contact and shipping fields, section presentation, coupon/note disclosures, draft recovery, quote-state messaging, and the sticky mobile action sheet.
+React owns the customer-facing cart page, cart drawer, and checkout CTA/handoff behavior only. React route `/checkout` is a compatibility handoff that performs full-document navigation into the domain-root `/checkout/` WordPress route.
 
-Checkout UI code belongs under `frontend/src/features/checkout/` when new shared behavior is added. The route must not rely on broad DOM MutationObserver runtimes for guest choice, order summary, mobile totals, or submit CTA behavior. Retired checkout DOM runtimes must not be reintroduced as architecture.
+The actual checkout UI is the assigned WordPress WooCommerce Checkout page containing the WooCommerce Checkout Block. The official WooCommerce Stripe Payment Gateway renders payment methods, Link, eligible wallets, tokenization, and 3DS/SCA inside that Woo checkout runtime. DTB may scope CSS, body classes, readiness diagnostics, order tagging, and verified lifecycle observation through `dtb-commerce/Payment/OfficialStripeNativeCheckout.php`.
 
-The React checkout CTA uses `Continue to secure payment` language because payment collection happens after backend finalization on the WooCommerce order-pay runtime. The order-pay runtime may use `Pay {total}` because WooCommerce/WooPayments own the gateway form there.
-
-Checkout draft recovery is temporary and session scoped. It must not persist payment data, gateway tokens, checkout session tokens, or customer notes. Form drafts must be cleared after successful handoff/order completion.
-
-Detailed mobile checkout UI guidance lives in `docs/mobile-checkout-architecture.md`.
+Frontend checkout work must not reintroduce a React checkout form, Stripe Elements wrapper, Stripe Checkout Session flow, payment iframe, copied plugin build component, DOM observer checkout runtime, or fake Apple Pay / Google Pay / Link buttons.
 
 ## Backend API surface
 
 ### `dtb/v1`
 
-Platform and domain APIs including authentication, account, checkout orchestration, catalog/platform routes, schematics/media, repairs, returns, support, Veeqo availability/webhooks/admin operations, QuickBooks, health, cache, and operator endpoints.
+Platform and domain APIs including authentication, account, checkout capability metadata, catalog/platform routes, schematics/media, repairs, returns, support, Veeqo availability/webhooks/admin operations, QuickBooks, health, cache, and operator endpoints.
 
 `GET /dtb/v1/config` is a public-safe capability/bootstrap endpoint only. It must never return WooCommerce credentials.
 
 ### `drywall/v1`
 
-Server-side read proxy for public product/catalog data. Legacy authenticated order/customer read routes are customer-bound and deprecated. Legacy raw order creation is retired; new orders use the DTB checkout finalization contract.
+Server-side read proxy for public product/catalog data. Legacy authenticated order/customer read routes are customer-bound and deprecated. Legacy raw order creation is retired; storefront orders use the WooCommerce Checkout Block and official Stripe gateway contract.
 
 ### `headless/v1`
 
@@ -156,12 +156,12 @@ Public WooCommerce Store API for cart/session operations. Storefront inventory v
 - HS256 JWT signed with `DRYWALL_JWT_SECRET`;
 - preferred HttpOnly `dtb_auth` cookie with SameSite policy;
 - optional Authorization bearer fallback;
-- no JWT, application password, consumer secret, or API key persisted in browser storage;
+- no JWT, application password, consumer secret, API key, Stripe secret, webhook secret, PaymentIntent client secret, or wallet token persisted in browser storage;
 - centralized origin allowlist and CORS policy;
 - customer record reads bind requested records to the authenticated customer;
 - admin endpoints require explicit capabilities;
 - public endpoints are intentionally read-safe or protected by narrow signed-token/HMAC contracts;
-- WooCommerce and Veeqo webhook signature validation;
+- WooCommerce, official Stripe gateway, and Veeqo webhook signature validation remain with their owning systems/modules;
 - order write boundary blocks raw external order creation, duplicate side effects, and write loops;
 - root and WordPress `.htaccess` preserve authorization headers and enforce routing/security behavior.
 
@@ -186,7 +186,7 @@ Live routing/cache policy:
 - native WordPress auth cookies (`wordpress_logged_in_`, `wordpress_sec_`, `wp-settings-`) and WooCommerce cart/session cookies (`woocommerce_cart_hash`, `woocommerce_items_in_cart`, `wp_woocommerce_session_`) also trigger no-cache behavior;
 - HostGator/Endurance cache is signaled with the short-lived `endurance-no-cache=1` cookie on admin, login, REST, WooCommerce session, callback, and order-payment surfaces;
 - React JS/CSS/manifest/JSON assets use short public revalidation; image/font/PDF assets use longer public cache; `index.html` and error HTML are no-store/revalidate;
-- keyed order-pay presentation is centralized in `dtb-commerce/Payment/OrderPayPresentation.php` with one template and one CSS/JS asset pair under `dtb-commerce`; gateway fields, nonces, tokenization, callbacks, and payment lifecycle remain WooCommerce/WooPayments-owned;
+- keyed order-pay presentation is centralized in `dtb-commerce/Payment/OrderPayPresentation.php` with one template and one CSS/JS asset pair under `dtb-commerce`; gateway fields, nonces, tokenization, callbacks, and payment lifecycle remain WooCommerce/official-Stripe-owned;
 - detailed live operator guidance lives in `docs/hostgator-cookie-cache-runtime.md`.
 
 ## Async and integration execution
@@ -206,10 +206,10 @@ Heavy catalog imports use Action Scheduler with WP-Cron fallback. Operational he
 
 - backend business rules stay in bounded mu-plugin modules;
 - frontend data access stays in `frontend/src/api/` with credential-free service facades;
-- React remains the public renderer;
+- React remains the public renderer and checkout handoff surface;
 - all order/integration writes use the canonical queue and write boundary;
 - public shipping language must distinguish DTB-calculated rates from Veeqo fulfillment data;
 - order-pay presentation stays in `dtb-commerce`; do not restore root-level `zz*` order-pay shims or platform-owned payment-runtime assets;
-- checkout presentation is React-owned under `frontend/src/features/checkout/`; do not restore checkout DOM observer runtimes for identity choice, summary auto-open, or mobile totals mirroring;
+- checkout/payment presentation stays in WooCommerce Checkout Block and official Stripe gateway extension points; do not restore React checkout/payment DOM observer runtimes or iframe payment hosts;
 - update `memory-bank/*` and the mu-plugin README whenever durable architecture changes;
 - run `npm run lint` and `npm run build` for frontend changes, plus targeted operator validation only when a changed backend/module contract requires it.
