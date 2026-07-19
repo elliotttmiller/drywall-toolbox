@@ -29,7 +29,9 @@ defined( 'ABSPATH' ) || exit;
 		}
 	} else {
 		status_header( 404 );
-		wp_kses_post( __( 'Checkout is temporarily unavailable. Please return to your cart and try again.', 'drywall-toolbox' ) );
+		echo '<div class="woocommerce-error" role="alert">'
+			. esc_html__( 'Checkout is temporarily unavailable. Please return to your cart and try again.', 'drywall-toolbox' )
+			. '</div>';
 	}
 	?>
 </main>
