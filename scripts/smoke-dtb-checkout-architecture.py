@@ -3,7 +3,7 @@
 
 This does not replace runtime Stripe/WooCommerce testing. It prevents source-level
 regressions that previously broke checkout ownership, routing, session continuity,
-or secret boundaries.
+secret boundaries, or deployment rollback safety.
 """
 
 from __future__ import annotations
@@ -187,6 +187,35 @@ def check_secret_boundaries() -> None:
             fail(f"Obsolete browser Stripe key injection remains in {path.relative_to(ROOT)}")
 
 
+def check_deployment_control_plane() -> None:
+    deploy = read(".github/workflows/deploy.yml")
+    required_jobs = [
+        "build-and-package:",
+        "backup-remote:",
+        "deploy-to-hostgator:",
+        "production-availability:",
+        "rollback-on-failure:",
+        "restore-from-backup:",
+    ]
+    for marker in required_jobs:
+        assert_contains(deploy, marker, "controlled deployment workflow")
+
+    # A gross truncation should fail immediately even if one or two early jobs
+    # survived. The controlled workflow is intentionally substantial because it
+    # includes backup, selective deploy, verification, rollback, and restore.
+    if len(deploy.splitlines()) < 450:
+        fail("Controlled deployment workflow appears truncated (<450 lines)")
+
+    for marker in [
+        "Download remote backup snapshot",
+        "Deploy full payload to HostGator via FTPS",
+        "Production availability verification",
+        "Roll back automatically if production verification fails",
+        "Manually restore from backup artifact",
+    ]:
+        assert_contains(deploy, marker, "controlled deployment workflow")
+
+
 def main() -> int:
     checks = [
         check_required_and_retired_files,
@@ -195,6 +224,7 @@ def main() -> int:
         check_cart_session_and_handoff,
         check_routing,
         check_secret_boundaries,
+        check_deployment_control_plane,
     ]
     try:
         for check in checks:
