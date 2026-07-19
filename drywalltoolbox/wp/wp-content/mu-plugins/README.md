@@ -2,7 +2,7 @@
 
 # Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-Last verified against source: 2026-07-18.
+Last verified against source: 2026-07-19.
 
 This document is the canonical operational map for:
 
@@ -61,8 +61,8 @@ Canonical module order:
 
 - WooCommerce Store API cart extension data;
 - toolset/order-line metadata persistence;
-- WooCommerce Checkout Block handoff and DTB-branded checkout shell/styling;
-- WooPayments readiness notices, same-origin provider-owned express checkout surfaces, and checkout-order metadata tagging;
+- native WooCommerce Checkout Block handoff support;
+- official WooCommerce Stripe Payment Gateway readiness notices, checkout styling, checkout capability metadata, and checkout-order metadata tagging;
 - order-type and order-admin query services;
 - branded WooCommerce email integration;
 - commerce-facing order REST/admin surfaces.
@@ -126,16 +126,17 @@ React SPA
 Checkout is the intentional exception to React rendering ownership:
 
 ```text
-React cart/cart sidebar/product surfaces
-  -> provider-owned WooPayments express iframe where eligible, or full-document navigation to /checkout/
+React cart/cart sidebar
+  -> full-document navigation to /checkout/
   -> .htaccess routes /checkout/ to WordPress
+  -> assigned WordPress WooCommerce Checkout page
   -> WooCommerce Checkout Block
-  -> WooPayments
+  -> official WooCommerce Stripe Payment Gateway
   -> WooCommerce order/payment lifecycle
   -> DTB order observation and downstream queues
 ```
 
-Without these constants, wp-admin HTML may load while Woo Admin REST calls to `/wp-json/*` receive only storefront/session cookies such as `dtb_auth`, causing WooCommerce permission failures.
+React product, cart, and drawer surfaces must not mount payment iframes, copy gateway build components, or render fake Apple Pay / Google Pay / Link buttons. Payment methods render only through WooCommerce/official-Stripe-supported surfaces.
 
 Customer-facing record routes must:
 
@@ -147,20 +148,21 @@ Customer-facing record routes must:
 
 A valid JWT alone is not sufficient authorization for an arbitrary order, customer, repair, return, or support-ticket ID.
 
-## 9. Configuration contract
+## 4. Configuration contract
 
 Server-only constants include:
 
 - WooCommerce proxy/application auth and webhook/import secrets;
 - JWT and origin configuration;
+- official Stripe gateway secret/webhook configuration managed by the plugin/runtime;
 - Veeqo API/webhook/warehouse/channel/delivery configuration;
 - order write-boundary and reviewed external-write exception configuration;
 - QuickBooks and marketplace credentials;
 - feature flags and operational switches.
 
-`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys.
+`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, and environment labels. Do not expose Stripe secret keys, Stripe webhook secrets, PaymentIntent client secrets, wallet tokens, WooCommerce application passwords, or integration credentials through React builds, REST responses, logs, screenshots, or generated assets.
 
-## 10. Scheduled and asynchronous work
+## 5. Scheduled and asynchronous work
 
 Examples include:
 
@@ -175,7 +177,7 @@ Examples include:
 
 Every new scheduled hook must document ownership, argument contract, queue group, idempotency behavior, retry policy, and operational visibility.
 
-## 11. Admin and observability surfaces
+## 6. Admin and observability surfaces
 
 DTB wp-admin provides:
 
@@ -190,7 +192,7 @@ The wp-admin toolbar cache control is consolidated by `dtb-platform/Admin/AdminC
 
 Operational actions require capability checks, nonces where applicable, input sanitization, escaped output, prepared SQL, and audit/event recording.
 
-## 12. Deployment contract
+## 7. Deployment contract
 
 Live production code is deployed through HostGator cPanel or FTP unless the business explicitly reintroduces another production deployment path.
 
@@ -210,9 +212,9 @@ Deployment never overwrites:
 - runtime secrets;
 - uncontrolled database dumps.
 
-Order-pay cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, and legacy DTB payment-webhook files from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
+Checkout cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, legacy DTB payment-webhook files, WooPayments express iframe files, and any standalone DTB checkout document shims from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
 
-## 13. Validation
+## 8. Validation
 
 Frontend changes:
 
@@ -223,26 +225,16 @@ npm run lint
 npm run build
 ```
 
-Loader/module changes:
+Backend checkout/payment changes:
 
 ```powershell
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Validation/CheckoutValidator.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Templates/WooOrderPayRuntime.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/bootstrap.php
 .\scripts\smoke-dtb-mu-modules.ps1
+git diff --check
 ```
 
-Catalog/API changes:
-
-```powershell
-.\scripts\smoke-dtb-catalog-api.ps1
-```
-
-Security-sensitive route changes additionally require negative tests for unauthenticated access, cross-customer IDs, raw order creation, malformed inputs, and missing integration configuration.
-
-## 14. Maintenance rules
-
-- Keep the 11-module loader order synchronized across `00-dtb-loader.php`, this README, `AGENTS.md`, and `memory-bank/structure.md`.
-- Document durable route, constant, scheduler, and authority changes in the same pull request.
-- Do not expose credentials through browser environment variables, REST responses, localStorage, sessionStorage, logs, or generated artifacts.
-- Do not describe DTB-calculated shipping options as live Veeqo carrier rates.
-- Do not add new business logic to legacy root wrappers.
-- Preserve write-boundary, idempotency, queue, and webhook protections when modifying order/integration flows.
-- Keep order-pay presentation centralized in `dtb-commerce`; do not restore root-level `zz*` order-pay shims or platform-owned payment-runtime assets.
+Runtime checkout validation must confirm `/checkout/` renders the assigned WooCommerce Checkout page with the Checkout Block, the official WooCommerce Stripe Payment Gateway is installed/connected/enabled, WooPayments and competing card/wallet plugins are disabled, React cart/drawer surfaces navigate to `/checkout/` without payment iframes, and DTB downstream order jobs dispatch only after a verified captured/paid WooCommerce official-Stripe order lifecycle event.
