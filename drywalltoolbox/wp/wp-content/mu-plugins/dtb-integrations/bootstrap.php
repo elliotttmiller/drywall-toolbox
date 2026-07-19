@@ -11,11 +11,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'dtb_integrations_require_files' ) ) {
-	/**
-	 * Require a list of integration module files in-order.
-	 *
-	 * @param string[] $relative_paths Paths relative to wp-content/mu-plugins.
-	 */
+	/** Require a list of integration module files in-order. */
 	function dtb_integrations_require_files( array $relative_paths ): void {
 		foreach ( $relative_paths as $path ) {
 			dtb_module_require( $path );
@@ -82,6 +78,7 @@ dtb_integrations_require_files( [
 
 // 4.5) Canonical order-platform contracts and hook overrides for Veeqo/QuickBooks orchestration.
 dtb_integrations_require_files( [
+	'dtb-integrations/OperationalPipeline/AtomicIntegrationLock.php',
 	'dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php',
 	'dtb-integrations/OperationalPipeline/OrderIntegrationContracts.php',
 	'dtb-integrations/OperationalPipeline/OrderPipelineHookOverrides.php',
@@ -176,5 +173,4 @@ dtb_integrations_require_files( [
 	'dtb-integrations/Marketplace/Admin/MarketplaceSettingsPage.php',
 ] );
 
-// Register existing lightweight integration diagnostics.
 dtb_integrations_register_health_checks();
