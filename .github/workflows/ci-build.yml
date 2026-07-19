@@ -40,6 +40,9 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Guard checkout and payment architecture
+        run: python3 scripts/smoke-dtb-checkout-architecture.py
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
