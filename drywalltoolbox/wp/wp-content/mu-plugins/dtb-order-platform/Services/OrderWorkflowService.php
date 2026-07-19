@@ -43,14 +43,21 @@ function dtb_order_on_created( int $order_id, $order ): void {
 }
 
 function dtb_order_on_refunded( int $order_id, int $refund_id ): void {
+	if ( $order_id <= 0 || $refund_id <= 0 ) {
+		return;
+	}
+
 	dtb_order_append_event( $order_id, 'order.refunded', [
-		'source'     => is_admin() ? 'wp_admin' : 'system',
-		'actor_type' => is_admin() ? 'admin' : 'system',
-		'actor_id'   => get_current_user_id() ?: null,
-		'visibility' => 'customer',
-		'payload'    => [ 'refund_id' => $refund_id ],
+		'source'          => is_admin() ? 'wp_admin' : 'system',
+		'actor_type'      => is_admin() ? 'admin' : 'system',
+		'actor_id'        => get_current_user_id() ?: null,
+		'visibility'      => 'customer',
+		'idempotency_key' => 'order-refunded:' . $order_id . ':' . $refund_id,
+		'payload'         => [ 'refund_id' => $refund_id ],
 	] );
-	dtb_order_enqueue_job( 'dtb_order_handle_refund', $order_id, [ 'refund_id' => $refund_id ] );
+
+	$refund_args = [ 'refund_id' => $refund_id ];
+	dtb_order_enqueue_job( 'dtb_order_handle_refund', $order_id, $refund_args );
 	dtb_order_enqueue_job( 'dtb_order_sync_quickbooks', $order_id, [ 'action' => 'refund', 'refund_id' => $refund_id ] );
 }
 
