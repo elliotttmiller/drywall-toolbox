@@ -11,7 +11,7 @@ function dtb_checkout_handoff_is_order( $order ): bool {
 	$contract = (string) $order->get_meta( '_dtb_checkout_contract_version', true );
 
 	return 'woo_native_stripe' === $gateway
-		|| 'woo-stripe-v1' === $contract;
+		&& 'woo-stripe-v1' === $contract;
 }
 
 function dtb_checkout_handoff_has_gateway_reference( WC_Order $order ): bool {
@@ -19,16 +19,7 @@ function dtb_checkout_handoff_has_gateway_reference( WC_Order $order ): bool {
 		return true;
 	}
 
-	$meta_keys = [
-		'_dtb_payment_ref',
-		'_stripe_intent_id',
-		'_stripe_charge_id',
-		'_stripe_source_id',
-		'_payment_intent_id',
-		'_stripe_setup_intent',
-	];
-
-	foreach ( $meta_keys as $meta_key ) {
+	foreach ( [ '_dtb_payment_ref', '_stripe_intent_id', '_stripe_charge_id', '_payment_intent_id' ] as $meta_key ) {
 		if ( '' !== trim( (string) $order->get_meta( $meta_key, true ) ) ) {
 			return true;
 		}
@@ -36,23 +27,26 @@ function dtb_checkout_handoff_has_gateway_reference( WC_Order $order ): bool {
 	return false;
 }
 
+/**
+ * Verify that DTB observed the selected gateway as an instance owned by the
+ * official WooCommerce Stripe extension during the Woo payment lifecycle.
+ *
+ * We intentionally do not trust a raw `stripe_*` payment-method prefix here;
+ * third-party Stripe extensions use overlapping gateway IDs.
+ */
 function dtb_checkout_handoff_uses_official_stripe_gateway( WC_Order $order ): bool {
-	$method = sanitize_key( (string) $order->get_payment_method() );
-	return 'stripe' === $method || str_starts_with( $method, 'stripe_' );
+	return 'woocommerce_stripe' === sanitize_key( (string) $order->get_meta( '_dtb_payment_provider', true ) );
 }
 
 function dtb_checkout_handoff_has_provider_verified_payment( WC_Order $order ): bool {
-	if ( dtb_checkout_handoff_uses_official_stripe_gateway( $order ) ) {
-		return null !== $order->get_date_paid() && dtb_checkout_handoff_has_gateway_reference( $order );
-	}
-
-	return false;
+	return dtb_checkout_handoff_is_order( $order )
+		&& dtb_checkout_handoff_uses_official_stripe_gateway( $order )
+		&& null !== $order->get_date_paid()
+		&& dtb_checkout_handoff_has_gateway_reference( $order );
 }
 
 function dtb_checkout_handoff_has_captured_payment( WC_Order $order ): bool {
-	return null !== $order->get_date_paid()
-		&& dtb_checkout_handoff_has_gateway_reference( $order )
-		&& dtb_checkout_handoff_has_provider_verified_payment( $order );
+	return dtb_checkout_handoff_has_provider_verified_payment( $order );
 }
 
 function dtb_checkout_handoff_is_order_unpaid( WC_Order $order ): bool {
