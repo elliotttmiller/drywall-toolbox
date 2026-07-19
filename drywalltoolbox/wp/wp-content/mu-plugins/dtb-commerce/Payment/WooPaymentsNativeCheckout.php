@@ -198,10 +198,6 @@ final class DTB_WooPaymentsNativeCheckout {
 			'_wcpay_payment_intent_id',
 			'_wcpay_charge_id',
 			'_wcpay_transaction_id',
-			'_stripe_intent_id',
-			'_stripe_charge_id',
-			'_stripe_source_id',
-			'_payment_intent_id',
 		];
 		foreach ( $meta_keys as $meta_key ) {
 			$value = trim( (string) $order->get_meta( $meta_key, true ) );
