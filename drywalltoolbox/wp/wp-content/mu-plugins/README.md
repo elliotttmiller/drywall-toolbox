@@ -2,21 +2,13 @@
 
 # Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-Last verified against source: 2026-07-18.
+Last verified against source: 2026-07-19.
 
-This document is the canonical operational map for:
-
-```text
-drywalltoolbox/wp/wp-content/mu-plugins/
-```
-
-Source code and the active loader remain authoritative. When this document and implementation diverge, correct this document in the same change.
+Source code and the active loader are authoritative for `drywalltoolbox/wp/wp-content/mu-plugins/`. When this document and implementation diverge, correct the document in the same change.
 
 ## 1. Runtime model
 
-WordPress automatically loads top-level PHP files in `mu-plugins/`. Drywall Toolbox uses `00-dtb-loader.php` as an explicit composition root so dependencies load in a deterministic order before WordPress reaches remaining top-level compatibility files.
-
-Canonical module order:
+`00-dtb-loader.php` is the explicit composition root. Preserve module order:
 
 1. `dtb-platform/bootstrap.php`
 2. `dtb-catalog-platform/bootstrap.php`
@@ -30,191 +22,186 @@ Canonical module order:
 10. `dtb-support/bootstrap.php`
 11. `dtb-returns/bootstrap.php`
 
-`00-dtb-loader.php` also owns shared feature-flag, origin, and security-log helpers. New bounded business logic belongs inside the relevant module subtree. Root-level compatibility files may delegate to modules but must not become the home for new domain behavior.
+New bounded business logic belongs inside the owning module subtree. Root compatibility files may delegate but must not become new domain homes.
 
 ## 2. Module responsibilities
 
 ### `dtb-platform`
 
-- runtime configuration and feature flags;
-- support primitives;
-- origin/CORS/API/admin security;
-- JWT/cookie authentication and account/session policy;
-- cache, health, logging, metrics, and diagnostics;
-- operator operations dashboards;
-- shared admin-workbench services;
-- account/history and shared platform REST controllers;
-- Command Center and System Manager.
+Security/origin/authentication, shared support primitives, cache/health/logging/metrics, account/history APIs, admin workbenches, Command Center, and System Manager.
 
 ### `dtb-catalog-platform`
 
-- catalog product, variation, brand, tool-family, and toolset domain models;
-- WooCommerce/product repositories and product meta;
-- category/brand normalization and catalog facets;
-- variation read models and default variation resolution;
-- product mapping and relationships;
-- compatible/universal parts projections;
-- inventory intelligence and Veeqo stock projection;
-- catalog validation, health, REST, CLI, and admin tools.
+Catalog/product/variation/brand/taxonomy models and normalization, relationships, compatible/universal parts, inventory intelligence, validation, REST/CLI/admin tooling.
 
 ### `dtb-commerce`
 
 - WooCommerce Store API cart extension data;
-- toolset/order-line metadata persistence;
-- WooCommerce Checkout Block handoff and DTB-branded checkout shell/styling;
-- WooPayments readiness notices, same-origin provider-owned express checkout surfaces, and checkout-order metadata tagging;
-- order-type and order-admin query services;
-- branded WooCommerce email integration;
-- commerce-facing order REST/admin surfaces.
+- toolset/order-line metadata;
+- native Woo checkout runtime exception for the headless theme;
+- official WooCommerce Stripe gateway readiness/capability metadata;
+- checkout-order contract tagging and non-secret paid reference mirroring;
+- conservative checkout presentation CSS;
+- DTB shipping policy method;
+- order-type/query and branded email support;
+- commerce-facing REST/admin surfaces.
+
+The checkout runtime adapter lives at:
+
+```text
+dtb-commerce/Payment/WooNativeCheckoutRuntime.php
+```
+
+It prevents the headless theme from forcing checkout into React or stripping Woo/plugin assets, then hosts the assigned Checkout page content using:
+
+```text
+dtb-commerce/Templates/WooNativeCheckoutPage.php
+```
+
+It does not manually create Checkout Block state, Stripe fields, PaymentIntents, Stripe Checkout Sessions, or orders.
+
+Official Stripe observation/readiness lives at:
+
+```text
+dtb-commerce/Payment/OfficialStripeNativeCheckout.php
+```
+
+DTB verifies official gateway origin rather than trusting arbitrary `stripe_*` IDs.
 
 ### `dtb-order-platform`
 
-- order lifecycle statuses and transitions;
-- append-only order event ledger;
+- order statuses/transitions and append-only event ledger;
 - integration-state persistence;
-- Action Scheduler queue and bounded retry;
+- `dtb-orders` Action Scheduler queue/retry;
 - order write boundary and duplicate containment;
-- WooCommerce payment lifecycle observation for DTB-tagged checkout orders;
-- customer/operator tracking projections;
-- order REST controllers and operator dashboards.
+- captured-payment lifecycle observation;
+- refund lifecycle projection keyed by concrete Woo refund ID;
+- customer/operator tracking projections and order REST/admin surfaces.
 
-### `dtb-schematics` and `dtb-media`
+The retired custom checkout-session repository is not part of the native Checkout Block runtime.
 
-- schematic mapping, editor, media-manifest, and product-linking workflows;
-- image/media synchronization, validation, registration, and repair tools.
+### `dtb-schematics` / `dtb-media`
+
+Schematic mapping/editor/runtime APIs and image/media synchronization, validation, registration, and repair tooling.
 
 ### `dtb-marketing`
 
-- coming-soon/subscriber and SEO support surfaces.
+Coming-soon/subscriber and SEO support.
 
 ### `dtb-repair-service`
 
-- repair domain statuses/transitions/events;
-- repair persistence, media, public tokens, quotes, SLA, queue, and notifications;
-- customer and operator timelines;
-- repair REST controllers and wp-admin workbench.
+Repair statuses/events/persistence, intake/media/public tokens/quotes/SLA/queues/notifications, customer/operator timelines, REST/admin workbench.
 
 ### `dtb-integrations`
 
-- WooCommerce integration adapters;
-- Veeqo inventory/fulfillment integration;
-- QuickBooks accounting projection;
-- order-pipeline contracts and webhook echo guards;
-- notification rendering/dispatch;
-- marketplace shared infrastructure, Amazon, and eBay modules.
+Woo adapters, Veeqo inventory/fulfillment, QuickBooks accounting projection, notification dispatch, order pipeline contracts, webhook guards, and marketplace infrastructure.
 
-Rewards integration files remain intentionally omitted from the launch bootstrap. Frontend feature flags do not make rewards operational unless the backend services/jobs/controllers are explicitly restored and validated.
+QuickBooks refund projection must be keyed by `order_id + refund_id`; one cumulative parent-order refund marker is not sufficient for multiple partial refunds.
 
-### `dtb-support`
+Rewards integration remains launch-gated unless backend services/jobs/controllers are explicitly restored and validated.
 
-- support ticket domain, repository, SLA, priority, workflow, assignment, replies, email outbox, customer history, REST, and operator workbench.
+### `dtb-support` / `dtb-returns`
 
-### `dtb-returns`
+Independent support-ticket and return lifecycle domains with persistence, authorization, customer/admin REST, notifications, histories, and operator workbenches.
 
-- return domain/status model, repository, workflow transition map, customer/admin REST, and wp-admin page.
-
-## 3. Request and trust boundaries
+## 3. Checkout/payment trust boundary
 
 ```text
-React SPA
-  -> domain-root /wp-json alias
-  -> WordPress REST server
-  -> DTB controller/service/repository
-  -> WooCommerce, DTB persistence, Action Scheduler, or external integration
-```
-
-Checkout is the intentional exception to React rendering ownership:
-
-```text
-React cart/cart sidebar/product surfaces
-  -> provider-owned WooPayments express iframe where eligible, or full-document navigation to /checkout/
-  -> .htaccess routes /checkout/ to WordPress
+React cart / cart drawer
+  -> WooCommerce Store API same-origin cookie session
+  -> full-document /checkout/
+  -> domain-root .htaccess routes to WordPress
+  -> DTB native checkout runtime exempts request from React theme override
+  -> assigned WooCommerce Checkout page
   -> WooCommerce Checkout Block
-  -> WooPayments
+  -> official WooCommerce Stripe Payment Gateway
   -> WooCommerce order/payment lifecycle
-  -> DTB order observation and downstream queues
+  -> DTB captured-payment verification
+  -> dtb-orders queue
+  -> Veeqo / QuickBooks / notifications / tracking
 ```
 
-Without these constants, wp-admin HTML may load while Woo Admin REST calls to `/wp-json/*` receive only storefront/session cookies such as `dtb_auth`, causing WooCommerce permission failures.
+Authority rules:
 
-Customer-facing record routes must:
+- WooCommerce owns cart/session/customer/address/shipping/tax/totals/order creation and authoritative order/payment status.
+- Official WooCommerce Stripe Payment Gateway owns Stripe payment rendering, eligible wallets/Link, tokenization, 3DS/SCA, payment execution, and webhook synchronization.
+- React owns cart UX/handoff only and must not render payment fields, wallet iframes, fake buttons, or create payment/order objects.
+- DTB may style/diagnose/tag/observe, but does not impersonate the gateway.
+- Veeqo owns fulfillment truth; QuickBooks owns accounting projection only.
 
-1. validate authentication;
-2. resolve the authenticated customer ID from the validated token/session;
-3. verify record ownership or use a customer-bound repository query;
-4. avoid trusting caller-supplied customer IDs;
-5. return non-enumerating 403/404 behavior consistent with the owning controller.
+Same-origin React cart traffic uses WooCommerce's cookie-backed session + Store API `Nonce`. Cart-Token is compatibility-only for genuinely cross-origin clients. DTB must never decode unsigned Cart-Token payloads or query `woocommerce_sessions` to recover arbitrary sessions.
 
-A valid JWT alone is not sufficient authorization for an arbitrary order, customer, repair, return, or support-ticket ID.
+## 4. Captured-payment contract
 
-## 9. Configuration contract
+A storefront order is eligible for paid downstream effects only when all are true:
 
-Server-only constants include:
+```text
+_dtb_checkout_gateway = woo_native_stripe
+_dtb_checkout_contract_version = woo-stripe-v1
+_dtb_payment_provider = woocommerce_stripe
+WooCommerce date_paid is present
+non-secret transaction/payment reference is present
+```
 
-- WooCommerce proxy/application auth and webhook/import secrets;
-- JWT and origin configuration;
-- Veeqo API/webhook/warehouse/channel/delivery configuration;
-- order write-boundary and reviewed external-write exception configuration;
-- QuickBooks and marketplace credentials;
-- feature flags and operational switches.
+`_dtb_payment_provider` is mirrored only after the selected gateway instance is verified as originating from the official `woocommerce-gateway-stripe` extension.
 
-`wp-config.php` is runtime-only and must never be committed or packaged. Public React environment variables may contain only public URLs, feature flags, environment labels, and publishable keys.
+Authorization-only/manual-capture state is not fulfillable. Launch should use automatic capture unless a reviewed manual-capture workflow is explicitly approved and tested.
 
-## 10. Scheduled and asynchronous work
+Initial downstream processing dispatch is protected by an atomic per-order `add_option()` barrier.
 
-Examples include:
+## 5. Refund contract
 
-- catalog import through Action Scheduler with WP-Cron fallback;
-- order integration/notification/tracking jobs;
-- repair queue and notification work;
-- Veeqo health/inventory jobs where enabled;
-- QuickBooks projection jobs;
-- marketplace ingestion/materialization jobs;
-- support email outbox processing;
-- operations KPI refresh and audit cleanup.
+WooCommerce owns refund creation. `woocommerce_order_refunded` supplies both parent `order_id` and concrete `refund_id`.
 
-Every new scheduled hook must document ownership, argument contract, queue group, idempotency behavior, retry policy, and operational visibility.
+Each refund must retain that identity through queue arguments, event idempotency, and QuickBooks projection. Partial refund A and partial refund B are distinct accounting events.
 
-## 11. Admin and observability surfaces
+Do not infer cancellation from the parent order remaining in processing after a partial refund. Do not use cumulative `get_total_refunded()` as the amount for every refund event.
 
-DTB wp-admin provides:
+## 6. Request/security boundaries
 
-- Command Center and System Manager;
-- order operations and product-order dashboards;
-- catalog, product mapping, parts, inventory intelligence, schematics, and media tools;
-- repair, return, and support workbenches;
-- integration health/state and exception surfaces;
-- cache, API health, configuration reference, SEO, and cleanup tools.
+Every REST route needs explicit permission behavior. Customer-facing record reads must authenticate, derive the validated customer identity, verify record ownership, and not trust caller-supplied customer IDs.
 
-The wp-admin toolbar cache control is consolidated by `dtb-platform/Admin/AdminCacheToolbar.php`: duplicate host/plugin cache nodes are hidden, and the single **Clear Caches** action delegates to `DTB_CacheOperationsService` for DTB, WooCommerce, WordPress object cache, OPcache, HostGator page cache, and supported host-managed CDN purge targets with per-target skipped/failed reporting.
+Server-only secrets include Woo application credentials, JWT signing secrets, official Stripe secret/webhook configuration, Veeqo/QuickBooks/marketplace credentials, and external-write secrets. Browser `REACT_APP_*` values are public by definition.
 
-Operational actions require capability checks, nonces where applicable, input sanitization, escaped output, prepared SQL, and audit/event recording.
+The React storefront does not require a Stripe key for the current architecture.
 
-## 12. Deployment contract
+## 7. Routing/cache contract
 
-Live production code is deployed through HostGator cPanel or FTP unless the business explicitly reintroduces another production deployment path.
+Root routing must send these to WordPress before SPA fallback:
 
-Live uploads include:
+```text
+/checkout/
+/staging/{id}/checkout/
+/checkout/order-pay/{id}
+/checkout/order-received/{id}
+/wp-json/*
+?rest_route=...
+?wc-api=wc_stripe
+```
 
-- generated frontend `dist/` contents when React/CSS source changes;
-- `drywalltoolbox/.htaccess` to `/public_html/drywalltoolbox/.htaccess`;
-- `drywalltoolbox/logos/` to `/public_html/drywalltoolbox/logos/`;
-- `drywalltoolbox/wp/.htaccess` and `wp/index.php` to `/public_html/drywalltoolbox/wp/`;
-- changed DTB mu-plugin and theme files to the matching `/public_html/drywalltoolbox/wp/wp-content/` paths.
+Checkout, callbacks, session-owned pages, and payment endpoints are private/no-store. Host cache-bypass cookies must be added without replacing WordPress/WooCommerce `Set-Cookie` headers.
 
-Deployment never overwrites:
+## 8. Async/integration contract
 
-- `wp-config.php`;
-- WordPress core unless intentionally performing a controlled WordPress update;
-- uploads, cache, or upgrade state;
-- runtime secrets;
-- uncontrolled database dumps.
+Order-related external effects use `dtb_order_enqueue_job()` and Action Scheduler group `dtb-orders`.
 
-Order-pay cleanup deployments must remove retired root-level `zz*order-pay*`, `dtb-wc-payment-runtime*`, `dtb-checkout-payment-status-guard.php`, `dtb-checkout-customer-association.php`, and legacy DTB payment-webhook files from the live `mu-plugins/` directory. The clean runtime state is deletion, not coexistence.
+New work must define owner, hook/args, idempotency/deduplication, retries/terminal failure, observability, and recovery. Slow Veeqo/QuickBooks calls must not occur synchronously during checkout or Stripe webhook acknowledgement.
 
-## 13. Validation
+## 9. Deployment contract
 
-Frontend changes:
+Live production paths:
+
+- React build contents -> `/public_html/drywalltoolbox/`;
+- root `.htaccess` -> `/public_html/drywalltoolbox/.htaccess`;
+- WordPress deployment mirror -> `/public_html/drywalltoolbox/wp/` matching tracked paths.
+
+Never overwrite `wp-config.php`, WordPress core unintentionally, uploads, cache, upgrade state, runtime secrets, or uncontrolled dumps.
+
+Clean deployments must delete retired custom order-pay/checkout-session/payment iframe artifacts rather than leave them beside the canonical runtime.
+
+## 10. Validation
+
+Frontend:
 
 ```powershell
 cd frontend
@@ -223,26 +210,19 @@ npm run lint
 npm run build
 ```
 
-Loader/module changes:
+Targeted PHP/source validation:
 
 ```powershell
-.\scripts\smoke-dtb-mu-modules.ps1
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeCheckoutRuntime.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/RefundLifecycle.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksJobOverride.php
+git diff --check
 ```
 
-Catalog/API changes:
+Do not claim a referenced smoke script passed if it is absent from the checked-out repository.
 
-```powershell
-.\scripts\smoke-dtb-catalog-api.ps1
-```
-
-Security-sensitive route changes additionally require negative tests for unauthenticated access, cross-customer IDs, raw order creation, malformed inputs, and missing integration configuration.
-
-## 14. Maintenance rules
-
-- Keep the 11-module loader order synchronized across `00-dtb-loader.php`, this README, `AGENTS.md`, and `memory-bank/structure.md`.
-- Document durable route, constant, scheduler, and authority changes in the same pull request.
-- Do not expose credentials through browser environment variables, REST responses, localStorage, sessionStorage, logs, or generated artifacts.
-- Do not describe DTB-calculated shipping options as live Veeqo carrier rates.
-- Do not add new business logic to legacy root wrappers.
-- Preserve write-boundary, idempotency, queue, and webhook protections when modifying order/integration flows.
-- Keep order-pay presentation centralized in `dtb-commerce`; do not restore root-level `zz*` order-pay shims or platform-owned payment-runtime assets.
+Runtime staging validation must prove cart/session continuity, Checkout Block rendering, official Stripe cards/3DS/eligible and ineligible express methods, order creation exactly once, captured-payment gating, webhook replay tolerance, order-pay retry, refunds by `refund_id`, Veeqo dispatch once, and QuickBooks create/refund projection exactly once before live payment acceptance.
