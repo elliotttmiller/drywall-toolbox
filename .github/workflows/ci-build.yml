@@ -55,8 +55,6 @@ jobs:
 
       - name: Build frontend for drywalltoolbox.com
         run: cd frontend && npm run build
-        env:
-          REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.REACT_APP_STRIPE_PUBLISHABLE_KEY }}
 
       - name: Assemble deployment payload
         shell: bash
