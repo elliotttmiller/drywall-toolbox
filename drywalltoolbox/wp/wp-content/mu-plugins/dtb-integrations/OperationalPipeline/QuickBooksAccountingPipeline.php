@@ -12,14 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'dtb_qbo_accounting_ref' ) ) {
-	/**
-	 * Resolve a configured QuickBooks reference value/name pair.
-	 *
-	 * @param string $key          Reference key: product|shipping|discount|tax|refund.
-	 * @param string $default_id   Fallback QBO item ID.
-	 * @param string $default_name Fallback display name.
-	 * @return array{value:string,name:string}
-	 */
+	/** Resolve a configured QuickBooks reference value/name pair. */
 	function dtb_qbo_accounting_ref( string $key, string $default_id, string $default_name ): array {
 		$key        = strtoupper( sanitize_key( $key ) );
 		$id_const   = 'DTB_QBO_ITEM_' . $key . '_ID';
@@ -141,9 +134,9 @@ if ( ! function_exists( 'dtb_qbo_build_sales_lines_for_order' ) ) {
 }
 
 if ( ! function_exists( 'dtb_qbo_build_refund_lines_for_order' ) ) {
-	/** Build RefundReceipt lines from a Woo order refund total. */
-	function dtb_qbo_build_refund_lines_for_order( WC_Order $order ): array {
-		$refund_total = dtb_qbo_money( abs( (float) $order->get_total_refunded() ) );
+	/** Build one RefundReceipt line for one concrete WooCommerce refund. */
+	function dtb_qbo_build_refund_lines_for_order( WC_Order $order, WC_Order_Refund $refund ): array {
+		$refund_total = dtb_qbo_money( abs( (float) $refund->get_amount() ) );
 		if ( $refund_total <= 0 ) {
 			return [];
 		}
@@ -152,7 +145,7 @@ if ( ! function_exists( 'dtb_qbo_build_refund_lines_for_order' ) ) {
 			[
 				'Amount'      => $refund_total,
 				'DetailType'  => 'SalesItemLineDetail',
-				'Description' => 'Refund for Drywall Toolbox order #' . $order->get_order_number(),
+				'Description' => sprintf( 'Refund #%d for Drywall Toolbox order #%s', $refund->get_id(), $order->get_order_number() ),
 				'SalesItemLineDetail' => [
 					'Qty'       => 1,
 					'UnitPrice' => $refund_total,
@@ -164,9 +157,22 @@ if ( ! function_exists( 'dtb_qbo_build_refund_lines_for_order' ) ) {
 }
 
 if ( ! function_exists( 'dtb_qbo_order_doc_number' ) ) {
-	/** Build a deterministic QBO document number for an order/refund. */
+	/** Build a deterministic QBO document number for an order. */
 	function dtb_qbo_order_doc_number( WC_Order $order, string $prefix = 'DTB' ): string {
 		return substr( sanitize_text_field( $prefix . '-' . $order->get_order_number() ), 0, 21 );
+	}
+}
+
+if ( ! function_exists( 'dtb_qbo_refund_doc_number' ) ) {
+	/** Build a deterministic QBO document number unique to a Woo refund. */
+	function dtb_qbo_refund_doc_number( WC_Order $order, int $refund_id ): string {
+		return substr( sanitize_text_field( 'DTB-R-' . $order->get_id() . '-' . $refund_id ), 0, 21 );
+	}
+}
+
+if ( ! function_exists( 'dtb_qbo_refund_meta_key' ) ) {
+	function dtb_qbo_refund_meta_key( int $refund_id ): string {
+		return '_dtb_quickbooks_refund_id_' . max( 0, $refund_id );
 	}
 }
 
@@ -177,74 +183,103 @@ if ( ! function_exists( 'dtb_qbo_sync_order_pipeline' ) ) {
 		if ( '' !== $existing_id || $order->get_meta( '_dtb_qbo_synced' ) ) {
 			return new WP_Error( 'already_synced', 'Order already synced to QuickBooks.' );
 		}
-
-		$lines = dtb_qbo_build_sales_lines_for_order( $order, false );
-		if ( empty( $lines ) ) {
-			return new WP_Error( 'no_line_items', 'Order has no valid positive line items to sync.' );
+		if ( function_exists( 'dtb_order_integration_acquire_lock' ) && ! dtb_order_integration_acquire_lock( 'quickbooks', (int) $order->get_id() ) ) {
+			return new WP_Error( 'qbo_locked', 'A QuickBooks sync is already in progress for this order.' );
 		}
 
-		$created = $order->get_date_created();
-		$payload = [
-			'Line'        => $lines,
-			'CustomerRef' => [ 'value' => dtb_qbo_get_or_create_customer( $order ) ],
-			'DocNumber'   => dtb_qbo_order_doc_number( $order, 'DTB' ),
-			'TxnDate'     => $created ? gmdate( 'Y-m-d', $created->getTimestamp() ) : gmdate( 'Y-m-d' ),
-			'PrivateNote' => 'Drywall Toolbox WooCommerce order #' . $order->get_order_number(),
-			'CurrencyRef' => [ 'value' => strtoupper( $order->get_currency() ?: get_woocommerce_currency() ) ],
-		];
+		try {
+			$lines = dtb_qbo_build_sales_lines_for_order( $order, false );
+			if ( empty( $lines ) ) {
+				return new WP_Error( 'no_line_items', 'Order has no valid positive line items to sync.' );
+			}
 
-		$result = dtb_qbo_request( 'POST', '/salesreceipt', [], $payload );
-		if ( empty( $result['ok'] ) ) {
-			return new WP_Error( 'qbo_sync_failed', 'QBO SalesReceipt API error: ' . ( $result['error'] ?? 'Unknown error.' ) );
+			$created = $order->get_date_created();
+			$payload = [
+				'Line'        => $lines,
+				'CustomerRef' => [ 'value' => dtb_qbo_get_or_create_customer( $order ) ],
+				'DocNumber'   => dtb_qbo_order_doc_number( $order, 'DTB' ),
+				'TxnDate'     => $created ? gmdate( 'Y-m-d', $created->getTimestamp() ) : gmdate( 'Y-m-d' ),
+				'PrivateNote' => 'Drywall Toolbox WooCommerce order #' . $order->get_order_number(),
+				'CurrencyRef' => [ 'value' => strtoupper( $order->get_currency() ?: get_woocommerce_currency() ) ],
+			];
+
+			$result = dtb_qbo_request( 'POST', '/salesreceipt', [], $payload );
+			if ( empty( $result['ok'] ) ) {
+				return new WP_Error( 'qbo_sync_failed', 'QBO SalesReceipt API error: ' . ( $result['error'] ?? 'Unknown error.' ) );
+			}
+
+			$qbo_id = (string) ( $result['data']['SalesReceipt']['Id'] ?? '' );
+			$order->update_meta_data( '_dtb_qbo_synced', '1' );
+			$order->update_meta_data( '_dtb_quickbooks_entity_type', 'sales_receipt' );
+			if ( '' !== $qbo_id ) {
+				$order->update_meta_data( '_dtb_qbo_receipt_id', $qbo_id );
+				$order->update_meta_data( '_dtb_quickbooks_entity_id', $qbo_id );
+			}
+			$order->save_meta_data();
+
+			return $result['data'];
+		} finally {
+			if ( function_exists( 'dtb_order_integration_release_lock' ) ) {
+				dtb_order_integration_release_lock( 'quickbooks', (int) $order->get_id() );
+			}
 		}
-
-		$qbo_id = (string) ( $result['data']['SalesReceipt']['Id'] ?? '' );
-		$order->update_meta_data( '_dtb_qbo_synced', '1' );
-		$order->update_meta_data( '_dtb_quickbooks_entity_type', 'sales_receipt' );
-		if ( '' !== $qbo_id ) {
-			$order->update_meta_data( '_dtb_qbo_receipt_id', $qbo_id );
-			$order->update_meta_data( '_dtb_quickbooks_entity_id', $qbo_id );
-		}
-		$order->save_meta_data();
-
-		return $result['data'];
 	}
 }
 
 if ( ! function_exists( 'dtb_qbo_sync_refund' ) ) {
-	/** Queue-safe RefundReceipt sync for one Woo order refund event. */
-	function dtb_qbo_sync_refund( WC_Order $order ): array|WP_Error {
-		$existing_id = (string) $order->get_meta( '_dtb_quickbooks_refund_id', true );
+	/** Queue-safe RefundReceipt sync for one concrete Woo refund event. */
+	function dtb_qbo_sync_refund( WC_Order $order, int $refund_id ): array|WP_Error {
+		$refund_id = absint( $refund_id );
+		$refund    = $refund_id > 0 ? wc_get_order( $refund_id ) : null;
+		if ( ! $refund instanceof WC_Order_Refund || (int) $refund->get_parent_id() !== (int) $order->get_id() ) {
+			return new WP_Error( 'invalid_refund', 'The WooCommerce refund could not be verified for this order.' );
+		}
+
+		$meta_key    = dtb_qbo_refund_meta_key( $refund_id );
+		$existing_id = (string) $order->get_meta( $meta_key, true );
 		if ( '' !== $existing_id ) {
-			return new WP_Error( 'already_synced', 'Order refund already synced to QuickBooks.' );
+			return new WP_Error( 'already_synced', 'This WooCommerce refund is already synced to QuickBooks.', [ 'entity_id' => $existing_id ] );
+		}
+		if ( function_exists( 'dtb_order_integration_acquire_lock' ) && ! dtb_order_integration_acquire_lock( 'quickbooks', (int) $order->get_id() ) ) {
+			return new WP_Error( 'qbo_locked', 'A QuickBooks sync is already in progress for this order.' );
 		}
 
-		$lines = dtb_qbo_build_refund_lines_for_order( $order );
-		if ( empty( $lines ) ) {
-			return new WP_Error( 'no_refund_total', 'Order has no refunded amount to sync.' );
+		try {
+			$lines = dtb_qbo_build_refund_lines_for_order( $order, $refund );
+			if ( empty( $lines ) ) {
+				return new WP_Error( 'no_refund_total', 'WooCommerce refund has no positive refunded amount to sync.' );
+			}
+
+			$refund_created = $refund->get_date_created();
+			$payload = [
+				'Line'        => $lines,
+				'CustomerRef' => [ 'value' => dtb_qbo_get_or_create_customer( $order ) ],
+				'DocNumber'   => dtb_qbo_refund_doc_number( $order, $refund_id ),
+				'TxnDate'     => $refund_created ? gmdate( 'Y-m-d', $refund_created->getTimestamp() ) : gmdate( 'Y-m-d' ),
+				'PrivateNote' => sprintf( 'WooCommerce refund #%d for Drywall Toolbox order #%s', $refund_id, $order->get_order_number() ),
+				'CurrencyRef' => [ 'value' => strtoupper( $order->get_currency() ?: get_woocommerce_currency() ) ],
+			];
+
+			$result = dtb_qbo_request( 'POST', '/refundreceipt', [], $payload );
+			if ( empty( $result['ok'] ) ) {
+				return new WP_Error( 'qbo_refund_sync_failed', 'QBO RefundReceipt API error: ' . ( $result['error'] ?? 'Unknown error.' ) );
+			}
+
+			$qbo_id = (string) ( $result['data']['RefundReceipt']['Id'] ?? '' );
+			if ( '' !== $qbo_id ) {
+				$order->update_meta_data( $meta_key, $qbo_id );
+				// Compatibility pointers describe the latest refund only. Per-refund meta
+				// above is the authoritative idempotency key and must not be replaced.
+				$order->update_meta_data( '_dtb_quickbooks_refund_id', $qbo_id );
+				$order->update_meta_data( '_dtb_quickbooks_refund_type', 'refund_receipt' );
+				$order->save_meta_data();
+			}
+
+			return $result['data'];
+		} finally {
+			if ( function_exists( 'dtb_order_integration_release_lock' ) ) {
+				dtb_order_integration_release_lock( 'quickbooks', (int) $order->get_id() );
+			}
 		}
-
-		$payload = [
-			'Line'        => $lines,
-			'CustomerRef' => [ 'value' => dtb_qbo_get_or_create_customer( $order ) ],
-			'DocNumber'   => dtb_qbo_order_doc_number( $order, 'DTB-R' ),
-			'TxnDate'     => gmdate( 'Y-m-d' ),
-			'PrivateNote' => 'Refund for Drywall Toolbox WooCommerce order #' . $order->get_order_number(),
-			'CurrencyRef' => [ 'value' => strtoupper( $order->get_currency() ?: get_woocommerce_currency() ) ],
-		];
-
-		$result = dtb_qbo_request( 'POST', '/refundreceipt', [], $payload );
-		if ( empty( $result['ok'] ) ) {
-			return new WP_Error( 'qbo_refund_sync_failed', 'QBO RefundReceipt API error: ' . ( $result['error'] ?? 'Unknown error.' ) );
-		}
-
-		$refund_id = (string) ( $result['data']['RefundReceipt']['Id'] ?? '' );
-		if ( '' !== $refund_id ) {
-			$order->update_meta_data( '_dtb_quickbooks_refund_id', $refund_id );
-			$order->update_meta_data( '_dtb_quickbooks_refund_type', 'refund_receipt' );
-			$order->save_meta_data();
-		}
-
-		return $result['data'];
 	}
 }
