@@ -2,8 +2,6 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Lock } from 'lucide-react';
 
-import WooPaymentsExpressCheckout from '../payments/WooPaymentsExpressCheckout.jsx';
-
 const CHECKOUT_HREF = `${(process.env.PUBLIC_URL || '').replace(/\/+$/, '')}/checkout`;
 
 function getSubtotal(cartItems) {
@@ -20,19 +18,13 @@ export default function MobileCartCheckoutDock({ isOpen, onClose, cartItems = []
 
   return (
     <aside
-      className="dtb-cart-express-dock"
-      aria-label="Cart express checkout options"
+      className="dtb-cart-express-dock dtb-cart-checkout-dock"
+      aria-label="Cart checkout actions"
     >
-      <WooPaymentsExpressCheckout
-        context="drawer"
-        cartItems={cartItems}
-        className="dtb-cart-express-dock__express"
-      />
-
       <div className="dtb-cart-express-dock__total-row">
         <div>
           <span className="dtb-cart-express-dock__label">Subtotal</span>
-          <span className="dtb-cart-express-dock__hint">Shipping and tax at checkout</span>
+          <span className="dtb-cart-express-dock__hint">Shipping, tax, and payment at checkout</span>
         </div>
         <strong>${subtotal.toFixed(2)}</strong>
       </div>
