@@ -1,70 +1,60 @@
 # Mobile Checkout Architecture
 
-Last updated: 2026-07-14.
+Last verified against source: 2026-07-19.
 
 ## Ownership
 
-The React checkout route owns customer-facing checkout intake, interaction state, client-side usability validation, draft recovery, section presentation, and the mobile action sheet.
+Drywall Toolbox no longer implements a React-owned checkout intake/finalization pipeline. React owns cart UX and the full-document checkout handoff only.
 
-The DTB backend remains authoritative for checkout quote creation, shipping, tax, coupon evaluation, checkout session state, confirmation, finalization, idempotency, order creation, and customer/session ownership.
-
-WooCommerce/WooPayments remain authoritative for payment collection on the order-pay runtime. React checkout must not render card fields, wallet buttons, payment iframes, payment intents, nonces, tokenization, or gateway callbacks.
-
-## Current route contract
+The production checkout authority is:
 
 ```text
-/cart
-  -> /checkout
-  -> POST /dtb/v1/checkout/quote
-  -> POST /dtb/v1/checkout/session
-  -> POST /dtb/v1/checkout/confirm
-  -> POST /dtb/v1/checkout/finalize
-  -> /checkout/order-pay/{order_id}?pay_for_order=true&key=...
+React cart / cart drawer
+  -> full-document navigation to /checkout/
+  -> assigned WordPress WooCommerce Checkout page
+  -> WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway
+  -> WooCommerce order/payment lifecycle
+  -> DTB event ledger + dtb-orders queue
 ```
 
-The React CTA says `Continue to secure payment` because payment is completed on the WooCommerce order-pay page. The order-pay CTA may say `Pay {total}` because that page owns the gateway form.
+WooCommerce owns cart/session continuity, customer/address validation, shipping/tax/totals, checkout submission, and order creation. The official WooCommerce Stripe Payment Gateway owns embedded payment fields, eligible express wallets, Link, tokenization, 3DS/SCA, and webhook-backed payment reconciliation.
 
-## Implemented mobile checkout principles
+## Mobile mechanical requirements
 
-- Guest checkout is first-class and rendered by React, not injected by a DOM runtime.
-- Login and registration remain optional and preserve checkout return intent through router state.
-- The mobile order summary is React-rendered and expandable.
-- The sticky mobile action sheet is React-rendered and expandable/collapsible.
-- Coupon entry is collapsed behind a disclosure to reduce mobile distraction.
-- Order notes are collapsed behind a disclosure.
-- Phone is optional for checkout intake; backend quote calculation requires name, email, and destination fields, not phone.
-- Draft recovery is session-scoped with a TTL and does not persist customer notes.
-- Shipping/tax copy distinguishes `By address`, `Calculating…`, and ready totals.
-- Checkout DOM MutationObserver runtimes for identity choice, summary auto-open, and mobile totals mirroring are retired.
+Before visual branding work, mobile checkout must satisfy these invariants:
 
-## Performance posture
+- the React cart and drawer use the same WooCommerce Store API cookie session as `/checkout/` on the same origin;
+- no React component renders card fields, wallet buttons, Stripe Elements, payment iframes, PaymentIntents, or Stripe Checkout Sessions;
+- pending cart quantity/remove mutations settle before the drawer transfers the document to checkout;
+- `/checkout/` is a normal WordPress/WooCommerce document and contains the assigned Checkout Block;
+- provider-owned payment controls remain visible, keyboard accessible, and responsive;
+- checkout does not depend on DOM MutationObserver shims or a custom full-document DTB checkout renderer;
+- checkout errors remain visible and do not get hidden by DTB styling;
+- order creation occurs once through WooCommerce checkout;
+- downstream Veeqo/QuickBooks/notification/tracking work waits for DTB's captured-payment gate.
 
-Checkout-specific UI logic should be implemented as React components under `frontend/src/features/checkout/`, not as global DOM mutation runtimes. This reduces layout thrashing, selector drift, and route-wide observer work on mobile devices.
+## Express checkout
 
-Checkout styles should be consolidated into `frontend/src/features/checkout/checkout.css` as new work lands. Existing older checkout CSS layers may remain temporarily only when they provide base layout definitions that have not yet been migrated.
+The official Stripe extension supports eligible express checkout methods in WooCommerce-supported contexts. Drywall Toolbox currently approves the native WooCommerce Checkout Block as the production express-payment surface.
 
-## Safety constraints
+React product pages, product modals, full cart, and mini-cart must not fabricate or iframe provider wallet controls. Additional locations may be added only through an officially supported WooCommerce/Stripe integration that preserves cart/session and variation/quantity authority.
 
-Do not change these invariants from checkout UI work:
+## Styling boundary
 
-- no raw browser WooCommerce order creation;
-- no browser-side WooCommerce credentials;
-- no payment secrets, tokens, gateway credentials, or iframe manipulation in React;
-- no order side effects before backend finalization;
-- no duplicate order materialization;
-- no duplicate Veeqo, QuickBooks, email, fulfillment, or webhook side effects;
-- no authoritative tax, shipping, coupon, inventory, or price logic in React.
+Until mechanical validation passes, `dtb-commerce/assets/woo-native-checkout.css` remains a conservative compatibility baseline only.
 
-## Manual verification checklist
+After cards, 3DS/SCA, eligible/ineligible wallets, failed payment, retry, refunds, and downstream jobs pass staging, checkout branding may be implemented around the native Checkout Block without changing payment or order authority.
 
-- Guest checkout selection focuses the first contact field.
-- Login/register links route correctly and can return to checkout.
-- Shipping/tax quote starts after name, email, and destination are valid.
-- Phone can be omitted until final submit without blocking quote generation.
-- Coupon disclosure opens, applies codes, and shows removable tags.
-- Order note disclosure does not persist notes after refresh.
-- Mobile action sheet is collapsed by default and expands smoothly.
-- Mobile CTA says `Continue to secure payment`, not `Pay`, on React checkout.
-- Order-pay still says `Pay {total}` and preserves WooCommerce gateway behavior.
-- Cart refresh restores checkout draft within the same browser session.
-- Checkout completion clears the draft.
+## Verification
+
+Test at minimum:
+
+1. Mobile Safari/iPhone with and without an Apple Pay-eligible wallet.
+2. Chrome/Android with and without Google Pay eligibility.
+3. Card payment success, decline, and 3DS challenge.
+4. Cart quantity change immediately followed by checkout handoff.
+5. Guest and authenticated checkout.
+6. Back/forward navigation and checkout refresh without cart loss or duplicate orders.
+7. Failed payment followed by retry through WooCommerce order-pay.
+8. Partial and full refunds with one QuickBooks refund projection per Woo refund ID.

@@ -179,11 +179,11 @@ Catalog domain models, Woo/product repositories, normalization, facets, variatio
 
 ### `dtb-commerce/`
 
-WooCommerce Store API cart extensions, checkout capability metadata, official Stripe checkout styling/diagnostics, Woo order tagging, toolset/order-line metadata, order type/query services, branded WooCommerce email integration, and commerce-facing order REST/admin surfaces.
+WooCommerce Store API cart extensions, native Woo checkout runtime exception for the headless theme, checkout capability metadata, official Stripe checkout styling/diagnostics, Woo order tagging, toolset/order-line metadata, order type/query services, branded WooCommerce email integration, and commerce-facing order REST/admin surfaces.
 
 ### `dtb-order-platform/`
 
-Order lifecycle domain, event ledger, integration state, Action Scheduler queue, write boundary, duplicate containment, WooCommerce payment lifecycle observation, customer/operator tracking projections, order REST controllers, and operations UI.
+Order lifecycle domain, event ledger, integration state, Action Scheduler queue, write boundary, duplicate containment, WooCommerce payment/refund lifecycle observation, customer/operator tracking projections, order REST controllers, and operations UI.
 
 ### `dtb-schematics/` and `dtb-media/`
 
@@ -201,20 +201,20 @@ Server-side adapters and orchestration for WooCommerce, Veeqo, QuickBooks, notif
 
 ```text
 React cart / cart drawer
-  -> WooCommerce Store API cart session
+  -> WooCommerce Store API cookie-backed cart session
   -> full-document navigation to /checkout/
   -> assigned WordPress WooCommerce Checkout page
   -> WooCommerce Checkout Block
   -> official WooCommerce Stripe Payment Gateway
   -> WooCommerce order and payment lifecycle
-  -> DTB order event ledger
+  -> DTB captured-payment event ledger
   -> dtb-orders Action Scheduler queue
   -> Veeqo inventory/fulfillment synchronization
   -> QuickBooks accounting projection
   -> notification and customer tracking projections
 ```
 
-Only WooCommerce Checkout Block may create storefront orders. Legacy raw WooCommerce order creation and DTB-owned order finalization for storefront checkout are blocked/retired. Customer order reads must bind requested records to the authenticated customer, not caller-supplied customer IDs.
+Only WooCommerce Checkout Block may create storefront orders. Legacy raw WooCommerce order creation, DTB-owned checkout session/finalization, and browser-created Stripe payment flows are blocked/retired. Customer order reads must bind requested records to the authenticated customer, not caller-supplied customer IDs.
 
 ## Data and operations structure
 

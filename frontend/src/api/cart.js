@@ -1,8 +1,11 @@
 /**
- * Store API cart operations only.
+ * WooCommerce Store API cart operations.
  *
- * Checkout quoting, payment handoff, and order creation belong to
- * frontend/src/api/checkout.js and the DTB server checkout boundary.
+ * On the production/staging same-origin storefront, WooCommerce's cookie-backed
+ * session is the cart authority so a full-document handoff to the native
+ * `/checkout/` page sees the exact same cart. Cart-Token is retained only for a
+ * genuinely cross-origin headless client where cookie session continuity cannot
+ * be used.
  */
 const runtimeHost = typeof window !== 'undefined' ? window.location.hostname : '';
 const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';
@@ -16,17 +19,24 @@ const STORE_BASE_CANDIDATES = Array.from( new Set( [
 	`${ resolvedApiBase.replace( /\/+$/, '' ) }/wp/wp-json/wc/store/v1`,
 ] ) ).filter( Boolean );
 
+function originOf( value ) {
+	if ( !value ) return '';
+	try {
+		return new URL( value, runtimeOrigin || undefined ).origin;
+	} catch {
+		return '';
+	}
+}
+
+const apiOrigin = originOf( resolvedApiBase );
+const USE_CART_TOKEN_SESSION = Boolean( runtimeOrigin && apiOrigin && apiOrigin !== runtimeOrigin );
+
 let activeStoreBaseIndex = 0;
 let storeNonce = '';
 let cartToken = '';
 
-/**
- * Read the persisted Cart-Token from localStorage.
- * We always use localStorage (not sessionStorage) so the WooCommerce session
- * survives hard refreshes and new tabs regardless of same/cross-origin mode.
- */
 function readPersistedCartToken() {
-	if ( typeof window === 'undefined' ) return '';
+	if ( typeof window === 'undefined' || !USE_CART_TOKEN_SESSION ) return '';
 	try {
 		return String( window.localStorage.getItem( CART_TOKEN_STORAGE_KEY ) || '' );
 	} catch {
@@ -34,14 +44,8 @@ function readPersistedCartToken() {
 	}
 }
 
-/**
- * Write or clear the Cart-Token in localStorage.
- * Keeping the token persistent across refreshes is required so that
- * WooCommerce reconnects to the same server-side cart session rather than
- * creating an empty new one on every page load.
- */
 function persistCartToken( token = '' ) {
-	cartToken = String( token || '' );
+	cartToken = USE_CART_TOKEN_SESSION ? String( token || '' ) : '';
 	if ( typeof window === 'undefined' ) return;
 	try {
 		if ( cartToken ) {
@@ -50,18 +54,16 @@ function persistCartToken( token = '' ) {
 			window.localStorage.removeItem( CART_TOKEN_STORAGE_KEY );
 		}
 	} catch {
-		// localStorage is optional; the in-memory token is used for this page load.
+		// Browser storage is optional. Same-origin checkout does not depend on it.
 	}
 }
 
 cartToken = readPersistedCartToken();
+if ( !USE_CART_TOKEN_SESSION ) persistCartToken( '' );
 
-/**
- * Return the current Cart-Token for use by other API modules (e.g. checkout).
- * Returns an empty string when no token has been established yet.
- */
+/** Return the current Cart-Token only for cross-origin headless compatibility. */
 export function getCartToken() {
-	return cartToken || readPersistedCartToken();
+	return USE_CART_TOKEN_SESSION ? ( cartToken || readPersistedCartToken() ) : '';
 }
 
 function currentStoreBase() {
@@ -71,13 +73,16 @@ function currentStoreBase() {
 function updateStoreSessionHeaders( response ) {
 	const nonce = response.headers.get( 'Nonce' ) || response.headers.get( 'X-WC-Store-API-Nonce' );
 	if ( nonce ) storeNonce = nonce;
-	const token = response.headers.get( 'Cart-Token' );
-	if ( token ) persistCartToken( token );
+
+	if ( USE_CART_TOKEN_SESSION ) {
+		const token = response.headers.get( 'Cart-Token' );
+		if ( token ) persistCartToken( token );
+	}
 }
 
 function mutationSessionHeaders() {
-	if ( cartToken ) return { 'Cart-Token': cartToken };
-	return storeNonce ? { 'X-WC-Store-API-Nonce': storeNonce } : {};
+	if ( USE_CART_TOKEN_SESSION && cartToken ) return { 'Cart-Token': cartToken };
+	return storeNonce ? { Nonce: storeNonce } : {};
 }
 
 async function storeFetch( path, options = {}, isRetry = false ) {
@@ -101,7 +106,7 @@ async function storeFetch( path, options = {}, isRetry = false ) {
 	if ( response.status === 401 ) {
 		if ( isRetry ) throw new Error( `Store API 401: ${ url }` );
 		storeNonce = '';
-		persistCartToken( '' );
+		if ( USE_CART_TOKEN_SESSION ) persistCartToken( '' );
 		await initCart();
 		return storeFetch( path, options, true );
 	}
@@ -128,7 +133,7 @@ export async function initCart() {
 		cache: 'no-store',
 		headers: {
 			'Content-Type': 'application/json',
-			...( cartToken ? { 'Cart-Token': cartToken } : {} ),
+			...( USE_CART_TOKEN_SESSION && cartToken ? { 'Cart-Token': cartToken } : {} ),
 		},
 	} );
 	updateStoreSessionHeaders( response );

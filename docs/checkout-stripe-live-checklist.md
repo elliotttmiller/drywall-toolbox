@@ -1,80 +1,150 @@
-# Official Stripe Embedded Checkout Checklist
+# Official WooCommerce Stripe Checkout Production Checklist
 
-## Required plugin authority
+Last verified against source: 2026-07-19.
 
-Use one storefront checkout payment authority only:
+## Required authority
+
+Use one storefront checkout/payment authority chain only:
 
 ```text
-WooCommerce Checkout Block
+WooCommerce Store API cart/session
++ assigned WooCommerce Checkout page with Checkout Block
 + official WooCommerce Stripe Payment Gateway
-+ DTB checkout styling/readiness diagnostics/order observation
++ DTB routing/readiness/order-observation/downstream queue
 ```
 
-Do not enable WooPayments, Payment Plugins for Stripe, DTB Stripe Embedded Checkout, same-shell custom payment iframes, copied gateway internals, fake wallet buttons, custom Stripe Checkout Sessions, or DTB express iframe surfaces as storefront checkout authorities while the official WooCommerce Stripe Payment Gateway is active.
+Do not enable WooPayments, Payment Plugins for Stripe, custom Stripe Checkout Sessions, React Stripe Elements, fake wallet buttons, copied gateway internals, or DTB payment/express iframes as parallel storefront authorities.
 
-## wp-admin configuration
+## Plugin and Stripe account configuration
 
 1. Install and activate the official WooCommerce Stripe Payment Gateway.
-2. Go to `WooCommerce -> Settings -> Payments -> Stripe`.
-3. Connect the intended Stripe account through the official gateway connection flow.
-4. Enable Stripe for checkout.
-5. Enable the desired card, Link, and express checkout/payment methods supported by the gateway.
-6. Confirm Stripe account/webhook health in WooCommerce status tools and Stripe dashboard.
-7. Verify Apple Pay / Google Pay domain and browser/device eligibility where used.
-8. Disable WooPayments and any competing card/wallet gateway.
-9. Confirm the WooCommerce Checkout page is assigned under `WooCommerce -> Settings -> Advanced -> Page setup`.
-10. Keep the Checkout page content as the WooCommerce Checkout Block.
+2. Open `WooCommerce -> Settings -> Payments -> Stripe`.
+3. Connect the intended Stripe account using the official extension flow.
+4. Verify test mode before any staging payment and live mode only at launch cutover.
+5. Enable only intended card/local/express methods.
+6. Prefer automatic capture for launch. If manual capture is enabled, verify that authorization-only/on-hold orders do not dispatch fulfillment/accounting until captured.
+7. Verify Stripe webhook health for the intended mode. The official gateway callback must remain reachable through WooCommerce `wc-api` routing.
+8. Verify HTTPS for the entire public site.
+9. For Apple Pay/Google Pay, verify Stripe payment-method domain registration and Apple Pay domain association.
+10. Disable WooPayments and other competing storefront card/wallet gateways.
 
-## Server deployment checks
+## WooCommerce checkout configuration
 
-After deployment, confirm these return JSON:
+1. Confirm the Checkout page is assigned under `WooCommerce -> Settings -> Advanced`.
+2. Confirm its content contains the WooCommerce Checkout Block.
+3. Confirm `/checkout/` returns a WordPress/WooCommerce document, not React `index.html`.
+4. Confirm Checkout Block and official Stripe scripts/styles are present and not stripped by the headless theme.
+5. Confirm `GET /wp-json/dtb/v1/checkout/capabilities` reports:
+   - `checkout=woo_native_checkout_block`;
+   - `provider=woocommerce_stripe`;
+   - official Stripe extension active;
+   - official Stripe gateway enabled;
+   - Checkout Block present;
+   - HTTPS true;
+   - no competing WooPayments authority.
 
-```text
-https://drywalltoolbox.com/wp-json/
-https://drywalltoolbox.com/wp-json/dtb/v1/catalog/products?per_page=1
-https://drywalltoolbox.com/wp/wp-json/dtb/v1/catalog/products?per_page=1
-```
+## Routing and cache checks
 
-Confirm this renders the assigned WooCommerce Checkout page with a visible Checkout Block, not the React SPA shell or a blank document:
+Confirm these are WordPress/WooCommerce-owned and private/no-store:
 
 ```text
 https://drywalltoolbox.com/checkout/
+https://drywalltoolbox.com/checkout/order-pay/{order_id}/?key=wc_order_...
+https://drywalltoolbox.com/checkout/order-received/{order_id}/?key=wc_order_...
+https://drywalltoolbox.com/?wc-api=wc_stripe
 ```
 
-Confirm these WordPress routes are not rewritten to React:
+Confirm staging checkout routes also enter WordPress rather than `/staging/2972/index.html`.
+
+Confirm `.htaccess` cache-bypass behavior does not replace or corrupt WordPress/WooCommerce `Set-Cookie` headers.
+
+Confirm the Apple Pay association URL returns the intended non-empty verification file when Apple Pay is enabled:
 
 ```text
-https://drywalltoolbox.com/checkout/order-pay/{order_id}/?pay_for_order=true&key=wc_order_...
-https://drywalltoolbox.com/?wc-api=...
+https://drywalltoolbox.com/.well-known/apple-developer-merchantid-domain-association
 ```
 
-Confirm retired custom checkout/express routes are absent or inert:
+## React cart/session continuity
+
+Run these tests before payment testing:
+
+1. Add a real simple SKU product in React.
+2. Change quantity and immediately click checkout from the full cart; Checkout Block must show the final quantity.
+3. Repeat from the cart drawer; pending/debounced Store API mutations must settle before navigation.
+4. Add a variable product and confirm the exact variation ID/SKU/quantity reaches Checkout Block.
+5. Reload the React cart, then navigate to checkout; cart must remain identical.
+6. Use browser back/forward and re-open checkout; no second cart/session should appear.
+7. Confirm same-origin React uses WooCommerce cookie session + Store API `Nonce`; it must not rely on a separate persisted Cart-Token cart.
+8. Confirm React does not render Stripe fields, wallet/payment iframes, or synthetic shipping/tax/final totals.
+
+## Payment matrix — Stripe test mode
+
+Test at minimum:
+
+1. Successful card payment.
+2. Declined card.
+3. 3DS/SCA success.
+4. 3DS/SCA cancellation/failure.
+5. Retry after failed payment using the WooCommerce order-pay path.
+6. Browser refresh during checkout without duplicate order/payment.
+7. Double-click/repeated Place Order does not create duplicate orders.
+8. Apple Pay eligible device/browser/wallet when enabled.
+9. Apple Pay ineligible case hides cleanly.
+10. Google Pay eligible case when enabled.
+11. Google Pay ineligible case hides cleanly.
+12. Link behavior when enabled.
+13. Address/shipping-rate change immediately before payment recalculates the final Woo total.
+14. Coupon/tax/shipping final total exactly matches the amount processed by Stripe.
+
+## Order/payment contract checks
+
+For a successful paid Stripe order confirm:
 
 ```text
-/checkout/?dtb_wcpay_express_surface=1
-/checkout/?dtb_woo_checkout=1 should still render the native checkout page, not a standalone DTB document
+_dtb_checkout_gateway = woo_native_stripe
+_dtb_checkout_contract_version = woo-stripe-v1
+_dtb_payment_provider = woocommerce_stripe
+_dtb_payment_ref = non-empty non-secret transaction/payment reference
+_dtb_payment_captured = 1
 ```
 
-## Runtime tests
+Confirm WooCommerce `date_paid` is present before DTB considers the order captured/fulfillable.
 
-Run in Stripe test mode before live mode:
+Confirm DTB never treats a SetupIntent, source ID, arbitrary `stripe_*` gateway prefix, redirect success, or browser response as captured-payment proof.
 
-1. Add a real SKU-backed product to cart.
-2. Confirm React full cart renders checkout CTA only, with no payment iframe.
-3. Confirm cart side drawer renders checkout CTA only, with no payment iframe.
-4. Confirm desktop cart drawer checkout dock is aligned to the drawer, not floating detached over the page.
-5. Confirm mobile cart drawer uses the safe-area-aware bottom checkout dock without horizontal overflow.
-6. Confirm product detail page and product modal do not mount wallet/payment iframes.
-7. Proceed from React cart/sidebar to `/checkout/`.
-8. Confirm customer/contact, shipping, order summary, official Stripe embedded payment, Link, eligible wallet controls, and place-order sections render in the Woo Checkout Block.
-9. Test successful card payment, 3DS/SCA, failed card, eligible wallets, ineligible wallets, and retry.
-10. Confirm Woo order is created once with real product/variation IDs and SKUs.
-11. Confirm `_dtb_checkout_gateway=woo_native_stripe` and `_dtb_checkout_contract_version=woo-stripe-v1` are present on the order.
-12. Confirm paid official Stripe order records DTB payment lifecycle events once.
-13. Confirm `dtb-orders` downstream processing is dispatched once.
-14. Confirm Veeqo receives/maps the Woo order by SKU in the intended environment.
-15. Confirm refund and failure events update Woo order state/notes as expected.
-16. Confirm QuickBooks projection eligibility after the qualifying Woo payment/refund event.
+## Duplicate-side-effect and webhook replay matrix
+
+For one successful paid order:
+
+1. Re-deliver/replay the Stripe webhook where tooling permits.
+2. Re-trigger Woo processing/completed transitions where safe in staging.
+3. Confirm Veeqo dispatch occurs once.
+4. Confirm QuickBooks create projection occurs once.
+5. Confirm tracking/notification jobs are not duplicated.
+6. Confirm the `dtb_order_processing_dispatch_{order_id}` barrier prevents duplicate initial downstream dispatch.
+7. Confirm failed/unpaid/cancelled orders do not dispatch fulfillment/accounting.
+
+## Refund matrix
+
+Use actual WooCommerce refund records:
+
+1. Create partial refund A and record its Woo `refund_id`.
+2. Confirm QuickBooks refund projection uses only refund A's amount.
+3. Create partial refund B.
+4. Confirm refund B receives a different deterministic/refund-specific idempotency identity and is not suppressed by refund A.
+5. Confirm replay of refund A does not create a second QuickBooks refund.
+6. Test full refund after partial refunds where business rules permit.
+7. Confirm parent order status does not cause a partial refund to be treated as cancellation.
+8. Confirm Veeqo/fulfillment compensation behavior separately from accounting refund projection.
+
+## Downstream checks
+
+After captured payment:
+
+- Veeqo receives/maps the exact Woo order SKUs/variation SKUs once;
+- QuickBooks receives the eligible order projection once;
+- customer/operator tracking projection updates;
+- external calls occur asynchronously through `dtb-orders`, not during interactive checkout or Stripe webhook acknowledgement.
 
 ## Validation commands
 
@@ -87,23 +157,32 @@ npm run lint
 npm run build
 ```
 
-Backend:
+Backend/source:
 
 ```powershell
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeCheckoutRuntime.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Validation/CheckoutValidator.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/bootstrap.php
-.\scripts\smoke-dtb-mu-modules.ps1
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/RefundLifecycle.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksJobOverride.php
 git diff --check
 ```
 
-## Rollback
+If a referenced smoke script is unavailable in the checked-out source, do not claim it passed; record the missing command as a validation gap.
 
-If checkout fails after deploy:
+## Go-live gate
 
-1. Disable checkout traffic or place site in maintenance mode.
-2. Confirm `/wp-json/` and `/wp/wp-json/` status.
-3. Check PHP fatal logs first.
-4. Roll back `drywalltoolbox/wp/wp-content/mu-plugins/`, frontend `dist/`, and `.htaccess` to the previous deploy artifact if REST is returning HTML, checkout is blank, payment UI does not render, or WordPress reports critical errors.
-5. Clear any server cache that may be serving old `index.html`, stale CSS, stale PHP opcode, or stale `.htaccess` behavior.
+Do not enable live payment acceptance until all of these are true:
+
+- native Checkout Block visibly renders on production routing;
+- official Stripe gateway is connected and healthy;
+- webhook health is confirmed;
+- card/3DS/express eligibility tests pass in test mode;
+- cart/session continuity passes from React to Woo checkout;
+- duplicate order/payment/downstream tests pass;
+- partial/multiple refund accounting tests pass;
+- rollback artifact and operational recovery procedure are verified.
+
+UI redesign/branding is explicitly after this mechanical gate.

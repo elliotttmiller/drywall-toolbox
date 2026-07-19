@@ -1,128 +1,114 @@
 # Checkout and Official WooCommerce Stripe Gateway Architecture
 
-## Purpose
+Last verified against source: 2026-07-19.
 
-Drywall Toolbox checkout uses WooCommerce as the cart, customer, address, shipping, tax, checkout, and order authority. The official WooCommerce Stripe Payment Gateway is the single active storefront payment authority for embedded card fields, Link, eligible Apple Pay / Google Pay express controls, tokenization, payment processing, 3DS/SCA, and webhook-backed payment status.
+## Production authority
 
-React owns product browsing, cart page, cart drawer, account UX, and checkout handoff UX only. React does not draw wallet buttons, frame checkout/payment iframes, create PaymentIntents, create Stripe Checkout Sessions, create orders, or own payment lifecycle state.
-
-The customer remains on `drywalltoolbox.com`. `/checkout/` is the assigned WordPress/WooCommerce Checkout page containing the native WooCommerce Checkout Block. DTB may style that native page and add diagnostics/order metadata, but DTB does not replace the checkout document or manually render isolated Woo payment blocks.
-
-## System-of-record boundaries
-
-| Concern | Authority |
-| --- | --- |
-| Product browsing, React cart page, React cart drawer, checkout CTA | React storefront |
-| Cart/session/customer/address/shipping/tax/order creation | WooCommerce Checkout Block / Store API |
-| Embedded card form, Link, Apple Pay, Google Pay, tokenization, 3DS/SCA, webhooks | Official WooCommerce Stripe Payment Gateway |
-| Checkout styling, readiness diagnostics, checkout-order tagging, paid-order observation, event ledger, downstream jobs | DTB MU plugins |
-| Product catalog, customer account, operational order record | WooCommerce |
-| Inventory allocation, fulfillment, labels, shipment/tracking | Veeqo |
-| Accounting projection after eligible payment/refund events | QuickBooks |
-
-React and DTB REST responses must never expose WooCommerce application passwords, Stripe secrets, webhook secrets, Veeqo credentials, QuickBooks credentials, private keys, PaymentIntent client secrets, wallet tokens, or raw payment method data.
-
-## Production flow
+Drywall Toolbox uses one storefront checkout/payment authority chain:
 
 ```text
-React cart / cart side sheet
+React Store API cart
   -> full-document navigation to /checkout/
-  -> .htaccess routes /checkout/ to wp/index.php?pagename=checkout
   -> WordPress serves the assigned WooCommerce Checkout page
-  -> WooCommerce Checkout Block renders customer/order/payment workflow
-  -> official WooCommerce Stripe Payment Gateway renders embedded payment form and eligible wallet controls
-  -> WooCommerce creates the order
-  -> Stripe gateway processes payment and reconciles webhooks
-  -> WooCommerce payment_complete / processing / completed hooks
-  -> DTB order event ledger + dtb-orders queue
-  -> Veeqo, QuickBooks, notification, and tracking projections
+  -> WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway
+  -> WooCommerce order/payment lifecycle
+  -> DTB captured-payment observation
+  -> dtb-orders Action Scheduler queue
+  -> Veeqo / QuickBooks / notifications / tracking
 ```
 
-There is no supported React mini-cart/product iframe express-payment path. Stripe wallet controls must render through WooCommerce-supported Checkout/Product/Cart contexts. Because Drywall Toolbox uses a React cart and React product UX rather than native Woo Cart/Product templates, the only production-approved express/wallet surface is the native Woo Checkout Block until an officially supported integration is adopted.
+WooCommerce owns cart/session state, customer/address validation, shipping, tax, totals, Checkout Block, order creation, and authoritative order/payment status.
 
-## Active checkout surfaces
+The official WooCommerce Stripe Payment Gateway owns embedded payment fields, supported Stripe payment methods, Link, eligible Apple Pay/Google Pay/other express methods, tokenization, 3DS/SCA, Stripe-side payment execution, and webhook-backed reconciliation into WooCommerce.
 
-| Surface | Authority |
-| --- | --- |
-| `/checkout/` | Assigned WordPress Checkout page containing WooCommerce Checkout Block |
-| `/checkout/order-pay/{id}` | WooCommerce order-pay endpoint for payment retry only |
-| `/checkout/order-received/{id}` | WooCommerce order-received endpoint |
-| React `/checkout` route | Compatibility handoff that forces full-page navigation into `/checkout/` |
+DTB does not create Stripe PaymentIntents, Stripe Checkout Sessions, wallet tokens, payment-method payloads, or storefront orders. DTB owns routing integration, a minimal native checkout document adapter for the headless theme, conservative presentation CSS, readiness diagnostics, order metadata, captured-payment observation, eventing, queues, and downstream projections.
 
-The retired custom Stripe Embedded Checkout Session bridge, DTB official-Stripe express iframe surface, WooPayments integration, Payment Plugins integration, React payment page, custom DTB payment-intent routes, DTB standalone checkout document, and DTB WooPayments express iframe surface are not checkout authorities.
+## Headless-theme checkout exception
 
-## Official Stripe gateway configuration
+The public WordPress theme normally forces frontend requests into the React SPA and strips non-React assets. Checkout cannot use that behavior.
 
-Production requires the official WooCommerce Stripe Payment Gateway to be installed, connected, enabled, and tested through WooCommerce settings.
+`dtb-commerce/Payment/WooNativeCheckoutRuntime.php` is the explicit exception boundary. On WooCommerce checkout/endpoints it:
 
-Recommended wp-admin path:
+1. disables the theme's React bundle enqueue for that request;
+2. disables the theme's non-React asset stripping;
+3. bypasses the theme's SPA `template_include` override;
+4. serves `Templates/WooNativeCheckoutPage.php`, a standard WordPress document host;
+5. executes the assigned Checkout page content through `the_content()`;
+6. leaves Checkout Block, WooCommerce endpoint handling, and official Stripe scripts/styles/provider controls owned by WooCommerce/plugins;
+7. sends private/no-store response headers.
 
-```text
-WooCommerce -> Settings -> Payments -> Stripe
-```
+The adapter must never manually instantiate payment fields, create an order, or duplicate Checkout Block state.
 
-Required operational settings:
+## Cart/session continuity
 
-1. Install and activate the official WooCommerce Stripe Payment Gateway.
-2. Connect the intended Stripe account through the official gateway connection flow.
-3. Enable Stripe as the active card/wallet checkout provider.
-4. Enable the desired embedded payment methods, Link, and express checkout methods supported by the gateway.
-5. Verify Apple Pay / Google Pay / Link behavior on eligible devices and browsers from the native Checkout Block.
-6. Confirm Stripe webhook/account health in WooCommerce status tools and Stripe dashboard.
-7. Disable WooPayments, Payment Plugins for Stripe, and any other competing card/wallet storefront payment authority.
-8. Confirm test mode before any live payment attempt.
+Production and staging are same-origin with WordPress/WooCommerce. React therefore uses WooCommerce's cookie-backed Store API session as the primary cart authority and uses the Store API `Nonce` header for mutations.
 
-The official Stripe gateway owns payment method rendering, wallet availability, tokenization, challenge/redirect authentication, and webhook-backed payment state. DTB does not create a parallel payment webhook endpoint for storefront payment completion.
+`Cart-Token` is retained only for genuinely cross-origin headless clients. Same-origin React must not prefer or persist a separate Cart-Token cart because a full-document `/checkout/` navigation uses the browser's WooCommerce session cookie.
 
-## DTB official Stripe checkout integration
+Server-side DTB code must never decode an unsigned Cart-Token payload, derive a session ID from it, query `woocommerce_sessions` directly, or inject another session into WooCommerce.
 
-`DTB_OfficialStripeNativeCheckout` owns only the native-checkout support layer:
+## Frontend checkout handoff
 
-```text
-drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
-```
+React owns cart interaction only.
 
-Responsibilities:
+- Full cart and drawer use Woo Store API state.
+- React does not display synthetic shipping, tax, discounts, or estimated grand totals as checkout authority.
+- The full cart may display the Store API merchandise subtotal and state that WooCommerce calculates remaining totals at checkout.
+- Checkout is a full-document navigation to the canonical WooCommerce checkout URL.
+- The drawer waits for debounced quantity changes and active Store API mutations to settle before navigation. If the cart cannot settle, checkout fails closed instead of transferring a stale cart.
+- The React `/checkout` route is compatibility-only. It performs a document handoff and has a one-shot direct WordPress fallback if a routing error serves the SPA at `/checkout/`.
 
-- enqueue DTB checkout styling only for the primary native checkout page;
-- add checkout body classes for CSS scoping;
-- expose a read-only checkout capabilities route with non-secret contract metadata;
-- tag Woo checkout orders with DTB metadata;
-- mirror verified Stripe references into non-secret DTB order meta;
-- show wp-admin readiness warnings when the official Stripe gateway is not enabled, the Checkout page lacks the Checkout Block, or WooPayments remains active as a competing authority.
+React product pages, product modals, full cart, and mini-cart do not mount Stripe/Woo payment iframes or fabricate express wallet buttons.
 
-Presentation asset:
+## Official Stripe gateway identity
 
-```text
-drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/assets/woo-native-checkout.css
-```
+DTB does not trust a gateway merely because its ID starts with `stripe`.
 
-The module must not call `template_redirect` to print a custom checkout document, must not render isolated payment blocks, and must not create iframe wallet surfaces.
+`DTB_OfficialStripeNativeCheckout` verifies that the selected gateway instance is loaded from the official `woocommerce-gateway-stripe` extension using the active extension constants/path and the gateway class source path.
 
-## Order metadata
+This prevents another Stripe plugin using overlapping `stripe_*` IDs from satisfying DTB's captured-payment authority contract.
 
-Woo checkout orders are tagged with:
+Production must have only one storefront card/wallet authority. WooPayments, Payment Plugins for Stripe, custom Stripe integrations, and other competing card/wallet providers must be disabled unless a future architecture explicitly authorizes them.
+
+## Checkout contract metadata
+
+Woo-created checkout orders are tagged with:
 
 ```text
 _dtb_checkout_gateway = woo_native_stripe
 _dtb_checkout_contract_version = woo-stripe-v1
-_dtb_checkout_source = woocommerce_checkout | woocommerce_store_api_checkout | woocommerce_stripe_lifecycle
+_dtb_checkout_source = woocommerce_checkout | woocommerce_store_api_checkout
 _dtb_order_type = product
 ```
 
-When WooCommerce reports a verified Stripe payment with a transaction/payment reference, DTB mirrors:
+The checkout source is immutable after initial tagging. Payment lifecycle observation uses separate metadata.
+
+After WooCommerce reaches a paid lifecycle hook and DTB verifies the selected gateway is an official Stripe extension instance with a non-secret transaction/payment reference, DTB mirrors:
 
 ```text
 _dtb_payment_provider = woocommerce_stripe
-_dtb_payment_ref = Woo transaction id or official Stripe payment reference
-_dtb_payment_captured = 1 when date_paid is present
+_dtb_payment_ref = Woo transaction ID / official Stripe payment reference
+_dtb_payment_captured = 1 when WooCommerce date_paid is present
+_dtb_payment_lifecycle_source = woocommerce_stripe_lifecycle
 ```
 
-These values are non-secret references only.
+DTB deliberately does not treat source IDs, SetupIntent IDs, arbitrary `stripe_*` method names, browser redirects, or unverified metadata as captured payment proof.
 
-## Downstream lifecycle
+## Captured-payment gate
 
-DTB order-platform observes WooCommerce payment lifecycle hooks:
+Fulfillment/accounting eligibility requires all of:
+
+1. exact DTB checkout contract `woo_native_stripe` + `woo-stripe-v1`;
+2. `_dtb_payment_provider=woocommerce_stripe`, set only after the official gateway instance is verified;
+3. WooCommerce `date_paid` is present;
+4. a non-secret transaction/payment reference is present.
+
+Authorization-only payment state is not fulfillable. DTB's launch policy should use automatic capture unless a reviewed manual-capture workflow is explicitly implemented and tested. If manual capture is enabled operationally, the order must remain ineligible for Veeqo/QuickBooks fulfillment/accounting until WooCommerce records the captured/paid state.
+
+## Order lifecycle and idempotency
+
+`dtb-order-platform/Payment/CheckoutPaymentLifecycle.php` observes WooCommerce hooks after the official Stripe mirror runs:
 
 ```text
 woocommerce_payment_complete
@@ -133,55 +119,108 @@ woocommerce_order_status_cancelled
 woocommerce_order_status_refunded
 ```
 
-For DTB-tagged official Stripe orders with provider-verified captured payment, DTB appends lifecycle events and dispatches `dtb-orders` processing jobs once. The webhook/payment authority remains the official Stripe gateway.
+Paid processing state is recorded as `payment_confirmed`, not `payment_authorized`.
 
-## Cart/session policy
+Initial downstream dispatch uses an atomic `add_option()` barrier per Woo order. Veeqo, QuickBooks create, tracking, and related projections are enqueued through `dtb_order_enqueue_job()` in Action Scheduler group `dtb-orders` only after the paid gate passes (or for an explicitly non-payment/free order path allowed by Woo lifecycle policy).
 
-React Store API calls may use WooCommerce's supported Store API session mechanisms. Server-side DTB code must never decode an unverified Cart-Token payload, select a session key from that payload, query `woocommerce_sessions` directly, or inject arbitrary session rows into the active Woo session.
+Raw browser/external WooCommerce REST order creation remains blocked by the order write boundary.
 
-WooCommerce owns Cart-Token validation and session resolution. If React-to-Woo checkout cart continuity fails, fix the supported Store API/session-cookie configuration; do not bypass WooCommerce session authority.
+## Refund contract
 
-## Routing contract
+WooCommerce owns refund creation.
 
-The public root `.htaccess` must route these to WordPress before the React SPA catch-all:
+Each `woocommerce_order_refunded` event is keyed by both:
+
+```text
+order_id + refund_id
+```
+
+DTB does not infer refund-versus-cancellation from the parent order status. Partial refunds can leave the parent order in processing and must still be treated as refunds.
+
+QuickBooks refund projection:
+
+- verifies the concrete `WC_Order_Refund` belongs to the parent order;
+- uses the exact refund amount, not cumulative lifetime refunded amount;
+- uses deterministic document identity `DTB-R-{order_id}-{refund_id}`;
+- stores a per-refund QuickBooks entity key;
+- prevents one refund from suppressing or duplicating another partial refund.
+
+WooCommerce remains responsible for native refund emails/customer notices unless explicitly changed by a reviewed notification policy.
+
+## Shipping and totals
+
+Current checkout shipping is WooCommerce/DTB policy rating, not live Veeqo carrier rating.
+
+WooCommerce Checkout Block owns the displayed shipping rates, selected rate, tax, discounts, and final payable total. The official Stripe gateway processes the WooCommerce total.
+
+Veeqo becomes authoritative downstream for inventory allocation, fulfillment, labels, shipment execution/status, carrier, and tracking.
+
+## Routing and caching
+
+The domain-root `.htaccess` must route these to WordPress before the SPA catch-all:
 
 ```text
 /checkout/
-/checkout/order-pay/{id}
-/checkout/?pay_for_order=true&key=wc_order_...
+/staging/{id}/checkout/
+/checkout/order-pay/{order_id}
+/checkout/order-received/{order_id}
+?wc-api=wc_stripe
 /wp-json/*
 ?rest_route=...
-?wc-api=...
 ```
 
-`GET /wp-json/dtb/v1/checkout/capabilities` remains a public, read-only compatibility route. It returns non-secret checkout contract metadata and enabled official Stripe gateway identifiers. It does not create orders, render payment fields, expose gateway secrets, or replace WooCommerce checkout.
+Checkout, callbacks, Woo session-owned requests, and payment endpoints must bypass public page cache. Cache-bypass headers/cookies must never replace or corrupt WordPress/WooCommerce `Set-Cookie` headers.
 
-## Failure and fallback behavior
+The Apple Pay domain-association file must be reachable at the public domain root when express checkout is enabled.
 
-- If the assigned Checkout page lacks the WooCommerce Checkout Block, wp-admin shows a blocking readiness warning.
-- If the official Stripe gateway is not enabled, wp-admin shows a warning before live payment acceptance.
-- If WooPayments is also enabled, wp-admin shows a competing-authority warning.
-- React cart and drawer always preserve the standard checkout CTA.
-- No fallback may fabricate Apple Pay/Google Pay/Link buttons or create an alternate order/payment path.
-- Checkout remains same-domain but payment fields are provider-owned embedded controls.
+## Official Stripe operational requirements
 
-## Deployment checklist
+Configure the official extension through WooCommerce settings. Before live acceptance:
 
-Before production use:
+1. install/activate the official WooCommerce Stripe Payment Gateway;
+2. connect the intended Stripe account;
+3. verify test/live mode explicitly;
+4. enable only intended payment methods;
+5. verify Stripe webhook status for both test and live modes as applicable;
+6. verify HTTPS across the entire site;
+7. verify payment-method domain registration and Apple Pay domain association when wallets are enabled;
+8. disable competing storefront card/wallet authorities;
+9. keep the assigned Checkout page as the WooCommerce Checkout Block;
+10. test with real Woo SKU/variation cart data in staging/test mode before live mode.
 
-1. Deploy frontend and backend as a clean mirror, not a partial FTP overlay.
-2. Remove retired Stripe Embedded Checkout bridge files, DTB Stripe express iframe files, and DTB WooPayments files from live `mu-plugins` if previously deployed.
-3. Confirm `/wp-json/` returns JSON.
-4. Confirm `/wp-json/dtb/v1/catalog/products?per_page=1` returns JSON.
-5. Confirm `/checkout/` renders the assigned WooCommerce Checkout page with the Checkout Block.
-6. Confirm the React cart and cart drawer navigate to `/checkout/` and do not mount payment iframes.
-7. Confirm the official WooCommerce Stripe gateway is installed, connected, enabled, and in the intended test/live mode.
-8. Confirm WooPayments and Payment Plugins for Stripe are disabled as storefront payment authorities.
-9. Test guest checkout, authenticated checkout, cards, 3DS/SCA, wallets, wallet-ineligible devices, failed payment, retry, order-received, refund, webhook delay/replay, Veeqo sync, and QuickBooks eligibility.
+The public read-only endpoint `GET /wp-json/dtb/v1/checkout/capabilities` exposes non-secret contract/readiness metadata only. It must never expose Stripe keys, webhook secrets, client secrets, tokens, or raw payment data.
+
+## Presentation policy
+
+Mechanical correctness precedes branding.
+
+`dtb-commerce/assets/woo-native-checkout.css` is intentionally a conservative compatibility baseline while checkout is being proven. It must not hide, re-parent, clone, or restyle provider-owned controls in ways that change eligibility or behavior.
+
+After the full mechanical test matrix passes, the UI may be designed around supported WooCommerce Checkout Block customization and outer styling without changing checkout/payment authority.
+
+## Required verification matrix
+
+Before live payment acceptance verify at minimum:
+
+- guest and authenticated checkout;
+- React quantity change immediately followed by checkout handoff;
+- cart/session continuity after reload/back/forward;
+- simple and variable products with correct SKU/variation/quantity;
+- shipping destination/rate recalculation;
+- coupons/tax/final total parity between Woo and Stripe;
+- card success and decline;
+- 3DS/SCA success, cancellation, and retry;
+- Apple Pay/Google Pay/Link eligible and ineligible cases as configured;
+- duplicate submit/reload/webhook replay does not duplicate orders or downstream jobs;
+- order-pay retry path;
+- order-received path;
+- partial refund, second partial refund, and full refund;
+- Veeqo dispatch exactly once after eligible captured payment;
+- QuickBooks create exactly once and each refund exactly once by `refund_id`;
+- failed/cancelled/unpaid orders do not dispatch fulfillment/accounting;
+- `/checkout/` and Stripe callback endpoints are never served by the React SPA or public cache.
 
 ## Validation commands
-
-Frontend:
 
 ```powershell
 cd frontend
@@ -190,17 +229,15 @@ npm run lint
 npm run build
 ```
 
-Backend:
-
 ```powershell
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeCheckoutRuntime.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Validation/CheckoutValidator.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/bootstrap.php
-php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/bootstrap.php
-.\scripts\smoke-dtb-mu-modules.ps1
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/RefundLifecycle.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksJobOverride.php
 git diff --check
 ```
 
-Runtime verification remains mandatory because final wallet availability, payment UI, Woo session continuity, Stripe account state, webhook status, order transitions, Veeqo sync, and QuickBooks projection depend on deployed WooCommerce/Stripe/Veeqo configuration.
+Runtime validation is mandatory. Static source checks cannot prove Stripe account connection, webhook health, wallet eligibility, Woo session cookies, HostGator rewrite/cache behavior, or external Veeqo/QuickBooks responses.
