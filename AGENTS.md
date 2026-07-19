@@ -31,8 +31,8 @@ Canonical system topology:
 React 19 storefront
   -> WordPress/WooCommerce backend
   -> WooCommerce Store API cart/session
-  -> WooCommerce Checkout Block or [woocommerce_checkout]
-  -> WooPayments embedded payment methods and webhooks
+  -> WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway embedded payment methods and webhooks
   -> WooCommerce operational order and payment lifecycle
   -> DTB must-use plugin platform
   -> DTB event ledger, write boundaries, integration state, and Action Scheduler queues
@@ -41,7 +41,7 @@ React 19 storefront
   -> notifications, tracking, catalog, media, schematic, repair, return, support, and operator tooling
 ```
 
-The React storefront owns public browsing, product discovery, cart UX, accounts, service intake, and customer-facing interaction state. WordPress/WooCommerce owns authoritative commerce persistence and the public checkout runtime. WooPayments owns embedded payment form rendering, supported wallet rendering, tokenization, payment processing, and webhook-backed payment status. DTB must-use plugins own domain policy, orchestration, projections, integrations, and operator workflows.
+The React storefront owns public browsing, product discovery, cart UX, accounts, service intake, and customer-facing interaction state. WordPress/WooCommerce owns authoritative commerce persistence and the public checkout runtime. The official WooCommerce Stripe Payment Gateway owns embedded payment form rendering, supported Stripe payment-method rendering, Link, eligible express wallets, tokenization, payment processing, and webhook-backed payment status. DTB must-use plugins own domain policy, orchestration, projections, integrations, and operator workflows.
 
 ## 3. Truth, recency, and source precedence
 
@@ -128,7 +128,7 @@ Prefer deterministic, reproducible transformations and explicit audit outputs ov
 
 `drywalltoolbox/` is the tracked HostGator deployment mirror, not a second independent application. There is no canonical root-level `wp/` source tree. Never edit generated `dist/` output as source.
 
-Regular WordPress plugins are runtime-managed dependencies, not canonical DTB business logic. The checkout payment plugin authority is WooPayments. Tracked third-party payment plugin snapshots are audit/reference material and must not be treated as DTB-owned source. Do not modify vendor plugin internals to implement DTB behavior; use supported WooCommerce, WooPayments, WordPress, and DTB extension points.
+Regular WordPress plugins are runtime-managed dependencies, not canonical DTB business logic. The checkout payment plugin authority is the official WooCommerce Stripe Payment Gateway. Tracked third-party payment plugin snapshots are audit/reference material and must not be treated as DTB-owned source. Do not modify vendor plugin internals to implement DTB behavior; use supported WooCommerce, official Stripe gateway, WordPress, and DTB extension points.
 
 ## 5. System-of-record and authority boundaries
 
@@ -136,17 +136,17 @@ Regular WordPress plugins are runtime-managed dependencies, not canonical DTB bu
 
 Owns products, customers, Store API cart/session state, Checkout Block/order creation, operational orders, taxes and totals as configured, and authoritative order/payment status.
 
-### WooPayments
+### Official WooCommerce Stripe Payment Gateway
 
-Owns embedded checkout payment-method rendering inside WooCommerce Checkout, supported express wallets, WooPay/Link where enabled, saved methods, tokenization, payment processing, challenge/redirect authentication, webhook provisioning/status, and payment-to-WooCommerce synchronization.
+Owns embedded checkout payment-method rendering inside WooCommerce Checkout, supported Stripe methods, Link, eligible express wallets, saved methods, tokenization, payment processing, challenge/redirect authentication, webhook provisioning/status, and payment-to-WooCommerce synchronization.
 
-DTB must not create a competing storefront Stripe Checkout Session, copy private payment-plugin React/build internals, render fake wallet buttons, iframe a second checkout workflow into React, or implement a second payment authority while WooPayments is active.
+DTB must not create a competing storefront Stripe Checkout Session, copy private payment-plugin React/build internals, render fake wallet buttons, iframe a second checkout workflow into React, or implement a second payment authority while the official Stripe gateway is active.
 
 ### DTB platform
 
 Owns storefront/cart integration policy, checkout routing into WooCommerce, branded checkout presentation, server-side validation beyond Woo defaults, order event observation, write boundaries, idempotency, duplicate containment, integration state, queues, projections, catalog read models, schematics, media, repairs, returns, support, operator workflows, and integration policy.
 
-DTB observes verified Woo/WooPayments lifecycle events; it does not impersonate the gateway or mutate payment state independently.
+DTB observes verified Woo/official-Stripe lifecycle events; it does not impersonate the gateway or mutate payment state independently.
 
 ### Veeqo
 
@@ -168,9 +168,9 @@ The only approved storefront checkout path is:
 React cart / cart side sheet
   -> full-document navigation to /checkout/
   -> domain-root routing sends /checkout/ to WordPress
-  -> DTB WooPayments checkout shell
-  -> WooCommerce Checkout Block or [woocommerce_checkout]
-  -> WooPayments embedded payment methods and signed webhook reconciliation
+  -> assigned WordPress WooCommerce Checkout page
+  -> WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway embedded payment methods and webhook reconciliation
   -> WooCommerce Store API checkout and order creation
   -> WooCommerce payment_complete / processing lifecycle
   -> DTB order event ledger
@@ -181,11 +181,11 @@ React cart / cart side sheet
 Mandatory invariants:
 
 - WooCommerce creates storefront orders;
-- WooPayments is the only active storefront card/wallet payment authority;
+- the official WooCommerce Stripe Payment Gateway is the only active storefront card/wallet payment authority;
 - React must not create Woo orders or process payment directly;
-- do not restore DTB-owned Stripe Embedded Checkout, Payment Plugins for Stripe, official Stripe express iframe surfaces, same-shell payment iframes, copied gateway components, or private plugin build internals;
+- do not restore DTB-owned Stripe Embedded Checkout, Payment Plugins for Stripe, WooPayments, same-shell payment iframes, copied gateway components, or private plugin build internals;
 - preserve Woo cart/session continuity across the full-document checkout handoff;
-- preserve Woo order/payment lifecycle and WooPayments webhook reconciliation;
+- preserve Woo order/payment lifecycle and official Stripe gateway webhook reconciliation;
 - do not dispatch fulfillment, accounting, notifications, or tracking until payment state satisfies the authoritative captured/paid contract;
 - prevent duplicate orders, payments, refunds, emails, fulfillment requests, accounting entries, and webhook side effects;
 - customer order access must be bound to authenticated customer ownership, never caller-supplied customer IDs alone;
@@ -209,7 +209,7 @@ Avoid slow external calls during checkout, webhook acknowledgement, authenticati
 
 ## 8. Security and privacy invariants
 
-Never expose or persist WooCommerce application passwords, consumer secrets, WooPayments secrets, Stripe secret keys, Stripe webhook secrets, Veeqo credentials, QuickBooks credentials, JWT signing secrets, marketplace credentials, private keys, payment secrets, wallet tokens, or PaymentIntent client secrets in browser code, `REACT_APP_*`, local/session storage, REST responses, logs, documentation, generated assets, or screenshots.
+Never expose or persist WooCommerce application passwords, consumer secrets, Stripe secret keys, Stripe webhook secrets, Veeqo credentials, QuickBooks credentials, JWT signing secrets, marketplace credentials, private keys, payment secrets, wallet tokens, or PaymentIntent client secrets in browser code, `REACT_APP_*`, local/session storage, REST responses, logs, documentation, generated assets, or screenshots.
 
 Only public configuration may reach the browser. Prefer HttpOnly `dtb_auth` cookies; compatibility bearer tokens are memory-only. Preserve `credentials: 'include'` for cookie-authenticated requests and the application-wide confirmed `auth:expired` behavior.
 
