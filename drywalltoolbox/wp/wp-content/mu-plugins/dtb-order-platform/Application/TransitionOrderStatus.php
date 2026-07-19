@@ -43,13 +43,12 @@ function dtb_order_on_status_changed( int $order_id, string $from_status, string
 	$event_type = $event_map[ $to_status ] ?? ( 'order.status_changed.' . sanitize_key( $to_status ) );
 
 	dtb_order_append_event( $order_id, $event_type, [
-		'from_status'     => $from_status,
-		'to_status'       => $to_status,
-		'actor_type'      => $actor_type,
-		'actor_id'        => $actor_id ?: null,
-		'source'          => $source,
-		'idempotency_key' => 'order-status:' . $order_id . ':' . sanitize_key( $from_status ) . ':' . sanitize_key( $to_status ),
-		'payload'         => [
+		'from_status' => $from_status,
+		'to_status'   => $to_status,
+		'actor_type'  => $actor_type,
+		'actor_id'    => $actor_id ?: null,
+		'source'      => $source,
+		'payload'     => [
 			'from' => $from_status,
 			'to'   => $to_status,
 		],
