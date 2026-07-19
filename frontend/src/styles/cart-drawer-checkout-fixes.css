@@ -1,10 +1,8 @@
 /*
  * Cart drawer checkout placement hardening.
  *
- * The WooPayments express dock is provider-owned payment UI framed by React,
- * but the drawer layout must remain stable on desktop and mobile. These rules
- * keep the desktop dock aligned to the right cart sheet instead of floating as
- * a detached card over the page, while preserving the mobile bottom-sheet model.
+ * The drawer remains a checkout handoff surface only. WooPayments and express
+ * wallet controls render on the native WooCommerce Checkout page.
  */
 
 @media (min-width: 768px) {
@@ -26,7 +24,7 @@
 
   .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-body {
     background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
-    padding: 8px 0 330px !important;
+    padding: 8px 0 250px !important;
   }
 
   .cart-overlay.active .cart-panel.storefront-cart-sheet .scs-item-list {
@@ -54,47 +52,32 @@
     background: #f8fafc !important;
   }
 
-  body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-footer {
+  body:has(.dtb-cart-checkout-dock) .cart-overlay.active .storefront-cart-sheet .scs-footer {
     display: none !important;
   }
 
-  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock {
+  body:has(.dtb-cart-checkout-dock) .dtb-cart-checkout-dock {
     right: 0 !important;
     bottom: 0 !important;
     z-index: 10004 !important;
     width: min(430px, 100vw) !important;
-    max-height: 340px !important;
     border-right: 0 !important;
     border-bottom: 0 !important;
     border-radius: 20px 0 0 0 !important;
     background:
       radial-gradient(circle at 16% -28%, rgba(59, 130, 246, 0.16), transparent 50%),
       rgba(255, 255, 255, 0.985) !important;
-    padding: 16px 18px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
     box-shadow: -18px -18px 54px rgba(15, 23, 42, 0.16) !important;
   }
 
-  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock .dtb-wcpay-express__heading-row {
-    margin-bottom: 8px;
-  }
-
-  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock .dtb-wcpay-express__heading {
-    color: #0f172a;
-    font-size: 0.82rem;
-    font-weight: 900;
-  }
-
-  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock .dtb-wcpay-express__divider {
-    margin-top: 10px;
-  }
-
-  body:has(.dtb-cart-express-dock) .dtb-cart-express-dock__checkout {
+  body:has(.dtb-cart-checkout-dock) .dtb-cart-checkout-dock__checkout {
     min-height: 50px;
   }
 }
 
 @media (max-width: 767px) {
-  body:has(.dtb-cart-express-dock) .cart-overlay.active .storefront-cart-sheet .scs-body {
-    padding-bottom: 310px !important;
+  body:has(.dtb-cart-checkout-dock) .cart-overlay.active .storefront-cart-sheet .scs-body {
+    padding-bottom: 240px !important;
   }
 }
