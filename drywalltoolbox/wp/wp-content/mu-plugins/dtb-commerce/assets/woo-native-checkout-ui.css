@@ -350,12 +350,23 @@ body.dtb-official-stripe-checkout .is-dtb-order-summary-duplicate {
     color: var(--dtb-ui-blue);
   }
 
-  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step] {
-    animation: dtb-checkout-step-in 190ms ease-out both;
+  /*
+   * Inactive sections stay mounted and measurable. This is critical for the
+   * official Stripe Payment Element and wallet surfaces, which may initialize
+   * before the customer reaches the Payment step.
+   */
+  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step].is-dtb-checkout-step-inactive {
+    position: absolute !important;
+    left: -200vw !important;
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
   }
 
-  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step][hidden] {
-    display: none !important;
+  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step]:not(.is-dtb-checkout-step-inactive) {
+    animation: dtb-checkout-step-in 190ms ease-out both;
   }
 
   @keyframes dtb-checkout-step-in {
@@ -475,6 +486,10 @@ body.dtb-official-stripe-checkout .is-dtb-order-summary-duplicate {
     gap: 12px;
   }
 
+  .dtb-mobile-checkout-actions[hidden] {
+    display: none !important;
+  }
+
   .dtb-mobile-checkout-actions__back,
   .dtb-mobile-checkout-actions__next {
     min-height: 50px;
@@ -507,7 +522,7 @@ body.dtb-official-stripe-checkout .is-dtb-order-summary-duplicate {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step] {
+    body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step]:not(.is-dtb-checkout-step-inactive) {
       animation: none;
     }
   }
