@@ -55,12 +55,19 @@ dtb-commerce/assets/woo-native-checkout-ui.css
   -> typography, spacing, responsive surfaces, express-button radius,
      order-summary presentation, and mobile step presentation
 
+dtb-commerce/assets/woo-native-checkout-mobile-fixes.css
+  -> mobile gesture/overflow hardening around provider-owned payment UI
+     and final step-navigation polish
+
 dtb-commerce/assets/woo-native-checkout-ui.js
-  -> presentation-only mobile Details / Payment / Review navigation
-     and duplicate visual order-summary suppression
+  -> presentation-only mobile Details / Payment / Review navigation,
+     runtime Checkout Block selector fallbacks, and duplicate visual
+     order-summary suppression
 ```
 
 The mobile step enhancement never creates, clones, moves, submits, or validates WooCommerce/Stripe controls. Inactive sections remain mounted at a measurable width off-canvas so the official Stripe Payment Element and wallet surfaces can initialize normally. WooCommerce remains the final validation and submission authority.
+
+Presentation discovery must support both WordPress block wrapper classes and WooCommerce's hydrated `wc-block-checkout__*` runtime classes. Missing presentation selectors must fail open: checkout sections remain native/visible rather than becoming a dependency of order or payment mechanics.
 
 A bounded `MutationObserver` is permitted only to wait for the initial hydrated Checkout Block before attaching presentation classes; it disconnects immediately after successful mount or timeout. The mechanical checkout path must remain usable if the presentation enhancement fails to initialize.
 
@@ -74,7 +81,7 @@ The responsive presentation uses three customer-facing steps:
 2. **Payment** — WooCommerce payment section and optional order note; Stripe remains provider-owned.
 3. **Review** — the single canonical order summary, terms, and WooCommerce-owned Place Order action.
 
-The progress/navigation controls only change presentation. They do not bypass Woo validation, mutate checkout data, or submit the order.
+The progress/navigation controls only change presentation. Future steps remain orientation-only until reached, completed/visited steps can be revisited, and native Woo validation may focus the customer back into the owning visible step. DTB does not bypass Woo validation, mutate checkout data, or submit the order.
 
 ## Verification
 
@@ -84,10 +91,11 @@ Test at minimum:
 2. Chrome/Android with and without Google Pay eligibility.
 3. Card payment success, decline, and 3DS challenge.
 4. Step forward/back navigation without losing address, shipping, payment, or Stripe state.
-5. Resize mobile -> desktop -> mobile without duplicated controls or hidden checkout sections.
-6. Exactly one visible Order Summary on mobile and desktop; values must match WooCommerce totals.
-7. Cart quantity change immediately followed by checkout handoff.
-8. Guest and authenticated checkout.
-9. Back/forward navigation and checkout refresh without cart loss or duplicate orders.
-10. Failed payment followed by retry through WooCommerce order-pay.
-11. Partial and full refunds with one QuickBooks refund projection per Woo refund ID.
+5. Every eligible provider payment method remains reachable by the provider-owned mobile selector/navigation.
+6. Resize mobile -> desktop -> mobile without duplicated controls or hidden checkout sections.
+7. Exactly one visible Order Summary on mobile and desktop; values must match WooCommerce totals.
+8. Cart quantity change immediately followed by checkout handoff.
+9. Guest and authenticated checkout.
+10. Back/forward navigation and checkout refresh without cart loss or duplicate orders.
+11. Failed payment followed by retry through WooCommerce order-pay.
+12. Partial and full refunds with one QuickBooks refund projection per Woo refund ID.
