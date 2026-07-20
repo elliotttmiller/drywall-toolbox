@@ -1,1 +1,228 @@
-/* Mobile UI presentation overrides. */
+/*
+ * Mobile storefront/account presentation convergence.
+ * UI only: no commerce, auth, checkout, payment, or order state changes.
+ */
+
+@media (max-width: 767px) {
+  /* One unified Account Hub header. */
+  .account-hub__sheet {
+    border-radius: 28px 28px 0 0;
+  }
+
+  .account-hub__drawer-header {
+    min-height: 112px;
+    padding: 24px 20px 20px;
+    gap: 14px;
+    border-bottom: 0;
+    background:
+      radial-gradient(circle at 86% 0%, rgba(59, 130, 246, 0.34), transparent 36%),
+      linear-gradient(140deg, #071329 0%, #0f2150 54%, #1d4ed8 100%);
+    box-shadow: 0 14px 32px rgba(15, 33, 80, 0.18);
+  }
+
+  .account-hub__drawer-header::after {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(90deg, #000, transparent 82%);
+    pointer-events: none;
+    content: "";
+  }
+
+  .account-hub__drawer-icon,
+  .account-hub__drawer-copy,
+  .account-hub__close {
+    position: relative;
+    z-index: 1;
+  }
+
+  .account-hub__drawer-icon {
+    width: 46px;
+    height: 46px;
+    border-color: rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #bfdbfe;
+    backdrop-filter: blur(10px);
+  }
+
+  .account-hub__drawer-copy h2 {
+    color: #93c5fd;
+    font-size: 0.69rem;
+    font-weight: 850;
+    letter-spacing: 0.13em;
+  }
+
+  .account-hub__drawer-copy p {
+    margin-top: 5px;
+    color: #fff;
+    font-size: clamp(1.25rem, 5.8vw, 1.55rem);
+    font-weight: 850;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+
+  .account-hub__close {
+    width: 42px;
+    height: 42px;
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    backdrop-filter: blur(10px);
+  }
+
+  .account-hub__panel {
+    padding-top: 18px;
+  }
+
+  .account-hub__panel--home .account-hub__hero {
+    display: none;
+  }
+
+  .account-hub__panel:not(.account-hub__panel--home) .account-hub__hero {
+    min-height: 0;
+    margin: 0 0 20px;
+    padding: 0;
+    gap: 10px;
+    overflow: visible;
+    background: transparent;
+    color: #0f172a;
+    box-shadow: none;
+  }
+
+  .account-hub__panel:not(.account-hub__panel--home) .account-hub__hero-pattern {
+    display: none;
+  }
+
+  .account-hub__panel:not(.account-hub__panel--home) .account-hub__hero-icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    border-color: #dbeafe;
+    border-radius: 11px;
+    background: #eff6ff;
+    color: #2563eb;
+    backdrop-filter: none;
+  }
+
+  .account-hub__panel:not(.account-hub__panel--home) .account-hub__hero-copy p {
+    margin-bottom: 3px;
+    color: #2563eb;
+  }
+
+  .account-hub__panel:not(.account-hub__panel--home) .account-hub__hero-copy h2 {
+    color: #0f172a;
+    font-size: 1.16rem;
+    line-height: 1.15;
+  }
+
+  .account-hub__panel:not(.account-hub__panel--home) .account-hub__hero-copy > span {
+    margin-top: 4px;
+    color: #64748b;
+  }
+
+  /* Compact, aligned horizontal catalog list cards. */
+  .dtb-product-card--list {
+    grid-template-columns: clamp(112px, 33vw, 136px) minmax(0, 1fr);
+    min-height: clamp(136px, 37vw, 154px);
+    border-radius: 18px;
+  }
+
+  .dtb-product-card--list .dtb-product-card__image {
+    min-width: 0;
+    min-height: 136px;
+  }
+
+  .dtb-product-card--list .dtb-product-card__image .product-card-image > div {
+    inset: 14px 11px 11px !important;
+  }
+
+  .dtb-product-card--list .dtb-product-card__meta {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    align-content: center;
+    padding: 13px 14px 13px 15px;
+    gap: 3px;
+  }
+
+  .dtb-product-card--list .dtb-product-card__brand {
+    font-size: 0.68rem;
+    line-height: 1.08;
+    letter-spacing: 0.12em;
+  }
+
+  .dtb-product-card--list .dtb-product-card__name {
+    font-size: clamp(0.92rem, 3.7vw, 1.02rem);
+    line-height: 1.16;
+    letter-spacing: -0.018em;
+  }
+
+  .dtb-product-card--list .dtb-product-card__sku {
+    margin-top: 1px;
+    font-size: clamp(0.7rem, 2.85vw, 0.79rem);
+    line-height: 1.2;
+  }
+
+  .dtb-product-card--list .dtb-product-card__footer {
+    align-self: end;
+    margin-top: 7px;
+  }
+
+  .dtb-product-card--list .dtb-product-card__price {
+    font-size: clamp(1rem, 4vw, 1.13rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .dtb-product-card--list .dtb-product-card__compare-price {
+    font-size: clamp(0.72rem, 2.8vw, 0.82rem);
+  }
+
+  /* Related products use the same horizontal touch-rail contract as home. */
+  .product-related__grid {
+    display: grid !important;
+    grid-template-columns: none !important;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(162px, 44vw, 188px);
+    align-items: stretch;
+    gap: 12px;
+    margin-inline: -16px;
+    padding: 0 16px 8px;
+    overflow-x: auto;
+    overflow-y: visible;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .product-related__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-related__grid > * {
+    width: 100%;
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .product-related__grid .dtb-product-card--grid {
+    height: 100%;
+  }
+
+  .product-related__grid .dtb-product-card--grid .dtb-product-card__image {
+    min-height: clamp(150px, 40vw, 170px);
+  }
+}
+
+@media (max-width: 374px) {
+  .dtb-product-card--list {
+    grid-template-columns: 108px minmax(0, 1fr);
+  }
+
+  .dtb-product-card--list .dtb-product-card__meta {
+    padding-inline: 12px;
+  }
+}
