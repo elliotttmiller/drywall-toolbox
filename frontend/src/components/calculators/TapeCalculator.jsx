@@ -10,9 +10,9 @@ function loadSaved() {
 }
 
 const sheetSizes = [
-  { value: 32,   label: '4×8 ft',     description: '32 sq ft' },
-  { value: 48,   label: '4×12 ft',    description: '48 sq ft' },
-  { value: 54,   label: '4×13.5 ft',  description: '54 sq ft' },
+  { value: 32, label: '4×8 ft', description: '32 sq ft' },
+  { value: 40, label: '4×10 ft', description: '40 sq ft' },
+  { value: 48, label: '4×12 ft', description: '48 sq ft' },
 ]
 
 const tapeTypes = [
@@ -268,4 +268,3 @@ export default function TapeCalculator({ onUpdate, sheetData }) {
     </div>
   )
 }
-
