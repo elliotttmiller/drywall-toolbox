@@ -244,7 +244,17 @@
 		return true;
 	}
 
+	function handleViewportChange() {
+		if ( mobileViewport.matches ) {
+			mountMobileEnhancement();
+		} else {
+			teardownMobileEnhancement();
+			markDuplicateOrderSummaries();
+		}
+	}
+
 	function initialize() {
+		mobileViewport.addEventListener( 'change', handleViewportChange );
 		markDuplicateOrderSummaries();
 		if ( mountMobileEnhancement() ) {
 			window.setTimeout( markDuplicateOrderSummaries, 500 );
@@ -269,15 +279,6 @@
 			markDuplicateOrderSummaries();
 			mountMobileEnhancement();
 		}, 5000 );
-
-		mobileViewport.addEventListener( 'change', () => {
-			if ( mobileViewport.matches ) {
-				mountMobileEnhancement();
-			} else {
-				teardownMobileEnhancement();
-				markDuplicateOrderSummaries();
-			}
-		} );
 	}
 
 	if ( document.readyState === 'loading' ) {
