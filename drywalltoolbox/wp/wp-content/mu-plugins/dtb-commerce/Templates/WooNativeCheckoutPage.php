@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$dtb_checkout_ui_version = '2026.07.20.2';
+$dtb_checkout_ui_version = '2026.07.20.3';
 wp_enqueue_style(
 	'dtb-woo-native-checkout-ui',
 	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.css' ),
