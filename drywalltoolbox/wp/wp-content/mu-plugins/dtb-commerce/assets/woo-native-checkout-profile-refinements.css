@@ -1,0 +1,170 @@
+/* Signed-in customers keep WooCommerce's authoritative checkout controls visible.
+ * This layer changes presentation only; Woo/Stripe continue to own field state,
+ * shipping calculation, wallet eligibility, payment fields, and submission. */
+
+.dtb-woo-native-checkout .dtb-checkout-account-contact,
+.dtb-woo-native-checkout .has-dtb-account-contact .dtb-checkout-account-contact {
+	display: none !important;
+}
+
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section],
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-shipping [data-dtb-profile-address-section] {
+	display: block !important;
+	position: static !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	transform: none !important;
+	pointer-events: auto !important;
+}
+
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] {
+	margin-top: 14px !important;
+	padding-top: 0 !important;
+	border-top: 0 !important;
+}
+
+/* The Contact step reuses the canonical Woo customer controls for name/phone,
+ * while address-only controls stay reserved for Shipping. No values are copied. */
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-shipping-field] {
+	display: none !important;
+}
+
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] > .wc-block-components-checkout-step__heading,
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] .wc-block-components-checkout-step__heading,
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] > h2,
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] > h3 {
+	display: none !important;
+}
+
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] .wc-block-components-address-card,
+.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] .wc-block-components-address-card-wrapper {
+	display: none !important;
+}
+
+.dtb-woo-native-checkout.logged-in [data-dtb-profile-contact-section],
+.dtb-woo-native-checkout.logged-in [data-dtb-profile-address-section] {
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.dtb-woo-native-checkout.logged-in [data-dtb-profile-address-section] input:not([type="checkbox"]):not([type="radio"]),
+.dtb-woo-native-checkout.logged-in [data-dtb-profile-address-section] select,
+.dtb-woo-native-checkout.logged-in [data-dtb-profile-contact-section] input:not([type="checkbox"]):not([type="radio"]),
+.dtb-woo-native-checkout.logged-in [data-dtb-profile-contact-section] select {
+	box-sizing: border-box;
+	max-width: 100%;
+	font-size: 16px;
+}
+
+/* Express checkout: provider-owned wallet controls remain untouched internally;
+ * DTB supplies a compact, balanced surface and sizing around those controls. */
+.dtb-woo-native-checkout .wc-block-components-express-payment__content {
+	box-sizing: border-box;
+	max-width: 100%;
+	min-width: 0;
+	border: 1px solid #dbe3ee !important;
+	border-radius: 20px !important;
+	background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%) !important;
+	box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055) !important;
+}
+
+.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons {
+	box-sizing: border-box;
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+}
+
+.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li {
+	box-sizing: border-box;
+	min-width: 0 !important;
+	margin: 0 !important;
+	padding: 3px !important;
+	overflow: hidden;
+	border: 1px solid #d7dee9;
+	border-radius: 16px;
+	background: #ffffff;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li > div,
+.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li iframe {
+	box-sizing: border-box;
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 0 !important;
+	border-radius: 13px !important;
+}
+
+@media (max-width: 767px) {
+	.dtb-woo-native-checkout .wc-block-components-express-payment__content {
+		padding: 14px !important;
+		border-radius: 18px !important;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons {
+		display: grid !important;
+		grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)) !important;
+		gap: 10px !important;
+		align-items: stretch !important;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li,
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li > div,
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li iframe {
+		min-height: 54px !important;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li {
+		display: flex !important;
+		align-items: stretch !important;
+		border-radius: 15px;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li > div {
+		flex: 1 1 auto;
+		display: flex;
+		align-items: stretch;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons > li iframe {
+		height: 54px !important;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment__title-container {
+		margin-bottom: 12px !important;
+	}
+
+	.dtb-woo-native-checkout .wc-block-components-express-payment,
+	.dtb-woo-native-checkout .wp-block-woocommerce-checkout-express-payment-block {
+		box-sizing: border-box;
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+		overflow: visible !important;
+	}
+
+	.dtb-woo-native-checkout.logged-in.dtb-checkout-step-contact [data-dtb-profile-address-section] {
+		margin-top: 10px !important;
+	}
+
+	.dtb-woo-native-checkout.logged-in [data-dtb-profile-contact-section],
+	.dtb-woo-native-checkout.logged-in [data-dtb-profile-address-section],
+	.dtb-woo-native-checkout.logged-in [data-dtb-profile-address-section] .wc-block-components-address-form,
+	.dtb-woo-native-checkout.logged-in [data-dtb-profile-address-section] .wc-block-components-checkout-step__container {
+		width: 100% !important;
+		max-width: 100% !important;
+		min-width: 0 !important;
+	}
+}
+
+@media (max-width: 340px) {
+	.dtb-woo-native-checkout .wc-block-components-express-payment__event-buttons {
+		grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)) !important;
+		gap: 8px !important;
+	}
+}
