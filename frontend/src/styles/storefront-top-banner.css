@@ -1,6 +1,26 @@
+.storefront-header-stack {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1200;
+  width: 100%;
+}
+
+/* On the homepage the utility bar and primary header are one fixed chrome stack.
+   The global header remains the authoritative header surface; only its positioning
+   is delegated to the parent stack so the banner never floats below it. */
+.storefront-header-stack > .site-header {
+  position: relative !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 100%;
+}
+
 .storefront-top-banner {
   position: relative;
-  z-index: 1100;
+  z-index: 1;
   width: 100%;
   min-height: 30px;
   /* Exact static chrome/silver palette used by the homepage "The New Standard in Drywall" title. */
