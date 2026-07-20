@@ -46,7 +46,7 @@ Contains shipping address, billing relationship/address, delivery/shipping metho
 
 The final page-level step is a review/payment-launch surface. The canonical WooCommerce sidebar Order Summary remains the only source for items, discounts, shipping, taxes, and final total. DTB must never copy or recompute those values.
 
-The page-level CTA opens the payment sheet; it does not submit an order or charge the customer.
+The page-level `Continue to payment` CTA opens the payment sheet; it does not submit an order or charge the customer.
 
 ## Payment sheet
 
@@ -57,7 +57,8 @@ When opened on mobile:
 - the existing WooCommerce main checkout column becomes a fixed bottom-sheet surface;
 - a backdrop and lightweight sheet header are added by DTB;
 - the already-mounted official express/payment blocks become interactive inside the sheet;
-- the authoritative WooCommerce Place Order/payment action remains the only order/payment submission control;
+- the authoritative WooCommerce Place Order action remains the only order/payment submission control;
+- the supported WooCommerce Checkout Block `placeOrderButtonLabel` filter changes that authoritative mobile label to `Pay now` without replacing the submit handler;
 - the page behind the sheet becomes inert and body scrolling is locked;
 - closing the sheet restores the Payment summary without destroying checkout or Stripe state.
 
@@ -105,6 +106,10 @@ dtb-commerce/assets/woo-native-checkout-ui.css
   -> existing checkout typography, fields, express-button radius,
      and canonical Order Summary styling
 
+dtb-commerce/assets/woo-native-checkout-block-filters.js
+  -> supported Woo Checkout Block presentation filters only;
+     mobile authoritative Place Order label becomes "Pay now"
+
 dtb-commerce/assets/woo-native-checkout-ui.js
   -> Contact/Shipping/Payment presentation state, duplicate visual summary
      suppression, and payment-sheet open/close/focus/scroll state
@@ -137,7 +142,7 @@ WooCommerce remains final validation authority.
 
 The enhanced Contact/Shipping/Payment + payment-sheet UX applies only at the mobile breakpoint.
 
-On desktop/tablet outside the mobile breakpoint, DTB removes the enhanced step/sheet classes and restores the normal WooCommerce Checkout Block document.
+On desktop/tablet outside the mobile breakpoint, DTB removes the enhanced step/sheet classes and restores the normal WooCommerce Checkout Block document. The `Pay now` filter also returns Woo's default label outside the mobile breakpoint.
 
 The presentation enhancement must fail open: if required Woo runtime selectors are not present after hydration, the native checkout remains usable rather than hiding controls.
 
@@ -154,9 +159,10 @@ Test at minimum:
 7. Exactly one visible canonical Order Summary; values always match WooCommerce totals.
 8. Page behind the open sheet cannot scroll or receive interaction.
 9. Escape/close/back interactions restore focus without destroying checkout state.
-10. Resize mobile -> desktop -> mobile without duplicated controls, fixed overlays, or hidden checkout sections.
-11. Guest and authenticated checkout.
-12. Cart quantity change immediately followed by checkout handoff.
-13. Failed payment followed by retry through WooCommerce order-pay.
-14. Successful staging checkout returns to the staging storefront order-tracking path.
-15. Partial/full refunds retain one QuickBooks projection per Woo refund ID.
+10. Mobile authoritative submit label is `Pay now`; desktop retains Woo's default label; both submit through the same Woo action.
+11. Resize mobile -> desktop -> mobile without duplicated controls, fixed overlays, or hidden checkout sections.
+12. Guest and authenticated checkout.
+13. Cart quantity change immediately followed by checkout handoff.
+14. Failed payment followed by retry through WooCommerce order-pay.
+15. Successful staging checkout returns to the staging storefront order-tracking path.
+16. Partial/full refunds retain one QuickBooks projection per Woo refund ID.
