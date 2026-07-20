@@ -1,12 +1,113 @@
 /*
  * Mobile-only compatibility hardening for native WooCommerce Checkout Block.
  *
- * DTB may style the outer checkout surfaces, but the official WooCommerce
- * Stripe gateway retains ownership of payment method rendering, eligibility,
- * iframe contents, validation, tokenization, and processing.
+ * DTB may style outer checkout surfaces, but the official WooCommerce Stripe
+ * gateway retains ownership of payment rendering, eligibility, validation,
+ * tokenization, iframe contents, and processing.
  */
 
 @media (max-width: 767px) {
+  html,
+  body.dtb-official-stripe-checkout {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  body.dtb-official-stripe-checkout {
+    min-height: 100dvh;
+    overscroll-behavior-y: auto;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-native-woocommerce-main,
+  body.dtb-official-stripe-checkout .wc-block-checkout,
+  body.dtb-official-stripe-checkout .wc-block-components-sidebar-layout,
+  body.dtb-official-stripe-checkout .wc-block-components-main,
+  body.dtb-official-stripe-checkout .wc-block-components-sidebar {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: clip;
+  }
+
+  /* Ordinary inactive steps leave layout flow. Stripe surfaces use the fixed mounted contract below. */
+  body.dtb-mobile-checkout-enhanced [data-dtb-checkout-step].is-dtb-checkout-step-inactive:not([data-dtb-payment-sheet-owned]) {
+    display: none !important;
+  }
+
+  body.dtb-mobile-checkout-enhanced [data-dtb-payment-sheet-owned].is-dtb-payment-sheet-closed {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transform: translate3d(-140vw, 0, 0) !important;
+    contain: layout paint style;
+  }
+
+  /* Keep all customer-editable controls at 16px to prevent iOS focus auto-zoom. */
+  body.dtb-official-stripe-checkout input,
+  body.dtb-official-stripe-checkout select,
+  body.dtb-official-stripe-checkout textarea,
+  body.dtb-official-stripe-checkout .wc-block-components-text-input input,
+  body.dtb-official-stripe-checkout .wc-block-components-combobox .components-combobox-control__input {
+    max-width: 100%;
+    font-size: 16px !important;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-checkout-step,
+  body.dtb-official-stripe-checkout .wc-block-checkout__contact-fields,
+  body.dtb-official-stripe-checkout .wc-block-checkout__shipping-fields,
+  body.dtb-official-stripe-checkout .wc-block-checkout__billing-fields,
+  body.dtb-official-stripe-checkout .wc-block-checkout__shipping-option,
+  body.dtb-official-stripe-checkout .wc-block-checkout__shipping-method {
+    width: 100%;
+    min-width: 0;
+    margin-inline: 0;
+  }
+
+  /* Hydrated Woo wrappers must remain visible in their owning Contact/Shipping step. */
+  body.dtb-checkout-step-contact .wp-block-woocommerce-checkout-contact-information-block,
+  body.dtb-checkout-step-contact .wc-block-checkout__contact-fields,
+  body.dtb-checkout-step-shipping .wp-block-woocommerce-checkout-shipping-address-block,
+  body.dtb-checkout-step-shipping .wc-block-checkout__shipping-fields,
+  body.dtb-checkout-step-shipping .wp-block-woocommerce-checkout-billing-address-block,
+  body.dtb-checkout-step-shipping .wc-block-checkout__billing-fields,
+  body.dtb-checkout-step-shipping .wp-block-woocommerce-checkout-shipping-method-block,
+  body.dtb-checkout-step-shipping .wp-block-woocommerce-checkout-shipping-methods-block,
+  body.dtb-checkout-step-shipping .wc-block-checkout__shipping-option,
+  body.dtb-checkout-step-shipping .wc-block-checkout__shipping-method {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  body.dtb-checkout-step-shipping .wp-block-woocommerce-checkout-shipping-method-block,
+  body.dtb-checkout-step-shipping .wp-block-woocommerce-checkout-shipping-methods-block,
+  body.dtb-checkout-step-shipping .wc-block-checkout__shipping-option,
+  body.dtb-checkout-step-shipping .wc-block-checkout__shipping-method {
+    margin-top: 24px !important;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-radio-control__option {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    background: #fff;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-radio-control__option-checked {
+    border-color: #3159df;
+    background: #f7f9ff;
+    box-shadow: 0 0 0 1px #3159df;
+  }
+
   /* Never clip or consume gestures around Stripe's embedded payment UI. */
   body.dtb-official-stripe-checkout .wc-block-checkout__payment-method,
   body.dtb-official-stripe-checkout .wc-block-components-payment-methods,
@@ -29,8 +130,30 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  body.dtb-official-stripe-checkout .wc-block-components-payment-method-content {
-    border-radius: 12px;
+  /* Remove the heavy nested square frame while preserving provider-owned controls. */
+  body.dtb-payment-sheet-open .wc-block-checkout__payment-method,
+  body.dtb-payment-sheet-open .wp-block-woocommerce-checkout-payment-block,
+  body.dtb-payment-sheet-open .wc-block-components-payment-methods,
+  body.dtb-payment-sheet-open .wc-block-components-payment-method-content,
+  body.dtb-payment-sheet-open .wc-block-components-radio-control-accordion-option,
+  body.dtb-payment-sheet-open .wc-block-components-radio-control-accordion-content {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body.dtb-payment-sheet-open .wp-block-woocommerce-checkout-payment-block,
+  body.dtb-payment-sheet-open .wc-block-checkout__payment-method {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.dtb-payment-sheet-open .wc-block-components-payment-method-label,
+  body.dtb-payment-sheet-open .wc-block-components-radio-control__option,
+  body.dtb-payment-sheet-open .wc-stripe-upe-element,
+  body.dtb-payment-sheet-open .StripeElement {
+    border-radius: 14px !important;
   }
 
   .dtb-mobile-checkout-progress__button:disabled {
@@ -42,8 +165,13 @@
     cursor: pointer;
   }
 
+  .dtb-mobile-checkout-actions__back[hidden] + .dtb-mobile-checkout-actions__next {
+    grid-column: 1 / -1;
+  }
+
   body.dtb-payment-sheet-open .wc-block-components-main,
   body.dtb-payment-sheet-open .wc-block-checkout__main {
+    overscroll-behavior-y: contain;
     touch-action: pan-y;
     scrollbar-width: thin;
     scrollbar-color: #d0d5dd transparent;
