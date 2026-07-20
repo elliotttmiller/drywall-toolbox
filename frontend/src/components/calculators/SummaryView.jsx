@@ -5,6 +5,7 @@ import CalculatorReport from './report/CalculatorReport'
 import { buildCalculatorReport, reportFilename } from './report/calculatorReportModel'
 
 const EMPTY_PROJECT = { jobName: '', jobAddress: '', contractorName: '', estimatorName: '', notes: '' }
+const PRINTING_CLASS = 'dtb-calculator-report-printing'
 
 export default function SummaryView({ data, onProjectUpdate }) {
   const [projectDraft, setProjectDraft] = useState({ ...EMPTY_PROJECT, ...(data.project || {}) })
@@ -35,14 +36,16 @@ export default function SummaryView({ data, onProjectUpdate }) {
     const previousTitle = document.title
     const printTitle = reportFilename(report).replace(/\.pdf$/i, '')
     let restored = false
-    const restoreTitle = () => {
+    const restorePrintState = () => {
       if (restored) return
       restored = true
       document.title = previousTitle
+      document.body.classList.remove(PRINTING_CLASS)
     }
     document.title = printTitle
-    window.addEventListener('afterprint', restoreTitle, { once: true })
-    window.setTimeout(restoreTitle, 60000)
+    document.body.classList.add(PRINTING_CLASS)
+    window.addEventListener('afterprint', restorePrintState, { once: true })
+    window.setTimeout(restorePrintState, 60000)
     window.print()
   }
 
