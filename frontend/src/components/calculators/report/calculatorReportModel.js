@@ -58,6 +58,21 @@ function detail(label, value) {
   return { label, value: hasValue(value) ? String(value) : EMPTY_VALUE }
 }
 
+function group(key, title, rows) {
+  return { key, title, rows }
+}
+
+function makeSection({ key, eyebrow, title, primaryResult, groups }) {
+  return {
+    key,
+    eyebrow,
+    title,
+    primary: primaryResult,
+    groups,
+    details: groups.flatMap((item) => item.rows),
+  }
+}
+
 /**
  * Canonical presentation model for the Summary tab and printable/PDF report.
  * Calculator-specific field mapping belongs here so output surfaces cannot drift.
@@ -74,7 +89,7 @@ export function buildCalculatorReport(data = {}, generatedAt = new Date()) {
     : null
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedAt: generatedAt.toISOString(),
     generatedDate: generatedDate.iso,
     generatedDateLabel: generatedDate.label,
@@ -93,74 +108,104 @@ export function buildCalculatorReport(data = {}, generatedAt = new Date()) {
       { key: 'screws', label: 'Drywall Screws', quantity: numberValue(screws.boxes, 0), unit: 'boxes' },
     ],
     sections: [
-      {
-        key: 'sheets', eyebrow: 'Board takeoff', title: 'Drywall Sheets',
-        primary: primary('Recommended quantity', sheets.sheets, 'sheets'),
-        details: [
-          detail('Sheet size', SHEET_SIZE_LABELS[sheets.sheetSize] || EMPTY_VALUE),
-          detail('Hang direction', HANG_DIRECTION_LABELS[sheets.hangDir] || EMPTY_VALUE),
-          detail('Wall count', numberValue(sheets.numWalls, 0)),
-          detail('Ceiling height', valueWithUnit(sheets.ceilHeight, 'ft')),
-          detail('Ceiling included', hasValue(sheets.inclCeiling) ? (sheets.inclCeiling ? 'Yes' : 'No') : EMPTY_VALUE),
-          detail('Wall area', valueWithUnit(sheets.wallArea, 'sq ft', 0)),
-          detail('Ceiling area', valueWithUnit(sheets.ceilArea, 'sq ft', 0)),
-          detail('Opening deductions', valueWithUnit(openingDeductions, 'sq ft', 0)),
-          detail('Net board area', valueWithUnit(sheets.net, 'sq ft', 0)),
-          detail('Base sheets', numberValue(sheets.baseSheets, 0)),
-          detail('Applied waste factor', percentage(sheets.wastePct)),
-          detail('Layout waste indicator', percentage(sheets.dynamicWaste)),
-          detail('Total joint footage', valueWithUnit(sheets.totalJointLinearFeet, 'lf', 0)),
+      makeSection({
+        key: 'sheets',
+        eyebrow: 'Board takeoff',
+        title: 'Drywall Sheets',
+        primaryResult: primary('Recommended quantity', sheets.sheets, 'sheets'),
+        groups: [
+          group('inputs', 'Project inputs', [
+            detail('Sheet size', SHEET_SIZE_LABELS[sheets.sheetSize] || EMPTY_VALUE),
+            detail('Hang direction', HANG_DIRECTION_LABELS[sheets.hangDir] || EMPTY_VALUE),
+            detail('Wall count', numberValue(sheets.numWalls, 0)),
+            detail('Ceiling height', valueWithUnit(sheets.ceilHeight, 'ft')),
+            detail('Ceiling included', hasValue(sheets.inclCeiling) ? (sheets.inclCeiling ? 'Yes' : 'No') : EMPTY_VALUE),
+            detail('Applied waste factor', percentage(sheets.wastePct)),
+          ]),
+          group('results', 'Calculated takeoff', [
+            detail('Wall area', valueWithUnit(sheets.wallArea, 'sq ft', 0)),
+            detail('Ceiling area', valueWithUnit(sheets.ceilArea, 'sq ft', 0)),
+            detail('Opening deductions', valueWithUnit(openingDeductions, 'sq ft', 0)),
+            detail('Net board area', valueWithUnit(sheets.net, 'sq ft', 0)),
+            detail('Base sheets', numberValue(sheets.baseSheets, 0)),
+            detail('Layout waste indicator', percentage(sheets.dynamicWaste)),
+            detail('Total joint footage', valueWithUnit(sheets.totalJointLinearFeet, 'lf', 0)),
+          ]),
         ],
-      },
-      {
-        key: 'mud', eyebrow: 'Finishing material', title: 'Joint Compound',
-        primary: primary('5-gallon buckets', mud.buckets5gal, 'buckets'),
-        details: [
-          detail('Calculated area', valueWithUnit(mud.area, 'sq ft', 0)),
-          detail('Finish level', hasValue(mud.finishLevel) ? `Level ${mud.finishLevel}` : EMPTY_VALUE),
-          detail('Compound type', COMPOUND_TYPE_LABELS[mud.compoundType] || safeText(mud.compoundType)),
-          detail('Coat count', numberValue(mud.coats, 0)),
-          detail('Total compound', valueWithUnit(mud.totalGallons, 'gal')),
-          detail('1-gallon equivalent', valueWithUnit(mud.buckets1gal, 'buckets', 0)),
-          detail('Source', mud.syncedFromSheets ? 'Synced from sheet net area' : 'Manual calculator area'),
+      }),
+      makeSection({
+        key: 'mud',
+        eyebrow: 'Finishing material',
+        title: 'Joint Compound',
+        primaryResult: primary('5-gallon buckets', mud.buckets5gal, 'buckets'),
+        groups: [
+          group('inputs', 'Finish specification', [
+            detail('Calculated area', valueWithUnit(mud.area, 'sq ft', 0)),
+            detail('Finish level', hasValue(mud.finishLevel) ? `Level ${mud.finishLevel}` : EMPTY_VALUE),
+            detail('Compound type', COMPOUND_TYPE_LABELS[mud.compoundType] || safeText(mud.compoundType)),
+            detail('Coat count', numberValue(mud.coats, 0)),
+          ]),
+          group('results', 'Material requirement', [
+            detail('Total compound', valueWithUnit(mud.totalGallons, 'gal')),
+            detail('1-gallon equivalent', valueWithUnit(mud.buckets1gal, 'buckets', 0)),
+            detail('Calculation source', mud.syncedFromSheets ? 'Synced from sheet net area' : 'Manual calculator area'),
+          ]),
         ],
-      },
-      {
-        key: 'tape', eyebrow: 'Joint treatment', title: 'Joint Tape',
-        primary: primary('Recommended quantity', tape.rolls, 'rolls'),
-        details: [
-          detail('Tape type', TAPE_TYPE_LABELS[tape.tapeType] || safeText(tape.tapeType)),
-          detail('Roll size', valueWithUnit(tape.rollSize, 'ft', 0)),
-          detail('Joint footage', valueWithUnit(tape.seamFeet, 'ft', 0)),
-          detail('Corner footage', valueWithUnit(tape.cornerFeet, 'ft', 0)),
-          detail('Total tape', valueWithUnit(tape.totalFeet, 'ft', 0)),
-          detail('Source', tape.syncedFromSheets ? 'Layout-derived joint footage' : 'Manual area estimate'),
+      }),
+      makeSection({
+        key: 'tape',
+        eyebrow: 'Joint treatment',
+        title: 'Joint Tape',
+        primaryResult: primary('Recommended quantity', tape.rolls, 'rolls'),
+        groups: [
+          group('inputs', 'Tape specification', [
+            detail('Tape type', TAPE_TYPE_LABELS[tape.tapeType] || safeText(tape.tapeType)),
+            detail('Roll size', valueWithUnit(tape.rollSize, 'ft', 0)),
+            detail('Calculation source', tape.syncedFromSheets ? 'Layout-derived joint footage' : 'Manual area estimate'),
+          ]),
+          group('results', 'Coverage requirement', [
+            detail('Joint footage', valueWithUnit(tape.seamFeet, 'ft', 0)),
+            detail('Corner footage', valueWithUnit(tape.cornerFeet, 'ft', 0)),
+            detail('Total tape', valueWithUnit(tape.totalFeet, 'ft', 0)),
+          ]),
         ],
-      },
-      {
-        key: 'bead', eyebrow: 'Outside corners', title: 'Corner Bead',
-        primary: primary('Recommended quantity', bead.sections, 'sections'),
-        details: [
-          detail('Bead type', BEAD_TYPE_LABELS[bead.beadType] || safeText(bead.beadType)),
-          detail('Stock length', valueWithUnit(bead.stockLength, 'ft', 0)),
-          detail('Straight corners', valueWithUnit(bead.standardFeet, 'ft', 0)),
-          detail('Arch / flexible bead', valueWithUnit(bead.archFeet, 'ft', 0)),
-          detail('Total bead', valueWithUnit(bead.totalFeet, 'ft', 0)),
+      }),
+      makeSection({
+        key: 'bead',
+        eyebrow: 'Outside corners',
+        title: 'Corner Bead',
+        primaryResult: primary('Recommended quantity', bead.sections, 'sections'),
+        groups: [
+          group('inputs', 'Bead specification', [
+            detail('Bead type', BEAD_TYPE_LABELS[bead.beadType] || safeText(bead.beadType)),
+            detail('Stock length', valueWithUnit(bead.stockLength, 'ft', 0)),
+          ]),
+          group('results', 'Linear requirement', [
+            detail('Straight corners', valueWithUnit(bead.standardFeet, 'ft', 0)),
+            detail('Arch / flexible bead', valueWithUnit(bead.archFeet, 'ft', 0)),
+            detail('Total bead', valueWithUnit(bead.totalFeet, 'ft', 0)),
+          ]),
         ],
-      },
-      {
-        key: 'screws', eyebrow: 'Fasteners', title: 'Drywall Screws',
-        primary: primary('Recommended quantity', screws.boxes, 'boxes'),
-        details: [
-          detail('Screw length', safeText(screws.screwLength)),
-          detail('Application', APPLICATION_LABELS[screws.application] || safeText(screws.application)),
-          detail('Sheets used', numberValue(screws.sheetsUsed, 0)),
-          detail('Screws per sheet', numberValue(screws.perSheet, 0)),
-          detail('Total screws', numberValue(screws.totalScrews, 0)),
-          detail('Box size', valueWithUnit(screws.boxSize, 'screws', 0)),
-          detail('Source', screws.syncedFromSheets ? 'Synced from sheet quantity' : 'Manual sheet quantity'),
+      }),
+      makeSection({
+        key: 'screws',
+        eyebrow: 'Fasteners',
+        title: 'Drywall Screws',
+        primaryResult: primary('Recommended quantity', screws.boxes, 'boxes'),
+        groups: [
+          group('inputs', 'Fastener specification', [
+            detail('Screw length', safeText(screws.screwLength)),
+            detail('Application', APPLICATION_LABELS[screws.application] || safeText(screws.application)),
+            detail('Sheets used', numberValue(screws.sheetsUsed, 0)),
+            detail('Box size', valueWithUnit(screws.boxSize, 'screws', 0)),
+          ]),
+          group('results', 'Calculated quantity', [
+            detail('Screws per sheet', numberValue(screws.perSheet, 0)),
+            detail('Total screws', numberValue(screws.totalScrews, 0)),
+            detail('Calculation source', screws.syncedFromSheets ? 'Synced from sheet quantity' : 'Manual sheet quantity'),
+          ]),
         ],
-      },
+      }),
     ],
     disclaimer: 'Material quantities are planning estimates based on the dimensions, selections, and waste factors entered in the Drywall Toolbox calculators. Verify field measurements, project specifications, manufacturer requirements, and applicable local code before purchasing or installing materials.',
   }
