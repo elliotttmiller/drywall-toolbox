@@ -4,7 +4,7 @@ Last verified against source: 2026-07-20.
 
 ## Ownership
 
-Drywall Toolbox no longer implements a React-owned checkout intake/finalization pipeline. React owns cart UX and the full-document checkout handoff only.
+Drywall Toolbox does not own payment processing. React owns cart UX and the full-document checkout handoff only.
 
 The production checkout authority is:
 
@@ -18,84 +18,136 @@ React cart / cart drawer
   -> DTB event ledger + dtb-orders queue
 ```
 
-WooCommerce owns cart/session continuity, customer/address validation, shipping/tax/totals, checkout submission, and order creation. The official WooCommerce Stripe Payment Gateway owns embedded payment fields, eligible express wallets, Link, tokenization, 3DS/SCA, and webhook-backed payment reconciliation.
+WooCommerce owns cart/session continuity, customer/address validation, shipping/tax/totals, checkout submission, and order creation. The official WooCommerce Stripe Payment Gateway owns embedded payment fields, payment-method eligibility, express methods, Link, tokenization, 3DS/SCA, and webhook-backed reconciliation.
 
-## Mobile mechanical requirements
+## Mobile customer flow
 
-The UI layer must preserve these invariants:
+The mobile presentation is:
 
-- the React cart and drawer use the same WooCommerce Store API cookie session as `/checkout/` on the same origin;
-- no React component renders card fields, wallet buttons, Stripe Elements, payment iframes, PaymentIntents, or Stripe Checkout Sessions;
-- pending cart quantity/remove mutations settle before the drawer transfers the document to checkout;
-- `/checkout/` is a normal WordPress/WooCommerce document and contains the assigned Checkout Block;
-- provider-owned payment controls remain mounted, keyboard accessible when active, responsive, and Stripe-owned;
-- checkout mechanics do not depend on a custom full-document renderer, cloned controls, custom payment validation, or DTB submission logic;
-- checkout errors remain visible and WooCommerce retains final validation authority;
-- order creation occurs once through WooCommerce checkout;
-- downstream Veeqo/QuickBooks/notification/tracking work waits for DTB's captured-payment gate.
+```text
+Contact
+  -> Shipping
+  -> Payment summary
+  -> Continue to payment
+  -> same-page bottom payment sheet
+  -> authoritative WooCommerce payment submission
+  -> Woo order-received / DTB order tracking
+```
 
-## Express checkout
+### Contact
 
-The official Stripe extension supports eligible express checkout methods in WooCommerce-supported contexts. Drywall Toolbox approves the native WooCommerce Checkout Block as the production express-payment surface.
+Contains contact/account fields only. Payment controls are not presented as a general checkout surface in this step.
 
-React catalog/product quick-view, full cart, and mini-cart must not fabricate or iframe provider wallet controls. Native Woo purchasing surfaces and checkout allow the official Stripe extension to render only eligible provider-owned controls.
+### Shipping
 
-## Presentation layer
+Contains shipping address, billing relationship/address, delivery/shipping methods, and pickup controls when available.
 
-Checkout branding is isolated from payment/order mechanics:
+### Payment
+
+The final page-level step is a review/payment-launch surface. The canonical WooCommerce sidebar Order Summary remains the only source for items, discounts, shipping, taxes, and final total. DTB must never copy or recompute those values.
+
+The page-level CTA opens the payment sheet; it does not submit an order or charge the customer.
+
+## Payment sheet
+
+The payment sheet is presentation state only. It is not a new checkout, payment gateway, PaymentIntent flow, or order lifecycle.
+
+When opened on mobile:
+
+- the existing WooCommerce main checkout column becomes a fixed bottom-sheet surface;
+- a backdrop and lightweight sheet header are added by DTB;
+- the already-mounted official express/payment blocks become interactive inside the sheet;
+- the authoritative WooCommerce Place Order/payment action remains the only order/payment submission control;
+- the page behind the sheet becomes inert and body scrolling is locked;
+- closing the sheet restores the Payment summary without destroying checkout or Stripe state.
+
+DTB must not reparent WooCommerce React-controlled nodes, clone Stripe iframes, create a second Payment Element, create PaymentIntents, create Checkout Sessions, fabricate wallet buttons, or implement a second submit/payment state machine.
+
+## Stripe-safe mounting contract
+
+The official Stripe runtime may initialize before the customer opens the payment sheet. Therefore provider-owned payment and express blocks remain mounted at measurable mobile width while visually inactive.
+
+Do not use `display:none` for inactive Stripe/Woo payment surfaces. Do not mount Stripe only after opening the sheet.
+
+The presentation layer may move the existing Woo checkout main column into a fixed visual bottom-sheet position with CSS, but it must not detach/reparent provider-owned controls from the WooCommerce React tree.
+
+## Official Stripe Optimized Checkout Suite
+
+The official WooCommerce Stripe extension supports Optimized Checkout Suite and provides merchant-configured payment-method layouts including Accordion and Tabs.
+
+For the DTB mobile sheet, Accordion is the preferred operator configuration because it provides a vertically navigable payment-method experience suitable for narrow mobile viewports and avoids a cramped horizontal tab selector. This is a WooCommerce/Stripe gateway setting, not a DTB-created payment-method UI.
+
+Required operator configuration should be verified in:
+
+```text
+WooCommerce -> Settings -> Payments -> Stripe -> Settings -> Advanced Settings
+```
+
+Verify:
+
+- official WooCommerce Stripe extension is current and connected;
+- Optimized Checkout Suite is enabled when eligible;
+- settings sync is healthy;
+- Layout is configured to Accordion for the intended mobile experience;
+- only desired payment methods are enabled;
+- wallet and local-payment eligibility remain provider controlled.
+
+## Presentation assets
 
 ```text
 dtb-commerce/assets/woo-native-checkout.css
-  -> compatibility/base layout
+  -> compatibility/base checkout layout
 
 dtb-commerce/assets/woo-native-checkout-steps.js
-  -> mechanical boot reveal only
+  -> mechanical boot/reveal only
 
 dtb-commerce/assets/woo-native-checkout-ui.css
-  -> typography, spacing, responsive surfaces, express-button radius,
-     order-summary presentation, and mobile step presentation
-
-dtb-commerce/assets/woo-native-checkout-mobile-fixes.css
-  -> mobile gesture/overflow hardening around provider-owned payment UI
-     and final step-navigation polish
+  -> typography, Contact/Shipping/Payment presentation,
+     canonical Order Summary styling, payment-sheet layout/animation
 
 dtb-commerce/assets/woo-native-checkout-ui.js
-  -> presentation-only mobile Details / Payment / Review navigation,
-     runtime Checkout Block selector fallbacks, and duplicate visual
-     order-summary suppression
+  -> presentation-only step navigation, duplicate visual summary suppression,
+     payment-sheet open/close/focus/scroll state
+
+dtb-commerce/assets/woo-native-checkout-mobile-fixes.css
+  -> provider-safe mobile overflow/touch compatibility only
 ```
 
-The mobile step enhancement never creates, clones, moves, submits, or validates WooCommerce/Stripe controls. Inactive sections remain mounted at a measurable width off-canvas so the official Stripe Payment Element and wallet surfaces can initialize normally. WooCommerce remains the final validation and submission authority.
+## Validation/error behavior
 
-Presentation discovery must support both WordPress block wrapper classes and WooCommerce's hydrated `wc-block-checkout__*` runtime classes. Missing presentation selectors must fail open: checkout sections remain native/visible rather than becoming a dependency of order or payment mechanics.
+WooCommerce remains final validation authority.
 
-A bounded `MutationObserver` is permitted only to wait for the initial hydrated Checkout Block before attaching presentation classes; it disconnects immediately after successful mount or timeout. The mechanical checkout path must remain usable if the presentation enhancement fails to initialize.
+- DTB step buttons only change presentation state.
+- If Woo focuses an invalid Contact or Shipping control, the presentation layer returns to that owning step.
+- Payment-specific errors remain in the open payment sheet.
+- Closing/reopening the sheet must not remount Stripe unnecessarily.
+- 3DS/SCA temporarily hands control to Stripe and must return to the same Woo payment state on failure/cancel.
+- Successful payment follows the authoritative WooCommerce order-received flow and existing DTB storefront tracking redirect.
 
-The canonical order summary is the WooCommerce sidebar summary. A repeated responsive/fill summary may be visually suppressed, but totals/items must never be copied or recomputed by DTB.
+## Responsive behavior
 
-## Mobile UX contract
+The enhanced Contact/Shipping/Payment + payment-sheet UX applies only at the mobile breakpoint.
 
-The responsive presentation uses three customer-facing steps:
+On desktop/tablet outside the mobile breakpoint, DTB removes the enhanced step/sheet classes and restores the normal WooCommerce Checkout Block document.
 
-1. **Details** — express checkout, contact, addresses, and shipping/delivery selection.
-2. **Payment** — WooCommerce payment section and optional order note; Stripe remains provider-owned.
-3. **Review** — the single canonical order summary, terms, and WooCommerce-owned Place Order action.
-
-The progress/navigation controls only change presentation. Future steps remain orientation-only until reached, completed/visited steps can be revisited, and native Woo validation may focus the customer back into the owning visible step. DTB does not bypass Woo validation, mutate checkout data, or submit the order.
+The presentation enhancement must fail open: if required Woo runtime selectors are not present after hydration, the native checkout remains usable rather than hiding controls.
 
 ## Verification
 
 Test at minimum:
 
-1. Mobile Safari/iPhone with and without an Apple Pay-eligible wallet.
+1. Mobile Safari/iPhone with and without Apple Pay eligibility.
 2. Chrome/Android with and without Google Pay eligibility.
-3. Card payment success, decline, and 3DS challenge.
-4. Step forward/back navigation without losing address, shipping, payment, or Stripe state.
-5. Every eligible provider payment method remains reachable by the provider-owned mobile selector/navigation.
-6. Resize mobile -> desktop -> mobile without duplicated controls or hidden checkout sections.
-7. Exactly one visible Order Summary on mobile and desktop; values must match WooCommerce totals.
-8. Cart quantity change immediately followed by checkout handoff.
-9. Guest and authenticated checkout.
-10. Back/forward navigation and checkout refresh without cart loss or duplicate orders.
-11. Failed payment followed by retry through WooCommerce order-pay.
-12. Partial and full refunds with one QuickBooks refund projection per Woo refund ID.
+3. Contact -> Shipping -> Payment -> payment sheet -> close -> reopen.
+4. Address, shipping method, selected payment method, and provider state remain intact across navigation.
+5. Accordion payment methods remain vertically reachable and scrollable in the sheet.
+6. Card payment success, decline, and 3DS challenge/cancel/failure.
+7. Exactly one visible canonical Order Summary; values always match WooCommerce totals.
+8. Page behind the open sheet cannot scroll or receive interaction.
+9. Escape/close/back interactions restore focus without destroying checkout state.
+10. Resize mobile -> desktop -> mobile without duplicated controls, fixed overlays, or hidden checkout sections.
+11. Guest and authenticated checkout.
+12. Cart quantity change immediately followed by checkout handoff.
+13. Failed payment followed by retry through WooCommerce order-pay.
+14. Successful staging checkout returns to the staging storefront order-tracking path.
+15. Partial/full refunds retain one QuickBooks projection per Woo refund ID.
