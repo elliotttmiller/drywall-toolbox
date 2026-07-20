@@ -1,0 +1,33 @@
+/* Structural guard loaded after mobile refinements. Do not turn Woo step wrappers into layout primitives. */
+
+@media (max-width: 767px) {
+  body.dtb-official-stripe-checkout .wc-block-checkout__contact-fields,
+  body.dtb-official-stripe-checkout .wc-block-checkout__shipping-fields,
+  body.dtb-official-stripe-checkout .wc-block-checkout__billing-fields {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-checkout__contact-fields > *,
+  body.dtb-official-stripe-checkout .wc-block-checkout__shipping-fields > *,
+  body.dtb-official-stripe-checkout .wc-block-checkout__billing-fields > * {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-address-form,
+  body.dtb-official-stripe-checkout .wc-block-components-address-form-wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-address-form > *,
+  body.dtb-official-stripe-checkout .wc-block-components-address-form-wrapper > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
