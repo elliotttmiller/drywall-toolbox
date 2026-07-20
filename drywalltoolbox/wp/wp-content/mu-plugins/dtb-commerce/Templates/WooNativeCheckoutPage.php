@@ -10,6 +10,22 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+$dtb_checkout_ui_version = '2026.07.20.1';
+wp_enqueue_style(
+	'dtb-woo-native-checkout-ui',
+	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.css' ),
+	[ 'dtb-woo-native-checkout' ],
+	$dtb_checkout_ui_version
+);
+wp_enqueue_script(
+	'dtb-woo-native-checkout-ui',
+	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.js' ),
+	[ 'dtb-woo-native-checkout-steps' ],
+	$dtb_checkout_ui_version,
+	true
+);
+wp_script_add_data( 'dtb-woo-native-checkout-ui', 'strategy', 'defer' );
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
