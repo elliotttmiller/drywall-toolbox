@@ -1,10 +1,12 @@
 ( function () {
 	'use strict';
 
+	const presentationScriptSrc = document.currentScript?.src || '';
 	const mobileViewport = window.matchMedia( '(max-width: 767px)' );
 	const checkoutRootSelector = '.wc-block-checkout';
 	const uiStylesheetId = 'dtb-woo-native-checkout-ui';
-	const uiVersion = '2026.07.20.1';
+	const uiVersion = '2026.07.20.2';
+	const inactiveStepClass = 'is-dtb-checkout-step-inactive';
 	const stepBodyClasses = [ 'dtb-checkout-step-details', 'dtb-checkout-step-payment', 'dtb-checkout-step-review' ];
 
 	const steps = [
@@ -68,13 +70,12 @@
 				return;
 			}
 
-			const scriptSrc = document.currentScript?.src || '';
-			let href = '/wp-content/mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.css';
-			if ( scriptSrc ) {
+			let href = '/wp/wp-content/mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.css';
+			if ( presentationScriptSrc ) {
 				try {
-					href = new URL( 'woo-native-checkout-ui.css', scriptSrc ).toString();
+					href = new URL( 'woo-native-checkout-ui.css', presentationScriptSrc ).toString();
 				} catch {
-					// The root content URL fallback remains valid on the tracked deployment.
+					// The tracked WordPress content-path fallback remains valid.
 				}
 			}
 
@@ -94,28 +95,40 @@
 		return Array.from( new Set( elements.filter( Boolean ) ) );
 	}
 
+	function topLevelElements( elements ) {
+		return elements.filter( ( candidate ) => ! elements.some( ( parent ) => parent !== candidate && parent.contains( candidate ) ) );
+	}
+
 	function stepElements( stepIndex ) {
 		const checkoutRoot = document.querySelector( checkoutRootSelector );
 		if ( ! checkoutRoot || ! steps[ stepIndex ] ) {
 			return [];
 		}
 
-		return uniqueElements(
+		const candidates = uniqueElements(
 			steps[ stepIndex ].selectors.flatMap( ( selector ) => Array.from( checkoutRoot.querySelectorAll( selector ) ) )
 		).filter( ( node ) => ! node.closest( '.is-dtb-order-summary-duplicate' ) );
+
+		return topLevelElements( candidates );
 	}
 
-	function allStepElements() {
-		return uniqueElements( steps.flatMap( ( step, index ) => stepElements( index ) ) );
+	function stepElementMap() {
+		const map = new Map();
+		steps.forEach( ( step, index ) => {
+			stepElements( index ).forEach( ( node ) => {
+				if ( ! map.has( node ) ) {
+					map.set( node, index );
+				}
+			} );
+		} );
+		return map;
 	}
 
 	function orderSummaryCandidates() {
 		const blockSummaries = Array.from( document.querySelectorAll( '.wp-block-woocommerce-checkout-order-summary-block' ) );
 		const standaloneSummaries = Array.from( document.querySelectorAll( '.wc-block-components-order-summary' ) )
 			.filter( ( node ) => ! node.closest( '.wp-block-woocommerce-checkout-order-summary-block' ) );
-		const candidates = uniqueElements( [ ...blockSummaries, ...standaloneSummaries ] );
-
-		return candidates.filter( ( candidate ) => ! candidates.some( ( parent ) => parent !== candidate && parent.contains( candidate ) ) );
+		return topLevelElements( uniqueElements( [ ...blockSummaries, ...standaloneSummaries ] ) );
 	}
 
 	function markDuplicateOrderSummaries() {
@@ -187,18 +200,16 @@
 	}
 
 	function updateControls() {
-		if ( progress ) {
-			progress.querySelectorAll( '[data-step]' ).forEach( ( button ) => {
-				const index = Number( button.dataset.step );
-				button.classList.toggle( 'is-current', index === activeStep );
-				button.classList.toggle( 'is-complete', index < activeStep );
-				if ( index === activeStep ) {
-					button.setAttribute( 'aria-current', 'step' );
-				} else {
-					button.removeAttribute( 'aria-current' );
-				}
-			} );
-		}
+		progress?.querySelectorAll( '[data-step]' ).forEach( ( button ) => {
+			const index = Number( button.dataset.step );
+			button.classList.toggle( 'is-current', index === activeStep );
+			button.classList.toggle( 'is-complete', index < activeStep );
+			if ( index === activeStep ) {
+				button.setAttribute( 'aria-current', 'step' );
+			} else {
+				button.removeAttribute( 'aria-current' );
+			}
+		} );
 
 		if ( actions ) {
 			const back = actions.querySelector( '.dtb-mobile-checkout-actions__back' );
@@ -215,24 +226,16 @@
 		}
 
 		activeStep = Math.max( 0, Math.min( requestedStep, steps.length - 1 ) );
-		allStepElements().forEach( ( node ) => {
-			let owningStep = -1;
-			steps.some( ( step, index ) => {
-				if ( stepElements( index ).includes( node ) ) {
-					owningStep = index;
-					return true;
-				}
-				return false;
-			} );
-
-			if ( owningStep >= 0 ) {
-				node.dataset.dtbCheckoutStep = steps[ owningStep ].id;
-				node.hidden = owningStep !== activeStep;
-			}
+		stepElementMap().forEach( ( owningStep, node ) => {
+			const inactive = owningStep !== activeStep;
+			node.dataset.dtbCheckoutStep = steps[ owningStep ].id;
+			node.classList.toggle( inactiveStepClass, inactive );
+			node.setAttribute( 'aria-hidden', inactive ? 'true' : 'false' );
 		} );
 
 		document.body.classList.remove( ...stepBodyClasses );
 		document.body.classList.add( `dtb-checkout-step-${ steps[ activeStep ].id }` );
+		markDuplicateOrderSummaries();
 		updateControls();
 
 		if ( shouldScroll && progress ) {
@@ -246,7 +249,8 @@
 	function teardownMobileEnhancement() {
 		document.body.classList.remove( 'dtb-mobile-checkout-enhanced', ...stepBodyClasses );
 		document.querySelectorAll( '[data-dtb-checkout-step]' ).forEach( ( node ) => {
-			node.hidden = false;
+			node.classList.remove( inactiveStepClass );
+			node.removeAttribute( 'aria-hidden' );
 			delete node.dataset.dtbCheckoutStep;
 		} );
 		progress?.remove();
