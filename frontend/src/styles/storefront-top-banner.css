@@ -1,0 +1,99 @@
+.storefront-top-banner {
+  position: relative;
+  z-index: 1100;
+  width: 100%;
+  min-height: 30px;
+  background: linear-gradient(110deg, #bfc8d6 0%, #f8fafc 32%, #d7dde8 58%, #6f7887 100%);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.14);
+  color: #0f172a;
+}
+
+.storefront-top-banner__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  width: min(100%, 1440px);
+  min-height: 30px;
+  margin: 0 auto;
+  padding: 0 24px;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.035em;
+}
+
+.storefront-top-banner__shipping {
+  grid-column: 2;
+  justify-self: center;
+  white-space: nowrap;
+  font-weight: 760;
+}
+
+.storefront-top-banner__phone {
+  grid-column: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  color: inherit;
+  font-weight: 720;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 140ms ease;
+}
+
+.storefront-top-banner__phone:hover,
+.storefront-top-banner__phone:focus-visible {
+  opacity: 0.72;
+}
+
+.storefront-top-banner__phone:focus-visible {
+  outline: 2px solid #0f172a;
+  outline-offset: -3px;
+  border-radius: 4px;
+}
+
+/* Contact support now lives in the utility bar on the homepage instead of
+   occupying a primary desktop-header action slot. */
+.header-contact-icon {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .storefront-top-banner,
+  .storefront-top-banner__inner {
+    min-height: 28px;
+  }
+
+  .storefront-top-banner__inner {
+    padding: 0 12px;
+    font-size: 10.5px;
+    letter-spacing: 0.015em;
+  }
+
+  .storefront-top-banner__phone {
+    min-height: 28px;
+    gap: 4px;
+    font-size: 10.5px;
+  }
+}
+
+@media (max-width: 420px) {
+  .storefront-top-banner__inner {
+    grid-template-columns: 1fr auto 1fr;
+    padding-inline: 8px;
+    font-size: 9.75px;
+    letter-spacing: 0;
+  }
+
+  .storefront-top-banner__phone {
+    gap: 3px;
+    font-size: 9.5px;
+  }
+
+  .storefront-top-banner__phone svg {
+    width: 11px;
+    height: 11px;
+  }
+}
