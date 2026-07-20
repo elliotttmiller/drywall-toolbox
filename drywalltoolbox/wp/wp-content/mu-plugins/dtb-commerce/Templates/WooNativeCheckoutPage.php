@@ -48,6 +48,12 @@ wp_enqueue_style(
 	[ 'dtb-woo-native-checkout-payment-sheet-content' ],
 	$dtb_checkout_ui_version
 );
+wp_enqueue_style(
+	'dtb-woo-native-checkout-mobile-layout-guard',
+	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-mobile-layout-guard.css' ),
+	[ 'dtb-woo-native-checkout-mobile-refinements' ],
+	$dtb_checkout_ui_version
+);
 wp_enqueue_script(
 	'dtb-woo-native-checkout-block-filters',
 	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-block-filters.js' ),
