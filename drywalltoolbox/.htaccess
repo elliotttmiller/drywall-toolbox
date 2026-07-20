@@ -162,7 +162,9 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^staging/2972/checkout/?$ wp/index.php?pagename=checkout [QSA,L]
 
   # Signal Endurance/nginx cache to bypass WordPress admin/auth and customer/session-owned surfaces.
-  <If "%{REQUEST_URI} =~ m#^/(?:wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wordpress_test_cookie|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|dtb_auth)#i">
+  # Match both root aliases and the physical /wp/ core paths so login/admin responses
+  # and Set-Cookie headers are never served from page cache on either URL shape.
+  <If "%{REQUEST_URI} =~ m#^/(?:wp/(?:wp-admin|wp-login\.php)|wp-admin|wp-login\.php|wp-json|dtb|wp-cron\.php|xmlrpc\.php|cart|checkout|account|my-account|dashboard|orders|addresses|rewards|login|register|forgot-password|lost-password|reset-password|logout|wc-api)(?:/|$)#i || %{REQUEST_URI} =~ m#/checkout/order-pay/#i || %{QUERY_STRING} =~ m#(^|&)(?:rest_route=|pay_for_order=true|order-pay=[0-9]+|wc-api=)#i || %{HTTP_COOKIE} =~ m#(?:^|;\s*)(?:wordpress_logged_in_|wordpress_sec_|wordpress_test_cookie|wp-settings-|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_|dtb_auth)#i">
     # Add a separate cache-bypass cookie without replacing WordPress/WooCommerce
     # Set-Cookie headers. `set` could destroy session/auth cookies and `append`
     # can illegally comma-join Set-Cookie values.
@@ -175,14 +177,12 @@ ErrorDocument 511 /errors/511.html
   RewriteRule ^favicon\.ico$ logos/favicon.ico [L]
 
   # WordPress admin/login aliases.
-  # admin-ajax must be internally rewritten before the general wp-admin 302.
-  # Redirecting WooCommerce importer batches changes POST to GET in browsers,
-  # dropping the action, nonce, mapping, file, and current import position.
+  # Preserve request methods for login/admin POSTs. External 302 redirects on
+  # wp-login.php or nested wp-admin actions can convert POST to GET and discard
+  # credentials, nonces, uploads, importer state, or other authenticated payloads.
+  # Only the bare wp-admin landing URL is canonicalized externally.
   RewriteRule ^wp-admin/admin-ajax\.php$ wp/wp-admin/admin-ajax.php [L,QSA]
   RewriteRule ^wp-admin/?$ /wp/wp-admin/ [R=302,L,QSA]
-  RewriteRule ^wp-admin/(.*)$ /wp/wp-admin/$1 [R=302,L,QSA]
-  RewriteRule ^wp-login\.php$ /wp/wp-login.php [R=302,L,QSA]
-  RewriteRule ^wp-admin/?$ wp/wp-admin/ [L,QSA]
   RewriteRule ^wp-admin/(.*)$ wp/wp-admin/$1 [L,QSA]
   RewriteRule ^wp-login\.php$ wp/wp-login.php [L,QSA]
 
