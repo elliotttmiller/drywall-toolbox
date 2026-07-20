@@ -1,0 +1,91 @@
+/*
+ * Mobile-only presentation hardening for native WooCommerce Checkout Block.
+ * Provider payment controls remain mounted and Stripe-owned.
+ */
+
+@media (max-width: 767px) {
+  /* DTB must not clip or consume gestures around Stripe's embedded method UI. */
+  body.dtb-official-stripe-checkout .wc-block-checkout__payment-method,
+  body.dtb-official-stripe-checkout .wc-block-components-payment-methods,
+  body.dtb-official-stripe-checkout .wc-block-components-payment-method-content,
+  body.dtb-official-stripe-checkout .wc-block-components-radio-control-accordion-content,
+  body.dtb-official-stripe-checkout .wc-stripe-upe-element,
+  body.dtb-official-stripe-checkout .StripeElement {
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible !important;
+  }
+
+  body.dtb-official-stripe-checkout .wc-stripe-upe-element,
+  body.dtb-official-stripe-checkout .StripeElement,
+  body.dtb-official-stripe-checkout .wc-stripe-upe-element iframe,
+  body.dtb-official-stripe-checkout .StripeElement iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    touch-action: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-payment-method-content {
+    border-radius: 12px;
+  }
+
+  /* Sequential progress: future steps remain visible as orientation, not links. */
+  .dtb-mobile-checkout-progress__button:disabled {
+    cursor: default;
+    opacity: 0.62;
+  }
+
+  .dtb-mobile-checkout-progress__button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  .dtb-mobile-checkout-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 22;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    margin: 8px -16px -44px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #eaecf0;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 -12px 30px rgba(16, 24, 40, 0.07);
+    backdrop-filter: blur(14px);
+  }
+
+  .dtb-mobile-checkout-actions[hidden] {
+    display: none !important;
+  }
+
+  .dtb-mobile-checkout-actions__back,
+  .dtb-mobile-checkout-actions__next {
+    min-height: 52px;
+    border-radius: 12px;
+    font: 760 14px/1 var(--dtb-ui-font);
+  }
+
+  .dtb-mobile-checkout-actions__back {
+    padding-inline: 18px;
+    border: 1px solid var(--dtb-ui-border-strong);
+    background: #fff;
+    color: var(--dtb-ui-copy);
+  }
+
+  .dtb-mobile-checkout-actions__next {
+    width: 100%;
+    padding-inline: 20px;
+    border: 1px solid var(--dtb-ui-blue);
+    background: var(--dtb-ui-blue);
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(36, 87, 230, 0.18);
+  }
+
+  body.dtb-official-stripe-checkout.dtb-checkout-step-review .wc-block-components-checkout-place-order-button {
+    position: sticky;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 20;
+    width: 100%;
+  }
+}
