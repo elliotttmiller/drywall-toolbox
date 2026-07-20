@@ -1,0 +1,514 @@
+/*
+ * Drywall Toolbox checkout visual refinement layer.
+ *
+ * Presentation only: WooCommerce Checkout Block and the official WooCommerce
+ * Stripe Payment Gateway retain ownership of checkout state, validation,
+ * payment controls, eligibility, totals, order creation, and submission.
+ */
+
+:root {
+  --dtb-ui-font: ui-rounded, "SF Pro Rounded", "Avenir Next", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --dtb-ui-ink: #101828;
+  --dtb-ui-copy: #344054;
+  --dtb-ui-muted: #667085;
+  --dtb-ui-border: #e4e7ec;
+  --dtb-ui-border-strong: #d0d5dd;
+  --dtb-ui-soft: #f8fafc;
+  --dtb-ui-soft-blue: #f5f8ff;
+  --dtb-ui-blue: #2457e6;
+  --dtb-ui-blue-hover: #1d4ed8;
+  --dtb-ui-radius-sm: 10px;
+  --dtb-ui-radius: 14px;
+  --dtb-ui-radius-lg: 18px;
+  --dtb-ui-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
+body.dtb-official-stripe-checkout,
+body.dtb-official-stripe-checkout button,
+body.dtb-official-stripe-checkout input,
+body.dtb-official-stripe-checkout select,
+body.dtb-official-stripe-checkout textarea {
+  font-family: var(--dtb-ui-font);
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+body.dtb-official-stripe-checkout {
+  color: var(--dtb-ui-ink);
+  background: #fff;
+  letter-spacing: -0.008em;
+}
+
+body.dtb-official-stripe-checkout .dtb-checkout-intro h1,
+body.dtb-official-stripe-checkout .wc-block-components-title,
+body.dtb-official-stripe-checkout .wc-block-components-checkout-step__title,
+body.dtb-official-stripe-checkout .wc-block-components-express-payment__title,
+body.dtb-official-stripe-checkout .wc-block-components-order-summary__button-text,
+body.dtb-official-stripe-checkout h2,
+body.dtb-official-stripe-checkout h3 {
+  color: var(--dtb-ui-ink);
+  font-family: var(--dtb-ui-font);
+  font-weight: 760;
+  letter-spacing: -0.028em;
+}
+
+body.dtb-official-stripe-checkout p,
+body.dtb-official-stripe-checkout label,
+body.dtb-official-stripe-checkout .wc-block-components-checkout-step__description,
+body.dtb-official-stripe-checkout .wc-block-components-address-card__address-section,
+body.dtb-official-stripe-checkout .wc-block-components-checkbox__label,
+body.dtb-official-stripe-checkout .wc-block-components-radio-control__label,
+body.dtb-official-stripe-checkout .wc-block-components-radio-control__description {
+  color: var(--dtb-ui-copy);
+  font-family: var(--dtb-ui-font);
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-text-input input,
+body.dtb-official-stripe-checkout .wc-block-components-combobox .components-combobox-control__input,
+body.dtb-official-stripe-checkout .wc-block-components-textarea,
+body.dtb-official-stripe-checkout input[type="text"],
+body.dtb-official-stripe-checkout input[type="email"],
+body.dtb-official-stripe-checkout input[type="tel"],
+body.dtb-official-stripe-checkout select,
+body.dtb-official-stripe-checkout textarea {
+  min-height: 52px;
+  border-color: var(--dtb-ui-border-strong);
+  border-radius: var(--dtb-ui-radius-sm);
+  font-size: 15px;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-address-card {
+  border-color: var(--dtb-ui-border);
+  border-radius: var(--dtb-ui-radius);
+  background: #fff;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-radio-control__option {
+  border-color: var(--dtb-ui-border);
+  border-radius: var(--dtb-ui-radius-sm);
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-radio-control__option-checked {
+  border-color: var(--dtb-ui-blue);
+  background: var(--dtb-ui-soft-blue);
+  box-shadow: 0 0 0 1px var(--dtb-ui-blue);
+}
+
+/* Provider-owned express buttons stay rectangular, with a softer modern radius. */
+body.dtb-official-stripe-checkout .wc-block-components-express-payment__content,
+body.dtb-official-stripe-checkout .wc-block-components-express-payment__event-buttons > li,
+body.dtb-official-stripe-checkout .wc-block-components-express-payment__event-buttons > div,
+body.dtb-official-stripe-checkout .wc-block-components-express-payment__event-buttons button,
+body.dtb-official-stripe-checkout .wc-block-components-express-payment iframe {
+  border-radius: 10px !important;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-express-payment__content {
+  border-color: var(--dtb-ui-border);
+  background: #fff;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-button,
+body.dtb-official-stripe-checkout .wc-block-components-checkout-place-order-button {
+  min-height: 54px;
+  border-radius: 12px;
+  font-family: var(--dtb-ui-font);
+  font-size: 15px;
+  font-weight: 760;
+  letter-spacing: -0.012em;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-checkout-place-order-button {
+  border-color: var(--dtb-ui-blue);
+  background: var(--dtb-ui-blue);
+  box-shadow: 0 10px 24px rgba(36, 87, 230, 0.18);
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-checkout-place-order-button:hover {
+  border-color: var(--dtb-ui-blue-hover);
+  background: var(--dtb-ui-blue-hover);
+}
+
+/* Modern order summary surface. */
+body.dtb-official-stripe-checkout .wp-block-woocommerce-checkout-order-summary-block {
+  overflow: hidden;
+  border: 1px solid var(--dtb-ui-border);
+  border-radius: var(--dtb-ui-radius-lg);
+  background: #fff;
+  box-shadow: var(--dtb-ui-shadow);
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-order-summary-item,
+body.dtb-official-stripe-checkout .wc-block-components-totals-wrapper,
+body.dtb-official-stripe-checkout .wc-block-components-totals-item {
+  border-color: var(--dtb-ui-border);
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-order-summary-item__description,
+body.dtb-official-stripe-checkout .wc-block-components-order-summary-item__individual-prices,
+body.dtb-official-stripe-checkout .wc-block-components-totals-item__label,
+body.dtb-official-stripe-checkout .wc-block-components-totals-item__value {
+  font-family: var(--dtb-ui-font);
+  letter-spacing: -0.012em;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-order-summary-item__description,
+body.dtb-official-stripe-checkout .wc-block-components-totals-item__label {
+  color: var(--dtb-ui-copy);
+  font-weight: 600;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-order-summary-item__total-price,
+body.dtb-official-stripe-checkout .wc-block-components-totals-item__value {
+  color: var(--dtb-ui-ink);
+  font-weight: 720;
+}
+
+body.dtb-official-stripe-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
+body.dtb-official-stripe-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__value {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+/* JS marks only actual repeated top-level summary blocks as duplicates. */
+body.dtb-official-stripe-checkout .is-dtb-order-summary-duplicate {
+  display: none !important;
+}
+
+.dtb-mobile-checkout-progress,
+.dtb-mobile-checkout-actions {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  body.dtb-official-stripe-checkout {
+    background: #fff;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-bottom-color: #eef2f6;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-header__inner {
+    width: calc(100% - 32px);
+    min-height: 62px;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-header__brand img {
+    height: 31px;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-header__secure span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-native-woocommerce-main {
+    width: 100%;
+    padding: 22px 16px 44px;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-intro {
+    margin-bottom: 20px;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-intro__eyebrow {
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-intro h1 {
+    font-size: clamp(27px, 8vw, 34px);
+    font-weight: 790;
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+  }
+
+  body.dtb-official-stripe-checkout .dtb-checkout-intro > p:last-child {
+    max-width: 34rem;
+    margin-top: 9px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-sidebar-layout,
+  body.dtb-official-stripe-checkout .wc-block-components-main,
+  body.dtb-official-stripe-checkout .wc-block-components-sidebar {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-sidebar-layout {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  body.dtb-official-stripe-checkout.dtb-checkout-step-review .wc-block-components-sidebar {
+    order: 0;
+  }
+
+  body.dtb-official-stripe-checkout.dtb-checkout-step-review .wc-block-components-main {
+    order: 1;
+  }
+
+  .dtb-mobile-checkout-progress {
+    position: sticky;
+    top: 62px;
+    z-index: 24;
+    display: block;
+    margin: 0 -16px 22px;
+    padding: 12px 16px 14px;
+    border-top: 1px solid #f2f4f7;
+    border-bottom: 1px solid #eaecf0;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(14px);
+  }
+
+  .dtb-mobile-checkout-progress__track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dtb-mobile-checkout-progress__track::before {
+    position: absolute;
+    top: 15px;
+    left: 16.66%;
+    right: 16.66%;
+    height: 2px;
+    background: #e4e7ec;
+    content: "";
+  }
+
+  .dtb-mobile-checkout-progress__item {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dtb-mobile-checkout-progress__button {
+    display: flex;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--dtb-ui-muted);
+    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .dtb-mobile-checkout-progress__number {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    border: 2px solid #e4e7ec;
+    border-radius: 999px;
+    background: #fff;
+    color: #98a2b3;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .dtb-mobile-checkout-progress__button.is-current,
+  .dtb-mobile-checkout-progress__button.is-complete {
+    color: var(--dtb-ui-ink);
+  }
+
+  .dtb-mobile-checkout-progress__button.is-current .dtb-mobile-checkout-progress__number {
+    border-color: var(--dtb-ui-blue);
+    background: var(--dtb-ui-blue);
+    color: #fff;
+    box-shadow: 0 5px 14px rgba(36, 87, 230, 0.22);
+  }
+
+  .dtb-mobile-checkout-progress__button.is-complete .dtb-mobile-checkout-progress__number {
+    border-color: #b8c8ff;
+    background: var(--dtb-ui-soft-blue);
+    color: var(--dtb-ui-blue);
+  }
+
+  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step] {
+    animation: dtb-checkout-step-in 190ms ease-out both;
+  }
+
+  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step][hidden] {
+    display: none !important;
+  }
+
+  @keyframes dtb-checkout-step-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-checkout-step,
+  body.dtb-official-stripe-checkout .wc-block-components-express-payment,
+  body.dtb-official-stripe-checkout .wc-block-checkout__payment-method {
+    margin-bottom: 22px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-checkout-step__heading {
+    margin-bottom: 12px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-title,
+  body.dtb-official-stripe-checkout .wc-block-components-checkout-step__title,
+  body.dtb-official-stripe-checkout .wc-block-components-express-payment__title,
+  body.dtb-official-stripe-checkout h2,
+  body.dtb-official-stripe-checkout h3 {
+    font-size: 16px;
+    font-weight: 770;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-checkout-step__description,
+  body.dtb-official-stripe-checkout .wc-block-components-address-card__address-section,
+  body.dtb-official-stripe-checkout .wc-block-components-checkbox__label,
+  body.dtb-official-stripe-checkout .wc-block-components-radio-control__label,
+  body.dtb-official-stripe-checkout .wc-block-components-radio-control__description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-address-card {
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.02);
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-text-input input,
+  body.dtb-official-stripe-checkout .wc-block-components-combobox .components-combobox-control__input,
+  body.dtb-official-stripe-checkout .wc-block-components-textarea,
+  body.dtb-official-stripe-checkout input[type="text"],
+  body.dtb-official-stripe-checkout input[type="email"],
+  body.dtb-official-stripe-checkout input[type="tel"],
+  body.dtb-official-stripe-checkout select,
+  body.dtb-official-stripe-checkout textarea {
+    min-height: 54px;
+    border-radius: 11px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-express-payment__content {
+    min-height: 82px;
+    padding: 14px;
+    border-radius: 14px !important;
+    background: #fbfcfe;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-express-payment__event-buttons {
+    gap: 10px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-express-payment__event-buttons button,
+  body.dtb-official-stripe-checkout .wc-block-components-express-payment iframe {
+    min-height: 48px;
+    border-radius: 10px !important;
+  }
+
+  body.dtb-official-stripe-checkout .wp-block-woocommerce-checkout-order-summary-block {
+    margin: 0 0 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.055);
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-order-summary-item {
+    padding: 16px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-order-summary-item__image {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-totals-wrapper {
+    padding: 0 16px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-totals-item {
+    min-height: 62px;
+    padding: 16px 0;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-totals-footer-item {
+    min-height: 78px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
+  body.dtb-official-stripe-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__value {
+    font-size: 22px;
+  }
+
+  body.dtb-official-stripe-checkout .wc-block-components-checkout-place-order-button {
+    position: static;
+    width: 100%;
+    min-height: 56px;
+    margin-top: 18px;
+    border-radius: 12px;
+  }
+
+  .dtb-mobile-checkout-actions {
+    display: flex;
+    margin: 8px 0 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dtb-mobile-checkout-actions__back,
+  .dtb-mobile-checkout-actions__next {
+    min-height: 50px;
+    border-radius: 12px;
+    font-family: var(--dtb-ui-font);
+    font-size: 14px;
+    font-weight: 760;
+    letter-spacing: -0.01em;
+  }
+
+  .dtb-mobile-checkout-actions__back {
+    padding: 0 18px;
+    border: 1px solid var(--dtb-ui-border-strong);
+    background: #fff;
+    color: var(--dtb-ui-copy);
+  }
+
+  .dtb-mobile-checkout-actions__next {
+    padding: 0 22px;
+    border: 1px solid var(--dtb-ui-blue);
+    background: var(--dtb-ui-blue);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(36, 87, 230, 0.16);
+    flex: 1 1 auto;
+  }
+
+  .dtb-mobile-checkout-actions__next:hover {
+    border-color: var(--dtb-ui-blue-hover);
+    background: var(--dtb-ui-blue-hover);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-checkout-step] {
+      animation: none;
+    }
+  }
+}
