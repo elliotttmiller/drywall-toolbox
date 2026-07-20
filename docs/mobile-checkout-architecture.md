@@ -1,6 +1,6 @@
 # Mobile Checkout Architecture
 
-Last verified against source: 2026-07-19.
+Last verified against source: 2026-07-20.
 
 ## Ownership
 
@@ -22,15 +22,15 @@ WooCommerce owns cart/session continuity, customer/address validation, shipping/
 
 ## Mobile mechanical requirements
 
-Before visual branding work, mobile checkout must satisfy these invariants:
+The UI layer must preserve these invariants:
 
 - the React cart and drawer use the same WooCommerce Store API cookie session as `/checkout/` on the same origin;
 - no React component renders card fields, wallet buttons, Stripe Elements, payment iframes, PaymentIntents, or Stripe Checkout Sessions;
 - pending cart quantity/remove mutations settle before the drawer transfers the document to checkout;
 - `/checkout/` is a normal WordPress/WooCommerce document and contains the assigned Checkout Block;
-- provider-owned payment controls remain visible, keyboard accessible, and responsive;
-- checkout does not depend on DOM MutationObserver shims or a custom full-document DTB checkout renderer;
-- checkout errors remain visible and do not get hidden by DTB styling;
+- provider-owned payment controls remain mounted, keyboard accessible when active, responsive, and Stripe-owned;
+- checkout mechanics do not depend on a custom full-document renderer, cloned controls, custom payment validation, or DTB submission logic;
+- checkout errors remain visible and WooCommerce retains final validation authority;
 - order creation occurs once through WooCommerce checkout;
 - downstream Veeqo/QuickBooks/notification/tracking work waits for DTB's captured-payment gate.
 
@@ -38,13 +38,43 @@ Before visual branding work, mobile checkout must satisfy these invariants:
 
 The official Stripe extension supports eligible express checkout methods in WooCommerce-supported contexts. Drywall Toolbox approves the native WooCommerce Checkout Block as the production express-payment surface.
 
-React full-product pages, product quick-view modals, full cart, and mini-cart must not fabricate or iframe provider wallet controls. Buy now awaits the Woo Store API cart mutation and hands off to native checkout, where the official Stripe extension renders eligible controls.
+React catalog/product quick-view, full cart, and mini-cart must not fabricate or iframe provider wallet controls. Native Woo purchasing surfaces and checkout allow the official Stripe extension to render only eligible provider-owned controls.
 
-## Styling boundary
+## Presentation layer
 
-Until mechanical validation passes, `dtb-commerce/assets/woo-native-checkout.css` remains a conservative compatibility baseline only.
+Checkout branding is isolated from payment/order mechanics:
 
-After cards, 3DS/SCA, eligible/ineligible wallets, failed payment, retry, refunds, and downstream jobs pass staging, checkout branding may be implemented around the native Checkout Block without changing payment or order authority.
+```text
+dtb-commerce/assets/woo-native-checkout.css
+  -> compatibility/base layout
+
+dtb-commerce/assets/woo-native-checkout-steps.js
+  -> mechanical boot reveal only
+
+dtb-commerce/assets/woo-native-checkout-ui.css
+  -> typography, spacing, responsive surfaces, express-button radius,
+     order-summary presentation, and mobile step presentation
+
+dtb-commerce/assets/woo-native-checkout-ui.js
+  -> presentation-only mobile Details / Payment / Review navigation
+     and duplicate visual order-summary suppression
+```
+
+The mobile step enhancement never creates, clones, moves, submits, or validates WooCommerce/Stripe controls. Inactive sections remain mounted at a measurable width off-canvas so the official Stripe Payment Element and wallet surfaces can initialize normally. WooCommerce remains the final validation and submission authority.
+
+A bounded `MutationObserver` is permitted only to wait for the initial hydrated Checkout Block before attaching presentation classes; it disconnects immediately after successful mount or timeout. The mechanical checkout path must remain usable if the presentation enhancement fails to initialize.
+
+The canonical order summary is the WooCommerce sidebar summary. A repeated responsive/fill summary may be visually suppressed, but totals/items must never be copied or recomputed by DTB.
+
+## Mobile UX contract
+
+The responsive presentation uses three customer-facing steps:
+
+1. **Details** — express checkout, contact, addresses, and shipping/delivery selection.
+2. **Payment** — WooCommerce payment section and optional order note; Stripe remains provider-owned.
+3. **Review** — the single canonical order summary, terms, and WooCommerce-owned Place Order action.
+
+The progress/navigation controls only change presentation. They do not bypass Woo validation, mutate checkout data, or submit the order.
 
 ## Verification
 
@@ -53,8 +83,11 @@ Test at minimum:
 1. Mobile Safari/iPhone with and without an Apple Pay-eligible wallet.
 2. Chrome/Android with and without Google Pay eligibility.
 3. Card payment success, decline, and 3DS challenge.
-4. Cart quantity change immediately followed by checkout handoff.
-5. Guest and authenticated checkout.
-6. Back/forward navigation and checkout refresh without cart loss or duplicate orders.
-7. Failed payment followed by retry through WooCommerce order-pay.
-8. Partial and full refunds with one QuickBooks refund projection per Woo refund ID.
+4. Step forward/back navigation without losing address, shipping, payment, or Stripe state.
+5. Resize mobile -> desktop -> mobile without duplicated controls or hidden checkout sections.
+6. Exactly one visible Order Summary on mobile and desktop; values must match WooCommerce totals.
+7. Cart quantity change immediately followed by checkout handoff.
+8. Guest and authenticated checkout.
+9. Back/forward navigation and checkout refresh without cart loss or duplicate orders.
+10. Failed payment followed by retry through WooCommerce order-pay.
+11. Partial and full refunds with one QuickBooks refund projection per Woo refund ID.
