@@ -1,0 +1,161 @@
+/* Same-page mobile payment sheet shell. Existing Woo/Stripe nodes are not reparented or recreated. */
+
+.dtb-payment-sheet-backdrop,
+.dtb-payment-sheet-header {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --dtb-payment-sheet-height: min(88dvh, 760px);
+    --dtb-payment-sheet-header-height: 72px;
+  }
+
+  .dtb-payment-sheet-backdrop {
+    position: fixed;
+    z-index: 80;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: rgba(15, 23, 42, 0.48);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+
+  .dtb-payment-sheet-header {
+    position: fixed;
+    z-index: 84;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--dtb-payment-sheet-height) - var(--dtb-payment-sheet-header-height));
+    display: grid;
+    width: min(100%, 520px);
+    height: var(--dtb-payment-sheet-header-height);
+    margin: 0 auto;
+    padding: 18px 20px 12px;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    align-items: end;
+    border-radius: 24px 24px 0 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(110%);
+  }
+
+  .dtb-payment-sheet-handle {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 42px;
+    height: 5px;
+    border-radius: 999px;
+    background: #d0d5dd;
+    transform: translateX(-50%);
+  }
+
+  .dtb-payment-sheet-title {
+    grid-column: 2;
+    margin: 0;
+    color: var(--dtb-ui-ink);
+    text-align: center;
+    font: 800 17px/1.2 var(--dtb-ui-font);
+    letter-spacing: -0.025em;
+  }
+
+  .dtb-payment-sheet-close {
+    grid-column: 3;
+    display: grid;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid #e4e7ec;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #344054;
+    place-items: center;
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  body.dtb-payment-sheet-open .dtb-payment-sheet-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body.dtb-payment-sheet-open .dtb-payment-sheet-header {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    animation: dtb-payment-sheet-header-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  body.dtb-payment-sheet-open .wc-block-components-main,
+  body.dtb-payment-sheet-open .wc-block-checkout__main {
+    position: fixed !important;
+    z-index: 82 !important;
+    inset: auto 0 0 !important;
+    width: min(100%, 520px) !important;
+    height: var(--dtb-payment-sheet-height) !important;
+    max-width: 520px !important;
+    max-height: var(--dtb-payment-sheet-height) !important;
+    margin: 0 auto !important;
+    padding: calc(var(--dtb-payment-sheet-header-height) + 8px) 16px calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    border-radius: 24px 24px 0 0;
+    background: #fff;
+    box-shadow: 0 -22px 70px rgba(15, 23, 42, 0.22);
+    transform: translateY(0);
+    -webkit-overflow-scrolling: touch;
+    animation: dtb-payment-sheet-in 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  body.dtb-payment-sheet-open .dtb-mobile-checkout-actions {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  body.dtb-payment-sheet-closing .dtb-payment-sheet-backdrop {
+    opacity: 0;
+  }
+
+  body.dtb-payment-sheet-closing .dtb-payment-sheet-header,
+  body.dtb-payment-sheet-closing .wc-block-components-main,
+  body.dtb-payment-sheet-closing .wc-block-checkout__main {
+    transition: transform 240ms cubic-bezier(0.4, 0, 1, 1), opacity 180ms ease;
+    transform: translateY(110%) !important;
+    opacity: 0.98;
+  }
+
+  @keyframes dtb-payment-sheet-in {
+    from { transform: translateY(105%); }
+    to { transform: translateY(0); }
+  }
+
+  @keyframes dtb-payment-sheet-header-in {
+    from { transform: translateY(105%); }
+    to { transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body.dtb-payment-sheet-open .dtb-payment-sheet-header,
+    body.dtb-payment-sheet-open .wc-block-components-main,
+    body.dtb-payment-sheet-open .wc-block-checkout__main {
+      animation: none;
+    }
+
+    .dtb-payment-sheet-backdrop,
+    body.dtb-payment-sheet-closing .dtb-payment-sheet-header,
+    body.dtb-payment-sheet-closing .wc-block-components-main,
+    body.dtb-payment-sheet-closing .wc-block-checkout__main {
+      transition-duration: 1ms;
+    }
+  }
+}
