@@ -1,0 +1,65 @@
+/* Mobile Contact -> Shipping -> Payment presentation. Payment/order authority remains WooCommerce + official Stripe. */
+
+@media (max-width: 767px) {
+  body.dtb-official-stripe-checkout.dtb-checkout-step-payment .wc-block-components-sidebar {
+    order: 0;
+  }
+
+  body.dtb-official-stripe-checkout.dtb-checkout-step-payment .wc-block-components-main,
+  body.dtb-official-stripe-checkout.dtb-checkout-step-payment .wc-block-checkout__main {
+    order: 1;
+  }
+
+  body.dtb-official-stripe-checkout.dtb-mobile-checkout-enhanced [data-dtb-payment-sheet-owned].is-dtb-payment-sheet-closed {
+    position: absolute !important;
+    left: -200vw !important;
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+
+  .dtb-mobile-checkout-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 26;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    margin: 8px -16px -44px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #eaecf0;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 -12px 30px rgba(16, 24, 40, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .dtb-mobile-checkout-actions__back,
+  .dtb-mobile-checkout-actions__next {
+    min-height: 54px;
+    border-radius: 14px;
+    font: 760 14px/1 var(--dtb-ui-font);
+  }
+
+  .dtb-mobile-checkout-actions__back[hidden] {
+    display: none !important;
+  }
+
+  .dtb-mobile-checkout-actions__back {
+    padding-inline: 18px;
+    border: 1px solid var(--dtb-ui-border-strong);
+    background: #fff;
+    color: var(--dtb-ui-copy);
+  }
+
+  .dtb-mobile-checkout-actions__next {
+    width: 100%;
+    padding-inline: 20px;
+    border: 1px solid var(--dtb-ui-blue);
+    background: var(--dtb-ui-blue);
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(36, 87, 230, 0.18);
+  }
+}
