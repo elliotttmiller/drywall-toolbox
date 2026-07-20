@@ -43,9 +43,16 @@ wp_enqueue_style(
 	$dtb_checkout_ui_version
 );
 wp_enqueue_script(
+	'dtb-woo-native-checkout-block-filters',
+	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-block-filters.js' ),
+	[ 'wc-blocks-checkout' ],
+	$dtb_checkout_ui_version,
+	true
+);
+wp_enqueue_script(
 	'dtb-woo-native-checkout-ui',
 	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.js' ),
-	[ 'dtb-woo-native-checkout-steps' ],
+	[ 'dtb-woo-native-checkout-steps', 'dtb-woo-native-checkout-block-filters' ],
 	$dtb_checkout_ui_version,
 	true
 );
