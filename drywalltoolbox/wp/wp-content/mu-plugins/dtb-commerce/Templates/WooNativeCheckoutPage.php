@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$dtb_checkout_ui_version = '2026.07.20.3';
+$dtb_checkout_ui_version = '2026.07.20.4';
 wp_enqueue_style(
 	'dtb-woo-native-checkout-ui',
 	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-ui.css' ),
@@ -42,6 +42,12 @@ wp_enqueue_style(
 	[ 'dtb-woo-native-checkout-payment-sheet' ],
 	$dtb_checkout_ui_version
 );
+wp_enqueue_style(
+	'dtb-woo-native-checkout-mobile-polish',
+	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-mobile-polish.css' ),
+	[ 'dtb-woo-native-checkout-payment-sheet-content' ],
+	$dtb_checkout_ui_version
+);
 wp_enqueue_script(
 	'dtb-woo-native-checkout-block-filters',
 	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-block-filters.js' ),
@@ -56,12 +62,20 @@ wp_enqueue_script(
 	$dtb_checkout_ui_version,
 	true
 );
+wp_enqueue_script(
+	'dtb-woo-native-checkout-mobile-polish',
+	content_url( 'mu-plugins/dtb-commerce/assets/woo-native-checkout-mobile-polish.js' ),
+	[ 'dtb-woo-native-checkout-ui' ],
+	$dtb_checkout_ui_version,
+	true
+);
 wp_script_add_data( 'dtb-woo-native-checkout-ui', 'strategy', 'defer' );
+wp_script_add_data( 'dtb-woo-native-checkout-mobile-polish', 'strategy', 'defer' );
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 	<meta name="robots" content="noindex,nofollow">
 	<script>document.documentElement.classList.add('dtb-native-checkout-booting');window.setTimeout(function(){document.documentElement.classList.remove('dtb-native-checkout-booting');},8000);</script>
 	<style>
