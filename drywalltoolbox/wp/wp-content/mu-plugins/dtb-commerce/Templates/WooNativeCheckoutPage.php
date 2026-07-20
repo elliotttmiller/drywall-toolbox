@@ -76,7 +76,7 @@ wp_enqueue_script(
 	true
 );
 wp_script_add_data( 'dtb-woo-native-checkout-ui', 'strategy', 'defer' );
-wp_script_add_data( 'dtb-woo-native-checkout-mobile-refinements', 'strategy', 'defer' );
+wp_script_add_data( 'dtb-woo-native-checkout-mobile-polish', 'strategy', 'defer' );
 ?><!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
