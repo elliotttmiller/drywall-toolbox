@@ -22,8 +22,10 @@ final class DTB_StorefrontReturnContext {
 
 	public static function register(): void {
 		add_action( 'wp', [ __CLASS__, 'capture_checkout_context' ], 5 );
-		add_action( 'woocommerce_checkout_create_order', [ __CLASS__, 'apply_order_context' ], 15, 2 );
-		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'apply_store_api_order_context' ], 15 );
+		// Run after OfficialStripeNativeCheckout's priority-20 order tagging so the
+		// explicit originating storefront context is the final persisted value.
+		add_action( 'woocommerce_checkout_create_order', [ __CLASS__, 'apply_order_context' ], 30, 2 );
+		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'apply_store_api_order_context' ], 30 );
 		add_filter( 'woocommerce_get_return_url', [ __CLASS__, 'filter_success_return_url' ], 1000, 2 );
 	}
 
