@@ -102,15 +102,24 @@ dtb-commerce/assets/woo-native-checkout-steps.js
   -> mechanical boot/reveal only
 
 dtb-commerce/assets/woo-native-checkout-ui.css
-  -> typography, Contact/Shipping/Payment presentation,
-     canonical Order Summary styling, payment-sheet layout/animation
+  -> existing checkout typography, fields, express-button radius,
+     and canonical Order Summary styling
 
 dtb-commerce/assets/woo-native-checkout-ui.js
-  -> presentation-only step navigation, duplicate visual summary suppression,
-     payment-sheet open/close/focus/scroll state
+  -> Contact/Shipping/Payment presentation state, duplicate visual summary
+     suppression, and payment-sheet open/close/focus/scroll state
 
 dtb-commerce/assets/woo-native-checkout-mobile-fixes.css
   -> provider-safe mobile overflow/touch compatibility only
+
+dtb-commerce/assets/woo-native-checkout-payment-flow.css
+  -> sequential mobile footer and final Payment summary layout
+
+dtb-commerce/assets/woo-native-checkout-payment-sheet.css
+  -> same-page bottom-sheet shell, backdrop, motion, and fixed Woo main surface
+
+dtb-commerce/assets/woo-native-checkout-payment-sheet-content.css
+  -> provider-owned express/payment content spacing and authoritative submit CTA
 ```
 
 ## Validation/error behavior
