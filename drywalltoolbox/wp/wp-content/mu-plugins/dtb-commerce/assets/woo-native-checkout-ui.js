@@ -14,11 +14,16 @@
 				'.wp-block-woocommerce-checkout-express-payment-block',
 				'.wc-block-components-express-payment',
 				'.wp-block-woocommerce-checkout-contact-information-block',
+				'.wc-block-checkout__contact-fields',
 				'.wp-block-woocommerce-checkout-shipping-address-block',
+				'.wc-block-checkout__shipping-fields',
 				'.wp-block-woocommerce-checkout-billing-address-block',
+				'.wc-block-checkout__billing-fields',
 				'.wp-block-woocommerce-checkout-create-account-block',
 				'.wp-block-woocommerce-checkout-shipping-method-block',
 				'.wp-block-woocommerce-checkout-shipping-methods-block',
+				'.wc-block-checkout__shipping-option',
+				'.wc-block-checkout__shipping-method',
 				'.wp-block-woocommerce-checkout-pickup-options-block',
 			],
 		},
@@ -27,7 +32,9 @@
 			label: 'Payment',
 			selectors: [
 				'.wp-block-woocommerce-checkout-payment-block',
+				'.wc-block-checkout__payment-method',
 				'.wp-block-woocommerce-checkout-order-note-block',
+				'.wc-block-checkout__order-notes',
 			],
 		},
 		{
@@ -37,12 +44,15 @@
 				'.wc-block-components-sidebar',
 				'.wc-block-checkout__sidebar',
 				'.wp-block-woocommerce-checkout-terms-block',
+				'.wc-block-checkout__terms',
 				'.wp-block-woocommerce-checkout-actions-block',
+				'.wc-block-checkout__actions',
 			],
 		},
 	];
 
 	let activeStep = 0;
+	let highestVisitedStep = 0;
 	let progress = null;
 	let actions = null;
 	let initialObserver = null;
@@ -119,6 +129,11 @@
 			button.className = 'dtb-mobile-checkout-progress__button';
 			button.dataset.step = String( index );
 			button.setAttribute( 'aria-label', `Go to ${ step.label }` );
+			button.addEventListener( 'click', () => {
+				if ( index <= highestVisitedStep ) {
+					showStep( index, true );
+				}
+			} );
 
 			const number = document.createElement( 'span' );
 			number.className = 'dtb-mobile-checkout-progress__number';
@@ -128,13 +143,18 @@
 			label.textContent = step.label;
 
 			button.append( number, label );
-			button.addEventListener( 'click', () => showStep( index, true ) );
 			item.append( button );
 			list.append( item );
 		} );
 
 		nav.append( list );
 		return nav;
+	}
+
+	function advanceStep() {
+		const nextStep = Math.min( steps.length - 1, activeStep + 1 );
+		highestVisitedStep = Math.max( highestVisitedStep, nextStep );
+		showStep( nextStep, true );
 	}
 
 	function createActions() {
@@ -150,7 +170,7 @@
 		const next = document.createElement( 'button' );
 		next.type = 'button';
 		next.className = 'dtb-mobile-checkout-actions__next';
-		next.addEventListener( 'click', () => showStep( Math.min( steps.length - 1, activeStep + 1 ), true ) );
+		next.addEventListener( 'click', advanceStep );
 
 		wrapper.append( back, next );
 		return wrapper;
@@ -161,6 +181,7 @@
 			const index = Number( button.dataset.step );
 			button.classList.toggle( 'is-current', index === activeStep );
 			button.classList.toggle( 'is-complete', index < activeStep );
+			button.disabled = index > highestVisitedStep;
 			if ( index === activeStep ) {
 				button.setAttribute( 'aria-current', 'step' );
 			} else {
@@ -203,6 +224,23 @@
 		}
 	}
 
+	function handleCheckoutFocus( event ) {
+		if ( ! mobileViewport.matches || ! ( event.target instanceof Element ) ) {
+			return;
+		}
+
+		const section = event.target.closest( '[data-dtb-checkout-step]' );
+		if ( ! section?.classList.contains( inactiveStepClass ) ) {
+			return;
+		}
+
+		const stepIndex = steps.findIndex( ( step ) => step.id === section.dataset.dtbCheckoutStep );
+		if ( stepIndex >= 0 ) {
+			highestVisitedStep = Math.max( highestVisitedStep, stepIndex );
+			showStep( stepIndex, true );
+		}
+	}
+
 	function teardownMobileEnhancement() {
 		document.body.classList.remove( 'dtb-mobile-checkout-enhanced', ...stepBodyClasses );
 		document.querySelectorAll( '[data-dtb-checkout-step]' ).forEach( ( node ) => {
@@ -218,8 +256,8 @@
 
 	function mountMobileEnhancement() {
 		const checkoutRoot = document.querySelector( checkoutRootSelector );
-		const paymentBlock = checkoutRoot?.querySelector( '.wp-block-woocommerce-checkout-payment-block' );
-		const orderActions = checkoutRoot?.querySelector( '.wp-block-woocommerce-checkout-actions-block' );
+		const paymentBlock = checkoutRoot?.querySelector( '.wp-block-woocommerce-checkout-payment-block, .wc-block-checkout__payment-method' );
+		const orderActions = checkoutRoot?.querySelector( '.wp-block-woocommerce-checkout-actions-block, .wc-block-checkout__actions' );
 		if ( ! checkoutRoot || ! paymentBlock || ! orderActions ) {
 			return false;
 		}
@@ -237,6 +275,10 @@
 		if ( ! actions ) {
 			actions = createActions();
 			checkoutRoot.insertAdjacentElement( 'afterend', actions );
+		}
+		if ( checkoutRoot.dataset.dtbStepperFocusBound !== '1' ) {
+			checkoutRoot.dataset.dtbStepperFocusBound = '1';
+			checkoutRoot.addEventListener( 'focusin', handleCheckoutFocus );
 		}
 
 		document.body.classList.add( 'dtb-mobile-checkout-enhanced' );
