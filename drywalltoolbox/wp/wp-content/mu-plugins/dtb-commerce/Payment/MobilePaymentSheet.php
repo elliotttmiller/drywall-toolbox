@@ -62,22 +62,22 @@ final class DTB_MobilePaymentSheet {
 			return $response;
 		}
 
-		$settings = self::stripe_settings();
+		$settings  = self::stripe_settings();
 		$test_mode = 'yes' === (string) ( $settings['testmode'] ?? 'no' );
 		$data['payment_sheet'] = [
-			'presentation'                         => 'dtb_mobile_bottom_sheet',
-			'asset_version'                        => self::ASSET_VERSION,
-			'payment_authority'                    => 'woocommerce_official_stripe',
-			'total_source'                         => 'wc_store_cart',
-			'modal_accessibility'                  => 'dialog_focus_containment',
-			'active_mode'                          => $test_mode ? 'test' : 'live',
-			'optimized_checkout_layout'            => sanitize_key( (string) ( $settings['optimized_checkout_layout'] ?? '' ) ),
+			'presentation'                          => 'dtb_mobile_bottom_sheet',
+			'asset_version'                         => self::ASSET_VERSION,
+			'payment_authority'                     => 'woocommerce_official_stripe',
+			'total_source'                          => 'wc_store_cart',
+			'modal_accessibility'                   => 'dialog_focus_containment',
+			'active_mode'                           => $test_mode ? 'test' : 'live',
+			'optimized_checkout_layout'             => sanitize_key( (string) ( $settings['optimized_checkout_layout'] ?? '' ) ),
 			'optimized_checkout_layout_recommended' => 'accordion',
-			'settings_sync_state'                  => self::settings_sync_state( $settings ),
-			'active_webhook_locally_configured'    => self::active_webhook_locally_configured( $settings, $test_mode ),
-			'active_webhook_cached_status'          => self::active_webhook_cached_status( $test_mode ),
-			'automatic_capture'                    => 'yes' === (string) ( $settings['capture'] ?? 'yes' ),
-			'competing_payment_authority_detected' => [] !== self::competing_payment_authorities(),
+			'settings_sync_state'                   => self::settings_sync_state( $settings ),
+			'active_webhook_locally_configured'     => self::active_webhook_locally_configured( $settings, $test_mode ),
+			'active_webhook_cached_status'           => self::active_webhook_cached_status( $test_mode ),
+			'automatic_capture'                     => 'yes' === (string) ( $settings['capture'] ?? 'yes' ),
+			'competing_payment_authority_detected'  => [] !== self::competing_payment_authorities(),
 		];
 
 		$response->set_data( $data );
@@ -95,7 +95,7 @@ final class DTB_MobilePaymentSheet {
 		}
 
 		$optimized_checkout_enabled = 'yes' === (string) ( $settings['optimized_checkout_element'] ?? 'no' );
-		$layout = sanitize_key( (string) ( $settings['optimized_checkout_layout'] ?? '' ) );
+		$layout                     = sanitize_key( (string) ( $settings['optimized_checkout_layout'] ?? '' ) );
 		if ( $optimized_checkout_enabled && 'accordion' !== $layout ) {
 			self::render_notice(
 				'warning',
@@ -161,7 +161,7 @@ final class DTB_MobilePaymentSheet {
 
 	private static function active_webhook_locally_configured( array $settings, bool $test_mode ): bool {
 		$data_key   = $test_mode ? 'test_webhook_data' : 'webhook_data';
-		secret_key = $test_mode ? 'test_webhook_secret' : 'webhook_secret';
+		$secret_key = $test_mode ? 'test_webhook_secret' : 'webhook_secret';
 		$data       = $settings[ $data_key ] ?? [];
 
 		return is_array( $data )
@@ -206,7 +206,7 @@ final class DTB_MobilePaymentSheet {
 				continue;
 			}
 
-			$class_name = strtolower( get_class( $gateway ) );
+			$class_name   = strtolower( get_class( $gateway ) );
 			$is_competing = 'woocommerce_payments' === $id
 				|| false !== strpos( $id, 'stripe' )
 				|| false !== strpos( $class_name, 'stripe' );
@@ -214,7 +214,7 @@ final class DTB_MobilePaymentSheet {
 				continue;
 			}
 
-			$title = sanitize_text_field( (string) ( $gateway->method_title ?? $gateway->title ?? $id ) );
+			$title       = sanitize_text_field( (string) ( $gateway->method_title ?? $gateway->title ?? $id ) );
 			$competing[] = '' !== $title ? $title : $id;
 		}
 
