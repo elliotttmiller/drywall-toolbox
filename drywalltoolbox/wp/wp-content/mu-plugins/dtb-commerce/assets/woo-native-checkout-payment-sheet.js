@@ -161,6 +161,8 @@
 	function clearDialogSemantics() {
 		const main = checkoutMain();
 		if ( main ) {
+			main.removeAttribute( 'role' );
+			main.removeAttribute( 'aria-modal' );
 			main.removeAttribute( 'aria-labelledby' );
 		}
 		mainObserver?.disconnect();
