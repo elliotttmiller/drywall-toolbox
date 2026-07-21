@@ -1,4 +1,4 @@
-name: Build DTB Production Launch Package
+name: Build DTB Production Launch Source Package
 
 on:
   push:
@@ -20,27 +20,11 @@ concurrency:
   group: dtb-production-package-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  NODE_ENV: production
-  PUBLIC_URL: /
-  REACT_APP_WP_BASE_URL: https://drywalltoolbox.com
-  REACT_APP_WP_API_BASE: https://drywalltoolbox.com/wp-json
-  REACT_APP_JWT_ENDPOINT: https://drywalltoolbox.com/wp-json/simple-jwt-login/v1/auth
-  REACT_APP_JWT_AUTH_ENDPOINT: /wp-json/simple-jwt-login/v1/auth
-  REACT_APP_API_BASE_URL: https://drywalltoolbox.com
-  REACT_APP_DTB_API_BASE: /wp-json/dtb/v1
-  REACT_APP_STORE_API_BASE: /wp-json/wc/store/v1
-  REACT_APP_SITE_URL: https://drywalltoolbox.com
-  REACT_APP_APP_ENV: production
-  REACT_APP_ENV: production
-  REACT_APP_REWARDS_ENABLED: '1'
-  REACT_APP_STORE_LAUNCH_DATE: ''
-
 jobs:
-  build-package-and-commit:
-    name: Build and materialize dtb-production
+  materialize-production-source:
+    name: Curate and validate dtb-production
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
       - name: Checkout source branch
@@ -49,23 +33,7 @@ jobs:
           fetch-depth: 1
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: cd frontend && npm ci --include=dev --prefer-offline --no-audit --no-fund
-
-      - name: Lint frontend source
-        run: cd frontend && npm run lint --if-present
-
-      - name: Build frontend for production
-        run: cd frontend && npm run build
-
-      - name: Assemble strict production launch package
+      - name: Assemble strict production source tree
         shell: bash
         run: |
           set -euo pipefail
@@ -73,59 +41,143 @@ jobs:
           rm -rf dtb-production
           mkdir -p dtb-production
 
-          # Production React build output. No source, node_modules, cache, or local env files.
-          cp -a dist/. dtb-production/
+          # Engineering authority and durable architecture context.
+          cp AGENTS.md dtb-production/AGENTS.md
+          mkdir -p dtb-production/memory-bank
+          cp memory-bank/product.md dtb-production/memory-bank/product.md
+          cp memory-bank/structure.md dtb-production/memory-bank/structure.md
+          cp memory-bank/tech.md dtb-production/memory-bank/tech.md
 
-          # Required root assets and routing.
-          cp -a drywalltoolbox/logos dtb-production/logos
+          # Production CI/release workflows only. Exclude Copilot/dev metadata and this generator.
+          mkdir -p dtb-production/.github/workflows
+          cp .github/workflows/ci-build.yml dtb-production/.github/workflows/ci-build.yml
+          cp .github/workflows/deploy.yml dtb-production/.github/workflows/deploy.yml
+
+          # Frontend production source. Keep only files needed to build/validate the storefront.
+          mkdir -p dtb-production/frontend/scripts
+          cp -a frontend/src dtb-production/frontend/src
+          cp -a frontend/public dtb-production/frontend/public
+          cp frontend/package.json dtb-production/frontend/package.json
+          cp frontend/package-lock.json dtb-production/frontend/package-lock.json
+          cp frontend/webpack.config.cjs dtb-production/frontend/webpack.config.cjs
+          cp frontend/eslint.config.js dtb-production/frontend/eslint.config.js
+          cp frontend/babel.config.json dtb-production/frontend/babel.config.json
+          cp frontend/postcss.config.js dtb-production/frontend/postcss.config.js
+          cp frontend/index.html dtb-production/frontend/index.html
+          cp frontend/error-page.html dtb-production/frontend/error-page.html
+          cp frontend/scripts/assert-public-env-safe.cjs dtb-production/frontend/scripts/assert-public-env-safe.cjs
+          cp frontend/scripts/clean-build-artifacts.cjs dtb-production/frontend/scripts/clean-build-artifacts.cjs
+          if [ -f frontend/.env.example ]; then
+            cp frontend/.env.example dtb-production/frontend/.env.example
+          fi
+
+          # Production web-root routing/assets.
           cp drywalltoolbox/.htaccess dtb-production/.htaccess
+          cp -a drywalltoolbox/logos dtb-production/logos
 
-          # Tracked WordPress application code only.
+          # Tracked WordPress application code only; never copy runtime-owned WordPress state.
           mkdir -p dtb-production/wp/wp-content
           cp drywalltoolbox/wp/.htaccess dtb-production/wp/.htaccess
           cp drywalltoolbox/wp/index.php dtb-production/wp/index.php
           cp -a drywalltoolbox/wp/wp-content/mu-plugins dtb-production/wp/wp-content/mu-plugins
           cp -a drywalltoolbox/wp/wp-content/themes dtb-production/wp/wp-content/themes
 
-          cat > dtb-production/PRODUCTION-PACKAGE.md <<'EOF'
-          # DTB Production Launch Package
+          # Curated production catalog/taxonomy data. Exclude reports, source history, audits and scratch data.
+          mkdir -p dtb-production/products/Production/catalogs
+          rsync -a \
+            --exclude='reports/' \
+            --exclude='sources/' \
+            --exclude='other/' \
+            --exclude='archive/' \
+            --exclude='archives/' \
+            --exclude='backups/' \
+            --exclude='backup/' \
+            --exclude='tmp/' \
+            --exclude='temp/' \
+            --exclude='scratch/' \
+            --exclude='scraped_results/' \
+            --exclude='*.bak' \
+            --exclude='*.tmp' \
+            products/Production/catalogs/ dtb-production/products/Production/catalogs/
 
-          This directory is a generated, deployment-ready copy of only the tracked files required by the active production deployment contract.
+          # Preserve the canonical schematic model crosswalk when present.
+          if [ -f products/Production/refs/schematic_tool_crosswalk.csv ]; then
+            mkdir -p dtb-production/products/Production/refs
+            cp products/Production/refs/schematic_tool_crosswalk.csv dtb-production/products/Production/refs/
+          fi
+
+          # Preserve canonical universal-part machine-readable data, not audit/reference prose.
+          if [ -d products/launch/universal_parts ]; then
+            while IFS= read -r -d '' file; do
+              rel="${file#products/}"
+              case "$rel" in
+                *audit*|*report*|*.md) continue ;;
+              esac
+              mkdir -p "dtb-production/products/$(dirname "$rel")"
+              cp "$file" "dtb-production/products/$rel"
+            done < <(find products/launch/universal_parts -type f \
+              \( -name '*.csv' -o -name '*.json' \) -print0)
+          fi
+
+          cat > dtb-production/PRODUCTION-PACKAGE.md <<'EOF'
+          # DTB Production Launch Source Package
+
+          This directory is a curated copy of source and production data required to build, operate, validate, and deploy Drywall Toolbox for launch.
 
           Included:
-          - compiled React production output at the web root
-          - `logos/`
-          - root `.htaccess`
-          - `wp/.htaccess`
-          - `wp/index.php`
-          - `wp/wp-content/mu-plugins/`
-          - `wp/wp-content/themes/`
+          - `AGENTS.md`
+          - `memory-bank/{product,structure,tech}.md`
+          - `.github/workflows/{ci-build,deploy}.yml`
+          - curated `frontend/` production source and required build-safety files
+          - tracked `wp/` application code (`mu-plugins`, themes, routing/index files)
+          - curated `products/` production catalog/taxonomy/compatibility data
+          - production root `.htaccess` and `logos/`
 
-          Intentionally excluded:
-          - `wp-config.php` and all secrets
-          - WordPress core
-          - regular `wp-content/plugins/`
-          - `wp-content/uploads/`
-          - caches, upgrade/runtime state, logs, backups, and database dumps
-          - frontend source, `node_modules`, build caches, local/staging env files, docs, product workspaces, and development tooling
+          Excluded:
+          - root `scripts/`
+          - research/reference docs, scraped data, reports, audits, historical exports and scratch data
+          - generated `dist/`, `node_modules/`, caches and local/staging env files
+          - `wp-config.php`, WordPress core, regular plugins, uploads, cache, runtime state and secrets
 
-          Source of truth remains the canonical repository paths and `.github/workflows/deploy.yml`. Regenerate this directory after production source changes; do not hand-edit generated build assets.
+          Canonical source remains outside this generated directory. Regenerate; do not hand-edit copied content here.
           EOF
 
-      - name: Validate package boundaries
+      - name: Validate production source boundaries
         shell: bash
         run: |
           set -euo pipefail
 
-          test -f dtb-production/index.html
+          test -f dtb-production/AGENTS.md
+          test -f dtb-production/memory-bank/product.md
+          test -f dtb-production/memory-bank/structure.md
+          test -f dtb-production/memory-bank/tech.md
+          test -f dtb-production/.github/workflows/ci-build.yml
+          test -f dtb-production/.github/workflows/deploy.yml
+
+          test -d dtb-production/frontend/src
+          test -d dtb-production/frontend/public
+          test -f dtb-production/frontend/package.json
+          test -f dtb-production/frontend/package-lock.json
+          test -f dtb-production/frontend/webpack.config.cjs
+          test -f dtb-production/frontend/scripts/assert-public-env-safe.cjs
+          test -f dtb-production/frontend/scripts/clean-build-artifacts.cjs
+
           test -f dtb-production/.htaccess
-          test -f dtb-production/logos/favicon.ico
-          test -d dtb-production/assets/js
-          test -d dtb-production/assets/css
+          test -d dtb-production/logos
           test -f dtb-production/wp/.htaccess
           test -f dtb-production/wp/index.php
           test -d dtb-production/wp/wp-content/mu-plugins
           test -d dtb-production/wp/wp-content/themes
+
+          test -d dtb-production/products/Production/catalogs/config
+          test -f dtb-production/products/Production/catalogs/config/production_taxonomy_policy.json
+
+          # Explicitly reject development/research/runtime-owned content.
+          test ! -e dtb-production/scripts
+          test ! -e dtb-production/docs
+          test ! -e dtb-production/frontend/server
+          test ! -e dtb-production/dist
+          test ! -e dtb-production/dist-staging
 
           if find dtb-production \
             \( -name 'wp-config.php' \
@@ -133,12 +185,25 @@ jobs:
             -o -path '*/wp-content/cache/*' \
             -o -path '*/wp-content/plugins/*' \
             -o -name 'node_modules' \
-            -o -name '.cache' \) | grep -q .; then
-            echo 'Forbidden runtime, secret, plugin, cache, or dependency content found in dtb-production.' >&2
+            -o -name '.cache' \
+            -o -name '.env.staging' \
+            -o -name '.env.local' \
+            -o -name '*.bak' \) | grep -q .; then
+            echo 'Forbidden secret, runtime, dependency, cache, staging, backup, or regular-plugin content found.' >&2
             exit 1
           fi
 
+          if find dtb-production/products -type d \
+            \( -name reports -o -name sources -o -name scraped_results -o -name scratch -o -name tmp -o -name temp \) | grep -q .; then
+            echo 'Forbidden product research/report/source-history directory found.' >&2
+            exit 1
+          fi
+
+          echo 'Validated production source package:'
+          find dtb-production -maxdepth 4 -type f | sort | head -300
+
       - name: Commit generated package
+        if: ${{ github.event_name != 'pull_request' }}
         shell: bash
         env:
           TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
@@ -151,5 +216,5 @@ jobs:
             echo 'dtb-production is already current.'
             exit 0
           fi
-          git commit -m 'chore: materialize production launch package'
+          git commit -m 'chore: materialize curated production source package'
           git push origin HEAD:${TARGET_BRANCH}
