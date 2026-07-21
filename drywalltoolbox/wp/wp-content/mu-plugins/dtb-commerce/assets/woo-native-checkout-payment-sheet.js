@@ -152,10 +152,12 @@
 
 	function clearDialogSemantics() {
 		const main = checkoutMain();
-		if ( ! main ) {
-			return;
+		if ( main ) {
+			main.removeAttribute( 'aria-labelledby' );
 		}
-		main.removeAttribute( 'aria-labelledby' );
+		mainObserver?.disconnect();
+		mainObserver = null;
+		observedMain = null;
 	}
 
 	function isElementVisible( element ) {
@@ -184,7 +186,7 @@
 					return;
 				}
 				const close = internalCloseButton( main );
-				if ( close instanceof HTMLElement ) {
+				if ( close instanceof HTMLElement && ! main.contains( document.activeElement ) ) {
 					close.focus( { preventScroll: true } );
 				}
 			} );
@@ -275,12 +277,14 @@
 		const store = data.select( cartStore );
 		const totals = typeof store?.getCartTotals === 'function' ? store.getCartTotals() : null;
 		const formattedTotal = formatCartTotal( totals );
-		if ( formattedTotal === previousFormattedTotal ) {
+		const totalNodes = Array.from( document.querySelectorAll( totalSelector ) );
+		const needsDomUpdate = formattedTotal !== previousFormattedTotal || totalNodes.some( ( node ) => node.textContent !== formattedTotal );
+		previousFormattedTotal = formattedTotal;
+		if ( ! needsDomUpdate ) {
 			return true;
 		}
-		previousFormattedTotal = formattedTotal;
 
-		document.querySelectorAll( totalSelector ).forEach( ( node ) => {
+		totalNodes.forEach( ( node ) => {
 			node.textContent = formattedTotal;
 			const context = node.closest( '.dtb-payment-sheet-dialog-chrome__context' );
 			if ( context instanceof HTMLElement ) {
