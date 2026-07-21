@@ -1,39 +1,43 @@
 # Tech
 
-Last verified against source: 2026-07-19.
+Last verified against source: 2026-07-20.
 
 ## Runtime stack
 
 ### Frontend (`frontend/`)
 
-- React 19 and React Router 7;
-- Axios and typed-by-contract fetch wrappers;
-- Framer Motion with centralized motion configuration;
+- React 19.2 and React DOM 19.2;
+- React Router 7.13;
+- Axios plus fetch-based API wrappers;
+- Framer Motion;
 - React Helmet Async;
-- React Markdown, `remark-gfm`, and DOMPurify;
-- `lucide-react` icons.
+- React Markdown + `remark-gfm` + DOMPurify;
+- `lucide-react`;
+- Webpack 5/Babel build pipeline;
+- Tailwind CSS v4 + PostCSS/Autoprefixer.
 
-The frontend does not own payment rendering, Stripe Elements, wallet controls, Stripe Checkout Sessions, PaymentIntents, or order creation. Payment UI is rendered by the official WooCommerce Stripe Payment Gateway inside native WooCommerce checkout/payment surfaces.
+The frontend does not own payment execution or storefront order creation. Stripe client packages remain installed, but the active storefront checkout/payment authority is native WooCommerce Checkout Block plus the official WooCommerce Stripe Payment Gateway.
 
 ### Backend (`drywalltoolbox/wp/`)
 
 - WordPress in headless usage;
-- WooCommerce and the official WooCommerce Stripe Payment Gateway;
-- custom DTB must-use plugin suite under `drywalltoolbox/wp/wp-content/mu-plugins/`;
-- composition root `00-dtb-loader.php` loading 11 module bootstraps;
-- Action Scheduler for order, integration, import, and other asynchronous jobs;
-- headless/backend-support themes `headless-base/` and `drywall-toolbox/`.
+- WooCommerce;
+- official WooCommerce Stripe Payment Gateway as storefront payment authority;
+- DTB must-use plugin suite under `drywalltoolbox/wp/wp-content/mu-plugins/`;
+- `00-dtb-loader.php` composition root with 11 ordered module bootstraps;
+- Action Scheduler for queued order/integration work;
+- headless/backend-support themes under `drywalltoolbox/wp/wp-content/themes/`.
 
-### Integration authorities
+### External authorities
 
-- WooCommerce: product/customer/cart/checkout/order/payment record system;
-- official WooCommerce Stripe Payment Gateway: embedded Stripe payment methods, eligible wallets, Link, tokenization, 3DS/SCA, Stripe webhook synchronization into WooCommerce;
-- DTB order platform: lifecycle events, captured-payment gating, idempotency, integration state, write boundary, queue, and customer/operator projections;
-- Veeqo: inventory, allocation, fulfillment, labels, shipment status, and tracking;
+- WooCommerce: products, customers, cart/session, checkout state, orders, refunds, authoritative operational payment/order state;
+- official WooCommerce Stripe gateway: payment-method rendering/eligibility, Link, eligible wallets, saved methods, tokenization, 3DS/SCA, payment execution, webhook reconciliation;
+- DTB order platform: lifecycle events, captured-payment gating, idempotency, integration state, write boundary, queue, customer/operator projections;
+- Veeqo: inventory, allocation, fulfillment, labels, shipment status, carrier, tracking;
 - QuickBooks: accounting projection after eligible payment/refund events;
-- marketplace modules: normalized Amazon/eBay operational ingestion and exception handling.
+- marketplace integrations: server-side Amazon/eBay operational ingestion and exception handling.
 
-Checkout shipping rates are currently computed by Woo/DTB policy. They are not live carrier quotes returned by Veeqo.
+Checkout shipping rates are Woo/DTB policy rates, not live Veeqo carrier quotes.
 
 ## Backend module chain
 
@@ -49,93 +53,132 @@ Checkout shipping rates are currently computed by Woo/DTB policy. They are not l
 10. `dtb-support`
 11. `dtb-returns`
 
-New business logic belongs inside the owning module subtree, not a root-level legacy wrapper.
+New business logic belongs inside the owning module subtree.
 
 ## Build and tooling
 
-- Node.js 20 for frontend builds;
-- locked dependency installation via `npm ci --include=dev`;
-- Webpack 5 and Babel;
-- Tailwind CSS v4, PostCSS, and Autoprefixer;
-- ESLint 9 flat configuration;
-- Workbox `GenerateSW` for production service worker generation;
-- Terser and CSS minimization;
+Current frontend package/build profile:
+
+- Node.js 20 in CI;
+- locked install with `npm ci --include=dev`;
+- Webpack 5.106;
+- Babel 7;
+- ESLint 9 flat config;
+- Tailwind CSS 4.1;
+- Workbox `GenerateSW`;
+- Terser/CSS minimization;
 - optional bundle analysis with `ANALYZE=true`;
-- Python scripts for catalog validation, normalization, pricing, image sync, and audits;
-- PowerShell scripts for operational diagnostics where present.
+- `sharp` available for image tooling;
+- Python and PowerShell operational scripts elsewhere in the repository.
 
-Frontend validation gates are dependency installation, source lint, production build, and credential-artifact safety. Do not claim a smoke script passed unless the script exists in the checked-out source and was actually run.
+`frontend/package.json` build commands:
 
-## Frontend build contract
+```text
+npm run build
+npm run build:staging
+npm run clean:build-cache
+npm run lint
+```
 
-`frontend/webpack.config.cjs` controls environment loading, public `REACT_APP_*` injection, production/staging output, chunking, copied public assets, error pages, service-worker generation, and development proxying.
+Production/staging builds run public-environment safety checks and generated-output cleanup. Current build configuration disables production/staging disk caches and source maps by default unless explicit diagnostic opt-ins are set.
 
-Only public configuration may use `REACT_APP_*`. The current production storefront does not require a React Stripe publishable key because Stripe configuration and payment rendering are owned by the official WooCommerce Stripe extension.
+## Environment and browser-safety model
 
-Forbidden browser values include WooCommerce application passwords, consumer keys/secrets, Stripe secret keys, Stripe webhook secrets, PaymentIntent client secrets, wallet tokens, Veeqo keys, QuickBooks credentials, private keys, and server integration credentials.
+`REACT_APP_*` values are public at build time. They may contain public URLs, route bases, environment identifiers, and feature flags, but never server integration credentials or payment secrets.
 
-## Environment model
+Preferred browser auth uses HttpOnly `dtb_auth`; compatibility bearer tokens are memory-only. Same-origin authenticated/session requests preserve credentials.
 
-### Browser-safe values
-
-- public site/API base URLs;
-- Woo Store API path;
-- feature flags;
-- environment identifier;
-- public launch dates.
-
-### Server-only values
-
-Defined in `wp-config.php`, WooCommerce/Stripe plugin settings, or secured host configuration:
-
-- `WC_PROXY_CONSUMER_KEY`, `WC_PROXY_CONSUMER_SECRET`;
-- `DTB_WC_AUTH_USER`, `DTB_WC_AUTH_PASS`;
-- `WC_WEBHOOK_SECRET`, `DTB_IMPORT_SECRET`;
-- official Stripe gateway secret/webhook/account configuration managed by the plugin/runtime;
-- `DRYWALL_JWT_SECRET`;
-- `DTB_VEEQO_*` credentials/authority IDs;
-- `DTB_QBO_*` credentials;
-- marketplace credentials;
-- `DTB_EXTERNAL_ORDER_WRITE_SECRET`.
-
-`wp-config.php`, uploads, cache, and runtime secrets are never included in deploy payloads.
+Current rewards state must be read from source, not environment alone: `isRewardsEnabled()` returns false and rewards services/jobs/controllers are omitted from integration bootstrap.
 
 ## Frontend API/session model
 
 Canonical browser communication uses:
 
-- `frontend/src/api/client.js` for DTB/proxy requests;
-- `frontend/src/api/cart.js` for WooCommerce Store API cart/session operations;
-- domain-specific modules under `frontend/src/api/`;
-- cookie credentials for same-origin authenticated/session requests;
-- optional bearer tokens from the in-memory `tokenStore` only.
+- `frontend/src/api/client.js` for DTB/proxy calls;
+- `frontend/src/api/cart.js` for Woo Store API cart/session operations;
+- domain modules under `frontend/src/api/`;
+- cookie credentials for same-origin session/auth requests;
+- optional in-memory bearer compatibility only.
 
-For production/staging same-origin cart traffic, WooCommerce's cookie-backed session is the checkout continuity authority and Store API mutations use the `Nonce` header. `Cart-Token` is compatibility-only for genuinely cross-origin clients; same-origin React must not maintain a separate persisted Cart-Token cart that diverges from `/checkout/`.
+Same-origin Woo cart continuity uses the WooCommerce cookie-backed session. Store API mutations use `Nonce` semantics. `Cart-Token` is compatibility-only for genuinely cross-origin clients and must not become a second persisted same-origin cart.
 
 ## Checkout runtime architecture
 
-React owns the cart page, cart drawer, and checkout CTA/handoff only. `/checkout` in React is compatibility routing that immediately performs full-document navigation to the WordPress/WooCommerce checkout. The cart, compatibility route, and native document use a shared fail-open loading presentation to mask intermediate document rewrites without changing routing authority.
+React owns cart UX and checkout handoff. `/checkout` in React is compatibility routing; the authoritative document is WordPress/WooCommerce.
 
-The active headless WordPress theme normally forces frontend requests into React and strips non-React assets. `dtb-commerce/Payment/WooNativeCheckoutRuntime.php` is the explicit checkout exception: it disables those theme overrides for checkout/endpoints and hosts the assigned Checkout page content without manually rendering payment controls.
+Critical backend files:
 
-The actual checkout is the assigned WooCommerce Checkout page containing the Checkout Block. The official WooCommerce Stripe Payment Gateway renders payment methods, Link, eligible wallets, tokenization, and 3DS/SCA. `DTB_OfficialStripeNativeCheckout` owns readiness metadata, responsive checkout presentation, mobile route-stable step navigation, supported Stripe Appearance API configuration, order tagging, strict official-gateway detection, and non-secret paid reference mirroring. The mobile step script only changes interaction state on existing Checkout Block section wrappers; it never renders, moves, submits, or replaces provider payment controls.
+```text
+dtb-commerce/Payment/WooNativeCheckoutRuntime.php
+dtb-commerce/Payment/OfficialStripeNativeCheckout.php
+dtb-commerce/Payment/MobilePaymentSheet.php
+dtb-commerce/Payment/CheckoutPerformance.php
+dtb-commerce/Templates/WooNativeCheckoutPage.php
+```
 
-Frontend checkout work must not reintroduce React checkout forms, Stripe Elements wrappers, Stripe Checkout Sessions, payment iframes, copied plugin builds, DOM observer payment runtimes, or fake Apple Pay/Google Pay/Link buttons. React product pages and quick-view modals use Woo Store API cart mutations and hand off to the official checkout runtime for eligible express methods.
+The native runtime exempts checkout/payment endpoints from normal headless-theme SPA forcing and hosts the assigned Woo Checkout page. It does not manually instantiate Checkout Block, provider fields, payment objects, or orders.
 
-Production and staging frontend builds disable webpack/Babel disk caches and source maps by default. Development retains filesystem caches. `DTB_WEBPACK_FS_CACHE=1` and `DTB_SOURCE_MAPS=1` are explicit diagnostic opt-ins; build scripts pre-clean only their generated output and matching stale webpack cache, while `npm run clean:build-cache` clears all frontend build caches on demand. Public ZIP archives are excluded from deployment copying.
+### Mobile payment sheet
 
-WooCommerce 10.9 fires `woocommerce_product_import_inserted_product_object` as an action after both new and updated product saves; it does not expose the older start/end hooks around each current CSV batch. DTB marks catalog caches dirty from that action, suppresses repeated invalidation during importer saves, and flushes once on WordPress shutdown for the AJAX request.
-Safe-mode CSV imports use ten rows per AJAX batch so the native WooCommerce progress bar receives frequent percentage updates on shared hosting; image-sideloading mode remains capped at five rows.
+The mobile `Contact -> Shipping -> Payment` flow is presentation layered over the existing Checkout Block.
 
-## Backend API surface
+- provider-owned payment nodes remain mounted;
+- no clone/reparent/recreate behavior;
+- final submission remains Woo Place Order;
+- mobile `Pay now` labeling uses supported Checkout Block filtering;
+- displayed `Total due` is read from Woo Blocks `wc/store/cart` state;
+- focus containment must yield to provider-owned challenge/modal focus;
+- software-keyboard and viewport handling must not hide provider errors or final action.
+
+### Checkout performance and stability
+
+`CheckoutPerformance.php` and `woo-native-checkout-performance.js` own checkout-only performance/stability policy.
+
+Current capabilities include:
+
+- checkout resource hints and DTB CSS preload;
+- low-priority static checkout prewarm after successful cart engagement;
+- prewarm manifest returned through read-safe capability metadata;
+- explicit suppression of known non-essential checkout marketing/tracking resources;
+- order-summary image loading policy;
+- bounded runtime diagnostics for JS/resource/provider/root-replacement/layout/performance issues;
+- payment-surface timeout recovery presentation.
+
+Prewarm must never fetch or cache session-owned `/checkout/` HTML.
+
+Diagnostics route:
+
+```text
+POST /wp-json/dtb/v1/checkout/runtime-telemetry
+```
+
+It is diagnostics-only and protected by dedicated nonce/origin/rate-limit/allowlist/bounds/redaction controls. It never mutates authoritative cart/order/payment state and makes no slow external calls during checkout.
+
+## Calculator report architecture
+
+Owning frontend subtree:
+
+```text
+frontend/src/components/calculators/report/
+├─ calculatorReportModel.js
+├─ CalculatorReport.jsx
+├─ calculator-report.css
+└─ README.md
+```
+
+`calculatorReportModel.js` is the canonical presentation mapper from calculator summary state to printable report data. The report renderer formats grouped values but does not recalculate estimator authority.
+
+Export is browser-native preview + print/Save-as-PDF. Print isolation is scoped to calculator report mode. Current workflow adds no server-side PDF endpoint or external PDF service.
+
+## API surface model
 
 ### `dtb/v1`
 
-Platform/domain APIs including auth/account, checkout capability metadata, catalog, schematics/media, repairs, returns, support, Veeqo, QuickBooks, health/cache, and operator endpoints. `GET /dtb/v1/config` and checkout capability routes must remain public-safe and secret-free.
+Primary DTB platform/domain APIs: auth/account, catalog, checkout capability/diagnostics, schematics/media, repairs, returns, support, integration/admin/health surfaces.
 
 ### `drywall/v1`
 
-Server-side read compatibility/proxy surfaces. Legacy raw storefront order creation is retired; storefront orders are created through WooCommerce Checkout Block.
+Compatibility/proxy surfaces. Raw storefront order creation remains retired.
 
 ### `headless/v1`
 
@@ -143,43 +186,62 @@ Theme-level headless support endpoints.
 
 ### `wc/store/v1`
 
-WooCommerce Store API for cart/session operations. Storefront inventory validation may additionally use DTB Veeqo availability APIs; bulk inventory authority remains server-side.
+WooCommerce Store API for public cart/session operations.
 
-## Authentication and security posture
+## Security posture
 
-- preferred HttpOnly `dtb_auth` cookie with optional in-memory bearer compatibility;
-- no JWT/application password/consumer secret/API key/payment secret persisted in browser storage;
+- preferred HttpOnly cookie authentication;
+- no integration/payment/server credentials persisted in browser storage;
 - centralized origin/CORS policy;
-- customer record reads bind records to authenticated ownership;
-- admin endpoints require explicit capabilities;
-- public endpoints are read-safe or narrowly signed/protected;
-- official Stripe webhook authentication/reconciliation remains owned by the official gateway;
-- Veeqo/other DTB webhook verification remains in owning integrations;
-- order write boundary blocks raw external order creation and duplicate side effects.
+- explicit REST permission callbacks;
+- customer ownership validation independent of caller-supplied IDs;
+- provider webhook authentication remains with the owning integration/payment plugin;
+- order write boundary and idempotent queues protect duplicate side effects;
+- checkout diagnostics are bounded and redact sensitive values before persistence.
 
-## Live HostGator deployment
+## Routing and cache contract
 
-Document root: `/public_html/drywalltoolbox/`; WordPress lives in `/public_html/drywalltoolbox/wp/`.
+`drywalltoolbox/.htaccess` routes these to WordPress before SPA fallback:
 
-Root routing sends REST, WooCommerce `wc-api`, `/checkout/`, `order-pay`, and order-received/payment endpoints to WordPress before the React fallback. Checkout/session/payment/callback surfaces are private/no-store. WooCommerce session cookies must be root-scoped in runtime configuration so React Store API cart and native checkout share one browser session.
+- root REST aliases;
+- WordPress admin/login aliases;
+- `/checkout/`;
+- checkout order-pay/order-received variants;
+- WooCommerce `wc-api` callbacks;
+- staging checkout equivalents.
 
-`drywalltoolbox/.htaccess` must preserve independent WordPress/WooCommerce `Set-Cookie` headers when adding host cache-bypass cookies.
-
-React static assets may be cached/revalidated normally; checkout/payment HTML must never be served from the SPA or public page cache.
+Checkout/payment/session-owned surfaces must remain private/no-store. React static assets may be cached normally. Root cache-bypass behavior must not destroy independent WordPress/WooCommerce session headers.
 
 ## Async and integration execution
 
-External order side effects use `dtb_order_enqueue_job()` and Action Scheduler group `dtb-orders`.
+Order-related external effects use `dtb_order_enqueue_job()` and Action Scheduler group `dtb-orders`.
 
-Initial fulfillment/accounting dispatch occurs only after the captured-payment contract passes and is protected by an atomic per-order dispatch barrier. Refund accounting is keyed by concrete Woo `refund_id`; partial refunds must not be collapsed into one cumulative refund identity.
+Initial fulfillment/accounting dispatch occurs only after the captured-payment contract passes and remains protected against duplicate dispatch. Refund projection preserves concrete Woo `refund_id` identity so multiple partial refunds remain distinct.
+
+## CI and deployment reality
+
+`.github/workflows/ci-build.yml` is active for pushes/PRs to `main` and manual dispatch. It currently performs:
+
+- Node 20 setup;
+- frontend dependency install;
+- lint;
+- production build;
+- `scripts/smoke-dtb-mobile-payment-sheet.ps1`;
+- `scripts/smoke-dtb-checkout-performance.ps1`;
+- deploy-payload assembly/boundary checks.
+
+`.github/workflows/deploy.yml` is manual-only and currently stops after build/package + protected HostGator backup snapshot logic with a placeholder indicating remaining deployment/restore work. Do not treat it as a verified complete deploy/restore/rollback workflow until the missing sequence is implemented and validated.
+
+Current repository gap: historical paths `scripts/smoke-dtb-mu-modules.ps1` and `scripts/smoke-dtb-catalog-api.ps1` are not presently tracked. Do not claim those scripts ran. Use available targeted checks and report the gap when those coverage classes are required.
 
 ## Engineering conventions
 
 - backend rules stay in bounded mu-plugin modules;
-- frontend data access stays in `frontend/src/api/`;
-- React remains public renderer and checkout handoff surface, not payment authority;
-- all order/integration writes use canonical queue/write-boundary contracts;
-- public shipping language distinguishes DTB-calculated rates from Veeqo fulfillment truth;
-- checkout/payment rendering stays in WooCommerce Checkout Block and official Stripe extension points;
-- update durable docs when authorities/routes/contracts change;
-- run `npm ci --include=dev`, lint/build for frontend changes and targeted PHP/source/runtime validation for checkout/backend changes.
+- new frontend data access stays in `frontend/src/api/`;
+- React remains public renderer/cart UX/handoff surface, not payment authority;
+- Woo/official Stripe remain checkout/payment authority;
+- order/integration side effects use canonical write-boundary/queue/idempotency contracts;
+- checkout performance work fails open and never caches private session documents;
+- calculator report rendering never becomes a second calculation engine;
+- update durable docs whenever authorities, routes, queues, runtime topology, or deployment behavior change;
+- never claim validation, merge, deployment, or production health without direct evidence.
