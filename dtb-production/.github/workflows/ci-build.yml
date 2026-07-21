@@ -1,0 +1,102 @@
+name: CI Build Validation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_ENV: production
+  PUBLIC_URL: /
+  REACT_APP_WP_BASE_URL: https://drywalltoolbox.com
+  REACT_APP_WP_API_BASE: https://drywalltoolbox.com/wp-json
+  REACT_APP_JWT_ENDPOINT: https://drywalltoolbox.com/wp-json/simple-jwt-login/v1/auth
+  REACT_APP_JWT_AUTH_ENDPOINT: /wp-json/simple-jwt-login/v1/auth
+  REACT_APP_API_BASE_URL: https://drywalltoolbox.com
+  REACT_APP_DTB_API_BASE: /wp-json/dtb/v1
+  REACT_APP_STORE_API_BASE: /wp-json/wc/store/v1
+  REACT_APP_SITE_URL: https://drywalltoolbox.com
+  REACT_APP_APP_ENV: production
+  REACT_APP_ENV: production
+  REACT_APP_REWARDS_ENABLED: '1'
+  REACT_APP_STORE_LAUNCH_DATE: ''
+
+jobs:
+  build:
+    name: Build deployable application payload
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci --include=dev --prefer-offline --no-audit --no-fund
+
+      - name: Lint frontend source
+        run: cd frontend && npm run lint --if-present
+
+      - name: Build frontend for drywalltoolbox.com
+        run: cd frontend && npm run build
+
+      - name: Validate mobile payment-sheet contract
+        shell: pwsh
+        run: ./scripts/smoke-dtb-mobile-payment-sheet.ps1
+
+      - name: Validate checkout performance and stability contract
+        shell: pwsh
+        run: ./scripts/smoke-dtb-checkout-performance.ps1
+
+      - name: Assemble deployment payload
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf deploy-root
+          mkdir -p deploy-root
+
+          cp -a dist/. deploy-root/
+          cp -a drywalltoolbox/logos deploy-root/logos
+          cp drywalltoolbox/.htaccess deploy-root/.htaccess
+
+          mkdir -p deploy-root/wp/wp-content
+          cp -a drywalltoolbox/wp/.htaccess deploy-root/wp/.htaccess
+          cp -a drywalltoolbox/wp/index.php deploy-root/wp/index.php
+          cp -a drywalltoolbox/wp/wp-content/mu-plugins deploy-root/wp/wp-content/mu-plugins
+          cp -a drywalltoolbox/wp/wp-content/themes deploy-root/wp/wp-content/themes
+
+      - name: Validate deployment payload boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f deploy-root/index.html
+          test -f deploy-root/.htaccess
+          test -f deploy-root/logos/favicon.ico
+          test -d deploy-root/assets/js
+          test -d deploy-root/assets/css
+          test -f deploy-root/wp/.htaccess
+          test -f deploy-root/wp/index.php
+          test -d deploy-root/wp/wp-content/mu-plugins
+          test -d deploy-root/wp/wp-content/themes
+
+          if find deploy-root -name 'wp-config.php' -o -path '*/wp-content/uploads/*' -o -path '*/wp-content/cache/*' | grep -q .; then
+            echo 'Refusing invalid payload shape.' >&2
+            exit 1
+          fi
