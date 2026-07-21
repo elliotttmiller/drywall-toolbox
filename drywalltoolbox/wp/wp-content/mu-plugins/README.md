@@ -2,7 +2,7 @@
 
 # Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-Last verified against source: 2026-07-20.
+Last verified against source: 2026-07-21.
 
 Source code and the active loader are authoritative for `drywalltoolbox/wp/wp-content/mu-plugins/`. When this document and implementation diverge, correct the document in the same change.
 
@@ -41,6 +41,7 @@ Catalog/product/variation/brand/taxonomy models and normalization, relationships
 - native Woo checkout runtime exception for the headless theme;
 - official WooCommerce Stripe gateway readiness/capability metadata;
 - mobile payment-sheet accessibility/presentation hardening and non-secret readiness diagnostics;
+- checkout performance policy, static-asset prewarm metadata, third-party budget enforcement, runtime stability telemetry, and provider-surface recovery presentation;
 - checkout-order contract tagging and non-secret paid reference mirroring;
 - responsive checkout presentation, cross-document handoff loading, mobile progressive step navigation, and official Stripe Appearance API configuration;
 - DTB shipping policy method;
@@ -78,6 +79,23 @@ dtb-commerce/assets/woo-native-checkout-payment-sheet.css
 ```
 
 This layer is presentation/readiness only. It adds accessible modal chrome, focus containment, `visualViewport` adaptation, and a read-only total projection from WooCommerce Blocks `wc/store/cart`. It never moves provider-owned payment nodes, creates Stripe payment objects, replaces Woo submission, or calls Stripe from the public readiness endpoint. The existing `GET /wp-json/dtb/v1/checkout/capabilities` response is augmented only with non-secret local readiness signals such as layout, settings-sync state, active-mode local webhook configuration, cached webhook health when already available, capture mode, and competing-authority presence.
+
+Checkout performance/stability hardening lives at:
+
+```text
+dtb-commerce/Payment/CheckoutPerformance.php
+dtb-commerce/assets/woo-native-checkout-performance.js
+```
+
+It owns checkout-only resource hints, a server-generated manifest for low-priority storefront prewarming of DTB static checkout assets, known non-essential marketing/tracking asset suppression, below-fold order-summary image policy, scoped checkout runtime diagnostics, provider-surface timeout recovery presentation, and the nonce/origin/rate-limited telemetry write boundary. It does not cache private checkout HTML, reconstruct Woo form state, or create payment/order state.
+
+The diagnostics-only route is:
+
+```text
+POST /wp-json/dtb/v1/checkout/runtime-telemetry
+```
+
+It requires the dedicated checkout telemetry nonce, same-origin validation when Origin is present, rate limiting, event deduplication, allowlisted event kinds, bounded/sanitized fields, and sensitive-value redaction. It never accepts authoritative cart/order/payment writes.
 
 ### `dtb-order-platform`
 
@@ -120,6 +138,7 @@ Independent support-ticket and return lifecycle domains with persistence, author
 ```text
 React cart / cart drawer
   -> WooCommerce Store API same-origin cookie session
+  -> low-priority static checkout prewarm after successful cart engagement
   -> full-document /checkout/
   -> domain-root .htaccess routes to WordPress
   -> DTB native checkout runtime exempts request from React theme override
@@ -137,11 +156,14 @@ Authority rules:
 - WooCommerce owns cart/session/customer/address/shipping/tax/totals/order creation and authoritative order/payment status.
 - Official WooCommerce Stripe Payment Gateway owns Stripe payment rendering, eligible wallets/Link, tokenization, 3DS/SCA, payment execution, and webhook synchronization.
 - React owns cart UX/handoff only and must not render payment fields, wallet iframes, fake buttons, or create payment/order objects.
-- DTB may style/diagnose/tag/observe, but does not impersonate the gateway.
+- DTB may style/diagnose/tag/observe/prewarm static assets, but does not impersonate the gateway.
 - Mobile payment-sheet UI is presentation state only; its displayed total is read directly from Woo Blocks cart state and is never independently calculated.
+- Checkout telemetry observes failures/performance only and never becomes a cart/order/payment write path.
 - Veeqo owns fulfillment truth; QuickBooks owns accounting projection only.
 
 Same-origin React cart traffic uses WooCommerce's cookie-backed session + Store API `Nonce`. Cart-Token is compatibility-only for genuinely cross-origin clients. DTB must never decode unsigned Cart-Token payloads or query `woocommerce_sessions` to recover arbitrary sessions.
+
+Checkout prewarming may fetch only read-safe capabilities metadata and static DTB assets. It must not prefetch or cache session-owned `/checkout/` HTML.
 
 ## 4. Captured-payment contract
 
@@ -177,7 +199,9 @@ Server-only secrets include Woo application credentials, JWT signing secrets, of
 
 The React storefront does not require a Stripe key for the current architecture.
 
-The public checkout capabilities endpoint may expose only non-secret readiness metadata. It must not return Stripe keys, webhook secrets, PaymentIntent/Checkout Session client secrets, tokens, raw webhook data, or payment credentials. Readiness checks on that public request must remain local/non-blocking and must not trigger external Stripe calls.
+The public checkout capabilities endpoint may expose only non-secret readiness/performance metadata. It must not return Stripe keys, webhook secrets, PaymentIntent/Checkout Session client secrets, tokens, raw webhook data, or payment credentials. Readiness checks on that public request must remain local/non-blocking and must not trigger external Stripe calls.
+
+Checkout runtime telemetry must never persist raw form values, email addresses, order keys, bearer/JWT tokens, Stripe keys/webhook secrets/client secrets, or Checkout Session secrets. The server sanitizes/redacts telemetry before logging; client-side source URLs omit query strings.
 
 ## 7. Routing/cache contract
 
@@ -195,11 +219,15 @@ Root routing must send these to WordPress before SPA fallback:
 
 Checkout, callbacks, session-owned pages, and payment endpoints are private/no-store. Host cache-bypass cookies must be added without replacing WordPress/WooCommerce `Set-Cookie` headers.
 
+Static checkout asset prewarm is allowed; private checkout document prefetch/caching is not.
+
 ## 8. Async/integration contract
 
 Order-related external effects use `dtb_order_enqueue_job()` and Action Scheduler group `dtb-orders`.
 
 New work must define owner, hook/args, idempotency/deduplication, retries/terminal failure, observability, and recovery. Slow Veeqo/QuickBooks calls must not occur synchronously during checkout or Stripe webhook acknowledgement.
+
+Checkout runtime telemetry is a local bounded log write. It must not make slow external calls during checkout.
 
 ## 9. Deployment contract
 
@@ -230,15 +258,23 @@ Targeted PHP/source validation:
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeCheckoutRuntime.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/MobilePaymentSheet.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/CheckoutPerformance.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/RefundLifecycle.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksJobOverride.php
 ./scripts/smoke-dtb-mobile-payment-sheet.ps1
+./scripts/smoke-dtb-checkout-performance.ps1
 git diff --check
 ```
 
-Do not claim a referenced smoke script passed if it is absent from the checked-out repository.
+Performance shell baseline:
 
-Runtime staging validation must prove cart/session continuity, Checkout Block rendering, official Stripe cards/3DS/eligible and ineligible express methods, accessible payment-sheet focus containment, mobile software-keyboard behavior, authoritative total parity, order creation exactly once, captured-payment gating, webhook replay tolerance, order-pay retry, refunds by `refund_id`, Veeqo dispatch once, and QuickBooks create/refund projection exactly once before live payment acceptance.
+```powershell
+./scripts/audit-dtb-checkout-pagespeed.ps1 -Url "https://drywalltoolbox.com/checkout/"
+```
+
+Do not claim a referenced smoke or performance command passed unless it actually ran and produced usable evidence.
+
+Runtime staging validation must prove cart/session continuity, Checkout Block rendering, official Stripe cards/3DS/eligible and ineligible express methods, accessible payment-sheet focus containment, mobile software-keyboard behavior, authoritative total parity, checkout root/form-state stability, payment-surface timeout recovery, third-party checkout budget, order creation exactly once, captured-payment gating, webhook replay tolerance, order-pay retry, refunds by `refund_id`, Veeqo dispatch once, and QuickBooks create/refund projection exactly once before live payment acceptance.
