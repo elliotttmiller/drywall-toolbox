@@ -1,151 +1,131 @@
 # Structure
 
-Last verified against source: 2026-07-19.
+Last verified against source: 2026-07-20.
 
 ## Architecture truth
 
-Drywall Toolbox is a headless commerce and operations platform with four primary repository layers:
+Drywall Toolbox has four primary repository layers:
 
-1. `frontend/` — React SPA and customer-facing route/UI implementation.
-2. `drywalltoolbox/` — tracked production deployment mirror. WordPress/WooCommerce application code lives under `drywalltoolbox/wp/`.
-3. `products/` — production catalog, taxonomy, image, schematic, pricing, and audit data.
-4. `scripts/` — deterministic catalog, media, smoke-test, and operational tooling.
+1. `frontend/` — React SPA and customer-facing UI/routes.
+2. `drywalltoolbox/` — tracked production deployment mirror; WordPress/WooCommerce code lives under `drywalltoolbox/wp/`.
+3. `products/` — production catalog, taxonomy, identifiers, pricing, media, schematic, compatibility, shipping-specification, and audit data.
+4. `scripts/` — deterministic operational, validation, audit, and smoke tooling.
 
-There is no canonical root-level `wp/` application directory. Backend edits belong under `drywalltoolbox/wp/` unless a task explicitly targets deployment documentation or generated/runtime state.
+There is no canonical root-level `wp/` application source tree. Generated `dist/` output is not a source editing target.
 
 ## Repository map
 
 ```text
 drywall-toolbox/
-├─ .github/
-│  ├─ copilot-instructions.md
-│  └─ workflows/
-│     ├─ ci-build.yml
-│     └─ deploy.yml
-├─ dist/                                  generated production frontend output
-├─ docs/                                  architecture, operations, plans, company, references
-├─ drywalltoolbox/                        tracked live-server deployment mirror
-│  ├─ .htaccess                           domain-root routing/security policy
+├─ .github/workflows/
+│  ├─ ci-build.yml
+│  └─ deploy.yml
+├─ dist/                                  generated frontend output
+├─ docs/                                  architecture and operations docs
+├─ drywalltoolbox/                        tracked production mirror
+│  ├─ .htaccess                           root routing/security/cache policy
 │  ├─ logos/
 │  └─ wp/
-│     ├─ .htaccess                        WordPress-subdirectory routing policy
+│     ├─ .htaccess
 │     ├─ index.php
 │     └─ wp-content/
-│        ├─ mu-plugins/                    DTB backend platform
+│        ├─ mu-plugins/                    canonical DTB backend
 │        └─ themes/                        headless/backend-support themes
 ├─ frontend/                              React storefront source
-├─ memory-bank/                           durable architecture context
+├─ memory-bank/
 │  ├─ product.md
 │  ├─ structure.md
 │  └─ tech.md
-├─ products/                              catalog/media/production operations workspace
-├─ scripts/                               Python and PowerShell operational tooling
-├─ AGENTS.md                              repository agent operating contract
-├─ coming-soon.html
+├─ products/
+├─ scripts/
+├─ AGENTS.md
 └─ README.md
 ```
-
-Generated build output is not a source-of-truth editing target. Modify `frontend/`, build into `dist/`, and deploy the generated payload.
 
 ## Production topology
 
 ```text
-/public_html/drywalltoolbox/              public document root
-├─ index.html                             React application shell
-├─ assets/                                compiled React assets
-├─ .htaccess                              HTTPS, REST aliases, WP aliases, SPA fallback
+/public_html/drywalltoolbox/
+├─ index.html
+├─ assets/
+├─ .htaccess
 ├─ logos/
-├─ staging/2972/                          staging SPA build target
-└─ wp/                                    WordPress + WooCommerce runtime
+├─ staging/2972/
+└─ wp/
    ├─ wp-admin/
    ├─ wp-includes/
    ├─ wp-content/
-   └─ wp-config.php                       runtime-only; never deployed from Git
+   └─ wp-config.php                       runtime-only
 ```
 
-The contents of repository `dist/` are uploaded to `/public_html/drywalltoolbox/`. The tracked `drywalltoolbox/wp/wp-content/mu-plugins/` and `themes/` trees are deployed into the live `/wp/wp-content/` runtime. Uploads, cache, WordPress core, and `wp-config.php` are server-owned runtime state and are excluded from deployment packages.
+Frontend build contents deploy to the document root. Tracked mu-plugins/themes map into `/wp/wp-content/`. Uploads, cache, WordPress core, runtime configuration, and runtime credentials are server-owned state and are excluded from deploy payloads.
 
 ## Request flow
 
 ```text
 Browser
-  -> domain-root .htaccess
-     -> existing static file / React application shell
-     -> /wp-json/* alias -> /wp/index.php
-     -> /wp-admin/* alias -> /wp/wp-admin/*
-     -> /checkout/ and WooCommerce order-pay endpoints -> /wp/index.php
-  -> React route in frontend/src/App.jsx
-  -> frontend/src/api/*, hooks, and providers
-  -> /wp-json/dtb/v1/*
-     /wp-json/drywall/v1/*
-     /wp-json/headless/v1/*
-     /wp-json/wc/store/v1/*
-  -> WordPress REST server
-  -> DTB mu-plugin controller/service/repository or WooCommerce Store API
-  -> WooCommerce, DTB tables/post meta, Action Scheduler, Veeqo, QuickBooks
+  -> drywalltoolbox/.htaccess
+     -> static file / React SPA fallback
+     -> REST and wp-admin aliases -> WordPress
+     -> checkout/order-pay/order-received/wc-api -> WordPress/WooCommerce
+  -> React routes in frontend/src/App.jsx
+  -> frontend/src/api/* + hooks/providers
+  -> dtb/v1, drywall/v1, headless/v1, wc/store/v1
+  -> WordPress/WooCommerce/DTB modules
+  -> persistence + Action Scheduler
+  -> Veeqo / QuickBooks / notifications / marketplace adapters
 ```
 
-React owns public rendering and interaction state. Backend modules own authorization, validation, persistence, lifecycle transitions, integration policy, and operational side effects. Checkout is intentionally a WordPress/WooCommerce document, not a React payment route.
+React owns rendering and interaction state. Backend modules own authoritative validation, authorization, persistence, lifecycle policy, integrations, and side effects. Checkout is a native WooCommerce document, not a React payment surface.
 
 ## Frontend structure
 
 ```text
-frontend/
-├─ public/                        copied static assets
-├─ scripts/                       frontend build-safety scripts
-├─ server/                        local reviews/dev support
-├─ src/
-│  ├─ analytics/
-│  ├─ api/                        canonical data-access layer
-│  ├─ assets/
-│  ├─ auth/                       auth provider and in-memory token store
-│  ├─ components/
-│  │  ├─ account/
-│  │  ├─ catalog/
-│  │  ├─ errors/
-│  │  ├─ product/
-│  │  ├─ repairs/
-│  │  ├─ routing/
-│  │  ├─ schematics/
-│  │  ├─ shared/
-│  │  ├─ shell/
-│  │  ├─ storefront/
-│  │  ├─ system/
-│  │  └─ ui/
-│  ├─ constants/
-│  ├─ context/
-│  ├─ data/
-│  ├─ hooks/
-│  ├─ motion/
-│  ├─ pages/                      route-level screens
-│  ├─ services/                   legacy compatibility/facade layer; do not expand
-│  ├─ styles/
-│  ├─ utils/
-│  ├─ App.jsx                     provider and route composition
-│  └─ main.jsx                    browser bootstrap
-├─ package.json
-└─ webpack.config.cjs
+frontend/src/
+├─ api/                        canonical browser/server access
+├─ auth/                       auth/session helpers
+├─ components/
+│  ├─ account/
+│  ├─ calculators/
+│  │  └─ report/               calculator report model/template/styles
+│  ├─ catalog/
+│  ├─ product/
+│  ├─ repairs/
+│  ├─ routing/
+│  ├─ schematics/
+│  ├─ shell/
+│  ├─ storefront/
+│  └─ ui/
+├─ context/
+├─ hooks/
+├─ pages/                      route-level screens
+├─ services/                   compatibility-only; do not expand
+├─ styles/
+├─ utils/
+├─ App.jsx                     route/provider composition
+└─ main.jsx                    browser bootstrap
 ```
 
-Frontend ownership rules:
+Frontend rules:
 
-- Place public route registration in `frontend/src/App.jsx`.
-- Place server communication in `frontend/src/api/`.
-- Keep optional legacy facades in `frontend/src/services/` credential-free and proxy-backed.
-- Use `frontend/src/auth/tokenStore.js` for optional in-memory bearer tokens; never persist credentials or JWTs in browser storage.
-- Use WooCommerce Store API only for public cart/session operations. WooCommerce admin REST credentials remain server-side.
-- Do not mount Stripe Elements, Stripe Checkout Sessions, express-wallet iframes, or copied payment gateway components in React.
+- route registration belongs in `frontend/src/App.jsx`;
+- new server communication belongs in `frontend/src/api/`;
+- same-origin cart/session state stays with Woo Store API and Woo cookies;
+- React does not own payment/order creation;
+- calculator reports consume the canonical report model and do not recalculate calculator authority.
 
-## Public route groups
+## Route groups
 
-- Storefront: `/`, `/products`, brand/category selectors, and React full-product/quick-view product detail.
-- Parts/schematics: `/parts`, `/product/:partNumber`, `/schematics`.
-- Repairs: intake, packages, tracking, status, authenticated dashboard detail.
-- Commerce: `/cart`, `/checkout` handoff, checkout return states, order confirmation and tracking.
-- Returns/support: return portal/status and support contact/status.
-- Account: login, register, password recovery, dashboard tabs.
-- Content: calculators, FAQ, shipping policy, policies.
-- Disabled: toolset-builder public route remains commented out until explicitly launched.
+- storefront: `/`, `/products`, brand/category selectors, product/variation detail;
+- parts/schematics: `/parts`, `/product/:partNumber`, `/schematics`;
+- repairs: overview/start/packages/tracking/status;
+- commerce: `/cart`, `/checkout` compatibility handoff, checkout return states, order confirmation/tracking;
+- returns/support: return portal/status and support contact/status;
+- account: login/register/password recovery/dashboard redirects;
+- content/tools: calculators, FAQ, shipping/return/store policies, technical-specification preview;
+- disabled: public toolset-builder route remains commented out.
+
+`/checkout` in React is compatibility/handoff behavior only. Root routing owns the authoritative native checkout document.
 
 ## Backend composition
 
@@ -155,77 +135,89 @@ Composition root:
 drywalltoolbox/wp/wp-content/mu-plugins/00-dtb-loader.php
 ```
 
-Canonical loader-managed module order:
+Loader order:
 
-1. `dtb-platform/`
-2. `dtb-catalog-platform/`
-3. `dtb-commerce/`
-4. `dtb-order-platform/`
-5. `dtb-schematics/`
-6. `dtb-media/`
-7. `dtb-marketing/`
-8. `dtb-repair-service/`
-9. `dtb-integrations/`
-10. `dtb-support/`
-11. `dtb-returns/`
+1. `dtb-platform`
+2. `dtb-catalog-platform`
+3. `dtb-commerce`
+4. `dtb-order-platform`
+5. `dtb-schematics`
+6. `dtb-media`
+7. `dtb-marketing`
+8. `dtb-repair-service`
+9. `dtb-integrations`
+10. `dtb-support`
+11. `dtb-returns`
 
-### `dtb-platform/`
+### Module ownership
 
-Shared configuration, support primitives, origin/CORS policy, API security, authentication, cache, health, observability, operator dashboards, account/history REST controllers, and platform administration.
+- `dtb-platform`: security/origin/auth, shared support, cache/health/logging/metrics, account/history APIs, platform admin.
+- `dtb-catalog-platform`: catalog/product/variation/taxonomy models, read models, relationships, compatible/universal parts, inventory intelligence, validation, REST/admin tooling.
+- `dtb-commerce`: Store API extensions, native checkout runtime/presentation, official Stripe readiness boundaries, shipping policy, order tagging, commerce-facing REST/admin/email support.
+- `dtb-order-platform`: order lifecycle, event ledger, integration state, `dtb-orders` queue, write boundary, duplicate containment, payment/refund observation, customer/operator projections.
+- `dtb-schematics` / `dtb-media`: schematic and media mapping/sync/validation/operator tooling.
+- `dtb-repair-service`, `dtb-support`, `dtb-returns`: independent domain lifecycles and workbenches.
+- `dtb-marketing`: coming-soon/subscriber and SEO support.
+- `dtb-integrations`: Woo/Veeqo/QuickBooks/notification/marketplace adapters and orchestration; rewards loading remains intentionally omitted for launch.
 
-### `dtb-catalog-platform/`
+## Checkout implementation map
 
-Catalog domain models, Woo/product repositories, normalization, facets, variation read models, product relationships, compatible/universal parts, inventory intelligence, validation, REST controllers, and catalog admin tools.
-
-`GET /wp-json/dtb/v1/catalog/products/{slug}/detail` is the React PDP read model. It returns the normalized product, variation state, computed selection data, and up to four public `relatedProducts`; curated WooCommerce upsells are ordered first and WooCommerce category/tag relationships fill remaining positions through one batched catalog read.
-
-### `dtb-commerce/`
-
-WooCommerce Store API cart extensions, native Woo checkout runtime exception for the headless theme, checkout capability metadata, official Stripe checkout presentation boundaries, Woo order tagging, toolset/order-line metadata, order type/query services, branded WooCommerce email integration, and commerce-facing order REST/admin surfaces.
-
-### `dtb-order-platform/`
-
-Order lifecycle domain, event ledger, integration state, Action Scheduler queue, write boundary, duplicate containment, WooCommerce payment/refund lifecycle observation, customer/operator tracking projections, order REST controllers, and operations UI.
-
-### `dtb-schematics/` and `dtb-media/`
-
-Schematic mapping/editor/runtime APIs and image/media synchronization, validation, and operator workflows.
-
-### `dtb-repair-service/`, `dtb-support/`, and `dtb-returns/`
-
-Independent lifecycle modules for repair requests, support tickets, and returns. Each owns its domain statuses, persistence, validation, customer endpoints, operator queues, and admin workbench.
-
-### `dtb-integrations/`
-
-Server-side adapters and orchestration for WooCommerce, Veeqo, QuickBooks, notifications, and marketplace channels. External side effects are queued through the order platform where an order lifecycle is involved.
-
-## Order and fulfillment flow
+High-signal owning files:
 
 ```text
-React cart / cart drawer
-  -> WooCommerce Store API cookie-backed cart session
-  -> full-document navigation to /checkout/
-  -> assigned WordPress WooCommerce Checkout page
-  -> WooCommerce Checkout Block
-  -> official WooCommerce Stripe Payment Gateway
-  -> WooCommerce order and payment lifecycle
-  -> DTB captured-payment event ledger
-  -> dtb-orders Action Scheduler queue
-  -> Veeqo inventory/fulfillment synchronization
-  -> QuickBooks accounting projection
-  -> notification and customer tracking projections
+drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/
+├─ Payment/
+│  ├─ WooNativeCheckoutRuntime.php
+│  ├─ OfficialStripeNativeCheckout.php
+│  ├─ MobilePaymentSheet.php
+│  └─ CheckoutPerformance.php
+├─ Templates/WooNativeCheckoutPage.php
+└─ assets/
+   ├─ woo-native-checkout-payment-sheet.js/.css
+   └─ woo-native-checkout-performance.js
 ```
 
-Only WooCommerce Checkout Block may create storefront orders. Legacy raw WooCommerce order creation, DTB-owned checkout session/finalization, and browser-created Stripe payment flows are blocked/retired. Customer order reads must bind requested records to the authenticated customer, not caller-supplied customer IDs.
+Flow:
 
-## Data and operations structure
+```text
+React cart
+  -> Woo Store API cookie session + mutation nonce
+  -> optional low-priority static checkout prewarm
+  -> full-document /checkout/
+  -> root .htaccess -> WordPress
+  -> assigned Woo Checkout page
+  -> WooCommerce Checkout Block
+  -> official WooCommerce Stripe Payment Gateway
+  -> Woo order/payment/refund lifecycle
+  -> DTB captured-payment verification/event ledger
+  -> dtb-orders Action Scheduler
+  -> Veeqo / QuickBooks / notifications / tracking
+```
 
-`products/` and `scripts/` are production-relevant application assets.
+Mobile `Contact -> Shipping -> Payment` and the bottom sheet are presentation-only layers over mounted Woo/Stripe nodes. The sheet total is a read-only Woo Blocks cart projection. Final submission remains Woo Place Order.
 
-Primary authorities:
+Checkout prewarming may request only read-safe capability metadata and approved static assets. Session-owned checkout HTML remains private/no-store.
 
-- WooCommerce: products, customers, Store API cart/session, Checkout Block, orders, taxes/totals, payment status record;
-- official WooCommerce Stripe Payment Gateway: card/payment method rendering, Link, eligible express wallets, tokenization, 3DS/SCA, Stripe payment processing, webhook synchronization;
-- DTB: domain policy, order observation, integration queues, projections, catalog/media/schematic/repair/return/support workflows;
-- Veeqo: inventory and fulfillment;
-- QuickBooks: accounting projection after eligible order/refund lifecycle events.
+## Data and operations
+
+`products/` and `scripts/` are production-relevant assets. Preserve stable identifiers, parent/variation relationships, taxonomy, media mappings, shipping specifications, schematic paths, compatibility, and source provenance. Prefer deterministic scripts and explicit audit outputs; reject ambiguous matches instead of guessing.
+
+## CI and deployment
+
+`.github/workflows/ci-build.yml` runs on pushes/PRs to `main` and manual dispatch. Current tracked steps include Node 20 setup, dependency install, lint, build, mobile payment-sheet smoke, checkout performance smoke, and deploy-payload boundary validation.
+
+`.github/workflows/deploy.yml` is manual-only. It currently contains release inputs/confirmation, build/package validation, protected HostGator backup access, and backup snapshot logic, but the tracked file ends at a placeholder after the backup step. It does not currently contain a verified complete upload/deploy/restore/rollback sequence.
+
+Therefore merge is not deployment, and no production deployment should be claimed without direct evidence.
+
+## Navigation guide
+
+- UI/routes -> `frontend/src/App.jsx`, `pages/`, owning `components/`;
+- frontend data/session -> `frontend/src/api/`, `auth/`, hooks/providers;
+- calculator report/export -> `frontend/src/components/calculators/report/`;
+- checkout routing/presentation -> `drywalltoolbox/.htaccess` + `dtb-commerce/Payment/` + checkout template/assets;
+- order lifecycle/dispatch -> `dtb-order-platform/` then owning `dtb-integrations/` adapter;
+- catalog/API -> `dtb-catalog-platform/`;
+- repair/return/support -> owning bounded module;
+- catalog/media/schematic operations -> `products/` + `scripts/`;
+- release behavior -> `.github/workflows/` + tracked deployment mirror.
