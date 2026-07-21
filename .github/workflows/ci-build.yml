@@ -60,6 +60,10 @@ jobs:
         shell: pwsh
         run: ./scripts/smoke-dtb-mobile-payment-sheet.ps1
 
+      - name: Validate checkout performance and stability contract
+        shell: pwsh
+        run: ./scripts/smoke-dtb-checkout-performance.ps1
+
       - name: Assemble deployment payload
         shell: bash
         run: |
