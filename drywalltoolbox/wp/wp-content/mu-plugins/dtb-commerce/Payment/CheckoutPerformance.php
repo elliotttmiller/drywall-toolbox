@@ -110,8 +110,8 @@ final class DTB_CheckoutPerformance {
 			'dtb-woo-native-checkout-performance',
 			'DTB_CHECKOUT_PERFORMANCE',
 			[
-				'telemetryUrl'           => esc_url_raw( rest_url( 'dtb/v1/checkout/runtime-telemetry' ) ),
-				'telemetryNonce'         => wp_create_nonce( self::TELEMETRY_NONCE_ACTION ),
+				'telemetryUrl'            => esc_url_raw( rest_url( 'dtb/v1/checkout/runtime-telemetry' ) ),
+				'telemetryNonce'          => wp_create_nonce( self::TELEMETRY_NONCE_ACTION ),
 				'paymentSurfaceTimeoutMs' => self::PAYMENT_SURFACE_TIMEOUT_MS,
 			]
 		);
@@ -194,12 +194,12 @@ final class DTB_CheckoutPerformance {
 		}
 
 		$data['performance'] = [
-			'asset_prewarm'               => self::prewarm_manifest(),
-			'noncritical_asset_policy'    => 'known_marketing_tracking_suppressed',
-			'checkout_runtime_telemetry'  => true,
-			'payment_surface_timeout_ms'  => self::PAYMENT_SURFACE_TIMEOUT_MS,
-			'below_fold_image_policy'     => 'viewport_aware_lazy_async',
-			'checkout_document_cache'     => 'private_no_store',
+			'asset_prewarm'              => self::prewarm_manifest(),
+			'noncritical_asset_policy'   => 'known_marketing_tracking_suppressed',
+			'checkout_runtime_telemetry' => true,
+			'payment_surface_timeout_ms' => self::PAYMENT_SURFACE_TIMEOUT_MS,
+			'below_fold_image_policy'    => 'viewport_aware_lazy_async',
+			'checkout_document_cache'    => 'private_no_store',
 		];
 		$response->set_data( $data );
 		return $response;
@@ -327,9 +327,25 @@ final class DTB_CheckoutPerformance {
 		if ( ! $origin ) {
 			return true;
 		}
-		$origin_host = strtolower( (string) wp_parse_url( $origin, PHP_URL_HOST ) );
-		$home_host   = strtolower( (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST ) );
-		return '' !== $origin_host && hash_equals( $home_host, $origin_host );
+
+		$request_origin = self::normalized_origin( $origin );
+		$home_origin    = self::normalized_origin( home_url( '/' ) );
+		return '' !== $request_origin
+			&& '' !== $home_origin
+			&& hash_equals( $home_origin, $request_origin );
+	}
+
+	private static function normalized_origin( string $url ): string {
+		$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
+		$host   = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$port   = absint( wp_parse_url( $url, PHP_URL_PORT ) );
+		if ( ! in_array( $scheme, [ 'http', 'https' ], true ) || '' === $host ) {
+			return '';
+		}
+
+		$default_port = 'https' === $scheme ? 443 : 80;
+		$port_suffix  = $port > 0 && $port !== $default_port ? ':' . $port : '';
+		return $scheme . '://' . $host . $port_suffix;
 	}
 
 	private static function sanitize_source( string $source ): string {
@@ -374,8 +390,26 @@ final class DTB_CheckoutPerformance {
 		return $clean;
 	}
 
+	private static function redact_sensitive_text( string $value ): string {
+		$redactions = [
+			'/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i' => '[redacted-email]',
+			'/\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9_\-]+\b/' => '[redacted-stripe-key]',
+			'/\bpk_(?:live|test)_[A-Za-z0-9_\-]+\b/' => '[redacted-stripe-key]',
+			'/\bwhsec_[A-Za-z0-9_\-]+\b/' => '[redacted-webhook-secret]',
+			'/\b(?:pi|seti)_[A-Za-z0-9]+_secret_[A-Za-z0-9_\-]+\b/' => '[redacted-client-secret]',
+			'/\bcs_(?:live|test)_[A-Za-z0-9_\-]+\b/' => '[redacted-checkout-secret]',
+			'/\bwc_order_[A-Za-z0-9_\-]+\b/' => '[redacted-order-key]',
+			'/\bBearer\s+[A-Za-z0-9._~+\/\-]+=*/i' => 'Bearer [redacted-token]',
+			'/\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\b/' => '[redacted-jwt]',
+			'/client_secret\s*[=:]\s*[^\s&,;]+/i' => 'client_secret=[redacted]',
+		];
+
+		$redacted = preg_replace( array_keys( $redactions ), array_values( $redactions ), $value );
+		return is_string( $redacted ) ? $redacted : '[redacted]';
+	}
+
 	private static function bounded_text( string $value, int $max_length ): string {
-		$value = sanitize_text_field( $value );
+		$value = self::redact_sensitive_text( sanitize_text_field( $value ) );
 		if ( function_exists( 'mb_substr' ) ) {
 			return mb_substr( $value, 0, $max_length );
 		}
