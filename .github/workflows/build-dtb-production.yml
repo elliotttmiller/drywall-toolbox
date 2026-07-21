@@ -6,6 +6,11 @@ on:
       - chore/dtb-production-launch-package
     paths-ignore:
       - 'dtb-production/**'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'dtb-production/**'
   workflow_dispatch:
 
 permissions:
@@ -38,10 +43,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout branch
+      - name: Checkout source branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -134,6 +140,8 @@ jobs:
 
       - name: Commit generated package
         shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -144,4 +152,4 @@ jobs:
             exit 0
           fi
           git commit -m 'chore: materialize production launch package'
-          git push origin HEAD:${GITHUB_REF_NAME}
+          git push origin HEAD:${TARGET_BRANCH}
