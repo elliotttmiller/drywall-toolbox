@@ -45,7 +45,11 @@ $requiredPhpTokens = @(
     'known_marketing_tracking_suppressed',
     'checkout_document_cache',
     'private_no_store',
-    'prewarm_manifest'
+    'prewarm_manifest',
+    'normalized_origin',
+    'redact_sensitive_text',
+    '[redacted-client-secret]',
+    '[redacted-order-key]'
 )
 foreach ($token in $requiredPhpTokens) {
     if (-not $php.Contains($token)) {
@@ -57,10 +61,13 @@ $requiredJsTokens = @(
     'unhandledrejection',
     'payment_surface_timeout',
     'checkout_root_replaced',
+    'state_loss_suspected',
     'third_party_budget',
     'layout-shift',
     'largest-contentful-paint',
     'fetchpriority',
+    'paymentBlock?.querySelector( providerFrameSelector )',
+    'bodyClassObserver',
     'Reload payment options'
 )
 foreach ($token in $requiredJsTokens) {
