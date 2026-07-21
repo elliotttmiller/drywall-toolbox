@@ -19,10 +19,16 @@ function apiCandidates() {
   ]));
 }
 
+function hasHint(signature) {
+  if (typeof document === 'undefined') return false;
+  return Array.from(document.head.querySelectorAll('link[data-dtb-checkout-prewarm]'))
+    .some((link) => link.dataset.dtbCheckoutPrewarm === signature);
+}
+
 function appendHint({ rel, href, as = '', crossOrigin = false }) {
   if (typeof document === 'undefined' || !href) return;
   const signature = `${rel}|${as}|${href}`;
-  if (document.head.querySelector(`link[data-dtb-checkout-prewarm="${CSS.escape(signature)}"]`)) return;
+  if (hasHint(signature)) return;
 
   const link = document.createElement('link');
   link.rel = rel;
