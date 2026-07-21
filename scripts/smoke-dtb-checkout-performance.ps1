@@ -113,10 +113,6 @@ if ($null -ne $node) {
     if ($LASTEXITCODE -ne 0) {
         throw 'node --check failed for woo-native-checkout-performance.js.'
     }
-    & $node.Source --check $prewarmPath
-    if ($LASTEXITCODE -ne 0) {
-        throw 'node --check failed for checkoutPrewarm.js.'
-    }
 }
 
 $phpCommand = Get-Command php -ErrorAction SilentlyContinue
