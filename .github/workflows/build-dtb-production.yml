@@ -1,0 +1,147 @@
+name: Build DTB Production Launch Package
+
+on:
+  push:
+    branches:
+      - chore/dtb-production-launch-package
+    paths-ignore:
+      - 'dtb-production/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dtb-production-package-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: production
+  PUBLIC_URL: /
+  REACT_APP_WP_BASE_URL: https://drywalltoolbox.com
+  REACT_APP_WP_API_BASE: https://drywalltoolbox.com/wp-json
+  REACT_APP_JWT_ENDPOINT: https://drywalltoolbox.com/wp-json/simple-jwt-login/v1/auth
+  REACT_APP_JWT_AUTH_ENDPOINT: /wp-json/simple-jwt-login/v1/auth
+  REACT_APP_API_BASE_URL: https://drywalltoolbox.com
+  REACT_APP_DTB_API_BASE: /wp-json/dtb/v1
+  REACT_APP_STORE_API_BASE: /wp-json/wc/store/v1
+  REACT_APP_SITE_URL: https://drywalltoolbox.com
+  REACT_APP_APP_ENV: production
+  REACT_APP_ENV: production
+  REACT_APP_REWARDS_ENABLED: '1'
+  REACT_APP_STORE_LAUNCH_DATE: ''
+
+jobs:
+  build-package-and-commit:
+    name: Build and materialize dtb-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci --include=dev --prefer-offline --no-audit --no-fund
+
+      - name: Lint frontend source
+        run: cd frontend && npm run lint --if-present
+
+      - name: Build frontend for production
+        run: cd frontend && npm run build
+
+      - name: Assemble strict production launch package
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf dtb-production
+          mkdir -p dtb-production
+
+          # Production React build output. No source, node_modules, cache, or local env files.
+          cp -a dist/. dtb-production/
+
+          # Required root assets and routing.
+          cp -a drywalltoolbox/logos dtb-production/logos
+          cp drywalltoolbox/.htaccess dtb-production/.htaccess
+
+          # Tracked WordPress application code only.
+          mkdir -p dtb-production/wp/wp-content
+          cp drywalltoolbox/wp/.htaccess dtb-production/wp/.htaccess
+          cp drywalltoolbox/wp/index.php dtb-production/wp/index.php
+          cp -a drywalltoolbox/wp/wp-content/mu-plugins dtb-production/wp/wp-content/mu-plugins
+          cp -a drywalltoolbox/wp/wp-content/themes dtb-production/wp/wp-content/themes
+
+          cat > dtb-production/PRODUCTION-PACKAGE.md <<'EOF'
+          # DTB Production Launch Package
+
+          This directory is a generated, deployment-ready copy of only the tracked files required by the active production deployment contract.
+
+          Included:
+          - compiled React production output at the web root
+          - `logos/`
+          - root `.htaccess`
+          - `wp/.htaccess`
+          - `wp/index.php`
+          - `wp/wp-content/mu-plugins/`
+          - `wp/wp-content/themes/`
+
+          Intentionally excluded:
+          - `wp-config.php` and all secrets
+          - WordPress core
+          - regular `wp-content/plugins/`
+          - `wp-content/uploads/`
+          - caches, upgrade/runtime state, logs, backups, and database dumps
+          - frontend source, `node_modules`, build caches, local/staging env files, docs, product workspaces, and development tooling
+
+          Source of truth remains the canonical repository paths and `.github/workflows/deploy.yml`. Regenerate this directory after production source changes; do not hand-edit generated build assets.
+          EOF
+
+      - name: Validate package boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f dtb-production/index.html
+          test -f dtb-production/.htaccess
+          test -f dtb-production/logos/favicon.ico
+          test -d dtb-production/assets/js
+          test -d dtb-production/assets/css
+          test -f dtb-production/wp/.htaccess
+          test -f dtb-production/wp/index.php
+          test -d dtb-production/wp/wp-content/mu-plugins
+          test -d dtb-production/wp/wp-content/themes
+
+          if find dtb-production \
+            \( -name 'wp-config.php' \
+            -o -path '*/wp-content/uploads/*' \
+            -o -path '*/wp-content/cache/*' \
+            -o -path '*/wp-content/plugins/*' \
+            -o -name 'node_modules' \
+            -o -name '.cache' \) | grep -q .; then
+            echo 'Forbidden runtime, secret, plugin, cache, or dependency content found in dtb-production.' >&2
+            exit 1
+          fi
+
+      - name: Commit generated package
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A dtb-production
+          if git diff --cached --quiet; then
+            echo 'dtb-production is already current.'
+            exit 0
+          fi
+          git commit -m 'chore: materialize production launch package'
+          git push origin HEAD:${GITHUB_REF_NAME}
