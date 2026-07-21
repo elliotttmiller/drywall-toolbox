@@ -1,6 +1,6 @@
 # Mobile Checkout Architecture
 
-Last verified against source: 2026-07-20.
+Last verified against source: 2026-07-21.
 
 ## Ownership
 
@@ -10,6 +10,7 @@ The production checkout authority is:
 
 ```text
 React cart / cart drawer
+  -> successful cart engagement may prewarm DTB static checkout assets
   -> full-document navigation to /checkout/
   -> assigned WordPress WooCommerce Checkout page
   -> WooCommerce Checkout Block
@@ -126,7 +127,32 @@ Required launch checks:
 - competing Stripe/WooPayments card-wallet authorities are disabled;
 - wallet and local-payment eligibility remain provider controlled.
 
-`GET /wp-json/dtb/v1/checkout/capabilities` exposes only non-secret local readiness metadata. `DTB_MobilePaymentSheet` augments it with payment-sheet version, active mode, configured layout, settings-sync state, local active-webhook configuration, cached webhook health when available, capture mode, and a competing-authority boolean. It must not perform external Stripe calls in this public request.
+`GET /wp-json/dtb/v1/checkout/capabilities` exposes only non-secret local readiness/performance metadata. Payment readiness and performance manifest generation must not perform external Stripe calls in this public request.
+
+## Checkout performance and stability
+
+The canonical contract is documented in `docs/checkout-performance-stability.md`.
+
+`dtb-commerce/Payment/CheckoutPerformance.php` and `dtb-commerce/assets/woo-native-checkout-performance.js` own only bounded performance/stability behavior:
+
+- low-priority server-manifest-driven prewarm of DTB static checkout assets after the first successful storefront add-to-cart event;
+- Stripe preconnect/DNS-prefetch and DTB checkout-style preload on the native checkout document;
+- suppression of known non-essential marketing/tracking/A-B/chat/loyalty assets while leaving unknown Woo/payment dependencies untouched;
+- below-fold order-summary image lazy/low-priority policy;
+- checkout-specific JavaScript/resource/unhandled-rejection telemetry;
+- LCP/CLS/load-threshold observation and unexpected third-party host audit;
+- scoped Checkout Block root observation plus bounded root-identity checks to detect wholesale re-renders and suspected populated-form state loss without reading form values;
+- official payment-block provider-iframe timeout detection and provider-safe recovery UI.
+
+Performance behavior must fail open. Prewarm never fetches private checkout HTML and never blocks add-to-cart or checkout navigation. Runtime telemetry never writes cart/order/payment state. Payment fallback may direct the shopper to an actually rendered eligible express surface or reload payment options, but it must never create a second payment implementation.
+
+Diagnostics route:
+
+```text
+POST /wp-json/dtb/v1/checkout/runtime-telemetry
+```
+
+It is nonce protected, same-origin checked, rate limited, deduplicated, allowlisted, bounded, sanitized, and sensitive-value redacted.
 
 ## Presentation assets
 
@@ -146,16 +172,26 @@ dtb-commerce/assets/woo-native-checkout-ui.js
 dtb-commerce/Payment/MobilePaymentSheet.php
   -> bounded production hardening asset loader plus non-secret local readiness
      diagnostics/admin warnings; no payment processing authority
+
 dtb-commerce/assets/woo-native-checkout-payment-sheet.js
   -> accessible dialog chrome, focus containment, authoritative Woo total
      projection, legacy chrome suppression, and visualViewport adaptation
+
 dtb-commerce/assets/woo-native-checkout-payment-sheet.css
   -> bounded mobile dialog/chrome/provider-container polish only
+
+dtb-commerce/Payment/CheckoutPerformance.php
+  -> checkout-only resource hints, prewarm manifest, third-party policy,
+     telemetry permission/write boundary, and performance capability metadata
+
+dtb-commerce/assets/woo-native-checkout-performance.js
+  -> scoped runtime diagnostics, image policy, CWV observation, third-party
+     resource audit, rerender/state-loss signals, and provider timeout recovery
 ```
 
 The payment-sheet hardening assets are intentionally downstream of the canonical checkout UI asset. They may only refine DTB-owned shell presentation and safe outer provider containers. They must never duplicate provider fields, mutate payment state, or introduce another checkout/payment authority.
 
-`woo-native-checkout-profile-refinements.css/js` remain a separate profile/contact presentation companion loaded by the native checkout template. New payment-sheet behavior belongs in the bounded payment-sheet assets above rather than in profile refinements.
+`woo-native-checkout-profile-refinements.css/js` remain a separate profile/contact presentation companion loaded by the native checkout template. New payment-sheet behavior belongs in the bounded payment-sheet assets rather than in profile refinements.
 
 ## Validation/error behavior
 
@@ -167,6 +203,8 @@ WooCommerce remains final validation authority.
 - Closing/reopening the sheet must not remount Stripe unnecessarily.
 - 3DS/SCA temporarily hands control to Stripe and must return to the same Woo payment state on failure/cancel.
 - Successful payment follows the authoritative WooCommerce order-received flow and existing DTB storefront tracking redirect.
+- A DTB performance/telemetry/prewarm failure must not make checkout unusable.
+- A provider-surface timeout must produce recovery presentation rather than a competing payment flow.
 
 ## Responsive behavior
 
@@ -180,16 +218,23 @@ Static contract validation:
 
 ```powershell
 ./scripts/smoke-dtb-mobile-payment-sheet.ps1
+./scripts/smoke-dtb-checkout-performance.ps1
 ```
 
-The smoke check verifies asset wiring, JavaScript/PHP syntax when runtimes are available, accessibility/authoritative-total contracts, and the absence of a second Stripe payment orchestration path. CI runs this script before deployment-payload assembly.
+Mobile PageSpeed checkout-shell baseline:
+
+```powershell
+./scripts/audit-dtb-checkout-pagespeed.ps1 -Url "https://drywalltoolbox.com/checkout/"
+```
+
+A public PageSpeed run does not reproduce a real Woo cart/session. Release acceptance also requires a session-preserving mobile Lighthouse/WebPageTest run against staging with a real cart.
 
 Manual/staging acceptance remains mandatory:
 
 1. Mobile Safari/iPhone with and without Apple Pay eligibility.
 2. Chrome/Android with and without Google Pay eligibility.
 3. Contact -> Shipping -> Payment -> payment sheet -> close -> reopen.
-4. Address, shipping method, selected payment method, and provider state remain intact across navigation.
+4. Address, shipping method, selected payment method, and provider state remain intact across navigation/recalculation.
 5. Accordion payment methods remain vertically reachable and scrollable.
 6. Card success, decline, and 3DS challenge/cancel/failure.
 7. Exactly one visible canonical Order Summary; sheet total always matches Woo authoritative totals.
@@ -200,8 +245,14 @@ Manual/staging acceptance remains mandatory:
 12. Resize mobile -> desktop -> mobile without duplicated controls, fixed overlays, or hidden sections.
 13. Guest and authenticated checkout.
 14. Cart quantity change immediately followed by checkout handoff.
-15. Failed payment followed by retry through WooCommerce order-pay.
-16. Successful staging checkout returns to the staging storefront order-tracking path.
-17. Duplicate submit/reload/webhook replay does not duplicate orders or downstream jobs.
-18. Partial/full refunds retain one QuickBooks projection per concrete Woo refund ID.
-19. Operator readiness confirms Accordion layout, Settings Sync, active-mode webhooks, automatic capture, and single payment authority before live acceptance.
+15. First successful add-to-cart schedules one low-priority checkout asset prewarm without delaying cart state.
+16. Address/shipping updates do not replace the checkout root in a way that loses populated controls.
+17. Checkout runtime telemetry records bounded/redacted diagnostics and rejects invalid nonce/origin/rate-limit cases.
+18. No unexplained marketing/analytics/third-party resources load on checkout.
+19. Payment-provider load timeout shows provider-safe recovery UI; an eligible express fallback is shown only when actually rendered.
+20. Failed payment followed by retry through WooCommerce order-pay.
+21. Successful staging checkout returns to the staging storefront order-tracking path.
+22. Duplicate submit/reload/webhook replay does not duplicate orders or downstream jobs.
+23. Partial/full refunds retain one QuickBooks projection per concrete Woo refund ID.
+24. Operator readiness confirms Accordion layout, Settings Sync, active-mode webhooks, automatic capture, and single payment authority before live acceptance.
+25. Mobile LCP/CLS/blocking/server/third-party performance evidence is recorded for the release candidate.
