@@ -67,7 +67,7 @@ The runtime observes cumulative layout shift and largest-contentful-paint when s
 - mobile checkout LCP/CLS/load threshold breaches;
 - unexpected third-party resources.
 
-The root-replacement diagnostic never reads or transmits field values. It compares only aggregate counts before/after replacement. DTB does not attempt to reconstruct Woo checkout form state from duplicated browser state; Woo remains the only authoritative form/cart state owner.
+The root-replacement diagnostic checks controls only for empty/non-empty or checked state, then transmits aggregate counts. It never captures or transmits field values. DTB does not attempt to reconstruct Woo checkout form state from duplicated browser state; Woo remains the only authoritative form/cart state owner.
 
 The runtime uses a scoped observer on the Woo checkout root plus a bounded 30-second root-identity check. Do not add another permanent document-wide mutation observer for performance monitoring.
 
