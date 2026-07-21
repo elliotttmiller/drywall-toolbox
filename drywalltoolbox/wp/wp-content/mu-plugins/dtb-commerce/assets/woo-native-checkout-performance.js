@@ -2,6 +2,7 @@
 	'use strict';
 
 	const config = window.DTB_CHECKOUT_PERFORMANCE || {};
+	const mobileViewport = window.matchMedia( '(max-width: 767px)' );
 	const checkoutRootSelector = '.wc-block-checkout';
 	const paymentBlockSelector = '.wp-block-woocommerce-checkout-payment-block, .wc-block-checkout__payment-method';
 	const expressBlockSelector = '.wp-block-woocommerce-checkout-express-payment-block, .wc-block-components-express-payment';
@@ -21,8 +22,10 @@
 	];
 	const reportedSignatures = new Set();
 	let runtimeObserver = null;
+	let bodyClassObserver = null;
 	let observedRoot = null;
 	let maintenanceQueued = false;
+	let paymentWatchArmed = false;
 	let vitalsReported = false;
 	let clsValue = 0;
 	let lcpValue = 0;
@@ -201,7 +204,15 @@
 		paymentBlock.prepend( notice );
 	}
 
+	function shouldWatchPaymentSurface() {
+		return ! mobileViewport.matches || document.body.classList.contains( 'dtb-payment-sheet-open' );
+	}
+
 	function checkPaymentSurface() {
+		if ( ! shouldWatchPaymentSurface() ) {
+			paymentWatchArmed = false;
+			return;
+		}
 		if ( isProviderFrameReady() ) {
 			removeFallbackNoticeIfRecovered();
 			return;
@@ -213,6 +224,15 @@
 			{ timeout_ms: Number( config.paymentSurfaceTimeoutMs || 15000 ), express_available: Boolean( expressSurface() ) }
 		);
 		showPaymentFallback();
+	}
+
+	function armPaymentSurfaceWatch() {
+		if ( paymentWatchArmed || ! shouldWatchPaymentSurface() || isProviderFrameReady() ) {
+			return;
+		}
+		paymentWatchArmed = true;
+		const timeout = Math.max( 5000, Math.min( 30000, Number( config.paymentSurfaceTimeoutMs || 15000 ) ) );
+		window.setTimeout( checkPaymentSurface, timeout );
 	}
 
 	function optimizeOrderSummaryImages( root = document ) {
@@ -269,6 +289,7 @@
 			}
 			optimizeOrderSummaryImages( root || document );
 			removeFallbackNoticeIfRecovered();
+			armPaymentSurfaceWatch();
 		} );
 	}
 
@@ -366,10 +387,19 @@
 		const root = checkoutRoot();
 		bindRuntimeObserver( root );
 		optimizeOrderSummaryImages( root || document );
+		armPaymentSurfaceWatch();
 
-		const timeout = Math.max( 5000, Math.min( 30000, Number( config.paymentSurfaceTimeoutMs || 15000 ) ) );
-		window.setTimeout( checkPaymentSurface, timeout );
-		window.setTimeout( auditThirdPartyResources, Math.min( timeout, 5000 ) );
+		bodyClassObserver = new MutationObserver( () => {
+			if ( shouldWatchPaymentSurface() ) {
+				armPaymentSurfaceWatch();
+			} else {
+				paymentWatchArmed = false;
+			}
+		} );
+		bodyClassObserver.observe( document.body, { attributes: true, attributeFilter: [ 'class' ] } );
+
+		const auditDelay = Math.max( 1000, Math.min( 5000, Number( config.paymentSurfaceTimeoutMs || 15000 ) ) );
+		window.setTimeout( auditThirdPartyResources, auditDelay );
 
 		// Checkout Blocks normally keep the root stable. A bounded identity check
 		// catches rare wholesale React remounts without a permanent document-wide
