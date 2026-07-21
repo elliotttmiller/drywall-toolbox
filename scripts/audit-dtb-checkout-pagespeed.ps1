@@ -28,7 +28,7 @@ if ($ApiKey) {
 $queryString = ($query.GetEnumerator() | ForEach-Object {
     '{0}={1}' -f [Uri]::EscapeDataString([string]$_.Key), [Uri]::EscapeDataString([string]$_.Value)
 }) -join '&'
-$endpoint = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?$queryString"
+$endpoint = "https://pagespeedonline.googleapis.com/pagespeedonline/v5/runPagespeed?$queryString"
 
 Write-Host "Running Google PageSpeed Insights mobile audit for $Url"
 $response = Invoke-RestMethod -Method Get -Uri $endpoint -TimeoutSec 180
