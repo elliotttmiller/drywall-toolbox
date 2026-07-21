@@ -7,7 +7,12 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-if (-not [Uri]::TryCreate($Url, [UriKind]::Absolute, [ref]([Uri]$null))) {
+try {
+    $parsedUrl = [Uri]$Url
+} catch {
+    throw "Url must be an absolute http(s) URL: $Url"
+}
+if (-not $parsedUrl.IsAbsoluteUri -or $parsedUrl.Scheme -notin @('http', 'https') -or -not $parsedUrl.Host) {
     throw "Url must be an absolute http(s) URL: $Url"
 }
 
@@ -17,7 +22,7 @@ $query = [ordered]@{
     category = 'performance'
 }
 if ($ApiKey) {
-    $query.key = $ApiKey
+    $query['key'] = $ApiKey
 }
 
 $queryString = ($query.GetEnumerator() | ForEach-Object {
@@ -42,11 +47,16 @@ function Get-AuditValue([string]$Id) {
     }
 }
 
+$performanceScore = $null
+if ($null -ne $lhr.categories.performance.score) {
+    $performanceScore = [math]::Round(([double]$lhr.categories.performance.score) * 100)
+}
+
 $summary = [ordered]@{
     audited_url = $Url
     fetched_at = $response.analysisUTCTimestamp
     strategy = 'mobile'
-    performance_score = [math]::Round(([double]$lhr.categories.performance.score) * 100)
+    performance_score = $performanceScore
     first_contentful_paint = Get-AuditValue 'first-contentful-paint'
     largest_contentful_paint = Get-AuditValue 'largest-contentful-paint'
     cumulative_layout_shift = Get-AuditValue 'cumulative-layout-shift'
@@ -59,7 +69,8 @@ $summary = [ordered]@{
     note = 'A public PSI run cannot reproduce a shopper-specific WooCommerce cart/session. Use this as a checkout-shell baseline; validate cart-filled checkout with a scripted mobile Lighthouse/WebPageTest flow in staging.'
 }
 
-$summary | ConvertTo-Json -Depth 8 | Write-Host
+$summaryJson = $summary | ConvertTo-Json -Depth 8
+Write-Host $summaryJson
 
 if ($OutputPath) {
     $resolved = [IO.Path]::GetFullPath($OutputPath)
@@ -67,6 +78,6 @@ if ($OutputPath) {
     if ($directory -and -not (Test-Path -LiteralPath $directory)) {
         New-Item -ItemType Directory -Path $directory -Force | Out-Null
     }
-    $summary | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $resolved -Encoding UTF8
+    $summaryJson | Set-Content -LiteralPath $resolved -Encoding UTF8
     Write-Host "Saved PageSpeed summary to $resolved"
 }
