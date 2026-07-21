@@ -27,6 +27,8 @@ $requiredJsTokens = @(
     'getCartTotals',
     'data.subscribe',
     'visualViewport',
+    'isProviderOwnedFocusTarget',
+    'stripe.com',
     'dtb-payment-sheet-dialog-chrome__close'
 )
 foreach ($token in $requiredJsTokens) {
