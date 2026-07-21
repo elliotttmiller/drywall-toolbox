@@ -71,6 +71,7 @@ final class DTB_MobilePaymentSheet {
 			'total_source'                          => 'wc_store_cart',
 			'modal_accessibility'                   => 'dialog_focus_containment',
 			'active_mode'                           => $test_mode ? 'test' : 'live',
+			'stripe_account_connected'              => self::stripe_account_connected(),
 			'optimized_checkout_layout'             => sanitize_key( (string) ( $settings['optimized_checkout_layout'] ?? '' ) ),
 			'optimized_checkout_layout_recommended' => 'accordion',
 			'settings_sync_state'                   => self::settings_sync_state( $settings ),
@@ -92,6 +93,13 @@ final class DTB_MobilePaymentSheet {
 		$settings = self::stripe_settings();
 		if ( [] === $settings ) {
 			return;
+		}
+
+		if ( ! self::stripe_account_connected() ) {
+			self::render_notice(
+				'error',
+				__( 'The official WooCommerce Stripe gateway is not connected to a Stripe account. Complete the official connection flow before accepting checkout payments.', 'drywall-toolbox' )
+			);
 		}
 
 		$optimized_checkout_enabled = 'yes' === (string) ( $settings['optimized_checkout_element'] ?? 'no' );
@@ -150,6 +158,12 @@ final class DTB_MobilePaymentSheet {
 
 		$settings = get_option( 'woocommerce_stripe_settings', [] );
 		return is_array( $settings ) ? $settings : [];
+	}
+
+	private static function stripe_account_connected(): bool {
+		return class_exists( 'WC_Stripe_Helper' )
+			&& method_exists( 'WC_Stripe_Helper', 'is_connected' )
+			&& (bool) WC_Stripe_Helper::is_connected();
 	}
 
 	private static function settings_sync_state( array $settings ): string {
