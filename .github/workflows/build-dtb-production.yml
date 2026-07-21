@@ -41,14 +41,14 @@ jobs:
           rm -rf dtb-production
           mkdir -p dtb-production
 
-          # Engineering authority and durable architecture context.
+          # Current engineering authority and durable architecture context only.
           cp AGENTS.md dtb-production/AGENTS.md
           mkdir -p dtb-production/memory-bank
           cp memory-bank/product.md dtb-production/memory-bank/product.md
           cp memory-bank/structure.md dtb-production/memory-bank/structure.md
           cp memory-bank/tech.md dtb-production/memory-bank/tech.md
 
-          # Production CI/release workflows only. Exclude Copilot/dev metadata and this generator.
+          # Current production CI/release workflows only.
           mkdir -p dtb-production/.github/workflows
           cp .github/workflows/ci-build.yml dtb-production/.github/workflows/ci-build.yml
           cp .github/workflows/deploy.yml dtb-production/.github/workflows/deploy.yml
@@ -82,60 +82,47 @@ jobs:
           cp -a drywalltoolbox/wp/wp-content/mu-plugins dtb-production/wp/wp-content/mu-plugins
           cp -a drywalltoolbox/wp/wp-content/themes dtb-production/wp/wp-content/themes
 
-          # Curated production catalog/taxonomy data. Exclude reports, source history, audits and scratch data.
-          mkdir -p dtb-production/products/Production/catalogs
-          rsync -a \
-            --exclude='reports/' \
-            --exclude='sources/' \
-            --exclude='other/' \
-            --exclude='archive/' \
-            --exclude='archives/' \
-            --exclude='backups/' \
-            --exclude='backup/' \
-            --exclude='tmp/' \
-            --exclude='temp/' \
-            --exclude='scratch/' \
-            --exclude='scraped_results/' \
-            --exclude='*.bak' \
-            --exclude='*.tmp' \
-            products/Production/catalogs/ dtb-production/products/Production/catalogs/
-
-          # Preserve the canonical schematic model crosswalk when present.
-          if [ -f products/Production/refs/schematic_tool_crosswalk.csv ]; then
-            mkdir -p dtb-production/products/Production/refs
-            cp products/Production/refs/schematic_tool_crosswalk.csv dtb-production/products/Production/refs/
+          # Product authority: ONLY the two current launch/runtime import CSVs.
+          # Do not copy historical/stage/audit CSV generations from products/Production/catalogs.
+          mapfile -d '' official_csvs < <(find products/launch/official -maxdepth 1 -type f -name '*.csv' -print0 | sort -z)
+          if [ "${#official_csvs[@]}" -ne 2 ]; then
+            echo "Expected exactly 2 authoritative CSVs in products/launch/official; found ${#official_csvs[@]}." >&2
+            printf '  %s\n' "${official_csvs[@]:-}"
+            exit 1
           fi
+          mkdir -p dtb-production/products/launch/official
+          for file in "${official_csvs[@]}"; do
+            cp "$file" dtb-production/products/launch/official/
+          done
 
-          # Preserve canonical universal-part machine-readable data, not audit/reference prose.
-          if [ -d products/launch/universal_parts ]; then
-            while IFS= read -r -d '' file; do
-              rel="${file#products/}"
-              case "$rel" in
-                *audit*|*report*|*.md) continue ;;
-              esac
-              mkdir -p "dtb-production/products/$(dirname "$rel")"
-              cp "$file" "dtb-production/products/$rel"
-            done < <(find products/launch/universal_parts -type f \
-              \( -name '*.csv' -o -name '*.json' \) -print0)
+          # Current machine-readable catalog governance only; no legacy catalog CSVs or reports.
+          mkdir -p dtb-production/products/Production/catalogs/config
+          cp products/Production/catalogs/config/production_taxonomy_policy.json \
+            dtb-production/products/Production/catalogs/config/production_taxonomy_policy.json
+          if [ -f products/Production/catalogs/config/product_category_map.json ]; then
+            cp products/Production/catalogs/config/product_category_map.json \
+              dtb-production/products/Production/catalogs/config/product_category_map.json
           fi
 
           cat > dtb-production/PRODUCTION-PACKAGE.md <<'EOF'
           # DTB Production Launch Source Package
 
-          This directory is a curated copy of source and production data required to build, operate, validate, and deploy Drywall Toolbox for launch.
+          This directory is a curated copy of current source and production data required to build, operate, validate, and deploy Drywall Toolbox for launch.
 
           Included:
           - `AGENTS.md`
-          - `memory-bank/{product,structure,tech}.md`
+          - current `memory-bank/{product,structure,tech}.md`
           - `.github/workflows/{ci-build,deploy}.yml`
-          - curated `frontend/` production source and required build-safety files
+          - curated `frontend/` production source and mandatory build-safety files
           - tracked `wp/` application code (`mu-plugins`, themes, routing/index files)
-          - curated `products/` production catalog/taxonomy/compatibility data
+          - exactly two authoritative runtime/import CSVs from `products/launch/official/`
+          - current taxonomy/category governance JSON from `products/Production/catalogs/config/`
           - production root `.htaccess` and `logos/`
 
           Excluded:
           - root `scripts/`
-          - research/reference docs, scraped data, reports, audits, historical exports and scratch data
+          - legacy/stage/historical catalog CSV generations outside `products/launch/official/`
+          - research/reference docs, scraped data, reports, audits, source-history and scratch data
           - generated `dist/`, `node_modules/`, caches and local/staging env files
           - `wp-config.php`, WordPress core, regular plugins, uploads, cache, runtime state and secrets
 
@@ -169,8 +156,18 @@ jobs:
           test -d dtb-production/wp/wp-content/mu-plugins
           test -d dtb-production/wp/wp-content/themes
 
-          test -d dtb-production/products/Production/catalogs/config
+          test -d dtb-production/products/launch/official
+          test "$(find dtb-production/products/launch/official -maxdepth 1 -type f -name '*.csv' | wc -l)" -eq 2
+          test -f dtb-production/products/launch/official/dtb_woocommerce_official_catalog.csv
           test -f dtb-production/products/Production/catalogs/config/production_taxonomy_policy.json
+
+          # No other catalog CSV generation may leak into the production capsule.
+          extra_product_csvs="$(find dtb-production/products -type f -name '*.csv' ! -path 'dtb-production/products/launch/official/*' -print)"
+          if [ -n "$extra_product_csvs" ]; then
+            echo 'Unexpected non-authoritative product CSVs found:' >&2
+            printf '%s\n' "$extra_product_csvs" >&2
+            exit 1
+          fi
 
           # Explicitly reject development/research/runtime-owned content.
           test ! -e dtb-production/scripts
@@ -194,13 +191,14 @@ jobs:
           fi
 
           if find dtb-production/products -type d \
-            \( -name reports -o -name sources -o -name scraped_results -o -name scratch -o -name tmp -o -name temp \) | grep -q .; then
-            echo 'Forbidden product research/report/source-history directory found.' >&2
+            \( -name reports -o -name sources -o -name scraped_results -o -name scratch -o -name refs -o -name tools \) | grep -q .; then
+            echo 'Forbidden product research/report/source-history/tool directory found.' >&2
             exit 1
           fi
 
-          echo 'Validated production source package:'
-          find dtb-production -maxdepth 4 -type f | sort | head -300
+          echo 'Authoritative launch CSVs:'
+          find dtb-production/products/launch/official -maxdepth 1 -type f -name '*.csv' -print | sort
+          echo 'Validated production source package.'
 
       - name: Commit generated package
         if: ${{ github.event_name != 'pull_request' }}
