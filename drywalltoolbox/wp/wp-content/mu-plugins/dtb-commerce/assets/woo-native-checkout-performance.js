@@ -23,7 +23,6 @@
 	let runtimeObserver = null;
 	let observedRoot = null;
 	let maintenanceQueued = false;
-	let paymentTimeoutId = 0;
 	let vitalsReported = false;
 	let clsValue = 0;
 	let lcpValue = 0;
@@ -134,7 +133,8 @@
 	}
 
 	function isProviderFrameReady() {
-		return Boolean( document.querySelector( providerFrameSelector ) );
+		const paymentBlock = document.querySelector( paymentBlockSelector );
+		return Boolean( paymentBlock?.querySelector( providerFrameSelector ) );
 	}
 
 	function expressSurface() {
@@ -230,6 +230,20 @@
 		} );
 	}
 
+	function countFilledControls( root ) {
+		if ( ! ( root instanceof Element ) ) return 0;
+		return Array.from( root.querySelectorAll( 'input:not([type="hidden"]):not([type="password"]), select, textarea' ) )
+			.reduce( ( count, control ) => {
+				if ( control instanceof HTMLInputElement && ( control.type === 'checkbox' || control.type === 'radio' ) ) {
+					return count + ( control.checked ? 1 : 0 );
+				}
+				if ( 'value' in control && String( control.value || '' ).trim() !== '' ) {
+					return count + 1;
+				}
+				return count;
+			}, 0 );
+	}
+
 	function queueMaintenance() {
 		if ( maintenanceQueued ) return;
 		maintenanceQueued = true;
@@ -237,8 +251,19 @@
 			maintenanceQueued = false;
 			const root = checkoutRoot();
 			if ( root && root !== observedRoot ) {
-				if ( observedRoot ) {
-					report( 'checkout_root_replaced', 'WooCommerce checkout root was replaced during the active checkout session.' );
+				const previousRoot = observedRoot;
+				if ( previousRoot ) {
+					const filledBefore = countFilledControls( previousRoot );
+					const filledAfter = countFilledControls( root );
+					report(
+						'checkout_root_replaced',
+						'WooCommerce checkout root was replaced during the active checkout session.',
+						{
+							filled_before: filledBefore,
+							filled_after: filledAfter,
+							state_loss_suspected: filledBefore > 0 && filledAfter < filledBefore,
+						}
+					);
 				}
 				bindRuntimeObserver( root );
 			}
@@ -343,7 +368,7 @@
 		optimizeOrderSummaryImages( root || document );
 
 		const timeout = Math.max( 5000, Math.min( 30000, Number( config.paymentSurfaceTimeoutMs || 15000 ) ) );
-		paymentTimeoutId = window.setTimeout( checkPaymentSurface, timeout );
+		window.setTimeout( checkPaymentSurface, timeout );
 		window.setTimeout( auditThirdPartyResources, Math.min( timeout, 5000 ) );
 
 		// Checkout Blocks normally keep the root stable. A bounded identity check
