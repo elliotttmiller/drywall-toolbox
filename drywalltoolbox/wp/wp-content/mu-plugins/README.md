@@ -2,7 +2,7 @@
 
 # Drywall Toolbox MU-Plugin Architecture and Runtime Contract
 
-Last verified against source: 2026-07-19.
+Last verified against source: 2026-07-20.
 
 Source code and the active loader are authoritative for `drywalltoolbox/wp/wp-content/mu-plugins/`. When this document and implementation diverge, correct the document in the same change.
 
@@ -40,6 +40,7 @@ Catalog/product/variation/brand/taxonomy models and normalization, relationships
 - toolset/order-line metadata;
 - native Woo checkout runtime exception for the headless theme;
 - official WooCommerce Stripe gateway readiness/capability metadata;
+- mobile payment-sheet accessibility/presentation hardening and non-secret readiness diagnostics;
 - checkout-order contract tagging and non-secret paid reference mirroring;
 - responsive checkout presentation, cross-document handoff loading, mobile progressive step navigation, and official Stripe Appearance API configuration;
 - DTB shipping policy method;
@@ -67,6 +68,16 @@ dtb-commerce/Payment/OfficialStripeNativeCheckout.php
 ```
 
 DTB verifies official gateway origin rather than trusting arbitrary `stripe_*` IDs.
+
+Production mobile payment-sheet hardening lives at:
+
+```text
+dtb-commerce/Payment/MobilePaymentSheet.php
+dtb-commerce/assets/woo-native-checkout-payment-sheet.js
+dtb-commerce/assets/woo-native-checkout-payment-sheet.css
+```
+
+This layer is presentation/readiness only. It adds accessible modal chrome, focus containment, `visualViewport` adaptation, and a read-only total projection from WooCommerce Blocks `wc/store/cart`. It never moves provider-owned payment nodes, creates Stripe payment objects, replaces Woo submission, or calls Stripe from the public readiness endpoint. The existing `GET /wp-json/dtb/v1/checkout/capabilities` response is augmented only with non-secret local readiness signals such as layout, settings-sync state, active-mode local webhook configuration, cached webhook health when already available, capture mode, and competing-authority presence.
 
 ### `dtb-order-platform`
 
@@ -127,6 +138,7 @@ Authority rules:
 - Official WooCommerce Stripe Payment Gateway owns Stripe payment rendering, eligible wallets/Link, tokenization, 3DS/SCA, payment execution, and webhook synchronization.
 - React owns cart UX/handoff only and must not render payment fields, wallet iframes, fake buttons, or create payment/order objects.
 - DTB may style/diagnose/tag/observe, but does not impersonate the gateway.
+- Mobile payment-sheet UI is presentation state only; its displayed total is read directly from Woo Blocks cart state and is never independently calculated.
 - Veeqo owns fulfillment truth; QuickBooks owns accounting projection only.
 
 Same-origin React cart traffic uses WooCommerce's cookie-backed session + Store API `Nonce`. Cart-Token is compatibility-only for genuinely cross-origin clients. DTB must never decode unsigned Cart-Token payloads or query `woocommerce_sessions` to recover arbitrary sessions.
@@ -164,6 +176,8 @@ Every REST route needs explicit permission behavior. Customer-facing record read
 Server-only secrets include Woo application credentials, JWT signing secrets, official Stripe secret/webhook configuration, Veeqo/QuickBooks/marketplace credentials, and external-write secrets. Browser `REACT_APP_*` values are public by definition.
 
 The React storefront does not require a Stripe key for the current architecture.
+
+The public checkout capabilities endpoint may expose only non-secret readiness metadata. It must not return Stripe keys, webhook secrets, PaymentIntent/Checkout Session client secrets, tokens, raw webhook data, or payment credentials. Readiness checks on that public request must remain local/non-blocking and must not trigger external Stripe calls.
 
 ## 7. Routing/cache contract
 
@@ -215,14 +229,16 @@ Targeted PHP/source validation:
 ```powershell
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/WooNativeCheckoutRuntime.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/OfficialStripeNativeCheckout.php
+php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Payment/MobilePaymentSheet.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-commerce/Domain/PaymentState.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/CheckoutPaymentLifecycle.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-order-platform/Payment/RefundLifecycle.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksAccountingPipeline.php
 php -l drywalltoolbox/wp/wp-content/mu-plugins/dtb-integrations/OperationalPipeline/QuickBooksJobOverride.php
+./scripts/smoke-dtb-mobile-payment-sheet.ps1
 git diff --check
 ```
 
 Do not claim a referenced smoke script passed if it is absent from the checked-out repository.
 
-Runtime staging validation must prove cart/session continuity, Checkout Block rendering, official Stripe cards/3DS/eligible and ineligible express methods, order creation exactly once, captured-payment gating, webhook replay tolerance, order-pay retry, refunds by `refund_id`, Veeqo dispatch once, and QuickBooks create/refund projection exactly once before live payment acceptance.
+Runtime staging validation must prove cart/session continuity, Checkout Block rendering, official Stripe cards/3DS/eligible and ineligible express methods, accessible payment-sheet focus containment, mobile software-keyboard behavior, authoritative total parity, order creation exactly once, captured-payment gating, webhook replay tolerance, order-pay retry, refunds by `refund_id`, Veeqo dispatch once, and QuickBooks create/refund projection exactly once before live payment acceptance.
