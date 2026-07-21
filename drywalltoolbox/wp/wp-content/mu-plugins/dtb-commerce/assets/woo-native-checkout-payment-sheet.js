@@ -15,6 +15,12 @@
 		'iframe',
 		'[tabindex]:not([tabindex="-1"])',
 	].join( ',' );
+	const providerFrameHosts = [
+		'stripe.com',
+		'stripe.network',
+		'pay.google.com',
+		'payments.google.com',
+	];
 
 	let bodyObserver = null;
 	let mainObserver = null;
@@ -102,12 +108,14 @@
 		const total = document.createElement( 'strong' );
 		total.className = 'dtb-payment-sheet-dialog-chrome__total';
 		total.setAttribute( 'data-dtb-payment-sheet-total', '1' );
+		total.setAttribute( 'aria-live', 'polite' );
+		total.setAttribute( 'aria-atomic', 'true' );
 
 		totalGroup.append( totalLabel, total );
 
 		const trust = document.createElement( 'span' );
 		trust.className = 'dtb-payment-sheet-dialog-chrome__trust';
-		trust.textContent = 'Final total from WooCommerce · Payment secured by Stripe';
+		trust.textContent = 'Drywall Toolbox · Secure payment powered by Stripe';
 
 		context.append( totalGroup, trust );
 		chrome.append( topbar, context );
@@ -160,6 +168,33 @@
 		observedMain = null;
 	}
 
+	function isProviderFrame( element ) {
+		if ( ! ( element instanceof HTMLIFrameElement ) ) {
+			return false;
+		}
+		const rawSource = element.getAttribute( 'src' );
+		if ( ! rawSource ) {
+			return false;
+		}
+		try {
+			const host = new URL( rawSource, window.location.href ).hostname.toLowerCase();
+			return providerFrameHosts.some( ( allowedHost ) => host === allowedHost || host.endsWith( `.${ allowedHost }` ) );
+		} catch ( error ) {
+			return false;
+		}
+	}
+
+	function isProviderOwnedFocusTarget( target ) {
+		if ( ! ( target instanceof Element ) ) {
+			return false;
+		}
+		if ( isProviderFrame( target ) ) {
+			return true;
+		}
+		const providerFrame = target.closest( 'iframe' );
+		return isProviderFrame( providerFrame );
+	}
+
 	function isElementVisible( element ) {
 		if ( ! ( element instanceof HTMLElement ) ) {
 			return element instanceof HTMLIFrameElement;
@@ -186,7 +221,7 @@
 					return;
 				}
 				const close = internalCloseButton( main );
-				if ( close instanceof HTMLElement && ! main.contains( document.activeElement ) ) {
+				if ( close instanceof HTMLElement && ! main.contains( document.activeElement ) && ! isProviderOwnedFocusTarget( document.activeElement ) ) {
 					close.focus( { preventScroll: true } );
 				}
 			} );
@@ -199,7 +234,7 @@
 		}
 
 		const main = checkoutMain();
-		if ( ! main ) {
+		if ( ! main || isProviderOwnedFocusTarget( event.target ) || isProviderOwnedFocusTarget( document.activeElement ) ) {
 			return;
 		}
 
@@ -231,7 +266,7 @@
 			return;
 		}
 		const main = checkoutMain();
-		if ( ! main || main.contains( event.target ) ) {
+		if ( ! main || main.contains( event.target ) || isProviderOwnedFocusTarget( event.target ) ) {
 			return;
 		}
 		const close = internalCloseButton( main );
