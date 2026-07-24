@@ -1,19 +1,20 @@
 .product-category-card--all-products {
   border: 1px solid rgba(15, 23, 42, 0.1);
   background: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.75);
+  box-shadow: none;
 }
 
+/*
+ * Keep the All Products image bed a single continuous white surface.
+ * The source previews are flattened against white; adding a separate gradient
+ * behind the contained image makes the raster canvas boundary visible.
+ */
 .product-category-card--all-products::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.035), rgba(255, 255, 255, 0) 48%);
-  opacity: 1;
-  pointer-events: none;
+  display: none;
 }
 
 .product-category-card--all-products .product-category-card__image--logo {
+  background: transparent;
   filter: drop-shadow(0 10px 24px rgba(15, 23, 42, 0.16)) saturate(1.04) contrast(1.04);
 }
 
